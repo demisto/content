@@ -17,7 +17,6 @@ from ContentClientApiModule import (
     BasicAuthHandler,
     OAuth2ClientCredentialsHandler,
     ContentClientState,
-    DeduplicationState,
     RateLimitPolicy,
     RetryPolicy,
     TimeoutSettings,
@@ -403,49 +402,21 @@ def test_content_client_state_serialization():
     assert empty.cursor is None
 
 
-def test_deduplication_state_serialization():
-    """Test DeduplicationState to_dict and from_dict."""
-    state = DeduplicationState(
-        latest_timestamp="2023-01-01T00:00:00Z",
-        seen_keys=["key1", "key2", "key3"],
-    )
-    
-    # Serialize
-    state_dict = state.to_dict()
-    assert state_dict["latest_timestamp"] == "2023-01-01T00:00:00Z"
-    assert state_dict["seen_keys"] == ["key1", "key2", "key3"]
-    
-    # Deserialize
-    restored = DeduplicationState.from_dict(state_dict)
-    assert restored.latest_timestamp == "2023-01-01T00:00:00Z"
-    assert restored.seen_keys == ["key1", "key2", "key3"]
-    
-    # Test empty state
-    empty = DeduplicationState.from_dict(None)
-    assert empty.latest_timestamp is None
-    assert empty.seen_keys == []
-
-
-def test_content_client_state_with_deduplication():
-    """Test ContentClientState serialization with deduplication."""
-    dedup_state = DeduplicationState(
-        latest_timestamp="2023-01-01T00:00:00Z",
-        seen_keys=["key1"],
-    )
-    
+def test_content_client_state_with_metadata():
+    """Test ContentClientState serialization with metadata."""
     state = ContentClientState(
         cursor="test_cursor",
-        deduplication=dedup_state,
+        metadata={"latest_timestamp": "2023-01-01T00:00:00Z", "seen_keys": ["key1"]},
     )
     
     # Serialize
     state_dict = state.to_dict()
-    assert state_dict["deduplication"]["latest_timestamp"] == "2023-01-01T00:00:00Z"
+    assert state_dict["metadata"]["latest_timestamp"] == "2023-01-01T00:00:00Z"
     
     # Deserialize
     restored = ContentClientState.from_dict(state_dict)
-    assert restored.deduplication is not None
-    assert restored.deduplication.latest_timestamp == "2023-01-01T00:00:00Z"
+    assert restored.metadata is not None
+    assert restored.metadata["latest_timestamp"] == "2023-01-01T00:00:00Z"
 
 
 # =============================================================================

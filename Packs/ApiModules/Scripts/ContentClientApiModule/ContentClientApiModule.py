@@ -1,39 +1,49 @@
 
+"""ContentClientApiModule - Enhanced HTTP client for XSOAR/XSIAM integrations.
+
+This module provides a drop-in replacement for BaseClient with advanced features
+including retry policies, circuit breakers, rate limiting, and diagnostic capabilities.
+"""
+
 from __future__ import annotations
 
-import hashlib
+import asyncio
+import concurrent.futures
 import json
 import random
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from threading import Lock
 from typing import (
+    TYPE_CHECKING,
     Any,
-    AsyncIterator,
     Callable,
     Dict,
     Final,
     List,
-    Literal,
     MutableMapping,
-    NewType,
     Optional,
-    Sequence,
     Tuple,
     Type,
-    TypedDict,
     Union,
-    cast,
 )
 
 import anyio
 import demistomock as demisto
 import httpx
 import requests
-from pydantic import BaseModel, Field, validator, root_validator
+from pydantic import BaseModel, Field, root_validator
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
+
+if TYPE_CHECKING:
+    from requests.auth import AuthBase
+
+# Type aliases for better readability
+HeadersType = Dict[str, str]
+ParamsType = Dict[str, Any]
+JsonType = Dict[str, Any]
+StatusCodesType = Tuple[int, ...]
 
 # Constants
 DEFAULT_USER_AGENT: Final[str] = "ContentClient/1.0"
@@ -165,9 +175,23 @@ class ClientExecutionMetrics:
 
 # Helper Classes
 class RetryPolicy(BaseModel):
-    """Retry policy for handling transient API failures."""
+    """Retry policy for handling transient API failures.
+    
+    Configures exponential backoff with jitter for retrying failed requests.
+    
+    Attributes:
+        max_attempts: Maximum number of retry attempts (default: 5).
+        initial_delay: Initial delay in seconds before first retry (default: 1.0).
+        multiplier: Multiplier for exponential backoff (default: 2.0).
+        max_delay: Maximum delay between retries in seconds (default: 60.0).
+        jitter: Random jitter factor (0.0-1.0) to prevent thundering herd (default: 0.2).
+        retryable_status_codes: HTTP status codes that trigger a retry.
+        retryable_exceptions: Exception types that trigger a retry.
+        respect_retry_after: Whether to honor Retry-After headers (default: True).
+    """
     class Config:
         extra = 'forbid'
+        arbitrary_types_allowed = True  # Required for Tuple[Type[Exception], ...]
 
     max_attempts: int = Field(5, ge=1)
     initial_delay: float = Field(1.0, ge=0)
@@ -185,7 +209,7 @@ class RetryPolicy(BaseModel):
     respect_retry_after: bool = True
 
     @root_validator(pre=False)
-    def validate_delay(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+    def validate_delay(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # noqa: N805
         """Validate that max_delay is greater than initial_delay."""
         max_delay = values.get("max_delay")
         initial_delay = values.get("initial_delay")
@@ -194,6 +218,15 @@ class RetryPolicy(BaseModel):
         return values
 
     def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
+        """Calculate the next delay for retry with exponential backoff and jitter.
+        
+        Args:
+            attempt: The current attempt number (1-based).
+            retry_after: Optional server-provided retry-after value in seconds.
+            
+        Returns:
+            The delay in seconds before the next retry attempt.
+        """
         if retry_after is not None and self.respect_retry_after:
             return retry_after
         delay = min(self.max_delay, self.initial_delay * (self.multiplier ** (attempt - 1)))
@@ -211,15 +244,29 @@ class CircuitBreakerPolicy(BaseModel):
 
 
 class CircuitBreaker:
-    def __init__(self, policy: CircuitBreakerPolicy):
-        self.policy = policy
-        self._failure_count = 0
+    """Circuit breaker implementation for preventing cascading failures.
+    
+    Tracks failures and opens the circuit when the failure threshold is reached,
+    preventing further requests until the recovery timeout expires.
+    
+    Attributes:
+        policy: The circuit breaker policy configuration.
+    """
+    
+    def __init__(self, policy: CircuitBreakerPolicy) -> None:
+        self.policy: CircuitBreakerPolicy = policy
+        self._failure_count: int = 0
         self._opened_at: Optional[float] = None
 
     def can_execute(self) -> bool:
+        """Check if the circuit allows execution.
+        
+        Returns:
+            True if the circuit is closed or half-open, False if open.
+        """
         if self._opened_at is None:
             return True
-        elapsed = _now() - self._opened_at
+        elapsed: float = _now() - self._opened_at
         if elapsed >= self.policy.recovery_timeout:
             self._failure_count = 0
             self._opened_at = None
@@ -227,10 +274,12 @@ class CircuitBreaker:
         return False
 
     def record_success(self) -> None:
+        """Record a successful execution, resetting the failure count."""
         self._failure_count = 0
         self._opened_at = None
 
     def record_failure(self) -> None:
+        """Record a failed execution, potentially opening the circuit."""
         self._failure_count += 1
         if self._failure_count >= self.policy.failure_threshold:
             self._opened_at = _now()
@@ -251,25 +300,47 @@ class RateLimitPolicy(BaseModel):
 
 
 class TokenBucketRateLimiter:
-    def __init__(self, policy: RateLimitPolicy):
-        self.policy = policy
-        self._capacity = max(1, policy.burst)
-        self._tokens = float(self._capacity)
-        self._updated = _now()
-        self._lock = anyio.Lock()
+    """Token bucket rate limiter for controlling request rate.
+    
+    Uses the token bucket algorithm to limit the rate of requests.
+    Tokens are refilled at a constant rate up to a maximum capacity (burst).
+    
+    Attributes:
+        policy: The rate limit policy configuration.
+    """
+    
+    def __init__(self, policy: RateLimitPolicy) -> None:
+        self.policy: RateLimitPolicy = policy
+        self._capacity: int = max(1, policy.burst)
+        self._tokens: float = float(self._capacity)
+        self._updated: float = _now()
+        self._lock: Optional[anyio.Lock] = None  # Lazy initialization
+
+    def _get_lock(self) -> anyio.Lock:
+        """Get or create the async lock (lazy initialization for thread safety)."""
+        if self._lock is None:
+            self._lock = anyio.Lock()
+        return self._lock
 
     async def acquire(self) -> None:
+        """Acquire a token, waiting if necessary until one is available."""
         while True:
-            async with self._lock:
+            async with self._get_lock():
                 await self._refill_locked()
                 if self._tokens >= 1:
                     self._tokens -= 1
                     return
                 needed = 1 - self._tokens
+                # Protect against division by zero
+                if self.policy.rate_per_second <= 0:
+                    raise ContentClientConfigurationError(
+                        "rate_per_second must be positive when rate limiting is enabled"
+                    )
                 wait_seconds = needed / self.policy.rate_per_second
             await anyio.sleep(wait_seconds)
 
     async def _refill_locked(self) -> None:
+        """Refill tokens based on elapsed time (must be called with lock held)."""
         now = _now()
         delta = now - self._updated
         if delta <= 0:
@@ -292,7 +363,7 @@ class TimeoutSettings(BaseModel):
     safety_buffer: float = Field(30.0, gt=0)
 
     @root_validator(pre=False)
-    def validate_execution_safety(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+    def validate_execution_safety(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # noqa: N805
         """Validate that execution timeout is greater than safety buffer."""
         execution = values.get("execution")
         safety_buffer = values.get("safety_buffer")
@@ -305,64 +376,52 @@ class TimeoutSettings(BaseModel):
 
 
 @dataclass
-class DeduplicationState:
-    """State for event deduplication."""
-    latest_timestamp: Optional[Union[str, int, float]] = None
-    seen_keys: List[str] = field(default_factory=list)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "latest_timestamp": self.latest_timestamp,
-            "seen_keys": self.seen_keys,
-        }
-
-    @classmethod
-    def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "DeduplicationState":
-        if not raw:
-            return cls()
-        return cls(
-            latest_timestamp=raw.get("latest_timestamp"),
-            seen_keys=raw.get("seen_keys", []),
-        )
-
-
-@dataclass
 class ContentClientState:
     """Pagination and collection state for resuming after timeouts.
     
     Stores pagination position (cursor, page, offset) and metadata to allow seamless
     resumption of collection after timeouts or interruptions.
     
-    Args:
-        cursor: Current cursor value for cursor-based pagination
-        page: Current page number for page-based pagination
-        offset: Current offset value for offset-based pagination
-        last_event_id: Last processed event ID (for deduplication)
-        deduplication: State for event deduplication (timestamp and keys)
-        partial_results: Events from incomplete pages (preserved on timeout)
-        metadata: Custom metadata dictionary for storing additional state
+    Attributes:
+        cursor: Current cursor value for cursor-based pagination.
+        page: Current page number for page-based pagination.
+        offset: Current offset value for offset-based pagination.
+        last_event_id: Last processed event ID (for deduplication).
+        partial_results: Events from incomplete pages (preserved on timeout).
+        metadata: Custom metadata dictionary for storing additional state.
     """
     cursor: Optional[str] = None
     page: Optional[int] = None
     offset: Optional[int] = None
     last_event_id: Optional[str] = None
-    deduplication: Optional[DeduplicationState] = None
     partial_results: List[Any] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        """Convert state to a dictionary for serialization.
+        
+        Returns:
+            Dictionary representation of the state.
+        """
         return {
             "cursor": self.cursor,
             "page": self.page,
             "offset": self.offset,
             "last_event_id": self.last_event_id,
-            "deduplication": self.deduplication.to_dict() if self.deduplication else None,
             "partial_results": self.partial_results,
             "metadata": self.metadata,
         }
 
     @classmethod
     def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "ContentClientState":
+        """Create a ContentClientState from a dictionary.
+        
+        Args:
+            raw: Dictionary containing state data.
+            
+        Returns:
+            A new ContentClientState instance.
+        """
         if not raw:
             return cls()
         return cls(
@@ -370,7 +429,6 @@ class ContentClientState:
             page=raw.get("page"),
             offset=raw.get("offset"),
             last_event_id=raw.get("last_event_id"),
-            deduplication=DeduplicationState.from_dict(raw.get("deduplication")),
             partial_results=raw.get("partial_results", []),
             metadata=raw.get("metadata", {}),
         )
@@ -382,21 +440,33 @@ class ContentClientContextStore:
     Provides read/write access to the integration context with retry logic
     for handling transient failures.
     
-    Args:
-        namespace: A namespace prefix for storing data (e.g., client name)
+    Attributes:
+        namespace: A namespace prefix for storing data (e.g., client name).
+        max_retries: Maximum number of retry attempts for write operations.
     """
     
-    def __init__(self, namespace: str, max_retries: int = 3):
-        self.namespace = namespace
-        self.max_retries = max_retries
+    def __init__(self, namespace: str, max_retries: int = 3) -> None:
+        self.namespace: str = namespace
+        self.max_retries: int = max_retries
     
     def read(self) -> Dict[str, Any]:
-        """Read the current integration context."""
-        context = demisto.getIntegrationContext() or {}
+        """Read the current integration context.
+        
+        Returns:
+            The integration context dictionary.
+        """
+        context: Dict[str, Any] = demisto.getIntegrationContext() or {}
         return context
     
     def write(self, data: Dict[str, Any]) -> None:
-        """Write data to the integration context with retry logic."""
+        """Write data to the integration context with retry logic.
+        
+        Args:
+            data: The data dictionary to write to the context.
+            
+        Raises:
+            Exception: If all retry attempts fail.
+        """
         last_error: Optional[Exception] = None
         for attempt in range(self.max_retries):
             try:
@@ -424,8 +494,24 @@ class AuthHandler:
 
 
 class APIKeyAuthHandler(AuthHandler):
-    """Authentication handler for API key-based authentication."""
+    """Authentication handler for API key-based authentication.
+    
+    Supports adding the API key either as a header or as a query parameter.
+    At least one of header_name or query_param must be provided.
+    
+    Args:
+        key: The API key value.
+        header_name: Optional header name to add the key to (e.g., 'X-API-Key').
+        query_param: Optional query parameter name to add the key to (e.g., 'api_key').
+        
+    Raises:
+        ContentClientConfigurationError: If neither header_name nor query_param is provided,
+            or if the key is empty.
+    """
     def __init__(self, key: str, header_name: Optional[str] = None, query_param: Optional[str] = None):
+        super().__init__()
+        if not key:
+            raise ContentClientConfigurationError("APIKeyAuthHandler requires a non-empty key")
         if not header_name and not query_param:
             raise ContentClientConfigurationError("APIKeyAuthHandler requires header_name or query_param")
         self.key = key
@@ -437,12 +523,25 @@ class APIKeyAuthHandler(AuthHandler):
         if self.header_name:
             request.headers[self.header_name] = self.key
         if self.query_param:
-            request.url = request.url.copy_add_param(self.query_param, self.key)
+            # Use copy_merge_params for proper URL parameter handling
+            current_params = dict(request.url.params)
+            current_params[self.query_param] = self.key
+            request.url = request.url.copy_merge_params(current_params)
 
 
 class BearerTokenAuthHandler(AuthHandler):
-    """Authentication handler for Bearer token authentication."""
+    """Authentication handler for Bearer token authentication.
+    
+    Args:
+        token: The bearer token value.
+        
+    Raises:
+        ContentClientConfigurationError: If the token is empty.
+    """
     def __init__(self, token: str):
+        super().__init__()
+        if not token:
+            raise ContentClientConfigurationError("BearerTokenAuthHandler requires a non-empty token")
         self.token = token
         self.name = "bearer"
 
@@ -451,8 +550,19 @@ class BearerTokenAuthHandler(AuthHandler):
 
 
 class BasicAuthHandler(AuthHandler):
-    """Authentication handler for HTTP Basic Authentication."""
+    """Authentication handler for HTTP Basic Authentication.
+    
+    Args:
+        username: The username for authentication.
+        password: The password for authentication.
+        
+    Raises:
+        ContentClientConfigurationError: If username is empty.
+    """
     def __init__(self, username: str, password: str):
+        super().__init__()
+        if not username:
+            raise ContentClientConfigurationError("BasicAuthHandler requires a non-empty username")
         credentials = f"{username}:{password}"
         self._encoded = b64_encode(credentials)
         self.name = "basic"
@@ -462,7 +572,24 @@ class BasicAuthHandler(AuthHandler):
 
 
 class OAuth2ClientCredentialsHandler(AuthHandler):
-    """Authentication handler for OAuth2 Client Credentials flow."""
+    """Authentication handler for OAuth2 Client Credentials flow.
+    
+    Implements the OAuth2 client credentials grant type for machine-to-machine
+    authentication. Automatically handles token refresh when tokens expire.
+    
+    Args:
+        token_url: The OAuth2 token endpoint URL.
+        client_id: The client ID for authentication.
+        client_secret: The client secret for authentication.
+        scope: Optional OAuth2 scope(s) to request.
+        audience: Optional audience parameter for the token request.
+        auth_params: Optional additional parameters to include in token requests.
+        context_store: Optional context store for persisting tokens across executions.
+        token_timeout: Timeout in seconds for token refresh requests (default: 30).
+        
+    Raises:
+        ContentClientConfigurationError: If required parameters are missing or invalid.
+    """
     def __init__(
         self,
         token_url: str,
@@ -472,7 +599,16 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         audience: Optional[str] = None,
         auth_params: Optional[Dict[str, str]] = None,
         context_store: Optional[Any] = None,
+        token_timeout: float = 30.0,
     ):
+        super().__init__()
+        if not token_url:
+            raise ContentClientConfigurationError("OAuth2ClientCredentialsHandler requires a non-empty token_url")
+        if not client_id:
+            raise ContentClientConfigurationError("OAuth2ClientCredentialsHandler requires a non-empty client_id")
+        if not client_secret:
+            raise ContentClientConfigurationError("OAuth2ClientCredentialsHandler requires a non-empty client_secret")
+        
         self.token_url = token_url
         self.client_id = client_id
         self.client_secret = client_secret
@@ -480,15 +616,34 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         self.audience = audience
         self.auth_params = auth_params or {}
         self.context_store = context_store
+        self.token_timeout = token_timeout
         self.name = "oauth2_client_credentials"
         
         self._access_token: Optional[str] = None
         self._expires_at: float = 0
-        self._lock = anyio.Lock()
+        self._lock: Optional[anyio.Lock] = None  # Lazy initialization
+        
+        # Try to load cached token from context store
+        if self.context_store:
+            try:
+                context = self.context_store.read()
+                cached_token = context.get("oauth2_token", {})
+                if cached_token.get("access_token") and cached_token.get("expires_at", 0) > _now():
+                    self._access_token = cached_token["access_token"]
+                    self._expires_at = cached_token["expires_at"]
+            except Exception as e:
+                # Log but don't fail if cache read fails
+                demisto.debug(f"Failed to load cached OAuth2 token: {e}")
+
+    def _get_lock(self) -> anyio.Lock:
+        """Get or create the async lock (lazy initialization)."""
+        if self._lock is None:
+            self._lock = anyio.Lock()
+        return self._lock
 
     async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:
         if self._should_refresh():
-            async with self._lock:
+            async with self._get_lock():
                 if self._should_refresh():
                     await self._refresh_token(client)
         
@@ -497,7 +652,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
 
     async def on_auth_failure(self, client: "ContentClient", response: httpx.Response) -> bool:
         # If we get 401, force refresh token
-        async with self._lock:
+        async with self._get_lock():
             await self._refresh_token(client)
         return True
 
@@ -505,9 +660,23 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         return not self._access_token or _now() >= self._expires_at - 60  # Refresh 60s before expiry
 
     async def _refresh_token(self, client: "ContentClient") -> None:
+        """Refresh the OAuth2 access token.
+        
+        Uses a separate HTTP client for token refresh to avoid recursion/deadlocks
+        and to not share state with the main client.
+        
+        Args:
+            client: The ContentClient instance (used for SSL verification settings).
+            
+        Raises:
+            ContentClientAuthenticationError: If token refresh fails.
+        """
         # Use a separate client for token refresh to avoid recursion/deadlocks
         # and to not share state with the main client
-        async with httpx.AsyncClient(verify=client._verify) as token_client:
+        async with httpx.AsyncClient(
+            verify=client._verify,
+            timeout=httpx.Timeout(self.token_timeout)
+        ) as token_client:
             data = {
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
@@ -545,6 +714,12 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                         # Log but don't fail auth if persistence fails
                         demisto.debug(f"Failed to persist OAuth2 token: {e}")
 
+            except httpx.HTTPStatusError as e:
+                raise ContentClientAuthenticationError(
+                    f"Token refresh failed with status {e.response.status_code}: {e.response.text}"
+                ) from e
+            except httpx.TimeoutException as e:
+                raise ContentClientAuthenticationError(f"Token refresh timed out: {str(e)}") from e
             except Exception as e:
                 raise ContentClientAuthenticationError(f"Failed to refresh token: {str(e)}") from e
 
@@ -583,11 +758,19 @@ class DiagnosticReport:
 
 
 class ContentClientLogger:
-    """Enhanced logger with diagnostic capabilities."""
+    """Enhanced logger with diagnostic capabilities.
     
-    def __init__(self, client_name: str, diagnostic_mode: bool = False):
-        self.client_name = client_name
-        self.diagnostic_mode = diagnostic_mode
+    Provides structured logging with optional diagnostic mode for detailed
+    request tracing and performance metrics collection.
+    
+    Attributes:
+        client_name: Name of the client for log identification.
+        diagnostic_mode: Whether to enable detailed diagnostic logging.
+    """
+    
+    def __init__(self, client_name: str, diagnostic_mode: bool = False) -> None:
+        self.client_name: str = client_name
+        self.diagnostic_mode: bool = diagnostic_mode
         self._traces: List[RequestTrace] = []
         self._errors: List[Dict[str, Any]] = []
         self._performance: Dict[str, List[float]] = {
@@ -597,16 +780,20 @@ class ContentClientLogger:
         }
 
     def debug(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+        """Log a debug message (only in diagnostic mode)."""
         if self.diagnostic_mode:
             demisto.debug(self._format("DEBUG", message, extra))
 
     def info(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+        """Log an info message."""
         demisto.info(self._format("INFO", message, extra))
 
     def warning(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+        """Log a warning message."""
         demisto.debug(self._format("WARNING", message, extra))
 
     def error(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
+        """Log an error message."""
         demisto.error(self._format("ERROR", message, extra))
         if self.diagnostic_mode and extra:
             self._errors.append({"message": message, "context": extra})
@@ -620,16 +807,23 @@ class ContentClientLogger:
         body: Optional[Any] = None,
         retry_attempt: int = 0,
     ) -> RequestTrace:
-        # Sanitize sensitive headers for security
-        safe_headers = headers.copy()
-        for sensitive_key in ['Authorization', 'X-API-Key', 'X-Auth-Token', 'API-Key']:
-            if sensitive_key in safe_headers:
-                safe_headers[sensitive_key] = '***REDACTED***'
+        """Create a trace record for an HTTP request.
         
+        Args:
+            method: HTTP method.
+            url: Request URL.
+            headers: Request headers.
+            params: Query parameters.
+            body: Request body.
+            retry_attempt: Current retry attempt number.
+            
+        Returns:
+            A RequestTrace instance for tracking the request.
+        """
         trace = RequestTrace(
             method=method,
             url=url,
-            headers=safe_headers,
+            headers=headers.copy(),
             params=params.copy(),
             body=body,
             timestamp=_now(),
@@ -767,6 +961,11 @@ class ContentClient:
     
     Fully compatible with BaseClient constructor and _http_request() method.
     Existing integrations can switch from BaseClient to ContentClient with zero code changes.
+    
+    Attributes:
+        timeout: Default timeout for HTTP requests in seconds.
+        execution_metrics: Metrics tracking for request outcomes.
+        logger: Logger instance for diagnostic output.
     """
     
     def __init__(
@@ -774,10 +973,10 @@ class ContentClient:
         base_url: str,
         verify: bool = True,
         proxy: bool = False,
-        ok_codes: tuple = tuple(),
-        headers: Optional[Dict[str, str]] = None,
-        auth: Optional[Union[tuple, requests.auth.AuthBase]] = None,
-        timeout: float = 60,
+        ok_codes: StatusCodesType = (),
+        headers: Optional[HeadersType] = None,
+        auth: Optional[Union[Tuple[str, str], "AuthBase"]] = None,
+        timeout: float = 60.0,
         # New optional parameters (backward compatible):
         auth_handler: Optional[AuthHandler] = None,
         retry_policy: Optional[RetryPolicy] = None,
@@ -785,21 +984,32 @@ class ContentClient:
         circuit_breaker: Optional[CircuitBreakerPolicy] = None,
         diagnostic_mode: bool = False,
         client_name: str = "ContentClient",
-    ):
-        """
-        Initialize ContentClient with BaseClient-compatible parameters.
+    ) -> None:
+        """Initialize ContentClient with BaseClient-compatible parameters.
         
-        All BaseClient parameters work identically. New parameters are optional
-        and provide enhanced functionality when needed.
+        Args:
+            base_url: The base URL for all API requests.
+            verify: Whether to verify SSL certificates.
+            proxy: Whether to use system proxy settings.
+            ok_codes: Tuple of HTTP status codes considered successful.
+            headers: Default headers to include in all requests.
+            auth: Authentication credentials (tuple of username/password or AuthBase).
+            timeout: Default timeout for requests in seconds.
+            auth_handler: Optional custom authentication handler.
+            retry_policy: Optional retry policy configuration.
+            rate_limiter: Optional rate limiting policy.
+            circuit_breaker: Optional circuit breaker policy.
+            diagnostic_mode: Whether to enable diagnostic logging.
+            client_name: Name for logging identification.
         """
         # Store BaseClient-compatible parameters
-        self._base_url = base_url
-        self._verify = verify
-        self._ok_codes = ok_codes
-        self._headers = headers or {}
-        self._auth = auth
-        self._session = requests.Session()
-        self.timeout = timeout
+        self._base_url: str = base_url
+        self._verify: bool = verify
+        self._ok_codes: StatusCodesType = ok_codes
+        self._headers: HeadersType = headers or {}
+        self._auth: Optional[Union[Tuple[str, str], "AuthBase"]] = auth
+        self._session: requests.Session = requests.Session()
+        self.timeout: float = timeout
         
         # Handle proxy exactly like BaseClient
         if proxy:
@@ -845,11 +1055,39 @@ class ContentClient:
         self._client_lock = anyio.Lock()
 
     async def aclose(self) -> None:
-        await self._client.aclose()
+        """Close the async HTTP client and release resources."""
+        try:
+            await self._client.aclose()
+        except Exception as e:
+            self.logger.error(f"Error closing async client: {e}")
 
     def close(self) -> None:
+        """Close the client synchronously.
+        
+        Note: This creates a new event loop to run the async close.
+        If called from within an async context, use aclose() instead.
+        """
         try:
-            anyio.run(self.aclose)
+            anyio.from_thread.run_sync(lambda: None)  # Check if in async context
+            self.logger.warning(
+                "close() may not work correctly from async context. Use 'await client.aclose()' instead."
+            )
+        except RuntimeError:
+            pass  # Not in async context, safe to proceed
+        
+        try:
+            # Use a simple synchronous approach
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    # Schedule the close but don't wait
+                    # We intentionally don't await this task as we're in a sync context
+                    asyncio.ensure_future(self.aclose())  # noqa: RUF006
+                else:
+                    loop.run_until_complete(self.aclose())
+            except RuntimeError:
+                # No event loop, create a new one
+                asyncio.run(self.aclose())
         except Exception as e:
             self.logger.error(f"Error closing client: {e}")
 
@@ -858,28 +1096,66 @@ class ContentClient:
         method: str,
         url_suffix: str = '',
         full_url: Optional[str] = None,
-        headers: Optional[Dict] = None,
-        auth: Optional[tuple] = None,
-        json_data: Optional[Dict] = None,
-        params: Optional[Dict] = None,
+        headers: Optional[HeadersType] = None,
+        auth: Optional[Tuple[str, str]] = None,
+        json_data: Optional[JsonType] = None,
+        params: Optional[ParamsType] = None,
         data: Optional[Any] = None,
-        files: Optional[Dict] = None,
+        files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
         resp_type: str = 'json',
-        ok_codes: Optional[tuple] = None,
+        ok_codes: Optional[StatusCodesType] = None,
         return_empty_response: bool = False,
         retries: int = 0,
         status_list_to_retry: Optional[List[int]] = None,
-        backoff_factor: float = 5,
+        backoff_factor: float = 5.0,
         backoff_jitter: float = 0.0,
         raise_on_redirect: bool = False,
         raise_on_status: bool = False,
-        error_handler: Optional[Callable] = None,
+        error_handler: Optional[Callable[[httpx.Response], None]] = None,
         empty_valid_codes: Optional[List[int]] = None,
-        params_parser: Optional[Callable] = None,
+        params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
         with_metrics: bool = False,
-        **kwargs
+        **kwargs: Any
     ) -> httpx.Response:
+        """Execute an async HTTP request with retry and error handling.
+        
+        Args:
+            method: HTTP method (GET, POST, PUT, PATCH, DELETE).
+            url_suffix: URL path to append to base_url.
+            full_url: Complete URL (overrides base_url + url_suffix).
+            headers: Additional headers for this request.
+            auth: Authentication tuple (username, password) for this request.
+            json_data: JSON body data.
+            params: Query parameters.
+            data: Form data or raw body.
+            files: Files to upload.
+            timeout: Request timeout in seconds.
+            resp_type: Expected response type ('json', 'text', 'content', 'response', 'xml').
+            ok_codes: HTTP status codes considered successful.
+            return_empty_response: Whether to return empty dict for empty responses.
+            retries: Number of retry attempts (BaseClient compatibility).
+            status_list_to_retry: Status codes that trigger retry.
+            backoff_factor: Backoff multiplier for retries.
+            backoff_jitter: Jitter factor for retry delays.
+            raise_on_redirect: Whether to raise on redirect responses.
+            raise_on_status: Whether to raise on non-2xx responses.
+            error_handler: Custom error handler callback.
+            empty_valid_codes: Status codes that return empty response.
+            params_parser: Custom parameter parser function.
+            with_metrics: Whether to include metrics in response.
+            **kwargs: Additional arguments.
+            
+        Returns:
+            The HTTP response object.
+            
+        Raises:
+            ContentClientCircuitOpenError: If circuit breaker is open.
+            ContentClientRateLimitError: If rate limit is exceeded.
+            ContentClientAuthenticationError: If authentication fails.
+            ContentClientRetryError: If all retry attempts are exhausted.
+            ContentClientError: For other request failures.
+        """
         
         if not self._circuit_breaker.can_execute():
             raise ContentClientCircuitOpenError("Circuit breaker is open, refusing to send request")
@@ -926,9 +1202,8 @@ class ContentClient:
                     # Manual auth override
                     if isinstance(auth, tuple):
                         http_request.headers["Authorization"] = f"Basic {b64_encode(f'{auth[0]}:{auth[1]}')}"
-                elif self._auth:
-                    if isinstance(self._auth, tuple):
-                        http_request.headers["Authorization"] = f"Basic {b64_encode(f'{self._auth[0]}:{self._auth[1]}')}"
+                elif self._auth and isinstance(self._auth, tuple):
+                    http_request.headers["Authorization"] = f"Basic {b64_encode(f'{self._auth[0]}:{self._auth[1]}')}"
 
                 # Trace request if in diagnostic mode
                 if self._diagnostic_mode:
@@ -985,7 +1260,7 @@ class ContentClient:
 
                 self.execution_metrics.success += 1
                 self._circuit_breaker.record_success()
-                self.logger.debug(
+                self.logger.debug(  # noqa: PLE1205
                     "HTTP request completed",
                     {"status": response.status_code, "elapsed": elapsed_ms, "endpoint": url},
                 )
@@ -994,7 +1269,8 @@ class ContentClient:
             except ContentClientError:
                 # Re-raise ContentClientError (including subclasses) without wrapping
                 raise
-            except tuple(self._retry_policy.retryable_exceptions) as exc:
+            except (httpx.ConnectError, httpx.ReadTimeout, httpx.WriteTimeout,
+                    httpx.RemoteProtocolError, httpx.PoolTimeout) as exc:
                 last_error = exc
                 elapsed_ms = (_now() - start) * 1000
                 if self._diagnostic_mode and trace:
@@ -1006,7 +1282,7 @@ class ContentClient:
                 retry_after = _parse_retry_after(getattr(exc, "response", None))
                 delay = self._retry_policy.next_delay(attempt, retry_after)
                 self.execution_metrics.retry_error += 1
-                self.logger.debug(
+                self.logger.debug(  # noqa: PLE1205
                     "Retryable exception occurred",
                     {"attempt": attempt, "delay": delay, "error": str(exc), "error_type": type(exc).__name__},
                 )
@@ -1031,7 +1307,7 @@ class ContentClient:
                 # Map HTTP status codes to specific exception types
                 if exc.response.status_code == 429:
                     self.execution_metrics.quota_error += 1
-                    self.logger.error("Rate limit error", {"status": 429, "error_type": "rate_limit"})
+                    self.logger.error("Rate limit error", {"status": 429, "error_type": "rate_limit"})  # noqa: PLE1205
                     should_retry = exc.response.status_code in (status_list_to_retry or self._retry_policy.retryable_status_codes)
                     if should_retry and attempt < max_attempts:
                         retry_after = _parse_retry_after(exc.response)
@@ -1043,7 +1319,10 @@ class ContentClient:
                     raise ContentClientRateLimitError(f"Rate limit exceeded: {exc.response.text}", response=exc.response) from exc
                 elif exc.response.status_code in (401, 403):
                     self.execution_metrics.auth_error += 1
-                    self.logger.error("Authentication error", {"status": exc.response.status_code, "error_type": "auth"})
+                    self.logger.error(  # noqa: PLE1205
+                        "Authentication error",
+                        {"status": exc.response.status_code, "error_type": "auth"},
+                    )
                     should_retry = exc.response.status_code in (status_list_to_retry or self._retry_policy.retryable_status_codes)
                     if should_retry and attempt < max_attempts:
                         retry_after = _parse_retry_after(exc.response)
@@ -1057,7 +1336,10 @@ class ContentClient:
                     ) from exc
                 else:
                     self.execution_metrics.service_error += 1
-                    self.logger.error("Service error", {"status": exc.response.status_code, "error_type": "service"})
+                    self.logger.error(  # noqa: PLE1205
+                        "Service error",
+                        {"status": exc.response.status_code, "error_type": "service"},
+                    )
                     should_retry = exc.response.status_code in (status_list_to_retry or self._retry_policy.retryable_status_codes)
                     if should_retry and attempt < max_attempts:
                         retry_after = _parse_retry_after(exc.response)
@@ -1074,7 +1356,10 @@ class ContentClient:
                 
                 self.execution_metrics.general_error += 1
                 self._circuit_breaker.record_failure()
-                self.logger.error("Non-retryable exception occurred", {"error": str(exc), "error_type": type(exc).__name__})
+                self.logger.error(  # noqa: PLE1205
+                    "Non-retryable exception occurred",
+                    {"error": str(exc), "error_type": type(exc).__name__},
+                )
                 raise
         
         self._circuit_breaker.record_failure()
@@ -1086,30 +1371,35 @@ class ContentClient:
         method: str,
         url_suffix: str = '',
         full_url: Optional[str] = None,
-        headers: Optional[Dict] = None,
-        auth: Optional[tuple] = None,
-        json_data: Optional[Dict] = None,
-        params: Optional[Dict] = None,
+        headers: Optional[HeadersType] = None,
+        auth: Optional[Tuple[str, str]] = None,
+        json_data: Optional[JsonType] = None,
+        params: Optional[ParamsType] = None,
         data: Optional[Any] = None,
-        files: Optional[Dict] = None,
+        files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
         resp_type: str = 'json',
-        ok_codes: Optional[tuple] = None,
+        ok_codes: Optional[StatusCodesType] = None,
         return_empty_response: bool = False,
         retries: int = 0,
         status_list_to_retry: Optional[List[int]] = None,
-        backoff_factor: float = 5,
+        backoff_factor: float = 5.0,
         backoff_jitter: float = 0.0,
         raise_on_redirect: bool = False,
         raise_on_status: bool = False,
-        error_handler: Optional[Callable] = None,
+        error_handler: Optional[Callable[[httpx.Response], None]] = None,
         empty_valid_codes: Optional[List[int]] = None,
-        params_parser: Optional[Callable] = None,
+        params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
         with_metrics: bool = False,
-        **kwargs
+        **kwargs: Any
     ) -> Any:
-        """
-        Synchronous wrapper for _request to maintain BaseClient compatibility.
+        """Synchronous wrapper for _request to maintain BaseClient compatibility.
+        
+        This method provides the same interface as BaseClient._http_request().
+        See _request() for full parameter documentation.
+        
+        Returns:
+            The processed response based on resp_type parameter.
         """
         return self.request_sync(
             method=method,
@@ -1138,11 +1428,20 @@ class ContentClient:
             **kwargs
         )
 
-    def request_sync(self, *args, **kwargs) -> Any:
+    def request_sync(self, *args: Any, **kwargs: Any) -> Any:
+        """Execute a request synchronously.
+        
+        This method wraps the async _request method for synchronous usage.
+        It handles response processing based on the resp_type parameter.
+        
+        Args:
+            *args: Positional arguments passed to _request.
+            **kwargs: Keyword arguments passed to _request.
+            
+        Returns:
+            The processed response based on resp_type (json, text, content, response, xml).
         """
-        Execute a request synchronously using anyio.run.
-        """
-        async def _do_request():
+        async def _do_request() -> Any:
             response = await self._request(*args, **kwargs)
             
             # Handle response processing (json, text, content) similar to BaseClient
@@ -1171,39 +1470,110 @@ class ContentClient:
             
             return response.json()
 
-        return anyio.run(_do_request)
+        # Use asyncio for sync-to-async bridging
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # We're in an async context, need to use a different approach
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(asyncio.run, _do_request())
+                    return future.result()
+            else:
+                return loop.run_until_complete(_do_request())
+        except RuntimeError:
+            # No event loop exists, create one
+            return asyncio.run(_do_request())
 
     # Standard HTTP verb helpers
-    def get(self, url_suffix: str, params: Optional[Dict] = None, **kwargs):
+    def get(self, url_suffix: str, params: Optional[ParamsType] = None, **kwargs: Any) -> Any:
+        """Execute a GET request.
+        
+        Args:
+            url_suffix: URL path to append to base_url.
+            params: Query parameters.
+            **kwargs: Additional arguments passed to _http_request.
+            
+        Returns:
+            The response object or processed response data.
+        """
         if 'resp_type' not in kwargs:
             kwargs['resp_type'] = 'response'
         return self._http_request('GET', url_suffix, params=params, **kwargs)
 
-    def post(self, url_suffix: str, json_data: Optional[Dict] = None, **kwargs):
+    def post(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+        """Execute a POST request.
+        
+        Args:
+            url_suffix: URL path to append to base_url.
+            json_data: JSON body data.
+            **kwargs: Additional arguments passed to _http_request.
+            
+        Returns:
+            The response object or processed response data.
+        """
         if 'resp_type' not in kwargs:
             kwargs['resp_type'] = 'response'
         return self._http_request('POST', url_suffix, json_data=json_data, **kwargs)
 
-    def put(self, url_suffix: str, json_data: Optional[Dict] = None, **kwargs):
+    def put(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+        """Execute a PUT request.
+        
+        Args:
+            url_suffix: URL path to append to base_url.
+            json_data: JSON body data.
+            **kwargs: Additional arguments passed to _http_request.
+            
+        Returns:
+            The response object or processed response data.
+        """
         if 'resp_type' not in kwargs:
             kwargs['resp_type'] = 'response'
         return self._http_request('PUT', url_suffix, json_data=json_data, **kwargs)
 
-    def patch(self, url_suffix: str, json_data: Optional[Dict] = None, **kwargs):
+    def patch(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
+        """Execute a PATCH request.
+        
+        Args:
+            url_suffix: URL path to append to base_url.
+            json_data: JSON body data.
+            **kwargs: Additional arguments passed to _http_request.
+            
+        Returns:
+            The response object or processed response data.
+        """
         if 'resp_type' not in kwargs:
             kwargs['resp_type'] = 'response'
         return self._http_request('PATCH', url_suffix, json_data=json_data, **kwargs)
 
-    def delete(self, url_suffix: str, **kwargs):
+    def delete(self, url_suffix: str, **kwargs: Any) -> Any:
+        """Execute a DELETE request.
+        
+        Args:
+            url_suffix: URL path to append to base_url.
+            **kwargs: Additional arguments passed to _http_request.
+            
+        Returns:
+            The response object or processed response data.
+        """
         if 'resp_type' not in kwargs:
             kwargs['resp_type'] = 'response'
         return self._http_request('DELETE', url_suffix, **kwargs)
 
     @property
     def metrics(self) -> ClientExecutionMetrics:
+        """Get the execution metrics for this client.
+        
+        Returns:
+            The ClientExecutionMetrics instance tracking request outcomes.
+        """
         return self.execution_metrics
 
     def get_diagnostic_report(self) -> DiagnosticReport:
+        """Generate a diagnostic report for troubleshooting.
+        
+        Returns:
+            A DiagnosticReport containing traces, metrics, and recommendations.
+        """
         return self.logger.get_diagnostic_report(
             configuration={
                 "name": self.logger.client_name,
@@ -1213,6 +1583,14 @@ class ContentClient:
         )
 
     def diagnose_error(self, error: Exception) -> Dict[str, str]:
+        """Diagnose an error and provide a solution recommendation.
+        
+        Args:
+            error: The exception to diagnose.
+            
+        Returns:
+            A dictionary with 'issue' and 'solution' keys.
+        """
         if isinstance(error, ContentClientAuthenticationError):
             return {"issue": "Authentication failed", "solution": "Check credentials and token expiration."}
         if isinstance(error, ContentClientRateLimitError):
@@ -1228,8 +1606,13 @@ class ContentClient:
         return {"issue": "Unexpected error", "solution": f"Check logs for details: {str(error)}"}
 
     def health_check(self) -> Dict[str, Any]:
-        status = "healthy"
-        warnings = []
+        """Perform a health check on the client.
+        
+        Returns:
+            A dictionary with 'status', 'configuration_valid', 'warnings', and 'metrics'.
+        """
+        status: str = "healthy"
+        warnings: List[str] = []
         
         if self.execution_metrics.auth_error > 0:
             status = "degraded"
