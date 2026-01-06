@@ -525,7 +525,7 @@ class S3:
                 )
 
             human_readable = tableToMarkdown(
-                f"AWS S3 Bucket Objects: {bucket}",
+                f"AWS S3 Bucket Object for Bucket: {bucket}",
                 table_data,
                 headers=["Key", "Size", "Size in Bytes", "LastModified", "StorageClass"],
                 removeNull=True,
