@@ -321,6 +321,7 @@ def describe_images_command(args: dict) -> CommandResults:
     obj = vars(client._client_config)
     kwargs = {}
     data = []
+
     if args.get("filters") is not None:
         kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
     if args.get("imageIds") is not None:
