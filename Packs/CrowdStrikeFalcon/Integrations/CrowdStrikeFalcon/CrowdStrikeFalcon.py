@@ -3708,11 +3708,6 @@ def fetch_items(command="fetch-incidents"):
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
     )
-    set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False)
-    set_last_run_per_type(
-        last_run, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data=ngsiem_automated_lead_last_run, is_fetch_events=False
-    )
-    set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False)
 
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
@@ -3726,6 +3721,11 @@ def fetch_items(command="fetch-incidents"):
         set_last_run_per_type(
             last_run, index=LastRunIndex.NGSIEM_DETECTIONS, data=ngsiem_detection_last_run, is_fetch_events=is_fetch_events
         )
+        set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False)
+        set_last_run_per_type(
+            last_run, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data=ngsiem_automated_lead_last_run, is_fetch_events=False
+        )
+        set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False)
         demisto.setLastRun(last_run)
 
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")

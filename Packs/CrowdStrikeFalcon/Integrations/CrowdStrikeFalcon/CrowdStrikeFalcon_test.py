@@ -4316,7 +4316,8 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     "detection_type, incident_type, entity_modifications",
     [
         ("ngsiem", "ngsiem_detection", {}),
-        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+        ("Detection", "detection", {"type": "ldt", "product": "epp"}),
+        ("ofp", "OFP detection", {"type": "ofp"}),
     ],
 )
 def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
@@ -4329,6 +4330,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+    generic_detection_id = input_data.remote_ngsiem_detection_id
 
     detection_entity = input_data.response_ngsiem_detection.copy()
     detection_entity.update(entity_modifications)
@@ -4337,7 +4339,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     mocker.patch.object(demisto, "debug", return_value=None)
 
     mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
-        input_data.remote_ngsiem_detection_id
+        generic_detection_id
     )
 
     assert mirrored_data == detection_entity
@@ -7909,6 +7911,9 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_INCIDENTS, data={"NGSIEM INCIDENT ID:": 11})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data={"AUTOMATED LEAD ID:": 12})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_CASES, data={"NGSIEM CASE ID:": 13})
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)
