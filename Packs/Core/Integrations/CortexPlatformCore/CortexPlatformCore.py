@@ -4332,7 +4332,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    DEFAULT_LIMIT = 100
+    DEFAULT_LIMIT = 1000
     if "limit" not in query:  # Add default limit if no limit was provided
         query = f"{query} | limit {DEFAULT_LIMIT!s}"
 
