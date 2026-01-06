@@ -570,9 +570,11 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
+
         $results = ""
         try {
             $cmd_params = @{ }
+            $cmd_params.CompressOutput = $compress_output
             if ($identities)
             {
                 $cmd_params.Identities = $identities
@@ -583,7 +585,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $null
+                $cmd_params.CompressOutput = $compress_output
             }
             if ($entity_type)
             {
@@ -2662,7 +2664,7 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
+    $Global:Demisto = $demisto
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
