@@ -2,16 +2,18 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 import demistomock as demisto
+import httpx
 import pytest
 import respx
 from httpx import Response
 
 from ContentClientApiModule import (
     ContentClient,
+    AuthHandler,
     APIKeyAuthHandler,
     BearerTokenAuthHandler,
     BasicAuthHandler,
@@ -36,6 +38,7 @@ from ContentClientApiModule import (
     _ensure_dict,
     _parse_retry_after,
     _get_value_by_path,
+    _create_rate_limiter,
 )
 
 
@@ -198,7 +201,7 @@ def test_retry_after_header_parsing():
     assert delay == 60.0
     
     # Test date Retry-After (use timezone-aware datetime)
-    future = datetime.now(timezone.utc) + timedelta(seconds=30)
+    future = datetime.now(UTC) + timedelta(seconds=30)
     retry_after_date = future.strftime("%a, %d %b %Y %H:%M:%S GMT")
     response = Response(429, headers={"Retry-After": retry_after_date})
     delay = _parse_retry_after(response)
@@ -691,8 +694,6 @@ def test_content_client_json_decode_error_empty_content():
 @respx.mock
 def test_retryable_exception_handling():
     """Test handling of retryable exceptions (network errors)."""
-    import httpx
-    
     # Mock endpoint that fails with network error then succeeds
     respx.get("https://api.example.com/v1/data").mock(
         side_effect=[
@@ -827,8 +828,6 @@ def test_oauth2_missing_access_token():
 @respx.mock
 def test_oauth2_network_error():
     """Test OAuth2 handler when token endpoint is unreachable."""
-    import httpx
-    
     # Mock token endpoint with network error
     respx.post("https://auth.example.com/token").mock(
         side_effect=httpx.ConnectError("Connection refused")
@@ -1107,4 +1106,976 @@ def test_close_with_exception(mocker):
     
     # Should not raise exception
     client.close()
+
+
+# =============================================================================
+# Context Manager Tests
+# =============================================================================
+
+
+@respx.mock
+def test_content_client_context_manager():
+    """Test ContentClient as a context manager."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
     
+    with ContentClient(base_url="https://api.example.com") as client:
+        response = client.get("/v1/data")
+        assert response.status_code == 200
+    
+    assert route.called
+
+
+@respx.mock
+@pytest.mark.asyncio
+async def test_content_client_async_context_manager():
+    """Test ContentClient as an async context manager."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    async with ContentClient(base_url="https://api.example.com") as client:
+        response = await client._request("GET", "/v1/data")
+        assert response.status_code == 200
+    
+    assert route.called
+
+
+def test_content_client_double_close():
+    """Test that closing a client twice doesn't cause issues."""
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Close twice - should not raise
+    client.close()
+    client.close()
+
+
+# =============================================================================
+# Thread Safety Tests
+# =============================================================================
+
+
+def test_circuit_breaker_thread_safety():
+    """Test CircuitBreaker is thread-safe."""
+    import threading
+    import time
+    
+    policy = CircuitBreakerPolicy(failure_threshold=100, recovery_timeout=1.0)
+    breaker = CircuitBreaker(policy)
+    
+    errors = []
+    
+    def record_failures():
+        try:
+            for _ in range(50):
+                breaker.record_failure()
+                time.sleep(0.001)
+        except Exception as e:
+            errors.append(e)
+    
+    def record_successes():
+        try:
+            for _ in range(50):
+                breaker.record_success()
+                time.sleep(0.001)
+        except Exception as e:
+            errors.append(e)
+    
+    def check_execute():
+        try:
+            for _ in range(50):
+                breaker.can_execute()
+                time.sleep(0.001)
+        except Exception as e:
+            errors.append(e)
+    
+    threads = [
+        threading.Thread(target=record_failures),
+        threading.Thread(target=record_successes),
+        threading.Thread(target=check_execute),
+        threading.Thread(target=record_failures),
+        threading.Thread(target=record_successes),
+    ]
+    
+    for t in threads:
+        t.start()
+    
+    for t in threads:
+        t.join()
+    
+    # No errors should have occurred
+    assert len(errors) == 0
+
+
+# =============================================================================
+# Sensitive Header Redaction Tests
+# =============================================================================
+
+
+def test_trace_request_redacts_sensitive_headers():
+    """Test that trace_request redacts sensitive headers."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    headers = {
+        "Authorization": "Bearer secret_token",
+        "X-API-Key": "api_key_value",
+        "Content-Type": "application/json",
+        "Api-Key": "another_key",
+    }
+    
+    trace = logger.trace_request(
+        method="GET",
+        url="https://api.example.com/test",
+        headers=headers,
+        params={},
+    )
+    
+    # Sensitive headers should be redacted
+    assert trace.headers["Authorization"] == "***REDACTED***"
+    assert trace.headers["X-API-Key"] == "***REDACTED***"
+    assert trace.headers["Api-Key"] == "***REDACTED***"
+    
+    # Non-sensitive headers should be preserved
+    assert trace.headers["Content-Type"] == "application/json"
+
+
+# =============================================================================
+# Instance ok_codes Tests
+# =============================================================================
+
+
+@respx.mock
+def test_content_client_uses_instance_ok_codes():
+    """Test ContentClient uses instance ok_codes when request ok_codes not provided."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(201, json={"created": True})
+    )
+    
+    # Create client with ok_codes that includes 201
+    client = ContentClient(
+        base_url="https://api.example.com",
+        ok_codes=(200, 201, 204),
+    )
+    
+    # Request without ok_codes should use instance ok_codes
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    
+    assert route.called
+    assert result == {"created": True}
+    
+    client.close()
+
+
+# =============================================================================
+# Additional Coverage Tests
+# =============================================================================
+
+
+def test_extract_list_with_custom_object():
+    """Test _extract_list with a custom object type."""
+    class CustomObj:
+        pass
+    
+    obj = CustomObj()
+    result = _extract_list(obj, None)
+    assert result == [obj]
+
+
+def test_create_rate_limiter_none_policy():
+    """Test _create_rate_limiter with None policy."""
+    result = _create_rate_limiter(None)
+    assert result is None
+
+
+def test_create_rate_limiter_disabled_policy():
+    """Test _create_rate_limiter with disabled policy."""
+    policy = RateLimitPolicy(rate_per_second=0.0)
+    result = _create_rate_limiter(policy)
+    assert result is None
+
+
+def test_create_rate_limiter_enabled_policy():
+    """Test _create_rate_limiter with enabled policy."""
+    policy = RateLimitPolicy(rate_per_second=10.0)
+    result = _create_rate_limiter(policy)
+    assert result is not None
+    assert isinstance(result, TokenBucketRateLimiter)
+
+
+@pytest.mark.asyncio
+async def test_token_bucket_rate_limiter_zero_rate():
+    """Test TokenBucketRateLimiter raises error when rate is zero."""
+    # Create a policy with rate_per_second > 0 to pass enabled check
+    policy = RateLimitPolicy(rate_per_second=0.001, burst=1)
+    limiter = TokenBucketRateLimiter(policy)
+    
+    # Consume the token
+    await limiter.acquire()
+    
+    # Now set rate to 0 to trigger the error path
+    limiter.policy = RateLimitPolicy(rate_per_second=0.0, burst=1)
+    
+    with pytest.raises(ContentClientConfigurationError, match="rate_per_second must be positive"):
+        await limiter.acquire()
+
+
+@pytest.mark.asyncio
+async def test_token_bucket_refill_no_time_elapsed():
+    """Test TokenBucketRateLimiter refill when no time has elapsed."""
+    import time
+    
+    policy = RateLimitPolicy(rate_per_second=10.0, burst=5)
+    limiter = TokenBucketRateLimiter(policy)
+    
+    # Force the updated time to be in the future to trigger delta <= 0
+    limiter._updated = time.monotonic() + 1000
+    
+    # This should not add tokens since delta <= 0
+    initial_tokens = limiter._tokens
+    await limiter._refill_locked()
+    assert limiter._tokens == initial_tokens
+
+
+def test_auth_handler_abstract_methods():
+    """Test AuthHandler abstract methods raise NotImplementedError."""
+    import asyncio
+    
+    handler = AuthHandler()
+    
+    # on_request should raise NotImplementedError
+    async def test_on_request():
+        with pytest.raises(NotImplementedError):
+            await handler.on_request(None, None)
+    
+    asyncio.run(test_on_request())
+
+
+@pytest.mark.asyncio
+async def test_auth_handler_on_auth_failure_default():
+    """Test AuthHandler.on_auth_failure returns False by default."""
+    handler = AuthHandler()
+    result = await handler.on_auth_failure(None, None)
+    assert result is False
+
+
+def test_api_key_auth_empty_key():
+    """Test APIKeyAuthHandler raises error for empty key."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty key"):
+        APIKeyAuthHandler("", header_name="X-API-Key")
+
+
+def test_bearer_token_auth_empty_token():
+    """Test BearerTokenAuthHandler raises error for empty token."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty token"):
+        BearerTokenAuthHandler("")
+
+
+def test_basic_auth_empty_username():
+    """Test BasicAuthHandler raises error for empty username."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty username"):
+        BasicAuthHandler("", "password")
+
+
+def test_oauth2_empty_token_url():
+    """Test OAuth2ClientCredentialsHandler raises error for empty token_url."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty token_url"):
+        OAuth2ClientCredentialsHandler(
+            token_url="",
+            client_id="client",
+            client_secret="secret"
+        )
+
+
+def test_oauth2_empty_client_id():
+    """Test OAuth2ClientCredentialsHandler raises error for empty client_id."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty client_id"):
+        OAuth2ClientCredentialsHandler(
+            token_url="https://auth.example.com/token",
+            client_id="",
+            client_secret="secret"
+        )
+
+
+def test_oauth2_empty_client_secret():
+    """Test OAuth2ClientCredentialsHandler raises error for empty client_secret."""
+    with pytest.raises(ContentClientConfigurationError, match="non-empty client_secret"):
+        OAuth2ClientCredentialsHandler(
+            token_url="https://auth.example.com/token",
+            client_id="client",
+            client_secret=""
+        )
+
+
+def test_oauth2_loads_cached_token(mocker):
+    """Test OAuth2ClientCredentialsHandler loads cached token from context store."""
+    import time
+    
+    # Create a mock context store with a valid cached token
+    mock_store = mocker.Mock()
+    mock_store.read.return_value = {
+        "oauth2_token": {
+            "access_token": "cached_token",
+            "expires_at": time.monotonic() + 3600  # Valid for 1 hour
+        }
+    }
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        context_store=mock_store
+    )
+    
+    assert handler._access_token == "cached_token"
+
+
+def test_oauth2_ignores_expired_cached_token(mocker):
+    """Test OAuth2ClientCredentialsHandler ignores expired cached token."""
+    import time
+    
+    # Create a mock context store with an expired cached token
+    mock_store = mocker.Mock()
+    mock_store.read.return_value = {
+        "oauth2_token": {
+            "access_token": "expired_token",
+            "expires_at": time.monotonic() - 100  # Expired
+        }
+    }
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        context_store=mock_store
+    )
+    
+    # Should not load expired token
+    assert handler._access_token is None
+
+
+def test_oauth2_handles_cache_read_error(mocker):
+    """Test OAuth2ClientCredentialsHandler handles cache read errors gracefully."""
+    # Create a mock context store that raises an error
+    mock_store = mocker.Mock()
+    mock_store.read.side_effect = Exception("Cache read failed")
+    
+    # Should not raise, just log and continue
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        context_store=mock_store
+    )
+    
+    assert handler._access_token is None
+
+
+@respx.mock
+def test_oauth2_with_scope_and_audience():
+    """Test OAuth2ClientCredentialsHandler with scope and audience."""
+    token_route = respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        scope="read write",
+        audience="https://api.example.com"
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    client.get("/v1/data")
+    
+    # Verify scope and audience were sent
+    assert token_route.called
+    request_content = token_route.calls[0].request.content.decode()
+    assert "scope" in request_content
+    assert "audience" in request_content
+    
+    client.close()
+
+
+@respx.mock
+def test_oauth2_token_persistence_failure(mocker):
+    """Test OAuth2 handles token persistence failure gracefully."""
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    # Create a mock context store that fails on write
+    mock_store = mocker.Mock()
+    mock_store.read.return_value = {}
+    mock_store.write.side_effect = Exception("Write failed")
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        context_store=mock_store
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    # Should not raise even though persistence fails
+    result = client.get("/v1/data")
+    assert result.status_code == 200
+    
+    client.close()
+
+
+@respx.mock
+def test_oauth2_http_status_error():
+    """Test OAuth2 handles HTTP status error during token refresh."""
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(401, json={"error": "invalid_client"})
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret"
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    with pytest.raises(ContentClientAuthenticationError, match="Token refresh failed"):
+        client.get("/v1/data")
+
+
+@respx.mock
+def test_oauth2_timeout_error():
+    """Test OAuth2 handles timeout during token refresh."""
+    respx.post("https://auth.example.com/token").mock(
+        side_effect=httpx.TimeoutException("Connection timed out")
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret",
+        token_timeout=0.1
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    with pytest.raises(ContentClientAuthenticationError, match="timed out"):
+        client.get("/v1/data")
+
+
+@respx.mock
+def test_api_key_auth_query_param():
+    """Test APIKeyAuthHandler adds key to query parameter."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=APIKeyAuthHandler(key="secret_key", query_param="api_key")
+    )
+    
+    client.get("/v1/data")
+    
+    assert route.called
+    # Check that the query param was added
+    request_url = str(route.calls[0].request.url)
+    assert "api_key=secret_key" in request_url
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_proxy(mocker):
+    """Test ContentClient with proxy enabled."""
+    mocker.patch("ContentClientApiModule.ensure_proxy_has_http_prefix")
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        proxy=True
+    )
+    
+    client.get("/v1/data")
+    assert route.called
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_without_verify(mocker):
+    """Test ContentClient with SSL verification disabled."""
+    mocker.patch("ContentClientApiModule.skip_cert_verification")
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        verify=False
+    )
+    
+    client.get("/v1/data")
+    assert route.called
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_post_method():
+    """Test ContentClient POST method."""
+    route = respx.post("https://api.example.com/v1/data").mock(
+        return_value=Response(201, json={"created": True})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com", ok_codes=(201,))
+    
+    response = client.post("/v1/data", json_data={"name": "test"})
+    
+    assert route.called
+    assert response.status_code == 201
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_put_method():
+    """Test ContentClient PUT method."""
+    route = respx.put("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"updated": True})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    response = client.put("/v1/data", json_data={"name": "test"})
+    
+    assert route.called
+    assert response.status_code == 200
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_delete_method():
+    """Test ContentClient DELETE method."""
+    route = respx.delete("https://api.example.com/v1/data").mock(
+        return_value=Response(204)
+    )
+    
+    client = ContentClient(base_url="https://api.example.com", ok_codes=(204,))
+    
+    response = client.delete("/v1/data")
+    
+    assert route.called
+    assert response.status_code == 204
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_metrics_property():
+    """Test ContentClient metrics property."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    client.get("/v1/data")
+    
+    metrics = client.metrics
+    assert metrics.success == 1
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_401_with_auth_handler_retry():
+    """Test ContentClient retries on 401 when auth handler returns True."""
+    # First call returns 401, second returns 200
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            Response(401, json={"error": "Unauthorized"}),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "new_token", "expires_in": 3600})
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret"
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_circuit_breaker_open():
+    """Test ContentClient raises error when circuit breaker is open."""
+    client = ContentClient(
+        base_url="https://api.example.com",
+        circuit_breaker=CircuitBreakerPolicy(failure_threshold=1, recovery_timeout=60.0)
+    )
+    
+    # Record a failure to open the circuit
+    client._circuit_breaker.record_failure()
+    
+    with pytest.raises(ContentClientCircuitOpenError):
+        client.get("/v1/data")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_retryable_status_code():
+    """Test ContentClient retries on retryable status codes."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            Response(503, text="Service Unavailable"),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_403_error():
+    """Test ContentClient handles 403 Forbidden error."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(403, text="Forbidden")
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=1)
+    )
+    
+    with pytest.raises(ContentClientAuthenticationError, match="Authentication failed"):
+        client.get("/v1/data")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_500_error():
+    """Test ContentClient handles 500 Internal Server Error."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(500, text="Internal Server Error")
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=1)
+    )
+    
+    with pytest.raises(ContentClientError, match="Request failed"):
+        client.get("/v1/data")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_general_exception():
+    """Test ContentClient handles general exceptions."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=Exception("Unexpected error")
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        diagnostic_mode=True
+    )
+    
+    with pytest.raises(Exception, match="Unexpected error"):
+        client.get("/v1/data")
+    
+    assert client.execution_metrics.general_error == 1
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_full_url():
+    """Test ContentClient with full_url parameter."""
+    route = respx.get("https://other.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    result = client._http_request(
+        "GET",
+        full_url="https://other.example.com/v1/data",
+        resp_type="json"
+    )
+    
+    assert route.called
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_custom_headers():
+    """Test ContentClient with custom headers."""
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        headers={"X-Custom-Header": "custom_value"}
+    )
+    
+    client.get("/v1/data", headers={"X-Request-Header": "request_value"})
+    
+    assert route.called
+    sent_headers = route.calls[0].request.headers
+    assert sent_headers.get("X-Custom-Header") == "custom_value"
+    assert sent_headers.get("X-Request-Header") == "request_value"
+    
+    client.close()
+
+
+def test_content_client_health_check_with_general_error():
+    """Test ContentClient health_check with general errors."""
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Simulate general error
+    client.execution_metrics.general_error = 1
+    
+    health = client.health_check()
+    
+    assert health["status"] == "degraded"
+    assert any("general" in w.lower() for w in health["warnings"])
+    
+    client.close()
+
+
+def test_content_client_health_check_with_auth_error():
+    """Test ContentClient health_check with auth errors."""
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Simulate auth error
+    client.execution_metrics.auth_error = 1
+    
+    health = client.health_check()
+    
+    assert health["status"] == "degraded"
+    assert any("authentication" in w.lower() for w in health["warnings"])
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_json_decode_error_with_content():
+    """Test ContentClient raises JSONDecodeError when content is not valid JSON."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, text="not valid json")
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    with pytest.raises(json.JSONDecodeError):
+        client._http_request("GET", "/v1/data", resp_type="json")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_default_json_response():
+    """Test ContentClient returns JSON by default when resp_type not specified in request_sync."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Call request_sync directly without resp_type
+    result = client.request_sync(method="GET", url_suffix="/v1/data")
+    
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_retries_exhausted():
+    """Test ContentClient raises ContentClientRetryError when retries are exhausted."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=httpx.ConnectError("Connection refused")
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=2, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    with pytest.raises(ContentClientRetryError, match="Exceeded retry attempts"):
+        client.get("/v1/data")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_with_retries_param():
+    """Test ContentClient with retries parameter (BaseClient compatibility)."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            httpx.ConnectError("Connection refused"),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Use retries param instead of retry_policy
+    result = client._http_request(
+        "GET", "/v1/data",
+        resp_type="json",
+        retries=2,
+        status_list_to_retry=[503]
+    )
+    
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_429_retry():
+    """Test ContentClient retries on 429 rate limit error."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            Response(429, text="Rate limited", headers={"Retry-After": "1"}),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_401_retry_with_status_list():
+    """Test ContentClient retries on 401 when in status_list_to_retry."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            Response(401, text="Unauthorized"),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    # Include 401 in status_list_to_retry
+    result = client._http_request(
+        "GET", "/v1/data",
+        resp_type="json",
+        status_list_to_retry=[401, 503]
+    )
+    
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_500_retry_with_status_list():
+    """Test ContentClient retries on 500 when in status_list_to_retry."""
+    respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            Response(500, text="Internal Server Error"),
+            Response(200, json={"result": "success"})
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    result = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_diagnostic_mode_http_error():
+    """Test ContentClient diagnostic mode captures HTTP errors."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(400, json={"error": "Bad Request"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        diagnostic_mode=True,
+        retry_policy=RetryPolicy(max_attempts=1)
+    )
+    
+    with pytest.raises(ContentClientError):
+        client.get("/v1/data")
+    
+    # Verify diagnostic report captured the error
+    report = client.get_diagnostic_report()
+    assert len(report.request_traces) > 0
+    trace = report.request_traces[0]
+    assert trace.response_status == 400
+    
+    client.close()

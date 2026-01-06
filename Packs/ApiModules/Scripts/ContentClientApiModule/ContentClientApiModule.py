@@ -11,11 +11,12 @@ import asyncio
 import concurrent.futures
 import json
 import random
+import threading
 import time
+import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import (
-    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -25,19 +26,14 @@ from typing import (
     Optional,
     Tuple,
     Type,
-    Union,
 )
 
 import anyio
 import demistomock as demisto
 import httpx
-import requests
 from pydantic import BaseModel, Field, root_validator
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
-
-if TYPE_CHECKING:
-    from requests.auth import AuthBase
 
 # Type aliases for better readability
 HeadersType = Dict[str, str]
@@ -249,6 +245,8 @@ class CircuitBreaker:
     Tracks failures and opens the circuit when the failure threshold is reached,
     preventing further requests until the recovery timeout expires.
     
+    This implementation is thread-safe using a threading lock.
+    
     Attributes:
         policy: The circuit breaker policy configuration.
     """
@@ -257,6 +255,7 @@ class CircuitBreaker:
         self.policy: CircuitBreakerPolicy = policy
         self._failure_count: int = 0
         self._opened_at: Optional[float] = None
+        self._lock: threading.Lock = threading.Lock()
 
     def can_execute(self) -> bool:
         """Check if the circuit allows execution.
@@ -264,25 +263,28 @@ class CircuitBreaker:
         Returns:
             True if the circuit is closed or half-open, False if open.
         """
-        if self._opened_at is None:
-            return True
-        elapsed: float = _now() - self._opened_at
-        if elapsed >= self.policy.recovery_timeout:
-            self._failure_count = 0
-            self._opened_at = None
-            return True
-        return False
+        with self._lock:
+            if self._opened_at is None:
+                return True
+            elapsed: float = _now() - self._opened_at
+            if elapsed >= self.policy.recovery_timeout:
+                self._failure_count = 0
+                self._opened_at = None
+                return True
+            return False
 
     def record_success(self) -> None:
         """Record a successful execution, resetting the failure count."""
-        self._failure_count = 0
-        self._opened_at = None
+        with self._lock:
+            self._failure_count = 0
+            self._opened_at = None
 
     def record_failure(self) -> None:
         """Record a failed execution, potentially opening the circuit."""
-        self._failure_count += 1
-        if self._failure_count >= self.policy.failure_threshold:
-            self._opened_at = _now()
+        with self._lock:
+            self._failure_count += 1
+            if self._failure_count >= self.policy.failure_threshold:
+                self._opened_at = _now()
 
 
 class RateLimitPolicy(BaseModel):
@@ -331,12 +333,14 @@ class TokenBucketRateLimiter:
                     self._tokens -= 1
                     return
                 needed = 1 - self._tokens
-                # Protect against division by zero
-                if self.policy.rate_per_second <= 0:
+                # Protect against division by zero - this should not happen in normal usage
+                # since the rate limiter is only created when rate_per_second > 0
+                rate = self.policy.rate_per_second
+                if rate <= 0:
                     raise ContentClientConfigurationError(
                         "rate_per_second must be positive when rate limiting is enabled"
                     )
-                wait_seconds = needed / self.policy.rate_per_second
+                wait_seconds = needed / rate
             await anyio.sleep(wait_seconds)
 
     async def _refill_locked(self) -> None:
@@ -523,10 +527,8 @@ class APIKeyAuthHandler(AuthHandler):
         if self.header_name:
             request.headers[self.header_name] = self.key
         if self.query_param:
-            # Use copy_merge_params for proper URL parameter handling
-            current_params = dict(request.url.params)
-            current_params[self.query_param] = self.key
-            request.url = request.url.copy_merge_params(current_params)
+            # Use copy_add_param for proper URL parameter handling
+            request.url = request.url.copy_add_param(self.query_param, self.key)
 
 
 class BearerTokenAuthHandler(AuthHandler):
@@ -724,6 +726,146 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                 raise ContentClientAuthenticationError(f"Failed to refresh token: {str(e)}") from e
 
 
+# Structured Logging for Google Cloud
+
+
+class StructuredLogEntry:
+    """Structured log entry optimized for Google Cloud Logs Explorer and BigQuery.
+    
+    Creates JSON-formatted log entries with consistent fields that can be easily
+    queried in Google Cloud Logs Explorer and exported to BigQuery for analysis.
+    
+    Fields follow Google Cloud Logging conventions:
+    - severity: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    - message: Human-readable log message
+    - timestamp: ISO 8601 formatted timestamp
+    - labels: Key-value pairs for filtering (client_name, request_id, etc.)
+    - httpRequest: HTTP request details (method, url, status, latency)
+    - Additional custom fields for debugging
+    """
+    
+    def __init__(
+        self,
+        severity: str,
+        message: str,
+        client_name: str,
+        request_id: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        self.entry: Dict[str, Any] = {
+            "severity": severity.upper(),
+            "message": message,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "labels": {
+                "client_name": client_name,
+                "component": "ContentClient",
+            },
+        }
+        
+        if request_id:
+            self.entry["labels"]["request_id"] = request_id
+        
+        # Add any additional fields
+        for key, value in kwargs.items():
+            if key == "http_request":
+                self.entry["httpRequest"] = value
+            elif key == "error":
+                self.entry["error"] = value
+            elif key == "labels":
+                self.entry["labels"].update(value)
+            else:
+                self.entry[key] = value
+    
+    def to_json(self) -> str:
+        """Convert to JSON string for logging."""
+        return json.dumps(self.entry, default=str)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return self.entry
+
+
+def create_http_request_log(
+    method: str,
+    url: str,
+    status: Optional[int] = None,
+    latency_ms: Optional[float] = None,
+    request_size: Optional[int] = None,
+    response_size: Optional[int] = None,
+    user_agent: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create an httpRequest object following Google Cloud Logging format.
+    
+    This format is recognized by Google Cloud Logs Explorer and enables
+    automatic HTTP request analysis and filtering.
+    
+    Args:
+        method: HTTP method (GET, POST, etc.)
+        url: Request URL
+        status: HTTP response status code
+        latency_ms: Request latency in milliseconds
+        request_size: Size of request body in bytes
+        response_size: Size of response body in bytes
+        user_agent: User-Agent header value
+        
+    Returns:
+        Dictionary in Google Cloud httpRequest format
+    """
+    http_request: Dict[str, Any] = {
+        "requestMethod": method.upper(),
+        "requestUrl": url,
+    }
+    
+    if status is not None:
+        http_request["status"] = status
+    
+    if latency_ms is not None:
+        # Google Cloud expects latency as a string with 's' suffix
+        http_request["latency"] = f"{latency_ms / 1000:.3f}s"
+    
+    if request_size is not None:
+        http_request["requestSize"] = str(request_size)
+    
+    if response_size is not None:
+        http_request["responseSize"] = str(response_size)
+    
+    if user_agent:
+        http_request["userAgent"] = user_agent
+    
+    return http_request
+
+
+def create_error_log(
+    error_type: str,
+    error_message: str,
+    stack_trace: Optional[str] = None,
+    error_code: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create an error object for structured logging.
+    
+    Args:
+        error_type: Type/class of the error
+        error_message: Error message
+        stack_trace: Optional stack trace
+        error_code: Optional error code for categorization
+        
+    Returns:
+        Dictionary with error details
+    """
+    error: Dict[str, Any] = {
+        "type": error_type,
+        "message": error_message,
+    }
+    
+    if stack_trace:
+        error["stackTrace"] = stack_trace
+    
+    if error_code:
+        error["code"] = error_code
+    
+    return error
+
+
 # Diagnostics
 
 
@@ -758,19 +900,46 @@ class DiagnosticReport:
 
 
 class ContentClientLogger:
-    """Enhanced logger with diagnostic capabilities.
+    """Enhanced logger with diagnostic capabilities and structured logging.
     
-    Provides structured logging with optional diagnostic mode for detailed
-    request tracing and performance metrics collection.
+    Provides structured JSON logging optimized for Google Cloud Logs Explorer
+    and BigQuery analysis. Supports request tracing, performance metrics,
+    and correlation IDs for distributed tracing.
     
     Attributes:
         client_name: Name of the client for log identification.
         diagnostic_mode: Whether to enable detailed diagnostic logging.
+        structured_logging: Whether to use JSON structured logging (default: True).
+    
+    Example BigQuery queries:
+        -- Find all errors for a specific client
+        SELECT * FROM `project.dataset.logs`
+        WHERE JSON_VALUE(jsonPayload.labels.client_name) = 'MyClient'
+        AND severity = 'ERROR'
+        
+        -- Analyze request latencies
+        SELECT
+            JSON_VALUE(jsonPayload.httpRequest.requestUrl) as url,
+            AVG(CAST(REPLACE(JSON_VALUE(jsonPayload.httpRequest.latency), 's', '') AS FLOAT64) * 1000) as avg_latency_ms
+        FROM `project.dataset.logs`
+        WHERE JSON_VALUE(jsonPayload.labels.component) = 'ContentClient'
+        GROUP BY url
+        
+        -- Find requests by correlation ID
+        SELECT * FROM `project.dataset.logs`
+        WHERE JSON_VALUE(jsonPayload.labels.request_id) = 'abc-123'
+        ORDER BY timestamp
     """
     
-    def __init__(self, client_name: str, diagnostic_mode: bool = False) -> None:
+    def __init__(
+        self,
+        client_name: str,
+        diagnostic_mode: bool = False,
+        structured_logging: bool = True
+    ) -> None:
         self.client_name: str = client_name
         self.diagnostic_mode: bool = diagnostic_mode
+        self.structured_logging: bool = structured_logging
         self._traces: List[RequestTrace] = []
         self._errors: List[Dict[str, Any]] = []
         self._performance: Dict[str, List[float]] = {
@@ -778,25 +947,201 @@ class ContentClientLogger:
             "pagination_times": [],
             "auth_times": [],
         }
+        self._current_request_id: Optional[str] = None
+
+    def new_request_id(self) -> str:
+        """Generate a new request ID for correlation.
+        
+        Returns:
+            A unique request ID string.
+        """
+        self._current_request_id = str(uuid.uuid4())[:8]
+        return self._current_request_id
+
+    def get_request_id(self) -> Optional[str]:
+        """Get the current request ID.
+        
+        Returns:
+            The current request ID or None if not set.
+        """
+        return self._current_request_id
 
     def debug(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
         """Log a debug message (only in diagnostic mode)."""
         if self.diagnostic_mode:
-            demisto.debug(self._format("DEBUG", message, extra))
+            if self.structured_logging:
+                log_entry = StructuredLogEntry(
+                    severity="DEBUG",
+                    message=message,
+                    client_name=self.client_name,
+                    request_id=self._current_request_id,
+                    **(extra or {})
+                )
+                demisto.debug(log_entry.to_json())
+            else:
+                demisto.debug(self._format("DEBUG", message, extra))
 
     def info(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
         """Log an info message."""
-        demisto.info(self._format("INFO", message, extra))
+        if self.structured_logging:
+            log_entry = StructuredLogEntry(
+                severity="INFO",
+                message=message,
+                client_name=self.client_name,
+                request_id=self._current_request_id,
+                **(extra or {})
+            )
+            demisto.info(log_entry.to_json())
+        else:
+            demisto.info(self._format("INFO", message, extra))
 
     def warning(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
         """Log a warning message."""
-        demisto.debug(self._format("WARNING", message, extra))
+        if self.structured_logging:
+            log_entry = StructuredLogEntry(
+                severity="WARNING",
+                message=message,
+                client_name=self.client_name,
+                request_id=self._current_request_id,
+                **(extra or {})
+            )
+            demisto.debug(log_entry.to_json())
+        else:
+            demisto.debug(self._format("WARNING", message, extra))
 
     def error(self, message: str, extra: Optional[Dict[str, Any]] = None) -> None:
         """Log an error message."""
-        demisto.error(self._format("ERROR", message, extra))
+        if self.structured_logging:
+            error_info = None
+            # Create a copy of extra to avoid modifying the original
+            extra_copy = dict(extra) if extra else {}
+            
+            if extra_copy and "error_type" in extra_copy:
+                error_info = create_error_log(
+                    error_type=extra_copy.get("error_type", "unknown"),
+                    error_message=extra_copy.get("error", message),
+                )
+                # Remove keys that are handled separately to avoid conflicts
+                extra_copy.pop("error_type", None)
+                extra_copy.pop("error", None)
+            
+            log_entry = StructuredLogEntry(
+                severity="ERROR",
+                message=message,
+                client_name=self.client_name,
+                request_id=self._current_request_id,
+                error=error_info,
+                **extra_copy
+            )
+            demisto.error(log_entry.to_json())
+        else:
+            demisto.error(self._format("ERROR", message, extra))
+        
         if self.diagnostic_mode and extra:
             self._errors.append({"message": message, "context": extra})
+
+    def log_http_request(
+        self,
+        method: str,
+        url: str,
+        status: Optional[int] = None,
+        latency_ms: Optional[float] = None,
+        request_size: Optional[int] = None,
+        response_size: Optional[int] = None,
+        retry_attempt: int = 0,
+        error: Optional[str] = None,
+    ) -> None:
+        """Log an HTTP request with structured format for Google Cloud.
+        
+        This creates a log entry that can be easily queried in Logs Explorer
+        and analyzed in BigQuery.
+        
+        Args:
+            method: HTTP method
+            url: Request URL
+            status: HTTP response status code
+            latency_ms: Request latency in milliseconds
+            request_size: Size of request body in bytes
+            response_size: Size of response body in bytes
+            retry_attempt: Current retry attempt number
+            error: Optional error message
+        """
+        http_request = create_http_request_log(
+            method=method,
+            url=url,
+            status=status,
+            latency_ms=latency_ms,
+            request_size=request_size,
+            response_size=response_size,
+        )
+        
+        severity = "INFO"
+        message = f"HTTP {method} {url}"
+        
+        if error:
+            severity = "ERROR"
+            message = f"HTTP {method} {url} failed: {error}"
+        elif status and status >= 400:
+            severity = "WARNING" if status < 500 else "ERROR"
+            message = f"HTTP {method} {url} returned {status}"
+        
+        extra: Dict[str, Any] = {
+            "http_request": http_request,
+            "retry_attempt": retry_attempt,
+        }
+        
+        if error:
+            extra["error"] = create_error_log(
+                error_type="HTTPError",
+                error_message=error,
+            )
+        
+        log_entry = StructuredLogEntry(
+            severity=severity,
+            message=message,
+            client_name=self.client_name,
+            request_id=self._current_request_id,
+            **extra
+        )
+        
+        if severity == "ERROR":
+            demisto.error(log_entry.to_json())
+        elif severity == "WARNING":
+            demisto.debug(log_entry.to_json())
+        else:
+            if self.diagnostic_mode:
+                demisto.debug(log_entry.to_json())
+
+    def log_metrics_summary(self) -> None:
+        """Log a summary of execution metrics for analysis.
+        
+        This creates a structured log entry with aggregated metrics that can
+        be used for monitoring and alerting in Google Cloud.
+        """
+        if not self._performance["request_times"]:
+            return
+        
+        times = self._performance["request_times"]
+        metrics = {
+            "total_requests": len(times),
+            "avg_latency_ms": sum(times) / len(times),
+            "min_latency_ms": min(times),
+            "max_latency_ms": max(times),
+            "p50_latency_ms": sorted(times)[len(times) // 2] if times else 0,
+            "p95_latency_ms": sorted(times)[int(len(times) * 0.95)] if len(times) >= 20 else max(times),
+            "error_count": len(self._errors),
+            "retry_count": sum(1 for t in self._traces if t.retry_attempt > 0),
+        }
+        
+        log_entry = StructuredLogEntry(
+            severity="INFO",
+            message="Request metrics summary",
+            client_name=self.client_name,
+            request_id=self._current_request_id,
+            metrics=metrics,
+            labels={"metric_type": "summary"}
+        )
+        demisto.info(log_entry.to_json())
 
     def trace_request(
         self,
@@ -812,7 +1157,7 @@ class ContentClientLogger:
         Args:
             method: HTTP method.
             url: Request URL.
-            headers: Request headers.
+            headers: Request headers (sensitive values will be redacted).
             params: Query parameters.
             body: Request body.
             retry_attempt: Current retry attempt number.
@@ -820,10 +1165,21 @@ class ContentClientLogger:
         Returns:
             A RequestTrace instance for tracking the request.
         """
+        # Generate a new request ID for this request
+        if retry_attempt == 0:
+            self.new_request_id()
+        
+        # Redact sensitive headers for security
+        safe_headers = headers.copy()
+        sensitive_keys = ['Authorization', 'X-API-Key', 'X-Auth-Token', 'API-Key', 'Api-Key', 'apikey']
+        for key in list(safe_headers.keys()):
+            if key.lower() in [k.lower() for k in sensitive_keys]:
+                safe_headers[key] = '***REDACTED***'
+        
         trace = RequestTrace(
             method=method,
             url=url,
-            headers=headers.copy(),
+            headers=safe_headers,
             params=params.copy(),
             body=body,
             timestamp=_now(),
@@ -851,15 +1207,15 @@ class ContentClientLogger:
         
         if self.diagnostic_mode:
             self._performance["request_times"].append(elapsed_ms)
-            self.debug(
-                "HTTP request completed",
-                {
-                    "method": trace.method,
-                    "url": trace.url,
-                    "status": status,
-                    "elapsed_ms": elapsed_ms,
-                    "retry_attempt": trace.retry_attempt,
-                },
+            
+            # Log with structured format for Google Cloud
+            self.log_http_request(
+                method=trace.method,
+                url=trace.url,
+                status=status,
+                latency_ms=elapsed_ms,
+                response_size=len(str(body)) if body else 0,
+                retry_attempt=trace.retry_attempt,
             )
 
     def trace_error(
@@ -873,7 +1229,15 @@ class ContentClientLogger:
             trace.elapsed_ms = elapsed_ms
         
         if self.diagnostic_mode:
-            self.error("HTTP request failed", {"url": trace.url, "error": error, "retry_attempt": trace.retry_attempt})
+            # Log with structured format for Google Cloud
+            self.log_http_request(
+                method=trace.method,
+                url=trace.url,
+                status=trace.response_status,
+                latency_ms=elapsed_ms,
+                retry_attempt=trace.retry_attempt,
+                error=error,
+            )
 
     def get_diagnostic_report(
         self,
@@ -975,7 +1339,7 @@ class ContentClient:
         proxy: bool = False,
         ok_codes: StatusCodesType = (),
         headers: Optional[HeadersType] = None,
-        auth: Optional[Union[Tuple[str, str], "AuthBase"]] = None,
+        auth: Optional[Tuple[str, str]] = None,
         timeout: float = 60.0,
         # New optional parameters (backward compatible):
         auth_handler: Optional[AuthHandler] = None,
@@ -1007,9 +1371,9 @@ class ContentClient:
         self._verify: bool = verify
         self._ok_codes: StatusCodesType = ok_codes
         self._headers: HeadersType = headers or {}
-        self._auth: Optional[Union[Tuple[str, str], "AuthBase"]] = auth
-        self._session: requests.Session = requests.Session()
+        self._auth: Optional[Tuple[str, str]] = auth
         self.timeout: float = timeout
+        self._closed: bool = False
         
         # Handle proxy exactly like BaseClient
         if proxy:
@@ -1056,40 +1420,67 @@ class ContentClient:
 
     async def aclose(self) -> None:
         """Close the async HTTP client and release resources."""
+        if self._closed:
+            return
+        self._closed = True
         try:
             await self._client.aclose()
         except Exception as e:
             self.logger.error(f"Error closing async client: {e}")
 
+    def __enter__(self) -> "ContentClient":
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit context manager and close resources."""
+        self.close()
+
+    async def __aenter__(self) -> "ContentClient":
+        """Enter async context manager."""
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit async context manager and close resources."""
+        await self.aclose()
+
     def close(self) -> None:
         """Close the client synchronously.
         
-        Note: This creates a new event loop to run the async close.
-        If called from within an async context, use aclose() instead.
+        Note: If called from within an async context, use aclose() instead.
+        This method handles various event loop scenarios gracefully.
         """
-        try:
-            anyio.from_thread.run_sync(lambda: None)  # Check if in async context
-            self.logger.warning(
-                "close() may not work correctly from async context. Use 'await client.aclose()' instead."
-            )
-        except RuntimeError:
-            pass  # Not in async context, safe to proceed
+        if self._closed:
+            return
         
         try:
-            # Use a simple synchronous approach
+            # Try to get the current event loop
+            try:
+                loop = asyncio.get_running_loop()
+                # We're in an async context - schedule the close
+                self.logger.warning(
+                    "close() called from async context. Use 'await client.aclose()' instead."
+                )
+                # Schedule the close but don't wait - the caller should use aclose()
+                loop.call_soon(lambda: asyncio.create_task(self.aclose()))
+                return
+            except RuntimeError:
+                # No running loop - we can safely run synchronously
+                pass
+            
+            # Try to use existing event loop or create new one
             try:
                 loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    # Schedule the close but don't wait
-                    # We intentionally don't await this task as we're in a sync context
-                    asyncio.ensure_future(self.aclose())  # noqa: RUF006
-                else:
-                    loop.run_until_complete(self.aclose())
+                if loop.is_closed():
+                    raise RuntimeError("Event loop is closed")
+                loop.run_until_complete(self.aclose())
             except RuntimeError:
-                # No event loop, create a new one
+                # No event loop or it's closed, create a new one
                 asyncio.run(self.aclose())
         except Exception as e:
             self.logger.error(f"Error closing client: {e}")
+            # Mark as closed even if there was an error to prevent repeated attempts
+            self._closed = True
 
     async def _request(
         self,
@@ -1247,10 +1638,12 @@ class ContentClient:
                     raise httpx.HTTPStatusError("Retryable status", request=http_request, response=response)
 
                 # Check for ok_codes
-                # BaseClient logic: if ok_codes provided, check against it. Else check response.ok
+                # BaseClient logic: if ok_codes provided, check against it.
+                # If not, check _ok_codes instance variable. Else check response.ok
                 is_ok = False
-                if ok_codes:
-                    is_ok = response.status_code in ok_codes
+                effective_ok_codes = ok_codes or self._ok_codes
+                if effective_ok_codes:
+                    is_ok = response.status_code in effective_ok_codes
                 else:
                     is_ok = response.is_success
                 
@@ -1468,7 +1861,12 @@ class ContentClient:
             elif resp_type == 'xml':
                 return response.text
             
-            return response.json()
+            # Default fallback - try JSON
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                # If JSON parsing fails, return the response object
+                return response
 
         # Use asyncio for sync-to-async bridging
         try:
