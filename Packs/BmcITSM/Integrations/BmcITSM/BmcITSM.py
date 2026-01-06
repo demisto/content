@@ -3677,20 +3677,6 @@ def fetch_relevant_tickets_by_ticket_type(
 
     response = client.list_request(ticket_form, fetch_query)
 
-    # Attach worklogs to the ticket
-    if ticket_form != "HPD:WorkLog":
-        for i, ticket in enumerate(response["entries"]):
-            incident_number = ticket.get("values").get("Incident Number")
-            query = f"'Incident Number' = \"{incident_number}\""
-            worklogs = client.list_request("HPD:WorkLog", query)
-            for w_i, worklog in enumerate(worklogs["entries"]):
-                # Change date format to ISO8601
-                for key, value in worklog.get("values").items():
-                    if key.endswith("Date"):
-                        worklog["values"][key] = FormatIso8601(arg_to_datetime(value))
-                worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
-            response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
-
     relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)  # type: ignore[arg-type]
     outputs: List[dict] = format_command_output(  # type: ignore[assignment]
         deepcopy(relevant_records),
