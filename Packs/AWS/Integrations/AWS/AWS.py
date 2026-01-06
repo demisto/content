@@ -2809,6 +2809,117 @@ class EC2:
         )
 
     @staticmethod
+    def create_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance.
+        
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - name (str): A name for the new image (required)
+                - instance_id (str): The ID of the instance (required)
+                - description (str, optional): A description for the new image
+                - no_reboot (str, optional): By default, Amazon EC2 attempts to shut down and reboot the instance
+                  before creating the image. If set to true, Amazon EC2 won't shut down the instance
+                - block_device_mappings (str, optional): JSON string of block device mappings
+                - tag_specifications (str, optional): Tags to apply to the AMI and snapshots
+        
+        Returns:
+            CommandResults: Results containing the created AMI information
+        """
+        kwargs = {
+            "Name": args.get("name"),
+            "InstanceId": args.get("instance_id"),
+            "Description": args.get("description"),
+            "NoReboot": argToBoolean(args.get("no_reboot")) if args.get("no_reboot") else None,
+        }
+        
+        # Handle block device mappings if provided
+        if block_device_mappings := args.get("block_device_mappings"):
+            try:
+                kwargs["BlockDeviceMappings"] = json.loads(block_device_mappings)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Invalid block_device_mappings JSON: {e}")
+        
+        # Handle tag specifications if provided
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "image", "Tags": parse_tag_field(tag_specifications)}]
+        
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating image with parameters: {kwargs}")
+        
+        try:
+            response = client.create_image(**kwargs)
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        
+        # Build output data
+        output_data = {
+            "ImageId": response.get("ImageId"),
+            "Name": args.get("name"),
+            "InstanceId": args.get("instance_id"),
+            "Region": args.get("region"),
+        }
+        output_data = remove_empty_elements(output_data)
+        
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Images",
+            outputs_key_field="ImageId",
+            outputs=output_data,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Image Created",
+                output_data,
+                headers=["ImageId", "Name", "InstanceId", "Region"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def deregister_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deregisters the specified Amazon Machine Image (AMI).
+        
+        After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect
+        any instances that you've already launched from the AMI. You'll continue to be charged for those
+        instances until you terminate them.
+        
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - image_id (str): The ID of the AMI to deregister (required)
+        
+        Returns:
+            CommandResults: Results of the deregistration operation
+        """
+        image_id = args.get("image_id")
+        
+        if not image_id:
+            raise DemistoException("image_id parameter is required")
+        
+        print_debug_logs(client, f"Deregistering image: {image_id}")
+        
+        try:
+            response = client.deregister_image(ImageId=image_id)
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        
+        return CommandResults(
+            readable_output=f"Successfully deregistered AMI: {image_id}",
+            raw_response=response,
+        )
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -4404,6 +4515,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
     "aws-ec2-images-describe": EC2.describe_images_command,
+    "aws-ec2-image-create": EC2.create_image_command,
+    "aws-ec2-image-deregister": EC2.deregister_image_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4439,6 +4552,8 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DescribeIpamResourceDiscoveries",
     "ec2:DescribeIpamResourceDiscoveryAssociations",
     "ec2:DescribeImages",
+    "ec2:CreateImage",
+    "ec2:DeregisterImage",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",

@@ -7322,3 +7322,652 @@ def test_ec2_describe_images_command_with_all_boolean_flags(mocker):
     call_args = mock_client.describe_images.call_args[1]
     assert call_args["IncludeDeprecated"] is True
     assert call_args["IncludeDisabled"] is True
+
+
+def test_ec2_create_image_command_success_minimal_params(mocker):
+    """
+    Given: A mocked boto3 EC2 client and minimal required parameters (name and instance_id).
+    When: create_image_command is called successfully.
+    Then: It should return CommandResults with image creation details and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-1234567890abcdef0",
+    }
+
+    args = {"name": "test-ami", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-1234567890abcdef0"
+    assert result.outputs["Name"] == "test-ami"
+    assert result.outputs["InstanceId"] == "i-1234567890abcdef0"
+    assert result.outputs["Region"] == "us-east-1"
+    assert "Successfully created AMI" in result.readable_output
+    assert "ami-1234567890abcdef0" in result.readable_output
+
+
+def test_ec2_create_image_command_success_with_description(mocker):
+    """
+    Given: A mocked boto3 EC2 client and arguments including description.
+    When: create_image_command is called with description parameter.
+    Then: It should return CommandResults and pass description to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-described123",
+    }
+
+    args = {
+        "name": "described-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "description": "Test AMI with description",
+        "region": "us-west-2",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.create_image.assert_called_once()
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["Name"] == "described-ami"
+    assert call_args["InstanceId"] == "i-1234567890abcdef0"
+    assert call_args["Description"] == "Test AMI with description"
+
+
+def test_ec2_create_image_command_success_with_no_reboot(mocker):
+    """
+    Given: A mocked boto3 EC2 client and no_reboot parameter set to true.
+    When: create_image_command is called with no_reboot=true.
+    Then: It should return CommandResults and pass NoReboot=True to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-noreboot123",
+    }
+
+    args = {"name": "no-reboot-ami", "instance_id": "i-1234567890abcdef0", "no_reboot": "true", "region": "eu-west-1"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["NoReboot"] is True
+
+
+def test_ec2_create_image_command_success_with_block_device_mappings(mocker):
+    """
+    Given: A mocked boto3 EC2 client and block_device_mappings as JSON string.
+    When: create_image_command is called with block device mappings.
+    Then: It should return CommandResults and properly parse the JSON block device mappings.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-blockdev123",
+    }
+
+    block_device_mappings = json.dumps(
+        [{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 20, "VolumeType": "gp3", "DeleteOnTermination": True}}]
+    )
+
+    args = {
+        "name": "blockdev-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": block_device_mappings,
+        "region": "ap-southeast-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert "BlockDeviceMappings" in call_args
+    assert call_args["BlockDeviceMappings"][0]["DeviceName"] == "/dev/sda1"
+    assert call_args["BlockDeviceMappings"][0]["Ebs"]["VolumeSize"] == 20
+
+
+def test_ec2_create_image_command_success_with_tag_specifications(mocker):
+    """
+    Given: A mocked boto3 EC2 client and tag_specifications parameter.
+    When: create_image_command is called with tags.
+    Then: It should return CommandResults and properly parse the tag specifications.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-tagged123",
+    }
+
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+
+    args = {
+        "name": "tagged-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "tag_specifications": "key=Environment,value=Production",
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert "TagSpecifications" in call_args
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "image"
+    assert call_args["TagSpecifications"][0]["Tags"][0]["Key"] == "Environment"
+
+
+def test_ec2_create_image_command_success_with_all_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and all possible parameters.
+    When: create_image_command is called with all parameters.
+    Then: It should return CommandResults and pass all parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-complete123",
+    }
+
+    block_device_mappings = json.dumps([{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 30}}])
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Name", "Value": "CompleteAMI"}])
+
+    args = {
+        "name": "complete-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "description": "Complete AMI with all parameters",
+        "no_reboot": "false",
+        "block_device_mappings": block_device_mappings,
+        "tag_specifications": "key=Name,value=CompleteAMI",
+        "region": "eu-central-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["Name"] == "complete-ami"
+    assert call_args["InstanceId"] == "i-1234567890abcdef0"
+    assert call_args["Description"] == "Complete AMI with all parameters"
+    assert call_args["NoReboot"] is False
+    assert "BlockDeviceMappings" in call_args
+    assert "TagSpecifications" in call_args
+
+
+def test_ec2_create_image_command_invalid_block_device_mappings_json(mocker):
+    """
+    Given: A mocked boto3 EC2 client and invalid JSON in block_device_mappings.
+    When: create_image_command is called with malformed JSON.
+    Then: It should raise DemistoException with JSON decode error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "name": "test-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": "invalid-json-string",
+        "region": "us-east-1",
+    }
+
+    with pytest.raises(DemistoException, match="Received invalid `block_device_mappings` JSON object"):
+        EC2.create_image_command(mock_client, args)
+
+
+def test_ec2_create_image_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: create_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-ami", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.create_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_create_image_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: create_image_command encounters an error during execution.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidInstanceID.NotFound", "Message": "The instance ID 'i-invalid' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-456"},
+    }
+    client_error = ClientError(error_response, "CreateImage")
+    mock_client.create_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"name": "test-ami", "instance_id": "i-invalid", "region": "us-east-1"}
+
+    EC2.create_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_create_image_command_missing_image_id_in_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning response without ImageId.
+    When: create_image_command receives response missing ImageId.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-ami", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.create_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_create_image_command_with_no_reboot_false(mocker):
+    """
+    Given: A mocked boto3 EC2 client and no_reboot parameter set to false.
+    When: create_image_command is called with no_reboot=false.
+    Then: It should return CommandResults and pass NoReboot=False to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-reboot123",
+    }
+
+    args = {"name": "reboot-ami", "instance_id": "i-1234567890abcdef0", "no_reboot": "false", "region": "us-east-1"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["NoReboot"] is False
+
+
+def test_ec2_create_image_command_output_format(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image creation arguments.
+    When: create_image_command is called successfully.
+    Then: It should return CommandResults with properly formatted outputs and table.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-formatted123",
+    }
+
+    args = {
+        "name": "formatted-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "description": "Formatted AMI",
+        "region": "ap-northeast-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully created AMI" in result.readable_output
+    assert "ami-formatted123" in result.readable_output
+    assert "formatted-ami" in result.readable_output
+
+
+def test_ec2_create_image_command_with_complex_block_device_mappings(mocker):
+    """
+    Given: A mocked boto3 EC2 client and complex block device mappings with multiple devices.
+    When: create_image_command is called with multiple block devices.
+    Then: It should return CommandResults and properly parse all block device configurations.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-multidev123",
+    }
+
+    block_device_mappings = json.dumps(
+        [
+            {"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 20, "VolumeType": "gp3", "DeleteOnTermination": True}},
+            {"DeviceName": "/dev/sdb", "Ebs": {"VolumeSize": 100, "VolumeType": "io2", "Iops": 10000}},
+        ]
+    )
+
+    args = {
+        "name": "multidev-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": block_device_mappings,
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert len(call_args["BlockDeviceMappings"]) == 2
+    assert call_args["BlockDeviceMappings"][0]["DeviceName"] == "/dev/sda1"
+    assert call_args["BlockDeviceMappings"][1]["DeviceName"] == "/dev/sdb"
+
+
+def test_ec2_create_image_command_with_multiple_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple tags in tag_specifications.
+    When: create_image_command is called with multiple tags.
+    Then: It should return CommandResults and properly parse all tags.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-multitag123",
+    }
+
+    mocker.patch(
+        "AWS.parse_tag_field",
+        return_value=[
+            {"Key": "Environment", "Value": "Production"},
+            {"Key": "Team", "Value": "DevOps"},
+            {"Key": "Application", "Value": "WebApp"},
+        ],
+    )
+
+    args = {
+        "name": "multitag-ami",
+        "instance_id": "i-1234567890abcdef0",
+        "tag_specifications": "key=Environment,value=Production;key=Team,value=DevOps;key=Application,value=WebApp",
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert len(call_args["TagSpecifications"][0]["Tags"]) == 3
+
+
+def test_ec2_create_image_command_verify_api_call_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image creation arguments.
+    When: create_image_command is called successfully.
+    Then: It should call create_image with correct parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-verify123",
+    }
+
+    args = {
+        "name": "verify-ami",
+        "instance_id": "i-verify123",
+        "description": "Verification AMI",
+        "no_reboot": "true",
+        "region": "us-east-1",
+    }
+
+    EC2.create_image_command(mock_client, args)
+    mock_client.create_image.assert_called_once_with(
+        Name="verify-ami", InstanceId="i-verify123", Description="Verification AMI", NoReboot=True
+    )
+
+
+def test_ec2_deregister_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image_id argument.
+    When: deregister_image_command is called successfully.
+    Then: It should return CommandResults with success message about image deregistration.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"image_id": "ami-1234567890abcdef0"}
+
+    result = EC2.deregister_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deregistered AMI" in result.readable_output
+    assert "ami-1234567890abcdef0" in result.readable_output
+    mock_client.deregister_image.assert_called_once_with(ImageId="ami-1234567890abcdef0")
+
+
+def test_ec2_deregister_image_command_missing_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and args without image_id parameter.
+    When: deregister_image_command is called without required image_id.
+    Then: It should raise DemistoException indicating image_id is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="image_id parameter is required"):
+        EC2.deregister_image_command(mock_client, args)
+
+
+def test_ec2_deregister_image_command_empty_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and empty image_id parameter.
+    When: deregister_image_command is called with empty image_id.
+    Then: It should raise DemistoException indicating image_id is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"image_id": ""}
+
+    with pytest.raises(DemistoException, match="image_id parameter is required"):
+        EC2.deregister_image_command(mock_client, args)
+
+
+def test_ec2_deregister_image_command_none_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and None image_id parameter.
+    When: deregister_image_command is called with None image_id.
+    Then: It should raise DemistoException indicating image_id is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"image_id": None}
+
+    with pytest.raises(DemistoException, match="image_id parameter is required"):
+        EC2.deregister_image_command(mock_client, args)
+
+
+def test_ec2_deregister_image_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: deregister_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"image_id": "ami-1234567890abcdef0"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: deregister_image_command encounters an error during execution.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id 'ami-invalid' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-789"},
+    }
+    client_error = ClientError(error_response, "DeregisterImage")
+    mock_client.deregister_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"image_id": "ami-invalid"}
+
+    EC2.deregister_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_deregister_image_command_missing_response_metadata(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning response without ResponseMetadata.
+    When: deregister_image_command is called with malformed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"image_id": "ami-1234567890abcdef0"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_missing_http_status_code(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning ResponseMetadata without HTTPStatusCode.
+    When: deregister_image_command is called with incomplete response metadata.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"image_id": "ami-1234567890abcdef0"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_verify_api_call_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image_id argument.
+    When: deregister_image_command is called successfully.
+    Then: It should call deregister_image with correct ImageId parameter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"image_id": "ami-verify-deregister"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_client.deregister_image.assert_called_once_with(ImageId="ami-verify-deregister")
+
+
+def test_ec2_deregister_image_command_with_whitespace_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image_id with leading/trailing whitespace.
+    When: deregister_image_command is called with whitespace in image_id.
+    Then: It should strip whitespace and successfully deregister the image.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"image_id": "  ami-1234567890abcdef0  "}
+
+    result = EC2.deregister_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deregistered AMI" in result.readable_output
+    mock_client.deregister_image.assert_called_once_with(ImageId="ami-1234567890abcdef0")
+
+
+def test_ec2_deregister_image_command_access_denied_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises AccessDenied ClientError.
+    When: deregister_image_command encounters permission error.
+    Then: It should call AWSErrorHandler.handle_client_error with the error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "UnauthorizedOperation", "Message": "You are not authorized to perform this operation"},
+        "ResponseMetadata": {"HTTPStatusCode": 403, "RequestId": "req-access-denied"},
+    }
+    client_error = ClientError(error_response, "DeregisterImage")
+    mock_client.deregister_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"image_id": "ami-1234567890abcdef0"}
+
+    EC2.deregister_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
+
+
+def test_ec2_deregister_image_command_invalid_ami_id_format(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidAMIID.Malformed ClientError.
+    When: deregister_image_command is called with malformed AMI ID.
+    Then: It should call AWSErrorHandler.handle_client_error with the error.
+    """
+    from AWS import EC2, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.Malformed", "Message": "Invalid id: 'invalid-ami-format'"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "req-malformed"},
+    }
+    client_error = ClientError(error_response, "DeregisterImage")
+    mock_client.deregister_image.side_effect = client_error
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"image_id": "invalid-ami-format"}
+
+    EC2.deregister_image_command(mock_client, args)
+    handler_spy.assert_called_once_with(client_error)
