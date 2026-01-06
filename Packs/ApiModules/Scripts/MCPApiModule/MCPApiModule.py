@@ -186,7 +186,6 @@ class OAuthHandler:
         if self.session:
             demisto.debug(f"Closing OAuth session for {self.command_prefix}")
             await self.session.aclose()
-            self.session = None
 
     async def _discover_oauth_protected_resource_metadata(self) -> str:
         """

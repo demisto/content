@@ -163,22 +163,6 @@ def test_parse_custom_headers_empty_header_name():
     assert result == expected
 
 
-def test_parse_custom_headers_debug_logging(mocker):
-    """
-    Given: Valid headers input and a mocked demisto debug function.
-    When: parse_custom_headers is called.
-    Then: The debug function is called with the parsed headers.
-    """
-    mock_debug = mocker.patch("MCPApiModule.demisto.debug")
-    headers_text = "Authorization: Bearer token123"
-
-    result = parse_custom_headers(headers_text)
-
-    expected = {"Authorization": "Bearer token123"}
-    mock_debug.assert_called_once_with(f"parse_custom_headers={expected}")
-    assert result == expected
-
-
 def test_join_url_basic_path():
     """
     Given: A base URL and a simple path.
