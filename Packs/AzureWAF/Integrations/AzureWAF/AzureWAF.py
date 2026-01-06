@@ -612,7 +612,6 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
         status = client.delete_front_door_policy(policy_name, resource_group_name)
         md = ""
         context: dict = {}
-        print(status.status_code)
         if status.status_code in [200, 202]:
             if not context:
                 context = {}
