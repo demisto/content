@@ -1054,7 +1054,9 @@ class Client(BaseClient):
         """
         body = generate_body(fields, custom_fields)
         query_params = {"sysparm_input_display_value": input_display_value}
-        return self.send_request(f"table/{table_name}/{record_id}", "PATCH", params=query_params, body=body)
+        demisto.debug(f"old servicenow update  - {body} {table_name} {record_id}")
+
+        # return self.send_request(f"table/{table_name}/{record_id}", "PATCH", params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}, input_display_value: bool = False):
         """Creates a ticket or a record by sending a POST request.
