@@ -1,0 +1,13 @@
+{
+    "command_name": "aws-s3api-put-bucket-ownership-controls",
+    "is_command_exists": true,
+    "documentation_url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketOwnershipControls.html",
+    "permissions": "s3:PutBucketOwnershipControls",
+    "arguments": ["bucket", "OwnershipControls", "Rule"],
+    "human_readable_output": "Bucket Ownership Controls successfully updated for {bucket}",
+    "outputs": "*",
+    "context_output_base_path": "AWS.S3-Bucket.*",
+    "is_potentially_harmful": false,
+    "should_generate_unittests": true
+}
+

@@ -1,0 +1,143 @@
+{
+    "Platform Discovery": {
+        "firewallRules": [],
+        "locks": {},
+        "serverAdmins": [
+            {
+                "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/administrators/ActiveDirectory",
+                "name": "ActiveDirectory",
+                "properties": {
+                    "administratorType": "ActiveDirectory",
+                    "azureADOnlyAuthentication": true,
+                    "login": "ethillaivanan@metlife.com",
+                    "sid": "49e0e3ae-0da7-4942-ae63-9ffb66d2b3bf",
+                    "tenantId": "ca56a4a5-e300-406a-98ff-7e36a0baac5b"
+                },
+                "type": "Microsoft.Sql/servers"
+            }
+        ],
+        "serverBlobAuditingPolicy": {
+            "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/auditingSettings/Default",
+            "name": "Default",
+            "properties": {
+                "auditActionsAndGroups": [],
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "isStorageSecondaryKeyInUse": false,
+                "retentionDays": 0,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "storageEndpoint": ""
+            },
+            "type": "Microsoft.Sql/servers/auditingSettings"
+        },
+        "serverSecurityAlertPolicy": {
+            "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/securityAlertPolicies/Default",
+            "name": "Default",
+            "properties": {
+                "creationTime": "0001-01-01T00:00:00Z",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "emailAddresses": [
+                    ""
+                ],
+                "retentionDays": 0,
+                "state": "Disabled",
+                "storageAccountAccessKey": "",
+                "storageEndpoint": ""
+            },
+            "type": "Microsoft.Sql/servers/securityAlertPolicies"
+        },
+        "sqlEncryptionProtectors": [
+            {
+                "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/encryptionProtector/current",
+                "kind": "servicemanaged",
+                "name": "current",
+                "properties": {
+                    "autoRotationEnabled": false,
+                    "serverKeyName": "ServiceManaged",
+                    "serverKeyType": "ServiceManaged"
+                },
+                "type": "Microsoft.Sql/servers/encryptionProtector"
+            }
+        ],
+        "sqlServer": {
+            "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99",
+            "identity": {
+                "principalId": "960efdd7-a65e-4f59-9a30-0b945771367d",
+                "tenantId": "ca56a4a5-e300-406a-98ff-7e36a0baac5b",
+                "type": "SystemAssigned"
+            },
+            "kind": "v12.0",
+            "location": "eastus",
+            "name": "sql11614e1dv99",
+            "properties": {
+                "administratorLogin": "CloudSAf194b247",
+                "administrators": {
+                    "administratorType": "ActiveDirectory",
+                    "azureADOnlyAuthentication": true,
+                    "login": "ethillaivanan@metlife.com",
+                    "principalType": "Group",
+                    "sid": "49e0e3ae-0da7-4942-ae63-9ffb66d2b3bf",
+                    "tenantId": "ca56a4a5-e300-406a-98ff-7e36a0baac5b"
+                },
+                "fullyQualifiedDomainName": "sql11614e1dv99.database.windows.net",
+                "minimalTlsVersion": "1.2",
+                "privateEndpointConnections": [
+                    {
+                        "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/privateEndpointConnections/pvlsql11614e1dv99-4929a61d-8878-4453-8ef5-cdc522975e37",
+                        "properties": {
+                            "groupIds": [
+                                "sqlServer"
+                            ],
+                            "privateEndpoint": {
+                                "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Network/privateEndpoints/pvlsql11614e1dv99"
+                            },
+                            "privateLinkServiceConnectionState": {
+                                "actionsRequired": "None",
+                                "description": "Auto-approved",
+                                "status": "Approved"
+                            },
+                            "provisioningState": "Ready"
+                        }
+                    }
+                ],
+                "publicNetworkAccess": "Disabled",
+                "restrictOutboundNetworkAccess": "Disabled",
+                "state": "Ready",
+                "version": "12.0"
+            },
+            "tags": {
+                "DPCCODE": "7324 ENTY DIST",
+                "EAICODE": "11614",
+                "ENV": "SB",
+                "IAC_IDENTIFIER": "Terraform",
+                "MODULE_NAME": "terraform-azure-sql-servers",
+                "MODULE_VERSION": "2.0.0",
+                "SCM_BRANCH": "LOCAL",
+                "SCM_COMMIT_ID": "Testcommit",
+                "SCM_REPOSITORY": "LOCAL",
+                "TENANT": "Thillai Sandbox",
+                "TFC_WORKSPACE": "LOCAL"
+            },
+            "type": "Microsoft.Sql/servers"
+        },
+        "vulnerabilityAssessments": [
+            {
+                "id": "/subscriptions/c8db423a-cd0a-49a0-9597-1cd34d809d4b/resourceGroups/RG_11614_thillai_Sandbox/providers/Microsoft.Sql/servers/sql11614e1dv99/vulnerabilityAssessments/Default",
+                "name": "Default",
+                "properties": {
+                    "recurringScans": {
+                        "emailSubscriptionAdmins": false,
+                        "emails": [],
+                        "isEnabled": false
+                    },
+                    "storageContainerPath": ""
+                },
+                "type": "Microsoft.Sql/servers/vulnerabilityAssessments"
+            }
+        ]
+    }
+}
