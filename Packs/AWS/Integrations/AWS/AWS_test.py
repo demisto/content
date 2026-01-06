@@ -155,9 +155,6 @@ def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fr
     mock_client.list_objects.return_value = mock_response
 
     mocker.patch('AWS.serialize_response_with_datetime_encoding', return_value=mock_response)
-    # mocker.patch('AWS.remove_nulls_from_dictionary')
-    # mocker.patch('AWS.tableToMarkdown', return_value="AWS S3 Bucket Object Table")
-
     args = {"bucket": "test-bucket"}
 
     result = S3.list_bucket_objects_command(mock_client, args)

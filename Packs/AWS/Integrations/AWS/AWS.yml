@@ -205,26 +205,30 @@ script:
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix
+      - description: Marker is where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
+        name: marker
+      - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 1,000".
+        name: max_keys
     outputs:
-      - contextPath: AWS.S3-Buckets.Objects.BucketName
+      - contextPath: AWS.S3-Buckets.BucketObjects.BucketName
         description: The name of S3 bucket.
         type: String
-      - contextPath: AWS.S3-Buckets.Objects.Objects.Key
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.Key
         description: The name of S3 object.
         type: String
-      - contextPath: AWS.S3-Buckets.Objects.Objects.Size
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.Size
         description: Object size in bytes.
         type: Number
-      - contextPath: AWS.S3-Buckets.Objects.Objects.LastModified
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.LastModified
         description: Last date object was modified.
         type: String
-      - contextPath: AWS.S3-Buckets.Objects.Objects.StorageClass
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.StorageClass
         description: The storage class of the object.
         type: String
-      - contextPath: AWS.S3-Buckets.Objects.Objects.ChecksumType
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.ChecksumType
         description: The checksum algorithm used to calculate the object checksum.
         type: Array
-      - contextPath: AWS.S3-Buckets.Objects.Objects.ETag
+      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.ETag
         description: The entity tag (hash) of the object.
         type: String
 

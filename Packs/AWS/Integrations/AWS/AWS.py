@@ -450,6 +450,17 @@ class S3:
 
     @staticmethod
     def delete_bucket_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Delete an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+
+        Returns:
+            CommandResults: Results of the command execution.
+        """
         bucket = args.get("bucket")
 
         print_debug_logs(client, f"Deleting bucket: {bucket}")
@@ -477,26 +488,20 @@ class S3:
         Returns:
             CommandResults: Results of the command execution including the list of objects and their metadata
         """
-
-        def convert_size(size_bytes):
-            if size_bytes == 0:
-                return "0B"
-            size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-            i = int(math.floor(math.log(size_bytes, 1024)))
-            p = math.pow(1024, i)
-            s = round(size_bytes / p, 2)
-            return f"{s} {size_name[i]}"
-
         bucket = args.get("bucket")
         prefix = args.get("prefix")
         delimiter = args.get("delimiter")
+        marker = args.get("marker")
+        max_keys = args.get("max_keys")
 
         print_debug_logs(client, f"Listing objects from bucket: {bucket}")
 
         kwargs = {
             "Bucket": bucket,
-            "Prefix": prefix,
-            "Delimiter": delimiter,
+            "prefix": prefix,
+            "delimiter": delimiter,
+            "marker": marker,
+            "max-keys": max_keys,
         }
         remove_nulls_from_dictionary(kwargs)
 
@@ -517,8 +522,7 @@ class S3:
                 table_data.append(
                     {
                         "Key": obj.get("Key"),
-                        "Size": convert_size(obj.get("Size", "")),
-                        "Size in Bytes": obj.get("Size"),
+                        "Size (Bytes)": obj.get("Size"),
                         "LastModified": obj.get("LastModified"),
                         "StorageClass": obj.get("StorageClass"),
                     }
@@ -527,11 +531,11 @@ class S3:
             human_readable = tableToMarkdown(
                 f"AWS S3 Bucket Object for Bucket: {bucket}",
                 table_data,
-                headers=["Key", "Size", "Size in Bytes", "LastModified", "StorageClass"],
+                headers=["Key", "Size (Bytes)", "LastModified", "StorageClass"],
                 removeNull=True,
             )
             return CommandResults(
-                outputs_prefix="AWS.S3-Buckets.Objects",
+                outputs_prefix="AWS.S3-Buckets.BucketObjects",
                 outputs_key_field="BucketName",
                 outputs={"BucketName": bucket, "Objects": contents},
                 readable_output=human_readable,
