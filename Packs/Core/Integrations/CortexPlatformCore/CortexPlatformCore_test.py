@@ -8724,3 +8724,422 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+# =========================================== TEST platform_http_request Method ===========================================#
+def test_platform_http_request_success(mocker):
+    """
+    Given:
+        - A client with RBAC enabled and valid JSON response from platform API.
+    When:
+        - Calling platform_http_request with json_data parameter.
+    Then:
+        - Ensure demisto._platformAPICall is called correctly and JSON response is parsed.
+    """
+    from CortexPlatformCore import Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", True)
+
+    mock_platform_api_call = mocker.patch.object(
+        demisto, "_platformAPICall", return_value={"status": 200, "data": '{"result": "success", "query_id": "abc123"}'}
+    )
+
+    response = client.platform_http_request(
+        method="POST",
+        url_suffix="/xql_queries/submit/",
+        json_data={"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}},
+        params={"param1": "value1"},
+        timeout=120,
+        ok_codes=[200],
+    )
+
+    assert response == {"result": "success", "query_id": "abc123"}
+    mock_platform_api_call.assert_called_once_with(
+        path="/xql_queries/submit/",
+        method="POST",
+        params={"param1": "value1"},
+        data='{"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}}',
+        timeout=120,
+    )
+
+
+# =========================================== TEST Platform Query Functions ===========================================#
+def test_start_xql_query_platform(mocker):
+    """
+    Given:
+    - A query to execute.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure execution_id is returned.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = "dataset = xdr_data | fields *"
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_123"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    response = start_xql_query_platform(client, query, timeframe)
+
+    assert response == mock_execution_id
+    mock_http_request.assert_called_once()
+    call_args = mock_http_request.call_args
+    assert call_args[1]["url_suffix"] == "/xql_queries/submit/"
+    assert call_args[1]["method"] == "POST"
+    assert call_args[1]["ok_codes"] == [200]
+
+
+def test_start_xql_query_platform_adds_limit(mocker):
+    """
+    Given:
+    - A query without a limit clause.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure a default limit is added.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = "dataset = xdr_data | fields *"
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_456"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    start_xql_query_platform(client, query, timeframe)
+
+    call_args = mock_http_request.call_args
+    submitted_query = call_args[1]["json_data"]["query"]
+    assert "| limit 1000" in submitted_query
+
+
+def test_get_xql_query_results_platform_success(mocker):
+    """
+    Given:
+    - A query_id for a completed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure results are retrieved correctly.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {
+        "status": "SUCCESS",
+        "stream_id": "test_stream_id",
+        "number_of_results": 2,
+    }
+    mock_results_data = '{"field1": "value1", "field2": "value3"}\n{"field2": "value2"}'
+
+    mocker.patch.object(client, "platform_http_request", side_effect=[mock_info_response, mock_results_data])
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == "test_query_id"
+    assert len(response["results"]) == 2
+    assert response["results"][0]["field1"] == "value1"
+    assert response["results"][0]["field2"] == "value3"
+    assert response["results"][1]["field2"] == "value2"
+
+
+def test_get_xql_query_results_platform_pending(mocker):
+    """
+    Given:
+    - A query_id for a pending query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure pending status is returned.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_response = {"status": "PENDING"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == "test_query_id"
+    assert "results" not in response
+
+
+def test_get_xql_query_results_platform_failure(mocker):
+    """
+    Given:
+    - A query_id for a failed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure error details are retrieved.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {"status": "FAIL"}
+    mock_error_response = {"reply": "Query execution failed"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_info_response)
+    mocker.patch.object(client, "_http_request", return_value=mock_error_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "FAIL"
+    assert response["error_details"] == "Query execution failed"
+
+
+def test_get_xql_query_results_platform_polling_success(mocker):
+    """
+    Given:
+    - An execution_id for a query that completes successfully.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure results are returned after polling.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 60
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_results)
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == execution_id
+    assert len(response["results"]) == 1
+
+
+def test_xql_query_platform_command_no_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to False.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure execution_id is returned without polling.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+    get_results_polling_mock = mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling")
+
+    res = xql_query_platform_command(client, args)
+
+    get_results_polling_mock.assert_not_called()
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert "query_url" in res.outputs
+    assert "results" not in res.outputs
+
+
+def test_xql_query_platform_command_with_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to True.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure results are polled and returned.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "true"}
+    mock_execution_id = "test_exec_id"
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": mock_execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling", return_value=mock_results)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    res = xql_query_platform_command(client, args)
+
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert res.outputs["status"] == "SUCCESS"
+    assert len(res.outputs["results"]) == 1
+
+
+def test_convert_timeframe_string_to_json_relative_time(mocker):
+    """
+    Given:
+    - A relative time string.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned timestamp is correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock datetime.utcnow to return a fixed time
+    fixed_now = datetime(2023, 1, 15, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.utcnow", return_value=fixed_now)
+
+    # Mock dateparser.parse to return a time 24 hours ago
+    time_24h_ago = datetime(2023, 1, 14, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=time_24h_ago)
+
+    response = convert_timeframe_string_to_json("24 hours")
+
+    assert "relativeTime" in response
+    assert response["relativeTime"] == 86400000  # 24 hours in milliseconds
+
+
+def test_convert_timeframe_string_to_json_between_times(mocker):
+    """
+    Given:
+    - A time range string with 'between' keyword.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned from/to timestamps are correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock dateparser.parse to return specific times
+    time_from = datetime(2023, 1, 1, 0, 0, 0)
+    time_to = datetime(2023, 1, 2, 12, 0, 0)
+
+    def mock_parse(time_str, settings=None):
+        if "2023-01-01" in time_str:
+            return time_from
+        elif "2023-01-02" in time_str:
+            return time_to
+        return None
+
+    mocker.patch("CortexPlatformCore.dateparser.parse", side_effect=mock_parse)
+
+    response = convert_timeframe_string_to_json("between 2023-01-01 00:00:00Z and 2023-01-02 12:00:00Z")
+
+    assert "from" in response
+    assert "to" in response
+    assert response["from"] == int(time_from.timestamp()) * 1000
+    assert response["to"] == int(time_to.timestamp()) * 1000
+
+
+def test_xql_query_platform_command_missing_query(mocker):
+    """
+    Given:
+    - Arguments without a query parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure ValueError is raised.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"wait_for_results": "false"}
+
+    with pytest.raises(ValueError, match="query is not specified"):
+        xql_query_platform_command(client, args)
+
+
+def test_xql_query_platform_command_default_timeframe(mocker):
+    """
+    Given:
+    - A query without a timeframe parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure default timeframe of 24 hours is used.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mock_start_query = mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.convert_timeframe_string_to_json", return_value={"relativeTime": 86400000})
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    xql_query_platform_command(client, args)
+
+    # Verify convert_timeframe_string_to_json was called with default "24 hours"
+    assert mock_start_query.called
+
+
+def test_get_xql_query_results_platform_polling_timeout(mocker):
+    """
+    Given:
+    - An execution_id for a query that remains pending beyond timeout.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure the function returns after timeout with pending status.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 1  # Very short timeout
+    mock_pending_response = {
+        "status": "PENDING",
+        "execution_id": execution_id,
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_pending_response)
+    mocker.patch("CortexPlatformCore.time.sleep")  # Mock sleep to avoid actual waiting
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == execution_id
