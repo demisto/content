@@ -837,7 +837,6 @@ def async_send_data_to_xsiam(
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        demisto.debug(f"Sending {len(data)} {data_type} to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
             data_format = "json"
@@ -865,9 +864,6 @@ def async_send_data_to_xsiam(
         }
     )
     if data_type == ASSETS:
-        if not snapshot_id:
-            snapshot_id = str(round(time.time() * 1000))
-
         # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
         # alphabetical order such that first_snapshot < second_snapshot etc.
         headers["snapshot-id"] = snapshot_id + instance_name
@@ -1095,11 +1091,11 @@ class AssetTypeRelatedData:
     product: str
     asset_type: AssetType
     process_result_func: Callable
+    snapshot_id: str
     offset: int = 0
     limit: int = MAX_API_LIMIT
     total_count: int = 0
     vendor: str = "Prisma_Cloud_Compute"
-    snapshot_id: str = str(round(time.time() * 1000))
 
     def next_page(self):
         self.offset += self.limit
@@ -3396,8 +3392,18 @@ def init_asset_type_related_data(
             ctx_lock=ctx_lock,
         )
     else:
+        # sleeping 1 second to ensure the same snapshot won't be created twice
+        time.sleep(1)
+        snapshot_id = str(round(time.time() * 1000))
+        ctx[asset_type.value] = {"offset": 0, "snapshot_id": snapshot_id}
+        set_integration_context(ctx)
         return AssetTypeRelatedData(
-            endpoint=endpoint, product=product, asset_type=asset_type, process_result_func=process_result_func, ctx_lock=ctx_lock
+            endpoint=endpoint,
+            product=product,
+            asset_type=asset_type,
+            process_result_func=process_result_func,
+            ctx_lock=ctx_lock,
+            snapshot_id=snapshot_id,
         )
 
 
@@ -3433,7 +3439,7 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     await asyncio.gather(*tasks)
     total = tas_droplets_related_data.total_count + host_scan_related_data.total_count + image_scan_related_data.total_count
     demisto.debug(
-        f"Finished sending all assets to XSIAM. Fetch {tas_droplets_related_data.total_count} Tas Droplets,"
+        f"Finished sending all assets to XSIAM. {tas_droplets_related_data.total_count} Tas Droplets,"
         f"{host_scan_related_data.total_count} Hosts, and {image_scan_related_data.total_count} Runtime images."
     )
     demisto.updateModuleHealth({"assetsPulled": total})
@@ -3457,13 +3463,16 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             await process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
-                f"Finished sending assets batch to xsiam, sent {asset_type_related_data.offset} assets so far."
+                f"Finished sending assets batch to xsiam, sent {min(asset_type_related_data.offset, asset_type_related_data.total_count)} "
+                "assets so far."
             )
             await asset_type_related_data.safe_update_integration_context()
         except Exception as e:
             traceback_str = "".join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
-    asset_type_related_data.write_debug_log("Finished obtaining and sending all assets to xsiam.")
+    asset_type_related_data.write_debug_log(
+        f"Finished obtaining and sending a total of {asset_type_related_data.total_count} assets to xsiam."
+    )
     await asset_type_related_data.remove_related_data_from_ctx()
 
 
@@ -3497,7 +3506,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         _type_: The send_data_to_xsiam tasks.
     """
     processed_data = asset_type_related_data.process_result_func(data)
-    return async_send_data_to_xsiam(
+    coroutine = async_send_data_to_xsiam(
         data=processed_data,
         vendor=asset_type_related_data.vendor,
         product=asset_type_related_data.product,
@@ -3510,6 +3519,8 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         url_key="address",
         items_count=asset_type_related_data.total_count,
     )
+    if coroutine:
+        await coroutine
 
 
 def process_host_results(data_list):
