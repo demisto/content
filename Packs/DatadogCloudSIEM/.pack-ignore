@@ -1,5 +1,8 @@
 
 # GR103 is temporary, see CIAC-11705
+[file:classifier-mapper-Datadog_Cloud_SIEM_-_Incoming_Mapper.json]
+ignore=GR103
+
 [file:classifier-mapper-incoming-Datadog_Cloud_SIEM.json]
 ignore=GR103
 
