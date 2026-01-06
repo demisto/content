@@ -3609,6 +3609,13 @@ def preform_get_cnapp_alerts_request(offset=0, filter=""):
     return http_request("GET", endpoint, params)
 
 
+def get_spotlight_assets():
+    last_run = demisto.getAssetsLastRun()
+    demisto.debug(f"Starting a new spotlight fetch assets execution with {last_run=}")
+
+
+
+
 def get_cnapp_assets():
     last_run = demisto.getAssetsLastRun()
     demisto.debug(f"Starting a new cnapp fetch assets execution with {last_run=}")
@@ -3646,8 +3653,13 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
-def fetch_assets_command():
-    demisto.info("Strating fetch assets exeuction.")
+def fetch_spotlight_assets():
+    demisto.info("Strating fetch spotlight assets exeuction.")
+    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+
+
+def fetch_cnapp_assets():
+    demisto.info("Strating fetch cnapp assets exeuction.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
     demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
@@ -3670,6 +3682,16 @@ def fetch_assets_command():
 
     demisto.info("Finished fetch assets exeuction.")
 
+def fetch_assets_command():
+    demisto.info("Strating fetch assets exeuction.")
+    params = demisto.params()
+    fetch_assets_types = params.get("fetch_assets_type", "")
+
+    if "CNAPP Alerts" in fetch_assets_types:
+        fetch_cnapp_assets()
+
+    if "Spotlight" in fetch_assets_types:
+        fetch_spotlight_assets()
 
 def fetch_detections_by_product_type(
     current_fetch_info: dict,

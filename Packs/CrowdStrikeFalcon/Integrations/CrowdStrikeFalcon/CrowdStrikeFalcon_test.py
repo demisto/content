@@ -8127,7 +8127,7 @@ class TestFetchAssetsFlow:
             - Verify that setAssetsLastRun is called twice with the correct last_run objects.
             - Verify that updateModuleHealth is called twice with the correct assetsPulled count.
         """
-        from CrowdStrikeFalcon import fetch_assets_command, CNAPP_PRODUCT, VENDOR
+        from CrowdStrikeFalcon import fetch_cnapp_assets, CNAPP_PRODUCT, VENDOR
         import time
 
         # Mocks
@@ -8148,7 +8148,7 @@ class TestFetchAssetsFlow:
             json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": 150}}},
         )
 
-        fetch_assets_command()
+        fetch_cnapp_assets()
 
         # Assertions for the first call
         assert mock_send_data_to_xsiam.call_count == 1
@@ -8185,7 +8185,7 @@ class TestFetchAssetsFlow:
             json={"resources": mock_alerts_page2, "meta": {"pagination": {"offset": 100, "limit": 100, "total": 150}}},
         )
 
-        fetch_assets_command()
+        fetch_cnapp_assets()
 
         # Assertions for the second call
         assert mock_send_data_to_xsiam.call_count == 2
