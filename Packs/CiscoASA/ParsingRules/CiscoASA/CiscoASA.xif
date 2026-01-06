@@ -3,5 +3,5 @@ alter _json = parse_cisco(_raw_log)
 | alter
         tmp_time = _json -> date
 | alter
-        _time = if(tmp_time contains "Z", parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_time), tmp_time ~= "[+-]\d{1,2}:{1,2}", parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_time))
+        _time = if(tmp_time contains "Z", parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_time), tmp_time ~= "[+-]\d{1,2}:\d{1,2}", parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_time))
 | fields - tmp_time;
