@@ -18,7 +18,7 @@ MUST verify the following prerequisites exist before proceeding:
 
 1. **Command Template File**: `Packs/COMMAND_TEMPLATE.json` MUST exist in the workspace.
 2. **Implementation Rules**: `Packs/<PackName>/COMMAND_IMPLEMENTATION_RULES.md` SHOULD exist for pack-specific guidelines.
-3. **Legacy Pack Access** (if `is_command_exists: true`):
+3. **Legacy Pack Access** (if needed):
    - For AWS commands: Legacy pack at `Packs/AWS-EC2/` MUST be accessible
    - For GCP commands: Legacy pack at `Packs/GCP-Compute/` MUST be accessible
    - For Azure commands: Legacy pack at `Packs/Azure-Compute/` MUST be accessible
@@ -49,471 +49,533 @@ MUST enforce strict quality standards:
 
 ## WORKFLOW
 
-### Workflow 1: Analyze Command Specification
+### Command Template Structure
 
-1. **Read Command Template**: Parse `Packs/COMMAND_TEMPLATE.json` for the target command
-2. **Extract Required Fields**:
-   - `command_name`: The command identifier (e.g., "aws-ec2-image-copy")
-   - `is_command_exists`: Boolean indicating if legacy implementation exists
-   - `documentation_url`: Official API documentation URL (optional but recommended)
-   - `additional_context`: Any extra implementation notes (optional)
+The comprehensive command template MUST follow this JSON structure:
 
-3. **Determine Implementation Strategy**:
-   - IF `is_command_exists: true`: Search for legacy implementation in corresponding pack
-   - IF `is_command_exists: false`: Use documentation_url and additional_context to design from scratch
+```json
+{
+  "pack": "AWS|GCP|Azure|OCI",
+  "command_name": "csp-service-resource-action",
+  "api_url": "https://docs.cloud.provider/api/reference",
+  "potentially_harmful": true|false,
+  "permission": "service:Action",
+  "description": "Brief description of what the command does",
+  "inputs": [
+    {
+      "name": "parameter_name",
+      "type": "string|number|boolean|array",
+      "required": true|false,
+      "description": "Parameter description",
+      "default": "default_value",
+      "options": ["option1", "option2"]
+    }
+  ],
+  "human_readable_output": "Template for success message with {placeholders}",
+  "command_example": "!command-name param1=\"value1\" param2=\"value2\"",
+  "context_output_base_path": "CSP.ServiceName.ResourceType",
+  "outputs": [
+    {
+      "path": "Field1",
+      "type": "string|number|boolean|date|array|object",
+      "description": "Description of field1"
+    }
+  ]
+}
+```
 
-### Workflow 2: Find Legacy Implementation (if exists)
+### Special Template Values
 
-1. **Locate Legacy Pack**:
-   - AWS commands: Search in `Packs/AWS-EC2/Integrations/AWS-EC2/`
-   - GCP commands: Search in `Packs/GCP-Compute/Integrations/GCP-Compute/`
-   - Azure commands: Search in `Packs/Azure-Compute/Integrations/Azure-Compute/`
-   - OCI commands: Search in `Packs/OCI-Compute/Integrations/OCI-Compute/`
+**"-" (Unknown/Auto-detect)**:
+- Mode MUST attempt to infer the value from:
+  - Legacy implementation (if exists)
+  - API documentation
+  - Similar commands in the pack
+  - Standard patterns
+- IF unable to infer: MUST ask user for clarification
+
+**"*" (Everything/All)**:
+- For `inputs`: Include ALL parameters from API documentation
+- For `outputs`: Include ALL fields from API response
+- For `permission`: Include ALL required IAM/RBAC permissions
+
+**Examples**:
+```json
+{
+  "inputs": "*",           // Auto-generate all inputs from API docs
+  "outputs": "*",          // Auto-generate all outputs from API response
+  "description": "-",      // Infer from API docs or legacy implementation
+  "permission": "-"        // Infer from command name (e.g., ec2:DescribeImages)
+}
+```
+
+### User Interaction Flow
+
+**Scenario 1: Complete Template (No Questions Needed)**
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-ec2-image-copy",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/copy_image.html",
+  "potentially_harmful": true,
+  "permission": "ec2:CopyImage",
+  "description": "Copies an AMI from one region to another",
+  "inputs": "*",
+  "human_readable_output": "Successfully copied AMI {source_image_id} to {region}",
+  "command_example": "!aws-ec2-image-copy name=\"my-ami\" source_image_id=\"ami-123\" source_region=\"us-east-1\"",
+  "context_output_base_path": "AWS.EC2.Images",
+  "outputs": "*"
+}
+```
+
+User says: **"Implement aws-ec2-image-copy"**
+
+Mode behavior:
+1. Reads template
+2. Expands "*" by reading API documentation
+3. Implements all components
+4. No questions asked
+
+**Scenario 2: Minimal Template with Auto-detect**
+```json
+{
+  "pack": "GCP",
+  "command_name": "gcp-compute-instance-stop",
+  "api_url": "https://cloud.google.com/compute/docs/reference/rest/v1/instances/stop",
+  "potentially_harmful": true,
+  "permission": "-",
+  "description": "-",
+  "inputs": "-",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "-"
+}
+```
+
+User says: **"Implement gcp-compute-instance-stop"**
+
+Mode behavior:
+1. Reads template
+2. Searches for legacy implementation in GCP-Compute pack
+3. Infers all "-" values from legacy implementation
+4. Implements all components
+5. No questions asked (legacy provides all context)
+
+**Scenario 3: New Command Without Legacy**
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-ec2-new-feature",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/new_feature.html",
+  "potentially_harmful": false,
+  "permission": "-",
+  "description": "-",
+  "inputs": "*",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "*"
+}
+```
+
+User says: **"Implement aws-ec2-new-feature"**
+
+Mode behavior:
+1. Reads template
+2. Reads API documentation from api_url
+3. Infers permission from command name: "ec2:NewFeature"
+4. Generates description from API docs
+5. Expands "*" for inputs and outputs from API docs
+6. Creates human_readable_output template
+7. Generates command_example
+8. Infers context_output_base_path: "AWS.EC2.NewFeature"
+9. Implements all components
+10. No questions asked (API docs provide all context)
+
+**Scenario 4: Missing Critical Information**
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-custom-operation",
+  "api_url": "-",
+  "potentially_harmful": "-",
+  "permission": "-",
+  "description": "-",
+  "inputs": "-",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "-"
+}
+```
+
+User says: **"Implement aws-custom-operation"**
+
+Mode behavior:
+1. Reads template
+2. Detects missing api_url (critical for inference)
+3. MUST ask: "What is the API documentation URL for this command?"
+4. User provides URL
+5. Reads API documentation
+6. Infers all other "-" values
+7. Implements all components
+
+### Workflow 1: Parse and Validate Template
+
+1. **Read Template Entry**:
+   - Search `Packs/COMMAND_TEMPLATE.json` for command matching user's request
+   - IF not found: MUST ask user to create template entry first
+
+2. **Validate Required Fields**:
+   - `pack`: MUST be one of: AWS, GCP, Azure, OCI
+   - `command_name`: MUST follow pattern: `csp-service-resource-action`
+   - `api_url`: MUST be valid URL OR "-" (will ask user if needed)
+   - All other fields: Can be "-" or "*" (will be inferred)
+
+3. **Expand Special Values**:
+   - Process "*" values: Read API docs and extract all parameters/outputs
+   - Process "-" values: Attempt inference from legacy/docs/patterns
+   - IF inference fails for critical fields: Ask user
+
+### Workflow 2: Infer Missing Information
+
+**For `permission` field**:
+- IF "-": Extract from command name
+  - `aws-ec2-image-copy` → `ec2:CopyImage`
+  - `gcp-compute-instance-stop` → `compute.instances.stop`
+  - Pattern: `service:PascalCaseAction`
+
+**For `description` field**:
+- IF "-": Extract from API documentation summary
+- IF API docs unavailable: Use command name pattern
+  - `aws-ec2-image-copy` → "Copies an Amazon Machine Image (AMI) from one region to another"
+
+**For `inputs` field**:
+- IF "*": Read API docs and extract ALL parameters
+- IF "-": 
+  - Search legacy implementation
+  - OR read API docs for required/optional parameters
+  - Always include: account_id/project_id, region/zone
+
+**For `outputs` field**:
+- IF "*": Read API docs and extract ALL response fields
+- IF "-":
+  - Search legacy implementation
+  - OR read API docs for response structure
+  - Create hierarchical context paths
+
+**For `human_readable_output` field**:
+- IF "-": Generate template based on command type
+  - Describe: "AWS EC2 Images" (table)
+  - Create: "Successfully created {resource_type} {identifier}"
+  - Modify: "Successfully modified {resource_type} {identifier}"
+  - Delete: "Successfully deleted {resource_type} {identifier}"
+  - Waiter: "{Resource} is now {desired_state}."
+
+**For `command_example` field**:
+- IF "-": Generate from inputs
+  - Include all required parameters
+  - Include 1-2 optional parameters as examples
+  - Use realistic values
+
+**For `context_output_base_path` field**:
+- IF "-": Infer from command name
+  - `aws-ec2-image-copy` → `AWS.EC2.Images`
+  - `gcp-compute-instance-stop` → `GCP.Compute.Instances`
+  - Pattern: `CSP.ServiceName.ResourceTypePlural`
+
+**For `potentially_harmful` field**:
+- IF "-": Infer from command action
+  - create, modify, delete, terminate, stop, revoke → `true`
+  - describe, list, get, wait → `false`
+
+### Workflow 3: Find Legacy Implementation (if available)
+
+1. **Determine Legacy Pack Location**:
+   - AWS: `Packs/AWS-EC2/Integrations/AWS-EC2/`
+   - GCP: `Packs/GCP-Compute/Integrations/GCP-Compute/`
+   - Azure: `Packs/Azure-Compute/Integrations/Azure-Compute/`
+   - OCI: `Packs/OCI-Compute/Integrations/OCI-Compute/`
 
 2. **Search for Implementation**:
-   - Use `search_files` to find the command name in Python files
-   - Read the legacy Python implementation
-   - Read the legacy YAML definition
-   - Note all parameters, return values, and error handling patterns
+   - Use `search_files` to find command name in Python files
+   - Read legacy Python implementation
+   - Read legacy YAML definition
+   - Extract all implementation details
 
-3. **Extract Implementation Details**:
-   - Function signature and parameters
-   - API client method calls
-   - Parameter transformations (e.g., comma-separated strings to lists)
-   - Error handling patterns
-   - Return value structure
-   - Output context paths
+3. **Use Legacy to Fill Template**:
+   - IF template field is "-": Use value from legacy
+   - IF template field is "*": Expand using legacy as reference
+   - IF template field has value: Use template value (override legacy)
 
-### Workflow 3: Design New Implementation (if no legacy exists)
+### Workflow 4: Read API Documentation (if needed)
 
-1. **Analyze Documentation**:
-   - Read the `documentation_url` to understand the API
-   - Identify required and optional parameters
-   - Understand the response structure
-   - Note any special considerations (pagination, waiters, etc.)
+1. **When to Read API Docs**:
+   - `inputs: "*"` → Need to extract all parameters
+   - `outputs: "*"` → Need to extract all response fields
+   - `description: "-"` AND no legacy → Need API summary
+   - `api_url: "-"` → MUST ask user for URL first
 
-2. **Design Command Structure**:
-   - Determine command category (describe, create, modify, delete, waiter)
-   - Identify required parameters (account_id, region always required)
-   - Map API parameters to command arguments (use snake_case)
-   - Design output context paths following AWS.ServiceName.ResourceType pattern
-   - Determine if command modifies resources (needs `execution: true`)
+2. **Extract from API Docs**:
+   - Required parameters
+   - Optional parameters with defaults
+   - Parameter types and constraints
+   - Response structure
+   - Error scenarios
 
-3. **Ask User for Clarification** (if needed):
-   - Ambiguous parameter mappings
-   - Missing documentation details
-   - Special handling requirements
+3. **Transform to Template Format**:
+   - Convert API parameter names to snake_case
+   - Map API types to template types
+   - Extract descriptions
+   - Identify arrays and objects
 
-### Workflow 4: Implement Python Command
+### Workflow 5: Implement Python Command
 
 1. **Locate Target File**: `Packs/<PackName>/Integrations/<PackName>/<PackName>.py`
 
 2. **Identify Service Class**:
    - AWS: EC2, S3, IAM, EKS, RDS, CloudTrail, ECS, Lambda, KMS, ELB, ACM, CostExplorer, Budgets
-   - Determine which class the command belongs to based on service
+   - GCP: Compute, Storage, IAM
+   - Azure: Compute, Storage, Network
+   - OCI: Compute, ObjectStorage, Identity
 
-3. **Implement Command Function**:
-   ```python
-   @staticmethod
-   def command_name_command(client: Any, args: dict[str, Any]) -> CommandResults:
-       """
-       Command description.
-       
-       Args:
-           client: Boto3 service client
-           args: Command arguments from XSOAR
-           
-       Returns:
-           CommandResults with outputs and readable output
-       """
-       try:
-           # Extract and validate parameters
-           required_param = args.get("required_param")
-           if not required_param:
-               raise DemistoException("required_param parameter is required")
-           
-           # Transform parameters (e.g., comma-separated to list)
-           optional_list = parse_resource_ids(args.get("optional_list")) if args.get("optional_list") else None
-           
-           # Build API call parameters
-           api_params = remove_nulls_from_dictionary({
-               "RequiredParam": required_param,
-               "OptionalList": optional_list,
-           })
-           
-           # Call AWS API
-           print_debug_logs(client, f"Calling API with params: {api_params}")
-           response = client.api_method(**api_params)
-           
-           # Validate response
-           if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-               AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-           
-           # Extract and format outputs
-           result_data = response.get("ResultKey", {})
-           outputs = serialize_response_with_datetime_encoding(result_data)
-           
-           # Build readable output
-           readable_output = tableToMarkdown(
-               "Command Result",
-               outputs,
-               headers=["Key1", "Key2"],
-               headerTransform=pascalToSpace
-           )
-           
-           return CommandResults(
-               outputs_prefix="AWS.ServiceName.ResourceType",
-               outputs_key_field="UniqueIdentifier",
-               outputs=outputs,
-               readable_output=readable_output,
-               raw_response=response
-           )
-           
-       except ClientError as e:
-           AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-       except Exception as e:
-           raise DemistoException(f"Error executing command: {str(e)}")
-   ```
+3. **Generate Function from Template**:
+   - Use `inputs` to create parameter extraction code
+   - Use `potentially_harmful` to determine validation strictness
+   - Use `outputs` to create output formatting code
+   - Use `human_readable_output` to create success message
+   - Use `permission` to verify IAM/RBAC requirements
 
-4. **Special Patterns**:
-   - **Waiter Commands**: Use `client.get_waiter("waiter_name")` with WaiterConfig
-   - **List Commands**: Support pagination with `next_token` and `limit`
-   - **Modify Commands**: Include `execution: true` in YAML
-   - **Boolean Parameters**: Convert string "true"/"false" to Python bool using `argToBoolean()`
-   - **Array Parameters**: Parse comma-separated strings using `parse_resource_ids()` or `argToList()`
-
-5. **Add to COMMANDS_MAPPING**:
-   - Locate the `COMMANDS_MAPPING` dictionary (usually near end of file)
+4. **Add to COMMANDS_MAPPING**:
    - Add entry: `"command-name": ServiceClass.command_name_command`
 
-6. **Verify IAM Permissions**:
-   - Check if required IAM action exists in `REQUIRED_ACTIONS` list
-   - Add if missing (e.g., "ec2:DescribeImages", "s3:PutBucketPolicy")
+5. **Verify Permissions**:
+   - Check if `permission` exists in REQUIRED_ACTIONS list
+   - Add if missing
 
-### Workflow 5: Add YAML Definition
+### Workflow 6: Generate YAML Definition
 
 1. **Locate Target File**: `Packs/<PackName>/Integrations/<PackName>/<PackName>.yml`
 
-2. **Find Insertion Point**:
-   - Commands are organized by service (S3, IAM, EC2, etc.)
-   - Insert in alphabetical order within the service section
-   - Maintain consistent indentation (2 spaces for command level, 4 for arguments, 6 for properties)
+2. **Generate from Template**:
+   - Use `command_name` for name field
+   - Use `description` for description field
+   - Use `potentially_harmful` to add `execution: true` if needed
+   - Use `inputs` to generate arguments section
+   - Use `outputs` to generate outputs section
 
-3. **Create Command Definition**:
-   ```yaml
-   - name: command-name
-     description: Clear description of what the command does.
-     execution: true  # Only if command modifies resources
-     arguments:
-     - name: account_id
-       description: The AWS account ID.
-       required: true
-     - name: region
-       description: The AWS region.
-       required: true
-       auto: PREDEFINED
-       predefined:
-       - us-east-1
-       - us-east-2
-       # ... all AWS regions
-     - name: required_param
-       description: Description of the parameter.
-       required: true
-     - name: optional_param
-       description: Description of the parameter.
-       required: false
-       auto: PREDEFINED  # If parameter has predefined values
-       predefined:
-       - value1
-       - value2
-     - name: list_param
-       description: Comma-separated list of values.
-       required: false
-       isArray: true
-     outputs:
-     - contextPath: AWS.ServiceName.ResourceType.Field1
-       description: Description of field1.
-       type: string
-     - contextPath: AWS.ServiceName.ResourceType.Field2
-       description: Description of field2.
-       type: number
-   ```
+3. **Apply Formatting Rules**:
+   - Correct indentation (2/4/6 space pattern)
+   - Include all regions in predefined list
+   - Mark required parameters
+   - Add isArray for list parameters
 
-4. **Indentation Rules** (CRITICAL):
-   - Command level (`- name:`): 2 spaces from `commands:`
-   - Arguments/outputs level (`arguments:`, `outputs:`): 4 spaces
-   - Argument properties (`- name:`, `description:`, etc.): 4 spaces
-   - Argument sub-properties (`predefined:` list items): 6 spaces
-   - MUST align with existing commands in the file
+### Workflow 7: Generate Unit Tests
 
-5. **Region Predefined Values**:
-   - MUST include all AWS regions (copy from existing commands)
-   - Standard regions: us-east-1, us-east-2, us-west-1, us-west-2, etc.
-   - GovCloud regions: us-gov-east-1, us-gov-west-1
-   - Special regions: af-south-1, ap-east-1, eu-south-1, me-south-1, etc.
+1. **Determine Test Count**:
+   - Count inputs: Simple (1-3) → 15 tests, Moderate (4-6) → 18 tests, Complex (7+) → 20 tests
 
-### Workflow 6: Generate Unit Tests
+2. **Generate Test Categories**:
+   - Success cases (40%): Minimal params, all params, combinations
+   - Parameter validation (25%): Missing required, empty, None values
+   - Error handling (25%): ClientError, WaiterError, unexpected responses
+   - Edge cases (10%): Whitespace, boundaries, special characters
 
-1. **Locate Test File**: `Packs/<PackName>/Integrations/<PackName>/<PackName>_test.py`
+3. **Use Template Fields**:
+   - `inputs` → Generate parameter validation tests
+   - `outputs` → Verify output structure in assertions
+   - `potentially_harmful` → Add execution permission tests
+   - `command_example` → Use as basis for success test
 
-2. **Analyze Existing Test Patterns**:
-   - Read similar command tests to understand mocking patterns
-   - Note how boto3 clients are mocked
-   - Understand assertion patterns
+### Workflow 8: Create Release Notes and Update Version
 
-3. **Generate Test Cases** (15-20 tests minimum):
-   - **Success Cases** (5-8 tests):
-     - Minimal parameters
-     - All parameters
-     - With optional parameters
-     - With multiple values (for array parameters)
-     - With different parameter combinations
-   
-   - **Parameter Validation** (3-5 tests):
-     - Missing required parameters
-     - Empty required parameters
-     - None values for required parameters
-     - Invalid parameter types
-   
-   - **Error Handling** (3-5 tests):
-     - ClientError handling
-     - WaiterError handling (for waiter commands)
-     - Unexpected response status codes
-     - Missing response fields
-   
-   - **Edge Cases** (2-4 tests):
-     - Whitespace in parameters
-     - Maximum/minimum values
-     - Special characters
-     - Complex nested structures
-
-4. **Test Structure Pattern**:
-   ```python
-   def test_command_name_success_minimal_params(mocker):
-       """
-       Given: A mocked boto3 client and minimal required parameters.
-       When: command_name_command is called successfully.
-       Then: It should return CommandResults with expected outputs.
-       """
-       from AWS import ServiceClass
-       
-       mock_client = mocker.Mock()
-       mock_client.api_method.return_value = {
-           "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-           "ResultKey": {"Field1": "value1"}
-       }
-       
-       args = {"required_param": "value"}
-       
-       result = ServiceClass.command_name_command(mock_client, args)
-       assert isinstance(result, CommandResults)
-       assert result.outputs_prefix == "AWS.ServiceName.ResourceType"
-       assert "success message" in result.readable_output
-   ```
-
-5. **Add Tests to File**:
-   - Append tests at the end of the file
-   - Maintain consistent naming: `test_<service>_<command>_<scenario>`
-   - Use descriptive docstrings following Given-When-Then pattern
-
-### Workflow 7: Update Release Notes
-
-1. **Determine Version Number**:
-   - Read current version from `pack_metadata.json`
+1. **Determine Version**:
+   - Read current version from pack_metadata.json
    - Increment patch version (e.g., 2.1.8 → 2.1.9)
-   - For multiple commands in same release, use same version
 
-2. **Create Release Notes File**: `Packs/<PackName>/ReleaseNotes/<version>.md`
-   ```markdown
-   #### Integrations
-   
-   ##### <PackName> - <ServiceName>
-   
-   - Added the **command-name** command to <brief description of functionality>.
-   ```
+2. **Create Release Notes**:
+   - Use `description` field for changelog entry
+   - Format: `- Added the **command-name** command to {description}.`
 
-3. **Format Rules**:
-   - Use bold for command names: `**command-name**`
-   - Keep description concise (one sentence)
-   - Use proper grammar and punctuation
-
-### Workflow 8: Update Pack Version
-
-1. **Locate Pack Metadata**: `Packs/<PackName>/pack_metadata.json`
-
-2. **Update Version**:
-   - Change `currentVersion` field to new version
-   - Maintain JSON formatting
-
-3. **Verify**:
-   - Version matches release notes filename
-   - Version follows semantic versioning (MAJOR.MINOR.PATCH)
-
-### Workflow 9: Final Validation
-
-1. **Python Implementation**:
-   - [ ] Function added to correct service class
-   - [ ] Added to COMMANDS_MAPPING
-   - [ ] IAM permission in REQUIRED_ACTIONS (if needed)
-   - [ ] Proper error handling (ClientError, WaiterError)
-   - [ ] Parameter validation for required fields
-   - [ ] Response validation
-   - [ ] Datetime serialization for outputs
-
-2. **YAML Definition**:
-   - [ ] Correct indentation (2/4/6 space pattern)
-   - [ ] All regions included in predefined list
-   - [ ] Required parameters marked correctly
-   - [ ] Output context paths follow convention
-   - [ ] execution: true for modify/delete/create commands
-   - [ ] isArray: true for list parameters
-
-3. **Unit Tests**:
-   - [ ] 15-20 tests minimum
-   - [ ] Success cases covered
-   - [ ] Error cases covered
-   - [ ] Parameter validation tested
-   - [ ] Edge cases included
-   - [ ] Proper mocking patterns
-   - [ ] Given-When-Then docstrings
-
-4. **Release Notes**:
-   - [ ] Version number matches pack_metadata.json
-   - [ ] Command name in bold
-   - [ ] Clear, concise description
-   - [ ] Proper markdown formatting
-
-5. **Pack Version**:
-   - [ ] Version incremented correctly
-   - [ ] Matches release notes filename
+3. **Update Pack Version**:
+   - Update `currentVersion` in pack_metadata.json
 
 ---
 
 ## BEHAVIOR
 
-### Command Template Structure
+### Template Field Processing Rules
 
-The command template MUST follow this JSON structure:
+**pack** (REQUIRED):
+- MUST be one of: "AWS", "GCP", "Azure", "OCI"
+- Determines target integration and file locations
+- Cannot be "-" or "*"
+
+**command_name** (REQUIRED):
+- MUST follow pattern: `csp-service-resource-action`
+- Examples: `aws-ec2-image-copy`, `gcp-compute-instance-stop`
+- Cannot be "-" or "*"
+
+**api_url** (REQUIRED for new commands):
+- Valid URL to official API documentation
+- IF "-": MUST ask user for URL
+- IF "*": Invalid (must be specific URL)
+- Used to extract parameters, outputs, and descriptions
+
+**potentially_harmful** (REQUIRED):
+- `true`: Command modifies/deletes resources → adds `execution: true` in YAML
+- `false`: Command is read-only → no execution flag
+- IF "-": Infer from command action verb
+  - create, modify, delete, terminate, stop, revoke, update, put → `true`
+  - describe, list, get, wait, show → `false`
+
+**permission** (REQUIRED):
+- IAM/RBAC permission string
+- AWS format: `service:Action` (e.g., `ec2:CopyImage`)
+- GCP format: `service.resource.action` (e.g., `compute.instances.stop`)
+- IF "-": Infer from command_name
+  - `aws-ec2-image-copy` → `ec2:CopyImage`
+  - `gcp-compute-instance-stop` → `compute.instances.stop`
+- IF "*": Extract ALL required permissions from API docs
+
+**description** (REQUIRED):
+- Brief description of command functionality
+- IF "-": Extract from API documentation summary OR legacy implementation
+- IF "*": Invalid (must be specific description)
+- Used in YAML definition and release notes
+
+**inputs** (REQUIRED):
+- Array of input parameter objects
+- IF "*": Extract ALL parameters from API documentation
+- IF "-": Extract from legacy implementation OR API docs
+- IF array: Use as-is
+- Always includes standard params: account_id/project_id, region/zone
+
+**human_readable_output** (REQUIRED):
+- Template string for success message
+- Can include {placeholder} for dynamic values
+- IF "-": Generate based on command type
+  - Describe/List: Table with resource data
+  - Create: "Successfully created {resource_type} {identifier}"
+  - Modify: "Successfully modified {resource_type} {identifier}"
+  - Delete: "Successfully deleted {resource_type} {identifier}"
+  - Waiter: "{Resource} is now {state}."
+- IF "*": Invalid (must be specific template)
+
+**command_example** (REQUIRED):
+- Example command invocation with realistic values
+- IF "-": Generate from inputs (required params + 1-2 optional)
+- IF "*": Invalid (must be specific example)
+- Format: `!command-name param1="value1" param2="value2"`
+
+**context_output_base_path** (REQUIRED):
+- Base path for output context
+- Pattern: `CSP.ServiceName.ResourceType`
+- IF "-": Infer from command_name
+  - `aws-ec2-image-copy` → `AWS.EC2.Images`
+  - `gcp-compute-instance-list` → `GCP.Compute.Instances`
+- IF "*": Invalid (must be specific path)
+
+**outputs** (REQUIRED):
+- Array of output field objects
+- IF "*": Extract ALL fields from API response documentation
+- IF "-": Extract from legacy implementation OR API docs
+- IF array: Use as-is
+- Each output has: path, type, description
+
+### Input Parameter Structure
+
+Each input object MUST have:
 ```json
 {
-  "command_name": "csp-service-resource-action",
-  "is_command_exists": true|false,
-  "documentation_url": "https://...",
-  "additional_context": "Optional implementation notes"
+  "name": "parameter_name",           // REQUIRED: snake_case
+  "type": "string",                   // REQUIRED: string|number|boolean|array|object
+  "required": true,                   // REQUIRED: true|false
+  "description": "Parameter desc",    // REQUIRED: Clear description
+  "default": "default_value",         // OPTIONAL: Default value if not required
+  "options": ["opt1", "opt2"]         // OPTIONAL: Predefined values (creates PREDEFINED in YAML)
 }
 ```
 
+**Special Input Handling**:
+- IF `type: "array"`: Add `isArray: true` in YAML, parse with `parse_resource_ids()` or `argToList()`
+- IF `options` provided: Add `auto: PREDEFINED` and `predefined:` list in YAML
+- IF `type: "boolean"`: Parse with `argToBoolean()` in Python
+- IF `type: "object"`: Parse JSON string with `json.loads()` in Python
+
+### Output Field Structure
+
+Each output object MUST have:
+```json
+{
+  "path": "FieldName",                // REQUIRED: PascalCase field name (appended to base path)
+  "type": "string",                   // REQUIRED: string|number|boolean|date|array|object
+  "description": "Field description"  // REQUIRED: Clear description
+}
+```
+
+**Full Context Path**: `{context_output_base_path}.{path}`
+- Example: Base path `AWS.EC2.Images` + path `ImageId` = `AWS.EC2.Images.ImageId`
+
 ### Naming Conventions (STRICT)
 
-- **Command Names**: `csp-service-resource-action` (e.g., `aws-ec2-image-copy`)
-  - CSP: aws, gcp, azure, oci
-  - Service: ec2, s3, iam, compute, storage
-  - Resource: image, instance, bucket, user
-  - Action: create, delete, modify, describe, list, copy, wait
+**Command Names**: `csp-service-resource-action`
+- CSP: aws, gcp, azure, oci (lowercase)
+- Service: ec2, s3, compute, storage (lowercase)
+- Resource: image, instance, bucket (lowercase, singular)
+- Action: create, delete, modify, describe, list, copy, wait (lowercase, verb)
 
-- **Python Functions**: `action_resource_command` (e.g., `copy_image_command`)
-  - Use snake_case
-  - Suffix with `_command`
-  - Verb comes first for clarity
+**Python Functions**: `action_resource_command`
+- snake_case
+- Verb first: `copy_image_command`, `stop_instance_command`
+- Suffix with `_command`
 
-- **Python Arguments**: `snake_case` (e.g., `source_image_id`, `waiter_max_attempts`)
-  - MUST match YAML argument names
-  - Use descriptive names
-  - Avoid abbreviations unless standard (e.g., `id`, `arn`)
+**Python/YAML Arguments**: `snake_case`
+- `source_image_id`, `waiter_max_attempts`, `instance_type`
+- MUST match between Python and YAML
 
-- **YAML Arguments**: `snake_case` (e.g., `source_image_id`, `waiter_max_attempts`)
-  - MUST match Python argument names
-  - Use descriptive names
-
-- **Output Context Paths**: `AWS.ServiceName.ResourceType.Field` (e.g., `AWS.EC2.Images.ImageId`)
-  - Use PascalCase for service, resource, and field names
-  - Follow hierarchical structure
-
-### Parameter Handling Patterns
-
-1. **Required String Parameters**:
-   ```python
-   param = args.get("param_name")
-   if not param:
-       raise DemistoException("param_name parameter is required")
-   param = param.strip()  # Remove whitespace
-   ```
-
-2. **Optional String Parameters**:
-   ```python
-   param = args.get("param_name")
-   if param:
-       param = param.strip()
-   ```
-
-3. **Boolean Parameters**:
-   ```python
-   from CommonServerPython import argToBoolean
-   param = argToBoolean(args.get("param_name", "false"))
-   ```
-
-4. **List Parameters** (comma-separated):
-   ```python
-   param_list = parse_resource_ids(args.get("param_name")) if args.get("param_name") else None
-   # OR for simple cases:
-   param_list = argToList(args.get("param_name"))
-   ```
-
-5. **Integer Parameters**:
-   ```python
-   param = int(args.get("param_name", "15"))  # With default
-   # OR
-   param = int(args.get("param_name")) if args.get("param_name") else None
-   ```
-
-6. **JSON Parameters**:
-   ```python
-   import json
-   param_str = args.get("param_name")
-   if param_str:
-       try:
-           param = json.loads(param_str) if isinstance(param_str, str) else param_str
-       except json.JSONDecodeError:
-           raise DemistoException("Received invalid `param_name` JSON object")
-   ```
+**Output Context Paths**: `CSP.ServiceName.ResourceType.Field`
+- PascalCase for all components
+- `AWS.EC2.Images.ImageId`, `GCP.Compute.Instances.Name`
 
 ### Error Handling Patterns
 
-1. **Standard Pattern**:
-   ```python
-   try:
-       response = client.api_method(**params)
-       
-       if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-           AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-       
-       # Process response...
-       
-   except ClientError as e:
-       AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-   except Exception as e:
-       raise DemistoException(f"Error message: {str(e)}")
-   ```
+**Standard Pattern**:
+```python
+try:
+    response = client.api_method(**params)
+    
+    if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+        AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+    
+    # Process response...
+    
+except ClientError as e:
+    AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+except Exception as e:
+    raise DemistoException(f"Error message: {str(e)}")
+```
 
-2. **Waiter Pattern**:
-   ```python
-   try:
-       waiter = client.get_waiter("waiter_name")
-       waiter_config = {
-           "Delay": int(args.get("waiter_delay", "15")),
-           "MaxAttempts": int(args.get("waiter_max_attempts", "40"))
-       }
-       waiter.wait(WaiterConfig=waiter_config, **params)
-       
-       return CommandResults(
-           readable_output="Resource is now in desired state."
-       )
-       
-   except WaiterError as e:
-       raise DemistoException(f"Waiter error: {str(e)}")
-   except ClientError as e:
-       AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-   ```
+**Waiter Pattern**:
+```python
+try:
+    waiter = client.get_waiter("waiter_name")
+    waiter_config = {
+        "Delay": int(args.get("waiter_delay", "15")),
+        "MaxAttempts": int(args.get("waiter_max_attempts", "40"))
+    }
+    waiter.wait(WaiterConfig=waiter_config, **params)
+    
+    return CommandResults(
+        readable_output="Resource is now in desired state."
+    )
+    
+except WaiterError as e:
+    raise DemistoException(f"Waiter error: {str(e)}")
+except ClientError as e:
+    AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+```
 
 ### YAML Indentation Rules (CRITICAL)
 
@@ -523,7 +585,7 @@ script:
   commands:
   - name: command-name              # 2 spaces from 'commands:'
     description: Description.       # 4 spaces
-    execution: true                 # 4 spaces (if needed)
+    execution: true                 # 4 spaces (if potentially_harmful: true)
     arguments:                      # 4 spaces
     - name: param1                  # 4 spaces (dash counts as 2)
       description: Description.     # 6 spaces
@@ -531,85 +593,150 @@ script:
     - name: param2                  # 4 spaces
       description: Description.     # 6 spaces
       required: false               # 6 spaces
-      auto: PREDEFINED              # 6 spaces
+      auto: PREDEFINED              # 6 spaces (if options provided)
       predefined:                   # 6 spaces
       - value1                      # 6 spaces (dash counts as 2)
       - value2                      # 6 spaces
     outputs:                        # 4 spaces
-    - contextPath: AWS.Service.Field  # 4 spaces
+    - contextPath: CSP.Service.Field  # 4 spaces
       description: Description.     # 6 spaces
       type: string                  # 6 spaces
 ```
 
-### Test Generation Rules
+### Autonomous Operation Mode
 
-1. **Test Quantity**:
-   - Simple commands (1-3 params): 15 tests
-   - Moderate commands (4-6 params): 18 tests
-   - Complex commands (7+ params): 20 tests
+The mode SHOULD operate autonomously when possible:
 
-2. **Test Categories Distribution**:
-   - Success cases: 40% (6-8 tests)
-   - Parameter validation: 25% (4-5 tests)
-   - Error handling: 25% (4-5 tests)
-   - Edge cases: 10% (2-3 tests)
+1. **Read template** → Extract all fields
+2. **Expand "*" values** → Read API docs automatically
+3. **Infer "-" values** → Use legacy/docs/patterns
+4. **Implement all components** → Python, YAML, tests, release notes, version
+5. **Present for review** → Show what was implemented
 
-3. **Test Naming**:
-   - Pattern: `test_<service>_<command>_<scenario>`
-   - Examples:
-     - `test_ec2_copy_image_command_success_minimal_params`
-     - `test_ec2_copy_image_command_missing_required_param`
-     - `test_ec2_copy_image_command_client_error`
+**ONLY ask questions when**:
+- Critical field is "-" AND cannot be inferred (e.g., api_url missing and no legacy)
+- Ambiguous design decision (e.g., multiple valid output structures)
+- User confirmation needed for potentially harmful operations
 
-4. **Docstring Format** (MUST use Given-When-Then):
-   ```python
-   """
-   Given: A mocked boto3 client and specific conditions.
-   When: command_name_command is called with certain parameters.
-   Then: It should produce expected behavior and outputs.
-   """
-   ```
-
-### Response Serialization
-
-MUST use `serialize_response_with_datetime_encoding()` for outputs containing datetime objects:
-```python
-from AWS import serialize_response_with_datetime_encoding
-
-outputs = serialize_response_with_datetime_encoding(response_data)
-```
-
-This ensures datetime objects are converted to ISO format strings.
-
-### Null Value Handling
-
-MUST use `remove_nulls_from_dictionary()` before API calls:
-```python
-from AWS import remove_nulls_from_dictionary
-
-api_params = remove_nulls_from_dictionary({
-    "RequiredParam": required_value,
-    "OptionalParam": optional_value  # Will be removed if None
-})
-```
-
-### Debug Logging
-
-MUST use `print_debug_logs()` before API calls:
-```python
-from AWS import print_debug_logs
-
-print_debug_logs(client, f"Calling API method with params: {api_params}")
-```
+**Goal**: Minimize user interaction. Template should provide enough context for autonomous implementation.
 
 ---
 
 ## FORMAT
 
+### Complete Template Example
+
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-ec2-image-copy",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/copy_image.html",
+  "potentially_harmful": true,
+  "permission": "ec2:CopyImage",
+  "description": "Initiates the copy of an AMI from the specified source region to the current region",
+  "inputs": [
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "description": "A name for the new AMI in the destination region"
+    },
+    {
+      "name": "source_image_id",
+      "type": "string",
+      "required": true,
+      "description": "The ID of the AMI to copy"
+    },
+    {
+      "name": "source_region",
+      "type": "string",
+      "required": true,
+      "description": "The name of the region that contains the AMI to copy"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "required": false,
+      "description": "A description for the new AMI in the destination region"
+    },
+    {
+      "name": "encrypted",
+      "type": "boolean",
+      "required": false,
+      "description": "Specifies whether the destination snapshots should be encrypted",
+      "options": ["true", "false"]
+    },
+    {
+      "name": "kms_key_id",
+      "type": "string",
+      "required": false,
+      "description": "The identifier of the symmetric AWS KMS key to use when creating encrypted volumes"
+    }
+  ],
+  "human_readable_output": "Successfully initiated copy of AMI {source_image_id} from {source_region} to {region}. New AMI ID: {ImageId}",
+  "command_example": "!aws-ec2-image-copy name=\"my-copied-ami\" source_image_id=\"ami-12345\" source_region=\"us-east-1\"",
+  "context_output_base_path": "AWS.EC2.Images",
+  "outputs": [
+    {
+      "path": "ImageId",
+      "type": "string",
+      "description": "The ID of the new AMI"
+    },
+    {
+      "path": "Name",
+      "type": "string",
+      "description": "The name of the new AMI"
+    },
+    {
+      "path": "SourceImageId",
+      "type": "string",
+      "description": "The ID of the source AMI"
+    },
+    {
+      "path": "SourceRegion",
+      "type": "string",
+      "description": "The source region from which the AMI was copied"
+    },
+    {
+      "path": "Region",
+      "type": "string",
+      "description": "The destination region where the AMI was copied to"
+    }
+  ]
+}
+```
+
+### Minimal Template with Auto-Inference
+
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-ec2-image-available-waiter",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/waiter/ImageAvailable.html",
+  "potentially_harmful": false,
+  "permission": "-",
+  "description": "-",
+  "inputs": "-",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": []
+}
+```
+
+Mode will infer:
+- `permission`: "ec2:DescribeImages" (waiters use describe permissions)
+- `description`: "Waits until an AMI is in the 'available' state" (from API docs)
+- `inputs`: Standard waiter params (filters, image_ids, owners, executable_users, waiter_delay, waiter_max_attempts)
+- `human_readable_output`: "Image is now available."
+- `command_example`: `!aws-ec2-image-available-waiter image_ids="ami-123"`
+- `context_output_base_path`: N/A (waiters have no outputs)
+- `outputs`: [] (waiters return simple messages, no context outputs)
+
 ### Python Code Style
 
 - **Imports**: Group by standard library, third-party, local
-- **Type Hints**: Use `Any` from typing for boto3 clients
+- **Type Hints**: Use `Any` from typing for clients
 - **Docstrings**: Clear, concise function descriptions
 - **Line Length**: Maximum 120 characters
 - **Spacing**: Two blank lines between functions
@@ -623,21 +750,37 @@ print_debug_logs(client, f"Calling API method with params: {api_params}")
 
 ### Test Code Style
 
-- **Mocking**: Use `mocker.Mock()` for boto3 clients
+- **Mocking**: Use `mocker.Mock()` for clients
 - **Assertions**: One assertion per logical check
 - **Setup**: Clear arrange-act-assert pattern
-- **Cleanup**: Not needed for unit tests (mocks are isolated)
+- **Docstrings**: Given-When-Then format
 
 ---
 
 ## VALIDATION
 
+### Template Validation
+
+Before processing template:
+- [ ] `pack` is valid CSP name
+- [ ] `command_name` follows naming pattern
+- [ ] `api_url` is valid URL OR "-"
+- [ ] `potentially_harmful` is boolean OR "-"
+- [ ] `permission` is string OR "-" OR "*"
+- [ ] `description` is string OR "-"
+- [ ] `inputs` is array OR "-" OR "*"
+- [ ] `human_readable_output` is string OR "-"
+- [ ] `command_example` is string OR "-"
+- [ ] `context_output_base_path` is string OR "-"
+- [ ] `outputs` is array OR "-" OR "*"
+
 ### Pre-Implementation Checklist
 
 Before starting implementation:
-- [ ] Command template exists and is valid JSON
-- [ ] Legacy implementation found (if `is_command_exists: true`)
-- [ ] Documentation URL accessible (if provided)
+- [ ] Template entry exists and validated
+- [ ] All "-" values inferred OR user provided clarification
+- [ ] All "*" values expanded from API docs
+- [ ] Legacy implementation found (if needed)
 - [ ] Target pack exists in workspace
 - [ ] Service class identified
 
@@ -657,7 +800,7 @@ For each component:
 
 After completing all components:
 - [ ] Command in COMMANDS_MAPPING
-- [ ] IAM permission in REQUIRED_ACTIONS (if needed)
+- [ ] Permission in REQUIRED_ACTIONS (if needed)
 - [ ] YAML definition added in correct location
 - [ ] Unit tests added to test file
 - [ ] Release notes created
@@ -672,383 +815,315 @@ MUST verify:
 - [ ] Test file imports work correctly
 - [ ] Command name consistent across all files
 - [ ] Version numbers match (pack_metadata.json and release notes)
+- [ ] All template placeholders replaced with actual values
 
 ---
 
 ## EXAMPLES
 
-### Example 1: Describe Command (Read-Only)
+### Example 1: Complete Template (No Inference Needed)
 
-**Command Template**:
+**Template Entry**:
 ```json
 {
-  "command_name": "aws-ec2-images-describe",
-  "is_command_exists": true,
-  "documentation_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_images.html"
+  "pack": "AWS",
+  "command_name": "aws-s3-bucket-versioning-put",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/put_bucket_versioning.html",
+  "potentially_harmful": true,
+  "permission": "s3:PutBucketVersioning",
+  "description": "Sets the versioning state of an existing bucket",
+  "inputs": [
+    {
+      "name": "bucket",
+      "type": "string",
+      "required": true,
+      "description": "The name of the bucket"
+    },
+    {
+      "name": "status",
+      "type": "string",
+      "required": true,
+      "description": "The versioning state of the bucket",
+      "options": ["Enabled", "Suspended"]
+    },
+    {
+      "name": "mfa_delete",
+      "type": "string",
+      "required": false,
+      "description": "Whether MFA delete is enabled"
+    }
+  ],
+  "human_readable_output": "Successfully updated versioning for bucket {bucket} to {status}",
+  "command_example": "!aws-s3-bucket-versioning-put bucket=\"my-bucket\" status=\"Enabled\"",
+  "context_output_base_path": "AWS.S3.Buckets",
+  "outputs": []
 }
 ```
 
-**Python Implementation**:
-```python
-@staticmethod
-def describe_images_command(client: Any, args: dict[str, Any]) -> CommandResults:
-    """Describes EC2 AMIs."""
-    try:
-        filters = parse_filter_field(args.get("filters"))
-        image_ids = parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None
-        
-        api_params = remove_nulls_from_dictionary({
-            "Filters": filters,
-            "ImageIds": image_ids,
-        })
-        
-        response = client.describe_images(**api_params)
-        
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-        
-        images = response.get("Images", [])
-        outputs = serialize_response_with_datetime_encoding(images)
-        
-        if not images:
-            return CommandResults(readable_output="No images were found.")
-        
-        readable_output = tableToMarkdown(
-            "AWS EC2 Images",
-            outputs,
-            headers=["ImageId", "Name", "State"],
-            headerTransform=pascalToSpace
-        )
-        
-        return CommandResults(
-            outputs_prefix="AWS.EC2.Images",
-            outputs_key_field="ImageId",
-            outputs=outputs,
-            readable_output=readable_output,
-            raw_response=response
-        )
-        
-    except ClientError as e:
-        AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-```
+**User Request**: "Implement aws-s3-bucket-versioning-put"
 
-**YAML Definition**:
-```yaml
-  - name: aws-ec2-images-describe
-    description: Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      # ... all regions
-    - name: filters
-      description: "One or more filters separated by ';' (for example, name=<name>;values=<values>)."
-      required: false
-    - name: image_ids
-      description: "A comma-separated list of image IDs to describe."
-      required: false
-      isArray: true
-    outputs:
-    - contextPath: AWS.EC2.Images.ImageId
-      description: The ID of the AMI.
-      type: string
-    - contextPath: AWS.EC2.Images.Name
-      description: The name of the AMI.
-      type: string
-    - contextPath: AWS.EC2.Images.State
-      description: The current state of the AMI.
-      type: string
-```
+**Mode Actions** (No questions asked):
+1. ✅ Read template
+2. ✅ Implement Python function with 3 parameters
+3. ✅ Add to COMMANDS_MAPPING
+4. ✅ Add s3:PutBucketVersioning to REQUIRED_ACTIONS
+5. ✅ Generate YAML with execution: true
+6. ✅ Generate 15 unit tests
+7. ✅ Create release notes
+8. ✅ Update pack version
 
-### Example 2: Create Command (Execution)
+### Example 2: Minimal Template with Auto-Inference
 
-**Command Template**:
+**Template Entry**:
 ```json
 {
-  "command_name": "aws-ec2-image-create",
-  "is_command_exists": true,
-  "documentation_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/create_image.html"
+  "pack": "GCP",
+  "command_name": "gcp-compute-instance-stop",
+  "api_url": "-",
+  "potentially_harmful": "-",
+  "permission": "-",
+  "description": "-",
+  "inputs": "-",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "-"
 }
 ```
 
-**Python Implementation**:
-```python
-@staticmethod
-def create_image_command(client: Any, args: dict[str, Any]) -> CommandResults:
-    """Creates an AMI from an EC2 instance."""
-    try:
-        name = args.get("name")
-        if not name:
-            raise DemistoException("name parameter is required")
-        name = name.strip()
-        
-        instance_id = args.get("instance_id")
-        if not instance_id:
-            raise DemistoException("instance_id parameter is required")
-        instance_id = instance_id.strip()
-        
-        api_params = remove_nulls_from_dictionary({
-            "Name": name,
-            "InstanceId": instance_id,
-            "Description": args.get("description"),
-            "NoReboot": argToBoolean(args.get("no_reboot", "false")),
-        })
-        
-        response = client.create_image(**api_params)
-        
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-        
-        image_id = response.get("ImageId")
-        if not image_id:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-        
-        outputs = {
-            "ImageId": image_id,
-            "Name": name,
-            "InstanceId": instance_id,
-            "Region": args.get("region")
-        }
-        
-        readable_output = f"Successfully created AMI '{name}' with ID: {image_id}"
-        
-        return CommandResults(
-            outputs_prefix="AWS.EC2.Images",
-            outputs_key_field="ImageId",
-            outputs=outputs,
-            readable_output=readable_output,
-            raw_response=response
-        )
-        
-    except ClientError as e:
-        AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-```
+**User Request**: "Implement gcp-compute-instance-stop"
 
-**YAML Definition**:
-```yaml
-  - name: aws-ec2-image-create
-    description: Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance.
-    execution: true
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      # ... all regions
-    - name: name
-      description: A name for the new image.
-      required: true
-    - name: instance_id
-      description: The ID of the instance.
-      required: true
-    - name: description
-      description: A description for the new image.
-      required: false
-    - name: no_reboot
-      description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image.
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    outputs:
-    - contextPath: AWS.EC2.Images.ImageId
-      description: The ID of the new AMI.
-      type: string
-    - contextPath: AWS.EC2.Images.Name
-      description: The name of the new AMI.
-      type: string
-```
+**Mode Actions**:
+1. ✅ Read template
+2. ✅ Search for legacy in `Packs/GCP-Compute/`
+3. ✅ Find legacy implementation
+4. ✅ Infer all "-" values from legacy:
+   - `api_url`: Extract from legacy comments or use standard GCP docs
+   - `potentially_harmful`: true (stop is harmful)
+   - `permission`: "compute.instances.stop"
+   - `description`: "Stops a running instance"
+   - `inputs`: Extract from legacy function parameters
+   - `human_readable_output`: "Successfully stopped instance {instance_name}"
+   - `command_example`: Generate from legacy usage
+   - `context_output_base_path`: "GCP.Compute.Instances"
+   - `outputs`: Extract from legacy return values
+5. ✅ Implement all components
+6. ✅ No questions asked (legacy provides all context)
 
-### Example 3: Waiter Command
+### Example 3: Wildcard Expansion
 
-**Command Template**:
+**Template Entry**:
 ```json
 {
-  "command_name": "aws-ec2-image-available-waiter",
-  "is_command_exists": true,
-  "documentation_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/waiter/ImageAvailable.html"
+  "pack": "AWS",
+  "command_name": "aws-ec2-instances-describe",
+  "api_url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instances.html",
+  "potentially_harmful": false,
+  "permission": "ec2:DescribeInstances",
+  "description": "Describes specified instances or all instances",
+  "inputs": "*",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "AWS.EC2.Instances",
+  "outputs": "*"
 }
 ```
 
-**Python Implementation**:
-```python
-@staticmethod
-def image_available_waiter_command(client: Any, args: dict[str, Any]) -> CommandResults:
-    """Waits until an AMI is available."""
-    try:
-        filters = parse_filter_field(args.get("filters"))
-        image_ids = parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None
-        
-        waiter_config = {
-            "Delay": int(args.get("waiter_delay", "15")),
-            "MaxAttempts": int(args.get("waiter_max_attempts", "40"))
-        }
-        
-        api_params = remove_nulls_from_dictionary({
-            "Filters": filters,
-            "ImageIds": image_ids,
-            "WaiterConfig": waiter_config
-        })
-        
-        waiter = client.get_waiter("image_available")
-        waiter.wait(**api_params)
-        
-        return CommandResults(
-            readable_output="Image is now available."
-        )
-        
-    except WaiterError as e:
-        raise DemistoException(f"Waiter error occurred: {str(e)}")
-    except ClientError as e:
-        AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+**User Request**: "Implement aws-ec2-instances-describe"
+
+**Mode Actions**:
+1. ✅ Read template
+2. ✅ Read API documentation from api_url
+3. ✅ Expand `inputs: "*"`:
+   - Extract ALL parameters from API docs
+   - Generate input objects for: instance_ids, filters, next_token, limit, etc.
+4. ✅ Expand `outputs: "*"`:
+   - Extract ALL response fields from API docs
+   - Generate output objects for: InstanceId, State, ImageId, InstanceType, etc.
+5. ✅ Infer `human_readable_output`: "AWS EC2 Instances" (table format)
+6. ✅ Infer `command_example`: `!aws-ec2-instances-describe instance_ids="i-123"`
+7. ✅ Implement all components
+8. ✅ No questions asked (API docs provide all context)
+
+### Example 4: Missing Critical Information
+
+**Template Entry**:
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-custom-new-feature",
+  "api_url": "-",
+  "potentially_harmful": "-",
+  "permission": "-",
+  "description": "-",
+  "inputs": "-",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "-"
+}
 ```
 
-**YAML Definition**:
-```yaml
-  - name: aws-ec2-image-available-waiter
-    description: Waits until an AMI is in the 'available' state.
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      # ... all regions
-    - name: image_ids
-      description: "A comma-separated list of image IDs to wait for."
-      required: false
-      isArray: true
-    - name: waiter_delay
-      description: "The amount of time in seconds to wait between attempts. Default is 15 seconds."
-      required: false
-      defaultValue: "15"
-    - name: waiter_max_attempts
-      description: "The maximum number of attempts. Default is 40 attempts."
-      required: false
-      defaultValue: "40"
-```
+**User Request**: "Implement aws-custom-new-feature"
 
-**Note**: Waiter commands typically have NO outputs section (they return simple success messages).
+**Mode Actions**:
+1. ✅ Read template
+2. ❌ Cannot find legacy (new feature)
+3. ❌ Cannot read API docs (api_url is "-")
+4. ⚠️ MUST ask: "What is the API documentation URL for aws-custom-new-feature?"
+5. ✅ User provides: "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/new_feature.html"
+6. ✅ Read API documentation
+7. ✅ Infer all other "-" values from API docs
+8. ✅ Implement all components
 
 ---
 
 ## ADDITIONAL NOTES
 
-### When Legacy Implementation Doesn't Exist
+### Template Creation Guidance
 
-IF `is_command_exists: false`:
+**For Users Creating Templates**:
 
-1. **MUST read documentation_url** to understand the API
-2. **MUST ask user for clarification** on:
-   - Required vs optional parameters
-   - Expected output structure
-   - Special handling requirements
-   - Error scenarios to handle
+**Minimal Template** (Let mode infer everything):
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-service-resource-action",
+  "api_url": "https://docs.aws.amazon.com/...",
+  "potentially_harmful": "-",
+  "permission": "-",
+  "description": "-",
+  "inputs": "*",
+  "human_readable_output": "-",
+  "command_example": "-",
+  "context_output_base_path": "-",
+  "outputs": "*"
+}
+```
 
-3. **MUST design from scratch** following these principles:
-   - Mirror AWS API parameter names (convert to snake_case)
-   - Include standard parameters: account_id, region
-   - Add pagination support for list commands (limit, next_token)
-   - Include proper error messages
-   - Design output context paths logically
+**Complete Template** (Full control):
+```json
+{
+  "pack": "AWS",
+  "command_name": "aws-service-resource-action",
+  "api_url": "https://docs.aws.amazon.com/...",
+  "potentially_harmful": true,
+  "permission": "service:Action",
+  "description": "Detailed description",
+  "inputs": [/* full input array */],
+  "human_readable_output": "Custom message with {placeholders}",
+  "command_example": "!command param=\"value\"",
+  "context_output_base_path": "AWS.Service.Resource",
+  "outputs": [/* full output array */]
+}
+```
 
-4. **MUST validate design with user** before implementation
+**Recommended Approach**:
+- Start with minimal template using "*" and "-"
+- Let mode infer from API docs and legacy
+- Review generated implementation
+- Refine template if needed for next command
 
 ### Multi-Command Implementation
 
-IF implementing multiple commands in one session:
+IF implementing multiple commands:
 
-1. **MUST use same version number** for all commands in the release
-2. **MUST list all commands** in the release notes
-3. **MUST implement commands sequentially** (one at a time)
-4. **MUST update todo list** after each command completion
+1. **Create multiple template entries** in COMMAND_TEMPLATE.json
+2. **Request implementation one at a time**: "Implement command-1", then "Implement command-2"
+3. **Use same version number** for all commands in the release
+4. **Consolidate release notes**: List all commands in single release notes file
 
-### Command Categories
+### Command Categories and Patterns
 
-1. **Describe/List Commands**:
-   - Read-only operations
-   - NO `execution: true` in YAML
-   - Support pagination (limit, next_token)
-   - Return arrays of resources
+**Describe/List Commands**:
+- `potentially_harmful`: false
+- `inputs`: Include filters, pagination (limit, next_token)
+- `outputs`: Array of resources
+- `human_readable_output`: Table format
 
-2. **Create/Modify/Delete Commands**:
-   - Modify resources
-   - MUST have `execution: true` in YAML
-   - Return single resource or confirmation
-   - Require explicit user action
+**Create Commands**:
+- `potentially_harmful`: true
+- `inputs`: Resource configuration parameters
+- `outputs`: Created resource details
+- `human_readable_output`: "Successfully created {resource}"
 
-3. **Waiter Commands**:
-   - Poll for resource state changes
-   - NO outputs section in YAML
-   - Support waiter_delay and waiter_max_attempts
-   - Return simple success message
+**Modify/Update Commands**:
+- `potentially_harmful`: true
+- `inputs`: Resource identifier + modification parameters
+- `outputs`: Updated resource details OR empty
+- `human_readable_output`: "Successfully modified {resource}"
 
-4. **Get Commands**:
-   - Retrieve single resource
-   - NO `execution: true` in YAML
-   - Return single resource object
-   - Require resource identifier
+**Delete Commands**:
+- `potentially_harmful`: true
+- `inputs`: Resource identifier
+- `outputs`: Usually empty
+- `human_readable_output`: "Successfully deleted {resource}"
+
+**Waiter Commands**:
+- `potentially_harmful`: false
+- `inputs`: Resource filters + waiter_delay + waiter_max_attempts
+- `outputs`: [] (empty - waiters don't return data)
+- `human_readable_output`: "{Resource} is now {state}."
 
 ### Integration-Specific Patterns
 
 **AWS**:
-- Service classes: EC2, S3, IAM, EKS, RDS, CloudTrail, ECS, Lambda, KMS, ELB, ACM, CostExplorer, Budgets
+- Standard inputs: account_id (required), region (required)
 - Error handler: `AWSErrorHandler.handle_client_error()`
 - Response serialization: `serialize_response_with_datetime_encoding()`
-- Standard parameters: account_id, region
+- Permissions format: `service:Action`
 
-**GCP** (if implementing):
-- Service classes: Compute, Storage, IAM
-- Error handler: Similar pattern to AWS
-- Standard parameters: project_id, zone/region
+**GCP**:
+- Standard inputs: project_id (required), zone/region (required)
+- Error handler: Similar to AWS pattern
+- Permissions format: `service.resource.action`
 
-**Azure** (if implementing):
-- Service classes: Compute, Storage, Network
-- Error handler: Similar pattern to AWS
-- Standard parameters: subscription_id, resource_group
+**Azure**:
+- Standard inputs: subscription_id (required), resource_group (required)
+- Error handler: Similar to AWS pattern
+- Permissions format: `Microsoft.Service/resourceType/action`
 
-**OCI** (if implementing):
-- Service classes: Compute, ObjectStorage, Identity
-- Error handler: Similar pattern to AWS
-- Standard parameters: compartment_id, region
+**OCI**:
+- Standard inputs: compartment_id (required), region (required)
+- Error handler: Similar to AWS pattern
+- Permissions format: `service.resource.action`
 
 ---
 
 ## WORKFLOW SUMMARY
 
-**Complete Implementation Flow**:
+**Complete Autonomous Flow** (Ideal):
 
-1. ✅ Read COMMAND_TEMPLATE.json
-2. ✅ Find legacy implementation (if exists) OR design from documentation
-3. ✅ Implement Python command function
-4. ✅ Add to COMMANDS_MAPPING
-5. ✅ Verify/add IAM permission to REQUIRED_ACTIONS
-6. ✅ Add YAML definition with correct indentation
-7. ✅ Generate 15-20 comprehensive unit tests
-8. ✅ Create release notes file
-9. ✅ Update pack version in pack_metadata.json
-10. ✅ Validate all components
+1. ✅ User creates template entry with "*" and "-" values
+2. ✅ User says: "Implement command-name"
+3. ✅ Mode reads template
+4. ✅ Mode expands "*" from API docs
+5. ✅ Mode infers "-" from legacy/docs/patterns
+6. ✅ Mode implements: Python + YAML + Tests + Release Notes + Version
+7. ✅ Mode presents complete implementation
+8. ✅ User reviews and approves
+
+**Minimal Interaction Flow** (When inference possible):
+
+1. ✅ User says: "Implement command-name"
+2. ✅ Mode finds template OR asks for template creation
+3. ✅ Mode infers missing values
+4. ✅ Mode implements all components
+5. ✅ Mode presents for review
+
+**Maximum Interaction Flow** (When critical info missing):
+
+1. ✅ User says: "Implement command-name"
+2. ❌ Template missing or has critical "-" that can't be inferred
+3. ⚠️ Mode asks 1-4 questions (api_url, harmful, outputs, etc.)
+4. ✅ User provides answers
+5. ✅ Mode implements all components
+6. ✅ Mode presents for review
 
 **Success Criteria**:
-- All files modified successfully
+- All components implemented correctly
 - No syntax or formatting errors
-- Tests cover all scenarios
+- Tests pass (if run)
 - Documentation complete
 - Version numbers consistent
+- User approval obtained
