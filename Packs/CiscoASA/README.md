@@ -46,7 +46,7 @@ For more information about syslog configuration see the official [Cisco ASA docs
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM).
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
@@ -58,6 +58,6 @@ To create or configure the Broker VM, use the information described [here](https
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Cisco ASA). |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Cisco ASA.   |
     | `Vendor`     | Enter Cisco.                                                                                                                 |
-    | `Product`    | Enter ASA.
+    | `Product`    | Enter ASA.|
 
 </~XSIAM>
