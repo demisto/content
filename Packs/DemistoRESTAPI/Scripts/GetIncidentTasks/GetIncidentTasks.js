@@ -49,8 +49,11 @@ function isTaskMatch(task, name, tag, states) {
     var tagMatch = tag === null || tag === undefined ||
         (taskTask.tags && taskTask.tags.indexOf(tag) !== -1);
 
+    // Normalize undefined task.state to empty string for comparison,
+    // since both "new" and undefined states are represented as "" in TASK_STATES
+    var taskState = task.state === undefined ? "" : task.state;
     var stateMatch = !states || states.length === 0 ||
-        (states.indexOf(task.state) !== -1);
+        (states.indexOf(taskState) !== -1);
 
     return nameMatch && tagMatch && stateMatch;
 }
