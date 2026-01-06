@@ -483,7 +483,8 @@ class S3:
                 - bucket (str): The name of the bucket
                 - prefix (str): Limits the response to keys that begin with the specified prefix
                 - delimiter (str): A delimiter is a character you use to group keys
-                - limit (str/int): Sets the maximum number of keys returned in the response (default is 1000)
+                - limit (str): Sets the maximum number of keys returned in the response (default is 1000).
+                - next_token (str): The marker for the next set of results (used for pagination).
 
         Returns:
             CommandResults: Results of the command execution including the list of objects and their metadata
@@ -491,18 +492,23 @@ class S3:
         bucket = args.get("bucket")
         prefix = args.get("prefix")
         delimiter = args.get("delimiter")
-        marker = args.get("marker")
-        max_keys = args.get("max_keys")
 
         print_debug_logs(client, f"Listing objects from bucket: {bucket}")
+
+        pagination_kwargs = build_pagination_kwargs(
+            args,
+            minimum_limit=1,
+            max_limit=1000,
+            next_token_name="Marker",
+            limit_name="MaxKeys"
+        )
 
         kwargs = {
             "Bucket": bucket,
             "prefix": prefix,
             "delimiter": delimiter,
-            "marker": marker,
-            "max-keys": max_keys,
         }
+        kwargs.update(pagination_kwargs)
         remove_nulls_from_dictionary(kwargs)
 
         try:
@@ -537,7 +543,10 @@ class S3:
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets.BucketObjects",
                 outputs_key_field="BucketName",
-                outputs={"BucketName": bucket, "Objects": contents},
+                outputs={"BucketName": bucket,
+                         "NextToken": serialized_response.get("NextMarker"),
+                         "Objects": contents
+                },
                 readable_output=human_readable,
             )
 

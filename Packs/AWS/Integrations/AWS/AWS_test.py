@@ -165,6 +165,8 @@ def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fr
     if expected_output_len > 0:
         assert len(result.outputs["Objects"]) == expected_output_len
         assert result.outputs["BucketName"] == "test-bucket"
+        assert result.outputs["Objects"][0]["Key"] == "test.txt"
+        assert result.outputs["Objects"][0]["Size"] == 1024
 
 
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
