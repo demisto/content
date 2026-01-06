@@ -255,6 +255,7 @@ class EndpointCommandRunner:
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
         if not entry_context:
+            # Note: In some cases, entry_context and readable_errors may be empty lists.
             hr = readable_errors[0].readable_output if readable_errors and readable_errors[0].readable_output else ""
             endpoints = get_endpoint_not_found(command, hr, [], endpoint_args)
             return readable_errors, endpoints
