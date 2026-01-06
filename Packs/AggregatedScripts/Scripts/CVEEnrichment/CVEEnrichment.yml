@@ -65,7 +65,10 @@ outputs:
   description: List of all indicators found for the CVE.
   type: array
 - contextPath: CVEEnrichment.Status
-  description: The status of the indicator.
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
+  type: string
+- contextPath: CVEEnrichment.Message
+  description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
   type: string
 # CVEEnrichment Main Keys
 - contextPath: CVEEnrichment.Results.Brand
@@ -115,7 +118,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.10.0
 marketplaces:
 - xsoar

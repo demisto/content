@@ -1068,13 +1068,13 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
   script: ''
   type: python
   subtype: python3
 tests:
-- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
+- MicrosoftGraphMailSingleUser-Test_dev
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
