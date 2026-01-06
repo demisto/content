@@ -640,7 +640,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
     policies = policies[: min(limit, policies_num)]
 
     # Prepare data for table
-    table_data: list[str] = []
+    table_data: list[str | dict[str, Any]] = []
     md = tableToMarkdown("Policies", table_data)
     for policy in policies:
         policy_copy = policy.copy()
