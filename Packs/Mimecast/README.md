@@ -1,14 +1,14 @@
 # Mimecast
 
-Mimecast is a cloud-based email security and management platform that provides comprehensive protection against email-borne threats, data leaks, and ensures business continuity through email archiving and continuity services.
+Use the Mimecast integration to protect against email threats and data leaks while preventing service downtime through email archiving and uptime services.
 
 ## What does this pack do?
 
-The <~XSOAR>Mimecast V2 integration</~XSOAR> <~XSIAM>Mimecast Event Collector</~XSIAM> can be configured to fetch two categories of logs from Mimecast:
+The <~XSOAR>Mimecast V2 integration</~XSOAR> <~XSIAM>Mimecast Event Collector</~XSIAM> fetches the following log types from Mimecast:
 
-- **Audit** - Information about administrative actions and configuration changes within the Mimecast account. Events include details such as the user who performed the action, the type of action, timestamp, and additional context about the activity.
+- **Audit** events that include information about administrative actions and configuration changes within a Mimecast account. For example, the user who performed the action, the type of action, timestamp, and additional context about the action.
 
-- **SIEM** - Security and email processing events across multiple categories:
+- **SIEM** logs that include the following security and email processing events:
   - **Antivirus (av)** - Virus detection and remediation events
   - **Delivery** - Email delivery status and routing information
   - **Internal Email Protect** - Internal email security events
@@ -20,4 +20,4 @@ The <~XSOAR>Mimecast V2 integration</~XSOAR> <~XSIAM>Mimecast Event Collector</~
   - **Spam** - Spam detection and filtering events
   - **URL Protect** - URL rewriting and click protection events
 
-All timestamps are in Coordinated Universal Time (UTC) timezone.
+**Note**: All timestamps are in the Coordinated Universal Time (UTC) timezone.
