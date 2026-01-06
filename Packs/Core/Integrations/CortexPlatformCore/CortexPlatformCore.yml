@@ -3131,7 +3131,7 @@ script:
           type: String
     - name: core-xql-generic-query-platform
       arguments:
-      - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+      - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.
         name: query
         required: true
       - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
