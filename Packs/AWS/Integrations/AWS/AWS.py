@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+#from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -240,7 +240,7 @@ def parse_target_field(target_string: str | None):
     targets = []
     list_targets = argToList(target_string, separator=";")
     regex = re.compile(
-        r"^key=(^[\p{L}\p{Z}\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
+        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
         flags=re.I,
     )
     for target in list_targets:
@@ -248,7 +248,7 @@ def parse_target_field(target_string: str | None):
         if match_target is None:
             raise ValueError(
                 f"Could not parse target: {target}. Please make sure you provided "
-                "like so: key=<key>,values=<values>;name=<name>,values=<value1>,<value2>..."
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
             )
         demisto.debug(
             f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'
@@ -274,9 +274,10 @@ def parse_parameters_arg(parameters_str: str) -> dict:
     list_parameters = argToList(parameters_str, separator=";")
     for param in list_parameters:
         first_split = param.split(",values=")
-        key = first_split[0][4:]  # remove 'key='
+        key = first_split[0][4:].strip()  # remove 'key='
         values = first_split[1].split(",")
-        parameters[key] = values
+        clean_values = [v.strip() for v in values]
+        parameters[key] = clean_values
     return parameters
 
 

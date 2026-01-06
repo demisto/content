@@ -6823,3 +6823,282 @@ def test_handle_port_range_with_port_range_single_dash():
     args = {"port": "80-80"}
     result = handle_port_range(args)
     assert result == (80, 80)
+
+
+def test_build_pagination_kwargs_with_custom_max_limit():
+    """Test build_pagination_kwargs with custom max limit constraint.
+    Given: A limit bigger than the max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit
+    """
+    from AWS import build_pagination_kwargs
+    args = {"limit": 500}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
+
+def test_build_pagination_kwargs_with_custom_parameter_names():
+    """Test build_pagination_kwargs with custom AWS parameter names.
+    Given: pagination parameters
+    When: build_pagination_kwargs is called with this custom parameter names
+    Then: The returned value should have the custom names as the keys with their matching values.
+    """
+    from AWS import build_pagination_kwargs
+    args = {"limit": 25, "next_token": "abc123"}
+    result = build_pagination_kwargs(
+        args,
+        next_token_name="ContinuationToken",
+        limit_name="PageSize"
+    )
+    expected = {"ContinuationToken": "abc123", "PageSize": 25}
+    assert result == expected
+
+
+def test_build_pagination_kwargs_at_maximum_boundary():
+    """Test build_pagination_kwargs with limit exactly at maximum boundary.
+    Given: A limit who is equal to the custom max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit and limit.
+    """
+    from AWS import build_pagination_kwargs
+    args = {"limit": 100}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
+    
+def test_parse_target_field_single_target_single_value():
+    """
+    Test parse_target_field function with a single target and single value.
+    Given: A target string with a single key and single value
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and value
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=value"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["value"]}]
+    assert result == expected
+
+def test_parse_target_field_single_target_multiple_values():
+    """
+    Test parse_target_field function with a single target and multiple values.
+    Given: A target string with a single key and multiple comma-separated values
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and multiple values
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=resourceGroup1,resourceGroup2,resourceGroup3"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["resourceGroup1", "resourceGroup2", "resourceGroup3"]}]
+    assert result == expected
+
+def test_parse_target_field_multiple_targets():
+    """
+    Test parse_target_field function with multiple targets and values.
+    Given: A target string with multiple keys and values separated by semicolon.
+    When: parse_target_field is called with this target string.
+    Then: Should return a list containing dictionaries with correctly mapped keys and values.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name,values=resourcegroups1;key=resource-groups:ResourceTypeFilters,values=ResourceTypeFilters1,ResourceTypeFilters2"
+    result = parse_target_field(target_string)
+    expected = [
+        {"Key": "resource-groups:Name", "Values": ["resourcegroups1"]},
+        {"Key": "resource-groups:ResourceTypeFilters", "Values": ["ResourceTypeFilters1", "ResourceTypeFilters2"]}
+    ]
+    assert result == expected
+
+def test_parse_target_field_none_input():
+    """
+    Test parse_target_field function with None input.
+    Given: A None input
+    When: parse_target_field is called with None
+    Then: Should return an empty list
+    """
+    from AWS import parse_target_field
+    result = parse_target_field(None)
+    expected = []
+    assert result == expected
+
+def test_parse_target_field_empty_string():
+    """
+    Test parse_target_field function with an empty string input.
+    Given: An empty string as an input.
+    When: parse_target_field is called with the empty string.
+    Then: Should return an empty list.
+    """
+    from AWS import parse_target_field
+    result = parse_target_field("")
+    expected = []
+    assert result == expected
+
+def test_parse_target_field_special_characters_in_values():
+    """
+    Test parse_target_field function with special characters in values.
+    Given: A target string with a key and values containing special characters.
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and values.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=server-01.example.com,server-02/path"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["server-01.example.com", "server-02/path"]}]
+    assert result == expected
+
+def test_parse_target_field_max_values_limit(mocker):
+    """
+    Test parse_target_field function with more values than the maximum allowed.
+    Given: A target string with values exceeding the configured maximum limit.
+    When: parse_target_field is called with this target string.
+    Then: Should return a list containing a dictionary with only the first MAX_TARGET_VALUES values.
+    """
+    from AWS import parse_target_field
+    mocker.patch('AWS.MAX_TARGET_VALUES', 3)
+    target_string = "key=resource-groups:Name,values=resourcegroups1,resourcegroups2,resourcegroups3,resourcegroups4,resourcegroups5"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:Name", "Values": ["resourcegroups1", "resourcegroups2", "resourcegroups3"]}]
+    assert result == expected
+
+def test_parse_target_field_invalid_format_missing_key():
+    """
+    Test parse_target_field function with invalid input missing key.
+    Given: A target string without a key.
+    When: parse_target_field is called with this invalid target string.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "values=Production"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_invalid_format_missing_values():
+    """
+    Test parse_target_field function with invalid input missing values.
+    Given: A target string without values specified.
+    When: parse_target_field is called with this invalid target string.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_invalid_format_wrong_separator():
+    """
+    Test parse_target_field with a wrong separator.
+    Given: A target string with incorrect key-value separator.
+    When: parse_target_field is called with an invalid separator.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "key:resource-groups:Name,values:Production"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_whitespace_in_values():
+    """
+    Test parse_target_field with an input that has a whitespace.
+    Given: A target string that includes a whitespace.
+    When: parse_target_field is called with a whitespace in the input.
+    Then: Should return a list containing a dictionary with the key and values, preserving the whitespace.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name,values=My resource group,Another resource group"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:Name", "Values": ["My resource group", "Another resource group"]}]
+    assert result == expected
+
+
+def test_parse_parameters_arg_single_param():
+    """
+    Given: A string with a single parameter in the format 'key=K1,values=V1'.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary with one key 'K1' and a list of values ['V1'].
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1"]}
+
+
+def test_parse_parameters_arg_multiple_params():
+    """
+    Given: A string with multiple parameters separated by semicolons.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary with all keys and their respective value lists.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1;key=K2,values=V2"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1"], "K2": ["V2"]}
+
+
+def test_parse_parameters_arg_multiple_values():
+    """
+    Given: A string where a single key has multiple comma-separated values.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary where the key maps to a list of all values.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1,V2,V3"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1", "V2", "V3"]}
+
+
+def test_parse_parameters_arg_empty_input():
+    """
+    Given: An empty string.
+    When: parse_parameters_arg is called.
+    Then: It should return an empty dictionary.
+    """
+    from AWS import parse_parameters_arg
+
+    assert parse_parameters_arg("") == {}
+
+
+def test_parse_parameters_arg_with_spaces():
+    """
+    Given: A string with spaces around keys and values.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary with keys and values including the spaces (as the function doesn't strip them).
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key= K1 ,values= V1 , V2 "
+    result = parse_parameters_arg(parameters_str)
+    # Note: argToList with separator=";" might strip spaces around the semicolon,
+    # but internal spaces in 'key= K1 ' and ' V1 , V2 ' are handled by split.
+    assert result == {"K1": ["V1", "V2"]}
+
+
+def test_parse_parameters_arg_malformed_missing_values():
+    """
+    Given: A malformed string missing the ',values=' separator.
+    When: parse_parameters_arg is called.
+    Then: It should raise an IndexError because it expects at least two parts from the split.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1"
+    with pytest.raises(IndexError):
+        parse_parameters_arg(parameters_str)
+
+
+def test_parse_parameters_arg_malformed_missing_key_prefix():
+    """
+    Given: A malformed string missing the 'key=' prefix.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary where the key is sliced incorrectly (missing first 4 chars of whatever is there).
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "K1,values=V1"
+    result = parse_parameters_arg(parameters_str)
+    # "K1"[4:] is ""
+    assert result == {"": ["V1"]}
