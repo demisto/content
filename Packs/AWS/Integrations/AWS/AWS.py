@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-#from datetime import date, datetime, timedelta, UTC
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -19,7 +19,7 @@ DEFAULT_REGION = "us-east-1"
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
-MAX_TARGET_VALUES = 50
+MAX_TARGET_VALUES = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
@@ -272,12 +272,19 @@ def parse_parameters_arg(parameters_str: str) -> dict:
     """
     parameters = {}
     list_parameters = argToList(parameters_str, separator=";")
+    regex = re.compile(
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
     for param in list_parameters:
-        first_split = param.split(",values=")
-        key = first_split[0][4:].strip()  # remove 'key='
-        values = first_split[1].split(",")
-        clean_values = [v.strip() for v in values]
-        parameters[key] = clean_values
+        match_param = regex.match(param)
+        if match_param is None:
+            raise ValueError(
+                f"Could not parse the parameter: {param}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
+            )
+        demisto.debug(f'Number of parameter values for filter {match_param.group(1)} is {len(match_param.group(2).split(","))}')
+        parameters[match_param.group(1)] = match_param.group(2).split(",")
     return parameters
 
 

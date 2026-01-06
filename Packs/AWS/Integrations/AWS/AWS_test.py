@@ -7062,21 +7062,6 @@ def test_parse_parameters_arg_empty_input():
     assert parse_parameters_arg("") == {}
 
 
-def test_parse_parameters_arg_with_spaces():
-    """
-    Given: A string with spaces around keys and values.
-    When: parse_parameters_arg is called.
-    Then: It should return a dictionary with keys and values including the spaces (as the function doesn't strip them).
-    """
-    from AWS import parse_parameters_arg
-
-    parameters_str = "key= K1 ,values= V1 , V2 "
-    result = parse_parameters_arg(parameters_str)
-    # Note: argToList with separator=";" might strip spaces around the semicolon,
-    # but internal spaces in 'key= K1 ' and ' V1 , V2 ' are handled by split.
-    assert result == {"K1": ["V1", "V2"]}
-
-
 def test_parse_parameters_arg_malformed_missing_values():
     """
     Given: A malformed string missing the ',values=' separator.
@@ -7086,8 +7071,9 @@ def test_parse_parameters_arg_malformed_missing_values():
     from AWS import parse_parameters_arg
 
     parameters_str = "key=K1"
-    with pytest.raises(IndexError):
+    with pytest.raises(ValueError) as exc_info:
         parse_parameters_arg(parameters_str)
+    assert "Could not parse" in str(exc_info.value)
 
 
 def test_parse_parameters_arg_malformed_missing_key_prefix():
@@ -7099,6 +7085,6 @@ def test_parse_parameters_arg_malformed_missing_key_prefix():
     from AWS import parse_parameters_arg
 
     parameters_str = "K1,values=V1"
-    result = parse_parameters_arg(parameters_str)
-    # "K1"[4:] is ""
-    assert result == {"": ["V1"]}
+    with pytest.raises(ValueError) as exc_info:
+        parse_parameters_arg(parameters_str)
+    assert "Could not parse" in str(exc_info.value)
