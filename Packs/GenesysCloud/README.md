@@ -7,19 +7,19 @@ Genesys Cloud is a unified, all-in-one cloud collaboration and contact center pl
 - Rest API integration to fetch audit logs
 - XDM Mapping for audit events
 - **Supported Events:**
-    - ContactCenter
-    - Telephony
-    - Groups
-    - Outbound
-    - PeoplePermissions
+  - ContactCenter
+  - Telephony
+  - Groups
+  - Outbound
+  - PeoplePermissions
 
 ## Configure Genesys Cloud in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Default value is https://api.mypurecloud.com/. | False |
-| Client ID | | True |
-| Client Secret | | True |
+| Client ID | The unique ID of the Genesys Cloud client. | True |
+| Client Secret | The secret key used to authenticate the client. | True |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
 | Fetch Events | | False |
@@ -56,4 +56,4 @@ There is no context output for this command.
 
 ## Limitations
 
-- The `genesys-cloud-get-events` is only able to retrieve events from the past 14 days. Ensure both the `from_date` and `to_date` command arguments are within the last 14 days.
+- The `genesys-cloud-get-events` command is only able to retrieve events from the past 14 days. Ensure both the `from_date` and `to_date` command arguments are within the last 14 days.
