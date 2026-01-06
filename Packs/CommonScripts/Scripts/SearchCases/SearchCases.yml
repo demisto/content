@@ -177,3 +177,4 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
+deprecated: true

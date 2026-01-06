@@ -7,6 +7,7 @@ commonfields:
 name: PrismaCloud v2
 display: Prisma Cloud v2
 category: Network Security
+provider: Palo Alto Networks
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:
 - additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'
@@ -840,6 +841,13 @@ script:
     - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
       name: include_additional_resource_fields
       defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Enable heuristic search optimization for faster results. Default is true.'
+      name: heuristic_search
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
       - 'true'
