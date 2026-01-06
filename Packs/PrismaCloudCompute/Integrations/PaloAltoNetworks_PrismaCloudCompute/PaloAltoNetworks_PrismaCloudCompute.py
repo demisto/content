@@ -3463,8 +3463,8 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             await process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
-                f"Finished sending assets batch to xsiam, sent {min(asset_type_related_data.offset, asset_type_related_data.total_count)} "
-                "assets so far."
+                "Finished sending assets batch to xsiam, sent " \
+                f"{min(asset_type_related_data.offset, asset_type_related_data.total_count)} assets so far."
             )
             await asset_type_related_data.safe_update_integration_context()
         except Exception as e:
