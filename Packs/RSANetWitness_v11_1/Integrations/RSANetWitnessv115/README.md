@@ -412,7 +412,7 @@ There is no context output for this command.
 ### rsa-nw-incident-list-alerts
 
 ***
-Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument.
+Retrieves all the alerts that are associated with an incident based on the incident ID. You can limit the results using the limit argument.
 
 #### Base Command
 
@@ -423,7 +423,7 @@ Retrieves all the alerts that are associated with an incident based on the incid
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The unique incident identifier. | Required |
-| limit | The maximum number of results to be returned. If not set, the first 50 results are returned. cannot be supplied with page_size/page_number arguments. | Optional |
+| limit | The maximum number of results to be returned. If not set, the first 50 results are returned. | Optional |
 
 #### Context Output
 

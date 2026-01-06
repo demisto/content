@@ -72,7 +72,7 @@ class Client(BaseClient):
             'meta_value': inc_id,
             'numberOfRecords': "0",
         })
-        response = self._http_request('GET', 'rest/api/incident/fetch', data=data)
+        response = self._http_request('GET', 'rest/api/incident/fetch', json_data=data)
 
         # Ensure the response is a list
         if not isinstance(response, list):
@@ -895,11 +895,14 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
             demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
             raise
 
-        items = [item.get("alert") for item in response_body]
+        items = []
+        if isinstance(response_body, list):
+            items = [item.get("alert") for item in response_body if isinstance(item, dict)]
         alerts.extend(items[:max_alerts - len(alerts)])
         page_number += 1
-        has_next = response_body[0].get('hasNext', False)
-
+        has_next = False
+        if response_body:
+            has_next = response_body[0].get('hasNext', False)
     return alerts
 
 
@@ -1297,7 +1300,9 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     xsoar_close_reason = parsed_args.data.get("closeReason")
     response = client.get_incident_request(new_incident_id)
     rsa_status = xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason)
-    response_status = response[0].get("status")
+    response_status = None
+    if response:
+        response_status = response[0].get("status")
     if rsa_status and response_status != rsa_status:
         demisto.debug(f"Current status should be {rsa_status} on RSA but is {response['status']}, updating incident...")
         response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response.get("assignee"))
@@ -1334,7 +1339,9 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     # check if the user enable alerts fetching
     if fetch_alert:
         demisto.debug(f'Pulling alerts from incident {inc_id} !')
-        inc_alert_count = int(response[0].get('alertCount'))
+        inc_alert_count = 0
+        if response:
+            inc_alert_count = int(response[0].get('alertCount', 0))
         if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f'{len(alerts)} alerts pulled !')
