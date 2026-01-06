@@ -145,6 +145,11 @@ configuration:
   - ssl_tls
   - web_app_security_missing_hsts_header_detected
   - web_app_security_misconfigured_hsts_header_detected
+  - web_app_security_missing_x_frame_options_header_detected
+  - web_app_security_misconfigured_x_frame_options_header_detected
+  - web_app_security_missing_x_content_type_options_header_detected
+  - web_app_security_misconfigured_x_content_type_options_header_detected
+  - web_app_security_missing_content_security_policy_header_detected
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -270,6 +275,11 @@ script:
       - ssl_tls
       - web_app_security_missing_hsts_header_detected
       - web_app_security_misconfigured_hsts_header_detected
+      - web_app_security_missing_x_frame_options_header_detected
+      - web_app_security_misconfigured_x_frame_options_header_detected
+      - web_app_security_missing_x_content_type_options_header_detected
+      - web_app_security_misconfigured_x_content_type_options_header_detected
+      - web_app_security_missing_content_security_policy_header_detected
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
