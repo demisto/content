@@ -42,8 +42,8 @@ Retrieves Mimecast Audit events and SIEM logs. Use this command for development 
 | should_push_events | If True, pushes the events to the Cortex XSIAM dataset. If False, only displays them. Default is False. | Required |
 | event_types | The event types to retrieve. Possible values are: Audit, SIEM. | Optional |
 | limit | The maximum number of events to retrieve per event type. Default is 10. | Optional |
-| start_date | The start date for retrieving events, expressed as relative time (for example, '3 hours ago') or an absolute time in ISO 8601 format (for example,, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is 1 hour ago. | Optional |
-| end_date | The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in ISO 8601 format (for example,, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is now. | Optional |
+| start_date | The start date for retrieving events, expressed as relative time (for example, '3 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is 1 hour ago. | Optional |
+| end_date | The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is now. | Optional |
 
 #### Context Output
 
@@ -51,7 +51,7 @@ There is no context output for this command.
 
 ## Limitations
 
-Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM logs are only available for fetching within a 24-hour rolling window. This limitation applies to SIEM logs but does _not_ apply to Audit events.
+Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM logs are only available for fetching within a 24-hour rolling window.
 
 * When retrieving SIEM logs using the _**mimecast-get-events**_ command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error for SIEM event types.
 

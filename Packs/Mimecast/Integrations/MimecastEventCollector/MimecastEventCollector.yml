@@ -88,10 +88,10 @@ script:
       description: The maximum number of events to retrieve per event type.
       defaultValue: '10'
     - name: start_date
-      description: The start time for retrieving events, expressed as relative time (for example, '3 hours ago') or as absolute time in ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
+      description: The start time for retrieving events, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
       defaultValue: '1 hour ago'
     - name: end_date
-      description: The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in ISO 8601 format (for example, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
+      description: The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
       defaultValue: 'now'
     description: Retrieves Mimecast Audit events and SIEM logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: mimecast-get-events
