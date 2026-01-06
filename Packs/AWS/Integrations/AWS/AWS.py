@@ -2920,6 +2920,94 @@ class EC2:
         )
 
     @staticmethod
+    def copy_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Copy an Amazon Machine Image (AMI) from a source region to the current region.
+        
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - name (str): Name for the new AMI in the destination region (required)
+                - source_image_id (str): ID of the AMI to copy (required)
+                - source_region (str): Region that contains the AMI to copy (required)
+                - description (str, optional): Description for the new AMI
+                - encrypted (str, optional): Whether destination snapshots should be encrypted
+                - kms_key_id (str, optional): KMS key ID for encryption
+                - client_token (str, optional): Idempotency token
+        
+        Returns:
+            CommandResults: Results containing the new ImageId and Region
+        """
+        # Validate required parameters
+        name = args.get("name", "").strip()
+        source_image_id = args.get("source_image_id", "").strip()
+        source_region = args.get("source_region", "").strip()
+        
+        if not name:
+            raise DemistoException("name parameter is required")
+        if not source_image_id:
+            raise DemistoException("source_image_id parameter is required")
+        if not source_region:
+            raise DemistoException("source_region parameter is required")
+        
+        print_debug_logs(client, f"Copying image {source_image_id} from region {source_region}")
+        
+        # Build API parameters
+        kwargs: Dict[str, Any] = {
+            "Name": name,
+            "SourceImageId": source_image_id,
+            "SourceRegion": source_region,
+            "Description": args.get("description"),
+            "Encrypted": argToBoolean(args.get("encrypted")) if args.get("encrypted") else None,
+            "KmsKeyId": args.get("kms_key_id"),
+            "ClientToken": args.get("client_token"),
+        }
+        
+        # Remove None values
+        remove_nulls_from_dictionary(kwargs)
+        
+        try:
+            response = client.copy_image(**kwargs)
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        
+        # Validate response
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        
+        if "ImageId" not in response:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        
+        # Get region from args
+        region = args.get("region", "")
+        
+        # Prepare outputs
+        outputs = {
+            "ImageId": response["ImageId"],
+            "Name": name,
+            "SourceImageId": source_image_id,
+            "SourceRegion": source_region,
+            "Region": region,
+        }
+        
+        # Prepare human-readable output
+        readable_output = tableToMarkdown(
+            "AWS EC2 Image Copy",
+            outputs,
+            headers=["ImageId", "Name", "SourceImageId", "SourceRegion", "Region"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+        
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Images",
+            outputs_key_field="ImageId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -4517,6 +4605,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-images-describe": EC2.describe_images_command,
     "aws-ec2-image-create": EC2.create_image_command,
     "aws-ec2-image-deregister": EC2.deregister_image_command,
+    "aws-ec2-image-copy": EC2.copy_image_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4554,6 +4643,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DescribeImages",
     "ec2:CreateImage",
     "ec2:DeregisterImage",
+    "ec2:CopyImage",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
