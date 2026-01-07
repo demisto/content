@@ -664,9 +664,12 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
     cmd_url = "/urlCategories/" + category_data.get("id") + "?action=" + action
     data = {
         "customCategory": category_data.get("customCategory"),
-        "urls": urls,
         "id": category_data.get("id"),
     }
+    
+    # Only include urls field if there are URLs to add/remove
+    if urls:
+        data["urls"] = urls
     if retaining_parent_category_data:
         data["dbCategorizedUrls"] = retaining_parent_category_data
     if "description" in category_data:
