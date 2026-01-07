@@ -4083,11 +4083,11 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def enhance_with_pb_details(pb_id_to_data, obj):
-    related_pb = pb_id_to_data.get(obj.get("id"))
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
     if related_pb:
-        obj["name"] = related_pb.get("name")
-        obj["description"] = related_pb.get("comment")
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
 
 
 def postprocess_case_resolution_statuses(client, response: dict):
