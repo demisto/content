@@ -3998,7 +3998,7 @@ script:
       - desc
     - description: The JSON to use for the "filter" field in the API.
       name: filter_json
-    - defaultValue: '30'
+    - defaultValue: '50'
       description: Maximum number of asset groups to return.
       name: limit
     - description: Page size for pagination.

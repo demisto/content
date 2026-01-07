@@ -522,7 +522,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("data")
 
-    def list_assets(self, filter_json: Any = None, sort_field: str = None,
+    def list_assets(self, filter_json: dict = None, sort_field: str = None,
                     sort_order: str = None, page: int = 0, page_size: int = 30):
         request_data: Dict[str, Any] = {
             "request_data": {
@@ -545,6 +545,7 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
+        demisto.debug(f"List assets: {res}")
         return res.get("reply", {}).get("data", [])
 
     def get_asset_schema(self):
@@ -615,7 +616,7 @@ class Client(CoreClient):
         if sort_field:
             request_data["request_data"]["sort"] = {
                 "field": sort_field,
-                "keyword": sort_order or "asc"
+                "order": sort_order or "asc"
             }
 
         res = self._http_request(
@@ -1723,7 +1724,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     filter_json = args.get('filter_json', "")
     if filter_json:
         filter_json = json.loads(filter_json)
-    limit = arg_to_number(args.get('limit')) or 30
+    limit = arg_to_number(args.get('limit')) or 50
     page_size = arg_to_number(args.get('page_size')) or limit
     page = arg_to_number(args.get('page')) or 0
 
@@ -1738,10 +1739,16 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     if not groups:
         return CommandResults(readable_output="No asset groups found.")
 
+    readable_groups = []
+    for group in groups:
+        readable_groups.append({'ID': group.get("XDM.ASSET_GROUP.ID"),
+                                'Name': group.get("XDM.ASSET_GROUP.NAME"),
+                                'Type': group.get("XDM.ASSET_GROUP.TYPE"),
+                                'Description': group.get("XDM.ASSET_GROUP.DESCRIPTION")})
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
-        t=groups,
-        headers=['group_id', 'group_name', 'group_type', 'group_description'],
+        t=readable_groups,
+        headers=['ID', 'Name', 'Type', 'Description'],
         headerTransform=string_to_table_header,
         removeNull=True
     )
@@ -1775,17 +1782,6 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
         membership_predicate_json = json.loads(membership_predicate_json)
 
     client.update_asset_group(group_id, group_name, group_type, group_description, membership_predicate_json)
-
-    groups = client.list_asset_groups(filter_json=[{"field": "group_id", "operator": "eq", "value": group_id}])
-    if groups:
-        group = groups[0]
-        readable_output = tableToMarkdown(name="Asset Group Updated", t=group, headerTransform=string_to_table_header)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
-            outputs_key_field="group_id",
-            outputs=group
-        )
 
     return CommandResults(readable_output="Asset group updated successfully")
 
