@@ -470,7 +470,7 @@ def policy_delete_command(client: AzureWAFClient, **args):
             md = f"Policy {policy_name} was deleted successfully."
 
         if status.status_code == 204:
-            md = f"Policy {policy_name} was not found."
+            md = f"Policy {policy_name} was deleted or not found."
 
     return CommandResults(outputs=context, readable_output=md)
 
@@ -624,7 +624,7 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
             md = f"Front Door Policy {policy_name} was deleted successfully."
 
         if status.status_code == 204:
-            md = f"Front Door Policy {policy_name} was not found."
+            md = f"Front Door policy {policy_name} was deleted or not found."
 
     return CommandResults(outputs=context, readable_output=md)
 
