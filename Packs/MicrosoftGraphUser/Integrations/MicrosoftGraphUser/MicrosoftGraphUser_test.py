@@ -1104,13 +1104,10 @@ def test_map_auth_method_fields_to_readable_single_dict():
         "ID": "method-id-123",
         "Display Name": "Test Device",
         "Key Strength": "normal",
-        "Created Date Time": "2025-01-01T00:00:00Z"
+        "Created Date Time": "2025-01-01T00:00:00Z",
     }
 
-    field_mapping = {
-        "ID": "Windows Hello Method ID",
-        "Key Strength": "Method Key Strength"
-    }
+    field_mapping = {"ID": "Windows Hello Method ID", "Key Strength": "Method Key Strength"}
 
     result = map_auth_method_fields_to_readable(input_data, field_mapping)
 
@@ -1136,22 +1133,14 @@ def test_map_auth_method_fields_to_readable_list():
     from MicrosoftGraphUser import map_auth_method_fields_to_readable
 
     input_data = [
-        {
-            "ID": "fido2-id-1",
-            "Display Name": "Security Key 1",
-            "Aa Guid": "guid-123"
-        },
-        {
-            "ID": "fido2-id-2",
-            "Display Name": "Security Key 2",
-            "Aa Guid": "guid-456"
-        }
+        {"ID": "fido2-id-1", "Display Name": "Security Key 1", "Aa Guid": "guid-123"},
+        {"ID": "fido2-id-2", "Display Name": "Security Key 2", "Aa Guid": "guid-456"},
     ]
 
     field_mapping = {
         "ID": "Authentication method ID",
         "Display Name": "The display name of the key",
-        "Aa Guid": "Authenticator Attestation GUID"
+        "Aa Guid": "Authenticator Attestation GUID",
     }
 
     result = map_auth_method_fields_to_readable(input_data, field_mapping)
@@ -1180,11 +1169,7 @@ def test_map_auth_method_fields_to_readable_empty_mapping():
     """
     from MicrosoftGraphUser import map_auth_method_fields_to_readable
 
-    input_data = {
-        "ID": "method-id-123",
-        "Display Name": "Test Device",
-        "Phone Number": "+1234567890"
-    }
+    input_data = {"ID": "method-id-123", "Display Name": "Test Device", "Phone Number": "+1234567890"}
 
     field_mapping = {}
 
@@ -1210,17 +1195,9 @@ def test_map_auth_method_fields_to_readable_partial_mapping():
     """
     from MicrosoftGraphUser import map_auth_method_fields_to_readable
 
-    input_data = {
-        "ID": "phone-id-123",
-        "Phone Number": "+1234567890",
-        "Phone Type": "mobile",
-        "Sms Sign In State": "ready"
-    }
+    input_data = {"ID": "phone-id-123", "Phone Number": "+1234567890", "Phone Type": "mobile", "Sms Sign In State": "ready"}
 
-    field_mapping = {
-        "ID": "Phone ID",
-        "Sms Sign In State": "Sms SignIn State"
-    }
+    field_mapping = {"ID": "Phone ID", "Sms Sign In State": "Sms SignIn State"}
 
     result = map_auth_method_fields_to_readable(input_data, field_mapping)
 
