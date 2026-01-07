@@ -1873,9 +1873,9 @@ def add_cases_ai_summary(client, cases_list):
             case_id = case.get("case_id")
             case_summary = get_case_ai_summary_command(client, {"case_id": case_id})
             if case_summary:
-                if case_description:= case_summary.outputs.get("case_description"): # type: ignore
+                if case_description := case_summary.outputs.get("case_description"):  # type: ignore
                     case["description"] = case_description
-                if case_name:= case_summary.outputs.get("case_name"): # type: ignore
+                if case_name := case_summary.outputs.get("case_name"):  # type: ignore
                     case["name"] = case_name
     except Exception as e:
         demisto.debug(str(e))
