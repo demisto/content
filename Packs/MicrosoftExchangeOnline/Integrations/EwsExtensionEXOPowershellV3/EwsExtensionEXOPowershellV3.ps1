@@ -570,7 +570,7 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
-        $zipErrMsg = "Using this argument requires 'compress_output' to be set to true."
+        $zipErrMsg = "Using this argument requires 'compress_output' argument to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
@@ -2669,7 +2669,6 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-    $Global:Demisto = $demisto
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
