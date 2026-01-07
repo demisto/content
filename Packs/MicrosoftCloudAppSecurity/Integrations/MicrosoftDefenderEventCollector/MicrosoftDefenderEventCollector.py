@@ -244,9 +244,8 @@ class IntegrationGetEvents(ABC):
     def call(self) -> requests.Response:
         return self.client.call(self.client.request)
 
-    @staticmethod
     @abstractmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(self, events: list) -> dict:
         """Logic to get the last run from the events
         Example:
         """
@@ -359,6 +358,12 @@ def _get_time_gap_info(timestamp_ms: int) -> str:
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
+    def __init__(
+        self, client: IntegrationEventsClient, options: IntegrationOptions, event_filters: list[EventFilter], base_url: AnyUrl
+    ) -> None:
+        super().__init__(client, options, event_filters, base_url)
+        self.requested_start_times: dict[str, int] = {}
+
     def _iter_events(self, event_type_name, endpoint_details):
         self.last_timestamp = {}
         base_url = self.base_url
@@ -372,6 +377,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         last_run_data = demisto.getLastRun()
         after = last_run_data.get(event_type_name) or self.client.after
+        self.requested_start_times[event_type_name] = after
 
         # Enhanced debug logging for timestamp tracking
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== Starting fetch for {event_type_name} ==========")
@@ -458,8 +464,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== Finished {event_type_name} (pages: {page_count}) =====")
 
-    @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(self, events: list) -> dict:
         last_run = demisto.getLastRun()
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== Calculating next last_run ==========")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current last_run: {last_run}")
@@ -515,6 +520,12 @@ class DefenderGetEvents(IntegrationGetEvents):
             last_run["activities_admin"] = new_val
         else:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   activities_admin: NOT UPDATED (no events)")
+
+        # Ensure all requested types are in last_run
+        for event_type, start_time in self.requested_start_times.items():
+            if event_type not in last_run and start_time:
+                demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Initializing missing last_run key for {event_type} with {start_time}")
+                last_run[event_type] = start_time
 
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Final last_run: {last_run}")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== Finished calculating last_run ==========")
@@ -604,7 +615,7 @@ def main(command: str, demisto_params: dict):
             if command == "fetch-events":
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                next_run = DefenderGetEvents.get_last_run(events)
+                next_run = get_events.get_last_run(events)
                 demisto.debug(f"MD: setting the next run: {next_run}")
                 demisto.setLastRun(next_run)
 
