@@ -87,7 +87,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as distinct_count | filter distinct_count > 1 | alter status = if(distinct_count  > 1, \"Bronze - PASS - Posture - Visibility into the environment - Onboard cloud accounts\", \"Bronze - FAIL - Posture - Visibility into the environment - Onboard cloud accounts\")\n| view graph type = pie subtype = full show_callouts = `true` xaxis = status yaxis = distinct_count seriestitle(\"distinct_count\",\"cloud accounts\") ",
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts > 1 | alter status = if(cspm_enabled_accounts  > 1, \"PASS - There is atleast one cloud account onboarded with CSPM capabilities\", \"FAIL - There is atleast one cloud account onboarded with CSPM capabilities\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = cspm_enabled_accounts valuecolor(\"PASS - There is atleast one cloud account onboarded with CSPM capabilities\",\"#ec6201\") ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -212,7 +212,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is at least one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts ",
+                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
