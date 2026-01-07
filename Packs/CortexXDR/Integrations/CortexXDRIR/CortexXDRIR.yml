@@ -3864,6 +3864,181 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
+  - arguments:
+    - description: An array or CSV string of asset IDs.
+      isArray: true
+      name: asset_id
+    - description: The field by which to sort the results.
+      name: sort_field
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: The JSON to use for the "filter" field in the API. You can use the xdr-asset-schema-get in order to get the schema.
+      name: filter_json
+    - description: Maximum number of assets to return.
+      name: limit
+      defaultvalue: '50'
+    - description: Page size for pagination.
+      name: page_size
+      defaultvalue: '50'
+    - defaultvalue: '0'
+      description: Page number for pagination.
+      name: page
+    description: Returns a list of assets.
+    name: xdr-asset-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Asset.asset_id
+      description: Unique ID assigned to each returned asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.asset_name
+      description: Name of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.first_observed
+      description: Date and time the asset was first observed.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Asset.last_observed
+      description: Date and time the asset was last observed.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Asset.critical_cases_count
+      description: Number of critical cases associated with the asset.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.critical_issues_count
+      description: Number of critical issues associated with the asset.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.asset_type
+      description: Type of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.ip_address
+      description: IP address of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.mac_address
+      description: MAC address of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.os_type
+      description: Operating system type of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.os_version
+      description: Operating system version of the asset.
+      type: String
+  - name: xdr-asset-schema-get
+    description: Gets the schema of the asset inventory.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_name
+      description: The name of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_type
+      description: The type of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.is_filterable
+      description: Whether the field is filterable.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.is_sortable
+      description: Whether the field is sortable.
+      type: Boolean
+  - arguments:
+    - description: The name of the field to get options for.
+      name: field_name
+      required: true
+    description: Gets the enum values of a specified field in the asset schema.
+    name: xdr-asset-schema-field-options-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_name
+      description: The name of the field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.options
+      description: The enum values of the field.
+      type: Unknown
+  - arguments:
+    - description: The name of the asset group.
+      name: group_name
+      required: true
+    - auto: PREDEFINED
+      description: The type of the asset group.
+      name: group_type
+      predefined:
+      - static
+      - dynamic
+      required: true
+    - description: The description of the asset group.
+      name: group_description
+    - description: The JSON to use for the "membership_predicate" field in the API.
+      name: membership_predicate_json
+    description: Creates an asset group.
+    name: xdr-asset-group-create
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_id
+      description: The ID of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_name
+      description: The name of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_type
+      description: The type of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_description
+      description: The description of the asset group.
+      type: String
+  - arguments:
+    - description: The ID of the asset group to delete.
+      name: group_id
+      required: true
+    description: Deletes an asset group.
+    name: xdr-asset-group-delete
+  - arguments:
+    - description: The field by which to sort the results.
+      name: sort_field
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: The JSON to use for the "filter" field in the API.
+      name: filter_json
+    - defaultValue: '30'
+      description: Maximum number of asset groups to return.
+      name: limit
+    - description: Page size for pagination.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number for pagination.
+      name: page
+    description: Returns a list of asset groups.
+    name: xdr-asset-group-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_id
+      description: The ID of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_name
+      description: The name of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_type
+      description: The type of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.group_description
+      description: The description of the asset group.
+      type: String
+  - arguments:
+    - description: The ID of the asset group to update.
+      name: group_id
+      required: true
+    - description: The name of the asset group.
+      name: group_name
+    - auto: PREDEFINED
+      description: The type of the asset group.
+      name: group_type
+      predefined:
+      - static
+      - dynamic
+    - description: The description of the asset group.
+      name: group_description
+    - description: The JSON to use for the "membership_predicate" field in the API.
+      name: membership_predicate_json
+    description: Updates an asset group.
+    name: xdr-asset-group-update
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false

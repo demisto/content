@@ -513,6 +513,139 @@ class Client(CoreClient):
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
 
+    def get_asset(self, asset_id: str):
+        res = self._http_request(
+            method="GET",
+            url_suffix=f"/assets/{asset_id}",
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("data")
+
+    def list_assets(self, filter_json: Any = None, sort_field: str = None,
+                    sort_order: str = None, page: int = 0, page_size: int = 30):
+        request_data: Dict[str, Any] = {
+            "request_data": {
+                "search_from": page * page_size,
+                "search_to": (page + 1) * page_size,
+            }
+        }
+        if filter_json:
+            request_data["request_data"]["filters"] = filter_json
+        if sort_field:
+            request_data["request_data"]["sort"] = {
+                "field": sort_field,
+                "keyword": sort_order or "asc"
+            }
+
+        res = self._http_request(
+            method="POST",
+            url_suffix="/assets",
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def get_asset_schema(self):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/assets/schema",
+            json_data={"request_data": {}},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def get_asset_schema_field_options(self, field_name: str):
+        res = self._http_request(
+            method="POST",
+            url_suffix=f"/assets/enum/{field_name}",
+            json_data={"request_data": {}},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def create_asset_group(self, group_name: str, group_type: str, group_description: str = "",
+                           membership_predicate_json: Any = None):
+        request_data = {
+            "request_data": {
+                "group_name": group_name,
+                "group_type": group_type,
+                "group_description": group_description,
+            }
+        }
+        if membership_predicate_json:
+            request_data["request_data"]["membership_predicate"] = membership_predicate_json
+
+        res = self._http_request(
+            method="POST",
+            url_suffix="/asset-group/create",
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply")
+
+    def delete_asset_group(self, group_id: str):
+        request_data = {
+            "request_data": {
+                "group_id": group_id
+            }
+        }
+        self._http_request(
+            method="POST",
+            url_suffix="/asset-group/delete",
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    def list_asset_groups(self, filter_json: Any = None, sort_field: str = None,
+                          sort_order: str = None, page: int = 0, page_size: int = 30):
+        request_data = {
+            "request_data": {
+                "search_from": page * page_size,
+                "search_to": (page + 1) * page_size,
+            }
+        }
+        if filter_json:
+            request_data["request_data"]["filters"] = filter_json
+        if sort_field:
+            request_data["request_data"]["sort"] = {
+                "field": sort_field,
+                "keyword": sort_order or "asc"
+            }
+
+        res = self._http_request(
+            method="POST",
+            url_suffix="/asset-groups",
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def update_asset_group(self, group_id: str, group_name: str = None, group_type: str = None,
+                           group_description: str = None, membership_predicate_json: Any = None):
+        update_data = assign_params(
+            group_name=group_name,
+            group_type=group_type,
+            group_description=group_description,
+            membership_predicate=membership_predicate_json
+        )
+        request_data = {
+            "request_data": update_data
+        }
+        self._http_request(
+            method="POST",
+            url_suffix=f"/asset-groups/update/{group_id}",
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
 
 def extract_paths_and_names(paths: list) -> tuple:
     """
@@ -602,7 +735,7 @@ def get_headers(params: dict) -> dict:
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
     readable_output = tableToMarkdown(
-        "Tenant Information", tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        "Tenant Information", tenant_info, headerTransform=string_to_table_header, removeNull=True, is_auto_json_transform=True
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1349,7 +1482,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 alerts.append(alert_with_events)
 
         readable_output = tableToMarkdown(
-            "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+            "Contributing events", alerts, headerTransform=string_to_table_header, removeNull=True, is_auto_json_transform=True
         )
         return CommandResults(
             readable_output=readable_output,
@@ -1383,7 +1516,7 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
     result = {"fieldType": field_type, "fields": fields}
 
     readable_output = tableToMarkdown(
-        f'Replaced featured: {result.get("fieldType")}', result.get("fields"), headerTransform=pascalToSpace
+        f'Replaced featured: {result.get("fieldType")}', result.get("fields"), headerTransform=string_to_table_header
     )
 
     return CommandResults(
@@ -1414,6 +1547,247 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     if not array_of_all_ids:
         raise DemistoException("Could not find alerts to update, please make sure you used valid alert IDs.")
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
+
+
+def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of assets.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the assets.
+    """
+    asset_id_list = argToList(args.get('asset_id', ""))
+    sort_field = args.get('sort_field', "")
+    sort_order = args.get('sort_order', "")
+    filter_json = args.get('filter_json', "")
+    if filter_json:
+        filter_json = json.loads(filter_json)
+    limit = arg_to_number(args.get('limit')) or 30
+    page_size = arg_to_number(args.get('page_size')) or limit
+    page = arg_to_number(args.get('page')) or 0
+
+    assets = []
+    if asset_id_list:
+        for asset_id in asset_id_list:
+            if asset := client.get_asset(asset_id):
+                assets.append(asset)
+    else:
+        assets = client.list_assets(
+            filter_json=filter_json,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            page=page,
+            page_size=page_size
+        )
+
+    if not assets:
+        return CommandResults(readable_output="No assets found.")
+
+    readable_headers = ['asset_id', 'asset_name', 'first_observed', 'last_observed', 'critical_cases_count', 'critical_issues_count']
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Assets",
+        t=assets,
+        headers=readable_headers,
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs_key_field="asset_id",
+        outputs=assets,
+        raw_response=assets
+    )
+
+
+def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets the schema of the asset inventory.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the asset schema.
+    """
+    schema = client.get_asset_schema()
+    if not schema:
+        return CommandResults(readable_output="No asset schema found.")
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Asset Schema",
+        t=schema,
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
+        outputs=schema,
+        raw_response=schema
+    )
+
+
+def get_asset_schema_field_options_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets the enum values of a specified field in the asset schema.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the field options.
+    """
+    field_name = args.get('field_name', "")
+    options = client.get_asset_schema_field_options(field_name)
+    if not options:
+        return CommandResults(readable_output=f"No options found for field {field_name}.")
+
+    readable_output = tableToMarkdown(
+        name=f"Cortex XDR Asset Schema Options for {field_name}",
+        t=options,
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
+        outputs_key_field="field_name",
+        outputs={'field_name': field_name, 'options': options},
+        raw_response=options
+    )
+
+
+def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the created asset group.
+    """
+    group_name = args.get('group_name', "")
+    group_type = args.get('group_type', "")
+    group_description = args.get('group_description', "")
+    membership_predicate_json = args.get('membership_predicate_json', "")
+    if membership_predicate_json:
+        membership_predicate_json = json.loads(membership_predicate_json)
+
+    res = client.create_asset_group(group_name, group_type, group_description, membership_predicate_json)
+
+    return CommandResults(readable_output="Asset group created successfully", raw_response=res)
+
+
+def delete_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    group_id = args.get('group_id', "")
+    client.delete_asset_group(group_id)
+    return CommandResults(readable_output="Asset group deleted successfully.")
+
+
+def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of asset groups.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the asset groups.
+    """
+    sort_field = args.get('sort_field', "")
+    sort_order = args.get('sort_order', "")
+    filter_json = args.get('filter_json', "")
+    if filter_json:
+        filter_json = json.loads(filter_json)
+    limit = arg_to_number(args.get('limit')) or 30
+    page_size = arg_to_number(args.get('page_size')) or limit
+    page = arg_to_number(args.get('page')) or 0
+
+    groups = client.list_asset_groups(
+        filter_json=filter_json,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        page=page,
+        page_size=page_size
+    )
+
+    if not groups:
+        return CommandResults(readable_output="No asset groups found.")
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Asset Groups",
+        t=groups,
+        headers=['group_id', 'group_name', 'group_type', 'group_description'],
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
+        outputs_key_field="group_id",
+        outputs=groups,
+        raw_response=groups
+    )
+
+
+def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    group_id = args.get('group_id', "")
+    group_name = args.get('group_name', "")
+    group_type = args.get('group_type', "")
+    group_description = args.get('group_description', "")
+    membership_predicate_json = args.get('membership_predicate_json', "")
+    if membership_predicate_json:
+        membership_predicate_json = json.loads(membership_predicate_json)
+
+    client.update_asset_group(group_id, group_name, group_type, group_description, membership_predicate_json)
+
+    groups = client.list_asset_groups(filter_json=[{"field": "group_id", "operator": "eq", "value": group_id}])
+    if groups:
+        group = groups[0]
+        readable_output = tableToMarkdown(name="Asset Group Updated", t=group, headerTransform=string_to_table_header)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
+            outputs_key_field="group_id",
+            outputs=group
+        )
+
+    return CommandResults(readable_output="Asset group updated successfully")
 
 
 def main():  # pragma: no cover
@@ -1484,6 +1858,27 @@ def main():  # pragma: no cover
 
         elif command == "xdr-get-incidents":
             return_outputs(*get_incidents_command(client, args))
+
+        elif command == "xdr-asset-list":
+            return_results(get_asset_list_command(client, args))
+
+        elif command == "xdr-asset-schema-get":
+            return_results(get_asset_schema_command(client, args))
+
+        elif command == "xdr-asset-schema-field-options-get":
+            return_results(get_asset_schema_field_options_command(client, args))
+
+        elif command == "xdr-asset-group-create":
+            return_results(create_asset_group_command(client, args))
+
+        elif command == "xdr-asset-group-delete":
+            return_results(delete_asset_group_command(client, args))
+
+        elif command == "xdr-asset-group-list":
+            return_results(list_asset_groups_command(client, args))
+
+        elif command == "xdr-asset-group-update":
+            return_results(update_asset_group_command(client, args))
 
         elif command == "xdr-get-incident-extra-data":
             return_outputs(*get_incident_extra_data_command(client, args))
