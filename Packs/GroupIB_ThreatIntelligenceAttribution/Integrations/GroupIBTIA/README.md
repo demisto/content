@@ -120,37 +120,40 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 The following commands are available in this integration:
 
-- `gibtia-get-available-collections` - Returns list of available collections
-- `gibtia-get-compromised-account-info` - Performs Group-IB event lookup in compromised/account collection
-- `gibtia-get-compromised-card-group-info` - Performs Group-IB event lookup in compromised/card collection
-- `gibtia-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breached collection
-- `gibtia-get-phishing-group-info` - Performs Group-IB event lookup in attacks/phishing_group collection
-- `gibtia-get-osi-git-leak-info` - Performs Group-IB event lookup in osi/git_repository collection
-- `gibtia-get-osi-public-leak-info` - Performs Group-IB event lookup in osi/public_leak collection
-- `gibtia-get-osi-vulnerability-info` - Performs Group-IB event lookup in osi/vulnerability collection
-- `gibtia-get-malware-malware-info` - Performs Group-IB event lookup in malware/malware collection
-- `gibtia-get-compromised-mule-info` - Performs Group-IB event lookup in compromised/mule collection
-- `gibtia-get-attacks-ddos-info` - Performs Group-IB event lookup in attacks/ddos collection
-- `gibtia-get-attacks-deface-info` - Performs Group-IB event lookup in attacks/deface collection
-- `gibtia-get-threat-info` - Performs Group-IB event lookup in hi/threat or apt/threat collection
-- `gibtia-get-threat-actor-info` - Performs Group-IB event lookup in hi/threat_actor or apt/threat_actor collection
-- `gibtia-get-suspicious-ip-tor-node-info` - Performs Group-IB event lookup in suspicious_ip/tor_node collection
-- `gibtia-get-suspicious-ip-open-proxy-info` - Performs Group-IB event lookup in suspicious_ip/open_proxy collection
-- `gibtia-get-suspicious-ip-socks-proxy-info` - Performs Group-IB event lookup in suspicious_ip/socks_proxy collection
-- `gibtia-get-suspicious-ip-vpn-info` - Performs Group-IB event lookup in suspicious_ip/vpn collection
-- `gibtia-get-suspicious-ip-scanner-info` - Performs Group-IB event lookup in suspicious_ip/scanner collection
-- `gibtia-get-malware-cnc-info` - Performs Group-IB event lookup in malware/cnc collection
-- `gibtia-global-search` - Performs global Group-IB search across all collections
-- `gibtia-local-search` - Performs Group-IB search in selected collection
+> Note: Commands now use the `gibti-` prefix. Legacy `gibtia-` commands remain available for backward compatibility and are marked as deprecated in the integration settings.
 
-### gibtia-get-compromised-account-info
+- `gibti-get-available-collections` - Returns list of available collections
+- `gibti-get-compromised-account-info` - Performs Group-IB event lookup in compromised/account collection
+- `gibti-get-compromised-card-group-info` - Performs Group-IB event lookup in compromised/card collection
+- `gibti-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breached collection
+- `gibti-get-phishing-group-info` - Performs Group-IB event lookup in attacks/phishing_group collection
+- `gibti-get-phishing-kit-info` - Performs Group-IB event lookup in attacks/phishing_kit collection
+- `gibti-get-osi-git-leak-info` - Performs Group-IB event lookup in osi/git_repository collection
+- `gibti-get-osi-public-leak-info` - Performs Group-IB event lookup in osi/public_leak collection
+- `gibti-get-osi-vulnerability-info` - Performs Group-IB event lookup in osi/vulnerability collection
+- `gibti-get-malware-malware-info` - Performs Group-IB event lookup in malware/malware collection
+- `gibti-get-compromised-mule-info` - Performs Group-IB event lookup in compromised/mule collection
+- `gibti-get-attacks-ddos-info` - Performs Group-IB event lookup in attacks/ddos collection
+- `gibti-get-attacks-deface-info` - Performs Group-IB event lookup in attacks/deface collection
+- `gibti-get-threat-info` - Performs Group-IB event lookup in hi/threat or apt/threat collection
+- `gibti-get-threat-actor-info` - Performs Group-IB event lookup in hi/threat_actor or apt/threat_actor collection
+- `gibti-get-suspicious-ip-tor-node-info` - Performs Group-IB event lookup in suspicious_ip/tor_node collection
+- `gibti-get-suspicious-ip-open-proxy-info` - Performs Group-IB event lookup in suspicious_ip/open_proxy collection
+- `gibti-get-suspicious-ip-socks-proxy-info` - Performs Group-IB event lookup in suspicious_ip/socks_proxy collection
+- `gibti-get-suspicious-ip-vpn-info` - Performs Group-IB event lookup in suspicious_ip/vpn collection
+- `gibti-get-suspicious-ip-scanner-info` - Performs Group-IB event lookup in suspicious_ip/scanner collection
+- `gibti-get-malware-cnc-info` - Performs Group-IB event lookup in malware/cnc collection
+- `gibti-global-search` - Performs global Group-IB search across all collections
+- `gibti-local-search` - Performs Group-IB search in selected collection
+
+### gibti-get-compromised-account-info
 
 ***
 Command performs Group-IB event lookup in compromised/account collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-account-info`
+`gibti-get-compromised-account-info`
 
 #### Input
 
@@ -188,7 +191,7 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 
 #### Command Example
 
-```!gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a```
+```!gibti-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a```
 
 #### Human Readable Output
 
@@ -216,14 +219,14 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 >|---|---|---|---|---|---|
 >| AS1111 | Country | City | 253b9a136f0d574149fc43691eaf7ae27aff141a | red | 11.11.11.11 |
 
-### gibtia-get-compromised-breached-info
+### gibti-get-compromised-breached-info
 
 ***
 Command performs Group-IB event lookup in compromised/breached collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-breached-info`
+`gibti-get-compromised-breached-info`
 
 #### Input
 
@@ -244,7 +247,7 @@ Command performs Group-IB event lookup in compromised/breached collection with p
 
 #### Command Example
 
-```!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
+```!gibti-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
 
 #### Human Readable Output
 
@@ -254,14 +257,14 @@ Command performs Group-IB event lookup in compromised/breached collection with p
 >|---|---|---|---|---|---|---|
 >| address: <br/> | some@gmail.com | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
 
-### gibtia-get-compromised-mule-info
+### gibti-get-compromised-mule-info
 
 ***
 Command performs Group-IB event lookup in compromised/mule collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-compromised-mule-info`
+`gibti-get-compromised-mule-info`
 
 #### Input
 
@@ -292,7 +295,7 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 
 #### Command Example
 
-```!gibtia-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99```
+```!gibti-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99```
 
 #### Human Readable Output
 
@@ -320,14 +323,14 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 >|---|---|---|
 >| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | 11.11.11.11 |
 
-### gibtia-get-osi-git-leak-info
+### gibti-get-osi-git-leak-info
 
 ***
 Command performs Group-IB event lookup in osi/git_leak collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-git-leak-info`
+`gibti-get-osi-git-leak-info`
 
 #### Input
 
@@ -353,7 +356,7 @@ Command performs Group-IB event lookup in osi/git_leak collection with provided 
 
 #### Command Example
 
-```!gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691```
+```!gibti-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691```
 
 #### Human Readable Output
 
@@ -369,14 +372,14 @@ Command performs Group-IB event lookup in osi/git_leak collection with provided 
 >|---|---|---|---|---|---|---|---|---|---|
 >| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.com <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
 
-### gibtia-get-osi-public-leak-info
+### gibti-get-osi-public-leak-info
 
 ***
 Command performs Group-IB event lookup in osi/public_leak collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-public-leak-info`
+`gibti-get-osi-public-leak-info`
 
 #### Input
 
@@ -403,7 +406,7 @@ Command performs Group-IB event lookup in osi/public_leak collection with provid
 
 #### Command Example
 
-```!gibtia-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273```
+```!gibti-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273```
 
 #### Human Readable Output
 
@@ -419,14 +422,14 @@ Command performs Group-IB event lookup in osi/public_leak collection with provid
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-01T14:57:01+03:00 | 2021-04-01T14:50:45+03:00 | 5d9657dbdf59487a6031820add2cacbe54e86814 | api | <https://some.com> | 709 | some.com | 1 |
 
-### gibtia-get-osi-vulnerability-info
+### gibti-get-osi-vulnerability-info
 
 ***
 Command performs Group-IB event lookup in osi/vulnerability collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-osi-vulnerability-info`
+`gibti-get-osi-vulnerability-info`
 
 #### Input
 
@@ -454,7 +457,7 @@ Command performs Group-IB event lookup in osi/vulnerability collection with prov
 
 #### Command Example
 
-```!gibtia-get-osi-vulnerability-info id=CVE-2021-27152```
+```!gibti-get-osi-vulnerability-info id=CVE-2021-27152```
 
 #### Human Readable Output
 
@@ -470,14 +473,14 @@ Command performs Group-IB event lookup in osi/vulnerability collection with prov
 >|---|---|---|---|
 >| some_firmware | some | some | some |
 
-### gibtia-get-attacks-ddos-info
+### gibti-get-attacks-ddos-info
 
 ***
 Command performs Group-IB event lookup in attacks/ddos collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-attacks-ddos-info`
+`gibti-get-attacks-ddos-info`
 
 #### Input
 
@@ -509,7 +512,7 @@ Command performs Group-IB event lookup in attacks/ddos collection with provided 
 
 #### Command Example
 
-```!gibtia-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5```
+```!gibti-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5```
 
 #### Human Readable Output
 
@@ -531,14 +534,14 @@ Command performs Group-IB event lookup in attacks/ddos collection with provided 
 >|---|---|---|---|---|---|
 >| AS11111 | United States | Some | 26a05baa4025edff367b058b13c6b43e820538a5 | red | 11.11.11.11 |
 
-### gibtia-get-attacks-deface-info
+### gibti-get-attacks-deface-info
 
 ***
 Command performs Group-IB event lookup in attacks/deface collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-attacks-deface-info`
+`gibti-get-attacks-deface-info`
 
 #### Input
 
@@ -563,7 +566,7 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 
 #### Command Example
 
-```!gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21```
+```!gibti-get-attacks-deface-info id=6009637a1135cd001ef46e21```
 
 #### Human Readable Output
 
@@ -591,14 +594,35 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 >|---|---|---|---|
 >| Indonesia | 6009637a1135cd001ef46e21 | orange | 11.11.11.11 |
 
-### gibtia-get-threat-info
+### gibti-get-phishing-kit-info
+
+***
+Command performs Group-IB event lookup in attacks/phishing_kit collection with provided ID.
+
+#### Base Command
+
+`gibti-get-phishing-kit-info`
+
+> Legacy alias `gibtia-get-phishing-kit-info` remains available for backward compatibility.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | GIB event id. | Required |
+
+#### Command Example
+
+```!gibti-get-phishing-kit-info id=<phishing-kit-id>```
+
+### gibti-get-threat-info
 
 ***
 Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-threat-info`
+`gibti-get-threat-info`
 
 #### Input
 
@@ -649,7 +673,7 @@ Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT
 
 #### Command Example
 
-```!gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true```
+```!gibti-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true```
 
 #### Human Readable Output
 
@@ -689,14 +713,14 @@ Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT
 >| false | 42a9929807fd954918f9bb603135754be7a6e11c | en | hashes: {"md4": "", "md5": "5d43baf1c9e9e3a939e5defd8f3fbd1d", "md6": "", "ripemd120": "", "sha1": "d5ff73c043f3bb75dd749636307500b60a336150", "sha224": "", "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc3dd12", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: 5d43baf1c9e9e3a939e5defd8f8fbd1d<br>size: null | 16107188498634 | file |
 >| false | 12cad1ca535a92a2ed306c0edf3025e7d9776612 | en | domain: some.com <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.com> | 16107188498908 | network |
 
-### gibtia-get-threat-actor-info
+### gibti-get-threat-actor-info
 
 ***
 Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-threat-actor-info`
+`gibti-get-threat-actor-info`
 
 #### Input
 
@@ -731,7 +755,7 @@ Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 #### Command Example
 
-```!gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true```
+```!gibti-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true```
 
 #### Human Readable Output
 
@@ -747,14 +771,14 @@ Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_acto
 >|---|---|---|
 >| 2021-02-04 | 59dec5947c5adac898445e3958b1d05e1c260459 | en: Template injection attacks from the Gamaredon group continued: protocol topics |
 
-### gibtia-get-suspicious-ip-tor-node-info
+### gibti-get-suspicious-ip-tor-node-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/tor_node collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-tor-node-info`
+`gibti-get-suspicious-ip-tor-node-info`
 
 #### Input
 
@@ -775,7 +799,7 @@ Command performs Group-IB event lookup in suspicious_ip/tor_node collection with
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-tor-node-info id=109.70.100.46```
+```!gibti-get-suspicious-ip-tor-node-info id=109.70.100.46```
 
 #### Human Readable Output
 
@@ -791,14 +815,14 @@ Command performs Group-IB event lookup in suspicious_ip/tor_node collection with
 >|---|---|---|
 >| 11.11.11.11 | green | 11.11.11.11 |
 
-### gibtia-get-suspicious-ip-open-proxy-info
+### gibti-get-suspicious-ip-open-proxy-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/open_proxy collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-open-proxy-info`
+`gibti-get-suspicious-ip-open-proxy-info`
 
 #### Input
 
@@ -822,7 +846,7 @@ Command performs Group-IB event lookup in suspicious_ip/open_proxy collection wi
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369```
+```!gibti-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369```
 
 #### Human Readable Output
 
@@ -838,14 +862,14 @@ Command performs Group-IB event lookup in suspicious_ip/open_proxy collection wi
 >|---|---|---|---|---|---|---|
 >| Country | cc6a2856da2806b03839f81aa214f22dbcfd7369 | 11.11.11.11 | 80 | green | some.com | 11.11.11.11 |
 
-### gibtia-get-suspicious-ip-socks-proxy-info
+### gibti-get-suspicious-ip-socks-proxy-info
 
 ***
 Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
 
 #### Base Command
 
-`gibtia-get-suspicious-ip-socks-proxy-info`
+`gibti-get-suspicious-ip-socks-proxy-info`
 
 #### Input
 
@@ -866,7 +890,7 @@ Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection w
 
 #### Command Example
 
-```!gibtia-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e```
+```!gibti-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e```
 
 #### Human Readable Output
 
@@ -882,14 +906,14 @@ Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection w
 >|---|---|---|---|---|
 >| AS11111 | Country | 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e | green | 11.11.11.11 |
 
-### gibtia-get-malware-cnc-info
+### gibti-get-malware-cnc-info
 
 ***
 Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 #### Base Command
 
-`gibtia-get-malware-cnc-info`
+`gibti-get-malware-cnc-info`
 
 #### Input
 
@@ -917,7 +941,7 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 #### Command Example
 
-```!gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089```
+```!gibti-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089```
 
 #### Human Readable Output
 
@@ -957,14 +981,14 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 >|---|---|---|---|
 >| AS1111 | United States | aeed277396e27e375d030a91533aa232444d0089 | 11.11.11.11 |
 
-### gibtia-get-available-collections
+### gibti-get-available-collections
 
 ***
 Returns list of available collections.
 
 #### Base Command
 
-`gibtia-get-available-collections`
+`gibti-get-available-collections`
 
 #### Input
 
@@ -978,7 +1002,7 @@ There are no input arguments for this command.
 
 #### Command Example
 
-```!gibtia-get-available-collections```
+```!gibti-get-available-collections```
 
 #### Human Readable Output
 
@@ -988,14 +1012,14 @@ There are no input arguments for this command.
 >|---|
 >| compromised/account,<br/>compromised/card,<br/>bp/phishing,<br/>bp/phishing_kit,<br/>osi/git_leak,<br/>osi/public_leak,<br/>malware/targeted_malware,<br/>compromised/mule,<br/>compromised/imei,<br/>attacks/ddos,<br/>attacks/deface,<br/>attacks/phishing,<br/>attacks/phishing_kit,<br/>apt/threat,<br/>hi/threat,<br/>suspicious_ip/tor_node,<br/>suspicious_ip/open_proxy,<br/>suspicious_ip/socks_proxy,<br/>malware/cnc,<br/>osi/vulnerability,<br/>hi/threat_actor,<br/>apt/threat_actor |
 
-### gibtia-global-search
+### gibti-global-search
 
 ***
 Command performs global Group-IB search
 
 #### Base Command
 
-`gibtia-global-search`
+`gibti-global-search`
 
 #### Input
 
@@ -1013,7 +1037,7 @@ Command performs global Group-IB search
 
 #### Command Example
 
-```!gibtia-global-search query=100.100.100.100```
+```!gibti-global-search query=100.100.100.100```
 
 #### Human Readable Output
 
@@ -1027,14 +1051,14 @@ Command performs global Group-IB search
 >| osi/git_leak | 5 | [https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100) |
 >| osi/public_leak | 23 | [https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100](https://group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100) |
 
-### gibtia-local-search
+### gibti-local-search
 
 ***
 Command performs Group-IB search in selected collection.
 
 #### Base Command
 
-`gibtia-local-search`
+`gibti-local-search`
 
 #### Input
 
@@ -1054,7 +1078,7 @@ Command performs Group-IB search in selected collection.
 
 #### Command Example
 
-```!gibtia-local-search collection_name=attacks/phishing query=100.100.100.100```
+```!gibti-local-search collection_name=attacks/phishing query=100.100.100.100```
 
 #### Human Readable Output
 

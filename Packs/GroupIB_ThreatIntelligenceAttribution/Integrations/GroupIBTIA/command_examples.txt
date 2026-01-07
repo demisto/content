@@ -1,22 +1,29 @@
-!gibtia-get-available-collections
-!gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a
-!gibtia-get-compromised-card-group-info id=ecda6f4dc85596f447314ce01e215
-!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba
-!gibtia-get-phishing-group-info id=42a22d6c8d642ba628294b2c91acfe322ffe16dda3
-!gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691
-!gibtia-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273
-!gibtia-get-osi-vulnerability-info id=CVE-2021-27152
-!gibtia-get-malware-malware-info id=83887a0fa2181a9a169ac65f5f6
-!gibtia-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99
-!gibtia-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5
-!gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21
-!gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true
-!gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef2988 isAPT=true
-!gibtia-get-suspicious-ip-tor-node-info id=100.100.100.100
-!gibtia-get-suspicious-ip-open-proxy-info id=100.100.100.100
-!gibtia-get-suspicious-ip-socks-proxy-info id=100.100.100.100
-!gibtia-get-suspicious-ip-vpn-info id=100.100.100.100
-!gibtia-get-suspicious-ip-scanner-info id=100.100.100.100
-!gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089
-!gibtia-global-search query=100.100.100.100
-!gibtia-local-search collection_name=attacks/phishing_group query=100.100.100.100
+!gibti-get-available-collections
+!gibti-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a
+!gibti-get-compromised-card-group-info id=ecda6f4dc85596f447314ce01e215
+!gibti-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba
+!gibti-get-phishing-group-info id=42a22d6c8d642ba628294b2c91acfe322ffe16dda3
+!gibti-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691
+!gibti-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273
+!gibti-get-osi-vulnerability-info id=CVE-2021-27152
+!gibti-get-malware-malware-info id=83887a0fa2181a9a169ac65f5f6
+!gibti-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99
+!gibti-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5
+!gibti-get-attacks-deface-info id=6009637a1135cd001ef46e21
+!gibti-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true
+!gibti-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef2988 isAPT=true
+!gibti-get-suspicious-ip-tor-node-info id=100.100.100.100
+!gibti-get-suspicious-ip-open-proxy-info id=100.100.100.100
+!gibti-get-suspicious-ip-socks-proxy-info id=100.100.100.100
+!gibti-get-suspicious-ip-vpn-info id=100.100.100.100
+!gibti-get-suspicious-ip-scanner-info id=100.100.100.100
+!gibti-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089
+!gibti-global-search query=100.100.100.100
+!gibti-local-search collection_name=attacks/phishing_group query=100.100.100.100
+!gibti-ip-scoring ip=100.100.100.100
+!ip ip=100.100.100.100
+!IPReputation ip=100.100.100.100
+!domain domain=example.com
+!DomainReputation domain=example.com
+!file file=ef3ee86e8f2a46aae25a964b61bc4136b93c321d
+!FileReputation file=ef3ee86e8f2a46aae25a964b61bc4136b93c321d
