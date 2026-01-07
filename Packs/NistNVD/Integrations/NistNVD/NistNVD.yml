@@ -132,6 +132,9 @@ script:
     description: Search specific CVE.
     name: nvd-search-cve
   dockerimage: demisto/python3:3.12.12.5490952
+  sectionorder:
+- Connect
+- Collect
   runonce: false
   script: ''
   subtype: python3
