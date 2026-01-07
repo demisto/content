@@ -574,7 +574,6 @@ class ExchangeOnlinePowershellV3Client
         $results = ""
         try {
             $cmd_params = @{ }
-            $cmd_params.CompressOutput = $compress_output
             if ($identities)
             {
                 $cmd_params.Identities = $identities
@@ -593,7 +592,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $null
+                $cmd_params.ForceConversionToMime = $force_conversion_to_mime
             }
             if ($password)
             {
