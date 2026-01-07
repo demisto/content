@@ -53,6 +53,6 @@ There is no context output for this command.
 
 Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM logs are only available for fetching within a 24-hour rolling window.
 
-* When retrieving SIEM logs using the _**mimecast-get-events**_ command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error for SIEM event types.
+* If the integration instance is disabled or the _**Fetch events**_ checkbox is unchecked for a period of more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM log coverage during the downtime period.
 
-* If the integration instance is disabled or the _**Fetch events**_ checkbox is unchecked for a period of more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM event coverage during the downtime period.
+* When retrieving SIEM logs using the _**mimecast-get-events**_ command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error.
