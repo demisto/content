@@ -3156,52 +3156,51 @@ script:
       description:  Retrieves resolution status information for a specific case.
       hidden: true
       outputs:
-        outputs:
-          - contextPath: Core.CaseResolutionStatus.category
-            description: The category of the item (done, inProgress, pending, recommended).
-            type: String
-          - contextPath: Core.CaseResolutionStatus.itemType
-            description: The type of item - "playbook" or "playbookTask".
-            type: String
-          - contextPath: Core.CaseResolutionStatus.id
-            description: The unique identifier of the playbook or task.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.name
-            description: The name of the playbook or task.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.description
-            description: The description of the playbook or task.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.status
-            description: The execution/completion status.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.type
-            description: The type of the task (for playbookTask items).
-            type: String
-          - contextPath: Core.CaseResolutionStatus.issueIDs
-            description: Array of issue IDs associated with the playbook or task.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.playbookVersion
-            description: The version number of the playbook.
-            type: Number
-          - contextPath: Core.CaseResolutionStatus.startedAt
-            description: Timestamp when execution started (for done/inProgress playbooks).
-            type: Number
-          - contextPath: Core.CaseResolutionStatus.completedAt
-            description: Timestamp when execution completed (for done playbooks).
-            type: Number
-          - contextPath: Core.CaseResolutionStatus.parentPlaybook.id
-            description: The unique identifier of the parent playbook.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.parentPlaybook.name
-            description: The name of the parent playbook.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.parentPlaybook.description
-            description: The description of the parent playbook.
-            type: String
-          - contextPath: Core.CaseResolutionStatus.userInput
-            description: User input parameters (for pending playbookTask items).
-            type: Unknown
+        - contextPath: Core.CaseResolutionStatus.category
+          description: The category of the item (done, inProgress, pending, recommended).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.itemType
+          description: The type of item - "playbook" or "playbookTask".
+          type: String
+        - contextPath: Core.CaseResolutionStatus.id
+          description: The unique identifier of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.name
+          description: The name of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.description
+          description: The description of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.status
+          description: The execution/completion status.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.type
+          description: The type of the task (for playbookTask items).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.issueIDs
+          description: Array of issue IDs associated with the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.playbookVersion
+          description: The version number of the playbook.
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.startedAt
+          description: Timestamp when execution started (for done/inProgress playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.completedAt
+          description: Timestamp when execution completed (for done playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.id
+          description: The unique identifier of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.name
+          description: The name of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.description
+          description: The description of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.userInput
+          description: User input parameters (for pending playbookTask items).
+          type: Unknown
   runonce: false
   script: "-"
   subtype: python3
