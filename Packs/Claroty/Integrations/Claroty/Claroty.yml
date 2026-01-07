@@ -370,7 +370,7 @@ script:
       type: String
     - contextPath: Claroty.Alert.InitialArrFlowCompleted
       description: Whether the alert has completed its initial Automated Resolution Rules flow.
-      type: Number
+      type: Boolean
   - arguments:
     - description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format).
       name: selected_alerts
