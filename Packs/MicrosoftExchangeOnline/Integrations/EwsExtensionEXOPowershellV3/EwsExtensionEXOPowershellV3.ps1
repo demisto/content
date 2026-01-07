@@ -570,7 +570,7 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
-
+        $zipErrMsg = "Using this argument requires 'compress_output' to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
@@ -596,10 +596,16 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($password)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.ReasonForExport = $reason_for_export
             }
             if ($recipient_address)
