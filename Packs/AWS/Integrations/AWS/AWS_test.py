@@ -111,19 +111,20 @@ def test_s3_put_bucket_versioning_command_exception(mocker):
         S3.put_bucket_versioning_command(mock_client, args)
 
 
-@pytest.mark.parametrize("status_code, expected_msg_fragment, is_error", [
-    (HTTPStatus.NO_CONTENT, "Successfully deleted bucket", False),  # Case 1: Success (204 No Content)
-    (HTTPStatus.NOT_FOUND, "Error deleting bucket", True)  # Case 2: Failure (404 Not Found or other error)
-])
+@pytest.mark.parametrize(
+    "status_code, expected_msg_fragment, is_error",
+    [
+        (HTTPStatus.NO_CONTENT, "Successfully deleted bucket", False),  # Case 1: Success (204 No Content)
+        (HTTPStatus.NOT_FOUND, "Error deleting bucket", True),  # Case 2: Failure (404 Not Found or other error)
+    ],
+)
 def test_delete_bucket_command(mocker, status_code, expected_msg_fragment, is_error):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.delete_bucket.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": status_code}
-    }
+    mock_client.delete_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": status_code}}
 
-    mock_error_handler = mocker.patch('AWS.AWSErrorHandler.handle_response_error')
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     mock_error_handler.return_value = CommandResults(readable_output="Error deleting bucket")
 
     args = {"bucket": "test-bucket"}
@@ -138,23 +139,27 @@ def test_delete_bucket_command(mocker, status_code, expected_msg_fragment, is_er
         mock_error_handler.assert_not_called()
 
 
-@pytest.mark.parametrize("mock_contents, expected_readable_fragment, expected_output_len", [
-    # Case 1: Bucket has objects (Success) - Verifies Size conversion (1024 -> 1.0 KB)
-    ([{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}], "AWS S3 Bucket Object", 1),
-    ([], "No objects found in bucket", 0)  # Case 2: Bucket is empty (Success but no content)
-])
+@pytest.mark.parametrize(
+    "mock_contents, expected_readable_fragment, expected_output_len",
+    [
+        # Case 1: Bucket has objects (Success) - Verifies Size conversion (1024 -> 1.0 KB)
+        (
+            [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+            "AWS S3 Bucket Object",
+            1,
+        ),
+        ([], "No objects found in bucket", 0),  # Case 2: Bucket is empty (Success but no content)
+    ],
+)
 def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fragment, expected_output_len):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_response = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Contents": mock_contents
-    }
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Contents": mock_contents}
 
     mock_client.list_objects.return_value = mock_response
 
-    mocker.patch('AWS.serialize_response_with_datetime_encoding', return_value=mock_response)
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
     args = {"bucket": "test-bucket"}
 
     result = S3.list_bucket_objects_command(mock_client, args)
