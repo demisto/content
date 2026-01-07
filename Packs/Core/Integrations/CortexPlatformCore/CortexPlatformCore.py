@@ -98,6 +98,9 @@ DISABLE_PREVENTION_RULES_TABLE = "AGENT_EXCEPTION_RULES_TABLE_ADVANCED"
 LEGACY_AGENT_EXCEPTIONS_TABLE = "AGENT_EXCEPTION_RULES_TABLE_LEGACY"
 
 
+CUSTOM_FIELDS_TABLE = "CUSTOM_FIELDS_CASE_TABLE"
+
+
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
@@ -714,6 +717,57 @@ def filter_context_fields(output_keys: list, context: list):
 
 
 class Client(CoreClient):
+    def platform_http_request(
+        self,
+        method,
+        url_suffix="",
+        json_data=None,
+        params=None,
+        data=None,
+        timeout=None,
+        ok_codes=None,
+        error_handler=None,
+        with_metrics=False,
+    ):
+        """A wrapper for the platformAPICall method to better handle requests and responses.
+
+        Args:
+            method (str): The HTTP method, for example: GET, POST, and so on.
+            url_suffix (str): The API endpoint suffix to append to the base URL.
+            json_data (dict, optional): Dictionary to send in the request body as JSON.
+                Will be automatically serialized to JSON string.
+            params (dict, optional): URL parameters to specify the query string.
+            data (str, optional): Raw data to send in the request body.
+                Used when json_data is not provided.
+            timeout (float or tuple, optional): The amount of time (in seconds) that a request
+                will wait for a client to establish a connection to a remote machine before
+                a timeout occurs. Can be only float (Connection Timeout) or a tuple
+                (Connection Timeout, Read Timeout).
+            ok_codes (list, optional): List of HTTP status codes that are considered successful.
+                If the response status is not in this list, an error will be raised.
+            error_handler (callable, optional): Custom error handler function to process errors.
+            with_metrics (bool): Whether to include metrics in error handling.
+
+        Returns:
+            dict or str: The parsed JSON response as a dictionary, or the raw response data
+                if JSON parsing fails.
+
+        Raises:
+            DemistoException: If FORWARD_USER_RUN_RBAC is not enabled, indicating the integration
+                is cloned or the server version is too low.
+        """
+        data = json.dumps(json_data) if json_data is not None else data
+
+        response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
+
+        if ok_codes and response.get("status") not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            return json.loads(response["data"])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response["data"]
+
     def test_module(self):
         """
         Performs basic get request to get item samples
@@ -1008,6 +1062,35 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
+
+    def get_custom_fields_metadata(self) -> dict[str, Any]:
+        """
+        Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
+
+        Returns comprehensive metadata for all custom fields including:
+        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
+        - CUSTOM_FIELD_TYPE: Field data type
+
+        Returns:
+            dict: Response containing custom fields metadata in reply.DATA
+        """
+        request_data = {
+            "type": "grid",
+            "table_name": CUSTOM_FIELDS_TABLE,
+            "filter_data": {
+                "sort": [],
+                "filter": {},
+                "free_text": "",
+                "visible_columns": None,
+                "locked": None,
+                "paging": {"from": 0, "to": 1000},
+            },
+            "jsons": [],
+        }
+
+        return self.get_webapp_data(request_data)
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -3044,6 +3127,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             f"{list(CaseManagement.SEVERITY.keys())}"
         )
 
+    valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
+
     # Build request_data with mapped and filtered values
     case_update_payload = {
         "caseName": case_name if case_name else None,
@@ -3056,26 +3141,78 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
-        "CustomFields": custom_fields if custom_fields else None,
+        "CustomFields": valid_fields_to_update if valid_fields_to_update else None,
     }
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
-        raise ValueError("No valid update parameters provided for case update.")
+        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
     responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = []
-    for resp in responses:
-        replies.append(process_case_response(resp))
+    replies = [process_case_response(resp) for resp in responses]
 
-    return CommandResults(
+    command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
         raw_response=replies,
     )
+
+    if error_messages:
+        return_results(command_results)
+        return_error(f"The following fields could not be updated:\n{error_messages}")
+
+    return command_results
+
+
+def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
+    """
+    Validates custom fields against system metadata.
+
+    Args:
+        fields_to_validate: Dict of field names and values to validate.
+        client: Client instance for API calls.
+
+    Returns:
+        Tuple of (valid_fields_dict, error_messages_str).
+    """
+    if not fields_to_validate:
+        return {}, ""
+
+    fields_data = client.get_custom_fields_metadata().get("reply", {}).get("DATA", [])
+
+    if not fields_data:
+        return {}, "No Fields are defined in the system."
+
+    system_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+    custom_fields = {
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        for f in fields_data
+        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+    }
+
+    if not custom_fields:
+        return {}, "No custom fields are defined in the system."
+
+    demisto.debug(f"Available custom fields: {custom_fields=}")
+    valid_fields, error_messages = {}, []
+    for field_name, field_value in fields_to_validate.items():
+        if field_name in system_fields:
+            error_messages.append(
+                f"Field '{field_name}' ({system_fields[field_name]}) is a system field and cannot"
+                f" be set with custom_fields argument."
+            )
+        elif field_name in custom_fields:
+            valid_fields[field_name] = field_value
+        else:
+            error_messages.append(f"Field '{field_name}' does not exist.")
+
+    return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
@@ -3773,6 +3910,186 @@ def list_system_users_command(client, args):
     )
 
 
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+    """Convert a timeframe string to a json required for XQL queries.
+
+    Args:
+        time_to_convert (str): The time frame string to convert (supports seconds, minutes, hours, days, months, years, between).
+
+    Returns:
+        dict: The timeframe parameters in JSON.
+    """
+    try:
+        time_to_convert_lower = time_to_convert.strip().lower()
+        if time_to_convert_lower.startswith("between "):
+            tokens = time_to_convert_lower[len("between ") :].split(" and ")
+            if len(tokens) == 2:
+                time_from = dateparser.parse(tokens[0], settings={"TIMEZONE": "UTC"})
+                time_to = dateparser.parse(tokens[1], settings={"TIMEZONE": "UTC"})
+                if time_from is None or time_to is None:
+                    raise DemistoException(
+                        "Failed to parse timeframe argument, please use a valid format."
+                        " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                    )
+                return {"from": int(time_from.timestamp() * 1000), "to": int(time_to.timestamp() * 1000)}
+        else:
+            relative = dateparser.parse(time_to_convert, settings={"TIMEZONE": "UTC"})
+            now_date = datetime.utcnow()
+            if relative is None or now_date is None:
+                raise DemistoException(
+                    "Failed to parse timeframe argument, please use a valid format."
+                    " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                )
+            return {"relativeTime": int((now_date - relative).total_seconds() * 1000)}
+
+        raise ValueError(f"Invalid timeframe: {time_to_convert}")
+    except Exception as exc:
+        raise DemistoException(
+            f"Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, years, between).\n{exc!s}"
+        )
+
+
+def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
+    """Retrieve results of an executed XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to retrieve.
+
+    Returns:
+        dict: The query results including status, execution_id, and results if completed.
+    """
+    data: dict[str, Any] = {
+        "query_id": execution_id,
+    }
+
+    # Call the Client function and get the raw response
+    demisto.debug(f"Calling get_query_results with {data=}")
+    response = client.platform_http_request(
+        method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
+    )
+
+    response["execution_id"] = execution_id
+    stream_id = response.get("stream_id")
+    if response.get("status") != "PENDING" and stream_id:
+        data = {
+            "stream_id": stream_id,
+        }
+        demisto.debug(f"Requesting query results using {data=}")
+        query_data = client.platform_http_request(
+            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
+        )
+        if isinstance(query_data, str):
+            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+        else:
+            response["results"] = query_data
+
+    if response.get("status") == "FAIL":
+        # Get full error details using PAPI
+        data = {
+            "request_data": {
+                "query_id": execution_id,
+                "pending_flag": True,
+                "format": "json",
+            }
+        }
+        res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
+        response["error_details"] = res.get("reply", "")
+
+    return response
+
+
+def get_xql_query_results_platform_polling(client: Client, execution_id: str, timeout: int) -> dict:
+    """Retrieve results of an executed XQL query using Platform API with polling.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to fetch.
+        timeout (int): The polling timeout in seconds.
+
+    Returns:
+        dict: The query results after polling completes or timeout is reached.
+    """
+    interval_in_secs = 10
+
+    # Block execution until the execution status isn't pending or we time out
+    polling_start_time = datetime.now()
+    while (datetime.now() - polling_start_time).total_seconds() < timeout:
+        outputs = get_xql_query_results_platform(client, execution_id)
+        if outputs.get("status") != "PENDING":
+            break
+
+        t_to_timeout = (datetime.now() - polling_start_time).total_seconds()
+        demisto.debug(
+            f"Got status 'PENDING' for {execution_id}, next poll in {interval_in_secs} seconds. Timeout in {t_to_timeout}"
+        )
+        time.sleep(interval_in_secs)  # pylint: disable=E9003
+
+    return outputs
+
+
+def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
+    """Execute an XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        query (str): The XQL query string to execute.
+        timeframe (dict): The timeframe for the query.
+
+    Returns:
+        str: The query execution ID.
+    """
+    DEFAULT_LIMIT = 1000
+    if "limit" not in query:  # Add default limit if no limit was provided
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+
+    data: Dict[str, Any] = {
+        "query": query,
+        "timeframe": timeframe,
+    }
+
+    demisto.debug(f"Calling xql_queries/submit with {data=}")
+    res = client.platform_http_request(url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200])
+    return str(res)
+
+
+def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
+    """Execute an XQL query using Platform API and poll for results.
+
+    Args:
+        client (Client): The XDR Client.
+        args (dict): Command arguments including query, timeframe, wait_for_results, and timeout_in_seconds.
+
+    Returns:
+        CommandResults: The command results with execution_id, query_url, and optionally status and results.
+    """
+    query = args.get("query", "")
+    if not query:
+        raise ValueError("query is not specified")
+
+    timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
+
+    execution_id = start_xql_query_platform(client, query, timeframe)
+
+    if not execution_id:
+        raise DemistoException("Failed to start query\n")
+
+    query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
+    outputs = {
+        "execution_id": execution_id,
+        "query_url": query_url,
+    }
+
+    if argToBoolean(args.get("wait_for_results", True)):
+        demisto.debug(f"Polling query execution with {execution_id=}")
+        timeout_in_secs = int(args.get("timeout_in_seconds", 180))
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
+
+    return CommandResults(
+        outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
 def enhance_with_pb_details(pb_id_to_data, obj):
     related_pb = pb_id_to_data.get(obj.get("id"))
     if related_pb:
@@ -3965,6 +4282,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-resolution-statuses":
             return_results(get_case_resolution_statuses(client, args))
+
+        elif command == "core-xql-generic-query-platform":
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+
+            return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
