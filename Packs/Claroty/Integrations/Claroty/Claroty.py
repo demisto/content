@@ -371,7 +371,7 @@ def _add_include_only_arr_completed_alerts_filters(filters: list[Filter]):
     if not filters:
         return [Filter("initial_arr_flow_completed", "true", "exact")]
 
-    filters += [Filter("initial_arr_flow_completed", "true", "exact")]
+    filters.append(Filter("initial_arr_flow_completed", "true", "exact"))
     return filters
 
 
