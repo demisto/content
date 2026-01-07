@@ -4130,6 +4130,9 @@ def get_case_resolution_statuses(client, args):
         raw_response=response,
     )
 
+def verify_platform_version(version : str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
 
 def main():  # pragma: no cover
     """
@@ -4274,12 +4277,11 @@ def main():  # pragma: no cover
             return_results(update_endpoint_version_command(client, args))
 
         elif command == "core-get-case-resolution-statuses":
+            verify_platform_version()
             return_results(get_case_resolution_statuses(client, args))
 
         elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
-
+            verify_platform_version()
             return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
