@@ -4609,7 +4609,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
 
 
-
 def test_add_cases_extra_data_single_case(mocker):
     """
     Given:

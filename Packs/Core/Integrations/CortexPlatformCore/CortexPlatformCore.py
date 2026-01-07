@@ -1873,8 +1873,12 @@ def add_cases_ai_summary(client, cases_list):
             case_id = case.get("case_id")
             case_summary = get_case_ai_summary_command(client, {"case_id": case_id})
             if case_summary:
-                case["description"] = case_summary.outputs.get("case_description")
-                case["name"] = case_summary.outputs.get("case_name")
+                outputs : dict = case_summary.outputs
+                if outputs:
+                    if outputs.get("case_description"):
+                        case["description"] = outputs.get("case_description")
+                    if outputs.get("case_name"):
+                        case["name"] = outputs.get("case_name")
     except Exception as e:
         demisto.debug(str(e))
     return cases_list
@@ -4135,7 +4139,8 @@ def get_case_ai_summary_command(client: Client, args: dict) -> CommandResults:
                         raw response, and outputs for integration context.
     """
     case_id = arg_to_number(args.get("case_id"))
-
+    if case_id is None:
+        raise DemistoException("get_case_ai_summary_command: case_id is required.")
     response = client.get_case_ai_summary(case_id)
     if not response:
         raise DemistoException(f"Failed to fetch ai summary for case {case_id}. Ensure the asset ID is valid.")
@@ -4184,7 +4189,7 @@ def init_client(api_type: str) -> Client:
         "data_platform": f"{webapp_root}/data-platform",
         "appsec": f"{webapp_root}/public_api/appsec",
         "xsoar": "/xsoar",
-        "agents": f"{webapp_root}/agents"
+        "agents": f"{webapp_root}/agents",
     }
 
     # Fallback to public API if the type isn't recognized
