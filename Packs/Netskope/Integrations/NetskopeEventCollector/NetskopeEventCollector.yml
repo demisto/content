@@ -56,8 +56,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Netskope Event Collector integration.
-display: Netskope Event Collector
+description: Deprecated. Use Netskope Event Collector v2 instead.
+display: Netskope Event Collector (Deprecated)
 name: NetskopeEventCollector
 script:
   commands:
@@ -75,6 +75,7 @@ script:
       defaultValue: 10
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
+    deprecated: true
   dockerimage: demisto/python3:3.12.11.4508456
   runonce: false
   script: '-'
@@ -82,8 +83,9 @@ script:
   type: python
   isfetchevents: true
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.8.0
+deprecated: true
