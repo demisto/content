@@ -212,7 +212,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is atleast one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts ",
+                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage  > 0, \"Bronze - PASS - Data Security - There is at least one cloud account that has DSPM enabled\", \"Bronze - FAIL - Data Security - There is no cloud account that has DSPM enabled\")\n| view graph type = pie subtype = semi_donut xaxis = status yaxis = dspm_enabled_accounts ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -372,7 +372,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d | dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as num_of_registry_scanning_enabled_accounts   | alter status = if(num_of_registry_scanning_enabled_accounts  > 1, \"Bronze - PASS - Runtime - Protect Managed Images - Registry Scanned\", \"Bronze - FAIL - PRuntime - Protect Managed Images - Registry Scanned\")\n\n| view graph type = pie xaxis = status yaxis = num_of_registry_scanning_enabled_accounts seriestitle(\"num_of_registry_scanning_enabled_accounts\",\"Distinct accounts supporting registry scanning\") ",
+                                "phrase": "config timeframe = 30d | dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as num_of_registry_scanning_enabled_accounts   | alter status = if(num_of_registry_scanning_enabled_accounts  > 1, \"Bronze - PASS - Runtime - Protect Managed Images - Registry Scanned\", \"Bronze - FAIL - Runtime - Protect Managed Images - Registry Scanned\")\n\n| view graph type = pie xaxis = status yaxis = num_of_registry_scanning_enabled_accounts seriestitle(\"num_of_registry_scanning_enabled_accounts\",\"Distinct accounts supporting registry scanning\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -739,7 +739,7 @@
     "widgets_data": [
         {
             "widget_key": "xql_1764836644887",
-            "title": "bpachauli-CWP-Gold-Issues on exposed assets down",
+            "title": "CWP Gold Issues on exposed assets down",
             "creation_time": 1764836644887,
             "description": "Issues on exposed assets down",
             "data": {
@@ -1029,9 +1029,9 @@
         },
         {
             "widget_key": "xql_1764777033854",
-            "title": "bpachauli- %Reduction in vulnerabilities over last 30 days",
+            "title": "Reduction in vulnerabilities over last 30 days",
             "creation_time": 1764777033854,
-            "description": "bpachauli- %Reduction in vulnerabilities over last 30 days",
+            "description": "Reduction in vulnerabilities over last 30 days",
             "data": {
                 "phrase": "config timeframe = 30d | dataset = uvm_findings | bin insert_time span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", insert_time  ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as vuln_id by date | sort desc date\n\n\n\n| view graph type = single subtype = trend header = \"%Reduction in vulnerabilities over last 30 days\" xaxis = date yaxis = vuln_id trend_percentage = `true` headerfontsize = 40 ",
                 "timeSpan": {
@@ -1101,7 +1101,7 @@
         },
         {
             "widget_key": "xql_1764838683019",
-            "title": "bpachaul-CWP-Bronze-Registry scanning enabled",
+            "title": "CWP Bronze Registry scanning enabled",
             "creation_time": 1764838683019,
             "description": "Registry scanning enabled",
             "data": {
@@ -1420,5 +1420,6 @@
         }
     ],
     "id": "2f4657820d624e06b0f51ebb21da16ea",
-    "name": "bpachauli-badges"
+    "fromVersion": "5.0.0",
+    "name": " Cortex Insights Badges"
 }

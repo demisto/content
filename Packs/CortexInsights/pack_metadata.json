@@ -1,9 +1,9 @@
 {
     "name": "Cortex Insights",
-    "description": "Provides dashboards with an oveview of current health and risk issues in addition to customer badges",
+    "description": "Provides dashboards with an overview of current health and risk issues in addition to customer badges",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Palo Alto Networks Technical Servicesmv",
+    "author": "Palo Alto Networks Technical Services",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
