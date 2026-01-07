@@ -1257,7 +1257,7 @@ def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResul
     Returns:
         CommandResults: The devices owned by the specified user.
     """
-    user_id = args.get("user_id", "")
+    user_id = args.get("user", "")
     next_page = args.get("next_page", "")
     filters = args.get("filter", "")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
@@ -1270,8 +1270,8 @@ def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResul
     devices_readable, devices_outputs = parse_outputs(devices_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {"ID": "Device Id", "Device ID": "Azure Device Registration Id", "Display Name": "Device Display Name"}
-    devices_readable = map_auth_method_fields_to_readable(devices_readable, field_mapping)
+    field_mapping = {"id": "Device Id", "deviceId": "Azure Device Registration Id", "displayName": "Device Display Name"}
+    devices_readable = map_auth_method_fields_to_readable(devices_data, field_mapping)
 
     headers = ["Device Id", "Azure Device Registration Id", "Device Display Name"]
 
