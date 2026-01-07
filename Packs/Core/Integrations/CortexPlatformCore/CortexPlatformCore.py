@@ -1873,7 +1873,7 @@ def add_cases_ai_summary(client, cases_list):
             case_id = case.get("case_id")
             case_summary = get_case_ai_summary_command(client, {"case_id": case_id})
             if case_summary:
-                outputs : dict = case_summary.outputs
+                outputs = case_summary.outputs # type: ignore
                 if outputs:
                     if outputs.get("case_description"):
                         case["description"] = outputs.get("case_description")
