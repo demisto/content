@@ -47,8 +47,8 @@ This command is used for developing/ debugging and is to be used with caution, a
 | start_time | Start time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). | Required |
 | end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). | Optional |
 | time_method | For more information see the explanation in the help section. | Required |
-| fetch_size | The maximum number of results per fetch, default 10 | Optional |
-| fetch_index | CSV | Optional |
+| fetch_size | The maximum number of results per fetch, default 10. | Optional |
+| fetch_index | CSV. | Optional |
 | fetch_time_field | The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation. | Required |
 | fetch_query | Query string uses the Lucene syntax. | Optional |
 | raw_query | Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string. | Optional |
