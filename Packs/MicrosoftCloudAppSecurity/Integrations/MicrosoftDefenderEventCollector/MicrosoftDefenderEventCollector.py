@@ -1,6 +1,6 @@
 from abc import ABC
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -150,19 +150,20 @@ class IntegrationEventsClient(ABC):
         try:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Making API call to {request.url}")
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Request params: {getattr(request, 'params', 'N/A')}")
-            
+
             response = self.session.request(**request.dict())
-            
+
             # Log response headers for debugging (especially rate limit info)
             rate_limit_headers = {
-                k: v for k, v in response.headers.items()
-                if 'rate' in k.lower() or 'limit' in k.lower() or 'retry' in k.lower() or 'x-' in k.lower()
+                k: v
+                for k, v in response.headers.items()
+                if "rate" in k.lower() or "limit" in k.lower() or "retry" in k.lower() or "x-" in k.lower()
             }
             if rate_limit_headers:
                 demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Rate limit/retry headers: {rate_limit_headers}")
-            
+
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Response status code: {response.status_code}")
-            
+
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError as exc:
@@ -174,7 +175,7 @@ class IntegrationEventsClient(ABC):
                     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Error response body: {exc.response.text[:1000]}")
                 except Exception:
                     pass
-                
+
                 if exc.response.status_code == 500:
                     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Got 500 error, retrying once...")
                     try:
@@ -338,7 +339,7 @@ class DefenderClient(IntegrationEventsClient):
 def _timestamp_to_human_readable(timestamp_ms: int) -> str:
     """Convert millisecond timestamp to human readable format."""
     try:
-        dt = datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc)
+        dt = datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC)
         return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
         return f"Invalid timestamp: {timestamp_ms}"
@@ -347,8 +348,8 @@ def _timestamp_to_human_readable(timestamp_ms: int) -> str:
 def _get_time_gap_info(timestamp_ms: int) -> str:
     """Get information about the time gap between timestamp and now."""
     try:
-        now = datetime.now(tz=timezone.utc)
-        event_time = datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc)
+        now = datetime.now(tz=UTC)
+        event_time = datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC)
         gap = now - event_time
         return f"Gap from now: {gap.days} days, {gap.seconds // 3600} hours, {(gap.seconds % 3600) // 60} minutes"
     except Exception as e:
@@ -371,7 +372,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         last_run_data = demisto.getLastRun()
         after = last_run_data.get(event_type_name) or self.client.after
-        
+
         # Enhanced debug logging for timestamp tracking
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== Starting fetch for {event_type_name} ==========")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Full last_run data: {last_run_data}")
@@ -379,32 +380,32 @@ class DefenderGetEvents(IntegrationGetEvents):
         if after:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: 'after' as human readable: {_timestamp_to_human_readable(after)}")
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {_get_time_gap_info(after)}")
-        
+
         # add the time filter
         if after:
             filters["date"] = {"gte": after}  # type: ignore
 
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Sending request with filters: {filters}")
         self.client.request.params["filters"] = json.dumps(filters)
-        
+
         response = self.client.call(self.client.request)
         response_json = response.json()
-        
+
         # Enhanced response logging
         events = response_json.get("data", [])
         has_next = response_json.get("hasNext")
         total = response_json.get("total", "N/A")
-        
+
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Response for {event_type_name}:")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   - Event count: {len(events)}")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   - hasNext: {has_next}")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   - total (if available): {total}")
-        
+
         # Log additional response fields that might be useful
-        other_fields = {k: v for k, v in response_json.items() if k not in ['data', 'hasNext', 'total']}
+        other_fields = {k: v for k, v in response_json.items() if k not in ["data", "hasNext", "total"]}
         if other_fields:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   - Other response fields: {other_fields}")
-        
+
         # If no events, log more details
         if len(events) == 0:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: WARNING - Zero events returned for {event_type_name}")
@@ -417,11 +418,11 @@ class DefenderGetEvents(IntegrationGetEvents):
             # Log first and last event timestamps
             first_event_ts = events[0].get("timestamp", "N/A")
             last_event_ts = events[-1].get("timestamp", "N/A")
-            first_ts_str = _timestamp_to_human_readable(first_event_ts) if isinstance(first_event_ts, int) else 'N/A'
-            last_ts_str = _timestamp_to_human_readable(last_event_ts) if isinstance(last_event_ts, int) else 'N/A'
+            first_ts_str = _timestamp_to_human_readable(first_event_ts) if isinstance(first_event_ts, int) else "N/A"
+            last_ts_str = _timestamp_to_human_readable(last_event_ts) if isinstance(last_event_ts, int) else "N/A"
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: First event timestamp: {first_event_ts} ({first_ts_str})")
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Last event timestamp: {last_event_ts} ({last_ts_str})")
-        
+
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
 
         # add new field with the event type
@@ -439,22 +440,22 @@ class DefenderGetEvents(IntegrationGetEvents):
             last_timestamp = last["timestamp"]
             ts_readable = _timestamp_to_human_readable(last_timestamp)
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Setting next filter timestamp: {last_timestamp} ({ts_readable})")
-            
+
             self.client.set_request_filter(last_timestamp)
             response = self.client.call(self.client.request)
             response_json = response.json()
             events = response_json.get("data", [])
             has_next = response_json.get("hasNext")
-            
+
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Page {page_count} - Got {len(events)} events, hasNext: {has_next}")
             demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
-            
+
             # add new field with the event type
             for event in events:
                 event["event_type_name"] = event_type_name
 
             yield events
-        
+
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== Finished {event_type_name} (pages: {page_count}) =====")
 
     @staticmethod
@@ -464,11 +465,11 @@ class DefenderGetEvents(IntegrationGetEvents):
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current last_run: {last_run}")
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Total events to process: {len(events)}")
         demisto.debug(f"MD: Got the last run: {last_run}")
-        
+
         alerts_last_run = 0
         activities_admin_last_run = 0
         activities_login_last_run = 0
-        
+
         # Count events by type
         event_counts = {"alerts": 0, "activities_login": 0, "activities_admin": 0}
 
@@ -485,7 +486,7 @@ class DefenderGetEvents(IntegrationGetEvents):
                 activities_admin_last_run = timestamp
 
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Event counts by type: {event_counts}")
-        
+
         # Log what will be updated
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Timestamp updates:")
         if alerts_last_run:
@@ -496,7 +497,7 @@ class DefenderGetEvents(IntegrationGetEvents):
             last_run["alerts"] = new_val
         else:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   alerts: NOT UPDATED (no events)")
-            
+
         if activities_login_last_run:
             old_val = last_run.get("activities_login", "None")
             new_val = activities_login_last_run + 1
@@ -505,7 +506,7 @@ class DefenderGetEvents(IntegrationGetEvents):
             last_run["activities_login"] = new_val
         else:
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]:   activities_login: NOT UPDATED (no events)")
-            
+
         if activities_admin_last_run:
             old_val = last_run.get("activities_admin", "None")
             new_val = activities_admin_last_run + 1
@@ -555,7 +556,7 @@ def module_test(get_events: DefenderGetEvents) -> str:
 def main(command: str, demisto_params: dict):
     demisto.debug(f"MD: Command being called is {command}")
     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Debug version active - enhanced logging enabled")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current time: {datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current time: {datetime.now(tz=UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
 
     try:
         demisto_params["client_secret"] = demisto_params["credentials"]["password"]
@@ -584,7 +585,10 @@ def main(command: str, demisto_params: dict):
 
         # Based on the flow of the code, after is always an int so ignore it
         client = DefenderClient(
-            request=request, options=options, authenticator=authenticator, after=after  # type:ignore[arg-type]
+            request=request,
+            options=options,
+            authenticator=authenticator,
+            after=after,  # type:ignore[arg-type]
         )
         get_events = DefenderGetEvents(client=client, base_url=request.url, options=options, event_filters=event_filters)
 
