@@ -7088,3 +7088,87 @@ def test_parse_parameters_arg_malformed_missing_key_prefix():
     with pytest.raises(ValueError) as exc_info:
         parse_parameters_arg(parameters_str)
     assert "Could not parse" in str(exc_info.value)
+
+
+def test_parse_triple_filter_single():
+    """
+    Given: A string with a single triple filter 'key=project,values=P1,type=string'.
+    When: parse_triple_filter is called.
+    Then: It should return a list containing one dictionary with Key, Values, and Type.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [{"Key": "project", "Values": ["P1"], "Type": "string"}]
+
+
+def test_parse_triple_filter_multiple():
+    """
+    Given: A string with multiple triple filters separated by semicolons.
+    When: parse_triple_filter is called.
+    Then: It should return a list of dictionaries for all filters.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,type=string;key=tag:Name,values=V1,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [
+        {"Key": "project", "Values": ["P1"], "Type": "string"},
+        {"Key": "tag:Name", "Values": ["V1"], "Type": "string"},
+    ]
+
+
+def test_parse_triple_filter_multiple_values():
+    """
+    Given: A triple filter where 'values' contains multiple comma-separated items.
+    When: parse_triple_filter is called.
+    Then: It should return a dictionary where 'Values' is a list of all items.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,P2,P3,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [{"Key": "project", "Values": ["P1", "P2", "P3"], "Type": "string"}]
+
+
+def test_parse_triple_filter_max_filters(mocker):
+    """
+    Given: A string with more than MAX_TRIPLE_FILTER_VALUE (5) filters.
+    When: parse_triple_filter is called.
+    Then: It should only parse the first 5 filters and log a debug message.
+    """
+    from AWS import parse_triple_filter
+
+    mocker.patch("AWS.demisto.debug")
+    filter_string = ";".join([f"key=K{i},values=V{i},type=T{i}" for i in range(10)])
+    result = parse_triple_filter(filter_string)
+    assert len(result) == 5
+    assert result[0]["Key"] == "K0"
+    assert result[4]["Key"] == "K4"
+
+
+def test_parse_triple_filter_empty():
+    """
+    Given: An empty string or None.
+    When: parse_triple_filter is called.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_triple_filter
+
+    assert parse_triple_filter("") == []
+    assert parse_triple_filter(None) == []
+
+
+def test_parse_triple_filter_malformed():
+    """
+    Given: A malformed string (e.g., using 'name=' instead of 'key=' as expected by the regex).
+    When: parse_triple_filter is called.
+    Then: It should raise a ValueError.
+    """
+    from AWS import parse_triple_filter
+
+    # The docstring says 'name=' but the regex uses 'key='
+    filter_string = "name=K1,values=V1,type=T1"
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_triple_filter(filter_string)

@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+#from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -20,6 +20,7 @@ MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
 MAX_TARGET_VALUES = 5
+MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
@@ -299,9 +300,9 @@ def parse_triple_filter(filter_string: str | None):
     """
     filters = []
     list_filters = argToList(filter_string, separator=";")
-    if len(list_filters) > MAX_FILTERS:
-        list_filters = list_filters[0:50]
-        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    if len(list_filters) > MAX_TRIPLE_FILTER_VALUE:
+        list_filters = list_filters[0:MAX_TRIPLE_FILTER_VALUE]
+        demisto.debug(f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters.")
     regex = re.compile(
         r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
         flags=re.I,
