@@ -21,7 +21,7 @@ configuration:
   type: 8
   required: false
 description: Scale IT automation, manage complex deployments, and speed productivity.
-display: Ansible Automation Platform
+display: Ansible Automation -  Platform
 name: AnsibleTower
 script:
   commands:
