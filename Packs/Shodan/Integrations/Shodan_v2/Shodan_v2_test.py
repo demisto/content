@@ -10,6 +10,7 @@ def util_load_json(path):
     with open(path) as f:
         return json.loads(f.read())
 
+
 with open("./test_data/response.json") as f:
     RESPONSE = json.load(f)
 
@@ -85,20 +86,21 @@ def test_fetch_events(mocker):
 
 
 @pytest.mark.parametrize(
-    'api_response_data, expected_demistoresults_args', [
+    "api_response_data, expected_demistoresults_args",
+    [
         (
-            util_load_json('./test_data/searchresults_NoSSL.json'),
-            util_load_json('./test_data/expected_return_results_NoSSL.json')
+            util_load_json("./test_data/searchresults_NoSSL.json"),
+            util_load_json("./test_data/expected_return_results_NoSSL.json"),
         ),
         (
-            util_load_json('./test_data/searchresults_SSL_NoNTLM.json'),
-            util_load_json('./test_data/expected_return_results_SSL_NoNTLM.json')
+            util_load_json("./test_data/searchresults_SSL_NoNTLM.json"),
+            util_load_json("./test_data/expected_return_results_SSL_NoNTLM.json"),
         ),
         (
-            util_load_json('./test_data/searchresults_SSL_WithNTLM.json'),
-            util_load_json('./test_data/expected_return_results_SSL_WithNTLM.json')
-        )
-    ]
+            util_load_json("./test_data/searchresults_SSL_WithNTLM.json"),
+            util_load_json("./test_data/expected_return_results_SSL_WithNTLM.json"),
+        ),
+    ],
 )
 def test_search_command(api_response_data: dict, expected_demistoresults_args: dict, mocker: MockerFixture):
     """
@@ -117,19 +119,17 @@ def test_search_command(api_response_data: dict, expected_demistoresults_args: d
     HumanReadable, HumanReadableFormat, and EntryContext.
     """
     from Shodan_v2 import search_command
-    mocker.patch.object(demisto, 'args', return_value={
-        'query': 'port:3389 ip:10.2.3.4',
-        'facets': '',
-        'page': 1,
-        'return_json': 'No'
-    })
-    mocker.patch('Shodan_v2.http_request', return_value=api_response_data)
-    mock_results = mocker.patch('Shodan_v2.demisto.results', return_value=True)
+
+    mocker.patch.object(
+        demisto, "args", return_value={"query": "port:3389 ip:10.2.3.4", "facets": "", "page": 1, "return_json": "No"}
+    )
+    mocker.patch("Shodan_v2.http_request", return_value=api_response_data)
+    mock_results = mocker.patch("Shodan_v2.demisto.results", return_value=True)
     search_command()
     results_call_args = mock_results.call_args[0][0]
-    assert results_call_args['Type'] == expected_demistoresults_args['Type']
-    assert results_call_args['Contents'] == expected_demistoresults_args['Contents']
-    assert results_call_args['ContentsFormat'] == expected_demistoresults_args['ContentsFormat']
-    assert results_call_args['HumanReadable'] == expected_demistoresults_args['HumanReadable']
-    assert results_call_args['HumanReadableFormat'] == expected_demistoresults_args['HumanReadableFormat']
-    assert results_call_args['EntryContext'] == expected_demistoresults_args['EntryContext']
+    assert results_call_args["Type"] == expected_demistoresults_args["Type"]
+    assert results_call_args["Contents"] == expected_demistoresults_args["Contents"]
+    assert results_call_args["ContentsFormat"] == expected_demistoresults_args["ContentsFormat"]
+    assert results_call_args["HumanReadable"] == expected_demistoresults_args["HumanReadable"]
+    assert results_call_args["HumanReadableFormat"] == expected_demistoresults_args["HumanReadableFormat"]
+    assert results_call_args["EntryContext"] == expected_demistoresults_args["EntryContext"]
