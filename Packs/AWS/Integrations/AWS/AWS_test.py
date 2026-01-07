@@ -7172,3 +7172,114 @@ def test_parse_triple_filter_malformed():
     filter_string = "name=K1,values=V1,type=T1"
     with pytest.raises(ValueError, match="Could not parse field"):
         parse_triple_filter(filter_string)
+
+
+def test_build_kwargs_network_interface_attribute_minimal():
+    """
+    Given: Minimal arguments (only network_interface_id).
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with default values and the provided ID.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {}
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["NetworkInterfaceId"] == ni_id
+    assert result["EnaSrdSpecification"] is None
+    assert result["AssociatedSubnetIds"] == []
+    assert result["Groups"] == []
+
+
+def test_build_kwargs_network_interface_attribute_basic_fields():
+    """
+    Given: Basic arguments like ena_srd_enabled and description.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with these fields correctly mapped.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "ena_srd_enabled": "true",
+        "description": "test description",
+        "source_dest_check": "false",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["EnaSrdSpecification"] is True
+    assert result["Description"] == {"Value": "test description"}
+    assert result["SourceDestCheck"] == {"Value": False}
+
+
+def test_build_kwargs_network_interface_attribute_attachment_success():
+    """
+    Given: Both attachment_id and delete_on_termination are provided.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with the Attachment block correctly populated.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "attachment_id": "attach-123",
+        "delete_on_termination": "true",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["Attachment"] == {
+        "AttachmentId": "attach-123",
+        "DeleteOnTermination": True,
+    }
+
+
+def test_build_kwargs_network_interface_attribute_connection_trucking_success():
+    """
+    Given: An udp_stream_timeout provided.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with the ConnectionTrackingSpecification block correctly populated.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "udp_stream_timeout": "1",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["ConnectionTrackingSpecification"] == {
+        "UdpStreamTimeout": 1,
+    }
+
+
+def test_build_kwargs_network_interface_attribute_attachment_failure():
+    """
+    Given: Only attachment_id is provided without delete_on_termination.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should raise a DemistoException.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "attachment_id": "attach-123",
+    }
+    ni_id = "eni-12345"
+    with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
+        build_kwargs_network_interface_attribute(args, ni_id)
+
+
+def test_build_kwargs_network_interface_attribute_attachment_missing_attachment_id():
+    """
+    Given: Only attachment_id is provided without delete_on_termination.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should raise a DemistoException.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "delete_on_termination": "true",
+    }
+    ni_id = "eni-12345"
+    with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
+        build_kwargs_network_interface_attribute(args, ni_id)

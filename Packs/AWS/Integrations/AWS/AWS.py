@@ -383,28 +383,42 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
         "NetworkInterfaceId": network_interface_id,
         "Groups": argToList(args.get("groups")),
     }
-    if ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled")):
+    
+    tcp_established_timeout = arg_to_number(args.get("tcp_established_timeout"))
+    udp_stream_timeout = arg_to_number(args.get("udp_stream_timeout"))
+    udp_timeout = arg_to_number(args.get("udp_timeout"))
+    if any([tcp_established_timeout, udp_stream_timeout, udp_timeout]):
+        kwargs["ConnectionTrackingSpecification"] = {}
+    
+    default_ena_queue_count = arg_to_bool_or_none(args.get("default_ena_queue_count"))
+    ena_queue_count = arg_to_number(args.get("ena_queue_count"))
+    attachment_id = args.get("attachment_id")
+    delete_on_termination = arg_to_bool_or_none(args.get("delete_on_termination"))
+    if any(b is not None for b in [default_ena_queue_count, ena_queue_count, attachment_id, delete_on_termination]):
+        kwargs["Attachment"] = {}
+    
+    if (ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))) is not None:
         kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
-    if tcp_established_timeout := arg_to_number(args.get("tcp_established_timeout")):
+    if tcp_established_timeout:
         kwargs["ConnectionTrackingSpecification"]["TcpEstablishedTimeout"] = tcp_established_timeout
-    if udp_stream_timeout := arg_to_number(args.get("udp_stream_timeout")):
+    if udp_stream_timeout:
         kwargs["ConnectionTrackingSpecification"]["UdpStreamTimeout"] = udp_stream_timeout
-    if udp_timeout := arg_to_number(args.get("udp_timeout")):
+    if udp_timeout:
         kwargs["ConnectionTrackingSpecification"]["UdpTimeout"] = udp_timeout
     if description := args.get("description"):
         kwargs["Description"] = {"Value": description}
-    if source_dest_check := arg_to_bool_or_none(args.get("source_dest_check")):
+    if (source_dest_check := arg_to_bool_or_none(args.get("source_dest_check"))) is not None:
         kwargs["SourceDestCheck"] = {"Value": source_dest_check}
-    if default_ena_queue_count := arg_to_bool_or_none(args.get("default_ena_queue_count")):
+    if default_ena_queue_count is not None:
         kwargs["Attachment"]["DefaultEnaQueueCount"] = default_ena_queue_count
-    if ena_queue_count := arg_to_number(args.get("ena_queue_count")):
+    if ena_queue_count:
         kwargs["Attachment"]["EnaQueueCount"] = ena_queue_count
-    if attachment_id := args.get("attachment_id"):
+    if attachment_id:
         kwargs["Attachment"]["AttachmentId"] = attachment_id
-    if delete_on_termination := arg_to_bool_or_none(args.get("delete_on_termination")):
+    if delete_on_termination is not None:
         kwargs["Attachment"]["DeleteOnTermination"] = delete_on_termination
 
-    if (attachment_id and not delete_on_termination) or (not attachment_id and delete_on_termination):
+    if (attachment_id and delete_on_termination is None) or (not attachment_id and delete_on_termination is not None):
         raise DemistoException(
             "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well."
         )
