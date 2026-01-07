@@ -207,7 +207,7 @@ script:
         name: prefix
       - description: Marker is where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
         name: limit
-      - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 1,000".
+      - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 1,000."
         name: next_token
     outputs:
       - contextPath: AWS.S3-Buckets.BucketObjects.BucketName

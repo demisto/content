@@ -515,8 +515,8 @@ class S3:
 
         kwargs = {
             "Bucket": bucket,
-            "prefix": prefix,
-            "delimiter": delimiter,
+            "Prefix": prefix,
+            "Delimiter": delimiter,
         }
         kwargs.update(pagination_kwargs)
         remove_nulls_from_dictionary(kwargs)
