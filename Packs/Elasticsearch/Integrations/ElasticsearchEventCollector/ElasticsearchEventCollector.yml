@@ -161,7 +161,7 @@ script:
       - Simple-Date
       - Timestamp-Seconds
       - Timestamp-Milliseconds
-      required: false
+      required: true
       description: For more information see the explanation in the help section.
     - name: fetch_size
       defaultvalue: '10'
@@ -171,7 +171,7 @@ script:
       required: false
       description: CSV
     - name: fetch_time_field      
-      required: false
+      required: true
       description: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
     - name: fetch_query
       description: Query string uses the Lucene syntax.

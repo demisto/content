@@ -24,3 +24,35 @@ Search for and analyze data in real time.
 | Request timeout (in seconds). |  | False |
 | Incident type |  | False |
 | Fetch events |  | False |
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### es-get-events
+
+***
+Gets events from Elasticsearch.
+This command is used for developing/ debugging and is to be used with caution, as it can cause the API request limit to be exceeded.
+
+#### Base Command
+
+`es-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_time | Start time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). | Required |
+| end_time | End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). | Optional |
+| time_method | For more information see the explanation in the help section. | Required |
+| fetch_size | The maximum number of results per fetch, default 10 | Optional |
+| fetch_index | CSV | Optional |
+| fetch_time_field | The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation. | Required |
+| fetch_query | Query string uses the Lucene syntax. | Optional |
+| raw_query | Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

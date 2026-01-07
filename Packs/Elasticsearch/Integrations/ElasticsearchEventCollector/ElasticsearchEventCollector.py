@@ -625,7 +625,12 @@ def format_to_iso(date_string):
 
 
 def get_time_range(
-    last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME, time_range_end=None, time_field=TIME_FIELD, time_method = TIME_METHOD) -> Dict:
+    last_fetch: Union[str, None] = None,
+    time_range_start=FETCH_TIME,
+    time_range_end=None,
+    time_field=TIME_FIELD,
+    time_method=TIME_METHOD,
+) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
@@ -761,27 +766,28 @@ def get_events(proxies):
     args = demisto.args()
     raw_query = args.get("raw_query", "")
     fetch_query = args.get("fetch_query", "")
-    fetch_time_field = args.get("fetch_time_field", "") # TODO: required?
-    fetch_index = args.get("fetch_index", "") # TODO: required?
-    fetch_size = args.get("fetch_size")
-    time_method = args.get("time_method", "") #  TODO: required
-    start_time = args.get("start_time", "") # TODO: required & add comment - ISO 8601 or Relative Timestamps(Human-Readable)
-    end_time = args.get("end_time", "")  # TODO: add comment - ISO 8601 or Relative Timestamps(Human-Readable)
+    fetch_time_field = args.get("fetch_time_field", "")
+    fetch_index = args.get("fetch_index", "")
+    fetch_size = int(args.get("fetch_size", 10))
+    time_method = args.get("time_method", "Simple-Date")
+    start_time = args.get("start_time", "")
+    end_time = args.get("end_time")
 
     if raw_query and fetch_query:
         demisto.debug("get_events - Only one of raw_query or fetch_query should be provided.")
         raise DemistoException("Only one of raw_query or fetch_query should be provided.")
-    
+
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=start_time, time_range_end=end_time, time_field=fetch_time_field, time_method=time_method)
+    time_range_dict = get_time_range(
+        time_range_start=start_time, time_range_end=end_time, time_field=fetch_time_field, time_method=time_method
+    )
 
     if raw_query:
         demisto.debug(f"get_events - search events using raw_query:\n{raw_query}")
         response = execute_raw_query(es, raw_query=raw_query, index=fetch_index)
     elif fetch_query:
         query = QueryString(query="(" + fetch_query + ") AND " + fetch_time_field + ":*")
-        demisto.debug(f"get_events - search events using fetch_query and fetch_time_field param:\n{query}"
-        )
+        demisto.debug(f"get_events - search events using fetch_query and fetch_time_field param:\n{query}")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=fetch_index).filter(time_range_dict)
         search = search.sort({fetch_time_field: {"order": "asc"}})[0:fetch_size].query(query)
@@ -811,10 +817,8 @@ def get_events(proxies):
             events, _ = results_to_events_datetime(response, start_time)
 
         demisto.info(f"get_events - total events extracted: {len(events)}")
-        hr = tableToMarkdown(name="Get Event", t=events)
-        return CommandResults(readable_output=hr)
-
-
+        return CommandResults(readable_output=tableToMarkdown(name="Get Events", t=events))
+    return CommandResults(readable_output=tableToMarkdown(name="No Events", t=events))
 
 def main():  # pragma: no cover
     proxies = handle_proxy()
