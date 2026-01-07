@@ -7,6 +7,7 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 | Fetch indicators | Select this check box to fetch indicators \(default selected\). | True |
 | Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | True |
 | Indicator Types | Comma-separated list of indicator types to fetch \(File, IP, URL, Domain\). If not specified, all indicator types are fetched. | False |
+| Indicator Fetch Limit | Maximum number of indicators to fetch per feed run. Default is 100000. Maximum allowed value is 100000. | False |
 | Source Reliability | Reliability of the source providing the intelligence context. | True |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation is to apply to indicators fetched from the feed. | False |

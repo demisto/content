@@ -800,6 +800,13 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     demisto.debug(f"UNIT42FEED_DEBUG: Feed types configured: {feed_types}")
     demisto.debug(f"UNIT42FEED_DEBUG: Indicator types configured: {indicator_types}")
 
+    fetch_limit = arg_to_number(params.get("fetch_limit")) or TOTAL_INDICATOR_LIMIT
+    # Enforce maximum limit of 100,000
+    if fetch_limit > TOTAL_INDICATOR_LIMIT:
+        demisto.debug(f"UNIT42FEED_DEBUG: Fetch limit {fetch_limit} exceeds maximum {TOTAL_INDICATOR_LIMIT}, using maximum")
+        fetch_limit = TOTAL_INDICATOR_LIMIT
+    demisto.debug(f"UNIT42FEED_DEBUG: Fetch limit configured: {fetch_limit}")
+
     default_start = (current_time - timedelta(hours=24)).strftime(DATE_FORMAT)
     last_run = demisto.getLastRun() or {}
     start_time = last_run.get("last_successful_run", default_start)
@@ -850,7 +857,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
                 # Keep track of total indicator count (starts at API_LIMIT because one call already completed)
                 indicator_count = API_LIMIT
                 page_number = 1
-                while next_page_token and indicator_count < TOTAL_INDICATOR_LIMIT:
+                while next_page_token and indicator_count < fetch_limit:
                     page_number += 1
                     demisto.debug(f"UNIT42FEED_DEBUG: Fetching page {page_number} with token: {next_page_token[:50]}...")
                     # Get next page of indicators
@@ -877,7 +884,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
                         )
                         # increment indicator_count by max number of objects fetches in single call
                         indicator_count += API_LIMIT
-                        demisto.debug(f"UNIT42FEED_DEBUG: Indicator count tracker: {indicator_count}/{TOTAL_INDICATOR_LIMIT}")
+                        demisto.debug(f"UNIT42FEED_DEBUG: Indicator count tracker: {indicator_count}/{fetch_limit}")
                     else:
                         demisto.debug(f"UNIT42FEED_DEBUG: Page {page_number} response invalid or empty, breaking pagination loop")
                         break

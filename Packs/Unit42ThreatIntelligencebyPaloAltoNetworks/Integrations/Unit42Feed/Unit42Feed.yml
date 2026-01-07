@@ -111,6 +111,14 @@ configuration:
   required: false
   section: Collect
   advanced: true
+- display: Indicator Fetch Limit
+  additionalinfo: Maximum number of indicators to fetch per feed run. Default is 100000. Maximum allowed value is 100000.
+  name: fetch_limit
+  type: 0
+  defaultvalue: '100000'
+  required: false
+  section: Collect
+  advanced: true
 - display: Incremental feed
   additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. If the indicator is new or modified on the 3rd-party vendor's side, only indicators that are new or modified are sent to Cortex. Therefore, all indicators coming from these feeds are labeled new or modified.
   name: feedIncremental
@@ -168,7 +176,7 @@ script:
       name: limit
     description: Gets threat objects from the feed.
     name: unit42-get-threat-objects
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6391686
   feed: true
   runonce: false
   script: '-'
