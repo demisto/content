@@ -1,10 +1,8 @@
-import os
-import json
 from datetime import UTC, datetime
 import pytest
 from pytest_mock import MockerFixture
 from aiohttp import ClientResponseError, RequestInfo
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from CommonServerPython import *
 from MimecastEventCollector import (
     ACCESS_TOKEN_KEY,
@@ -18,15 +16,10 @@ from MimecastEventCollector import (
     EventTypes,
     AsyncClient,
 )
+from test_data.data import AUDIT_RAW_RESPONSE, SIEM_RAW_RESPONSE
 
 CLIENT_ID = "test_client_id"
 CLIENT_SECRET = "test_client_secret"
-
-
-def util_load_json(path: str):
-    absolute_path = os.path.join(os.path.dirname(__file__), path)
-    with open(absolute_path, encoding="utf-8") as f:
-        return json.loads(f.read())
 
 
 @pytest.fixture()
@@ -56,7 +49,8 @@ def mock_async_session_response(
             message=error_message,
         )
     else:
-        mock_response.raise_for_status = AsyncMock()
+        # raise_for_status is a synchronous method in aiohttp, not async
+        mock_response.raise_for_status = Mock()
         mock_response.status = 200
     return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
 
@@ -227,9 +221,7 @@ async def test_async_client_get_audit_events(async_client: AsyncClient, mocker: 
     end_date = "2025-01-02T00:00:00+0000"
     page_size = 500
 
-    mock_response_json = util_load_json("test_data/audit_raw_response.json")
-
-    mock_response = mock_async_session_response(response_json=mock_response_json)
+    mock_response = mock_async_session_response(response_json=AUDIT_RAW_RESPONSE)
     mock_get_auth_header = mocker.patch.object(
         async_client, "get_authorization_header", new=AsyncMock(return_value="Bearer test_token")
     )
@@ -242,7 +234,7 @@ async def test_async_client_get_audit_events(async_client: AsyncClient, mocker: 
             page_size=page_size,
         )
 
-    assert response_json == mock_response_json
+    assert response_json == AUDIT_RAW_RESPONSE
     assert mock_get_auth_header.call_count == 1
     assert mock_post_request.call_args.kwargs["url"] == urljoin(DEFAULT_BASE_URL, "/api/audit/get-audit-events")
     assert mock_post_request.call_args.kwargs["json"]["data"][0]["startDateTime"] == start_date
@@ -263,9 +255,7 @@ async def test_async_client_get_siem_events(async_client: AsyncClient, mocker: M
     start_date = "2025-01-01T00:00:00.000Z"
     page_size = 100
 
-    mock_response_json = util_load_json("test_data/siem_raw_response.json")
-
-    mock_response = mock_async_session_response(response_json=mock_response_json)
+    mock_response = mock_async_session_response(response_json=SIEM_RAW_RESPONSE)
     mock_get_auth_header = mocker.patch.object(
         async_client, "get_authorization_header", new=AsyncMock(return_value="Bearer test_token")
     )
@@ -274,7 +264,7 @@ async def test_async_client_get_siem_events(async_client: AsyncClient, mocker: M
         mock_get_request = mocker.patch.object(_client._session, "request", return_value=mock_response)
         response_json = await _client.get_siem_events(start_date=start_date, page_size=page_size)
 
-    assert response_json == mock_response_json
+    assert response_json == SIEM_RAW_RESPONSE
     assert mock_get_auth_header.call_count == 1
     assert mock_get_request.call_args.kwargs["url"] == urljoin(DEFAULT_BASE_URL, "/siem/v1/events/cg")
 
