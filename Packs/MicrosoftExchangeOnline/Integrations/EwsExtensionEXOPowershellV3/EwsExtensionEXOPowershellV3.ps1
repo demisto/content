@@ -584,7 +584,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $compress_output
+                $cmd_params.CompressOutput = $true
             }
             if ($entity_type)
             {
@@ -592,11 +592,11 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $force_conversion_to_mime
+                $cmd_params.ForceConversionToMime = $true
             }
             if ($password)
             {
-                $cmd_params.Password = $password
+                $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
