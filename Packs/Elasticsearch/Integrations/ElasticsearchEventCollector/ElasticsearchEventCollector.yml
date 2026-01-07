@@ -146,8 +146,9 @@ description: "Search for and analyze data in real time. \n Supports version 6 an
 display: ElasticsearchEventCollector
 name: ElasticsearchEventCollector
 script:
+  commands:
+    isfetchevents: true
   dockerimage: demisto/elasticsearch:1.0.0.5954979
-  isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3

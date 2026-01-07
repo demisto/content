@@ -1,9 +1,7 @@
-Search for and analyze data in real time. 
+Search for and analyze data in real time.
  Supports version 6 and later.
-This integration was integrated and tested with version xx of ElasticsearchEventCollector.
 
 ## Configure ElasticsearchEventCollector in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
