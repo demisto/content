@@ -1,4 +1,4 @@
-Automation to recreate Security Groups with the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
 
 ## Script Data
 
@@ -32,7 +32,7 @@ This script uses the following commands and scripts.
 | sg_list | The Security Group ID\(s\) to be recreated, given as a comma separated list. |
 | port | TCP/UDP port to be restricted. |
 | protocol | Protocol of the port to be restricted. |
-| region | Region where EC2 instance is present. |
+| region | Region where EC2 instance resides. |
 | integration_instance | The AWS Integration Instance to use. |
 
 ## Outputs
@@ -41,6 +41,7 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AWSPublicExposure.SGReplacements.ResourceID | The EC2 Resource ID whose Security Groups are to be remediated. | string |
-| AWSPublicExposure.SGReplacements.ReplacementSet | List of existing \(old\) Security Groups and the newly created equivalent with over-permissive rules removed. | unknown |
-| AWSPublicExposure.SGReplacements.UpdatedSGList | List of Security Groups to associate to the EC2 resource after remediation. | unknown |
+| AWSPublicExposure.SGReplacements.ReplacementSet.new-sg | ID of the newly created security group with restricted permissions. | String |
+| AWSPublicExposure.SGReplacements.ReplacementSet.old-sg | ID of the original security group before remediation. | String |
+| AWSPublicExposure.SGReplacements.ResourceID | The EC2 Resource ID whose Security Groups are to be remediated. | String |
+| AWSPublicExposure.SGReplacements.UpdatedSGList | List of Security Groups to associate to the EC2 resource after remediation. | String |

@@ -19,7 +19,7 @@ args:
   - tcp
   - udp
   required: true
-- description: Region where EC2 instance is present.
+- description: Region where EC2 instance resides.
   name: region
   auto: PREDEFINED
   required: true
@@ -59,7 +59,7 @@ args:
 - description: The AWS Integration Instance to use.
   name: integration_instance
   required: true
-comment: Automation to recreate Security Groups with the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+comment: Automation to duplicate Security Groups with rules modified to remove public exposure of the given port.  The updated list of security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
 commonfields:
   id: AWSRemediateSG
   version: -1
