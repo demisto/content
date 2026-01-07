@@ -66,7 +66,6 @@ WEBAPP_COMMANDS = [
     "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
-    # "core-get-case-resolution-statuses"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
