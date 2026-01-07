@@ -156,7 +156,7 @@ class Client(BaseClient):
         if bool(demisto.params().get("exclude_resolved_alerts", False)):
             extra_filters_list = _add_exclude_resolved_alerts_filters(extra_filters_list)
 
-        if bool(demisto.params().get("include_only_arr_completed_alerts", False)):
+        if argToBoolean(demisto.params().get("include_only_arr_completed_alerts", False)):
             extra_filters_list = _add_include_only_arr_completed_alerts_filters(extra_filters_list)
 
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
