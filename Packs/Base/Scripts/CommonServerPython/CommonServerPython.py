@@ -61,7 +61,8 @@ SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
-
+JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
+DEFAULT_INSIGHT_CACHE_SIZE = 3072
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -3048,6 +3049,10 @@ class Common(object):
         def to_context(self):
             pass
 
+        @abstractmethod
+        def to_minimum_context(self):
+            pass
+
         @staticmethod
         def create_context_table(data):
             """
@@ -3157,6 +3162,9 @@ class Common(object):
             }
             return ret_value
 
+        def to_minimum_context(self):
+            return self.to_context()
+
         def to_readable(self):
             dbot_score_to_text = {0: 'Unknown',
                                   1: 'Good',
@@ -3232,6 +3240,21 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 ret_value['Relationships'] = relationships_context
+
+            return ret_value
+
+        def to_minimum_context(self):
+            custom_context = {
+                'value': self.value
+            }
+
+            ret_value = {
+                self.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
 
             return ret_value
 
@@ -3586,6 +3609,25 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            ip_context = {
+                'Address': self.ip
+            }
+
+            if self.ip_type == "IP":
+                context_path = Common.IP.CONTEXT_PATH
+            elif self.ip_type == "IPv6":
+                context_path = Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
+
+            ret_value = {
+                context_path: ip_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class FileSignature(object):
         """
         FileSignature class
@@ -3623,6 +3665,9 @@ class Common(object):
                 'OriginalName': self.original_name,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class FeedRelatedIndicators(object):
         """
         FeedRelatedIndicators class
@@ -3653,6 +3698,9 @@ class Common(object):
                 'description': self.description
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Rank:
         """
         Single row in a rank grid field
@@ -3673,6 +3721,9 @@ class Common(object):
                 'source': self.source,
                 'rank': self.rank
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class ExternalReference(object):
         """
@@ -3698,6 +3749,9 @@ class Common(object):
                 'sourcename': self.source_name,
                 'sourceid': self.source_id,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Certificates(object):
         """
@@ -3734,6 +3788,9 @@ class Common(object):
                 'validto': self.valid_to
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Hash(object):
         """
         Hash class
@@ -3759,6 +3816,9 @@ class Common(object):
                 'value': self.hash_value,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class CommunityNotes(object):
         """
         CommunityNotes class
@@ -3783,6 +3843,9 @@ class Common(object):
                 'note': self.note,
                 'timestamp': self.timestamp,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Publications(object):
         """
@@ -3819,6 +3882,9 @@ class Common(object):
                 'timestamp': self.timestamp,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Behaviors(object):
         """
         Behaviors class
@@ -3843,6 +3909,9 @@ class Common(object):
                 'details': self.details,
                 'title': self.action,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class ThreatTypes(object):
         """
@@ -3872,6 +3941,9 @@ class Common(object):
                 'threatcategory': self.threat_category,
                 'threatcategoryconfidence': self.threat_category_confidence,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class WhoisRecord(object):
         """
@@ -3903,6 +3975,9 @@ class Common(object):
                 'date': self.whois_record_date
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class DNSRecord(object):
         """
         DNSRecord class
@@ -3933,6 +4008,9 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class CPE:
         """
         Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
@@ -3952,6 +4030,9 @@ class Common(object):
             return {
                 'CPE': self.cpe,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class File(Indicator):
         """
@@ -4298,6 +4379,27 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            file_context = {}
+
+            if self.md5:
+                file_context['MD5'] = self.md5
+            if self.sha1:
+                file_context['SHA1'] = self.sha1
+            if self.sha256:
+                file_context['SHA256'] = self.sha256
+            if self.sha512:
+                file_context['SHA512'] = self.sha512
+
+            ret_value = {
+                Common.File.CONTEXT_PATH: file_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class CVE(Indicator):
         """
         CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
@@ -4459,6 +4561,20 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            cve_context = {
+                'ID': self.id
+            }
+
+            ret_value = {
+                Common.CVE.CONTEXT_PATH: cve_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class EMAIL(Indicator):
         """
         EMAIL indicator class
@@ -4547,6 +4663,18 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 email_context['Relationships'] = relationships_context
+
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            return ret_value
+
+        def to_minimum_context(self):
+            email_context = {
+                'Email': {'Address': self.address}
+            }
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -4795,6 +4923,20 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 url_context['Relationships'] = relationships_context
+
+            ret_value = {
+                Common.URL.CONTEXT_PATH: url_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            url_context = {
+                'Data': self.url
+            }
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -5122,6 +5264,20 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            domain_context = {
+                'Name': self.domain
+            }
+
+            ret_value = {
+                Common.Domain.CONTEXT_PATH: domain_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Endpoint(Indicator):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
@@ -5210,6 +5366,17 @@ class Common(object):
                     raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
                                      ' isolation or Pending unisolation')
                 endpoint_context['IsIsolated'] = self.is_isolated
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
+
+        def to_minimum_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -5310,7 +5477,7 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs', 'to_minimum_context']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
@@ -5363,6 +5530,21 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            account_context = {}
+
+            if self.id:
+                account_context['ID'] = self.id
+
+            ret_value = {
+                Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Cryptocurrency(Indicator):
         """
         Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
@@ -5397,6 +5579,21 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
 
             ret_value = {
                 Common.Cryptocurrency.CONTEXT_PATH: crypto_context
@@ -5497,6 +5694,21 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                'Value': self.value
+            }
 
             ret_value = {
                 Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
@@ -5636,6 +5848,9 @@ class Common(object):
 
             return publickey_context
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class GeneralName(object):
         """
         GeneralName class
@@ -5688,6 +5903,9 @@ class Common(object):
                 'Type': self.gn_type,
                 'Value': self.gn_value
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
         def get_value(self):
             return self.gn_value
@@ -5799,6 +6017,9 @@ class Common(object):
             def to_context(self):
                 return self.gn.to_context()
 
+            def to_minimum_context(self):
+                return self.to_context()
+
             def get_value(self):
                 return self.gn.get_value()
 
@@ -5842,6 +6063,9 @@ class Common(object):
                     authority_key_identifier_context["KeyIdentifier"] = self.key_identifier
 
                 return authority_key_identifier_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class DistributionPoint(object):
             """
@@ -5889,6 +6113,9 @@ class Common(object):
 
                 return distribution_point_context
 
+            def to_minimum_context(self):
+                return self.to_context()
+
         class CertificatePolicy(object):
             """
             CertificatePolicy class
@@ -5922,6 +6149,9 @@ class Common(object):
 
                 return certificate_policies_context
 
+            def to_minimum_context(self):
+                return self.to_context()
+
         class AuthorityInformationAccess(object):
             """
             AuthorityInformationAccess class
@@ -5950,6 +6180,9 @@ class Common(object):
                     "AccessMethod": self.access_method,
                     "AccessLocation": self.access_location.to_context()
                 }
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class BasicConstraints(object):
             """
@@ -5983,6 +6216,9 @@ class Common(object):
                     basic_constraints_context["PathLength"] = self.path_length
 
                 return basic_constraints_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class SignedCertificateTimestamp(object):
             """
@@ -6049,6 +6285,9 @@ class Common(object):
                 timestamps_context["EntryType"] = self.entry_type
 
                 return timestamps_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class ExtensionType(object):
             """
@@ -6287,6 +6526,9 @@ class Common(object):
                 extension_context["Value"] = self.value
 
             return extension_context
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Certificate(Indicator):
         """
@@ -6556,6 +6798,29 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            certificate_context = {
+                "SubjectDN": self.subject_dn
+            }
+
+            if self.sha512:
+                certificate_context["SHA512"] = self.sha512
+            if self.sha256:
+                certificate_context["SHA256"] = self.sha256
+            if self.sha1:
+                certificate_context["SHA1"] = self.sha1
+            if self.md5:
+                certificate_context["MD5"] = self.md5
+
+            ret_value = {
+                Common.Certificate.CONTEXT_PATH: certificate_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Tactic(Indicator):
         """
         Tactic indicator
@@ -6638,6 +6903,21 @@ class Common(object):
 
             ret_value = {
                 Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            tactic_context = {
+                'STIXID': self.stix_id,
+                'Value': self.value
+            }
+
+            ret_value = {
+                Common.Tactic.CONTEXT_PATH: tactic_context
             }
 
             if self.dbot_score:
@@ -7466,14 +7746,47 @@ class CommandResults:
         indicators = [self.indicator] if self.indicator else self.indicators
 
         if indicators:
+            # Get InsightCacheSize from demisto.callingContext (in KB, default 3 MB = 3072 KB)
+            insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", DEFAULT_INSIGHT_CACHE_SIZE)
+            insight_cache_size_bytes = insight_cache_size_kb * 1024
+
+            virtual_outputs = {}
             for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
-                    if key not in outputs:
-                        outputs[key] = []
+                    if key not in virtual_outputs:
+                        virtual_outputs[key] = []
+                    virtual_outputs[key].append(value)
 
-                    outputs[key].append(value)
+            context_size = len(json.dumps(virtual_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
+
+            # If the context size exceeds the limit, use to_minimum_context() instead
+            if context_size > insight_cache_size_bytes:
+                # Measure performance of to_minimum_context() - minimal context generation
+                for indicator in indicators:
+                    context_outputs = indicator.to_minimum_context()
+
+                    for key, value in context_outputs.items():
+                        if key not in outputs:
+                            outputs[key] = []
+
+                        outputs[key].append(value)
+
+                if human_readable:
+                    human_readable += "\nNote! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+                else:
+                    human_readable = "Note! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+
+                demisto.debug(
+                    "Context size ({} chars) exceeded limit ({} bytes). Will use the minimum context.".format(context_size, insight_cache_size_bytes)
+                )
+            else:
+                # Use the already calculated full context
+                outputs = virtual_outputs
+                demisto.debug(
+                    "Using full context ({} chars within {} bytes limit). ".format(context_size, insight_cache_size_bytes)
+                )
 
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
