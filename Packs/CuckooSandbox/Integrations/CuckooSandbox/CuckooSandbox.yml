@@ -4,7 +4,8 @@ commonfields:
 name: Cuckoo Sandbox
 display: Cuckoo Sandbox
 category: Forensics & Malware Analysis
-description: Malware dynamic analysis sandboxing
+provider: Open Source
+description: Malware dynamic analysis sandboxing.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -35,24 +36,24 @@ script:
     - name: fileID
       description: commands.server.ckFile.arguments.fileID.description
     - name: machine
-      description: (optional) Label of the machine to use for analysis
+      description: (optional) Label of the machine to use for analysis.
     - name: package
-      description: (optional) analysis package to be used for the analysis
+      description: (optional) analysis package to be used for the analysis.
     - name: timeout
-      description: (optional)  analysis timeout (in seconds)
+      description: (optional)  analysis timeout (in seconds).
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout value
+      description: (optional) enable to enforce the execution for the full timeout value.
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine from (e.g. "windows").
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated.
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis machine
+      description: (optional) - enable the creation of a full memory dump of the analysis machine.
     - name: options
-      description: ' (optional) - options to pass to the analysis package'
+      description: ' (optional) - options to pass to the analysis package.'
     outputs:
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     description: commands.server.ckFile.description
   - name: cuckoo-create-task-from-file
     arguments:
@@ -62,24 +63,24 @@ script:
     - name: fileID
       description: commands.server.ckFile.arguments.fileID.description
     - name: machine
-      description: (optional) Label of the machine to use for analysis
+      description: (optional) Label of the machine to use for analysis.
     - name: package
-      description: (optional) analysis package to be used for the analysis
+      description: (optional) analysis package to be used for the analysis.
     - name: timeout
-      description: (optional)  analysis timeout (in seconds)
+      description: (optional)  analysis timeout (in seconds).
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout value
+      description: (optional) enable to enforce the execution for the full timeout value.
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine from (e.g. "windows").
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated.
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis machine
+      description: (optional) - enable the creation of a full memory dump of the analysis machine.
     - name: options
-      description: ' (optional) - options to pass to the analysis package'
+      description: ' (optional) - options to pass to the analysis package.'
     outputs:
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     description: commands.server.ckFile.description
   - name: ck-report
     deprecated: true
@@ -90,45 +91,45 @@ script:
       description: commands.server.ckReport.arguments.id.description
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     description: commands.server.ckReport.description
   - name: cuckoo-get-task-report
     arguments:
@@ -138,49 +139,49 @@ script:
       description: commands.server.ckReport.arguments.id.description
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     - contextPath: Cuckoo.Task.Score
-      description: Reported score of the the task
+      description: Reported score of the the task.
     - contextPath: Cuckoo.Task.Monitor
-      description: Monitor of the reported task
+      description: Monitor of the reported task.
     - contextPath: Cuckoo.Task.FileInfo.sha1
       description: The SHA1 hash of the file.
     - contextPath: Cuckoo.Task.FileInfo.name
@@ -209,89 +210,89 @@ script:
     arguments: []
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     description: commands.server.ckList.description
   - name: cuckoo-list-tasks
     arguments: []
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     description: commands.server.ckList.description
   - name: ck-url
     deprecated: true
@@ -299,20 +300,20 @@ script:
     - name: url
       required: true
       default: true
-      description: URL to analyze
+      description: URL to analyze.
     outputs:
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     description: Submit a URL for analysis
   - name: cuckoo-create-task-from-url
     arguments:
     - name: url
       required: true
       default: true
-      description: URL to analyze
+      description: URL to analyze.
     outputs:
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     description: Submit a URL for analysis
   - name: ck-view
     deprecated: true
@@ -323,45 +324,45 @@ script:
       description: commands.server.ckView.arguments.id.description
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     description: commands.server.ckView.description
   - name: cuckoo-view-task
     arguments:
@@ -372,45 +373,45 @@ script:
       isArray: true
     outputs:
     - contextPath: Cuckoo.Task.Category
-      description: Category of task
+      description: Category of task.
     - contextPath: Cuckoo.Task.Machine
-      description: Machine of task
+      description: Machine of task.
     - contextPath: Cuckoo.Task.Errors
-      description: Errors of task
+      description: Errors of task.
     - contextPath: Cuckoo.Task.Target
-      description: Target of task
+      description: Target of task.
     - contextPath: Cuckoo.Task.Package
-      description: Package of task
+      description: Package of task.
     - contextPath: Cuckoo.Task.SampleID
-      description: Sample ID of task
+      description: Sample ID of task.
     - contextPath: Cuckoo.Task.Guest
-      description: Task guest
+      description: Task guest.
     - contextPath: Cuckoo.Task.Custom
-      description: Custom values of task
+      description: Custom values of task.
     - contextPath: Cuckoo.Task.Owner
-      description: Task owner
+      description: Task owner.
     - contextPath: Cuckoo.Task.Priority
-      description: Priority of task
+      description: Priority of task.
     - contextPath: Cuckoo.Task.Platform
-      description: Platform of task
+      description: Platform of task.
     - contextPath: Cuckoo.Task.Options
-      description: Task options
+      description: Task options.
     - contextPath: Cuckoo.Task.Status
-      description: Task status
+      description: Task status.
     - contextPath: Cuckoo.Task.EnforceTimeout
-      description: Is timeout of task enforced
+      description: Is timeout of task enforced.
     - contextPath: Cuckoo.Task.Timeout
-      description: Task timeout
+      description: Task timeout.
     - contextPath: Cuckoo.Task.Memory
-      description: Task memory
+      description: Task memory.
     - contextPath: Cuckoo.Task.Tags
-      description: Task tags
+      description: Task tags.
     - contextPath: Cuckoo.Task.ID
-      description: ID of task
+      description: ID of task.
     - contextPath: Cuckoo.Task.AddedOn
-      description: Date on which the task was added
+      description: Date on which the task was added.
     - contextPath: Cuckoo.Task.CompletedOn
-      description: Date on which the task was completed
+      description: Date on which the task was completed.
     description: commands.server.ckView.description
   - name: ck-del
     deprecated: true
@@ -433,175 +434,175 @@ script:
     - name: id
       required: true
       default: true
-      description: ID of the task that generated the screenshot
+      description: ID of the task that generated the screenshot.
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
+      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002).
     description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
   - name: cuckoo-task-screenshot
     arguments:
     - name: id
       required: true
       default: true
-      description: ID of the task that generated the screenshot
+      description: ID of the task that generated the screenshot.
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
+      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002).
     outputs:
     - contextPath: File.Size
-      description: Size of file
+      description: Size of file.
     - contextPath: File.SHA1
-      description: File's SHA1
+      description: File's SHA1.
     - contextPath: File.SHA256
-      description: File's SHA256
+      description: File's SHA256.
     - contextPath: File.Name
-      description: File's name
+      description: File's name.
     - contextPath: File.SSDeep
-      description: File's SSDeep
+      description: File's SSDeep.
     - contextPath: File.EntryID
-      description: File's entry id
+      description: File's entry id.
     - contextPath: File.Info
-      description: File's info
+      description: File's info.
     - contextPath: File.Type
-      description: File's type
+      description: File's type.
     - contextPath: File.MD5
-      description: File's MD5
+      description: File's MD5.
     - contextPath: File.Extension
-      description: File's Extension
+      description: File's Extension.
     description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
   - name: ck-machines-list
     deprecated: true
     arguments: []
     outputs:
     - contextPath: Machine.Status
-      description: Status of machine
+      description: Status of machine.
     - contextPath: Machine.Locked
-      description: Is the machine locked
+      description: Is the machine locked.
     - contextPath: Machine.Name
-      description: Name of machine
+      description: Name of machine.
     - contextPath: Machine.ResultserverIP
-      description: IP address of machine's result server
+      description: IP address of machine's result server.
     - contextPath: Machine.IP
-      description: IP address of machine
+      description: IP address of machine.
     - contextPath: Machine.Label
-      description: Label of machine
+      description: Label of machine.
     - contextPath: Machine.LockedChangedOn
-      description: last update time of machine lock status
+      description: last update time of machine lock status.
     - contextPath: Machine.Platform
-      description: Platform of machine
+      description: Platform of machine.
     - contextPath: Machine.Snapshot
-      description: Snapshot
+      description: Snapshot.
     - contextPath: Machine.Interface
-      description: Interface of machine
+      description: Interface of machine.
     - contextPath: Machine.StatusChangedOn
-      description: Last update time of machine status
+      description: Last update time of machine status.
     - contextPath: Machine.ID
-      description: ID of machine
+      description: ID of machine.
     - contextPath: Machine.ResultserverPort
-      description: Port address of machine's result server
+      description: Port address of machine's result server.
     - contextPath: Machine.Tags
-      description: Machine tags
+      description: Machine tags.
     description: Returns a list with details on the analysis machines available to Cuckoo.
   - name: cuckoo-machines-list
     arguments: []
     outputs:
     - contextPath: Machine.Status
-      description: Status of machine
+      description: Status of machine.
     - contextPath: Machine.Locked
-      description: Is the machine locked
+      description: Is the machine locked.
     - contextPath: Machine.Name
-      description: Name of machine
+      description: Name of machine.
     - contextPath: Machine.ResultserverIP
-      description: IP address of machine's result server
+      description: IP address of machine's result server.
     - contextPath: Machine.IP
-      description: IP address of machine
+      description: IP address of machine.
     - contextPath: Machine.Label
-      description: Label of machine
+      description: Label of machine.
     - contextPath: Machine.LockedChangedOn
-      description: last update time of machine lock status
+      description: last update time of machine lock status.
     - contextPath: Machine.Platform
-      description: Platform of machine
+      description: Platform of machine.
     - contextPath: Machine.Snapshot
-      description: Snapshot
+      description: Snapshot.
     - contextPath: Machine.Interface
-      description: Interface of machine
+      description: Interface of machine.
     - contextPath: Machine.StatusChangedOn
-      description: Last update time of machine status
+      description: Last update time of machine status.
     - contextPath: Machine.ID
-      description: ID of machine
+      description: ID of machine.
     - contextPath: Machine.ResultserverPort
-      description: Port address of machine's result server
+      description: Port address of machine's result server.
     - contextPath: Machine.Tags
-      description: Machine tags
+      description: Machine tags.
     description: Returns a list with details on the analysis machines available to Cuckoo.
   - name: ck-machine-view
     deprecated: true
     arguments:
     - name: name
       required: true
-      description: Machine name to view
+      description: Machine name to view.
     outputs:
     - contextPath: Machine.Status
-      description: Status of machine
+      description: Status of machine.
     - contextPath: Machine.Locked
-      description: Is the machine locked
+      description: Is the machine locked.
     - contextPath: Machine.Name
-      description: Name of machine
+      description: Name of machine.
     - contextPath: Machine.ResultserverIP
-      description: IP address of machine's result server
+      description: IP address of machine's result server.
     - contextPath: Machine.IP
-      description: IP address of machine
+      description: IP address of machine.
     - contextPath: Machine.Label
-      description: Label of machine
+      description: Label of machine.
     - contextPath: Machine.LockedChangedOn
-      description: last update time of machine lock status
+      description: last update time of machine lock status.
     - contextPath: Machine.Platform
-      description: Platform of machine
+      description: Platform of machine.
     - contextPath: Machine.Snapshot
-      description: Snapshot
+      description: Snapshot.
     - contextPath: Machine.Interface
-      description: Interface of machine
+      description: Interface of machine.
     - contextPath: Machine.StatusChangedOn
-      description: Last update time of machine status
+      description: Last update time of machine status.
     - contextPath: Machine.ID
-      description: ID of machine
+      description: ID of machine.
     - contextPath: Machine.ResultserverPort
-      description: Port address of machine's result server
+      description: Port address of machine's result server.
     - contextPath: Machine.Tags
-      description: Machine tags
+      description: Machine tags.
     description: Returns details on the analysis machine associated with the given name.
   - name: cuckoo-machine-view
     arguments:
     - name: name
       required: true
-      description: Machine name to view
+      description: Machine name to view.
     outputs:
     - contextPath: Machine.Status
-      description: Status of machine
+      description: Status of machine.
     - contextPath: Machine.Locked
-      description: Is the machine locked
+      description: Is the machine locked.
     - contextPath: Machine.Name
-      description: Name of machine
+      description: Name of machine.
     - contextPath: Machine.ResultserverIP
-      description: IP address of machine's result server
+      description: IP address of machine's result server.
     - contextPath: Machine.IP
-      description: IP address of machine
+      description: IP address of machine.
     - contextPath: Machine.Label
-      description: Label of machine
+      description: Label of machine.
     - contextPath: Machine.LockedChangedOn
-      description: last update time of machine lock status
+      description: last update time of machine lock status.
     - contextPath: Machine.Platform
-      description: Platform of machine
+      description: Platform of machine.
     - contextPath: Machine.Snapshot
-      description: Snapshot
+      description: Snapshot.
     - contextPath: Machine.Interface
-      description: Interface of machine
+      description: Interface of machine.
     - contextPath: Machine.StatusChangedOn
-      description: Last update time of machine status
+      description: Last update time of machine status.
     - contextPath: Machine.ID
-      description: ID of machine
+      description: ID of machine.
     - contextPath: Machine.ResultserverPort
-      description: Port address of machine's result server
+      description: Port address of machine's result server.
     - contextPath: Machine.Tags
-      description: Machine tags
+      description: Machine tags.
     description: Returns details on the analysis machine associated with the given name.
   runonce: false
 fromversion: 5.0.0
