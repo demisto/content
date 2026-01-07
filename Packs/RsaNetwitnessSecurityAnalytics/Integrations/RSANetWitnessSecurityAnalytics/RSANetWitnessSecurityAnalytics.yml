@@ -6,6 +6,7 @@ system: true
 fromversion: 5.0.0
 display: RSA NetWitness Security Analytics
 category: Analytics & SIEM
+provider: PartnerOne
 description: RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
 configuration:
 - display: Server Url (192.168.56.101)
@@ -51,31 +52,31 @@ script:
     deprecated: true
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}].'
     - name: page
-      description: The default is 1. Indicates the page number of incidents
+      description: The default is 1. Indicates the page number of incidents.
     - name: start
-      description: The default is 0. Indicates the start index of incident in page
+      description: The default is 0. Indicates the start index of incident in page.
     - name: limit
-      description: The default is 100. Limits the number of incidents per page
+      description: The default is 100. Limits the number of incidents per page.
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]".'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]".'
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
       description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
-    description: Fetches incidents by filter
+    description: Fetches incidents by filter.
   - name: nw-login
     arguments: []
-    description: Logins to the system and returns valid sessionId
+    description: Logins to the system and returns valid sessionId.
   - name: nw-get-components
     deprecated: true
     arguments:
     - name: query
-      description: '[optional string] Query must contain page, start, limit'
-    description: Returns all the components in the system
+      description: '[optional string] Query must contain page, start, limit.'
+    description: Returns all the components in the system.
   - name: nw-get-events
     deprecated: true
     arguments:
@@ -104,69 +105,69 @@ script:
       - LAST_WEEK
       - ALL_DATA
       - CUSTOM
-      description: Filter of time range in which events occured
+      description: Filter of time range in which events occured.
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components.'
     - name: collectionName
-      description: '[optional]'
+      description: '[optional].'
     - name: predicateIds
-      description: '[optional]'
+      description: '[optional].'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
     - name: lastCollectionTime
-      description: '[optional datetime] Last collection time'
+      description: '[optional datetime] Last collection time.'
     - name: mid1
-      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value.'
     - name: mid2
       description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
-      description: '[optional guid] Investigation id token'
+      description: '[optional guid] Investigation id token.'
     - name: page
-      description: '[optional number] Default set to 1. The page number'
+      description: '[optional number] Default set to 1. The page number.'
     - name: start
       description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page.'
     - name: sort
-      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
+      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]".'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
-    description: Returns all the events in defined time range
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\"".'
+    description: Returns all the events in defined time range.
   - name: nw-get-available-assignees
     deprecated: true
     arguments: []
-    description: Returns the available users to be assigned to incidents
+    description: Returns the available users to be assigned to incidents.
     outputs:
     - contextPath: Netwitness.Component.Id
-      description: Netwitness User ID
+      description: Netwitness User ID.
     - contextPath: Netwitness.Component.Name
-      description: Netwitness User Name
+      description: Netwitness User Name.
     - contextPath: Netwitness.Component.Login
-      description: Netwitness User Lofin Name
+      description: Netwitness User Lofin Name.
     - contextPath: Netwitness.Component.EmailAddress
-      description: Netwitness User Email Address
+      description: Netwitness User Email Address.
   - name: nw-create-incident
     deprecated: true
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to incident'
+      description: '[string] Short summary of the alert which will be attached to incident.'
     - name: severity
-      description: '[optional string] Default set to "50". '
+      description: '[optional string] Default set to "50".'
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123.'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events.
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components.
     - name: priority
       required: true
       auto: PREDEFINED
@@ -175,12 +176,12 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: Priority of the incident
+      description: Priority of the incident.
     - name: summary
-      description: Summary of the incident
+      description: Summary of the incident.
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: Creating new incident
+    description: Creating new incident.
     execution: true
   - name: nw-add-events-to-incident
     deprecated: true
@@ -188,37 +189,37 @@ script:
     - name: incidentId
       required: true
       default: true
-      description: '[string] Existing incident id. '
+      description: '[string] Existing incident id.'
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events. Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events. Example: "23,12,3".'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to incident'
+      description: '[string] Short summary of the alert which will be attached to incident.'
     - name: severity
       required: true
-      description: '[number] Severity of the incident. Example: 50'
+      description: '[number] Severity of the incident. Example: 50.'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components.'
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: This command will add new events to existing incident
+    description: This command will add new events to existing incident.
     execution: true
   - name: nw-update-incident
     deprecated: true
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23".'
     - name: name
-      description: '[optional string] Set name if incident name has been changed'
+      description: '[optional string] Set name if incident name has been changed.'
     - name: summary
-      description: '[optional string] Updated incident summary'
+      description: '[optional string] Updated incident summary.'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123.'
     - name: comment
-      description: '[optional string] Add a journal entry describing your changes'
+      description: '[optional string] Add a journal entry describing your changes.'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -229,7 +230,7 @@ script:
       - REMEDIATION_COMPLETED
       - CLOSED
       - CLOSED_FALSE_POSITIVE
-      description: '[optional status] Set status if changed'
+      description: '[optional status] Set status if changed.'
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -237,12 +238,12 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been changed'
+      description: '[optional priority] Set priority if incident priority has been changed.'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: Updates incident
+    description: Updates incident.
     execution: true
   - name: fetch-incidents
     description: Simulates fetching incidents. Returns array of incidents from NetWitness.
@@ -252,123 +253,123 @@ script:
     deprecated: true
     arguments:
     - name: page
-      description: The default is 1. Indicates the page number of incidents
+      description: The default is 1. Indicates the page number of incidents.
     - name: start
-      description: The default is 0. Indicates the start index of incident in page
+      description: The default is 0. Indicates the start index of incident in page.
     - name: limit
-      description: The default is 100. Limits the number of incidents per page
+      description: The default is 100. Limits the number of incidents per page.
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]".'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]".'
   - name: nw-get-alert-details
     description: Return single alert by id
     deprecated: true
     arguments:
     - name: alertId
-      description: Alert id
+      description: Alert id.
       required: true
   - name: nw-get-event-details
     deprecated: true
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components.'
     - name: eventId
       required: true
-      description: '[number] Id of the event'
-    description: Returns two entries. One is event details json and the second is event/session content
+      description: '[number] Id of the event.'
+    description: Returns two entries. One is event details json and the second is event/session content.
   - name: nw-get-incident-details
     deprecated: true
     arguments:
     - name: incidentId
       required: true
       default: true
-      description: '[number] ID of incident. Example: "INC-12"'
-    description: Returns incident json by id
+      description: '[number] ID of incident. Example: "INC-12".'
+    description: Returns incident json by id.
   - name: nw-get-alert-original
     deprecated: true
     arguments:
     - name: alertId
       required: true
       default: true
-      description: Id of the alert
-    description: Returns the original events which this alert contains
+      description: Id of the alert.
+    description: Returns the original events which this alert contains.
   - name: netwitness-im-list-incidents
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}].'
     - name: page
-      description: The default is 1. Indicates the page number of incidents
+      description: The default is 1. Indicates the page number of incidents.
     - name: start
-      description: The default is 0. Indicates the start index of incident in page
+      description: The default is 0. Indicates the start index of incident in page.
     - name: limit
-      description: The default is 100. Limits the number of incidents per page
+      description: The default is 100. Limits the number of incidents per page.
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]".'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]".'
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
       description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
-    description: Fetches incidents by filter
+    description: Fetches incidents by filter.
     outputs:
     - contextPath: Netwitness.Incident.Id
-      description: Netwitness Incident ID
+      description: Netwitness Incident ID.
     - contextPath: Netwitness.Incident.Name
-      description: Netwitness Incident Name
+      description: Netwitness Incident Name.
     - contextPath: Netwitness.Incident.Priority
-      description: Netwitness Incident Priority
+      description: Netwitness Incident Priority.
     - contextPath: Netwitness.Incident.CreatedBy
-      description: User who created Netwitness Incident
+      description: User who created Netwitness Incident.
     - contextPath: Netwitness.Incident.Summary
-      description: Netwitness Incident Summary
+      description: Netwitness Incident Summary.
     - contextPath: Netwitness.Incident.Assignee
-      description: User Assigned To Incident
+      description: User Assigned To Incident.
     - contextPath: Netwitness.Incident.Created
-      description: Time of Incident Creation
+      description: Time of Incident Creation.
     - contextPath: Netwitness.Incident.FirstAlertTime
-      description: Time of Incident Creation
+      description: Time of Incident Creation.
     - contextPath: Netwitness.Incident.LastUpdatedByUserName
-      description: User who was last to update Incident
+      description: User who was last to update Incident.
     - contextPath: Netwitness.Incident.RiskScore
-      description: Netwitness Incident Risk Score
+      description: Netwitness Incident Risk Score.
     - contextPath: Netwitness.Incident.AverageAlertRiskScore
-      description: Netwitness Incident Average Risk Score
+      description: Netwitness Incident Average Risk Score.
     - contextPath: Netwitness.Incident.Categories
-      description: Netwitness Incident Category
+      description: Netwitness Incident Category.
     - contextPath: Netwitness.Incident.AlertCount
-      description: Netwitness Incident Alerts Counts
+      description: Netwitness Incident Alerts Counts.
   - name: netwitness-im-login
     arguments: []
-    description: Logins to the system and returns valid sessionId
+    description: Logins to the system and returns valid sessionId.
   - name: netwitness-im-get-components
     arguments:
     - name: query
-      description: '[optional string] Query must contain page, start, limit'
-    description: Returns all the components in the system
+      description: '[optional string] Query must contain page, start, limit.'
+    description: Returns all the components in the system.
     outputs:
     - contextPath: Netwitness.Component.Id
-      description: Netwitness Component ID
+      description: Netwitness Component ID.
     - contextPath: Netwitness.Component.DisplayName
-      description: Netwitness Component DisplayName
+      description: Netwitness Component DisplayName.
     - contextPath: Netwitness.Component.DeviceVersion
-      description: Netwitness Component Device Version
+      description: Netwitness Component Device Version.
     - contextPath: Netwitness.Component.DisplayType
-      description: Netwitness Component Device Type
+      description: Netwitness Component Device Type.
     - contextPath: Netwitness.Component.Host
-      description: Netwitness Component Device Host
+      description: Netwitness Component Device Host.
     - contextPath: Netwitness.Component.Port
-      description: Netwitness Component Device Port
+      description: Netwitness Component Device Port.
     - contextPath: Netwitness.Component.Validated
-      description: Netwitness Component is passed validation
+      description: Netwitness Component is passed validation.
     - contextPath: Netwitness.Component.Licensed
-      description: Netwitness Component license
+      description: Netwitness Component license.
     - contextPath: Netwitness.Component.Username
-      description: Netwitness Component User Name
+      description: Netwitness Component User Name.
     - contextPath: Netwitness.Component.EnableSSL
-      description: Netwitness Component Enable SSL
+      description: Netwitness Component Enable SSL.
   - name: netwitness-im-get-events
     arguments:
     - name: timeRangeType
@@ -396,67 +397,67 @@ script:
       - LAST_WEEK
       - ALL_DATA
       - CUSTOM
-      description: Filter of time range in which events occured
+      description: Filter of time range in which events occured.
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components.'
     - name: collectionName
-      description: '[optional]'
+      description: '[optional].'
     - name: predicateIds
-      description: '[optional]'
+      description: '[optional].'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
     - name: lastCollectionTime
-      description: '[optional datetime] Last collection time'
+      description: '[optional datetime] Last collection time.'
     - name: mid1
-      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value'
+      description: 'The unique meta id for this field. If nw-get-events was called this will be your starting id for this distinct value.'
     - name: mid2
       description: 'The unique meta id for this field. If nw-get-events was called this will be your ending id for this distinct value.'
     - name: investigationToken
-      description: '[optional guid] Investigation id token'
+      description: '[optional guid] Investigation id token.'
     - name: page
-      description: '[optional number] Default set to 1. The page number'
+      description: '[optional number] Default set to 1. The page number.'
     - name: start
       description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page.'
     - name: sort
-      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
+      description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]".'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
-    description: Returns all the events in defined time range
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\"".'
+    description: Returns all the events in defined time range.
   - name: netwitness-im-get-available-assignees
     arguments: []
-    description: Returns the available users to be assigned to incidents
+    description: Returns the available users to be assigned to incidents.
     outputs:
     - contextPath: Netwitness.Account.Id
-      description: Netwitness Account ID
+      description: Netwitness Account ID.
     - contextPath: Netwitness.Account.Name
-      description: Netwitness Account Name
+      description: Netwitness Account Name.
     - contextPath: Netwitness.Account.Login
-      description: Netwitness Account Login Name
+      description: Netwitness Account Login Name.
     - contextPath: Netwitness.Account.EmailAddress
-      description: Netwitness Account Email Address
+      description: Netwitness Account Email Address.
   - name: netwitness-im-create-incident
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to incident'
+      description: '[string] Short summary of the alert which will be attached to incident.'
     - name: severity
-      description: '[optional string] Default set to "50". '
+      description: '[optional string] Default set to "50".'
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123.'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events.
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components.
     - name: priority
       required: true
       auto: PREDEFINED
@@ -465,59 +466,59 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: Priority of the incident
+      description: Priority of the incident.
     - name: summary
-      description: Summary of the incident
+      description: Summary of the incident.
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: Creating new incident
+    description: Creating new incident.
     outputs:
     - contextPath: Netwitness.Incident.Id
-      description: Netwitness Incident ID
+      description: Netwitness Incident ID.
     - contextPath: Netwitness.Incident.Name
-      description: Netwitness Incident Name
+      description: Netwitness Incident Name.
     - contextPath: Netwitness.Incident.Priority
-      description: Netwitness Incident Priority
+      description: Netwitness Incident Priority.
     - contextPath: Netwitness.Incident.CreatedBy
-      description: User who created Netwitness.Incident
+      description: User who created Netwitness.Incident.
     - contextPath: Netwitness.Incident.AlertIDList
-      description: Alerts which rised by incident
+      description: Alerts which rised by incident.
     execution: true
   - name: netwitness-im-add-events-to-incident
     arguments:
     - name: incidentId
       required: true
       default: true
-      description: '[string] Existing incident id. '
+      description: '[string] Existing incident id.'
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events. Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events. Example: "23,12,3".'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to incident'
+      description: '[string] Short summary of the alert which will be attached to incident.'
     - name: severity
       required: true
-      description: '[number] Severity of the incident. Example: 50'
+      description: '[number] Severity of the incident. Example: 50.'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components.'
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: This command will add new events to existing incident
+    description: This command will add new events to existing incident.
     execution: true
   - name: netwitness-im-update-incident
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23".'
     - name: name
-      description: '[optional string] Set name if incident name has been changed'
+      description: '[optional string] Set name if incident name has been changed.'
     - name: summary
-      description: '[optional string] Updated incident summary'
+      description: '[optional string] Updated incident summary.'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123.'
     - name: comment
-      description: '[optional string] Add a journal entry describing your changes'
+      description: '[optional string] Add a journal entry describing your changes.'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -528,7 +529,7 @@ script:
       - REMEDIATION_COMPLETED
       - CLOSED
       - CLOSED_FALSE_POSITIVE
-      description: '[optional status] Set status if changed'
+      description: '[optional status] Set status if changed.'
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -536,124 +537,124 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been changed'
+      description: '[optional priority] Set priority if incident priority has been changed.'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
       description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
-    description: Updates incident
+    description: Updates incident.
     execution: true
   - name: netwitness-im-get-alerts
     description: Return all the alerts filtered by filter.
     arguments:
     - name: page
-      description: The default is 1. Indicates the page number of incidents
+      description: The default is 1. Indicates the page number of incidents.
     - name: start
-      description: The default is 0. Indicates the start index of incident in page
+      description: The default is 0. Indicates the start index of incident in page.
     - name: limit
-      description: The default is 100. Limits the number of incidents per page
+      description: The default is 100. Limits the number of incidents per page.
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]".'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]".'
   - name: netwitness-im-get-alert-details
     description: Return single alert by id
     arguments:
     - name: alertId
-      description: Alert id
+      description: Alert id.
       required: true
     outputs:
     - contextPath: Netwitness.Alert.Id
-      description: Netwitness Alert ID
+      description: Netwitness Alert ID.
     - contextPath: Netwitness.Alert.Name
-      description: Netwitness Alert Name
+      description: Netwitness Alert Name.
     - contextPath: Netwitness.Alert.IncidentId
-      description: Id of Incident which caused to Alert
+      description: Id of Incident which caused to Alert.
     - contextPath: Netwitness.Alert.Timestamp
-      description: Time of Alert
+      description: Time of Alert.
     - contextPath: Netwitness.Alert.HostSummary
-      description: Netwitness Alert Summary
+      description: Netwitness Alert Summary.
     - contextPath: Netwitness.Alert.SignatureId
-      description: Singnature Id of Alert
+      description: Singnature Id of Alert.
     - contextPath: Netwitness.Alert.Source
-      description: Score of Alert
+      description: Score of Alert.
     - contextPath: Netwitness.Alert.Type
-      description: Type of Alert
+      description: Type of Alert.
     - contextPath: Netwitness.Alert.RiskScore
-      description: Risk score of Alert
+      description: Risk score of Alert.
     - contextPath: Netwitness.Alert.SourceCountry
-      description: Netwitness Alert Source Country
+      description: Netwitness Alert Source Country.
     - contextPath: Netwitness.Alert.DestinationCountry
-      description: Netwitness Alert Destination Country
+      description: Netwitness Alert Destination Country.
     - contextPath: Netwitness.Alert.NumEvents
-      description: Netwitness Alert Evevts Number
+      description: Netwitness Alert Evevts Number.
     - contextPath: Netwitness.Alert.SourceIp
-      description: Netwitness Alert Source Ip
+      description: Netwitness Alert Source Ip.
     - contextPath: Netwitness.Alert.DestonationIp
-      description: Netwitness Alert Destonation Ip
+      description: Netwitness Alert Destonation Ip.
     - contextPath: Netwitness.Alert.DestonationPort
-      description: Netwitness Alert Destonation Port
+      description: Netwitness Alert Destonation Port.
   - name: netwitness-im-get-event-details
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components.'
     - name: eventId
       required: true
-      description: '[number] Id of the event'
-    description: Returns two entries. One is event details json and the second is
+      description: '[number] Id of the event.'
+    description: Returns two entries. One is event details json and the second is.
     outputs:
     - contextPath: Netwitness.Event.EventId
-      description: Netwitness Event ID
+      description: Netwitness Event ID.
     - contextPath: Netwitness.Event.DeviceId
-      description: Netwitness Event Device Id
+      description: Netwitness Event Device Id.
     - contextPath: Netwitness.Event.ReconstructedContentType
-      description: Netwitness Event Reconstructed Content
+      description: Netwitness Event Reconstructed Content.
     - contextPath: Netwitness.Event.PacketsTotal
-      description: Total Packets Netwitness Event
+      description: Total Packets Netwitness Event.
     - contextPath: Netwitness.Event.PacketsProcessed
-      description: Packets Processed in Current Event
+      description: Packets Processed in Current Event.
   - name: netwitness-im-get-incident-details
     arguments:
     - name: incidentId
       required: true
       default: true
-      description: '[number] ID of incident. Example: "INC-12"'
-    description: Returns incident json by id
+      description: '[number] ID of incident. Example: "INC-12".'
+    description: Returns incident json by id.
     outputs:
     - contextPath: Netwitness.Incident.Id
-      description: Netwitness Incident ID
+      description: Netwitness Incident ID.
     - contextPath: Netwitness.Incident.Name
-      description: Netwitness Incident Name
+      description: Netwitness Incident Name.
     - contextPath: Netwitness.Incident.Priority
-      description: Netwitness Incident Priority
+      description: Netwitness Incident Priority.
     - contextPath: Netwitness.Incident.CreatedBy
-      description: User who created Netwitness Incident
+      description: User who created Netwitness Incident.
     - contextPath: Netwitness.Incident.Summary
-      description: Netwitness Incident Summary
+      description: Netwitness Incident Summary.
     - contextPath: Netwitness.Incident.Assignee
-      description: User Assigned To Incident
+      description: User Assigned To Incident.
     - contextPath: Netwitness.Incident.Created
-      description: Time of Incident Creation
+      description: Time of Incident Creation.
     - contextPath: Netwitness.Incident.FirstAlertTime
-      description: Time of Incident Creation
+      description: Time of Incident Creation.
     - contextPath: Netwitness.Incident.LastUpdatedByUserName
-      description: User who was last to update Incident
+      description: User who was last to update Incident.
     - contextPath: Netwitness.Incident.RiskScore
-      description: Netwitness Incident Risk Score
+      description: Netwitness Incident Risk Score.
     - contextPath: Netwitness.Incident.AverageAlertRiskScore
-      description: Netwitness Incident Average Risk Score
+      description: Netwitness Incident Average Risk Score.
     - contextPath: Netwitness.Incident.Categories
-      description: Netwitness Incident Category
+      description: Netwitness Incident Category.
     - contextPath: Netwitness.Incident.AlertCount
-      description: Netwitness Incident Alerts Counts
+      description: Netwitness Incident Alerts Counts.
   - name: netwitness-im-get-alert-original
     arguments:
     - name: alertId
       required: true
       default: true
-      description: Id of the alert
-    description: Returns the original events which this alert contains
+      description: Id of the alert.
+    description: Returns the original events which this alert contains.
   isfetch: true
 tests:
 - no test
