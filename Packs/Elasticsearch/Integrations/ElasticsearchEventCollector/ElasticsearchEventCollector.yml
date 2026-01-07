@@ -147,8 +147,43 @@ display: ElasticsearchEventCollector
 name: ElasticsearchEventCollector
 script:
   commands:
-    isfetchevents: true
+  - arguments:
+    - name: start_time
+      description: Start time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now").
+      required: true
+    - name: end_time
+      description: End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now").
+      required: false
+    - name: time_method 
+      auto: PREDEFINED
+      defaultvalue: 'Simple-Date'
+      predefined:
+      - Simple-Date
+      - Timestamp-Seconds
+      - Timestamp-Milliseconds
+      required: false
+      description: For more information see the explanation in the help section.
+    - name: fetch_size
+      defaultvalue: '10'
+      description: The maximum number of results per fetch
+      required: false
+    - name: fetch_index
+      required: false
+      description: CSV
+    - name: fetch_time_field      
+      required: false
+      description: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
+    - name: fetch_query
+      description: Query string uses the Lucene syntax.
+      required: false
+    - name: raw_query
+      type: 12
+      description: Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
+      required: false
+    description: This command is used for developing/ debugging and is to be used with caution, as it can cause the API request limit to be exceeded.
+    name: es-get-events
   dockerimage: demisto/elasticsearch:1.0.0.5954979
+  isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3
@@ -156,6 +191,6 @@ script:
 marketplaces:
 - marketplacev2
 - platform
-fromversion: 5.0.0
+fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

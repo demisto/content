@@ -888,8 +888,7 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     Then
         - Make sure that the returned datetime is as expected with the correct format.
     """
-    ElasticsearchEventCollector.TIME_METHOD = time_method
-    assert ElasticsearchEventCollector.convert_date_to_timestamp(date_time) == expected_time
+    assert ElasticsearchEventCollector.convert_date_to_timestamp(date_time, time_method=time_method) == expected_time
 
 
 def test_get_value_by_dot_notation():
