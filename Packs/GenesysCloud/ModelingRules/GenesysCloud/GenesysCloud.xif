@@ -7,14 +7,14 @@
 alter
     extract_context_ip_address = context -> remoteIp,
     extract_first_ip_in_array = replex(arrayindex(arraymap(remoteIp -> [], "@element"),0),"\"",""),
-    extract_ip_v4_addresses_array = arraymap(remoteIp -> [], if(is_ipv4(replex("@element","\"","")) ,"@element",null)),
-    extract_ip_v6_addresses_array = arraymap(remoteIp -> [], if(is_ipv6(replex("@element","\"","")) ,"@element",null))
+    extract_ip_v4_addresses_array = arraymap(remoteIp -> [], if(is_ipv4(replex("@element","\"","")) ,trim("@element", "\""),null)),
+    extract_ip_v6_addresses_array = arraymap(remoteIp -> [], if(is_ipv6(replex("@element","\"","")) ,trim("@element", "\""),null))
 // Perform protocol validation to identify if the source IP is IPv4 or IPv6.
 | alter
-    check_remote_ip_v4 = if(is_ipv4(extract_first_ip_in_array) = TRUE , extract_first_ip_in_array),
-    check_remote_ip_v6 = if(is_ipv6(extract_first_ip_in_array) = TRUE , extract_first_ip_in_array),
-    check_extract_context_ip_v4 = if(is_ipv4(extract_context_ip_address) = TRUE , extract_context_ip_address),
-    check_extract_context_ip_v6 = if(is_ipv6(extract_context_ip_address) = TRUE , extract_context_ip_address)
+    check_remote_ip_v4 = if(is_ipv4(extract_first_ip_in_array), extract_first_ip_in_array, null),
+    check_remote_ip_v6 = if(is_ipv6(extract_first_ip_in_array), extract_first_ip_in_array, null),
+    check_extract_context_ip_v4 = if(is_ipv4(extract_context_ip_address), extract_context_ip_address,null),
+    check_extract_context_ip_v6 = if(is_ipv6(extract_context_ip_address), extract_context_ip_address, null)
 /* Data Model (XDM) Mapping:
    Aligning Genesys Cloud audit telemetry with XDM specifications for cross-platform correlation.
    
@@ -25,9 +25,10 @@ alter
 | alter
     xdm.source.ipv4 = coalesce(check_extract_context_ip_v4,check_remote_ip_v4),
     xdm.source.ipv6 = coalesce(check_extract_context_ip_v6,check_remote_ip_v6),
-    xdm.source.host.ipv4_addresses = if(array_length(extract_ip_v4_addresses_array) > 1 and (incidr("@element", "10.0.0.0/8") or incidr("@element", "172.16.0.0/12") or incidr("@element", "192.168.0.0/16") or incidr("@element", "127.0.0.0/8")),extract_ip_v4_addresses_array,null), // Evaluate if the IPv4 array contains internal addresses.
-    xdm.source.host.ipv4_public_addresses = if(array_length(extract_ip_v4_addresses_array) > 1 and not (incidr("@element", "10.0.0.0/8") or incidr("@element", "172.16.0.0/12") or incidr("@element", "192.168.0.0/16") or incidr("@element", "127.0.0.0/8")),extract_ip_v4_addresses_array,null), // Evaluate if the IPv4 array contains public addresses.
-    xdm.source.host.ipv6_addresses = if(array_length(extract_ip_v6_addresses_array) > 1,extract_ip_v6_addresses_array,null),
+    xdm.source.host.ipv4_addresses = if(array_length(extract_ip_v4_addresses_array) > 1, arrayfilter(extract_ip_v4_addresses_array, is_known_private_ipv4("@element")), null), // Evaluate if the IPv4 array contains internal addresses.
+    xdm.source.host.ipv4_public_addresses = if(array_length(extract_ip_v4_addresses_array) > 1, arrayfilter(extract_ip_v4_addresses_array, is_known_private_ipv4("@element") = FALSE), null), // Evaluate if the IPv4 array contains public addresses.
+    xdm.source.host.ipv6_addresses = if(array_length(extract_ip_v6_addresses_array) > 1, arrayfilter(extract_ip_v6_addresses_array, is_known_private_ipv6("@element")), null), // Evaluate if the IPv6 array contains internal addresses.
+    xdm.source.host.ipv6_public_addresses = if(array_length(extract_ip_v6_addresses_array) > 1, arrayfilter(extract_ip_v6_addresses_array, is_known_private_ipv6("@element") = FALSE), null), // Evaluate if the IPv6 array contains public addresses.
     xdm.observer.name = serviceName,
     xdm.event.id = id,
     xdm.event.type = action,
