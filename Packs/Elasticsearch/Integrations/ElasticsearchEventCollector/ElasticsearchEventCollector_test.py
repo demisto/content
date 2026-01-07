@@ -783,7 +783,9 @@ def test_get_time_range_with_utc_offset(time_method, time_range_start, expected_
     """
     from ElasticsearchEventCollector import get_time_range
 
-    result = get_time_range(last_fetch=None, time_range_start=time_range_start, time_range_end=None, time_field="time_field", time_method=time_method)
+    result = get_time_range(
+        last_fetch=None, time_range_start=time_range_start, time_range_end=None, time_field="time_field", time_method=time_method
+    )
 
     if expected_time_zone:
         assert "time_zone" in result["range"]["time_field"]
@@ -818,7 +820,10 @@ def test_execute_raw_query(mocker, raw_query_body):
     mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "__init__", return_value=None)
     es = ElasticsearchEventCollector.elasticsearch_builder({})
-    assert ElasticsearchEventCollector.execute_raw_query(es, json.dumps(raw_query_body), index="index from parameter") == ES_V7_RESPONSE
+    assert (
+        ElasticsearchEventCollector.execute_raw_query(es, json.dumps(raw_query_body), index="index from parameter")
+        == ES_V7_RESPONSE
+    )
 
 
 @patch.dict("os.environ", {"DEMISTO_PARAMS": str(PARAMS_V8)})

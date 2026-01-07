@@ -820,6 +820,7 @@ def get_events(proxies):
         return CommandResults(readable_output=tableToMarkdown(name="Get Events", t=events))
     return CommandResults(readable_output=tableToMarkdown(name="No Events", t=events))
 
+
 def main():  # pragma: no cover
     proxies = handle_proxy()
     proxies = proxies if proxies else None
