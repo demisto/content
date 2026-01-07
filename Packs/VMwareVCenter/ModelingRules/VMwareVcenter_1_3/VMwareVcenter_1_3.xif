@@ -146,7 +146,6 @@ alter
     vm_name = coalesce(
         arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0),
         arrayindex(regextract(description, "Virtual machine ([^\s]+)"), 0),
-        arrayindex(regextract(description, "Creating ([^\s]+) on"), 0),
         arrayindex(regextract(description, "([^\s]+) cloned to"), 0),
         arrayindex(regextract(description, "Created virtual machine ([^\s]+) on"), 0),
         arrayindex(regextract(description, "Template (.+?)\s"), 0),
@@ -157,7 +156,9 @@ alter
         arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)),
     target_vm_name = arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
     target_hostname = arrayindex(regextract(description, " to ([^\s]+)"), 0),
-    target_datacenter = arrayindex(regextract(description, " to ([^\s]+)"), 0),    original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0)),
+    target_datacenter = arrayindex(regextract(description, " to ([^\s]+)"), 0),    
+    original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0)
+                            description~= "Creating ([^\s]+) on", arrayindex(regextract(description, "Creating ([^\s]+) on"), 0)),
     datastore_name =  if(description ~= "\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\S+\,\s+([^\s]+)\s+in"), 0)),
     target_datastore_name = if(description ~= "\s+to\s+\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\s+to\s+\S+\,\s+([^\s]+)"), 0)),
     old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)),
