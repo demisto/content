@@ -1045,12 +1045,6 @@ class Client(CoreClient):
         return reply
 
     def get_case_resolution_statuses(self, case_id: str) -> dict:
-        # reply = self._http_request(
-        #     method="POST",
-        #     json_data={"case_id" : case_id},
-        #     headers=self._headers,
-        #     url_suffix="resolution_actions/case/read",
-        # )
         reply = self._http_request(
             method="GET",
             json_data={},
