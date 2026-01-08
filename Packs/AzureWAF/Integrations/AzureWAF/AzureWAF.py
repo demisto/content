@@ -647,7 +647,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
         if type(properties) is str:
             table_data.append({"Name": properties})
             continue
-        
+
         if verbose:
             # Include detailed information
             row = {
