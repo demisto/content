@@ -632,16 +632,6 @@ script:
       - 'true'
       - 'false'
     description: |- 
-      Retrieves the properties and relationships of a user object by its onPremisesSamAccountName. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-      Permissions: - User.Read (Delegated) - User.Read.All (Application).
-    name: msgraph-user-get-by-sam
-  - arguments:
-    - description: The onPremisesSamAccountName.
-      name: user
-      required: true
-    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
-      name: properties
-    description: |- 
       Retrieves the properties from the owned devices of a user.
     name: msgraph-user-get-owned-devices
   - arguments:
@@ -649,7 +639,7 @@ script:
       name: user
       required: true
     description: |- 
-      Retrieves the properties from the owned devices of a user.
+      Retrieve a list of authentication methods registered to a user.  
     name: msgraph-user-get-auth-methods
   - arguments:
     - description: The User ID or userPrincipalName of the user for which to get the MFA methods properties.

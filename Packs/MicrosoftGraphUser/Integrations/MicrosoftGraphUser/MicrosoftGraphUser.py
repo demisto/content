@@ -231,20 +231,6 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def get_user_by_sam(self, user, properties):
-        user_data = self.ms_client.http_request(
-            method="GET",
-            url_suffix="users",
-            headers={"ConsistencyLevel": "eventual"},
-            params={
-                "$select": properties,
-                "$filter": f"onPremisesSamAccountName eq {repr(quote(user))}",
-                "$count": "true",
-            },
-        )
-        user_data.pop("@odata.context", None)
-        return user_data
-
     def get_groups(self, user):
         try:
             group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
@@ -258,16 +244,28 @@ class MsGraphClient:
             raise e
 
     def get_owned_devices(self, user):
-        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/ownedDevices")
-        data.pop("@odata.context", None)
-        data.pop("@odata.type", None)
-        return data
+        try:
+            data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/ownedDevices")
+            data.pop("@odata.context", None)
+            data.pop("@odata.type", None)
+            return data
+        except NotFoundError as e:
+            demisto.debug(f"User {user} was not found")
+            return {"NotFound": e.message}
+        except Exception as e:
+            raise e
 
     def get_auth_methods(self, user):
-        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
-        data.pop("@odata.context", None)
-        data.pop("@odata.type", None)
-        return data
+        try:
+            data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
+            data.pop("@odata.context", None)
+            data.pop("@odata.type", None)
+            return data
+        except NotFoundError as e:
+            demisto.debug(f"User {user} was not found")
+            return {"NotFound": e.message}
+        except Exception as e:
+            raise e
 
     def validate_password(self, password) -> Dict:
         response = self.ms_client.http_request(
@@ -687,17 +685,6 @@ def get_user_command(client: MsGraphClient, args: dict):
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
 
 
-def get_user_by_sam_command(client: MsGraphClient, args: dict):
-    user = args.get("user")
-    properties = args.get("properties", "id,displayName,jobTitle,mobilePhone,mail")
-    users_data = client.get_user_by_sam(user, properties)
-    users_readable, users_outputs = parse_outputs(users_data)
-    outputs = {"MSGraphUser(val.ID == obj.ID)": users_outputs}
-    human_readable = tableToMarkdown(name="All Graph Users", t=users_readable, removeNull=True)
-
-    return human_readable, outputs, users_data
-
-
 def get_groups_command(client: MsGraphClient, args: Dict):
     user = args.get("user")
     try:
@@ -1026,7 +1013,6 @@ def main():
         "msgraph-user-create": create_user_command,
         "msgraph-user-get-delta": get_delta_command,
         "msgraph-user-get": get_user_command,
-        "msgraph-user-get-by-sam": get_user_by_sam_command,
         "msgraph-user-get-groups": get_groups_command,
         "msgraph-user-get-owned-devices": get_owned_devices_command,
         "msgraph-user-get-auth-methods": get_auth_methods_command,
