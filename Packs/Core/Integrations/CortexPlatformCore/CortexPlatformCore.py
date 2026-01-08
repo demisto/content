@@ -1527,6 +1527,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
             "assigned": FilterType.NIS_EMPTY,
         },
     )
+    filter_builder.add_field("CORTEX_VULNERABILITY_RISK_SCORE", FilterType.GTE, arg_to_number(args.get("cvrs_gte")))
+    filter_builder.add_field(
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage"))
+    )
 
     request_data = build_webapp_request_data(
         table_name=VULNERABLE_ISSUES_TABLE,
@@ -1557,6 +1561,17 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "EXPLOITABLE",
         "ASSET_IDS",
         "FINDING_SOURCES",
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE",
+        "CORTEX_VULNERABILITY_RISK_SCORE",
+        "FIX_VERSIONS",
+        "ASSET_TYPES",
+        "COMPENSATING_CONTROLS_DETECTED_CONTROLS",
+        "EXPLOIT_LEVEL",
+        "ISSUE_NAME",
+        "PACKAGE_IN_USE",
+        "PROVIDERS",
+        "OS_FAMILY",
+        "IMAGE",
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
@@ -4020,7 +4035,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    DEFAULT_LIMIT = 100
+    DEFAULT_LIMIT = 1000
     if "limit" not in query:  # Add default limit if no limit was provided
         query = f"{query} | limit {DEFAULT_LIMIT!s}"
 
