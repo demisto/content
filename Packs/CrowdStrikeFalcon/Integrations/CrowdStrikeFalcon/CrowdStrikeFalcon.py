@@ -440,7 +440,7 @@ def is_detection_occurred_before_fetch_time(detection_created_timestamp: str, st
 
     return create_date < start_date
 
-
+ƒ
 def is_incident_fetch_type_selected(selected_types: list):
     return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
