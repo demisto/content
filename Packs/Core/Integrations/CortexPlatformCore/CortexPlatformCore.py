@@ -4091,7 +4091,7 @@ def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
 
 
 def postprocess_case_resolution_statuses(client, response: dict):
-    response = response.copy()
+    response = copy.deepcopy(response)
     pbs_metadata = client.get_playbooks_metadata() or []
     pb_id_to_data = map_pb_id_to_data(pbs_metadata)
 

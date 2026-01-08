@@ -3149,7 +3149,7 @@ script:
         type: List
     - arguments:
         - description: The unique identifier of the case to retrieve resolution statuses for.
-          isArray: true
+          isArray: false
           name: case_id
           required: true
       name: core-get-case-resolution-statuses
