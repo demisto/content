@@ -523,11 +523,11 @@ script:
       type: string
     - contextPath: Slack.Messages.HasReplies
       description: Whether the message has replies.
-      type: boolean
+      type: string
     - contextPath: Slack.Messages.ThreadTimeStamp
       description: The thread timestamp of the message.
       type: string
-    - contextPath: SlackPageToken.NextPageToken
+    - contextPath: SlackConversationsNextPageToken
       description: Token to retrieve the next page of results.
       type: string
   - arguments:

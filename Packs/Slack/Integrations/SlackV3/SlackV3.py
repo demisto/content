@@ -2851,7 +2851,6 @@ def conversation_history() -> None:
         body["cursor"] = page_token
 
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
-    demisto.debug(f"Raw response from Slack conversations.history: {raw_response}")
 
     if not raw_response.get("ok"):
         raise DemistoException(
@@ -2920,9 +2919,9 @@ def conversation_history() -> None:
     if cursor:
         results.append(
             CommandResults(
-                outputs_prefix="SlackPageToken",
-                outputs_key_field="NextPageToken",
-                outputs={"NextPageToken": cursor},
+                outputs_prefix="SlackConversationsNextPageToken",
+                outputs_key_field="SlackConversationsNextPageToken",
+                outputs=cursor,
             )
         )
 
