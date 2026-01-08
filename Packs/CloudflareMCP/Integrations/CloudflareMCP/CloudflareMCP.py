@@ -20,6 +20,7 @@ async def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
+    client = None
     try:
         cloudflare_server = params.get("cloudflare_server", "")
         cloudflare_url = CLOUDFLARE_BASE_URL.format(server=cloudflare_server)
@@ -71,6 +72,11 @@ async def main() -> None:  # pragma: no cover
     except BaseException as eg:
         root_msg = extract_root_error_message(eg)
         return_error(f"Failed to execute {command} command.\nError:\n{root_msg}")
+
+    finally:
+        if client:
+            demisto.debug(f"Closing client connection for {command}")
+            await client.close()
 
 
 """ ENTRY POINT """
