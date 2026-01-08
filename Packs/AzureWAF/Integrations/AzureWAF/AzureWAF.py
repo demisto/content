@@ -647,7 +647,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
         if type(properties) is str:
             table_data.append({"Name": properties})
             continue
-
+        
         if verbose:
             # Include detailed information
             row = {
@@ -658,8 +658,8 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
                 "Resource State": properties.get("resourceState", ""),
                 "Policy Mode": properties.get("policySettings", {}).get("mode", ""),
                 "Policy State": properties.get("policySettings", {}).get("state", ""),
-                "Custom Rules": len(properties.get("customRules", {}).get("rules", [])),
-                "Managed Rule Sets": len(properties.get("managedRules", {}).get("managedRuleSets", [])),
+                "Custom Rules": len(properties.get("customRules", {})),
+                "Managed Rule Sets": properties.get("managedRules", {}).get("managedRuleSets", []),
                 "Type": policy_copy.get("type", ""),
                 "Etag": policy_copy.get("etag", ""),
                 "ID": policy_copy.get("id", ""),
