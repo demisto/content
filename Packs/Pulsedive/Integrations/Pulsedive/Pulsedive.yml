@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Pulsedive LLC
 commonfields:
   id: Pulsedive
   version: -1
@@ -269,7 +270,7 @@ script:
       description: The expiration date of the domain.
       type: Date
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: The name of the registrar, for example 'GoDaddy'
+      description: The name of the registrar, for example 'GoDaddy'.
       type: String
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
@@ -371,7 +372,7 @@ script:
       description: The number of engines that positively detected the indicator as malicious.
       type: string
   - arguments:
-    - description: The value to scan
+    - description: The value to scan.
       name: value
       required: true
     - auto: PREDEFINED
@@ -395,7 +396,7 @@ script:
       description: The success message.
       type: string
   - arguments:
-    - description: QID recieved from scan command
+    - description: QID recieved from scan command.
       name: qid
       required: true
     description: Retrieve the Result
