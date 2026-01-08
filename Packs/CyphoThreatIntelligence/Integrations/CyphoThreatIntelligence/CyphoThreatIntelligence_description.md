@@ -2,12 +2,6 @@
 #### Author
 Mahammad Rehimov
 
-#### Contact
-- Email: Mahammad.Rahimov@proton.me
-- Platform: Cypho Threat Intelligence
-
----
-
 #### Overview
 
 This integration ingests threat intelligence indicators, category metadata, incidents, ticket state updates, and file attachments from the Cypho platform into Cortex XSOAR for enrichment and automation. It synchronizes the lifecycle of Cypho issues so that XSOAR incidents accurately reflect the current state of Cypho tickets. The integration streamlines SOC workflows, reduces manual effort, and preserves SLA accountability tracking such as MTTR (Mean Time to Resolve) and assignment-based analyst ownership metrics.
