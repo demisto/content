@@ -1,5 +1,6 @@
 id: IPEnrichment-Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: IPEnrichment-Test
 starttaskid: "0"
 tasks:
