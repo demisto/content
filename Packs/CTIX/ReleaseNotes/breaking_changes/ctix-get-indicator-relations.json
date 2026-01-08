@@ -1,5 +1,0 @@
-{
-  "id": "ctix-get-indicator-relations",
-  "type": "command",
-  "description": "The 'ctix-get-indicator-relations' command has been renamed to ctix-get-object-relations. Any playbooks or automations using this command may break and need to be updated."
-}
