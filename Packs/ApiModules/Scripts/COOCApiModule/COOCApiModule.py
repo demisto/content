@@ -395,7 +395,7 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
     return error_entry
 
 
-def is_gov_account(connector_id: str, account_id: str) -> bool:
+def is_gov_account(connector_id: str, account_id: str = "") -> bool:
     """
     Return whether the account connected to the connector_id is a gov account or not.
 
@@ -409,11 +409,16 @@ def is_gov_account(connector_id: str, account_id: str) -> bool:
     accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
 
     relevant_account = {}
-    for account in accounts_info:
-        if account.get("account_id") == account_id:
-            relevant_account = account
-            demisto.debug("found the account")
-            break
+    if account_id:
+        demisto.debug(f"[COOC API]The found {account_id=}")
+        for account in accounts_info:
+            if account.get("account_id") == account_id:
+                relevant_account = account
+                demisto.debug("[COOC API] found the account")
+                break
+    else:
+        demisto.debug(f"[COOC API] {account_id=}. Getting the first account for the health check")
+        relevant_account = accounts_info[0]
 
     if account_cloud_partition := relevant_account.get("cloud_partition", ""):
         demisto.debug(f"The found {account_cloud_partition=}")
