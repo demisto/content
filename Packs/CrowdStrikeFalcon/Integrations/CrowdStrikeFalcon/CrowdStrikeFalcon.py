@@ -3742,8 +3742,8 @@ async def fetch_spotlight_assets_async():
     limit = 5000
     params = {
         "limit": limit,
-        "filter": "status:['open']",
-        "facet": ["host_info", "cve"]
+        "filter": "status:['open', 'reopen']",
+        "facet": "cve"
     }
     
     tasks = []
