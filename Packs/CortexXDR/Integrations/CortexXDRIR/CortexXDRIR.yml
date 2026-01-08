@@ -3959,13 +3959,14 @@ script:
       description: The type of the asset group.
       name: group_type
       predefined:
-      - static
-      - dynamic
+      - Static
+      - Dynamic
       required: true
     - description: The description of the asset group.
       name: group_description
-    - description: The JSON to use for the "membership_predicate" field in the API.
+    - description: 'The JSON to use for the "membership_predicate" field in the API. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
       name: membership_predicate_json
+      required: true
     description: Creates an asset group.
     name: xdr-asset-group-create
     outputs:

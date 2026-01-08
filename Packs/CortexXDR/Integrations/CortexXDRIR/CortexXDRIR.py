@@ -550,39 +550,42 @@ class Client(CoreClient):
 
     def get_asset_schema(self):
         res = self._http_request(
-            method="POST",
+            method="GET",
             url_suffix="/assets/schema",
-            json_data={"request_data": {}},
             headers=self.headers,
             timeout=self.timeout,
         )
-        return res.get("reply", {}).get("DATA", [])
+        return res.get("reply", {}).get("data", [])
 
     def get_asset_schema_field_options(self, field_name: str):
         res = self._http_request(
-            method="POST",
+            method="GET",
             url_suffix=f"/assets/enum/{field_name}",
-            json_data={"request_data": {}},
             headers=self.headers,
             timeout=self.timeout,
         )
-        return res.get("reply", {}).get("DATA", [])
+        return res.get("reply", {}).get("data", [])
 
     def create_asset_group(self, group_name: str, group_type: str, group_description: str = "",
                            membership_predicate_json: Any = None):
+        update_data = assign_params(
+            group_name=group_name,
+            group_type=group_type,
+            group_description=group_description,
+            membership_predicate=membership_predicate_json
+        )
+
         request_data = {
             "request_data": {
-                "group_name": group_name,
-                "group_type": group_type,
-                "group_description": group_description,
+                "asset_group": update_data
             }
         }
         if membership_predicate_json:
-            request_data["request_data"]["membership_predicate"] = membership_predicate_json
+            request_data["request_data"]["asset_group"]["membership_predicate"] = membership_predicate_json
 
         res = self._http_request(
             method="POST",
-            url_suffix="/asset-group/create",
+            url_suffix="/asset-groups/create",
             json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
@@ -590,15 +593,9 @@ class Client(CoreClient):
         return res.get("reply")
 
     def delete_asset_group(self, group_id: str):
-        request_data = {
-            "request_data": {
-                "group_id": group_id
-            }
-        }
         self._http_request(
             method="POST",
-            url_suffix="/asset-group/delete",
-            json_data=request_data,
+            url_suffix=f"/asset-groups/delete/{group_id}",
             headers=self.headers,
             timeout=self.timeout,
         )
@@ -614,10 +611,10 @@ class Client(CoreClient):
         if filter_json:
             request_data["request_data"]["filters"] = filter_json
         if sort_field:
-            request_data["request_data"]["sort"] = {
-                "field": sort_field,
-                "order": sort_order or "asc"
-            }
+            request_data["request_data"]["sort"] = [{
+                "FIELD": sort_field,
+                "ORDER": sort_order or "ASC"
+            }]
 
         res = self._http_request(
             method="POST",
@@ -637,7 +634,9 @@ class Client(CoreClient):
             membership_predicate=membership_predicate_json
         )
         request_data = {
-            "request_data": update_data
+            "request_data": {
+                "asset_group": update_data
+            }
         }
         self._http_request(
             method="POST",
@@ -1619,9 +1618,6 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object containing the asset schema.
     """
     schema = client.get_asset_schema()
-    if not schema:
-        return CommandResults(readable_output="No asset schema found.")
-
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Schema",
         t=schema,
@@ -1650,8 +1646,6 @@ def get_asset_schema_field_options_command(client: Client, args: Dict) -> Comman
     """
     field_name = args.get('field_name', "")
     options = client.get_asset_schema_field_options(field_name)
-    if not options:
-        return CommandResults(readable_output=f"No options found for field {field_name}.")
 
     readable_output = tableToMarkdown(
         name=f"Cortex XDR Asset Schema Options for {field_name}",
