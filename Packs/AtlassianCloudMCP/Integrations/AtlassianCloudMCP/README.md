@@ -4,7 +4,7 @@ Use this integration to connect securely with a Atlassian Cloud Model Context Pr
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Authorization code |  |
+| Authorization code | True |
 
 ## Commands
 

@@ -31,7 +31,7 @@ class TestMain:
         Then: The client's list_tools method is called and results are returned.
         """
 
-        async def mock_list_tools():
+        async def mock_list_tools(server_name):
             return {"tools": []}
 
         mock_client = mocker.MagicMock()
@@ -136,7 +136,7 @@ class TestMain:
         Then: The exception is caught and return_error is called with the error message.
         """
 
-        async def mock_list_tools_with_error():
+        async def mock_list_tools_with_error(server_name):
             raise Exception("Connection failed")
 
         mock_client = mocker.MagicMock()
