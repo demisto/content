@@ -985,7 +985,6 @@ def test_update_remote_system_with_entries(mocker):
         assert result[0]["Contents"]["dbotIncidentClose"] is True
         assert result[0]["Contents"]["closeReason"] == "CustomResolved"
 
-
     def test_get_modified_incidents_custom_mapping_miss(mocker):
         """
         Ensure that when custom_defender_to_xsoar_close_reason is enabled but the mapping does not contain
@@ -1009,8 +1008,7 @@ def test_update_remote_system_with_entries(mocker):
         assert result[0]["Contents"]["dbotIncidentClose"] is True
         # fallback to default mapping for TruePositive -> "Resolved"
         assert result[0]["Contents"]["closeReason"] == "Resolved"
-        
-        
+
     def test_default_close_reason_false_positive_updates_classification(mocker):
         """
         Given:
@@ -1031,7 +1029,7 @@ def test_update_remote_system_with_entries(mocker):
 
         assert delta["classification"] == "FalsePositive"
         assert delta["determination"] == "Other"
-        
+
     def test_default_close_reason_other_sets_unknown(mocker):
         """
         Given:
@@ -1048,6 +1046,22 @@ def test_update_remote_system_with_entries(mocker):
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
         
+    def test_default_close_reason_duplicate_sets_unknown(mocker):
+        """
+        Given:
+            closeReason is Duplicate
+        Then:
+            classification is Unknown and determination is NotAvailable
+        """
+        mocker.patch("Microsoft365Defender.demisto.debug")
+
+        delta = {"closeReason": "Duplicate"}
+
+        _get_default_incident_close_out_or_reactiviation_reason(delta)
+
+        assert delta["classification"] == "Unknown"
+        assert delta["determination"] == "NotAvailable"
+
     def test_default_close_reason_no_match_no_change(mocker):
         """
         Given:
@@ -1062,7 +1076,7 @@ def test_update_remote_system_with_entries(mocker):
         _get_default_incident_close_out_or_reactiviation_reason(delta)
 
         assert delta == {"closeReason": "Resolved"}
-        
+
     def test_get_default_modified_incident_close_reason_known_classification():
         """
         Given:
@@ -1076,11 +1090,8 @@ def test_update_remote_system_with_entries(mocker):
 
         assert result["Type"] == EntryType.NOTE
         assert result["Contents"]["dbotIncidentClose"] is True
-        assert (
-            result["Contents"]["closeReason"]
-            == MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON["TruePositive"]
-        )
-        
+        assert result["Contents"]["closeReason"] == MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON["TruePositive"]
+
     def test_get_default_modified_incident_close_reason_unknown_classification():
         """
         Given:
@@ -1089,6 +1100,21 @@ def test_update_remote_system_with_entries(mocker):
             closeReason defaults to 'Other'
         """
         incident = {"classification": "NonExistingClassification"}
+
+        result = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
+
+        assert result["Type"] == EntryType.NOTE
+        assert result["Contents"]["dbotIncidentClose"] is True
+        assert result["Contents"]["closeReason"] == "Other"
+        
+    def test_get_default_modified_incident_close_reason_missing_classification():
+        """
+        Given:
+            Incident without classification field
+        Then:
+            classification defaults to Unknown and closeReason resolves accordingly
+        """
+        incident = {}
 
         result = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
 

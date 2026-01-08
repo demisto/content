@@ -412,7 +412,8 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
         "Classification": raw_incident.get("classification", "Not set"),
         "Device groups": ", ".join(device_groups),
     }
-    
+
+
 def _get_default_incident_close_out_or_reactiviation_reason(delta: dict):
     """
     Get the default incident close reason for the given classification.
@@ -421,15 +422,12 @@ def _get_default_incident_close_out_or_reactiviation_reason(delta: dict):
     """
     if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
         delta.update({"classification": "FalsePositive", "determination": "Other"})
-        demisto.debug(
-            "Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other"
-        )
+        demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
     elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
         delta.update({"classification": "Unknown", "determination": "NotAvailable"})
-        demisto.debug(
-            "Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable"
-        )
-        
+        demisto.debug("Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable")
+
+
 def _get_default_modified_incidents_close_or_reopen_entries_reason(incident: dict) -> dict:
     """
     Get the default incident close reason for the given classification.
@@ -440,15 +438,15 @@ def _get_default_modified_incidents_close_or_reopen_entries_reason(incident: dic
         dict: A dictionary containing the default close or reopen entries reason.
     """
     return {
-            "Type": EntryType.NOTE,
-            "Contents": {
-                "dbotIncidentClose": True,
-                "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
-                    incident.get("classification", "Unknown"), "Other"
-                ),
-            },
-            "ContentsFormat": EntryFormat.JSON,
-        }
+        "Type": EntryType.NOTE,
+        "Contents": {
+            "dbotIncidentClose": True,
+            "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
+                incident.get("classification", "Unknown"), "Other"
+            ),
+        },
+        "ContentsFormat": EntryFormat.JSON,
+    }
 
 
 """ COMMAND FUNCTIONS """
