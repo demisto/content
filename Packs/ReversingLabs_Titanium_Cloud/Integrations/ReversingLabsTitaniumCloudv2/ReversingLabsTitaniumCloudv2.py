@@ -113,12 +113,7 @@ def test_module_command():
 
 def file_command():
     mwp = FileReputation(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     hash_list = argToList(demisto.getArg("file"))
@@ -695,12 +690,7 @@ def file_upload_command():
 
 def url_command():
     url_ti = URLThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     url_list = argToList(demisto.getArg("url"))
@@ -1620,7 +1610,7 @@ def domain_report_output(response_json, domain):
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=score,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
     indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
@@ -1881,7 +1871,7 @@ def ip_report_output(response_json, ip):
         indicator_type=DBotScoreType.IP,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=score,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
     indicator = Common.IP(ip=ip, dbot_score=dbot_score)
