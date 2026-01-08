@@ -1045,7 +1045,7 @@ def test_update_remote_system_with_entries(mocker):
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
-        
+
     def test_default_close_reason_duplicate_sets_unknown(mocker):
         """
         Given:
@@ -1106,7 +1106,7 @@ def test_update_remote_system_with_entries(mocker):
         assert result["Type"] == EntryType.NOTE
         assert result["Contents"]["dbotIncidentClose"] is True
         assert result["Contents"]["closeReason"] == "Other"
-        
+
     def test_get_default_modified_incident_close_reason_missing_classification():
         """
         Given:
