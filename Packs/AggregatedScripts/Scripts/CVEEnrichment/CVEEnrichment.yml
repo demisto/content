@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'This script enriches CVE indicators using reputation data from multiple integrations and returns a consolidated CVEEnrichment object in the context output. It supports indicators of type: "CVE" only and will create the CVE indicator in TIM if it does not exist.'
+comment: 'This script enriches CVE indicators using reputation data from multiple integrations and returns a consolidated CVEEnrichment object in the context output. It supports indicators of type "CVE" only and will create the CVE indicator in TIM if it does not exist.'
 commonfields:
   id: cve-enrichment
   version: -1
