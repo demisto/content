@@ -4330,6 +4330,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+
     generic_detection_id = input_data.remote_ngsiem_detection_id
 
     detection_entity = input_data.response_ngsiem_detection.copy()
@@ -4338,9 +4339,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
     mocker.patch.object(demisto, "debug", return_value=None)
 
-    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
-        generic_detection_id
-    )
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(generic_detection_id)
 
     assert mirrored_data == detection_entity
     assert returned_detection_type == detection_type
