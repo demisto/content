@@ -4,7 +4,8 @@ commonfields:
 name: Aella Star Light
 display: Aella Star Light
 category: Data Enrichment & Threat Intelligence
-description: Aella Star Light Integration
+provider: AellaData
+description: Aella Star Light Integration.
 configuration:
 - display: Server URL (e.g. https://starlight.companyname.com:8889)
   name: url
@@ -57,33 +58,33 @@ script:
     arguments:
     - name: event_id
       required: true
-      description: event id from the Star Light incident
+      description: event id from the Star Light incident.
     outputs:
     - contextPath: Aella.Event.event_name
-      description: The event name
+      description: The event name.
       type: string
     - contextPath: Aella.Event.severity
-      description: The severity score
+      description: The severity score.
       type: string
     - contextPath: Aella.Event.dstip
-      description: The Destination IP
+      description: The Destination IP.
       type: string
     - contextPath: Aella.Event.srcip
-      description: The source IP
+      description: The source IP.
       type: string
     - contextPath: Aella.Event.tenantid
-      description: The tenant ID
+      description: The tenant ID.
       type: string
     - contextPath: Aella.Event.srcip_reputation
-      description: The source IP reputation
+      description: The source IP reputation.
       type: string
     - contextPath: Aella.Event.dstip_reputation
-      description: The destination IP reputation
+      description: The destination IP reputation.
       type: string
     - contextPath: Aella.Event.dstip_geo
-      description: The destination IP geo location
+      description: The destination IP geo location.
     - contextPath: Aella.Event.srcip_geo
-      description: The source  IP geo location
+      description: The source  IP geo location.
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
