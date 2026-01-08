@@ -150,7 +150,7 @@ def test_fetch_uam_alerts(mocker, requests_mock):
     )
 
     # Set the last run to a time before our mock incident
-    mocker.patch.object(demisto, "getLastRun", return_value={"time": 1735041600000})
+    mocker.patch.object(demisto, "getLastRun", return_value={"uam_time": 1735041600000})
     mocker.patch.object(demisto, "command", return_value="fetch-incidents")
     mock_incidents = mocker.patch.object(demisto, "incidents")
 

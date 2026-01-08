@@ -4753,9 +4753,9 @@ def fetch_handler(client: Client, args):
         default_date = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
         if not default_date:
             raise DemistoException("Please provide an initial First fetch timestamp")
-        
+
         default_ts = int(default_date.timestamp() * 1000)
-        
+
         # Assign only if None
         last_fetch = last_fetch if last_fetch is not None else default_ts
         uam_last_fetch = uam_last_fetch if uam_last_fetch is not None else default_ts
@@ -4792,7 +4792,10 @@ def fetch_handler(client: Client, args):
         incidents += uam_incidents
     # Debug log if no incidents
     if not incidents:
-        demisto.debug(f"{args.get('fetch_type')=}, {args.get('fetch_uam_alert_type')=} -> {incidents=} {current_fetch=} {uam_current_fetch=}")
+        demisto.debug(
+            f"{args.get('fetch_type')=}, {args.get('fetch_uam_alert_type')=} -> "
+            f"{incidents=} {current_fetch=} {uam_current_fetch=}"
+        )
 
     demisto.setLastRun({"time": current_fetch, "uam_time": uam_current_fetch})
     demisto.incidents(incidents)
