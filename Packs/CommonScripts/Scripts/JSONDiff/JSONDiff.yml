@@ -21,7 +21,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 tests:
 - JSONtoCSV-Test
 fromversion: 6.10.0

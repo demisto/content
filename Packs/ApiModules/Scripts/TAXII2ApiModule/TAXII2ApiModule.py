@@ -542,19 +542,21 @@ class XSOAR2STIXParser:
                     )
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                         stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
-                    demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
                         if extension_definition:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
+
+        demisto.info(f"T2API: indicators count: {len(iocs)}")
         if (
             not is_manifest
             and iocs
             and is_demisto_version_ge("6.6.0")
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
+            demisto.info(f"T2API: indicators count: {len(relationships)}")
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])
@@ -1480,7 +1482,8 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 attack_pattern["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        fields["tags"] = list(set(attack_pattern_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         attack_pattern["fields"] = fields
 
@@ -1542,8 +1545,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 report["score"] = score
 
-        tags = list((set(report_obj.get("labels", []))).union(set(self.tags)))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(set(report_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(
             report_obj, self.id_to_object, relationships_prefix, ignore_reports_relationships, is_unit42_report
@@ -1592,8 +1594,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 threat_actor["score"] = score
 
-        tags = list((set(threat_actor_obj.get("labels", []))).union(set(self.tags)))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(set(threat_actor_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
         threat_actor["fields"] = fields
 
         if self.enrichment_excluded:
@@ -1678,8 +1679,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 malware["score"] = score
 
-        tags = list((set(malware_obj.get("labels", []))).union(set(self.tags)))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(set(malware_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         malware["fields"] = fields
 
@@ -1719,7 +1719,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 tool["score"] = score
 
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+        fields["tags"] = list(set(tool_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         tool["fields"] = fields
 
@@ -1791,7 +1791,8 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 campaign["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        fields["tags"] = list(set(campaign_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
         campaign["fields"] = fields
 
         if self.enrichment_excluded:
@@ -1831,7 +1832,8 @@ class STIX2XSOARParser(BaseClient):
             fields.update(assign_params(**custom_fields))
             if score:
                 intrusion_set["score"] = score
-        fields["tags"] = list(set(list(fields.get("tags", [])) + self.tags))
+
+        fields["tags"] = list(set(intrusion_set_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         if self.enrichment_excluded:
             intrusion_set["enrichmentExcluded"] = self.enrichment_excluded
@@ -1996,8 +1998,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 identity["score"] = score
 
-        tags = list((set(identity_obj.get("labels", []))).union(set(self.tags)))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(set(identity_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         identity["fields"] = fields
 
@@ -2034,8 +2035,7 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 location["score"] = score
 
-        tags = list((set(location_obj.get("labels", []))).union(set(self.tags)))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(set(location_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", []))))
 
         location["fields"] = fields
 
@@ -2066,8 +2066,9 @@ class STIX2XSOARParser(BaseClient):
             if score:
                 cve["score"] = score
 
-        tags = list((set(vulnerability_obj.get("labels", []))).union(set(self.tags), {name} if name else {}))
-        fields["tags"] = list(set(list(fields.get("tags", [])) + tags))
+        fields["tags"] = list(
+            set(vulnerability_obj.get("labels", [])).union(set(self.tags), set(fields.get("tags", [])), {name} if name else {})
+        )
 
         cve["fields"] = fields
 
