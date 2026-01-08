@@ -1,4 +1,4 @@
-This script enriches URL indicators using reputation data from multiple integrations and returns a consolidated URLEnrichment object in the context output. It supports only indicators of type URL and will create the URL indicator in TIM if it does not exist.
+This script enriches URL indicators using reputation data from multiple integrations and returns a consolidated URLEnrichment object in the context output. It supports indicators of type "URL" only and will create the URL indicator in TIM if it does not exist.
 
 ## Script Data
 

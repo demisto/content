@@ -1,4 +1,4 @@
-This script enriches IP indicators using reputation data from multiple integrations and returns a consolidated IPEnrichment object in the context output. It supports only indicators of type IP and will create the IP indicator in TIM if it does not exist. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
+This script enriches IP indicators using reputation data from multiple integrations and returns a consolidated IPEnrichment object in the context output. It supports indicators of type "IP" only and will create the IP indicator in TIM if it does not exist. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
 
 ## Script Data
 
