@@ -1659,7 +1659,38 @@
 				},
 				"CrowdStrike Falcon IOC Urls": {
 					"simple": "details.ioc.urls"
-				}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+				"dbotMirrorId": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": ":recon:"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
 			}
 		}
     },
