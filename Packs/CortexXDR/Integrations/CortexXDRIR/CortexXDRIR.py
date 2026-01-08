@@ -100,6 +100,36 @@ def clear_trailing_whitespace(res):
     return res
 
 
+def strip_prefix_from_list(data_list, prefix):
+    """
+    Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
+
+    Args:
+        data_list (list): The list of dictionaries (e.g., from raw API response).
+        prefix (str): The prefix to remove (e.g., "XDM.ASSET_GROUP").
+
+    Returns:
+        list: A new list with cleaned dictionary keys.
+    """
+    cleaned_list = []
+    len_prefix = len(prefix)
+    for entry in data_list:
+        if not isinstance(entry, dict):
+            continue
+        new_dict = {}
+
+        for key, value in entry.items():
+            if key.startswith(prefix):
+                new_key = key[len_prefix:]
+                new_dict[new_key] = value
+            else:
+                new_dict[key] = value
+
+        cleaned_list.append(new_dict)
+
+    return cleaned_list
+
+
 def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_already_filtered_incidents: int) -> List:
     """
     Filters incidents that were seen already and saves the unseen incidents to LastRun object.
@@ -615,6 +645,7 @@ class Client(CoreClient):
                 "FIELD": sort_field,
                 "ORDER": sort_order or "ASC"
             }]
+        demisto.debug(f"Final {request_data=}")
 
         res = self._http_request(
             method="POST",
@@ -1584,19 +1615,20 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             page=page,
             page_size=page_size
         )
-    demisto.debug(f"Got assets: {assets}")
     readable_assets = []
+    assets = strip_prefix_from_list(assets, "xdm.")
+    assets = strip_prefix_from_list(assets, "asset.")
     for asset in assets:
         readable_asset = {
-            "ID": asset.get("xdm.asset.id"),
-            "Name": asset.get("xdm.asset.name"),
-            "Critical Cases Count": asset.get("xdm.asset.related_issues.critical_assets"),
-            "Critical Issues Count": asset.get("xdm.asset.related_issues.critical_issues"),
+            "ID": asset.get("id"),
+            "Name": asset.get("name"),
+            "Critical Cases Count": asset.get("related_issues.critical_assets"),
+            "Critical Issues Count": asset.get("related_issues.critical_issues"),
         }
         if asset.get("xdm.asset.first_observed"):
-            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("xdm.asset.first_observed"))
+            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("first_observed"))
         if asset.get("xdm.asset.last_observed"):
-            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("xdm.asset.last_observed"))
+            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("last_observed"))
         readable_assets.append(readable_asset)
 
     readable_output = tableToMarkdown(
@@ -1609,7 +1641,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
-        outputs_key_field="xdm.asset.id",
+        outputs_key_field="id",
         outputs=assets,
         raw_response=assets
     )
@@ -1738,20 +1770,11 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
         page=page,
         page_size=page_size
     )
-
-    if not groups:
-        return CommandResults(readable_output="No asset groups found.")
-
-    readable_groups = []
-    for group in groups:
-        readable_groups.append({'ID': group.get("XDM.ASSET_GROUP.ID"),
-                                'Name': group.get("XDM.ASSET_GROUP.NAME"),
-                                'Type': group.get("XDM.ASSET_GROUP.TYPE"),
-                                'Description': group.get("XDM.ASSET_GROUP.DESCRIPTION")})
+    groups = strip_prefix_from_list(groups, "XDM.ASSET_GROUP.")
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
-        t=readable_groups,
-        headers=['ID', 'Name', 'Type', 'Description'],
+        t=groups,
+        headers=['ID', 'NAME', 'TYPE', 'DESCRIPTION'],
         headerTransform=string_to_table_header,
         removeNull=True
     )
@@ -1759,7 +1782,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
-        outputs_key_field="group_id",
+        outputs_key_field="ID",
         outputs=groups,
         raw_response=groups
     )
