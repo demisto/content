@@ -7,7 +7,8 @@ sectionorder:
 name: APIVoid
 display: APIVoid
 category: Data Enrichment & Threat Intelligence
-description: APIVoid wraps up a number of services such as ipvoid & urlvoid
+provider: APIVoid
+description: APIVoid wraps up a number of services such as ipvoid & urlvoid.
 configuration:
 - name: credentials
   type: 9
@@ -111,7 +112,7 @@ script:
       description: The IP to query.
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -360,7 +361,7 @@ script:
     - contextPath: URL
       description: ''
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -700,7 +701,7 @@ script:
     - contextPath: IP
       description: ''
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -777,7 +778,7 @@ script:
       isArray: true
     outputs:
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.DetectionEngines
       description: The total number of engines that checked the indicator.
@@ -827,7 +828,7 @@ script:
       - SOA
       - SRV
       - CAA
-      description: The DNS record type to lookup
+      description: The DNS record type to lookup.
       defaultValue: A
     outputs:
     - contextPath: APIVoid.DNS
@@ -1065,7 +1066,7 @@ script:
     arguments:
     - name: email
       required: true
-      description: Email address to lookup
+      description: Email address to lookup.
     outputs:
     - contextPath: APIVoid.Email
       description: ''
@@ -1143,7 +1144,7 @@ script:
     arguments:
     - name: host
       required: true
-      description: The host the check
+      description: The host the check.
     outputs:
     - contextPath: APIVoid.ThreatLog.detected
       description: ''
@@ -1162,7 +1163,7 @@ script:
     arguments:
     - name: domain
       required: true
-      description: Domain to check
+      description: Domain to check.
     outputs:
     - contextPath: APIVoid.ParkedDomain.host
       description: ''
@@ -1178,7 +1179,7 @@ script:
     arguments:
     - name: domain
       required: true
-      description: The domain to check
+      description: The domain to check.
     outputs:
     - contextPath: APIVoid.DomainAge.debug_message
       description: ''
@@ -1215,7 +1216,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to capture screenshot of
+      description: URL to capture screenshot of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1255,7 +1256,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: URL to create PDF of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1295,7 +1296,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to create PDF of
+      description: URL to create PDF of.
     outputs:
     - contextPath: File.Size
       description: 'The size of the file.'
@@ -1335,7 +1336,7 @@ script:
     arguments:
     - name: host
       required: true
-      description: The host to check
+      description: The host to check.
     outputs:
     - contextPath: APIVoid.SiteTrust.domain_blacklist.detections
       description: ''
