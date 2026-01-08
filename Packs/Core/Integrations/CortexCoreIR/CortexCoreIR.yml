@@ -180,11 +180,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
@@ -224,11 +219,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Isolate Endpoint
     quickaction: true
     hidden: true
@@ -265,11 +255,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.UnIsolation.endpoint_id
@@ -917,11 +902,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.AuditAgentReports.ENDPOINTID
       description: Endpoint ID.
@@ -990,11 +970,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.added_hashes
       description: Added file hash to the block list.
@@ -1024,11 +999,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.added_hashes
       description: Added a file hash to the allow list.
@@ -1063,11 +1033,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1136,11 +1101,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Quarantine File
     quickaction: true
     hidden: true
@@ -1189,11 +1149,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
   - arguments:
     - description: Links a response action to the incident that triggered it.
       name: incident_id
@@ -1216,11 +1171,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1275,11 +1225,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Restore File From Quarantine
     quickaction: true
     hidden: true
@@ -1378,11 +1323,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1489,11 +1429,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Run Malware Scan
     quickaction: true
     hidden: true
@@ -1590,11 +1525,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.endpointScan.actionId
       description: The action ID of the abort scan request.
@@ -1822,11 +1752,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -1901,11 +1826,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Retrieve File
     quickaction: true
     hidden: true
@@ -1952,11 +1872,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: File
       description: The file details returned by the command.
@@ -2064,11 +1979,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.GetActionStatus
       description: The results of the action status command.
@@ -2129,11 +2039,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     deprecated: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2165,11 +2070,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2216,11 +2116,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptStatus.general_status
       description: The general status of the action, based on the status of all endpoints.
@@ -2269,11 +2164,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptResult.action_id
       description: The ID of the initiated action.
@@ -2332,11 +2222,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2408,11 +2293,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2476,11 +2356,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2544,11 +2419,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2612,11 +2482,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2669,11 +2534,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Endpoint.Hostname
       description: The hostname of the endpoint.
@@ -2740,11 +2600,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.removed_hashes
       description: The removed file hash.
@@ -2764,11 +2619,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.removed_hashes
       description: The removed file hash from the block list.
@@ -3907,11 +3757,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -3991,11 +3836,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Run Endpoint Script
     quickaction: true
     hidden: true
@@ -4067,11 +3907,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     description: Terminates a process by its instance ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
@@ -4147,11 +3982,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     description: Terminates a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
@@ -4232,11 +4062,6 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
-    - C3
-    - X0
-    - X3
-    - X5
-    - ENT_PLUS
     prettyname: Terminate CGO
     quickaction: true
     hidden: true
