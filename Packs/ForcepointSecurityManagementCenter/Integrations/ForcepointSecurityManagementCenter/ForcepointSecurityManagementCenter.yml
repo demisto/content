@@ -1,4 +1,5 @@
 category: Network Security
+provider: Francisco Partners
 commonfields:
   id: Forcepoint Security Management Center
   version: -1
@@ -90,7 +91,7 @@ script:
       description: The name of the IP list.
       type: String
     - contextPath: ForcepointSMC.IPList.Addresses
-      description: 'The list of addresses in the IPList'
+      description: 'The list of addresses in the IPList.'
       type: Unknown
     - contextPath: ForcepointSMC.IPList.Comment
       description: The comment for the IP list.
