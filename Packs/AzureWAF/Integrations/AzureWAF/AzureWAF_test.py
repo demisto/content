@@ -800,4 +800,4 @@ def test_front_door_policy_delete_command_not_found(mocker):
 
     commandResult = waf.front_door_policy_delete_command(client, **demisto_args)
 
-    assert "Front Door Policy fd_pol1 was not found" in commandResult.readable_output
+    assert "Front Door policy fd_pol1 was deleted or not found." in commandResult.readable_output
