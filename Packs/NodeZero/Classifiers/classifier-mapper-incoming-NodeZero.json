@@ -1,0 +1,153 @@
+{
+    "description": "Maps incoming NodeZero Weakness fields.",
+    "feed": false,
+    "id": "NodeZero - Incoming Mapper",
+    "mapping": {
+        "NodeZero Weakness": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "CRITICAL,HIGH"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "externalid": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "vuln_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "sourcehostname": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "affected_asset_display_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "sourceip": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ip",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroweaknessscore": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroweaknesscategory": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "vuln_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroweaknessproven": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "has_proof",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroattackpathscount": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attack_paths_count",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezerocisakov": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "vuln_cisa_kev",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroransomwareuse": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "vuln_known_ransomware_campaign_use",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "nodezeroopid": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "op_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "NodeZero - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.1.0"
+}

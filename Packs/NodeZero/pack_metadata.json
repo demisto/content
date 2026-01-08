@@ -1,0 +1,29 @@
+{
+    "name": "NodeZero",
+    "description": "Vulnerability management with NodeZero",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Horizon3.ai",
+    "url": "https://horizon3.ai",
+    "email": "support@horizon3.ai",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Attack",
+        "Breach Simulation"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "support@horizon3.ai"
+    ],
+    "githubUser": [
+        "h3-ryan"
+    ]
+}
