@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
 """ IMPORTS """
+import asyncio
+import aiohttp
 import base64
 import email
 import hashlib
@@ -2116,6 +2118,15 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     return http_request("GET", "/indicators/queries/processes/v1", payload)
 
 
+def get_devices_entities_request(device_ids: list[str]) -> dict:
+    """
+    Get device entities by IDs.
+    :param device_ids: List of device IDs.
+    :return: Device entities response json.
+    """
+    return http_request("POST", "/devices/entities/devices/v2", json={"ids": device_ids})
+
+
 def search_device(filter_operator="AND"):
     """
     Searches for devices using the argument provided by the command execution. Returns empty
@@ -2165,7 +2176,7 @@ def search_device(filter_operator="AND"):
     if not device_ids:
         return None
     demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
-    return http_request("POST", "/devices/entities/devices/v2", json={"ids": device_ids})
+    return get_devices_entities_request(device_ids)
 
 
 def behavior_to_entry_context(behavior):
@@ -3653,9 +3664,158 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
+async def fetch_spotlight_assets_enrichment_async(session: aiohttp.ClientSession, headers: dict, aids: list[str], snapshot_id: str, tasks: list):
+    url = f"{SERVER}/devices/entities/devices/v2"
+    batch_size = 500
+
+    for i in range(0, len(aids), batch_size):
+        batch_aids = aids[i : i + batch_size]
+        payload = {"ids": batch_aids}
+
+        try:
+            async with session.post(url, json=payload, headers=headers) as response:
+                if response.status == 429:
+                    demisto.debug("Rate limit reached in asset enrichment, sleeping for 5 seconds.")
+                    await asyncio.sleep(5)
+                    async with session.post(url, json=payload, headers=headers) as response_retry:
+                        response = response_retry
+
+                if response.status == 401:
+                    demisto.info("Token expired during asset enrichment, refreshing...")
+                    new_token = await asyncio.to_thread(get_token, new_token=True)
+                    headers["Authorization"] = f"Bearer {new_token}"
+                    async with session.post(url, json=payload, headers=headers) as response_retry:
+                        response = response_retry
+
+                if response.status != 200:
+                    demisto.error(f"Failed to enrich assets batch: {response.status} - {await response.text()}")
+                    continue
+
+                data = await response.json()
+                resources = data.get("resources", [])
+
+                if resources:
+                    tasks.append(asyncio.create_task(asyncio.to_thread(
+                        send_data_to_xsiam,
+                        data=resources,
+                        vendor=VENDOR,
+                        product="spotlight_assets",
+                        data_type="assets",
+                        snapshot_id=snapshot_id,
+                        items_count=len(resources)
+                    )))
+        except Exception as e:
+            demisto.error(f"Error enriching assets batch: {e}")
+
+
+async def fetch_spotlight_assets_async():
+    demisto.info("Starting fetch spotlight assets execution.")
+    last_run = demisto.getAssetsLastRun()
+    spotlight_last_run = last_run.get("spotlight", {})
+
+    # Concurrency check
+    status = spotlight_last_run.get("status")
+    start_time_str = spotlight_last_run.get("start_time")
+
+    if status == "running" and start_time_str:
+        start_time = dateparser.parse(start_time_str)
+        if start_time and (datetime.now() - start_time).total_seconds() < 86400:
+            demisto.info("Spotlight assets fetch is already running. Skipping.")
+            return
+        demisto.info("Spotlight assets fetch was marked running but seems stuck. Resetting.")
+
+    # Update status to running
+    spotlight_last_run["status"] = "running"
+    spotlight_last_run["start_time"] = datetime.now().isoformat()
+    last_run["spotlight"] = spotlight_last_run
+    demisto.setAssetsLastRun(last_run)
+
+    snapshot_id = str(round(time.time() * 1000))
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {get_token()}",
+    }
+    
+    url = f"{SERVER}/spotlight/combined/vulnerabilities/v1"
+    limit = 5000
+    params = {
+        "limit": limit,
+        "filter": "status:['open']",
+        "facet": ["host_info", "cve"]
+    }
+    
+    tasks = []
+    aids = set()
+    
+    async with aiohttp.ClientSession() as session:
+        while True:
+            try:
+                async with session.get(url, params=params, headers=headers) as response:
+                    if response.status == 429:
+                        demisto.debug("Rate limit reached, sleeping for 5 seconds.")
+                        await asyncio.sleep(5)
+                        continue
+                    
+                    if response.status == 401:
+                        demisto.info("Token expired during vulnerability fetch, refreshing...")
+                        new_token = await asyncio.to_thread(get_token, new_token=True)
+                        headers["Authorization"] = f"Bearer {new_token}"
+                        continue
+
+                    if response.status != 200:
+                        demisto.error(f"Failed to fetch vulnerabilities: {response.status} - {await response.text()}")
+                        break
+                        
+                    data = await response.json()
+                    resources = data.get("resources", [])
+                    
+                    if resources:
+                        tasks.append(asyncio.create_task(asyncio.to_thread(
+                            send_data_to_xsiam,
+                            data=resources,
+                            vendor=VENDOR,
+                            product="spotlight_vulnerabilities",
+                            data_type="assets",
+                            snapshot_id=snapshot_id,
+                            items_count=len(resources)
+                        )))
+                        
+                        for item in resources:
+                            if aid := item.get("aid"):
+                                aids.add(aid)
+                                
+                    meta = data.get("meta", {})
+                    pagination = meta.get("pagination", {})
+                    after = pagination.get("after")
+                    
+                    if not after:
+                        break
+                        
+                    params["after"] = after
+                    
+            except Exception as e:
+                demisto.error(f"Error in vulnerability fetch loop: {e}")
+                break
+        
+        if aids:
+            await fetch_spotlight_assets_enrichment_async(session, headers, list(aids), snapshot_id, tasks)
+
+    if tasks:
+        await asyncio.gather(*tasks)
+        
+    spotlight_last_run["status"] = "completed"
+    spotlight_last_run["last_finish_time"] = datetime.now().isoformat()
+    spotlight_last_run["last_fetch_timestamp"] = datetime.now().strftime(DATE_FORMAT)
+    
+    last_run["spotlight"] = spotlight_last_run
+    demisto.setAssetsLastRun(last_run)
+    demisto.info("Finished fetch spotlight assets execution.")
+
+
 def fetch_spotlight_assets():
-    demisto.info("Strating fetch spotlight assets exeuction.")
-    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+    asyncio.run(fetch_spotlight_assets_async())
 
 
 def fetch_cnapp_assets():
