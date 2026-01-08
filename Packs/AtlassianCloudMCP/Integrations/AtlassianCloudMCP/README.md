@@ -1,4 +1,4 @@
-Use this integration to connect securely with a Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
+Use this integration to connect securely with an Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
 
 ## Configure Atlassian Cloud MCP in Cortex
 

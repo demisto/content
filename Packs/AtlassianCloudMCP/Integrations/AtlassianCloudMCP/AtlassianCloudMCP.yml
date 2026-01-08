@@ -10,7 +10,7 @@ configuration:
     displaypassword: Authorization code
     hiddenusername: true
     section: Connect
-description: Use this integration to connect securely with a Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
+description: Use this integration to connect securely with an Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
 display: Atlassian Cloud MCP
 name: Atlassian Cloud MCP
 script:
