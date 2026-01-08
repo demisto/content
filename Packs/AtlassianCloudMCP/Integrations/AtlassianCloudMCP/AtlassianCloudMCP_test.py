@@ -13,6 +13,12 @@ class TestMain:
         When: Main function processes the command.
         Then: A DemistoException is raised indicating test module is unavailable.
         """
+        async def mock_close():
+            pass
+
+        mock_client = mocker.MagicMock()
+        mock_client.close = mock_close
+        mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch.object(demisto, "command", return_value="test-module")
@@ -34,8 +40,12 @@ class TestMain:
         async def mock_list_tools(server_name):
             return {"tools": []}
 
+        async def mock_close():
+            pass
+
         mock_client = mocker.MagicMock()
         mock_client.list_tools = mock_list_tools
+        mock_client.close = mock_close
         mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={})
@@ -56,8 +66,12 @@ class TestMain:
         async def mock_call_tool(name, arguments):
             return {"result": "success"}
 
+        async def mock_close():
+            pass
+
         mock_client = mocker.MagicMock()
         mock_client.call_tool = mock_call_tool
+        mock_client.close = mock_close
         mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={"name": "test_tool", "arguments": '{"param": "value"}'})
@@ -78,8 +92,12 @@ class TestMain:
         async def mock_test_connection(auth_test=False):
             return {"status": "authenticated"}
 
+        async def mock_close():
+            pass
+
         mock_client = mocker.MagicMock()
         mock_client.test_connection = mock_test_connection
+        mock_client.close = mock_close
         mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={})
@@ -100,7 +118,11 @@ class TestMain:
         async def mock_generate_login_url(*args, **kwargs):
             return {"login_url": "https://example.com"}
 
+        async def mock_close():
+            pass
+
         mock_client = mocker.MagicMock()
+        mock_client.close = mock_close
         mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch("AtlassianCloudMCP.generate_login_url", side_effect=mock_generate_login_url)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
@@ -118,6 +140,12 @@ class TestMain:
         When: Main function processes the command.
         Then: A NotImplementedError is raised and return_error is called.
         """
+        async def mock_close():
+            pass
+
+        mock_client = mocker.MagicMock()
+        mock_client.close = mock_close
+        mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch.object(demisto, "command", return_value="unknown-command")
@@ -139,8 +167,12 @@ class TestMain:
         async def mock_list_tools_with_error(server_name):
             raise Exception("Connection failed")
 
+        async def mock_close():
+            pass
+
         mock_client = mocker.MagicMock()
         mock_client.list_tools = mock_list_tools_with_error
+        mock_client.close = mock_close
         mocker.patch("AtlassianCloudMCP.Client", return_value=mock_client)
         mocker.patch.object(demisto, "params", return_value={"auth_code": {"password": "test_code"}})
         mocker.patch.object(demisto, "args", return_value={})
