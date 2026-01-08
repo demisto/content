@@ -2607,15 +2607,12 @@ class EC2:
                 - network_interface_id (str, optional): The ID of the network interface
                 - private_ip_address (str, optional): The primary or secondary private IP address
                 - allow_reassociation (str, optional): Whether to allow reassociation
-                - public_ip (str, optional): The Elastic IP address (EC2-Classic)
-
         Returns:
             CommandResults: Results containing the association information
         """
         kwargs = {
             "AllocationId": args.get("allocation_id"),
             "InstanceId": args.get("instance_id"),
-            "PublicIp": args.get("public_ip"),
             "NetworkInterfaceId": args.get("network_interface_id"),
             "PrivateIpAddress": args.get("private_ip_address"),
             "AllowReassociation": arg_to_bool_or_none(args.get("allow_reassociation")),

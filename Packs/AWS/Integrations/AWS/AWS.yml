@@ -7975,9 +7975,6 @@ script:
     - name: instance_id
       description: The ID of the instance. The instance must have exactly one attached network interface.
       required: false
-    - name: public_ip
-      description: The Elastic IP address to associate with the instance (EC2-Classic).
-      required: false
     - name: network_interface_id
       description: The ID of the network interface.
       required: false
