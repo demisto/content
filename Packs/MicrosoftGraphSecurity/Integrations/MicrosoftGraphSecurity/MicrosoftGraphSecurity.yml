@@ -2895,28 +2895,91 @@ script:
       type: Date
     # --- createdBy (identitySet) ---
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.Id
-      description: The unique identifier of the application identity associated with this action.
+      description: The unique identifier of the application associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.DisplayName
-      description: The display name of the application identity associated with this action.
+      description: The display name of the application associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.TenantId
       description: The tenant ID of the application identity associated with this action.
       type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.Id
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.Id
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.Id
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.Id
-      description: The unique identifier of the device identity associated with this action.
+      description: The unique identifier of the device associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.DisplayName
-      description: The display name of the device identity associated with this action.
+      description: The display name of the device associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.TenantId
       description: The tenant ID of the device identity associated with this action.
       type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.Id
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.Id
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.Id
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.Id
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.Id
-      description: The unique identifier of the user identity associated with this action.
+      description: The unique identifier of the user associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.DisplayName
-      description: The display name of the user identity associated with this action.
+      description: The display name of the user associated with this action.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.TenantId
       description: The tenant ID of the user identity associated with this action.

@@ -346,7 +346,7 @@ class MsGraphClient:
         """
         url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
         self.ms_client.http_request(
-            ok_codes=[204], method="DELETE", url_suffix=url, resp_type="text"
+            ok_codes=[204], method="DELETE", url_suffix=url, return_empty_response=True,
         )
 
 
@@ -380,7 +380,7 @@ class MsGraphClient:
             method="PATCH",
             url_suffix=url,
             json_data=body,
-            resp_type="text",
+            return_empty_response=True,
         )
 
 
@@ -1952,7 +1952,6 @@ def list_case_operation_command(
             "Action": operation.get("action"),
             "Status": operation.get("status"),
             "Created By": operation.get("createdBy"),
-            "Link to download a file": operation.get("downloadUrl"),
         }
         for operation in operation_list
     ]
