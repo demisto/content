@@ -13,6 +13,7 @@ class TestMain:
         When: Main function processes the command.
         Then: A DemistoException is raised indicating test module is unavailable.
         """
+
         async def mock_close():
             pass
 
@@ -140,6 +141,7 @@ class TestMain:
         When: Main function processes the command.
         Then: A NotImplementedError is raised and return_error is called.
         """
+
         async def mock_close():
             pass
 
