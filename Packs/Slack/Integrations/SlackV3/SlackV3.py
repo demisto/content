@@ -2828,9 +2828,6 @@ def conversation_history():
     and events
     """
     args = demisto.args()
-    if args.get("thread_timestamp"):
-        return conversation_replies()
-
     conversation_id = args.get("channel_id") or args.get("conversation_id")
     conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
@@ -2905,7 +2902,7 @@ def conversation_history():
     )
 
 
-def conversation_replies() -> list[CommandResults]:
+def conversation_replies():
     """
     Retrieves replies to specific messages, regardless of whether it's
     from a public or private channel, direct message, or otherwise.
@@ -2914,11 +2911,8 @@ def conversation_replies() -> list[CommandResults]:
     channel_id = args.get("channel_id")
     context: list = []
     readable_output: str = ""
-    ts = args.get("thread_timestamp")
-    body = {"channel": channel_id, "ts": ts, "limit": arg_to_number(args.get("limit"))}
+    body = {"channel": channel_id, "ts": args.get("thread_timestamp"), "limit": arg_to_number(args.get("limit"))}
     raw_response = send_slack_request_sync(CLIENT, "conversations.replies", http_verb="GET", body=body)
-    response_metadata: dict = raw_response.get("response_metadata", {})
-    cursor: str = response_metadata.get("next_cursor", "")
     messages = raw_response.get("messages", "")
     if not raw_response.get("ok"):
         error = raw_response.get("error")
@@ -2952,25 +2946,16 @@ def conversation_replies() -> list[CommandResults]:
         }
         context.append(entry)
     readable_output = tableToMarkdown(f"Channel details from Channel ID - {channel_id}", context)
-    results = [
-        CommandResults(
-            outputs_prefix="Slack.Threads",
-            outputs_key_field="TimeStamp",
-            outputs=context,
-            readable_output=readable_output,
-            raw_response=messages,
-        )
-    ]
-    if cursor:
-        results.append(
-            CommandResults(
-                outputs_prefix="Slack.ThreadNextToken",
-                outputs_key_field="NextPageToken",
-                outputs={"NextPageToken": cursor},
-            )
-        )
-
-    return_results(results)
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": messages,
+            "EntryContext": {"Slack.Threads": context},
+            "ContentsFormat": formats["json"],
+            "HumanReadable": readable_output,
+            "ReadableContentsFormat": formats["markdown"],
+        }
+    )
 
 
 def long_running_main():
