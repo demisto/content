@@ -4230,7 +4230,7 @@
       }
     }
   },
-  "######### Backward compatibility: Access the alert fields using the ${issue}",
+  "######### Backward compatibility: Access the issue fields using the ${alert}",
   {
     "args": {
       "templates_type": "raw",
