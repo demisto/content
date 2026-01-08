@@ -300,6 +300,224 @@ class MsGraphClient:
         url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/lastEstimateStatisticsOperation"
         return self.ms_client.http_request(method="GET", url_suffix=url)
 
+    def create_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        display_name: str,
+        description: Any,
+        content_query: Any,
+    ) -> Any:
+        """
+        Create a legal hold policy for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            display_name: The display name of the hold policy.
+            description: Description of the hold policy.
+            content_query: KQL query defining content to be held.
+
+        Returns:
+            The created hold policy object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds"
+        body = {
+            "displayName": display_name,
+            "description": description,
+            "contentQuery": content_query,
+        }
+        remove_nulls_from_dictionary(body)
+        return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body)
+
+
+    def delete_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+    ) -> None:
+        """
+        Delete a legal hold policy from an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy to delete.
+
+        Returns:
+            None.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        self.ms_client.http_request(
+            ok_codes=[204], method="DELETE", url_suffix=url, resp_type="text"
+        )
+
+
+    def update_ediscovery_case_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+        description: Any,
+        content_query: Any,
+    ) -> None:
+        """
+        Update an existing legal hold policy.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy to update.
+            description: Updated description.
+            content_query: Updated content query.
+
+        Returns:
+            None.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        body = {
+            "description": description,
+            "contentQuery": content_query,
+        }
+        remove_nulls_from_dictionary(body)
+        self.ms_client.http_request(
+            ok_codes=[204],
+            method="PATCH",
+            url_suffix=url,
+            json_data=body,
+            resp_type="text",
+        )
+
+
+    def list_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        limit: int | None,
+    ) -> Any:
+        """
+        List legal hold policies for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            limit: Maximum number of results to return.
+
+        Returns:
+            A list of hold policy objects.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds"
+        if limit:
+            url += f"?$top={limit}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+
+    def get_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+    ) -> Any:
+        """
+        Retrieve a specific legal hold policy.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy.
+
+        Returns:
+            The hold policy object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+
+    def list_case_operation(
+        self,
+        case_id: str,
+        limit: int | None,
+    ) -> Any:
+        """
+        List operations for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            limit: Maximum number of results to return.
+
+        Returns:
+            A list of case operation objects.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/operations"
+        if limit:
+            url += f"?$top={limit}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+
+    def get_case_operation(
+        self,
+        case_id: str,
+        operation_id: str,
+    ) -> Any:
+        """
+        Retrieve a specific eDiscovery case operation.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            operation_id: The ID of the operation.
+
+        Returns:
+            The operation object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/operations/{operation_id}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+
+    def export_result_ediscovery_data(
+        self,
+        case_id: str,
+        search_id: str,
+        additional_options: str,
+        export_criteria: str,
+        export_format: str,
+        cloud_attachment_version: str,
+        description: str,
+        display_name: str,
+        document_version: str,
+        export_location: str,
+    ) -> Any:
+        """
+        Export search results from an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            search_id: The ID of the eDiscovery search.
+            additional_options: Additional export options.
+            export_criteria: Criteria defining what to export.
+            export_format: Export format.
+            cloud_attachment_version: Cloud attachment version.
+            description: Export description.
+            display_name: Display name of the export.
+            document_version: Document version.
+            export_location: Export destination.
+
+        Returns:
+            HTTP response object for the export request.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/exportResult"
+        body = {
+            "additionalOptions": additional_options,
+            "exportCriteria": export_criteria,
+            "exportFormat": export_format,
+            "cloudAttachmentVersion": cloud_attachment_version,
+            "description": description,
+            "displayName": display_name,
+            "documentVersion": document_version,
+            "exportLocation": export_location,
+        }
+        remove_nulls_from_dictionary(body)
+        headers = {"Prefer": "include-unknown-enum-members"}
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data=body,
+            headers=headers,
+            ok_codes=[202],
+            return_empty_response=True,
+            resp_type="response",
+        )
+
     def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
         body = {
             "@odata.type": "#microsoft.graph.mailAssessmentRequest",
@@ -1568,6 +1786,221 @@ def run_estimate_statistics_command(client: MsGraphClient, args) -> CommandResul
     )
 
 
+def create_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    Create a legal hold policy for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing the created hold policy.
+    """
+    raw_resp = client.create_ediscovery_case_hold_policy(
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+    )
+    human_readable = tableToMarkdown(
+        name="Results",
+        t={
+            "Display Name": raw_resp.get("displayName"),
+            "Id": raw_resp.get("id"),
+            "Status": raw_resp.get("status"),
+        },
+    )
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
+        outputs_key_field="Id",
+        outputs=capitalize_dict_keys_first_letter(raw_resp),
+        readable_output=human_readable,
+        raw_response=raw_resp,
+    )
+
+
+def delete_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args: Any,
+) -> CommandResults:
+    """
+    Delete a legal hold policy from an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    client.delete_ediscovery_case_hold_policy(
+        args.get("case_id"),
+        args.get("hold_policy_id"),
+    )
+    return CommandResults(
+        readable_output=(
+            f'The hold policy {args.get("hold_policy_id")} '
+            f'for the case {args.get("case_id")} has been successfully deleted.'
+        ),
+    )
+
+
+def update_ediscovery_case_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    Update a legal hold policy for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    client.update_ediscovery_case_policy(
+        args.get("case_id"),
+        args.get("hold_policy_id"),
+        args.get("description"),
+        args.get("content_query"),
+    )
+    return CommandResults(
+        readable_output=f'Hold policy {args.get("hold_policy_id")} was updated successfully.'
+    )
+
+
+def list_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    List or retrieve legal hold policies for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing hold policy data.
+    """
+    case_id = args.get("case_id")
+    hold_policy_id = args.get("hold_policy_id")
+    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit"))
+
+    if hold_policy_id:
+        raw_res = client.get_ediscovery_case_hold_policy(case_id, hold_policy_id)
+        hold_list = [raw_res]
+    else:
+        raw_res = client.list_ediscovery_case_hold_policy(case_id, limit)
+        hold_list = raw_res.get("value")
+
+    demisto.debug(f"returned {len(hold_list)} results from the api")
+
+    hr = [
+        {
+            "Display Name": hold.get("displayName"),
+            "Id": hold.get("id"),
+            "Status": hold.get("status"),
+        }
+        for hold in hold_list
+    ]
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
+        outputs_key_field="Id",
+        outputs=[capitalize_dict_keys_first_letter(hold) for hold in hold_list],
+        readable_output=tableToMarkdown(name="Results", t=hr),
+        raw_response=raw_res,
+    )
+    
+
+def list_case_operation_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    List or retrieve operations for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing case operation data.
+    """
+    case_id = args.get("case_id")
+    operation_id = args.get("operation_id")
+    limit = 0 if argToBoolean(args.get("all_results")) else int(args.get("limit"))
+
+    if operation_id:
+        raw_res = client.get_case_operation(case_id, operation_id)
+        operation_list = [raw_res]
+    else:
+        raw_res = client.list_case_operation(case_id, limit)
+        operation_list = raw_res.get("value")
+
+    demisto.debug(f"returned {len(operation_list)} results from the api")
+
+    hr = [
+        {
+            "ID": operation.get("id"),
+            "Action": operation.get("action"),
+            "Status": operation.get("status"),
+            "Created By": operation.get("createdBy"),
+            "Link to download a file": operation.get("downloadUrl"),
+        }
+        for operation in operation_list
+    ]
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.Operation",
+        outputs_key_field="ID",
+        outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
+        readable_output=tableToMarkdown(name="Results", t=hr),
+        raw_response=raw_res,
+    )
+
+
+def export_result_ediscovery_data_command(
+    client: MsGraphClient,
+    args: Any,
+) -> CommandResults:
+    """
+    Export search results from an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing the export operation location.
+    """
+    resp = client.export_result_ediscovery_data(
+        args.get("case_id"),
+        args.get("search_id"),
+        args.get("additional_options"),
+        args.get("export_criteria"),
+        args.get("export_format"),
+        args.get("cloud_attachment_version"),
+        args.get("description"),
+        args.get("display_name"),
+        args.get("document_version"),
+        args.get("export_location"),
+    )
+
+    operation_url = resp.headers.get("Location")
+    if not operation_url:
+        raise DemistoException("Missing Location header in exportResult response")
+
+    return CommandResults(
+        readable_output=f"eDiscovery export location: {operation_url}."
+    )
+
 # @polling_function(
 #     "msg-get-last-estimate-statistics-operation",
 #     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
@@ -2195,6 +2628,12 @@ def main():
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,
+        "msg-create-ediscovery-case-hold-policy": create_ediscovery_case_hold_policy_command,
+        "msg-delete-ediscovery-case-hold-policy": delete_ediscovery_case_hold_policy_command,
+        "msg-update-ediscovery-case-policy": update_ediscovery_case_policy_command,
+        "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
+        "msg-list-case-operation": list_case_operation_command,
+        "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
