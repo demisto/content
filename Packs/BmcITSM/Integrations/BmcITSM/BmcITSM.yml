@@ -793,6 +793,9 @@ script:
     - name: template_instance_id
       description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command.
       defaultValue: ""
+    - name: vendor_ticket_number
+      description: The external ticket number associated with the ticket.
+      defaultValue: ""
     - name: summary
       description: The incident ticket summary. Required when the template_instance_id argument is not provided.
       defaultValue: ""
@@ -1971,9 +1974,10 @@ script:
       required: true
     - name: detailed_description
       description: Detailed Description.
-      required: True
+      required: true
     - name: entry_ids
       description: A comma-separated list of entry_ids to add as attachments.
+      isArray: true
   - arguments:
     - description: A comma-separated list of DisplayIDs. Used as a filtering argument.
       isArray: true

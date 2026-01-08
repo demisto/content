@@ -426,8 +426,9 @@ class Client(BaseClient):
             except KeyError:
                 continue
             fname = re.findall("filename*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
-            fname = fname[0].strip().strip('"')
-            attachments.append(fileResult(fname, res.content))
+            if fname:
+                fname = fname[0].strip().strip('"')
+                attachments.append(fileResult(fname, res.content))
 
         return attachments
 
