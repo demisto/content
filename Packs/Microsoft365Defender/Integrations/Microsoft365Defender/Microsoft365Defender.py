@@ -412,6 +412,43 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
         "Classification": raw_incident.get("classification", "Not set"),
         "Device groups": ", ".join(device_groups),
     }
+    
+def _get_default_incident_close_out_or_reactiviation_reason(delta: dict):
+    """
+    Get the default incident close reason for the given classification.
+    Args:
+        delta (dict): The delta of the incident to update.
+    """
+    if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
+        delta.update({"classification": "FalsePositive", "determination": "Other"})
+        demisto.debug(
+            "Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other"
+        )
+    elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
+        delta.update({"classification": "Unknown", "determination": "NotAvailable"})
+        demisto.debug(
+            "Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable"
+        )
+        
+def _get_default_modified_incidents_close_or_reopen_entries_reason(incident: dict) -> dict:
+    """
+    Get the default incident close reason for the given classification.
+    Args:
+        incident (dict): The incident which holds the classification.
+
+    Returns:
+        dict: A dictionary containing the default close or reopen entries reason.
+    """
+    return {
+            "Type": EntryType.NOTE,
+            "Contents": {
+                "dbotIncidentClose": True,
+                "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
+                    incident.get("classification", "Unknown"), "Other"
+                ),
+            },
+            "ContentsFormat": EntryFormat.JSON,
+        }
 
 
 """ COMMAND FUNCTIONS """
@@ -832,27 +869,9 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
                             "ContentsFormat": EntryFormat.JSON,
                         }
                     else:
-                        entry = {
-                            "Type": EntryType.NOTE,
-                            "Contents": {
-                                "dbotIncidentClose": True,
-                                "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
-                                    incident.get("classification", "Unknown"), "Other"
-                                ),
-                            },
-                            "ContentsFormat": EntryFormat.JSON,
-                        }
+                        entry = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
                 else:
-                    entry = {
-                        "Type": EntryType.NOTE,
-                        "Contents": {
-                            "dbotIncidentClose": True,
-                            "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
-                                incident.get("classification", "Unknown"), "Other"
-                            ),
-                        },
-                        "ContentsFormat": EntryFormat.JSON,
-                    }
+                    entry = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
             else:
                 demisto.debug(
                     f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} "
@@ -1062,26 +1081,10 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
                     delta.update({"classification": defender_classification, "determination": defender_determination})
                 else:
                     demisto.debug("resolve_defender_close_reason using default mapping")
-                    if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
-                        delta.update({"classification": "FalsePositive", "determination": "Other"})
-                        demisto.debug(
-                            "Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other"
-                        )
-                    elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
-                        delta.update({"classification": "Unknown", "determination": "NotAvailable"})
-                        demisto.debug(
-                            "Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable"
-                        )
+                    _get_default_incident_close_out_or_reactiviation_reason(delta)
 
             else:
-                if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
-                    delta.update({"classification": "FalsePositive", "determination": "Other"})
-                    demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
-                elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
-                    delta.update({"classification": "Unknown", "determination": "NotAvailable"})
-                    demisto.debug(
-                        "Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable"
-                    )
+                _get_default_incident_close_out_or_reactiviation_reason(delta)
     else:
         if any(delta.get(key) == "" for key in ["closeReason", "closeNotes", "closingUserId"]):
             delta["status"] = "Active"

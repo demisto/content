@@ -18,6 +18,8 @@ from CommonServerPython import EntryType, IncidentStatus
 from Microsoft365Defender import (
     Client,
     _query_set_limit,
+    _get_default_incident_close_out_or_reactiviation_reason,
+    _get_default_modified_incidents_close_or_reopen_entries_reason,
     fetch_incidents,
     fetch_modified_incident,
     fetch_modified_incident_ids,
@@ -41,6 +43,12 @@ OUTGOING_MIRRORED_FIELDS = {
     "determination": "Specifies the determination of the incident.",
     "tags": "List of Incident tags.",
     "comment": "Comment to be added to the incident.",
+}
+MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
+    "Unknown": "Other",
+    "TruePositive": "Resolved",
+    "FalsePositive": "False Positive",
+    "InformationalExpectedActivity": "Resolved",
 }
 
 
@@ -955,7 +963,6 @@ def test_update_remote_system_with_entries(mocker):
         "12345",
     )
 
-    # python
     def test_get_modified_incidents_custom_mapping_hit(mocker):
         """
         Ensure that when custom_defender_to_xsoar_close_reason is enabled and the mapping contains
@@ -977,6 +984,7 @@ def test_update_remote_system_with_entries(mocker):
         assert result[0]["Type"] == EntryType.NOTE
         assert result[0]["Contents"]["dbotIncidentClose"] is True
         assert result[0]["Contents"]["closeReason"] == "CustomResolved"
+
 
     def test_get_modified_incidents_custom_mapping_miss(mocker):
         """
@@ -1001,3 +1009,89 @@ def test_update_remote_system_with_entries(mocker):
         assert result[0]["Contents"]["dbotIncidentClose"] is True
         # fallback to default mapping for TruePositive -> "Resolved"
         assert result[0]["Contents"]["closeReason"] == "Resolved"
+        
+        
+    def test_default_close_reason_false_positive_updates_classification(mocker):
+        """
+        Given:
+            closeReason is FalsePositive and classification is different
+        When:
+            _get_default_incident_close_out_or_reactiviation_reason is called
+        Then:
+            classification and determination are updated to FalsePositive / Other
+        """
+        mocker.patch("Microsoft365Defender.demisto.debug")
+
+        delta = {
+            "closeReason": "FalsePositive",
+            "classification": "TruePositive",
+        }
+
+        _get_default_incident_close_out_or_reactiviation_reason(delta)
+
+        assert delta["classification"] == "FalsePositive"
+        assert delta["determination"] == "Other"
+        
+    def test_default_close_reason_other_sets_unknown(mocker):
+        """
+        Given:
+            closeReason is Other
+        Then:
+            classification is Unknown and determination is NotAvailable
+        """
+        mocker.patch("Microsoft365Defender.demisto.debug")
+
+        delta = {"closeReason": "Other"}
+
+        _get_default_incident_close_out_or_reactiviation_reason(delta)
+
+        assert delta["classification"] == "Unknown"
+        assert delta["determination"] == "NotAvailable"
+        
+    def test_default_close_reason_no_match_no_change(mocker):
+        """
+        Given:
+            closeReason does not match any condition
+        Then:
+            delta is not modified
+        """
+        mocker.patch("Microsoft365Defender.demisto.debug")
+
+        delta = {"closeReason": "Resolved"}
+
+        _get_default_incident_close_out_or_reactiviation_reason(delta)
+
+        assert delta == {"closeReason": "Resolved"}
+        
+    def test_get_default_modified_incident_close_reason_known_classification():
+        """
+        Given:
+            Incident with known classification
+        Then:
+            closeReason is taken from MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON
+        """
+        incident = {"classification": "TruePositive"}
+
+        result = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
+
+        assert result["Type"] == EntryType.NOTE
+        assert result["Contents"]["dbotIncidentClose"] is True
+        assert (
+            result["Contents"]["closeReason"]
+            == MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON["TruePositive"]
+        )
+        
+    def test_get_default_modified_incident_close_reason_unknown_classification():
+        """
+        Given:
+            Incident with unknown classification
+        Then:
+            closeReason defaults to 'Other'
+        """
+        incident = {"classification": "NonExistingClassification"}
+
+        result = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
+
+        assert result["Type"] == EntryType.NOTE
+        assert result["Contents"]["dbotIncidentClose"] is True
+        assert result["Contents"]["closeReason"] == "Other"
