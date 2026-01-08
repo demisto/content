@@ -8703,6 +8703,92 @@ def test_update_case_command_bulk_update_allowed_fields(mocker: MockerFixture):
     assert len(result.outputs) == 2
 
 
+def test_update_case_command_bulk_update_assignee_unassigned(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and assignee='unassigned'.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed with assignee set to empty string and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "assignee": "unassigned",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["assignee"] == ""
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_iterative_update_assignee_unassigned(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids, assignee='unassigned', and non-bulk field.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        iterativ updates are performed with assignee set to empty string for each case.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(
+        client,
+        "update_case",
+        side_effect=[{"reply": {"caseId": "123"}}, {"reply": {"caseId": "456"}}],
+    )
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "assignee": "unassigned",
+        "description": "Updated description",  # Non-bulk field forces individual updates
+    }
+
+    result = update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    mock_bulk_update.assert_not_called()
+    
+    # Verify both calls had assignee set to empty string
+    first_call_args = mock_update_case.call_args_list[0][0][0]
+    second_call_args = mock_update_case.call_args_list[1][0][0]
+    assert first_call_args["assignee"] == ""
+    assert first_call_args["description"] == "Updated description"
+    assert second_call_args["assignee"] == ""
+    assert second_call_args["description"] == "Updated description"
+    assert len(result.outputs) == 2
+
+
 def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
     """
     GIVEN:
