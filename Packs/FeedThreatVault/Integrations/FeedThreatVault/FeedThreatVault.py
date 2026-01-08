@@ -146,6 +146,11 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
             response = {}
             readable_output = "There is no information for your search."
             CommandResults(readable_output=readable_output)
+        elif err.res is not None and err.res.status_code == 504:
+            raise DemistoException(
+                f"Request timed out. Current page size limit is {limit}. "
+                f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+            )
         else:
             raise
 
@@ -164,9 +169,18 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
                 limit=limit,
             )
 
-            response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
-            offset += limit
+            try:
+                response = client.get_indicators_request(args=query)
+                ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
+                offset += limit
+            except DemistoException as err:
+                if err.res is not None and err.res.status_code == 504:
+                    raise DemistoException(
+                        f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
+                        f"Current page size limit is {limit}. "
+                        f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                    )
+                raise
 
         # create the table based on the response
         table = {
@@ -235,6 +249,12 @@ def fetch_indicators_command(
             response = {}
             readable_output = "There is no information for your search."
             CommandResults(readable_output=readable_output)
+        elif err.res is not None and err.res.status_code == 504:
+            raise DemistoException(
+                f"Request timed out (504 Gateway Timeout) during indicator fetch. "
+                f"Current page size limit is {limit}. "
+                f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+            )
         else:
             raise
 
@@ -252,9 +272,18 @@ def fetch_indicators_command(
                 limit=limit,
             )
 
-            response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
-            offset += limit
+            try:
+                response = client.get_indicators_request(args=query)
+                ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
+                offset += limit
+            except DemistoException as err:
+                if err.res is not None and err.res.status_code == 504:
+                    raise DemistoException(
+                        f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
+                        f"Current page size limit is {limit}. "
+                        f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                    )
+                raise
 
     else:
         raise DemistoException(f"couldn't fetch - {response.get('message')}")
@@ -344,7 +373,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Error runnning integration - {err}")
+        return_error(f"Error running integration - {err}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
