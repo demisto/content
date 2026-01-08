@@ -7,6 +7,7 @@ sectionorder:
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
+provider: Atlassian
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
 - name: server_url
