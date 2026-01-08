@@ -631,7 +631,7 @@ class Client(CoreClient):
             group_name=group_name,
             group_type=group_type,
             group_description=group_description,
-            membership_predicate=membership_predicate_json
+            membership_predicate=membership_predicate_json,
         )
         request_data = {
             "request_data": {

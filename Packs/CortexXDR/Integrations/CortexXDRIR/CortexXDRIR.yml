@@ -3989,14 +3989,11 @@ script:
     - contextPath: PaloAltoNetworksXDR.AssetSchema.field_type
       description: The type of the field.
       type: String
-    - contextPath: PaloAltoNetworksXDR.AssetSchema.is_filterable
-      description: Whether the field is filterable.
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.AssetSchema.is_sortable
-      description: Whether the field is sortable.
-      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.AssetSchema.field_pretty_name
+      description: The pretty name of the field.
+      type: String
   - arguments:
-    - description: The name of the field to get options for.
+    - description: The name of the field to get options for. Must be from type ENUM.
       name: field_name
       required: true
     description: Gets the enum values of a specified field in the asset schema.
@@ -4023,7 +4020,7 @@ script:
       name: group_description
     - description: 'The JSON to use for the "membership_predicate" field in the API. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
       name: membership_predicate_json
-      required: true
+#      required: true
     description: Creates an asset group.
     name: xdr-asset-group-create
     outputs:
@@ -4089,11 +4086,11 @@ script:
       description: The type of the asset group.
       name: group_type
       predefined:
-      - static
-      - dynamic
+      - Static
+      - Dynamic
     - description: The description of the asset group.
       name: group_description
-    - description: The JSON to use for the "membership_predicate" field in the API.
+    - description: 'The JSON to use for the "membership_predicate" field in the API. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update

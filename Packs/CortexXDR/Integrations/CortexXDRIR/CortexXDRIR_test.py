@@ -2393,3 +2393,255 @@ def test_extract_paths_and_names_single_item():
 
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
+
+
+def test_get_asset_list_command(mocker):
+    """
+    Given:
+        - asset_id_list in args
+    When:
+        - Running get_asset_list_command
+    Then:
+        - Verify the client.get_asset is called and results are correct with rich data
+    """
+    from CortexXDRIR import Client, get_asset_list_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {'asset_id': 'asset1,asset2'}
+    mock_assets = [
+        {
+            'xdm.asset.id': 'asset1',
+            'xdm.asset.name': 'name1',
+            'xdm.asset.related_issues.critical_assets': 5,
+            'xdm.asset.related_issues.critical_issues': 10,
+            'xdm.asset.first_observed': 1609459200000,
+            'xdm.asset.last_observed': 1609545600000
+        },
+        {
+            'xdm.asset.id': 'asset2',
+            'xdm.asset.name': 'name2',
+            'xdm.asset.related_issues.critical_assets': 0,
+            'xdm.asset.related_issues.critical_issues': 1,
+            'xdm.asset.first_observed': 1609459200000,
+            'xdm.asset.last_observed': 1609545600000
+        }
+    ]
+    mocker.patch.object(Client, 'get_asset', side_effect=[[mock_assets[0]], [mock_assets[1]]])
+
+    res = get_asset_list_command(client, args)
+    assert isinstance(res.outputs, list)
+    assert len(res.outputs) == 2
+    assert res.outputs[0]['xdm.asset.id'] == 'asset1'
+    assert res.outputs[1]['xdm.asset.id'] == 'asset2'
+    assert res.outputs[0]['xdm.asset.related_issues.critical_assets'] == 5
+    assert "Cortex XDR Assets" in res.readable_output
+    assert "asset1" in res.readable_output
+    assert "name1" in res.readable_output
+    assert "asset2" in res.readable_output
+    assert "name2" in res.readable_output
+
+
+def test_get_asset_list_command_list(mocker):
+    """
+    Given:
+        - No asset_id in args, but filter and sort
+    When:
+        - Running get_asset_list_command
+    Then:
+        - Verify the client.list_assets is called and results are correct with rich data
+    """
+    from CortexXDRIR import Client, get_asset_list_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        'filter_json': '{"field": "xdm.asset.name", "operator": "contains", "value": "test"}',
+        'sort_field': 'xdm.asset.name',
+        'sort_order': 'DESC',
+        'limit': '2'
+    }
+    mock_assets = [
+        {
+            'xdm.asset.id': 'asset1',
+            'xdm.asset.name': 'test-asset-1',
+            'xdm.asset.related_issues.critical_assets': 1,
+            'xdm.asset.related_issues.critical_issues': 2,
+            'xdm.asset.first_observed': 1609459200000,
+            'xdm.asset.last_observed': 1609545600000
+        },
+        {
+            'xdm.asset.id': 'asset2',
+            'xdm.asset.name': 'test-asset-2',
+            'xdm.asset.related_issues.critical_assets': 0,
+            'xdm.asset.related_issues.critical_issues': 0,
+            'xdm.asset.first_observed': 1609459200000,
+            'xdm.asset.last_observed': 1609545600000
+        }
+    ]
+    mocker.patch.object(Client, 'list_assets', return_value=mock_assets)
+
+    res = get_asset_list_command(client, args)
+    assert isinstance(res.outputs, list)
+    assert len(res.outputs) == 2
+    assert res.outputs[0]['xdm.asset.id'] == 'asset1'
+    assert res.outputs[1]['xdm.asset.name'] == 'test-asset-2'
+    assert "Cortex XDR Assets" in res.readable_output
+    assert "test-asset-1" in res.readable_output
+
+
+def test_get_asset_schema_command(mocker):
+    """
+    Given:
+        - No args
+    When:
+        - Running get_asset_schema_command
+    Then:
+        - Verify the client.get_asset_schema is called and results are correct
+    """
+    from CortexXDRIR import Client, get_asset_schema_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_schema = [
+        {'name': 'xdm.asset.id', 'type': 'string', 'description': 'Asset ID'},
+        {'name': 'xdm.asset.name', 'type': 'string', 'description': 'Asset Name'},
+        {'name': 'xdm.asset.status', 'type': 'enum', 'description': 'Asset Status'}
+    ]
+    mocker.patch.object(Client, 'get_asset_schema', return_value=mock_schema)
+
+    res = get_asset_schema_command(client, {})
+    assert isinstance(res.outputs, list)
+    assert res.outputs == mock_schema
+    assert len(res.outputs) == 3
+    assert res.outputs[0]['name'] == 'xdm.asset.id'
+    assert res.outputs[2]['type'] == 'enum'
+    assert "Cortex XDR Asset Schema" in res.readable_output
+
+
+def test_get_asset_schema_field_options_command(mocker):
+    """
+    Given:
+        - field_name in args
+    When:
+        - Running get_asset_schema_field_options_command
+    Then:
+        - Verify the client.get_asset_schema_field_options is called and results are correct
+    """
+    from CortexXDRIR import Client, get_asset_schema_field_options_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {'field_name': 'xdm.asset.status'}
+    mock_options = [
+        {'value': 'active', 'description': 'Active Asset'},
+        {'value': 'inactive', 'description': 'Inactive Asset'},
+        {'value': 'pending', 'description': 'Pending Asset'}
+    ]
+    mocker.patch.object(Client, 'get_asset_schema_field_options', return_value=mock_options)
+
+    res = get_asset_schema_field_options_command(client, args)
+    assert isinstance(res.outputs, dict)
+    assert res.outputs['field_name'] == 'xdm.asset.status'
+    assert res.outputs['options'] == mock_options
+    assert len(res.outputs['options']) == 3
+    assert res.outputs['options'][0]['value'] == 'active'
+    assert "Cortex XDR Asset Schema Options for xdm.asset.status" in res.readable_output
+
+
+def test_create_asset_group_command(mocker):
+    """
+    Given:
+        - group_name, group_type, group_description, membership_predicate_json in args
+    When:
+        - Running create_asset_group_command
+    Then:
+        - Verify the client.create_asset_group is called and results are correct
+    """
+    from CortexXDRIR import Client, create_asset_group_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        'group_name': 'group1',
+        'group_type': 'static',
+        'group_description': 'description1',
+        'membership_predicate_json': '{"field": "xdm.asset.name", "operator": "eq", "value": "test"}'
+    }
+    mock_res = {'group_id': 'g1', 'group_name': 'group1', 'status': 'created'}
+    mocker.patch.object(Client, 'create_asset_group', return_value=mock_res)
+
+    res = create_asset_group_command(client, args)
+    assert res.readable_output == "Asset group created successfully"
+    assert res.raw_response == mock_res
+    assert res.raw_response['status'] == 'created'
+
+
+def test_delete_asset_group_command(mocker):
+    """
+    Given:
+        - group_id in args
+    When:
+        - Running delete_asset_group_command
+    Then:
+        - Verify the client.delete_asset_group is called
+    """
+    from CortexXDRIR import Client, delete_asset_group_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {'group_id': 'g1'}
+    mocker.patch.object(Client, 'delete_asset_group')
+
+    res = delete_asset_group_command(client, args)
+    assert res.readable_output == "Asset group deleted successfully."
+
+
+def test_list_asset_groups_command(mocker):
+    """
+    Given:
+        - No args
+    When:
+        - Running list_asset_groups_command
+    Then:
+        - Verify the client.list_asset_groups is called and results are correct
+    """
+    from CortexXDRIR import Client, list_asset_groups_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_groups = [
+        {
+            'XDM.ASSET_GROUP.ID': 'g1',
+            'XDM.ASSET_GROUP.NAME': 'group1',
+            'XDM.ASSET_GROUP.TYPE': 'static',
+            'XDM.ASSET_GROUP.DESCRIPTION': 'desc1'
+        },
+        {
+            'XDM.ASSET_GROUP.ID': 'g2',
+            'XDM.ASSET_GROUP.NAME': 'group2',
+            'XDM.ASSET_GROUP.TYPE': 'dynamic',
+            'XDM.ASSET_GROUP.DESCRIPTION': 'desc2'
+        }
+    ]
+    mocker.patch.object(Client, 'list_asset_groups', return_value=mock_groups)
+
+    res = list_asset_groups_command(client, {})
+    assert isinstance(res.outputs, list)
+    assert res.outputs == mock_groups
+    assert len(res.outputs) == 2
+    assert res.outputs[0]['XDM.ASSET_GROUP.ID'] == 'g1'
+    assert res.outputs[1]['XDM.ASSET_GROUP.NAME'] == 'group2'
+    assert "Cortex XDR Asset Groups" in res.readable_output
+    assert "group1" in res.readable_output
+    assert "group2" in res.readable_output
+
+
+def test_update_asset_group_command(mocker):
+    """
+    Given:
+        - group_id, group_name, group_type, group_description, membership_predicate_json in args
+    When:
+        - Running update_asset_group_command
+    Then:
+        - Verify the client.update_asset_group is called
+    """
+    from CortexXDRIR import Client, update_asset_group_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        'group_id': 'g1',
+        'group_name': 'new_name',
+        'group_type': 'dynamic',
+        'group_description': 'new_desc',
+        'membership_predicate_json': '{"field": "xdm.asset.name", "operator": "contains", "value": "test"}'
+    }
+    mocker.patch.object(Client, 'update_asset_group')
+
+    res = update_asset_group_command(client, args)
+    assert res.readable_output == "Asset group updated successfully"
