@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 
 VERSION = "latest"
-LIMIT = 1000
+LIMIT = 200
 CONTEXT_KEY = "EDL"
 INTEGRATION_ENTRY_CONTEXT = "ThreatVault"
 LOG_LINE = INTEGRATION_ENTRY_CONTEXT + "_" + CONTEXT_KEY + " -"
