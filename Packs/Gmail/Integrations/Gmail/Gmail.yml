@@ -499,7 +499,7 @@ script:
     - contextPath: Email.Date
       description: The date the email was received.
       type: String
-    - contextPath: GmailPageToken.NextPageToken
+    - contextPath: GmailMailsNextPageToken
       description: Token to retrieve the next page of results.
       type: String
   - arguments:
