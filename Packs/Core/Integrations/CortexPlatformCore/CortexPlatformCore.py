@@ -4203,9 +4203,11 @@ def init_client(api_type: str) -> Client:
         timeout=timeout,
     )
 
-def verify_platform_version(version : str = "8.13.0"):
+
+def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
+
 
 def main():  # pragma: no cover
     """
