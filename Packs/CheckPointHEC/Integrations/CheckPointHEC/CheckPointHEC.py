@@ -693,7 +693,7 @@ def fetch_restore_requests(client: Client, params: dict):
             count = last_run.get(count_field, 0) + 1
             last_run[count_field] = count
 
-            entity_payload['entityId'] = entity_info.get("entityId")
+            entity_payload["entityId"] = entity_info.get("entityId")
             incidents.append(
                 {
                     "dbotMirrorId": entity_info.get("entityId"),
