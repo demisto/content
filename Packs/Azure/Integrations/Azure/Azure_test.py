@@ -2849,7 +2849,7 @@ def test_storage_container_blob_create_command(mocker, client, mock_params):
     # Verify results
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Blob test_blob.txt successfully created."
-    assert result.raw_response == mock_response
+    assert result.raw_response is None
 
 
 def test_storage_container_property_get_command(mocker, client, mock_params):
@@ -3261,7 +3261,7 @@ class TestGetCommandResource:
         """Test that a default command returns DEFAULT_RESOURCE."""
         command = "azure-nsg-security-rule-update"
         resource = get_command_resource(command)
-        assert resource == f"{DEFAULT_RESOURCE}/"
+        assert resource == DEFAULT_RESOURCE
 
     def test_storage_container_command(self):
         """Test that a storage-container command returns STORAGE_RESOURCE."""
@@ -3319,7 +3319,7 @@ class TestGetAzureClient:
             proxy=False,
             tenant_id="test-tenant-id",
             enc_key=None,
-            resource=f"{DEFAULT_RESOURCE}/",
+            resource=DEFAULT_RESOURCE,
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
         )

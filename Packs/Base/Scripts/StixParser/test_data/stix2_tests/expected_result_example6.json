@@ -6,12 +6,8 @@
         "rawJSON": {
             "created": "2016-05-07T11:22:30.000Z",
             "id": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
-            "infrastructure_types": [
-                "command-and-control"
-            ],
-            "labels": [
-                "command-and-control"
-            ],
+            "infrastructure_types": ["command-and-control"],
+            "labels": ["command-and-control"],
             "modified": "2016-05-07T11:22:30.000Z",
             "name": "Poison Ivy C2",
             "type": "infrastructure",
@@ -20,13 +16,12 @@
         "customFields": {
             "stixid": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
             "description": "",
-            "infrastructure_types": [
-                "command-and-control"
-            ],
+            "infrastructure_types": ["command-and-control"],
             "aliases": [],
             "kill_chain_phases": [],
             "firstseenbysource": "2016-05-07T11:22:30.000Z",
-            "modified": "2016-05-07T11:22:30.000Z"
+            "modified": "2016-05-07T11:22:30.000Z",
+            "tags": ["command-and-control"]
         },
         "relationships": [
             {
@@ -53,12 +48,8 @@
         "rawJSON": {
             "created": "2016-11-22T09:22:30.000Z",
             "id": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
-            "infrastructure_types": [
-                "hosting-target-lists"
-            ],
-            "labels": [
-                "target-list-hosting"
-            ],
+            "infrastructure_types": ["hosting-target-lists"],
+            "labels": ["target-list-hosting"],
             "modified": "2016-11-22T09:22:30.000Z",
             "name": "Example target-list-hosting",
             "type": "infrastructure",
@@ -67,13 +58,12 @@
         "customFields": {
             "stixid": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
             "description": "",
-            "infrastructure_types": [
-                "hosting-target-lists"
-            ],
+            "infrastructure_types": ["hosting-target-lists"],
             "aliases": [],
             "kill_chain_phases": [],
             "firstseenbysource": "2016-11-22T09:22:30.000Z",
-            "modified": "2016-11-22T09:22:30.000Z"
+            "modified": "2016-11-22T09:22:30.000Z",
+            "tags": ["target-list-hosting"]
         }
     },
     {
@@ -84,14 +74,10 @@
             "created": "2016-05-08T14:31:09.000Z",
             "id": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
             "is_family": true,
-            "labels": [
-                "rat"
-            ],
+            "labels": ["rat"],
             "modified": "2016-05-08T14:31:09.000Z",
             "name": "Poison Ivy",
-            "malware_types": [
-                "remote-access-trojan"
-            ],
+            "malware_types": ["remote-access-trojan"],
             "type": "malware",
             "spec_version": "2.1"
         },
@@ -100,9 +86,7 @@
             "firstseenbysource": "2016-05-08T14:31:09.000Z",
             "modified": "2016-05-08T14:31:09.000Z",
             "description": "",
-            "malware_types": [
-                "remote-access-trojan"
-            ],
+            "malware_types": ["remote-access-trojan"],
             "is_family": true,
             "aliases": [],
             "kill_chain_phases": [],
@@ -110,9 +94,7 @@
             "architecture_execution_envs": [],
             "capabilities": [],
             "sample_refs": [],
-            "tags": [
-                "rat"
-            ]
+            "tags": ["rat"]
         }
     },
     {
@@ -126,9 +108,7 @@
             "modified": "2016-11-12T14:31:09.000Z",
             "name": "IMDDOS",
             "type": "malware",
-            "malware_types": [
-                "bot"
-            ],
+            "malware_types": ["bot"],
             "spec_version": "2.1"
         },
         "customFields": {
@@ -136,9 +116,7 @@
             "firstseenbysource": "2016-11-12T14:31:09.000Z",
             "modified": "2016-11-12T14:31:09.000Z",
             "description": "",
-            "malware_types": [
-                "bot"
-            ],
+            "malware_types": ["bot"],
             "is_family": true,
             "aliases": [],
             "kill_chain_phases": [],

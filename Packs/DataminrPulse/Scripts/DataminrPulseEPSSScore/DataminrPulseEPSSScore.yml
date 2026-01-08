@@ -1,0 +1,17 @@
+commonfields:
+  id: DataminrPulseEPSSScore
+  version: -1
+name: DataminrPulseEPSSScore
+script: ''
+type: python
+tags:
+- dynamic-indicator-section
+comment: This dynamic automation parses the EPSS Score of a CVE and presents it in the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
