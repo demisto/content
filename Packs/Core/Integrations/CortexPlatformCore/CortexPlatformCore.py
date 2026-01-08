@@ -63,7 +63,6 @@ WEBAPP_COMMANDS = [
     "core-run-script-agentix",
     "core-list-endpoints",
     "core-list-exception-rules",
-    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
@@ -3048,9 +3047,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
 
-    if assignee == "unassigned":
-        assignee = None
-
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
 
@@ -3087,7 +3083,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+    if not case_update_payload:
         raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
     def is_bulk_update_allowed(case_update_payload: dict) -> bool:
@@ -3141,7 +3137,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                     "status": {
                         "value": CaseManagement.STATUS.get(status_key),
                         "resolveComment": raw_case.get("RESOLVED_COMMENT"),
-                        "resolve_reason": raw_case.get("RESOLVED_REASON"),  # Note: ensure this exists in raw
+                        "resolve_reason": raw_case.get("RESOLVED_REASON"),
                     },
                     "severity": CaseManagement.SEVERITY.get(raw_severity),
                     "userSeverity": raw_case.get("USER_SEVERITY"),
@@ -3159,7 +3155,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                     },
                     "tags": [
                         {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
-                        for tag in raw_case.get("CURRENT_TAGS", [])
+                        for tag in (raw_case.get("CURRENT_TAGS", []) or [])
                     ],
                     "groupingStatus": {
                         "pretty": raw_grouping.capitalize(),
@@ -3179,6 +3175,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         demisto.debug("Performing bulk case update")
         if case_update_payload.get("userSeverity"):
             case_update_payload["severity"] = case_update_payload.pop("userSeverity")
+        if case_update_payload.get("assignedUser") == "unassigned":
+            case_update_payload["assignedUser"] = None
 
         client.bulk_update_case(case_update_payload, case_ids)
         filter_builder = FilterBuilder()
@@ -3201,7 +3199,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
     else:
         demisto.debug("Performing iterative case update")
-        if args.get("assignee", "").lower() == "unassigned":
+        if assignee == "unassigned":
             for case_id in case_ids:
                 client.unassign_case(case_id)
         responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
