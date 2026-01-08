@@ -141,7 +141,7 @@ def main():
     additional_fields = argToBoolean(args.get("additional_fields", False))
     demisto.debug(f"Data list: {ip_list}")
     demisto.debug(f"Brands: {brands}")
-
+    demisto.debug("Test")
     try:
         return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields, args))
     except Exception as ex:
