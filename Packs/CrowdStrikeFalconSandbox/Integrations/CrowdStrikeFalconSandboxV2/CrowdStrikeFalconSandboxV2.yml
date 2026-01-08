@@ -7,6 +7,7 @@ sectionorder:
 name: CrowdStrike Falcon Sandbox V2
 display: CrowdStrike Falcon Sandbox v2 (Hybrid-Analysis)
 category: Forensics & Malware Analysis
+provider: CrowdStrike
 description: Fully automated malware analysis using Hybrid Analysis API.
 configuration:
 - name: serverUrl
