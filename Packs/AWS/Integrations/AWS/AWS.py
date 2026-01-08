@@ -2519,7 +2519,8 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS EC2 Elastic IP Addresses",
                 readable_outputs,
-                headers=["PublicIp", "AllocationId", "Domain", "InstanceId", "AssociationId", "NetworkInterfaceId", "PrivateIpAddress"],
+                headers=["PublicIp", "AllocationId", "Domain", "InstanceId", "AssociationId", "NetworkInterfaceId",
+                         "PrivateIpAddress"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -2658,15 +2659,10 @@ class EC2:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
                 - association_id (str): The association ID (required for VPC)
-                - public_ip (str, optional): The Elastic IP address (EC2-Classic)
-
         Returns:
             CommandResults: Results of the disassociation operation
         """
-        kwargs = {
-            "AssociationId": args.get("association_id"),
-            "PublicIp": args.get("public_ip"),
-        }
+        kwargs = {"AssociationId": args.get("association_id")}
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Disassociating address with parameters: {kwargs}")
@@ -2676,9 +2672,8 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        association_id = args.get("association_id") or args.get("public_ip")
         return CommandResults(
-            readable_output=f"Successfully disassociated Elastic IP address (Association ID: {association_id})",
+            readable_output=f"Successfully disassociated Elastic IP address (Association ID :  {args.get('association_id')})",
             raw_response=response,
         )
 
@@ -2691,7 +2686,6 @@ class EC2:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
                 - allocation_id (str): The allocation ID (required for VPC)
-                - public_ip (str, optional): The Elastic IP address (EC2-Classic)
                 - network_border_group (str, optional): The set of Availability Zones, Local Zones, or Wavelength Zones
 
         Returns:
@@ -2699,7 +2693,6 @@ class EC2:
         """
         kwargs = {
             "AllocationId": args.get("allocation_id"),
-            "PublicIp": args.get("public_ip"),
             "NetworkBorderGroup": args.get("network_border_group"),
         }
 
@@ -2711,9 +2704,8 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        allocation_id = args.get("allocation_id") or args.get("public_ip")
         return CommandResults(
-            readable_output=f"Successfully released Elastic IP address (Allocation ID: {allocation_id})",
+            readable_output=f"Successfully released Elastic IP address (Association ID : {args.get('association_id')})",
             raw_response=response,
         )
 

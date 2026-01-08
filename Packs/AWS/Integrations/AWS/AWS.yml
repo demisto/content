@@ -8048,9 +8048,6 @@ script:
     - name: association_id
       description: The association ID. Required for VPC.
       required: false
-    - name: public_ip
-      description: The Elastic IP address. Required for EC2-Classic.
-      required: false
 
   - name: aws-ec2-address-release
     description: Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
@@ -8100,9 +8097,6 @@ script:
       - us-gov-west-1
     - name: allocation_id
       description: The allocation ID. Required for VPC.
-      required: false
-    - name: public_ip
-      description: The Elastic IP address. Required for EC2-Classic.
       required: false
     - name: network_border_group
       description: The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
