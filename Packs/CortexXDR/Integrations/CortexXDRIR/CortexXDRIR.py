@@ -523,7 +523,7 @@ class Client(CoreClient):
         return res.get("reply", {}).get("data")
 
     def list_assets(self, filter_json: dict = None, sort_field: str = None,
-                    sort_order: str = None, page: int = 0, page_size: int = 30):
+                    sort_order: str = None, page: int = 0, page_size: int = 50):
         request_data: Dict[str, Any] = {
             "request_data": {
                 "search_from": page * page_size,
@@ -533,10 +533,10 @@ class Client(CoreClient):
         if filter_json:
             request_data["request_data"]["filters"] = filter_json
         if sort_field:
-            request_data["request_data"]["sort"] = {
-                "field": sort_field,
-                "keyword": sort_order or "asc"
-            }
+            request_data["request_data"]["sort"] = [{
+                "FIELD": sort_field,
+                "ORDER": sort_order or "ASC"
+            }]
 
         res = self._http_request(
             method="POST",
@@ -1573,7 +1573,8 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     assets = []
     if asset_id_list:
         for asset_id in asset_id_list:
-            if asset := client.get_asset(asset_id):
+            if response := client.get_asset(asset_id):
+                asset = response.pop()
                 assets.append(asset)
     else:
         assets = client.list_assets(
@@ -1583,24 +1584,32 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             page=page,
             page_size=page_size
         )
-
-    if not assets:
-        return CommandResults(readable_output="No assets found.")
-
-    readable_headers = ['asset_id', 'asset_name', 'first_observed', 'last_observed', 'critical_cases_count', 'critical_issues_count']
+    demisto.debug(f"Got assets: {assets}")
+    readable_assets = []
+    for asset in assets:
+        readable_asset = {
+            "ID": asset.get("xdm.asset.id"),
+            "Name": asset.get("xdm.asset.name"),
+            "Critical Cases Count": asset.get("xdm.asset.related_issues.critical_assets"),
+            "Critical Issues Count": asset.get("xdm.asset.related_issues.critical_issues"),
+        }
+        if asset.get("xdm.asset.first_observed"):
+            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("xdm.asset.first_observed"))
+        if asset.get("xdm.asset.last_observed"):
+            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("xdm.asset.last_observed"))
+        readable_assets.append(readable_asset)
 
     readable_output = tableToMarkdown(
         name="Cortex XDR Assets",
-        t=assets,
-        headers=readable_headers,
-        headerTransform=string_to_table_header,
+        t=readable_assets,
+        headers=["ID", "Name", "First Observed", "Last Observed", "Critical Cases Count", "Critical Issues Count"],
         removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
-        outputs_key_field="asset_id",
+        outputs_key_field="xdm.asset.id",
         outputs=assets,
         raw_response=assets
     )

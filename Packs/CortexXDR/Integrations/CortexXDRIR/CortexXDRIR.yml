@@ -3890,39 +3890,96 @@ script:
     description: Returns a list of assets.
     name: xdr-asset-list
     outputs:
-    - contextPath: PaloAltoNetworksXDR.Asset.asset_id
-      description: Unique ID assigned to each returned asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.asset_name
-      description: Name of the asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.first_observed
-      description: Date and time the asset was first observed.
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.Asset.last_observed
-      description: Date and time the asset was last observed.
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.Asset.critical_cases_count
-      description: Number of critical cases associated with the asset.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Asset.critical_issues_count
-      description: Number of critical issues associated with the asset.
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.Asset.asset_type
-      description: Type of the asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.ip_address
-      description: IP address of the asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.mac_address
-      description: MAC address of the asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.os_type
-      description: Operating system type of the asset.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Asset.os_version
-      description: Operating system version of the asset.
-      type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.id
+        description: The unique identifier of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.name
+        description: The name of the asset (e.g., image SHA).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.strong_id
+        description: The strong identifier (SHA256) of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.provider
+        description: The provider of the asset.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.external_provider_id
+        description: External provider ID (if applicable).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.first_observed
+        description: Timestamp when the asset was first observed.
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.last_observed
+        description: Timestamp when the asset was last observed.
+        type: Date
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.type.id
+        description: The ID of the asset type (e.g., CORE_IMAGE).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.type.name
+        description: The name of the asset type.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.type.category
+        description: The category of the asset (e.g., Container Image).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.type.class
+        description: The class of the asset (e.g., Compute).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.development_cycle_stages
+        description: The development cycle stages (e.g., RUNTIME).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.architecture
+        description: The architecture of the image (e.g., amd64).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.digest
+        description: The image digest hash.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.identifier
+        description: The image identifier.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.names
+        description: List of names/tags associated with the image.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.os
+        description: The OS version of the image.
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.os_distribution
+        description: The OS distribution (e.g., UBUNTU).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.os_family
+        description: The OS family (e.g., Linux).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.os_release
+        description: The OS release name (e.g., noble).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.labels
+        description: Labels associated with the image.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.layers
+        description: List of layers making up the image.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.layers.created_at
+        description: Timestamp of when the layer was created.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.layers.instruction
+        description: The instruction used to create the layer (e.g., RUN, ADD).
+        type: String
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.image.layers.size
+        description: The size of the layer in bytes.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.related_cases.cases_breakdown
+        description: Breakdown of related cases by severity.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.related_cases.critical_cases
+        description: Count of critical cases.
+        type: Number
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.related_issues.issues_breakdown
+        description: Breakdown of related issues by severity.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.relations
+        description: Relations to other assets.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXDR.Asset.xdm.asset.group_ids
+        description: Group IDs associated with the asset.
+        type: Number
   - name: xdr-asset-schema-get
     description: Gets the schema of the asset inventory.
     outputs:
@@ -4005,7 +4062,7 @@ script:
     - description: Page size for pagination.
       name: page_size
     - defaultValue: '0'
-      description: Page number for pagination.
+      description: Page number for pagination. 0 is the first page.
       name: page
     description: Returns a list of asset groups.
     name: xdr-asset-group-list
