@@ -1,4 +1,4 @@
-fromversion: 8.6.0  # Will be updated with XSIAM version updates
+fromversion: 8.12.0
 id: Silverfort_Admin_Console_ModelingRule
 name: Silverfort Admin Console Modeling Rule
 rules: ''

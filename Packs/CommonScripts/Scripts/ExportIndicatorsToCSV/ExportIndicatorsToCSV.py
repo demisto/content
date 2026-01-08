@@ -33,33 +33,14 @@ def main():
         "columns": indicator_columns,
     }
 
-    # Use internalHttpRequest to make the POST to create the indicators CSV file.
-    post_response = demisto.internalHttpRequest(method="POST", uri="/indicators/batch/exportToCsv", body=indicator_body)
+    # generate the file
+    res = demisto.executeCommand("core-api-post", {"uri": "/indicators/batch/exportToCsv", "body": indicator_body})[0][
+        "Contents"
+    ]["response"]
 
-    # Check if the request was successful
-    if post_response.get("statusCode") not in [200, 201]:
-        return_error(
-            f"Failed to initiate CSV export. Status: {post_response.get('statusCode')}, Body: {post_response.get('body')}"
-        )
-
-    # Parse the response to get the file ID
-    try:
-        file_id = json.loads(post_response.get("body", "{}"))
-    except (json.JSONDecodeError, KeyError) as e:
-        return_error(f"Failed to parse POST response: {e}")
-
-    # Use internalHttpRequest to download the file
-    get_response = demisto.internalHttpRequest(method="GET", uri=f"/indicators/csv/{file_id}")
-
-    # Check if the download was successful
-    if get_response.get("statusCode") != 200:
-        return_error(f"Failed to download CSV file. Status: {get_response.get('statusCode')}, Body: {get_response.get('body')}")
-
-    # Get the file content
-    file_content = get_response.get("body", "")
-
-    # Return the file to the war room
-    demisto.results(fileResult(file_id, file_content))
+    # download the file and return to the war room
+    file = demisto.executeCommand("core-api-get", {"uri": f"/indicators/csv/{res}"})[0]["Contents"]["response"]
+    demisto.results(fileResult(res, file))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
