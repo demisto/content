@@ -1,4 +1,5 @@
 category: Authentication & Identity Management
+provider: Microsoft
 commonfields:
   id: Azure Active Directory Identity Protection
   version: -1
