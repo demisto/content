@@ -2551,10 +2551,7 @@ class EC2:
         print_debug_logs(client, f"Describing images with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
 
-        try:
-            response = client.describe_images(**kwargs)
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        response = client.describe_images(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -2566,7 +2563,7 @@ class EC2:
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
         images = response.get("Images", [])
-
+        return CommandResults(readable_output=len(images))
         # Build readable output data
         readable_outputs = []
         for image in images:
@@ -2606,7 +2603,7 @@ class EC2:
                 - name (str): A name for the new image (required)
                 - instance_id (str): The ID of the instance (required)
                 - description (str, optional): A description for the new image
-                - no_reboot (str, optional): By default, Amazon EC2 attempts to shut down and reboot the instance
+                - no_reboot (boolean, optional): By default, Amazon EC2 attempts to shut down and reboot the instance
                   before creating the image. If set to true, Amazon EC2 won't shut down the instance
                 - block_device_mappings (str, optional): JSON string of block device mappings
                 - tag_specifications (str, optional): Tags to apply to the AMI and snapshots
@@ -2618,13 +2615,14 @@ class EC2:
             "Name": args.get("name"),
             "InstanceId": args.get("instance_id"),
             "Description": args.get("description"),
-            "NoReboot": argToBoolean(args.get("no_reboot")) if args.get("no_reboot") else None,
+            "NoReboot": arg_to_bool_or_none(args.get("no_reboot"))
         }
 
         # Handle block device mappings if provided
         if block_device_mappings := args.get("block_device_mappings"):
             try:
-                kwargs["BlockDeviceMappings"] = json.loads(block_device_mappings)
+                kwargs["BlockDeviceMappings"] = json.loads(block_device_mappings) if isinstance(block_device_mappings,
+                                                                                                str) else block_device_mappings
             except json.JSONDecodeError as e:
                 raise DemistoException(f"Invalid block_device_mappings JSON: {e}")
 
@@ -2635,11 +2633,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating image with parameters: {kwargs}")
 
-        try:
-            response = client.create_image(**kwargs)
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-
+        response = client.create_image(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
@@ -4363,6 +4357,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-delete": EC2.delete_security_group_command,
     "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
     "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
+    "aws-ec2-images-describe": EC2.describe_images_command,
+    "aws-ec2-image-create": EC2.create_image_command,
+    "aws-ec2-image-deregister": EC2.deregister_image_command,
+    "aws-ec2-image-copy": EC2.copy_image_command,
+    "aws-ec2-image-available-waiter": EC2.image_available_waiter_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
