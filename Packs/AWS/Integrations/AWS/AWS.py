@@ -2563,7 +2563,7 @@ class EC2:
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
         images = response.get("Images", [])
-        return CommandResults(readable_output=len(images))
+
         # Build readable output data
         readable_outputs = []
         for image in images:
