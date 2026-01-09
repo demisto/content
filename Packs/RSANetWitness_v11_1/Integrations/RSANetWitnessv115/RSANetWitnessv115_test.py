@@ -75,7 +75,7 @@ args_single_inc = {"id": "INC-1"}
 @pytest.mark.parametrize(
     "function_to_mock, function_to_test, args, http_response_key, expected_command_results_key",
     [
-        ("get_incident_request", list_incidents_command, [{"id": "INC-1"}], "single_incident", "single_incident"),
+        ("get_incident_request", list_incidents_command, {"id": "INC-1"}, "single_incident", "single_incident"),
         ("list_incidents_request", list_incidents_command, {}, "list_incidents", "list_incidents"),
         (
             "update_incident_request",
