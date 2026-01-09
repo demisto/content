@@ -532,7 +532,7 @@ def incident_add_journal_entry_command(client: Client, args: dict[str, Any]) -> 
 def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = args.get('id')
     limit = arg_to_number(args.get('limit'))
-
+    items: list = []
     response = client.incident_list_alerts_request(limit, id_)
     if isinstance(response, list):
         items = response
@@ -1345,7 +1345,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
         if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f'{len(alerts)} alerts pulled !')
-            response['alerts'] = alerts
+            response[0]['alerts'] = alerts
         else:
             demisto.debug("Skipping this step, max number of pull alerts reached for this incident !")
 

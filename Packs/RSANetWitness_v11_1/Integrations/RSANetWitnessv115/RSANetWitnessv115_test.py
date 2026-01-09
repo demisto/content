@@ -75,7 +75,7 @@ args_single_inc = {"id": "INC-1"}
 @pytest.mark.parametrize(
     "function_to_mock, function_to_test, args, http_response_key, expected_command_results_key",
     [
-        ("get_incident_request", list_incidents_command, {"id": "INC-1"}, "single_incident", "single_incident"),
+        ("get_incident_request", list_incidents_command, [{"id": "INC-1"}], "single_incident", "single_incident"),
         ("list_incidents_request", list_incidents_command, {}, "list_incidents", "list_incidents"),
         (
             "update_incident_request",
@@ -388,8 +388,8 @@ def test_fetch_incidents(mocker, import_alerts: bool, test_data_key: str):
 
     """
     fetch_responses = util_load_json("test_data/fetch_incidents.json")
-    mocked_http__incidents_response = fetch_responses["list_incidents_request"][0]
-    mocked_http__alerts_response = fetch_responses["incident_list_alerts_request"][0]
+    mocked_http__incidents_response = fetch_responses["list_incidents_request"]
+    mocked_http__alerts_response = fetch_responses["incident_list_alerts_request"]
     mocker.patch.object(client, "list_incidents_request", return_value=mocked_http__incidents_response)
     mocker.patch.object(client, "incident_list_alerts_request", return_value=mocked_http__alerts_response)
 
@@ -496,7 +496,7 @@ def test_update_remote_system_command_with_updated_incident(mocker):
             self.data = {"status": 2, "closeReason": "False positive"}
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": "INC-1", "status": "New"}])
     mocker_update = mocker.patch.object(
         client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive"}
     )
@@ -527,7 +527,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
             self.data = {"status": 1, "closeReason": "New"}
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": "INC-1", "status": "New"}])
     mocker_update_remote_system = mocker.patch.object(client, "update_incident_request")
 
     assert not (mocker_update_remote_system.called)
@@ -555,8 +555,8 @@ def test_get_remote_data_command(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     params = {"close_incident": True, "import_alerts": True, "max_alerts": "3"}
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "New", "alertCount": 2})
-    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[{"id": "1"}, {"id": "2"}])
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": 1, "status": "New", "alertCount": 2}])
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", autospec=True, return_value=[{'id': '1'}, {'id': '2'}])
 
     res = get_remote_data_command(client, {}, params)
     assert res.mirrored_object == expected_result
@@ -591,8 +591,8 @@ def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     params = {"close_incident": True, "import_alerts": True, "max_alerts": "3"}
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "Closed", "alertCount": 1})
-    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"id": 1}]})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": 1, "status": "Closed", "alertCount": 1}])
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[{'id': 1}])
 
     res = get_remote_data_command(client, {}, params)
     assert res.mirrored_object == expected_result
@@ -619,9 +619,9 @@ def test_get_modified_remote_data_command_from_timestamp(mocker):
             self.last_update = "1694188115"
 
     mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New", "alertCount": 3})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": "INC-1", "status": "New", "alertCount": 3}])
     mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, [{"id": "INC-1", "lastUpdated": 1694188116}]))
-    mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=False)
+    mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=True)
     mocker.patch.object(RSANetWitnessv115, "get_integration_context", return_value={})
 
     res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 2, "max_mirror_time": 0})
@@ -649,7 +649,7 @@ def test_get_modified_remote_data_command_from_alerts(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
     mocker.patch.object(
-        client, "get_incident_request", return_value={"id": "INC-1", "status": 1, "alertCount": 1, "eventCount": 1}
+        client, "get_incident_request", return_value=[{"id": "INC-1", "status": 1, "alertCount": 1, "eventCount": 1}]
     )
     mocker.patch.object(
         RSANetWitnessv115,
