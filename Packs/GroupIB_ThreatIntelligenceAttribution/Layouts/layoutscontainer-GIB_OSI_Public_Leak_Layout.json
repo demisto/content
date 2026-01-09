@@ -1,6 +1,12 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
     "description": "Layout for GIB OSI Public Leak",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -81,97 +87,98 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "maxW": 3
+                        "y": 0
                     },
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "maxW": 3
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 0,
-                        "maxW": 3
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxW": 3,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 14,
-                        "maxW": 3
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Child Incidents",
                         "static": false,
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 10,
-                        "maxW": 3
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 8,
-                        "maxW": 3
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
                         "type": "team",
                         "w": 1,
                         "x": 0,
-                        "y": 8,
-                        "maxW": 3
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -180,8 +187,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 12,
-                        "maxW": 3
+                        "y": 12
                     },
                     {
                         "displayType": "CARD",
@@ -234,13 +240,13 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 10,
-                        "maxW": 3
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -276,13 +282,13 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 14,
-                        "maxW": 3
+                        "y": 14
                     },
                     {
                         "displayType": "CARD",
@@ -300,13 +306,13 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 10,
-                        "maxW": 3
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -347,6 +353,15 @@
                                 "height": 22,
                                 "id": "9dfda3d0-71a6-11ef-8c49-f9d8b5e80cf6",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "9674d800-ed28-11f0-9509-45873decf476",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -473,10 +488,25 @@
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "6.0.0",
     "group": "incident",
     "id": "GIB OSI Public Leak Layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "2.3.2",
+    "locked": false,
+    "mobile": null,
     "name": "GIB OSI Public Leak Layout",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.0.0"
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "packName": "Group-IB Threat Intelligence",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "99.99.99",
+    "version": -1
 }

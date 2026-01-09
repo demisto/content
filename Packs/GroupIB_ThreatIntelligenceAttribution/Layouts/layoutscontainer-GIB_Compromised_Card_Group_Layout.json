@@ -1,6 +1,12 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
     "description": "Layout for GIB Compromised Card Group",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -349,6 +355,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "018baff0-ed25-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -573,10 +588,25 @@
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "6.10.0",
     "group": "incident",
     "id": "GIB Compromised Card Group Layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "2.3.2",
+    "locked": false,
+    "mobile": null,
     "name": "GIB Compromised Card Group Layout",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "packName": "Group-IB Threat Intelligence",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "99.99.99",
+    "version": -1
 }

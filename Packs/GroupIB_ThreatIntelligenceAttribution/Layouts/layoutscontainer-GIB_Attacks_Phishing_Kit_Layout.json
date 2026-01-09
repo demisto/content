@@ -1,6 +1,12 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
     "description": "Layout for GIB Attacks Phishing Kit",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -431,7 +437,7 @@
                                 "fieldId": "gibreliability",
                                 "height": 22,
                                 "id": "f7864130-71a8-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -441,6 +447,15 @@
                                 "height": 22,
                                 "id": "fa52a7a0-71a8-11ef-8c49-f9d8b5e80cf6",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "c55d3170-ed24-11f0-9509-45873decf476",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -484,10 +499,25 @@
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "6.10.0",
     "group": "incident",
     "id": "GIB Attacks Phishing Kit Layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "2.3.2",
+    "locked": false,
+    "mobile": null,
     "name": "GIB Attacks Phishing Kit Layout",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "packName": "Group-IB Threat Intelligence",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "99.99.99",
+    "version": -1
 }

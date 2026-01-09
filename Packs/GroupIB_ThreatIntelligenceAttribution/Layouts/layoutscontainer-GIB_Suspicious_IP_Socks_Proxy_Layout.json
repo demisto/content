@@ -1,6 +1,12 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
     "description": "Layout for GIB Suspicious IP Socks Proxy",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -340,6 +346,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "d3bcb5c0-ed28-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -451,10 +466,25 @@
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "6.10.0",
     "group": "incident",
     "id": "GIB Suspicious IP Socks Proxy Layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "2.3.2",
+    "locked": false,
+    "mobile": null,
     "name": "GIB Suspicious IP Socks Proxy Layout",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "packName": "Group-IB Threat Intelligence",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "99.99.99",
+    "version": -1
 }

@@ -1,12 +1,12 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
     "description": "Layout for GIB Compromised Mule",
-    "group": "incident",
-    "id": "GIB Compromised Mule Layout",
-    "name": "GIB Compromised Mule Layout",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.0.0",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -472,6 +472,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "1bd0d890-ed25-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -512,5 +521,26 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "edit": null,
+    "fromServerVersion": "6.0.0",
+    "group": "incident",
+    "id": "GIB Compromised Mule Layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "2.3.2",
+    "locked": false,
+    "mobile": null,
+    "name": "GIB Compromised Mule Layout",
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "packName": "Group-IB Threat Intelligence",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "99.99.99",
+    "version": -1
 }

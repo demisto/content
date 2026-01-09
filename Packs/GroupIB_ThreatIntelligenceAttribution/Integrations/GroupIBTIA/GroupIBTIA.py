@@ -780,6 +780,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1272,14 +1273,16 @@ MAPPING = {
         "id": "id",  # GIB ID
         "title": "title",  # GIB Cybercriminal Threat Title
         "description": "description",  # GIB Cybercriminal Threat Description
-        "createdAt": "createdAt",  # GIB Date Created At
-        "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
-        "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "isTailored": "isTailored",  # GIB Is Tailored
         "expertise": "expertise",  # GIB Cybercriminal Expertises
         "regions": "regions",  # GIB Cybercriminal Regions
         "sectors": "sectors",  # GIB Cybercriminal Sectors
         "reportNumber": "reportNumber",  # GIB Report Number
+        # Group-IB Dates
+        "createdAt": "createdAt",  # GIB Date Created At
+        "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
+        "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
+        # END Group-IB Dates
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
                 "static": PORTAL_LINKS.get("hi/threat"),
@@ -1413,7 +1416,7 @@ MAPPING = {
             "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
-        # Group-IB Cybercriminal Forum Information
+        # Group-IB Nation-State Cybercriminal Forum Information
         "forumsAccounts": {  # GIB Nation-State Cybercriminal Forums Table
             "nickname": "forumsAccounts.nickname",
             "url": "forumsAccounts.url",
