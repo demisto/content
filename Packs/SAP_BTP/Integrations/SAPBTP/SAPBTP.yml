@@ -160,5 +160,6 @@ triggers:
           required: true
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
