@@ -379,6 +379,8 @@ asset_softwares AS (
         das.asset_id,
         json_agg(
             json_build_object(
+                'Software_ID', das.software_id,
+                'Fingerprint_source_ID', das.fingerprint_source_id,
                 'Vendor', ds.vendor,
                 'Family', ds.family,
                 'Name', ds.name,
@@ -468,7 +470,7 @@ asset_latest_scan AS (
         ds.finished AS last_scan_date,
         ds.status_id AS last_scan_status_id,
         ds.scan_id AS scan_id,
-        ds.started As started,
+        ds.started AS started,
         ds.type_id AS type_id,
         ds.scan_name AS scan_name,
         fas.vulnerabilities AS vulnerabilities,
@@ -526,13 +528,11 @@ SELECT
     am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
     ai.aggregated_ip_addresses AS "dim_asset_ip_address.ip_address",
     af.aggregated_files_json AS "asset_files",
-    das.software_id AS "dim_asset_software.software_id",
-    das.fingerprint_source_id AS "dim_asset_software.fingerprint_source_id",
     asoft.aggregated_software_json AS "asset_softwares",
     als.last_scan_date AS "dim_scan.finished",
     als.last_scan_status_id AS "dim_scan.status_id",
     als.scan_id AS "dim_scan.scan_id",
-    als.started As "dim_scan.started",
+    als.started AS "dim_scan.started",
     als.type_id AS "dim_scan.type_id",
     als.scan_name AS "dim_scan.scan_name",
     als.vulnerabilities AS "fact_asset_scan.vulnerabilities",
@@ -557,8 +557,6 @@ LEFT JOIN
     asset_files af ON da.asset_id = af.asset_id
 LEFT JOIN
     dim_host_type dht ON da.host_type_id = dht.host_type_id
-LEFT JOIN
-    dim_asset_software das ON da.asset_id = das.asset_id
 LEFT JOIN
     asset_softwares asoft ON da.asset_id = asoft.asset_id
 LEFT JOIN
