@@ -9,9 +9,8 @@ This is the default integration for this content pack when configured by the Dat
 | --- | --- | --- |
 | Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log') |  | True |
 | API Token |  | True |
-| Number of incidents to fetch per fetch. |  | False |
-| First fetch time interval |  | False |
-| The event types to include. | web - returns web \(non-Git\) events, git - returns Git events, all - returns both web and Git events. | False |
+| Maximum number of events per fetch |  | False |
+| The event types to include | web - returns web \(non-Git\) events, git - returns Git events, all - returns both web and Git events. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
