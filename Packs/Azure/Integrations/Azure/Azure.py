@@ -360,7 +360,6 @@ class TokenScope:
     WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
 
 
-
 """ CLIENT CLASS """
 
 
@@ -418,9 +417,6 @@ class AzureClient:
             params = {}
         if not self.headers:
             self.headers = {}
-        if not params.get("api-version") and "x-ms-version" not in self.headers:
-            if not params:
-                params = {}
         if not self.headers:
             self.headers = {}
         if not params.get("api-version") and "x-ms-version" not in self.headers:
@@ -4816,7 +4812,7 @@ def main():  # pragma: no cover
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:
-            if is_gov_account(connector_id, account_id):  # type: ignore
+            if is_gov_account(connector_id):  # type: ignore
                 switch_to_gov_account()
             demisto.debug(f"Running health check for connector ID: {connector_id}")
             return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
