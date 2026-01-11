@@ -238,6 +238,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Check if there are files to block.
     nexttasks:
       '#default#':
       - "3"
