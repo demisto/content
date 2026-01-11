@@ -809,6 +809,7 @@ class AzureClient:
         Retrieve properties for the specified Container.
 
         Args:
+            account_name (str): The storage account name.
             container_name (str): Container name.
 
         Returns:
@@ -869,8 +870,10 @@ class AzureClient:
 
         Args:
             container_name (str): Container name.
+            account_name (str): Storage account name.
             file_entry_id (str): File War room Entry ID.
-            file_name (str): File name. Default is file name.
+            blob_name (str): File name.
+            system_file_path (str): File system path.
 
         Returns:
             Response: API response from Azure.
@@ -990,6 +993,7 @@ class AzureClient:
         Args:
             container_name (str): Container name.
             blob_name (str): Blob name.
+            account_name (str): Name of the storage account.
             headers (dict): Request Headers.
 
         Returns:
@@ -1011,7 +1015,6 @@ class AzureClient:
         Args:
             account_name (str): Name of the storage account.
             container_name (str): Name of the container.
-            headers (dict): Request Headers.
 
         Returns:
             Response: API response from Azure.
