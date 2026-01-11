@@ -2,9 +2,7 @@
 alter
     user = trim(coalesce(modified_by, principal, uid))
 | alter
-    user_parsed = if(user ~= "^\[", 
-                     arrayindex(regextract(modified_by, "^\[([^|]+)\|"), 0), 
-                     user)
+    user_parsed = if(user ~= "^\[",arrayindex(regextract(user, "^\[([^|]+)\|"), 0),user)
 | alter
     xdm.event.type = coalesce(event_action, event_type),
     xdm.event.description = coalesce(name,asset_comments),
