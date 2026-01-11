@@ -23,6 +23,7 @@ def arguments_handler():
     parser.add_argument("-p", "--pr_number", help="The PR number to check.")
     parser.add_argument("-g", "--github_token", help="The GitHub token to authenticate the GitHub client.")
     return parser.parse_args()
+
 def get_pr_query_string():
     """Returns the GraphQL query string."""
     return """
