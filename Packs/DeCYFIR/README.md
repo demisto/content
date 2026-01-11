@@ -3,6 +3,8 @@
 CYFIRMA’s core platform, DeCYFIR, combines cyber threat intelligence with attack surface discovery and digital risk protection to deliver predictive, personalized, contextual, outside-in, and multi-layered cyber-intelligence.
 With DeCYFIR’s APIs, security teams obtain a complete view of their external threat landscape and receive actionable insights to ensure their cybersecurity posture is robust, resilient, and able to counter emerging cyber threats.
 
+<~XSOAR>
+
 #### This packs empowers security teams with the following capabilities
 
 - Monitor your entire external attack surfaces as they emerge.
@@ -15,6 +17,8 @@ With DeCYFIR’s APIs, security teams obtain a complete view of their external t
 **Note:**
 Support and maintenance for this integration is provided by **[Cyfirma](https://www.cyfirma.com)**.
 Please contact us for more details on this email **_contact@cyfirma.com_**.
+
+</~XSOAR>
 
 <~XSIAM>
 
