@@ -1,13 +1,15 @@
-Use the Cloudflare MCP integration to connect securely with a Cloudflare Model Context Protocol (MCP) server and access its tools in real time.
+Use the Cloudflare MCP integration to securely connect to a Cloudflare Model Context Protocol (MCP) server and access Cloudflare tools in real time.
 
-## What does this pack do
+## What does this pack do?
 
-This integration provides tools primarily intended for use with Agentix Actions. It enables you to:
+This pack is intended for Cortex Agentic AI.
 
-- Retrieve a list of available tools in the Cloudflare MCP server.
-- Call a specific tool on the Cloudflare MCP server with optional input parameters.
+Connects to a Cloudflare MCP server to automatically discover tools and expose them as agentic system actions that users can enable for agents.
 
-## Available tools (Availability depends on the chosen Server)
+## Tools
+
+Tool availability depends on the selected server.
+The list below reflects the tools available at the time this pack was created and may change.
 
 ### docs - Documentation server
 
