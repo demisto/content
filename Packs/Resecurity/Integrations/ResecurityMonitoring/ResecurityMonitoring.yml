@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Resecurity
 commonfields:
   id: ResecurityMonitoring
   version: -1
@@ -38,40 +39,40 @@ script:
       name: page_size
     - description: Limit of the records in dataset. Default value is 1000.
       name: limit
-    - description: "Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results"
+    - description: "Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results."
       name: mode
     description: 'Retrieve monitoring results from a specific monitor task'
     name: resecurity-get-task-monitor-results-data-breaches
     outputs:
     - contextPath: Resecurity.DataBreach.id
-      description: 'Data breach ID'
+      description: 'Data breach ID.'
       type: String
     - contextPath: Resecurity.DataBreach.query
-      description: 'The query for which the result was found'
+      description: 'The query for which the result was found.'
       type: String
     - contextPath: Resecurity.DataBreach.detection_date
-      description: 'Data breach detection date'
+      description: 'Data breach detection date.'
       type: Number
     - contextPath: Resecurity.DataBreach.email
-      description: 'Data breach email'
+      description: 'Data breach email.'
       type: String
     - contextPath: Resecurity.DataBreach.username
-      description: 'Data breach username'
+      description: 'Data breach username.'
       type: String
     - contextPath: Resecurity.DataBreach.password
-      description: 'Data breach password'
+      description: 'Data breach password.'
       type: String
     - contextPath: Resecurity.DataBreach.password_hash
-      description: 'Data breach password hash'
+      description: 'Data breach password hash.'
       type: String
     - contextPath: Resecurity.DataBreach.salt
-      description: 'Data breach salt'
+      description: 'Data breach salt.'
       type: String
     - contextPath: Resecurity.DataBreach.ip
-      description: 'Data breach IP address'
+      description: 'Data breach IP address.'
       type: String
     - contextPath: Resecurity.DataBreach.source_name
-      description: 'Data breach source name'
+      description: 'Data breach source name.'
       type: String
   runonce: false
   script: '-'
