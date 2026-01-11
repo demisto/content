@@ -41,14 +41,15 @@ For more info see [here](https://www.elastic.co/guide/en/elasticsearch/reference
 ## Notes
 
 * Not all fields can be used for sorting in Elasticsearch. Sorting is only supported for fields of the following types: **boolean**, **numeric**, **date**, and **keyword**.
-* The "Test" button does not fully validate the fetch incidents functionality. To ensure the instance is correctly fetching incidents, run the *!es-integration-health-check* command
+* The "Test" button does not fully validate the fetch events functionality.
 
 ## Additional Configuration Parameters Details
 
 Fetch events requires:
-    - Index
-    - Index time field
-    - Query String or Raw Query
+
+* Index
+* Index time field
+* Query String or Raw Query
 
 For further information about type mapping, see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type).
 

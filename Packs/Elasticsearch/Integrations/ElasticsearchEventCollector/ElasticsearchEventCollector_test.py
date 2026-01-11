@@ -1,7 +1,6 @@
 import importlib
 import unittest
 from datetime import datetime, timedelta
-from unittest import mock
 from unittest.mock import patch, MagicMock
 
 import dateparser
@@ -9,7 +8,6 @@ import demistomock as demisto
 import ElasticsearchEventCollector
 import json
 import pytest
-import requests
 
 """MOCKED RESPONSES"""
 
@@ -92,80 +90,6 @@ ES_V8_RESPONSE = {
 }
 
 
-MOCK_ES7_SEARCH_CONTEXT = str(
-    {
-        "Server": "",
-        "Index": "customer",
-        "Query": "check",
-        "Page": 0,
-        "Size": 2,
-        "total": {"value": 9, "relation": "eq"},
-        "max_score": 0.6814878,
-        "took": 1,
-        "timed_out": False,
-        "Results": [
-            {
-                "_index": "customer",
-                "_type": "doc",
-                "_id": "123",
-                "_score": 0.6814878,
-                "_source": {"Date": "2019-08-27T18:00:00Z"},
-            },
-            {
-                "_index": "customer",
-                "_type": "doc",
-                "_id": "456",
-                "_score": 0.6814878,
-                "_source": {"Date": "2019-08-27T18:01:25.343212Z"},
-            },
-        ],
-    }
-)
-
-MOCK_ES7_HIT_CONTEXT = str(
-    [
-        {"_index": "customer", "_id": "123", "_type": "doc", "_score": 0.6814878, "Date": "2019-08-27T18:00:00Z"},
-        {"_index": "customer", "_id": "456", "_type": "doc", "_score": 0.6814878, "Date": "2019-08-27T18:01:25.343212Z"},
-    ]
-)
-
-MOCK_ES6_SEARCH_CONTEXT = str(
-    {
-        "Server": "",
-        "Index": "users",
-        "Query": "incident",
-        "Page": 0,
-        "Size": 2,
-        "total": {"value": 17},
-        "max_score": 1.3862944,
-        "took": 1,
-        "timed_out": False,
-        "Results": [
-            {
-                "_index": "users",
-                "_type": "_doc",
-                "_id": "123",
-                "_score": 1.3862944,
-                "_source": {"Date": "2019-08-29T14:45:00.123Z"},
-            },
-            {
-                "_index": "users",
-                "_type": "_doc",
-                "_id": "456",
-                "_score": 0.9517491,
-                "_source": {"Date": "2019-08-29T14:46:00.123456Z"},
-            },
-        ],
-    }
-)
-
-MOCK_ES6_HIT_CONTEXT = str(
-    [
-        {"_index": "users", "_id": "123", "_type": "_doc", "_score": 1.3862944, "Date": "2019-08-29T14:45:00.123Z"},
-        {"_index": "users", "_id": "456", "_type": "_doc", "_score": 0.9517491, "Date": "2019-08-29T14:46:00.123456Z"},
-    ]
-)
-
 MOCK_ES7_INCIDENTS = str(
     [
         {
@@ -230,7 +154,7 @@ MOCK_ES7_INCIDENTS_WITHOUT_LABELS = str(
     ]
 )
 
-MOCK_ES6_INCIDETNS = str(
+MOCK_ES6_INCIDENTS = str(
     [
         {
             "name": "Elasticsearch: Index: users, ID: 123",
@@ -263,7 +187,7 @@ MOCK_ES6_INCIDETNS = str(
     ]
 )
 
-MOCK_ES6_INCIDETNS_WITHOUT_LABELS = str(
+MOCK_ES6_INCIDENTS_WITHOUT_LABELS = str(
     [
         {
             "name": "Elasticsearch: Index: users, ID: 123",
@@ -372,66 +296,6 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS = str(
     ]
 )
 
-MOCK_ES7_SCHEMA_INPUT = {"bytes": {"type": "long"}, "clientip": {"type": "ip"}}
-
-MOCK_ES7_SCHEMA_OUTPUT = {"bytes": "type: long", "clientip": "type: ip"}
-
-MOC_ES7_SERVER_RESPONSE = {
-    "kibana_sample_data_logs": {
-        "mappings": {
-            "properties": {
-                "@timestamp": {"type": "alias", "path": "timestamp"},
-                "agent": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "bytes": {"type": "long"},
-                "clientip": {"type": "ip"},
-                "event": {"properties": {"dataset": {"type": "keyword"}}},
-                "extension": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "geo": {
-                    "properties": {
-                        "coordinates": {"type": "geo_point"},
-                        "dest": {"type": "keyword"},
-                        "src": {"type": "keyword"},
-                        "srcdest": {"type": "keyword"},
-                    }
-                },
-                "host": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "index": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "ip": {"type": "ip"},
-                "machine": {
-                    "properties": {
-                        "os": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                        "ram": {"type": "long"},
-                    }
-                },
-                "memory": {"type": "double"},
-                "message": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "phpmemory": {"type": "long"},
-                "referer": {"type": "keyword"},
-                "request": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "response": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "tags": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "timestamp": {"type": "date"},
-                "url": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 256}}},
-                "utc_time": {"type": "date"},
-            }
-        }
-    }
-}
-
-MOCK_INDEX_RESPONSE = {
-    "_index": "test-index",
-    "_id": "1",
-    "_version": 1,
-    "result": "created",
-    "_shards": {"total": 2, "successful": 2, "failed": 0},
-    "_seq_no": 5,
-    "_primary_term": 1,
-}
-
-MOCK_INDICES_STATISTICS_RESPONSE = {
-    "index_name1": {"uuid": "1111", "health": "yellow", "status": "open", "total": {"docs": {"count": 2, "deleted": 0}}},
-    "index_name2": {"uuid": "2222", "health": "green", "status": "closed", "total": {"docs": {"count": 40, "deleted": 2}}},
-}
 
 MOCK_PARAMS = [
     {
@@ -494,9 +358,9 @@ def test_incident_creation_e6(params, mocker):
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-29T14:46:00.123456+00:00"
     if params.get("map_labels"):
-        assert str(incidents) == MOCK_ES6_INCIDETNS
+        assert str(incidents) == MOCK_ES6_INCIDENTS
     else:
-        assert str(incidents) == MOCK_ES6_INCIDETNS_WITHOUT_LABELS
+        assert str(incidents) == MOCK_ES6_INCIDENTS_WITHOUT_LABELS
 
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
@@ -634,40 +498,6 @@ The get-mapping-fields command perform a GET /<index name>/_mapping http command
 for e.g http://elasticserver.com/customers/_mapping the output is then formatted and arranged by the parse-tree function
 The test created a mock response.
 """
-
-
-class GetMapping:
-    def fetch_json(self, url):
-        response = requests.get(url)
-        return response.json()
-
-
-# This method will be used by the mock to replace requests.get
-@patch("ElasticsearchEventCollector.FETCH_INDEX", "customer")
-def mocked_requests_get(*args, **kwargs):
-    class MockResponse:
-        def __init__(self, json_data, status_code):
-            self.json_data = json_data
-            self.status_code = status_code
-
-        def json(self):
-            return self.json_data
-
-    if args[0] == "http://someurl.com/" + "index" + "/_mapping":
-        return MockResponse(MOC_ES7_SERVER_RESPONSE, 200)
-    else:
-        return MockResponse(None, 404)
-
-
-# Our test case class
-class GetMappingFields(unittest.TestCase):
-    # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
-    def test_fetch(self, mock_get):
-        # Assert requests.get calls
-        gmf = GetMapping()
-        server_response = gmf.fetch_json("http://someurl.com/" + "index" + "/_mapping")
-        assert server_response == MOC_ES7_SERVER_RESPONSE
 
 
 class TestIncidentLabelMaker(unittest.TestCase):

@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - display: Server URL
   name: url
-  required: false
+  required: true
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
@@ -78,8 +78,6 @@ configuration:
     Query string uses the Lucene syntax.
     For more information about the Lucene syntax, see the link in the help section.
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
 - display: Index time field
@@ -95,8 +93,6 @@ configuration:
     Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
     Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
     For more information see the link in the help section.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   advanced: true
   required: false
@@ -131,11 +127,6 @@ configuration:
   defaultvalue: '60'
   section: Connect
   advanced: true
-  required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
   required: false
 - display: Fetch events
   name: isFetchEvents

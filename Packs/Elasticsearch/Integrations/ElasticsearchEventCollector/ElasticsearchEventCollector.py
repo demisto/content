@@ -152,7 +152,7 @@ def timestamp_to_date(timestamp_string):
         timestamp_number = float(timestamp_string)
 
     # convert timestamp (a floating point number representing time since epoch) to datetime
-    return datetime.utcfromtimestamp(timestamp_number)
+    return datetime.fromtimestamp(timestamp_number, tz=UTC).replace(tzinfo=None)
 
 
 def get_api_key_header_val(api_key):
@@ -744,7 +744,7 @@ def fetch_events(proxies):
     demisto.debug(f"fetch_events - total fetched: {total_results}, response:\n{response}.")
 
     events = []  # type: List
-
+    updated_last_run = last_run
     if total_results > 0:
         if "Timestamp" in TIME_METHOD:
             demisto.debug("fetch_events - calling results_to_events_timestamp")
@@ -756,10 +756,15 @@ def fetch_events(proxies):
             events, last_fetch = results_to_events_datetime(response, last_fetch or FETCH_TIME)
             updated_last_run = {"time": str(last_fetch)}
 
-        demisto.info(f"fetch_events - total events extracted: {len(events)}")
-        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.info(f"fetch_events - total events extracted: {len(events)}")
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.info("fetch_events - send_events_to_xsiam completed successfully")
+
+    if total_results > 0:
         demisto.setLastRun(updated_last_run)
         demisto.debug(f"fetch_events - Updated last_run object after successful fetch:\n{updated_last_run}")
+    else:
+        demisto.results("No events were found, last_run not updated.")
 
 
 def get_events(proxies):
