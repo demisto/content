@@ -147,7 +147,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity '
+          root: 'inputs.Severity'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -210,7 +210,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity '
+          root: 'inputs.Severity'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -282,6 +282,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Check if input hash is of type MD5.
     nexttasks:
       '#default#':
       - "3"
@@ -328,6 +329,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Check if input hash is of type SHA256.
     nexttasks:
       '#default#':
       - "3"
@@ -384,7 +386,7 @@ view: |-
     }
   }
 inputs:
-- key: 'Severity '
+- key: 'Severity'
   value: {}
   required: false
   description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
@@ -414,7 +416,7 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
-  - 'Severity '
+  - 'Severity'
   - IndicatorDescription
   - IndicatorTitle
   - GenerateAlert
