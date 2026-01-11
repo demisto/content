@@ -1095,3 +1095,26 @@ def test_is_gov_account_get_accounts_call_parameters(mocker):
 
     # Verify get_accounts_by_connector_id was called with correct parameters
     mock_get_accounts.assert_called_once_with("test-connector-id", None)
+
+
+def test_is_gov_account_empty_accounts_list_no_account(mocker):
+    """
+    Given: A connector_id, no account_id, and empty accounts list.
+    When: is_gov_account is called.
+    Then: It returns False for empty accounts list.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = []
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "")
+
+    # Verify result
+    assert result is False
+    debug_call_args = demisto.debug.call_args[0][0]
+    expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
+    assert  expected_debug_log == debug_call_args
