@@ -404,6 +404,11 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=params)
         return response.get("data", {})
 
+    def get_threat_analysis_request(self, threat_id):
+        endpoint_url = f"private/threats/{threat_id}/analysis"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        return response.get("data", {})
+
     def list_agents_request(self, params: dict):
         response = self._http_request(method="GET", url_suffix="agents", params=params)
         return response.get("data", {})
@@ -734,6 +739,66 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
+    def create_bulk_ioc_request(self, iocs_from_file, account_ids):
+        endpoint_url = "threat-intelligence/iocs"
+        required_fields = {"source", "type", "value", "method", "validUntil", "name"}
+        normalized_iocs: list[dict] = []
+        for idx, ioc in enumerate(iocs_from_file):
+            if not isinstance(ioc, dict):
+                raise DemistoException(f"IOC at index {idx} is not an object.")
+            missing = [field for field in required_fields if field not in ioc or ioc.get(field) in (None, "")]
+            if missing:
+                raise DemistoException(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
+            # Normalize to API expectations (upper-case TYPE and METHOD)
+            ioc_type = ioc.get("type", "").strip().upper()
+            method = ioc.get("method", "").strip().upper()
+            # Build the outbound object preserving optional fields if present
+            outbound = {
+                "source": ioc.get("source", ""),
+                "type": ioc_type,
+                "method": method,
+                "value": ioc.get("value", ""),
+                "validUntil": ioc.get("validUntil", ""),
+                "name": ioc.get("name", ""),
+            }
+            # Optional fields as per current single-IOC code
+            for opt in ("externalId", "description"):
+                if opt in ioc and ioc.get(opt) not in (None, ""):
+                    outbound[opt] = ioc.get(opt)
+            normalized_iocs.append(outbound)
+
+        payload = {
+            "filter": {"accountIds": account_ids},
+            "data": normalized_iocs,
+        }
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def run_powerquery_request(self, sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails):
+        if not sdl_url.startswith("https://"):
+            raise DemistoException("Invalid URL: must start with https://")
+
+        headers = {
+            "Authorization": f"Bearer {sdl_api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {"query": query}
+        optional_params = {
+            "startTime": start_time,
+            "endTime": end_time,
+            "priority": priority,
+            "recurring": recurring,
+            "teamEmails": team_emails,
+        }
+
+        payload.update(
+            {param_name: param_value for param_name, param_value in optional_params.items() if param_value not in [None, ""]}
+        )
+        return self._http_request(
+            method="POST", full_url=f"{sdl_url.rstrip('/')}/api/powerQuery", headers=headers, json_data=payload
+        )
+
     def delete_ioc_request(self, account_ids, uuids):
         endpoint_url = "threat-intelligence/iocs"
         payload = {"filter": {"accountIds": account_ids, "uuids": uuids}}
@@ -827,6 +892,9 @@ class Client(BaseClient):
     def download_threat_file_request(self, endpoint_url):
         return self._http_request(method="GET", url_suffix=endpoint_url, resp_type="content")
 
+    def download_threat_cloud_file(self, url):
+        return self._http_request(method="GET", full_url=url, resp_type="content", headers={"Accept": "application/json"})
+
     def get_installed_applications_request(self, query_params):
         endpoint_url = "agents/applications"
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=query_params)
@@ -835,6 +903,21 @@ class Client(BaseClient):
     def initiate_endpoint_scan_request(self, agent_ids):
         endpoint_url = "agents/actions/initiate-scan"
         payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def abort_endpoint_scan_request(self, agent_ids):
+        endpoint_url = "agents/actions/abort-scan"
+        payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def endpoint_fetch_logs_request(self, agent_ids, agent_logs, customer_facing_logs, platform_logs):
+        endpoint_url = "agents/actions/fetch-logs"
+        payload = {
+            "filter": {"ids": agent_ids},
+            "data": {"agentLogs": agent_logs, "customerFacingLogs": customer_facing_logs, "platformLogs": platform_logs},
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -983,6 +1066,23 @@ class Client(BaseClient):
         """
         # Returning updated dictionary with non-empty fields
         return {key: value for key, value in json_payload.items() if str(value)}
+
+    def threat_download_from_cloud_request(self, threat_id: str) -> dict[str, str]:
+        """
+        Returns Information to download the file for the given threat_id from the cloud
+
+        Parameters:
+        - threat_id (str): The threat_id to download the file for.
+
+        Returns:
+        - dict: A new JSON object containing information to download the file or a message, if it isn't available
+        """
+        endpoint_url = f"threats/{threat_id}/download-from-cloud"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        data: dict = response.get("data", {})
+        if "errors" in response:
+            data["message"] = response.get("errors", [{}])[0].get("detail", "An Unknown Error occurred")
+        return data
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -1808,6 +1908,106 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
     )
 
 
+def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
+    """
+    Add bulk IoC's to the Threat Intelligence database. . Relavent for API version 2.1
+    """
+    context_list = []
+
+    # Get arguments
+    entry_id = args.get("entry_id")
+    account_ids = argToList(args.get("account_ids"))
+
+    # Resolve file path from entry_id
+    try:
+        file_info = demisto.getFilePath(entry_id)
+    except Exception as e:
+        raise DemistoException(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
+    if not file_info or not file_info.get("path"):
+        raise DemistoException(f"Could not resolve file path for entry_id={entry_id}")
+    file_path = file_info["path"]
+
+    # Load JSON array of IOC objects
+    try:
+        with open(file_path, encoding="utf-8") as json_ioc_list:
+            iocs_data = json.load(json_ioc_list)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON in uploaded file: {str(e)}")
+    except Exception as e:
+        raise DemistoException(f"Failed reading uploaded file {file_path}: {str(e)}")
+    if not isinstance(iocs_data, list):
+        raise DemistoException("Uploaded JSON must be an array of IOC objects.")
+
+    iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
+
+    for ioc in iocs:
+        context_list.append(
+            {
+                "UUID": ioc.get("uuid"),
+                "Name": ioc.get("name"),
+                "Source": ioc.get("source"),
+                "Type": ioc.get("type"),
+                "Batch Id": ioc.get("batchId"),
+                "Creator": ioc.get("creator"),
+                "Scope": ioc.get("scope"),
+                "Scope Id": ioc.get("scopeId")[0],
+                "Valid Until": ioc.get("validUntil"),
+                "Description": ioc.get("description"),
+                "External Id": ioc.get("externalId"),
+            }
+        )
+
+    # Create readable output (markdown table)
+    readable_output = tableToMarkdown("SentinelOne - Create IOCs", context_list, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SentinelOne.IOCs",
+        outputs_key_field="UUID",
+        outputs=context_list,
+        raw_response=iocs,
+    )
+
+
+def run_powerquery(client: Client, args: dict) -> CommandResults:
+    outputs = {}
+
+    # Get arguments
+    sdl_url = args.get("singularity_xdr_url")
+    sdl_api_key = args.get("singularity_xdr_api_key")
+    query = args.get("query")
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    priority = args.get("priority")
+    recurring = argToBoolean(args.get("recurring")) if args.get("recurring") else None
+    team_emails = argToList(args.get("team_emails")) or None
+
+    pq_response = client.run_powerquery_request(
+        sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails
+    )
+
+    # Extract columns and rows
+    columns = [col.get("name") for col in pq_response.get("columns", [])]
+    rows = pq_response.get("values", [])
+
+    table_data = [dict(zip(columns, row)) for row in rows]
+
+    summary = f"### SentinelOne PowerQuery Results\n" f"**Query:** `{args.get('query')}`  \n\n"
+
+    md = summary + tableToMarkdown("Query Output", table_data)
+
+    outputs = {
+        "status": pq_response.get("status"),
+        "matchingEvents": pq_response.get("matchingEvents"),
+        "omittedEvents": pq_response.get("omittedEvents"),
+        "results": table_data,
+    }
+
+    return CommandResults(
+        readable_output=md, outputs_prefix="SentinelOne.PowerQuery.Results", outputs=outputs, raw_response=pq_response
+    )
+
+
 def delete_ioc(client: Client, args: dict) -> CommandResults:
     """
     Deletes an IoC from the Threat Intelligence database. Relavent for API version 2.1
@@ -2142,6 +2342,36 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
     ]
 
 
+def threat_download_from_cloud(client: Client, args: dict) -> list[CommandResults | list]:
+    """
+    Downloads the threat file uploaded to the cloud (Binary
+    """
+    threat_id: str = str(args.get("threat_id"))
+    response = client.threat_download_from_cloud_request(threat_id)
+    downloadable = False
+    files = []
+    if "downloadUrl" in response:
+        file_download_url = response["downloadUrl"]
+        try:
+            zip_file_data = client.download_threat_cloud_file(file_download_url)
+            zipped_file = fileResult(filename=response["fileName"], data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            files.append(zipped_file)
+            downloadable = True
+        except Exception:
+            zipped_file = "File not available for Download from BinaryVault"
+    context_entry = {"Downloadable": downloadable, "ID": threat_id, "ZippedFile": zipped_file}
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Sentinel One - Download From Cloud", context_entry, removeNull=False),
+            outputs_prefix="SentinelOne.Threat",
+            outputs_key_field="ID",
+            outputs=context_entry,
+            raw_response=zipped_file,
+        ),
+        *files,
+    ]
+
+
 def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
@@ -2346,6 +2576,62 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         outputs_key_field="Agent ID",
         outputs=context_entries,
         raw_response=initiated,
+    )
+
+
+def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
+    """
+    Abort the endpoint virus scan on provided agent IDs
+    """
+    context_entries = []
+
+    agent_ids = argToList(args.get("agent_ids"))
+    aborted = client.abort_endpoint_scan_request(agent_ids)
+    if aborted.get("affected") and int(aborted.get("affected")) > 0:
+        updated = True
+        meta = f'Total of {aborted.get("affected")} provided agents were successfully aborted the scan'
+    else:
+        updated = False
+        meta = "No agents scan was aborted"
+    for agent_id in agent_ids:
+        context_entries.append({"Agent ID": agent_id, "Aborted": updated})
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Abort endpoint scan on provided Agent ID", context_entries, metadata=meta, removeNull=True
+        ),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Agent ID",
+        outputs=context_entries,
+        raw_response=aborted,
+    )
+
+
+def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Agent and Endpoint logs from Agents for provided agent IDs
+    """
+    context = {}
+
+    agent_ids = argToList(args.get("agent_ids"))
+    agent_logs = argToBoolean(args.get("agents_logs"))
+    customer_facing_logs = argToBoolean(args.get("customer_facing_logs"))
+    platform_logs = argToBoolean(args.get("platform_logs"))
+
+    response = client.endpoint_fetch_logs_request(agent_ids, agent_logs, customer_facing_logs, platform_logs)
+    agents_affected = response.get("affected", 0)
+    context = {"Affected": agents_affected}
+    if agents_affected > 0:
+        meta = "Fetch logs operation was successfully executed for the provided agent(s)."
+    else:
+        meta = "No entity was affected."
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True
+        ),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Affected",
+        outputs=context,
+        raw_response=response,
     )
 
 
@@ -2697,6 +2983,49 @@ def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field="ID",
         outputs=context_entries,
         raw_response=threat_summary,
+    )
+
+
+def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get threat analysis
+    """
+    context_entries = {}
+
+    threat_id = args.get("threat_id")
+
+    # Make request and get raw response
+    threat_analysis_response = client.get_threat_analysis_request(threat_id)
+
+    # Parse response into context & content entries
+    if threat_analysis_response:
+        agent_detection_info = threat_analysis_response.get("agentDetectionInfo", {})
+        agent_realtime_info = threat_analysis_response.get("agentRealtimeInfo", {})
+        threat_info = threat_analysis_response.get("threatInfo", {})
+
+        # Build multi-section markdown (each dict → single row table)
+        readable_output = ""
+        if agent_detection_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Detection Info", [agent_detection_info], removeNull=True)
+
+        if agent_realtime_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Realtime Info", [agent_realtime_info], removeNull=True)
+
+        if threat_info:
+            readable_output += tableToMarkdown("SentinelOne - Threat Info", [threat_info], removeNull=True)
+
+        context_entries = {
+            "AgentDetectionInfo": agent_detection_info,
+            "AgentRealtimeInfo": agent_realtime_info,
+            "ThreatInfo": threat_info,
+        }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SentinelOne.Threat",
+        outputs_key_field="ThreatInfo.threatId",
+        outputs=context_entries,
+        raw_response=threat_analysis_response,
     )
 
 
@@ -4288,8 +4617,11 @@ def main():
             "sentinelone-fetch-threat-file": fetch_threat_file,
             "sentinelone-get-installed-applications": get_installed_applications,
             "sentinelone-initiate-endpoint-scan": initiate_endpoint_scan,
+            "sentinelone-abort-endpoint-scan": abort_endpoint_scan,
+            "sentinelone-endpoint-fetch-logs": endpoint_fetch_logs,
             "get-modified-remote-data": get_modified_remote_data_command,
             "update-remote-system": update_remote_system_command,
+            "sentinelone-run-powerquery": run_powerquery,
         },
         "2.0": {
             "sentinelone-mark-as-threat": mark_as_threat_command,
@@ -4298,6 +4630,7 @@ def main():
         },
         "2.1": {
             "sentinelone-threat-summary": get_threat_summary_command,
+            "sentinelone-threat-analysis": get_threat_analysis_command,
             "sentinelone-update-threats-verdict": update_threat_analyst_verdict,
             "sentinelone-update-alerts-verdict": update_alert_analyst_verdict,
             "sentinelone-create-star-rule": create_star_rule,
@@ -4314,6 +4647,7 @@ def main():
             "sentinelone-write-threat-note": write_threat_note,
             "sentinelone-get-threat-notes": get_threat_notes,
             "sentinelone-create-ioc": create_ioc,
+            "sentinelone-create-bulk-ioc": create_bulk_ioc,
             "sentinelone-delete-ioc": delete_ioc,
             "sentinelone-get-iocs": get_iocs,
             "sentinelone-create-power-query": create_power_query,
@@ -4330,6 +4664,7 @@ def main():
             "sentinelone-get-power-query-results": get_power_query_results,
             "sentinelone-list-installed-singularity-marketplace-applications": list_installed_singu_mark_apps_command,
             "sentinelone-get-service-users": get_service_users_command,
+            "sentinelone-threat-download-from-cloud": threat_download_from_cloud,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,

@@ -1,0 +1,522 @@
+id: MicrosoftGraphMailSingleUser-Test_dev
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: MicrosoftGraphMailSingleUser-Test_dev
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb381794-8090-42af-8f27-36055033be2b
+    type: start
+    task:
+      id: eb381794-8090-42af-8f27-36055033be2b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f97ad12f-82aa-4216-b0be-db4fd52dafba
+    type: regular
+    task:
+      id: f97ad12f-82aa-4216-b0be-db4fd52dafba
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: db3a8df4-9478-4326-843d-8c3080769725
+    type: regular
+    task:
+      id: db3a8df4-9478-4326-843d-8c3080769725
+      version: -1
+      name: List Folders
+      description: Returns the mail folder list directly under the root folder.
+      script: '|||msgraph-mail-list-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5b1984de-3d2e-4ded-bd66-ffc971e16290
+    type: regular
+    task:
+      id: 5b1984de-3d2e-4ded-bd66-ffc971e16290
+      version: -1
+      name: List Emails
+      description: Gets the properties of returned emails. Typically shows partial
+        results, use the "page_size" and "pages_to_pull" arguments to get all results.
+      script: '|||msgraph-mail-list-emails'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 21e68f13-c826-4ff7-a817-c69513f5a34c
+    type: regular
+    task:
+      id: 21e68f13-c826-4ff7-a817-c69513f5a34c
+      version: -1
+      name: List Rules
+      description: List email rules for a user's mailbox using Microsoft Graph API.
+      script: '|||msgraph-mail-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ee741ff5-4250-4ae2-a213-fca3ebfd5264
+    type: regular
+    task:
+      id: ee741ff5-4250-4ae2-a213-fca3ebfd5264
+      version: -1
+      name: Move Email to Folder
+      description: Moves a message to a different folder.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-move-email
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      destination_folder_id:
+        complex:
+          root: MSGraphMail.Folders
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      message_id:
+        complex:
+          root: MSGraphMail
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 568dee01-b927-4730-9f37-dfbf85be58d3
+    type: condition
+    task:
+      id: 568dee01-b927-4730-9f37-dfbf85be58d3
+      version: -1
+      name: Check Results for Moved Email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.MovedEmails.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MSGraphMail
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.MovedEmails.DestinationFolderID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MSGraphMail.Folders
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ba2044be-7e2a-4ae2-87e4-81c2fa8962dc
+    type: regular
+    task:
+      id: ba2044be-7e2a-4ae2-87e4-81c2fa8962dc
+      version: -1
+      name: 'Get Email as EML '
+      description: Retrieves an email message by message ID and uploads the content
+        as an EML file.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-get-email-as-eml
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      message_id:
+        complex:
+          root: MSGraphMail
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 45983f80-085c-44c2-82de-8f7e9a3c2d29
+    type: regular
+    task:
+      id: 45983f80-085c-44c2-82de-8f7e9a3c2d29
+      version: -1
+      name: Get Attachments
+      description: Gets an attachment from the email.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-get-attachment
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message_id:
+        complex:
+          root: MSGraphMail
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d51a6378-1633-4ddd-8ae1-62ed3263242f
+    type: regular
+    task:
+      id: d51a6378-1633-4ddd-8ae1-62ed3263242f
+      version: -1
+      name: Create Email Draft
+      description: Creates a draft message in the specified user's mailbox.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-create-draft
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      body:
+        simple: this is an email craft for tpb graph mail single user
+      subject:
+        simple: this is an email craft for tpb graph mail single user
+      to:
+        simple: testbox@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c87cba80-1253-481a-a254-0ec6292c04d1
+    type: regular
+    task:
+      id: c87cba80-1253-481a-a254-0ec6292c04d1
+      version: -1
+      name: Send Email Draft
+      description: Sends a draft email using Microsoft Graph.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-send-draft
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      draft_id:
+        simple: ${MicrosoftGraph.Draft.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ecce7d83-5316-4e78-ac3d-d4d3607a27e1
+    type: regular
+    task:
+      id: ecce7d83-5316-4e78-ac3d-d4d3607a27e1
+      version: -1
+      name: Update Email Status to Unread
+      description: Update the status of an email to read / unread.
+      script: Microsoft Graph Mail Single User|||msgraph-update-email-status
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message_ids:
+        complex:
+          root: MSGraphMail
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      status:
+        simple: Unread
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0ac2d4fb-8846-4b03-a3ae-77811cce879c
+    type: regular
+    task:
+      id: 0ac2d4fb-8846-4b03-a3ae-77811cce879c
+      version: -1
+      name: Get Rule
+      description: Get details of a specific email rule by ID for a user's mailbox
+        using Microsoft Graph API.
+      script: Microsoft Graph Mail Single User|||msgraph-mail-get-rule
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Mail Single User
+    scriptarguments:
+      rule_id:
+        complex:
+          root: MSGraphMail.Rule
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1985,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

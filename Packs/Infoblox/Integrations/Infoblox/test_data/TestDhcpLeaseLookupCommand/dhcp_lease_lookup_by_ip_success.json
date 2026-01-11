@@ -1,0 +1,26 @@
+{
+    "result": [
+        {
+            "_ref": "lease/234:0.0.0.3/default",
+            "address": "0.0.0.3",
+            "binding_state": "ACTIVE",
+            "client_hostname": "CE",
+            "cltt": 1757399758,
+            "ends": 1757442958,
+            "fingerprint": "Ubuntu/Debian 5/Knoppix 6",
+            "hardware": "00:00:00:00:00:03",
+            "ipv6_prefix_bits": 0,
+            "is_invalid_mac": false,
+            "network": "0.0.0.0/20",
+            "network_view": "default",
+            "never_ends": false,
+            "never_starts": false,
+            "next_binding_state": "FREE",
+            "protocol": "IPV4",
+            "served_by": "0.0.0.2",
+            "server_host_name": "infoblox.localdomain",
+            "starts": 1757399758,
+            "uid": "002"
+        }
+    ]
+}

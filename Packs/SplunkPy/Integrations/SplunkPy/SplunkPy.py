@@ -23,6 +23,7 @@ OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xm
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DAYLIGHT_SAVING_TIME_DELTA = timedelta(hours=1)
 DEFAULT_ASSET_ENRICH_TABLES = "asset_lookup_by_str,asset_lookup_by_cidr"
 DEFAULT_IDENTITY_ENRICH_TABLE = "identity_lookup_expanded"
 VERIFY_CERTIFICATE = not bool(params.get("unsecure"))
@@ -336,7 +337,11 @@ def remove_irrelevant_incident_ids(
             # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
             # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
             incident_window_end_datetime = datetime.strptime(incident_occurred_time.get("occurred_time", ""), SPLUNK_TIME_FORMAT)
-            if incident_window_end_datetime >= window_start_datetime:
+
+            # We subtract DAYLIGHT_SAVING_TIME_DELTA to account for daylight saving time changes.
+            # This prevents duplicate incidents that may occur when the clock shifts,
+            # ensuring incidents remain in the cache during the transition period.
+            if incident_window_end_datetime >= window_start_datetime - DAYLIGHT_SAVING_TIME_DELTA:
                 # We keep the incident, since it is still in the fetch window
                 extensive_log(
                     f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}"
@@ -425,6 +430,8 @@ def build_fetch_query(params):
             field_trimmed = field.strip()
             fetch_query = f"{fetch_query} | eval {field_trimmed}={field_trimmed}"
 
+    if "| expandtoken" not in fetch_query:
+        demisto.info('**WARNING**: Could not find "expandtoken" in fetch query.')
     return fetch_query
 
 
@@ -1234,7 +1241,24 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
-    if drilldown_search := notable_data.get("drilldown_search"):
+    fill_null_value = None
+    fetch_query = demisto.params().get("fetchQuery", "")
+
+    # --- Extract fillnull value if present ---
+    # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
+    match = re.search(r'fillnull\s+value\s*=\s*("[^"]*"|\'[^\']*\'|\S+)', fetch_query)
+    if match:
+        raw_value = match.group(1)
+
+        # Strip quotes if needed
+        if (raw_value.startswith('"') and raw_value.endswith('"')) or (raw_value.startswith("'") and raw_value.endswith("'")):
+            raw_value = raw_value[1:-1]
+
+        fill_null_value = raw_value
+        demisto.info(f"Found fillnull command in drilldown search with value: {fill_null_value}")
+
+    drilldown_search = notable_data.get("drilldown_search")
+    if drilldown_search and drilldown_search != fill_null_value:
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
     if drilldown_search := notable_data.get("drilldown_searches", []):
@@ -1245,6 +1269,18 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a dict/list of the search data in a JSON string representation.
             return parse_drilldown_searches([drilldown_search])
     return []
+
+
+def earliest_time_exists_in_query(query: str) -> bool:
+    """
+    Returns True if the query contains 'earliest=' or 'earliest ='
+    (any amount of whitespace around the equals sign).
+    """
+    if query is None:
+        return False
+
+    pattern = r"earliest\s*=\s*"
+    return re.search(pattern, query) is not None
 
 
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
@@ -1270,6 +1306,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         for i in range(total_searches):
             # Iterates over the drilldown searches of the given notable to enrich each one of them
             search = searches[i]
+            demisto.debug(f"notable drilldown search = {search}")
             demisto.debug(f"Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}")
 
             if isinstance(search, dict):
@@ -1299,7 +1336,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if searchable_query := build_drilldown_search(notable_data, query_search, raw_dict):
                 demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
 
-                if earliest_offset and latest_offset:
+                if (earliest_offset and latest_offset) or earliest_time_exists_in_query(searchable_query):
                     kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                     if latest_offset:
                         kwargs["latest_time"] = latest_offset
@@ -3361,12 +3398,39 @@ def parse_time_to_minutes():
     return None
 
 
-def splunk_get_indexes_command(service: client.Service):
-    indexes = service.indexes
+def splunk_get_indexes_command(service: client.Service, app: str = "-"):
+    search_query = f"""| rest "/servicesNS/nobody/{app}/data/indexes/?count=-1&offset=0"
+    | eval name=title, count=totalEventCount
+    | table name, count"""
+
     indexesNames = []
-    for index in indexes:
-        index_json = {"name": index.name, "count": index["totalEventCount"]}
-        indexesNames.append(index_json)
+
+    # Try the first approach: REST API query
+    try:
+        demisto.debug("Attempting to get indexes using REST API query approach")
+        for item in results.JSONResultsReader(service.jobs.oneshot(query=search_query, output_mode=OUTPUT_MODE_JSON)):
+            if handle_message(item):
+                continue
+            indexesNames.append(item)
+        demisto.debug(f"Successfully retrieved {len(indexesNames)} indexes using REST API query approach")
+    except Exception as e:
+        # Log the error and fall back to the second approach
+        demisto.error(f"Failed to get indexes using REST API query approach: {e!s}")
+        demisto.debug("Falling back to direct API approach using service.indexes")
+
+        try:
+            # Second approach: Direct API using service.indexes
+            indexes = service.indexes
+            for index in indexes:
+                index_json = {"name": index.name, "count": index["totalEventCount"]}
+                indexesNames.append(index_json)
+            demisto.debug(f"Successfully retrieved {len(indexesNames)} indexes using direct API approach")
+        except Exception as fallback_error:
+            demisto.error(f"Failed to get indexes using direct API approach: {fallback_error!s}")
+            raise DemistoException(
+                f"Failed to retrieve indexes using both methods. " f"REST API error: {e!s}. Direct API error: {fallback_error!s}"
+            )
+
     return_results(
         CommandResults(
             content_format=EntryFormat.JSON,
@@ -4031,7 +4095,7 @@ def main():  # pragma: no cover
     elif command == "splunk-results":
         splunk_results_command(service, args)
     elif command == "splunk-get-indexes":
-        splunk_get_indexes_command(service)
+        splunk_get_indexes_command(service, app=connection_args.get("app", "-"))
     elif command == "fetch-incidents":
         demisto.info("########### FETCH #############")
         fetch_incidents(service, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
