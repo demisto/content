@@ -9,8 +9,17 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Alerts",
+        "Security",
+        "Threat Intelligence Management",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Network Security",
+        "Threat Intelligence Management",
+        "Asset Management"
+    ],
     "keywords": [
         "Attack Surface",
         "Digital Risk",
