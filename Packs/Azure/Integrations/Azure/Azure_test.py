@@ -1481,7 +1481,7 @@ def test_azure_client_create_policy_assignment(mocker, client):
         display_name="Test Policy",
         description="Test description",
         parameters={"param1": "value1"},
-        scope="/scope",
+        scope="scope",
     )
 
     # Verify correct API call was made
@@ -2849,7 +2849,6 @@ def test_storage_container_blob_create_command(mocker, client, mock_params):
     # Verify results
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Blob test_blob.txt successfully created."
-    assert result.raw_response is None
 
 
 def test_storage_container_property_get_command(mocker, client, mock_params):

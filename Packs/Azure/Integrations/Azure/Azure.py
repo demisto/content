@@ -34,7 +34,7 @@ SCOPE_BY_CONNECTION = {
     "Client Credentials": "https://management.azure.com/.default",
 }
 DEFAULT_SCOPE = "https://management.azure.com/.default"
-DEFAULT_RESOURCE = "https://management.azure.com"
+DEFAULT_RESOURCE = "https://management.azure.com/"
 STORAGE_SCOPE = "https://storage.azure.com/.default"
 STORAGE_RESOURCE = "https://storage.azure.com/"
 
@@ -1056,7 +1056,7 @@ class AzureClient:
             dict: The full response from the Azure policy assignment creation API.
         """
         # subscription_id is required as argument for token creation.
-        full_url = f"{DEFAULT_RESOURCE}/{scope}/providers/Microsoft.Authorization/policyAssignments/{name}"
+        full_url = f"{DEFAULT_RESOURCE}{scope}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
         data = {
             "properties": {
@@ -4724,7 +4724,7 @@ def switch_to_gov_account() -> None:
         "Client Credentials": "https://management.usgovcloudapi.net/.default",
     }
     DEFAULT_SCOPE = "https://management.usgovcloudapi.net/.default"
-    DEFAULT_RESOURCE = "https://management.usgovcloudapi.net"
+    DEFAULT_RESOURCE = "https://management.usgovcloudapi.net/"
     PREFIX_URL_AZURE = "https://management.usgovcloudapi.net/subscriptions/"
     PREFIX_URL_MS_GRAPH = "https://graph.microsoft.us/v1.0"
 
