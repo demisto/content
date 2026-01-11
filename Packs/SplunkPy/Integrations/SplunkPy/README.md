@@ -1338,4 +1338,9 @@ See [here](#resetting-the-enriching-fetch-mechanism).
 
 ### Large Search Results
 
-Commands that return a large number of results (such as `splunk-search`) may cause issues in playbooks. To avoid this, we recommend limiting the number of results. A limit of 30,000 results is suggested, depending on the size of the data. You can achieve this by using the `event_limit` argument (where available) or by appending `| head 30000` to your Splunk query.
+Commands that return large data (such as `splunk-search`) can cause performance issues in playbooks.
+
+**Recommendation**: Limit results to approximately **30,000** events, depending on the data size. You can do this through one of the following:
+
+- Use the `event_limit` argument (where available).
+- Append `| head 30000` directly to your Splunk query.
