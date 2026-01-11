@@ -1,5 +1,5 @@
 Github logs event collector integration for Cortex XSIAM.
-This integration was integrated and tested with Github REST API V3
+This integration was integrated and tested with Github REST API version `2022-11-28`.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -8,12 +8,16 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log') |  | True |
-| API Key |  | True |
+| API Token |  | True |
 | Number of incidents to fetch per fetch. |  | False |
 | First fetch time interval |  | False |
 | The event types to include. | web - returns web \(non-Git\) events, git - returns Git events, all - returns both web and Git events. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
+
+## Permissions
+
+To fetch audit logs, ensure the API Token has the `read:audit_log` permission scope.
 
 ## Commands
 

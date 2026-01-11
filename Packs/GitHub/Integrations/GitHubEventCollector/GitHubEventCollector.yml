@@ -17,7 +17,7 @@ configuration:
   required: true
   section: Connect
 - display: ""
-  displaypassword: API Key
+  displaypassword: API Token
   name: auth_credendtials
   type: 9
   required: true
