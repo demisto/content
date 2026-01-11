@@ -1117,4 +1117,4 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
     assert result is False
     debug_call_args = demisto.debug.call_args[0][0]
     expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
-    assert  expected_debug_log == debug_call_args
+    assert expected_debug_log == debug_call_args
