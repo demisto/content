@@ -1,4 +1,5 @@
 This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script gathers CVE reputation data from multiple integrations and returns a
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Used In
 

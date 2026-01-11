@@ -1,4 +1,5 @@
 category: Network Security
+provider: A10 Networks
 commonfields:
   id: ThreatX
   version: -1
@@ -179,7 +180,7 @@ script:
     - description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
       name: entity_id
       required: true
-    - description: Contents of the note
+    - description: Contents of the note.
       name: message
       required: true
     description: 'Add a new note to the entity. For example: !threatx-add-entity-note entity_id=566056709695514809 message="test note"'
