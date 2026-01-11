@@ -1,0 +1,404 @@
+import demistomock as demisto
+from CommonServerPython import *
+from typing import Any
+
+''' CONSTANTS '''
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+VENDOR = 'beyondtrust'
+PRODUCT = 'pm_cloud'
+DEFAULT_LIMIT = 1000
+DEFAULT_PAGE_SIZE = 200
+
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    """Client class to interact with the service API
+
+    Args:
+        base_url (str): The base URL of the service.
+        client_id (str): The client ID for authentication.
+        client_secret (str): The client secret for authentication.
+        verify (bool): Whether to verify the SSL certificate.
+        proxy (bool): Whether to use a proxy.
+    """
+
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.token = None
+
+    def get_token(self):
+        """Retrieves the access token from the service."""
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        # The token endpoint is /oauth/connect/token relative to the base URL, but the base URL for API calls
+        # might be different or the same. Based on documentation:
+        # https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/oauth/connect/token
+        # https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/management-api/v3/...
+        # So we can use the base URL.
+        token_url = '/oauth/connect/token'
+
+        response = self._http_request(
+            method='POST',
+            url_suffix=token_url,
+            data=data,
+            headers=headers,
+            resp_type='json'
+        )
+        return response.get('access_token')
+
+    def _http_request(self, method: str, url_suffix: str = '', params: dict | None = None,  # type: ignore[override]
+                      data: dict | None = None, headers: dict | None = None, resp_type: str = 'json',
+                      timeout: int = 10, **kwargs) -> Any:
+        """Wrapper for http_request to handle authentication and execution."""
+        if not headers:
+            headers = {}
+
+        if url_suffix != '/oauth/connect/token':
+            if not self.token:
+                self.token = self.get_token()
+            headers['Authorization'] = f'Bearer {self.token}'
+
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            data=data,
+            headers=headers,
+            resp_type=resp_type,
+            timeout=timeout,
+            **kwargs
+        )
+
+    def get_events(self, start_date: str, limit: int = DEFAULT_LIMIT) -> dict:
+        """Retrieves events from the service.
+
+        Args:
+            start_date (str): The start date to retrieve events from.
+            limit (int): The maximum number of events to retrieve.
+
+        Returns:
+            dict: The response from the service.
+        """
+        params = {
+            'StartDate': start_date,
+            'RecordSize': limit
+        }
+        return self._http_request(
+            method='GET',
+            url_suffix='/management-api/v3/Events/FromStartDate',
+            params=params
+        )
+
+    def get_audit_activity(self, page_size: int = DEFAULT_PAGE_SIZE, page_number: int = 1,
+                           filter_created_dates: list[str] | None = None,
+                           filter_created_selection_mode: str | None = None) -> dict:
+        """Retrieves audit activity from the service.
+
+        Args:
+            page_size (int): The number of records per page.
+            page_number (int): The page number to retrieve.
+            filter_created_dates (list[str]): The dates to filter by.
+            filter_created_selection_mode (str): The selection mode for the dates.
+
+        Returns:
+            dict: The response from the service.
+        """
+        params: dict[str, Any] = {
+            'Pagination.PageSize': page_size,
+            'Pagination.PageNumber': page_number
+        }
+        if filter_created_dates:
+            params['Filter.Created.Dates'] = filter_created_dates
+        if filter_created_selection_mode:
+            params['Filter.Created.SelectionMode'] = filter_created_selection_mode
+
+        return self._http_request(
+            method='GET',
+            url_suffix='/management-api/v3/ActivityAudits/Details',
+            params=params
+        )
+
+
+''' HELPER FUNCTIONS '''
+
+
+def get_dedup_key(event: dict) -> str:
+    """Generates a deduplication key for an event.
+
+    Args:
+        event (dict): The event to generate the key for.
+
+    Returns:
+        str: The deduplication key.
+    """
+    # For Events, we can use the 'id' field if available, or a combination of fields.
+    # Based on documentation, 'id' seems available in both event types.
+    if 'id' in event:
+        return str(event['id'])
+    # Fallback to hashing the event content if no ID is present (unlikely based on docs but good practice)
+    return str(hash(json.dumps(event, sort_keys=True)))
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client) -> str:
+    """Tests API connectivity.
+
+    Args:
+        client (Client): The client to use.
+
+    Returns:
+        str: 'ok' if the test passed, anything else otherwise.
+    """
+    try:
+        client.get_token()
+        return 'ok'
+    except Exception as e:
+        return f'Failed to connect to the service: {e}'
+
+
+def get_events_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves events from the service.
+
+    Args:
+        client (Client): The client to use.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    start_date = args.get('start_date')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
+
+    if not start_date:
+        # Default to 1 hour ago if not provided
+        start_date = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(DATE_FORMAT)
+
+    response = client.get_events(start_date, limit)
+    events = response.get('events', [])
+
+    return CommandResults(
+        outputs_prefix='BeyondTrust.Event',
+        outputs_key_field='id',
+        outputs=events,
+        raw_response=response
+    )
+
+
+def get_audit_activity_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves audit activity from the service.
+
+    Args:
+        client (Client): The client to use.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
+    page_number = arg_to_number(args.get('page_number', 1)) or 1
+    filter_created_dates = argToList(args.get('filter_created_dates'))
+    filter_created_selection_mode = args.get('filter_created_selection_mode')
+
+    response = client.get_audit_activity(page_size, page_number, filter_created_dates,
+                                         filter_created_selection_mode)
+    audits = response.get('data', [])
+
+    return CommandResults(
+        outputs_prefix='BeyondTrust.Audit',
+        outputs_key_field='id',
+        outputs=audits,
+        raw_response=response
+    )
+
+
+def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: int,
+                 events_types_to_fetch: list[str]) -> tuple[dict, list[dict]]:
+    """Fetches events from the service.
+
+    Args:
+        client (Client): The client to use.
+        last_run (dict): The last run context.
+        first_fetch (str): The first fetch time.
+        max_fetch (int): The maximum number of events to fetch.
+        events_types_to_fetch (list[str]): The types of events to fetch.
+
+    Returns:
+        tuple[dict, list[dict]]: The next run context and the fetched events.
+    """
+    events = []
+    next_run = last_run.copy()
+
+    # Handle Events
+    if 'Events' in events_types_to_fetch:
+        last_event_time_str = last_run.get('last_event_time')
+        if not last_event_time_str:
+            last_event_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
+        else:
+            last_event_time = dateparser.parse(last_event_time_str).replace(tzinfo=timezone.utc)  # type: ignore
+
+        # Fetch events
+        # The API takes StartDate. We should probably add a small buffer or rely on the API to handle >=
+        # The API returns events *from* the start date.
+        # To avoid duplicates if the API is inclusive, we might need to filter locally or handle overlap.
+        # However, for simplicity and standard practice, we pass the last timestamp.
+
+        # We need to format the date as required by the API: ISO 8601
+        start_date_str = last_event_time.strftime(DATE_FORMAT)
+
+        response = client.get_events(start_date_str, max_fetch)
+        fetched_events = response.get('events', [])
+
+        for event in fetched_events:
+            # Add fields for XSIAM
+            event['_time'] = event.get('created') or event.get('@timestamp')
+            event['source_log_type'] = 'events'
+            event['vendor'] = VENDOR
+            event['product'] = PRODUCT
+
+            # Update last_event_time if this event is newer
+            event_time = dateparser.parse(event['_time']).replace(tzinfo=timezone.utc)  # type: ignore
+            if event_time > last_event_time:
+                last_event_time = event_time
+
+        events.extend(fetched_events)
+        next_run['last_event_time'] = last_event_time.strftime(DATE_FORMAT)
+
+    # Handle Activity Audits
+    if 'Activity Audits' in events_types_to_fetch:
+        last_audit_time_str = last_run.get('last_audit_time')
+        if not last_audit_time_str:
+            last_audit_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
+        else:
+            last_audit_time = dateparser.parse(last_audit_time_str).replace(tzinfo=timezone.utc)  # type: ignore
+
+        # Activity Audits API uses pagination and filtering.
+        # We can filter by Created Date Range.
+        # To fetch new events, we can set the range from last_audit_time to now.
+        now = datetime.now(timezone.utc)
+
+        # We need to fetch pages until we get all events in the range or hit max_fetch
+        # Note: The API documentation says "Filter.Created.Dates: array of date-times".
+        # And "Filter.Created.SelectionMode: Range".
+        # This implies we need to provide two dates for a range.
+
+        start_date_str = last_audit_time.strftime('%Y-%m-%d %H:%M:%S.%f')
+        end_date_str = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+
+        page_number = 1
+        total_fetched_audits = 0
+
+        while True:
+            # Calculate remaining limit for this cycle
+            remaining_limit = max_fetch - total_fetched_audits
+            if remaining_limit <= 0:
+                break
+
+            current_page_size = min(DEFAULT_PAGE_SIZE, remaining_limit)
+
+            response = client.get_audit_activity(
+                page_size=current_page_size,
+                page_number=page_number,
+                filter_created_dates=[start_date_str, end_date_str],
+                filter_created_selection_mode='Range'
+            )
+
+            fetched_audits = response.get('data', [])
+            if not fetched_audits:
+                break
+
+            for audit in fetched_audits:
+                # Add fields for XSIAM
+                audit['_time'] = audit.get('created')
+                audit['source_log_type'] = 'activity_audits'
+                audit['vendor'] = VENDOR
+                audit['product'] = PRODUCT
+
+                # Update last_audit_time if this audit is newer
+                audit_time = dateparser.parse(audit['_time']).replace(tzinfo=timezone.utc)  # type: ignore
+                if audit_time > last_audit_time:
+                    last_audit_time = audit_time
+
+            events.extend(fetched_audits)
+            total_fetched_audits += len(fetched_audits)
+
+            # Check if we have more pages
+            # The response has "pageCount" and "totalRecordCount"
+            if page_number >= response.get('pageCount', 0):
+                break
+
+            page_number += 1
+
+        next_run['last_audit_time'] = last_audit_time.strftime(DATE_FORMAT)
+
+    return next_run, events
+
+
+''' MAIN FUNCTION '''
+
+
+def main():
+    """Main function to handle the command execution."""
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    base_url = params.get('url')
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    client = Client(
+        base_url=base_url,
+        client_id=client_id,
+        client_secret=client_secret,
+        verify=verify,
+        proxy=proxy
+    )
+
+    try:
+        if command == 'test-module':
+            return_results(test_module(client))
+
+        elif command == 'beyondtrust-pm-cloud-get-events':
+            return_results(get_events_command(client, args))
+
+        elif command == 'beyondtrust-pm-cloud-get-audit-activity':
+            return_results(get_audit_activity_command(client, args))
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            first_fetch = params.get('first_fetch', '3 days')
+            max_fetch = arg_to_number(params.get('max_fetch', 6000)) or 6000
+            events_types_to_fetch = argToList(params.get('events_types_to_fetch', 'Activity Audits,Events'))
+
+            next_run, events = fetch_events(client, last_run, first_fetch, max_fetch,
+                                            events_types_to_fetch)
+
+            # Deduplicate events
+            # We use a dictionary to deduplicate by ID (or hash)
+            # This is important because we might fetch overlapping ranges or the same event in multiple calls
+            deduped_events = {get_dedup_key(event): event for event in events}
+            final_events = list(deduped_events.values())
+
+            demisto.setLastRun(next_run)
+            demisto.sendEvents(final_events)  # type: ignore
+
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

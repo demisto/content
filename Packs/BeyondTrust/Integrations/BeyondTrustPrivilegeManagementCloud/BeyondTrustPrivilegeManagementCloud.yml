@@ -1,0 +1,125 @@
+commonfields:
+  id: BeyondTrust Privilege Management Cloud
+  version: -1
+name: BeyondTrust Privilege Management Cloud
+display: BeyondTrust Privilege Management Cloud
+category: Endpoint
+description: BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs.
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+  section: Connect
+  help: "The server URL, e.g. https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com"
+- display: Client ID
+  name: client_id
+  defaultvalue: ""
+  type: 0
+  required: true
+  section: Connect
+- display: Client Secret
+  name: client_secret
+  defaultvalue: ""
+  type: 4
+  required: true
+  section: Connect
+- display: Events types to fetch
+  name: events_types_to_fetch
+  defaultvalue: Activity Audits,Events
+  type: 16
+  required: false
+  section: Connect
+  options:
+  - Activity Audits
+  - Events
+  - Activity Audits,Events
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch events
+  name: isFetch
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Collect
+- display: Maximum number of audit events (per type)
+  name: max_fetch
+  defaultvalue: "6000"
+  type: 0
+  required: false
+  section: Collect
+  help: Maximum number of events to fetch per fetch cycle.
+- display: First fetch timestamp
+  name: first_fetch
+  defaultvalue: "3 days"
+  type: 0
+  required: false
+  section: Collect
+  help: The time from which to fetch events.
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  runonce: false
+  commands:
+  - name: beyondtrust-pm-cloud-get-events
+    arguments:
+    - name: start_date
+      required: false
+      description: "Start Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z"
+    - name: limit
+      required: false
+      description: "Maximum records that can be returned. Min size: 1, Max size: 1000."
+      defaultValue: "50"
+    description: Retrieves the list of events by start date.
+    outputs:
+    - contextPath: BeyondTrust.Event.id
+      description: The ID of the event.
+      type: String
+    - contextPath: BeyondTrust.Event.created
+      description: The creation time of the event.
+      type: Date
+  - name: beyondtrust-pm-cloud-get-audit-activity
+    arguments:
+    - name: page_size
+      required: false
+      description: "The number of records per page. Shouldn't exceed 200."
+      defaultValue: "50"
+    - name: page_number
+      required: false
+      description: The page number to retrieve from results.
+      defaultValue: "1"
+    - name: filter_created_dates
+      required: false
+      description: "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+    - name: filter_created_selection_mode
+      required: false
+      description: The selection mode of date criteria e.g. single, multiple, range.
+      options:
+      - Single
+      - Multiple
+      - Range
+    description: Retrieves list of Details of Activity Audits.
+    outputs:
+    - contextPath: BeyondTrust.Audit.id
+      description: The ID of the audit.
+      type: String
+    - contextPath: BeyondTrust.Audit.created
+      description: The creation time of the audit.
+      type: Date
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
