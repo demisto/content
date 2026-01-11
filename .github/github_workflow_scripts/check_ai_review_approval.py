@@ -102,6 +102,7 @@ def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: 
     for review in reviews:
         author_login = review.get("author", {}).get("login")
         body = review.get("body", "")
+        print(f"Current comment body: {body}")
 
         if (author_login == bot_username) and (required_text in body):
             bot_review_found = True
@@ -119,7 +120,7 @@ def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
-    print(f"🔍 Checking PR {pr_number} via GraphQL...")
+    print(f"Checking PR {pr_number} via GraphQL...")
 
     pr_data = fetch_pr_data(REPO_OWNER, REPO_NAME, pr_number, github_token)
 
