@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import demistomock as demisto
@@ -10,6 +10,9 @@ import httpx
 import pytest
 import respx
 from httpx import Response
+
+# Python 3.8/3.9 compatibility: use timezone.utc instead of UTC
+UTC = timezone.utc
 
 from ContentClientApiModule import (
     ContentClient,
@@ -1094,15 +1097,25 @@ def test_diagnostic_mode_non_json_response():
     client.close()
 
 
+@respx.mock
 def test_close_with_exception(mocker):
     """Test that close() handles exceptions gracefully."""
-    client = ContentClient(base_url="https://api.example.com")
+    # First make a request to initialize the client
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
     
+    client = ContentClient(base_url="https://api.example.com")
+    client.get("/v1/data")  # This initializes the async client
+    
+    # Now the client should have an async client to close
     # Mock aclose to raise exception
     async def mock_aclose():
         raise Exception("Close failed")
     
-    mocker.patch.object(client._client, "aclose", side_effect=mock_aclose)
+    # Get the actual async client that was created
+    async_client = client._get_async_client()
+    mocker.patch.object(async_client, "aclose", side_effect=mock_aclose)
     
     # Should not raise exception
     client.close()
@@ -1320,8 +1333,7 @@ async def test_token_bucket_rate_limiter_zero_rate():
         await limiter.acquire()
 
 
-@pytest.mark.asyncio
-async def test_token_bucket_refill_no_time_elapsed():
+def test_token_bucket_refill_no_time_elapsed():
     """Test TokenBucketRateLimiter refill when no time has elapsed."""
     import time
     
@@ -1333,7 +1345,7 @@ async def test_token_bucket_refill_no_time_elapsed():
     
     # This should not add tokens since delta <= 0
     initial_tokens = limiter._tokens
-    await limiter._refill_locked()
+    limiter._refill_locked()  # Now synchronous, no await needed
     assert limiter._tokens == initial_tokens
 
 
@@ -1700,7 +1712,7 @@ def test_content_client_delete_method():
 @respx.mock
 def test_content_client_metrics_property():
     """Test ContentClient metrics property."""
-    route = respx.get("https://api.example.com/v1/data").mock(
+    respx.get("https://api.example.com/v1/data").mock(
         return_value=Response(200, json={"result": "success"})
     )
     
@@ -2079,3 +2091,366 @@ def test_content_client_diagnostic_mode_http_error():
     assert trace.response_status == 400
     
     client.close()
+
+
+# =============================================================================
+# Sequential Synchronous Request Tests
+# =============================================================================
+
+
+@respx.mock
+def test_sequential_sync_requests():
+    """Test that multiple sequential synchronous requests work correctly.
+    
+    This tests the fix for httpx.AsyncClient reuse across event loops.
+    Each call to request_sync creates a new event loop, so the client
+    must handle this correctly.
+    """
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Make multiple sequential synchronous requests
+    for i in range(3):
+        result = client._http_request("GET", "/v1/data", resp_type="json")
+        assert result == {"result": "success"}
+    
+    assert route.call_count == 3
+    client.close()
+
+
+@respx.mock
+def test_sequential_sync_requests_with_different_endpoints():
+    """Test sequential sync requests to different endpoints."""
+    route1 = respx.get("https://api.example.com/v1/users").mock(
+        return_value=Response(200, json={"users": []})
+    )
+    route2 = respx.get("https://api.example.com/v1/events").mock(
+        return_value=Response(200, json={"events": []})
+    )
+    route3 = respx.post("https://api.example.com/v1/data").mock(
+        return_value=Response(201, json={"created": True})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com", ok_codes=(200, 201))
+    
+    # Make sequential requests to different endpoints
+    result1 = client._http_request("GET", "/v1/users", resp_type="json")
+    assert result1 == {"users": []}
+    
+    result2 = client._http_request("GET", "/v1/events", resp_type="json")
+    assert result2 == {"events": []}
+    
+    result3 = client._http_request("POST", "/v1/data", json_data={"key": "value"}, resp_type="json")
+    assert result3 == {"created": True}
+    
+    assert route1.called
+    assert route2.called
+    assert route3.called
+    
+    client.close()
+
+
+@respx.mock
+def test_sequential_sync_requests_with_auth():
+    """Test sequential sync requests with OAuth2 authentication."""
+    # Mock token endpoint
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+    
+    # Mock API endpoint
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret"
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    # Make multiple sequential requests - token should be reused
+    for _ in range(3):
+        result = client._http_request("GET", "/v1/data", resp_type="json")
+        assert result == {"result": "success"}
+    
+    assert route.call_count == 3
+    client.close()
+
+
+@respx.mock
+def test_sequential_sync_requests_with_rate_limiter():
+    """Test sequential sync requests with rate limiting."""
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        rate_limiter=RateLimitPolicy(rate_per_second=100.0, burst=10)
+    )
+    
+    # Make multiple sequential requests
+    for _ in range(5):
+        result = client._http_request("GET", "/v1/data", resp_type="json")
+        assert result == {"result": "success"}
+    
+    client.close()
+
+
+@respx.mock
+def test_sequential_sync_requests_with_retries():
+    """Test sequential sync requests with retry logic."""
+    # First request fails, second succeeds
+    route = respx.get("https://api.example.com/v1/data").mock(
+        side_effect=[
+            httpx.ConnectError("Connection refused"),
+            Response(200, json={"result": "success"}),
+            Response(200, json={"result": "success"}),
+        ]
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        retry_policy=RetryPolicy(max_attempts=3, initial_delay=0.01, max_delay=0.02)
+    )
+    
+    # First request should retry and succeed
+    result1 = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result1 == {"result": "success"}
+    
+    # Second request should succeed immediately
+    result2 = client._http_request("GET", "/v1/data", resp_type="json")
+    assert result2 == {"result": "success"}
+    
+    # Verify the route was called 3 times (1 failure + 2 successes)
+    assert route.call_count == 3
+    
+    client.close()
+
+
+# =============================================================================
+# Circuit Breaker Half-Open State Tests
+# =============================================================================
+
+
+def test_circuit_breaker_half_open_state():
+    """Test circuit breaker enters half-open state after recovery timeout."""
+    import time
+    
+    policy = CircuitBreakerPolicy(failure_threshold=2, recovery_timeout=0.1)
+    breaker = CircuitBreaker(policy)
+    
+    # Record failures to open circuit
+    breaker.record_failure()
+    breaker.record_failure()
+    
+    # Circuit should be open
+    assert not breaker.can_execute()
+    
+    # Wait for recovery timeout
+    time.sleep(0.15)
+    
+    # First call should succeed (half-open, probe allowed)
+    assert breaker.can_execute()
+    
+    # Second call should fail (already in half-open, probe in progress)
+    assert not breaker.can_execute()
+
+
+def test_circuit_breaker_half_open_success_closes():
+    """Test circuit breaker closes after successful probe in half-open state."""
+    import time
+    
+    policy = CircuitBreakerPolicy(failure_threshold=2, recovery_timeout=0.1)
+    breaker = CircuitBreaker(policy)
+    
+    # Open the circuit
+    breaker.record_failure()
+    breaker.record_failure()
+    assert not breaker.can_execute()
+    
+    # Wait for recovery timeout
+    time.sleep(0.15)
+    
+    # Enter half-open state
+    assert breaker.can_execute()
+    
+    # Record success - should close the circuit
+    breaker.record_success()
+    
+    # Circuit should be fully closed now
+    assert breaker.can_execute()
+    assert breaker.can_execute()  # Multiple calls should work
+
+
+def test_circuit_breaker_half_open_failure_reopens():
+    """Test circuit breaker re-opens after failed probe in half-open state."""
+    import time
+    
+    policy = CircuitBreakerPolicy(failure_threshold=2, recovery_timeout=0.1)
+    breaker = CircuitBreaker(policy)
+    
+    # Open the circuit
+    breaker.record_failure()
+    breaker.record_failure()
+    assert not breaker.can_execute()
+    
+    # Wait for recovery timeout
+    time.sleep(0.15)
+    
+    # Enter half-open state
+    assert breaker.can_execute()
+    
+    # Record failure - should re-open the circuit
+    breaker.record_failure()
+    
+    # Circuit should be open again
+    assert not breaker.can_execute()
+
+
+# =============================================================================
+# Thread Safety Tests for Token Bucket Rate Limiter
+# =============================================================================
+
+
+def test_token_bucket_rate_limiter_thread_safety():
+    """Test TokenBucketRateLimiter is thread-safe."""
+    import threading
+    import asyncio
+    
+    policy = RateLimitPolicy(rate_per_second=100.0, burst=50)
+    limiter = TokenBucketRateLimiter(policy)
+    
+    errors = []
+    acquired_count = [0]
+    lock = threading.Lock()
+    
+    def acquire_tokens():
+        try:
+            for _ in range(10):
+                asyncio.run(limiter.acquire())
+                with lock:
+                    acquired_count[0] += 1
+        except Exception as e:
+            errors.append(e)
+    
+    threads = [threading.Thread(target=acquire_tokens) for _ in range(5)]
+    
+    for t in threads:
+        t.start()
+    
+    for t in threads:
+        t.join()
+    
+    # No errors should have occurred
+    assert len(errors) == 0
+    # All tokens should have been acquired
+    assert acquired_count[0] == 50
+
+
+# =============================================================================
+# OAuth2 Thread Safety Tests
+# =============================================================================
+
+
+@respx.mock
+def test_oauth2_concurrent_token_refresh():
+    """Test OAuth2 handler handles concurrent token refresh safely."""
+    import threading
+    
+    # Mock token endpoint - should only be called once due to locking
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+    
+    # Mock API endpoint
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token",
+        client_id="client",
+        client_secret="secret"
+    )
+    
+    client = ContentClient(
+        base_url="https://api.example.com",
+        auth_handler=handler
+    )
+    
+    errors = []
+    
+    def make_request():
+        try:
+            client._http_request("GET", "/v1/data", resp_type="json")
+        except Exception as e:
+            errors.append(e)
+    
+    # Start multiple threads that will all try to refresh the token
+    threads = [threading.Thread(target=make_request) for _ in range(5)]
+    
+    for t in threads:
+        t.start()
+    
+    for t in threads:
+        t.join()
+    
+    # No errors should have occurred
+    assert len(errors) == 0
+    
+    client.close()
+
+
+# =============================================================================
+# Context Store Thread Safety Tests
+# =============================================================================
+
+
+def test_context_store_thread_safety(mocker):
+    """Test ContentClientContextStore is thread-safe."""
+    import threading
+    
+    store = ContentClientContextStore("TestClient")
+    
+    # Track all writes
+    writes = []
+    write_lock = threading.Lock()
+    
+    def mock_set_context(value):
+        with write_lock:
+            writes.append(value.copy())
+    
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=mock_set_context)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    
+    errors = []
+    
+    def write_data(thread_id):
+        try:
+            for i in range(5):
+                store.write({"thread": thread_id, "iteration": i})
+        except Exception as e:
+            errors.append(e)
+    
+    threads = [threading.Thread(target=write_data, args=(i,)) for i in range(3)]
+    
+    for t in threads:
+        t.start()
+    
+    for t in threads:
+        t.join()
+    
+    # No errors should have occurred
+    assert len(errors) == 0
+    # All writes should have completed
+    assert len(writes) == 15  # 3 threads * 5 iterations

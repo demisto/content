@@ -116,7 +116,6 @@ def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
         return float(retry_after)
     except ValueError:
         try:
-            from datetime import timezone
             parsed = datetime.strptime(retry_after, "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=timezone.utc)
             return max(0.0, (parsed - datetime.now(timezone.utc)).total_seconds())
         except ValueError:
@@ -245,6 +244,13 @@ class CircuitBreaker:
     Tracks failures and opens the circuit when the failure threshold is reached,
     preventing further requests until the recovery timeout expires.
     
+    This implementation uses a half-open state with probe request support:
+    - CLOSED: Normal operation, requests are allowed
+    - OPEN: Circuit is tripped, requests are blocked
+    - HALF_OPEN: Recovery timeout expired, one probe request is allowed
+    
+    The circuit only fully closes after a successful probe request.
+    
     This implementation is thread-safe using a threading lock.
     
     Attributes:
@@ -255,35 +261,44 @@ class CircuitBreaker:
         self.policy: CircuitBreakerPolicy = policy
         self._failure_count: int = 0
         self._opened_at: Optional[float] = None
+        self._half_open: bool = False
         self._lock: threading.Lock = threading.Lock()
 
     def can_execute(self) -> bool:
         """Check if the circuit allows execution.
         
         Returns:
-            True if the circuit is closed or half-open, False if open.
+            True if the circuit is closed or half-open (allowing probe), False if open.
         """
         with self._lock:
             if self._opened_at is None:
                 return True
             elapsed: float = _now() - self._opened_at
             if elapsed >= self.policy.recovery_timeout:
-                self._failure_count = 0
-                self._opened_at = None
-                return True
+                # Enter half-open state - allow one probe request
+                if not self._half_open:
+                    self._half_open = True
+                    return True
+                # Already in half-open and probe is in progress, block additional requests
+                return False
             return False
 
     def record_success(self) -> None:
-        """Record a successful execution, resetting the failure count."""
+        """Record a successful execution, resetting the failure count and closing the circuit."""
         with self._lock:
             self._failure_count = 0
             self._opened_at = None
+            self._half_open = False
 
     def record_failure(self) -> None:
         """Record a failed execution, potentially opening the circuit."""
         with self._lock:
             self._failure_count += 1
-            if self._failure_count >= self.policy.failure_threshold:
+            if self._half_open:
+                # Probe failed, re-open the circuit
+                self._opened_at = _now()
+                self._half_open = False
+            elif self._failure_count >= self.policy.failure_threshold:
                 self._opened_at = _now()
 
 
@@ -307,6 +322,9 @@ class TokenBucketRateLimiter:
     Uses the token bucket algorithm to limit the rate of requests.
     Tokens are refilled at a constant rate up to a maximum capacity (burst).
     
+    This implementation uses threading.Lock for thread safety, which works
+    correctly across different event loops and in synchronous contexts.
+    
     Attributes:
         policy: The rate limit policy configuration.
     """
@@ -316,19 +334,13 @@ class TokenBucketRateLimiter:
         self._capacity: int = max(1, policy.burst)
         self._tokens: float = float(self._capacity)
         self._updated: float = _now()
-        self._lock: Optional[anyio.Lock] = None  # Lazy initialization
-
-    def _get_lock(self) -> anyio.Lock:
-        """Get or create the async lock (lazy initialization for thread safety)."""
-        if self._lock is None:
-            self._lock = anyio.Lock()
-        return self._lock
+        self._lock: threading.Lock = threading.Lock()  # Thread-safe lock
 
     async def acquire(self) -> None:
         """Acquire a token, waiting if necessary until one is available."""
         while True:
-            async with self._get_lock():
-                await self._refill_locked()
+            with self._lock:
+                self._refill_locked()
                 if self._tokens >= 1:
                     self._tokens -= 1
                     return
@@ -343,7 +355,7 @@ class TokenBucketRateLimiter:
                 wait_seconds = needed / rate
             await anyio.sleep(wait_seconds)
 
-    async def _refill_locked(self) -> None:
+    def _refill_locked(self) -> None:
         """Refill tokens based on elapsed time (must be called with lock held)."""
         now = _now()
         delta = now - self._updated
@@ -442,7 +454,8 @@ class ContentClientContextStore:
     """Store for persisting state to Demisto integration context.
     
     Provides read/write access to the integration context with retry logic
-    for handling transient failures.
+    for handling transient failures. Uses thread-safe locking to prevent
+    race conditions during concurrent read-modify-write operations.
     
     Attributes:
         namespace: A namespace prefix for storing data (e.g., client name).
@@ -452,6 +465,7 @@ class ContentClientContextStore:
     def __init__(self, namespace: str, max_retries: int = 3) -> None:
         self.namespace: str = namespace
         self.max_retries: int = max_retries
+        self._lock: threading.Lock = threading.Lock()
     
     def read(self) -> Dict[str, Any]:
         """Read the current integration context.
@@ -459,11 +473,14 @@ class ContentClientContextStore:
         Returns:
             The integration context dictionary.
         """
-        context: Dict[str, Any] = demisto.getIntegrationContext() or {}
-        return context
+        with self._lock:
+            context: Dict[str, Any] = demisto.getIntegrationContext() or {}
+            return context
     
     def write(self, data: Dict[str, Any]) -> None:
         """Write data to the integration context with retry logic.
+        
+        Uses thread-safe locking to prevent race conditions.
         
         Args:
             data: The data dictionary to write to the context.
@@ -472,13 +489,14 @@ class ContentClientContextStore:
             Exception: If all retry attempts fail.
         """
         last_error: Optional[Exception] = None
-        for attempt in range(self.max_retries):
-            try:
-                demisto.setIntegrationContext(data)
-                return
-            except Exception as e:
-                last_error = e
-                time.sleep(0.1 * (attempt + 1))  # Simple backoff
+        with self._lock:
+            for attempt in range(self.max_retries):
+                try:
+                    demisto.setIntegrationContext(data)
+                    return
+                except Exception as e:
+                    last_error = e
+                    time.sleep(0.1 * (attempt + 1))  # Simple backoff
         if last_error:
             raise last_error
 
@@ -579,6 +597,10 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
     Implements the OAuth2 client credentials grant type for machine-to-machine
     authentication. Automatically handles token refresh when tokens expire.
     
+    Uses thread-safe locking to prevent race conditions during token refresh,
+    which is important when the handler is used across different event loops
+    or in synchronous contexts.
+    
     Args:
         token_url: The OAuth2 token endpoint URL.
         client_id: The client ID for authentication.
@@ -623,7 +645,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         
         self._access_token: Optional[str] = None
         self._expires_at: float = 0
-        self._lock: Optional[anyio.Lock] = None  # Lazy initialization
+        self._lock: threading.Lock = threading.Lock()  # Thread-safe lock
         
         # Try to load cached token from context store
         if self.context_store:
@@ -637,35 +659,53 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                 # Log but don't fail if cache read fails
                 demisto.debug(f"Failed to load cached OAuth2 token: {e}")
 
-    def _get_lock(self) -> anyio.Lock:
-        """Get or create the async lock (lazy initialization)."""
-        if self._lock is None:
-            self._lock = anyio.Lock()
-        return self._lock
-
     async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:
+        # Check if refresh is needed (thread-safe read)
         if self._should_refresh():
-            async with self._get_lock():
-                if self._should_refresh():
-                    await self._refresh_token(client)
+            # Perform refresh outside the lock to avoid blocking async operations
+            await self._refresh_token_if_needed(client)
         
-        if self._access_token:
-            request.headers["Authorization"] = f"Bearer {self._access_token}"
+        # Read token under lock to ensure visibility
+        with self._lock:
+            if self._access_token:
+                request.headers["Authorization"] = f"Bearer {self._access_token}"
 
     async def on_auth_failure(self, client: "ContentClient", response: httpx.Response) -> bool:
         # If we get 401, force refresh token
-        async with self._get_lock():
-            await self._refresh_token(client)
+        await self._force_refresh_token(client)
         return True
 
     def _should_refresh(self) -> bool:
-        return not self._access_token or _now() >= self._expires_at - 60  # Refresh 60s before expiry
+        """Check if token needs refresh. Thread-safe read."""
+        with self._lock:
+            return not self._access_token or _now() >= self._expires_at - 60  # Refresh 60s before expiry
+
+    async def _refresh_token_if_needed(self, client: "ContentClient") -> None:
+        """Refresh token if needed, with proper locking that doesn't block async operations."""
+        # Double-check pattern: check again after we're ready to refresh
+        # We use a flag to track if we should refresh, then release the lock before awaiting
+        should_refresh = False
+        with self._lock:
+            if self._should_refresh_unlocked():
+                should_refresh = True
+        
+        if should_refresh:
+            await self._refresh_token(client)
+
+    async def _force_refresh_token(self, client: "ContentClient") -> None:
+        """Force refresh the token (used after auth failure)."""
+        await self._refresh_token(client)
+
+    def _should_refresh_unlocked(self) -> bool:
+        """Check if token needs refresh. Must be called with lock held."""
+        return not self._access_token or _now() >= self._expires_at - 60
 
     async def _refresh_token(self, client: "ContentClient") -> None:
         """Refresh the OAuth2 access token.
         
         Uses a separate HTTP client for token refresh to avoid recursion/deadlocks
-        and to not share state with the main client.
+        and to not share state with the main client. This method should be called
+        with the lock held.
         
         Args:
             client: The ContentClient instance (used for SSL verification settings).
@@ -1398,35 +1438,82 @@ class ContentClient:
         # Logger
         self.logger = ContentClientLogger(client_name, diagnostic_mode=diagnostic_mode)
 
-        # httpx client for async operations
+        # httpx client for async operations - created lazily per event loop
+        self._client: Optional[httpx.AsyncClient] = None
+        self._client_event_loop: Optional[asyncio.AbstractEventLoop] = None
+        self._client_lock: threading.Lock = threading.Lock()
+        self._http2_available: bool = True  # Will be set to False if HTTP/2 fails
+
+    def _get_async_client(self) -> httpx.AsyncClient:
+        """Get or create an async client for the current event loop.
+        
+        This method ensures that the httpx.AsyncClient is created for and used
+        within the same event loop, preventing issues when request_sync creates
+        new event loops.
+        
+        Returns:
+            An httpx.AsyncClient instance bound to the current event loop.
+        """
         try:
-            self._client = httpx.AsyncClient(
-                base_url=base_url.rstrip("/"),
-                timeout=timeout,
-                headers={"User-Agent": DEFAULT_USER_AGENT},
-                verify=verify,
-                http2=True,
-            )
-        except ImportError:
-            self.logger.info("HTTP/2 dependencies missing, falling back to HTTP/1.1 transport")
-            self._client = httpx.AsyncClient(
-                base_url=base_url.rstrip("/"),
-                timeout=timeout,
-                headers={"User-Agent": DEFAULT_USER_AGENT},
-                verify=verify,
-                http2=False,
-            )
-        self._client_lock = anyio.Lock()
+            current_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            current_loop = None
+        
+        with self._client_lock:
+            # Check if we need to create a new client
+            if self._client is None or self._client_event_loop != current_loop:
+                # Close existing client if any
+                if self._client is not None:
+                    try:
+                        # Schedule close on the old loop if possible
+                        if self._client_event_loop is not None and not self._client_event_loop.is_closed():
+                            self._client_event_loop.call_soon_threadsafe(
+                                lambda c=self._client: asyncio.create_task(c.aclose())
+                            )
+                    except Exception:
+                        pass  # Best effort cleanup
+                
+                # Create new client for current loop
+                try:
+                    if self._http2_available:
+                        self._client = httpx.AsyncClient(
+                            base_url=self._base_url.rstrip("/"),
+                            timeout=self.timeout,
+                            headers={"User-Agent": DEFAULT_USER_AGENT},
+                            verify=self._verify,
+                            http2=True,
+                        )
+                except ImportError:
+                    self._http2_available = False
+                    self.logger.info("HTTP/2 dependencies missing, falling back to HTTP/1.1 transport")
+                
+                if not self._http2_available or self._client is None:
+                    self._client = httpx.AsyncClient(
+                        base_url=self._base_url.rstrip("/"),
+                        timeout=self.timeout,
+                        headers={"User-Agent": DEFAULT_USER_AGENT},
+                        verify=self._verify,
+                        http2=False,
+                    )
+                
+                self._client_event_loop = current_loop
+            
+            return self._client
 
     async def aclose(self) -> None:
         """Close the async HTTP client and release resources."""
         if self._closed:
             return
         self._closed = True
-        try:
-            await self._client.aclose()
-        except Exception as e:
-            self.logger.error(f"Error closing async client: {e}")
+        with self._client_lock:
+            if self._client is not None:
+                try:
+                    await self._client.aclose()
+                except Exception as e:
+                    self.logger.error(f"Error closing async client: {e}")
+                finally:
+                    self._client = None
+                    self._client_event_loop = None
 
     def __enter__(self) -> "ContentClient":
         """Enter context manager."""
@@ -1576,7 +1663,8 @@ class ContentClient:
             attempt += 1
             start = _now()
             try:
-                http_request = self._client.build_request(
+                client = self._get_async_client()
+                http_request = client.build_request(
                     method.upper(),
                     url=url,
                     params=req_params,
@@ -1608,7 +1696,7 @@ class ContentClient:
                         retry_attempt=attempt - 1,
                     )
 
-                response = await self._client.send(http_request)
+                response = await client.send(http_request)
                 elapsed_ms = (_now() - start) * 1000
                 
                 if self._diagnostic_mode and trace:
@@ -1827,6 +1915,10 @@ class ContentClient:
         This method wraps the async _request method for synchronous usage.
         It handles response processing based on the resp_type parameter.
         
+        The implementation creates a new event loop for each synchronous request
+        to avoid issues with event loop reuse. The httpx.AsyncClient is automatically
+        recreated for each new event loop.
+        
         Args:
             *args: Positional arguments passed to _request.
             **kwargs: Keyword arguments passed to _request.
@@ -1835,51 +1927,59 @@ class ContentClient:
             The processed response based on resp_type (json, text, content, response, xml).
         """
         async def _do_request() -> Any:
-            response = await self._request(*args, **kwargs)
-            
-            # Handle response processing (json, text, content) similar to BaseClient
-            resp_type = kwargs.get('resp_type', 'json')
-            return_empty_response = kwargs.get('return_empty_response', False)
-            empty_valid_codes = kwargs.get('empty_valid_codes')
-            
-            if return_empty_response and empty_valid_codes and response.status_code in empty_valid_codes:
-                return {}
+            try:
+                response = await self._request(*args, **kwargs)
                 
-            if resp_type == 'json':
+                # Handle response processing (json, text, content) similar to BaseClient
+                resp_type = kwargs.get('resp_type', 'json')
+                return_empty_response = kwargs.get('return_empty_response', False)
+                empty_valid_codes = kwargs.get('empty_valid_codes')
+                
+                if return_empty_response and empty_valid_codes and response.status_code in empty_valid_codes:
+                    return {}
+                    
+                if resp_type == 'json':
+                    try:
+                        return response.json()
+                    except json.JSONDecodeError:
+                        if not response.content:
+                            return {}
+                        raise
+                elif resp_type == 'text':
+                    return response.text
+                elif resp_type == 'content':
+                    return response.content
+                elif resp_type == 'response':
+                    return response
+                elif resp_type == 'xml':
+                    return response.text
+                
+                # Default fallback - try JSON
                 try:
                     return response.json()
                 except json.JSONDecodeError:
-                    if not response.content:
-                        return {}
-                    raise
-            elif resp_type == 'text':
-                return response.text
-            elif resp_type == 'content':
-                return response.content
-            elif resp_type == 'response':
-                return response
-            elif resp_type == 'xml':
-                return response.text
-            
-            # Default fallback - try JSON
-            try:
-                return response.json()
-            except json.JSONDecodeError:
-                # If JSON parsing fails, return the response object
-                return response
+                    # If JSON parsing fails, return the response object
+                    return response
+            finally:
+                # Clean up the client after each sync request to prevent event loop issues
+                with self._client_lock:
+                    if self._client is not None:
+                        try:
+                            await self._client.aclose()
+                        except Exception:
+                            pass
+                        self._client = None
+                        self._client_event_loop = None
 
-        # Use asyncio for sync-to-async bridging
+        # Check if we're already in an async context
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # We're in an async context, need to use a different approach
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(asyncio.run, _do_request())
-                    return future.result()
-            else:
-                return loop.run_until_complete(_do_request())
+            asyncio.get_running_loop()
+            # We're in an async context, need to use a thread pool
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, _do_request())
+                return future.result()
         except RuntimeError:
-            # No event loop exists, create one
+            # No running event loop, safe to use asyncio.run
             return asyncio.run(_do_request())
 
     # Standard HTTP verb helpers

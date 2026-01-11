@@ -4,18 +4,18 @@
 
 ## Table of Contents
 
-- [Key Features](#-key-features)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Migration from BaseClient](#-migration-from-baseclient)
-- [Authentication Handlers](#-authentication-handlers)
-- [Resilience Policies](#-resilience-policies)
-- [Timeout Configuration](#-timeout-configuration)
-- [Error Handling](#-error-handling)
-- [Metrics & Diagnostics](#-metrics--diagnostics)
-- [State Management](#-state-management)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Migration from BaseClient](#migration-from-baseclient)
+- [Authentication Handlers](#authentication-handlers)
+- [Resilience Policies](#resilience-policies)
+- [Timeout Configuration](#timeout-configuration)
+- [Error Handling](#error-handling)
+- [Metrics & Diagnostics](#metrics--diagnostics)
+- [State Management](#state-management)
 - [Complete Integration Example](#-complete-integration-example)
-- [API Reference](#-api-reference)
+- [API Reference](#api-reference)
 
 ---
 
@@ -116,7 +116,32 @@ class MyClient(BaseClient):
         )
 ```
 
-### After (ContentClient)
+### After (ContentClient - Zero Changes)
+
+```python
+from ContentClientApiModule import ContentClient
+
+class MyClient(ContentClient):
+    def __init__(self, base_url, api_key, verify=True, proxy=False):
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"Authorization": f"Bearer {api_key}"}  # Works exactly like BaseClient
+        )
+    
+    def get_incidents(self, limit=50):
+        # Same method signature - no changes needed!
+        return self._http_request(
+            method="GET",
+            url_suffix="/incidents",
+            params={"limit": limit}
+        )
+```
+
+### After (ContentClient - With Enhanced Auth)
+
+Once migrated, you can optionally adopt enhanced features like built-in auth handlers:
 
 ```python
 from ContentClientApiModule import ContentClient, BearerTokenAuthHandler
@@ -127,7 +152,7 @@ class MyClient(ContentClient):
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            # Enhanced: Use built-in auth handler
+            # Optional enhancement: Use built-in auth handler
             auth_handler=BearerTokenAuthHandler(token=api_key)
         )
     
@@ -571,43 +596,49 @@ client = ContentClient(
 
 ## Timeout Configuration
 
-Configure granular timeout settings:
+Configure request timeout settings:
 
 ```python
-from ContentClientApiModule import ContentClient, TimeoutSettings
+from ContentClientApiModule import ContentClient
 
+# Simple timeout (recommended)
 client = ContentClient(
     base_url="https://api.example.com",
-    timeout=TimeoutSettings(
-        connect=10.0,        # Connection timeout in seconds (default: 10.0)
-        read=60.0,           # Read timeout in seconds (default: 60.0)
-        write=60.0,          # Write timeout in seconds (default: 60.0)
-        pool=60.0,           # Connection pool timeout (default: 60.0)
-        execution=300.0,     # Total execution timeout (default: None)
-        safety_buffer=30.0   # Buffer before execution timeout (default: 30.0)
-    )
+    timeout=60  # Timeout in seconds for all operations
 )
 
-# Quick timeouts for fast APIs
-fast_timeout = TimeoutSettings(
-    connect=5.0,
-    read=10.0,
-    write=10.0
-)
-
-# Long timeouts for slow APIs
-slow_timeout = TimeoutSettings(
-    connect=30.0,
-    read=300.0,
-    write=300.0
-)
-
-# Simple timeout (backward compatible)
+# Quick timeout for fast APIs
 client = ContentClient(
     base_url="https://api.example.com",
-    timeout=60  # Single value applies to all operations
+    timeout=10  # 10 second timeout
+)
+
+# Long timeout for slow APIs
+client = ContentClient(
+    base_url="https://api.example.com",
+    timeout=300  # 5 minute timeout
 )
 ```
+
+### TimeoutSettings (Advanced)
+
+For advanced use cases, the `TimeoutSettings` class provides granular control over different timeout phases. This is primarily used internally but can be useful for understanding timeout behavior:
+
+```python
+from ContentClientApiModule import TimeoutSettings
+
+# TimeoutSettings structure (for reference)
+timeout_config = TimeoutSettings(
+    connect=10.0,        # Connection timeout in seconds (default: 10.0)
+    read=60.0,           # Read timeout in seconds (default: 60.0)
+    write=60.0,          # Write timeout in seconds (default: 60.0)
+    pool=60.0,           # Connection pool timeout (default: 60.0)
+    execution=300.0,     # Total execution timeout (default: None)
+    safety_buffer=30.0   # Buffer before execution timeout (default: 30.0)
+)
+```
+
+> **Note:** The `timeout` parameter in `ContentClient` constructor accepts a `float` value representing seconds. The `TimeoutSettings` class is used internally for advanced timeout management.
 
 ---
 
@@ -1049,6 +1080,24 @@ def test_module(client: SecurityVendorClient) -> str:
         return f"Connection failed: {str(e)}"
 
 
+def convert_severity(severity: str) -> int:
+    """Convert vendor severity to XSOAR severity.
+    
+    Args:
+        severity: Vendor severity string (e.g., 'low', 'medium', 'high', 'critical').
+        
+    Returns:
+        XSOAR severity level (1-4).
+    """
+    severity_map = {
+        "low": 1,
+        "medium": 2,
+        "high": 3,
+        "critical": 4
+    }
+    return severity_map.get(severity.lower() if severity else "", 1)
+
+
 def fetch_incidents(client: SecurityVendorClient, max_fetch: int = 50) -> List[Dict]:
     """Fetch incidents for XSOAR."""
     alerts = client.get_alerts(severity="high", limit=max_fetch)
@@ -1128,10 +1177,10 @@ The main client class that extends `BaseClient` functionality.
 | `base_url` | `str` | Required | Base URL for the API |
 | `verify` | `bool` | `True` | Verify SSL certificates |
 | `proxy` | `bool` | `False` | Use system proxy settings |
-| `ok_codes` | `tuple` | `()` | HTTP status codes to consider successful |
+| `ok_codes` | `tuple` | `()` | HTTP status codes to consider successful (empty tuple means use standard HTTP success codes) |
 | `headers` | `Dict[str, str]` | `None` | Default headers for all requests |
 | `auth` | `tuple` | `None` | Basic auth credentials (username, password) |
-| `timeout` | `float` | `60` | Request timeout in seconds |
+| `timeout` | `float` | `60.0` | Request timeout in seconds |
 | `auth_handler` | `AuthHandler` | `None` | Authentication handler instance |
 | `retry_policy` | `RetryPolicy` | `None` | Retry policy configuration |
 | `rate_limiter` | `RateLimitPolicy` | `None` | Rate limiting configuration |
