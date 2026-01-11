@@ -12,4 +12,5 @@ alter
     xdm.target.resource.name = asset_name,
     xdm.target.resource.type = asset_type,
     xdm.target.application.publisher = vendor,
-    xdm.target.application.version = version;
+    xdm.target.application.version = version,
+    xdm.event.outcome = if(event_type ~= "SUCCESS", XDM_CONST.OUTCOME_SUCCESS,event_type ~= "FAILED",XDM_CONST.OUTCOME_FAILED, event_type ~= "AUTHENTICATION_ATTEMPT",XDM_CONST.OUTCOME_UNKNOWN,event_type);
