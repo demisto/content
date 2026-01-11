@@ -1,12 +1,14 @@
-Use the Atlassian Cloud MCP integration to connect securely with an Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
+Use the Atlassian Cloud MCP integration to securely connect to an Atlassian Cloud Model Context Protocol (MCP) server and access Atlassian Cloud tools in real time.
 
-## What does this pack do
+## What does this pack do?
 
-This integration provides tools primarily intended for use with Agentix Actions. It enables you to:
+This pack is intended for Cortex Agentic AI.
 
-- Retrieve a list of available tools in the Atlassian Cloud MCP server.
-- Call a specific tool on the Atlassian Cloud MCP server with optional input parameters.
+Connects to an Atlassian Cloud MCP server to automatically discover tools and expose them as agentic system actions that users can enable for agents.
 
-## Available tools (Tool access contingent upon permissions granted)
+## Tools
+
+Tool availability depends on the permissions granted to the user and server configuration.
+The list below reflects the tools available at the time this pack was created and may change.
 
 `atlassianUserInfo`  `getAccessibleAtlassianResources`  `getConfluenceSpaces`  `getConfluencePage`  `getPagesInConfluenceSpace`  `getConfluencePageFooterComments`  `getConfluencePageInlineComments`  `getConfluencePageDescendants`  `createConfluencePage`  `updateConfluencePage`  `createConfluenceFooterComment`  `createConfluenceInlineComment`  `searchConfluenceUsingCql`  `getJiraIssue`  `editJiraIssue`  `createJiraIssue`  `getTransitionsForJiraIssue`  `transitionJiraIssue`  `lookupJiraAccountId`  `searchJiraIssuesUsingJql`  `addCommentToJiraIssue`  `getJiraIssueRemoteIssueLinks`  `getVisibleJiraProjects`  `getJiraProjectIssueTypesMetadata`  `getJiraIssueTypeMetaWithFields`  `getCompassComponents`  `getCompassComponent`  `getCompassCustomFieldDefinitions`  `createCompassCustomFieldDefinition`  `createCompassComponent`  `createCompassComponentRelationship`  `search`  `fetch`
