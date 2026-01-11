@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Migrated the 'Mimecast Event Collector' from the legacy API 1.0 authentication method to OAuth2 client credentials flow for Mimecast API 2.0. All 'Mimecast Event Collector' integration instances must be re-configured using OAuth2 Client ID and Client Secret."
+    "breakingChangesNotes": "Migrated the 'Mimecast Event Collector' integration to Mimecast API 2.0. This requires re-configuration of all 'Mimecast Event Collector' integration instances and includes major changes relating to the fetching of SIEM logs. Refer to the version release notes for additional details."
 }

@@ -32,7 +32,7 @@ configuration:
   section: Collect
   advanced: true
   type: 0
-  required: true
+  required: false
   defaultvalue: 7 days
 - display: Fetch event types
   name: event_types

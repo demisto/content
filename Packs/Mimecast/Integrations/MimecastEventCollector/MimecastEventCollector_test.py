@@ -470,11 +470,11 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
 
     mock_response_jsons = [
         {  # Page 1
-            "value": [{"aCode": f"event-A{i}", "timestamp": 1704067200000} for i in range(100)],
+            "value": [{"id": f"event-A{i}", "timestamp": 1704067200000} for i in range(100)],
             "@nextPage": "page2_token",
         },
         {  # Page 2
-            "value": [{"aCode": f"event-B{i}", "timestamp": 1704070800000} for i in range(50)],
+            "value": [{"id": f"event-B{i}", "timestamp": 1704070800000} for i in range(50)],
             "@nextPage": "page3_token",
         },
     ]
@@ -506,7 +506,7 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
     from MimecastEventCollector import get_events_command
 
     mock_audit_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000", "_time": "2025-01-01T00:00:00Z"}]
-    mock_siem_events = [{"aCode": "event-2", "timestamp": 1704067200000, "_time": "2025-01-01T00:00:00Z"}]
+    mock_siem_events = [{"id": "event-2", "timestamp": 1704067200000, "_time": "2025-01-01T00:00:00Z"}]
 
     mocker.patch("MimecastEventCollector.UTC_NOW", datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC))
     mock_get_audit_events = mocker.patch("MimecastEventCollector.get_audit_events", new=AsyncMock(return_value=mock_audit_events))
@@ -536,7 +536,7 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
                 {"id": "event-2", "eventTime": "2025-01-01T01:00:00+0000", "_filter_time": "2025-01-01T01:00:00+0000"},
             ],
             {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
-            id="Initial run with audit events",
+            id="First fetch with audit events",
         ),
         pytest.param(
             {"start_date": "2025-01-01T00:00:00+0000", "last_fetched_ids": ["event-1"]},
@@ -546,14 +546,14 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
                 {"id": "event-3", "eventTime": "2025-01-01T01:00:00+0000", "_filter_time": "2025-01-01T01:00:00+0000"},
             ],
             {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2", "event-3"]},
-            id="Subsequent run with events at same timestamp",
+            id="Subsequent run with events at same timestamp (uses last _filter_time IDs)",
         ),
         pytest.param(
             {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
             100,
             [],
             {"start_date": "2025-01-01T01:00:00+0000", "last_fetched_ids": ["event-2"]},
-            id="No new events",
+            id="No new events (keeps last run)",
         ),
     ],
 )
@@ -586,6 +586,133 @@ async def test_fetch_audit_events(
     assert len(events) == len(mock_audit_events)
 
 
+@pytest.mark.parametrize(
+    "last_run, max_fetch, mock_siem_events, mock_next_page, expected_next_run",
+    [
+        pytest.param(
+            {},
+            100,
+            [
+                {
+                    "id": "event-1",
+                    "aggregateId": "code-1",
+                    "timestamp": 1704067200000,
+                    "_filter_time": "2025-01-01T00:00:00.000Z",
+                },
+                {
+                    "id": "event-2",
+                    "aggregateId": "code-2",
+                    "timestamp": 1704070800000,
+                    "_filter_time": "2025-01-01T01:01:00.000Z",
+                },
+            ],
+            "next_page_token_1",
+            {
+                "start_date": "2025-01-01T01:01:00.000Z",
+                "last_fetched_ids": ["event-1", "event-2"],
+                "next_page": "next_page_token_1",
+            },
+            id="First fetch with SIEM events",
+        ),
+        pytest.param(
+            {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": ["event-1"], "next_page": "page_token_1"},
+            50,
+            [
+                {
+                    "id": "event-2",
+                    "aggregateId": "code-2",
+                    "timestamp": 1704070800000,
+                    "_filter_time": "2025-01-01T01:00:00.000Z",
+                },
+                {
+                    "id": "event-3",
+                    "aggregateId": "code-3",
+                    "timestamp": 1704070800000,
+                    "_filter_time": "2025-01-01T01:00:02.000Z",
+                },
+            ],
+            "next_page_token_2",
+            {
+                "start_date": "2025-01-01T01:00:02.000Z",
+                "last_fetched_ids": ["event-2", "event-3"],
+                "next_page": "next_page_token_2",
+            },
+            id="Subsequent run with two events on page (use last page IDs)",
+        ),
+        pytest.param(
+            {"start_date": "2025-01-01T01:00:00.000Z", "last_fetched_ids": ["event-2"], "next_page": "page_token_2"},
+            100,
+            [],
+            None,
+            {"start_date": "2025-01-01T01:00:00.000Z", "last_fetched_ids": ["event-2"], "next_page": "page_token_2"},
+            id="No new events (keeps last run)",
+        ),
+        pytest.param(
+            {},
+            200,
+            [
+                {
+                    "id": f"event-{i}",
+                    "aggregateId": f"code-{i}",
+                    "timestamp": 1704067200000,
+                    "_filter_time": "2025-01-01T00:00:00.000Z",
+                }
+                for i in range(150)
+            ],
+            "next_page_token_3",
+            {
+                "start_date": "2025-01-01T00:00:00.000Z",
+                "last_fetched_ids": [f"event-{i}" for i in range(150)],
+                "next_page": "next_page_token_3",
+            },
+            # Sometimes, even when using passing `next_page` to endpoint, we may get events from previous page on the next page
+            # So save IDs from the last page (default 100) or all IDs with the latest _filter_time (whichever is greater)
+            id="More than 100 events with same timestamp (uses last _filter_time IDs)",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_siem_events(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    last_run: dict,
+    max_fetch: int,
+    mock_siem_events: list,
+    mock_next_page: str | None,
+    expected_next_run: dict,
+):
+    """
+    Given:
+     - An AsyncClient, last_run, and max_fetch parameters.
+    When:
+     - Calling fetch_siem_events.
+    Then:
+     - Ensure that get_siem_events is called.
+     - Ensure that the next_run object and events are returned correctly.
+    """
+    from MimecastEventCollector import fetch_siem_events, convert_to_siem_filter_format
+
+    mock_siem_first_fetch = datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC)
+    mocker.patch("MimecastEventCollector.UTC_MINUTE_AGO", mock_siem_first_fetch)
+    mocker.patch("MimecastEventCollector.is_within_last_24_hours", return_value=True)
+    mock_get_siem_events = mocker.patch(
+        "MimecastEventCollector.get_siem_events",
+        new=AsyncMock(return_value=(mock_siem_events, mock_next_page)),
+    )
+
+    next_run, events = await fetch_siem_events(async_client, last_run, max_fetch)
+
+    assert mock_get_siem_events.call_count == 1
+    assert mock_get_siem_events.call_args.kwargs == {
+        "start_date": last_run.get("start_date") or convert_to_siem_filter_format(mock_siem_first_fetch),
+        "limit": max_fetch,
+        "last_fetched_ids": last_run.get("last_fetched_ids", []),
+        "next_page": last_run.get("next_page"),
+    }
+    assert next_run == expected_next_run
+    assert len(events) == len(mock_siem_events)
+
+
 @pytest.mark.asyncio
 async def test_fetch_events_command(async_client: AsyncClient, mocker: MockerFixture):
     """
@@ -604,7 +731,7 @@ async def test_fetch_events_command(async_client: AsyncClient, mocker: MockerFix
     event_types = EventTypes.all_values()
 
     mock_audit_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00+0000"}]
-    mock_siem_events = [{"aCode": "event-2", "timestamp": 1704067200000}]
+    mock_siem_events = [{"id": "event-2", "timestamp": 1704067200000}]
 
     mocker.patch(
         "MimecastEventCollector.fetch_audit_events",

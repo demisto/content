@@ -254,7 +254,7 @@ class AsyncClient:
 
                 # Handle 401 Unauthorized - regenerate token and retry once
                 if status_code == HTTPStatus.UNAUTHORIZED:
-                    demisto.debug("[log_prefix] Received HTTP 401 Unauthorized. Generating new token and retrying...")
+                    demisto.debug(f"{log_prefix} Received HTTP 401 Unauthorized. Generating new token and retrying...")
                     headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
                     # Retry immediately with new token
                     async with self._session.request(method=method, url=url, headers=headers, **request_kwargs) as response:
@@ -402,7 +402,7 @@ def generate_event_id_if_not_exists(events: list[dict[str, Any]], event_type: Ev
 
 def convert_to_audit_filter_format(filter_datetime: datetime) -> str:
     """
-    Converts datetime object (e.g. 2025-12-24T11:23:41.955Z).
+    Converts datetime object to the `AUDIT_DATE_FILTER_FORMAT` (e.g. 2025-12-24T11:23:41.955Z).
 
     Removes last colon from the time format.
     """
@@ -411,7 +411,7 @@ def convert_to_audit_filter_format(filter_datetime: datetime) -> str:
 
 def convert_to_siem_filter_format(filter_datetime: datetime) -> str:
     """
-    Converts datetime object (e.g. 2025-12-24T11:23:41.955Z).
+    Converts datetime object to the `SIEM_DATE_FILTER_FORMAT` (e.g. 2025-12-24T11:23:41.955Z).
 
     Removes last colon from the time format.
     """
@@ -908,6 +908,7 @@ def get_siem_new_start_time_last_fetched_ids(events: list[dict[str, Any]]) -> tu
         new_last_fetched_ids = events_with_newest_time
     else:
         # Sometimes, even when using passing `next_page` to SIEM endpoint, we may get events from previous page on the next page
+        # So save IDs from the last page (default 100) or all IDs with the latest `_filter_time` (whichever is greater)
         demisto.debug(f"{log_prefix} Using all event IDs in last SIEM page for last run {LAST_FETCHED_IDS_KEY!r} value.")
         new_last_fetched_ids = events_from_last_page
 

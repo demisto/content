@@ -9,7 +9,7 @@ This is the default integration for this content pack when configured by the Dat
 | Client secret | Refer to the help section for instructions on how to obtain the API 2.0 OAuth2 client credentials. | True |
 | Fetch events | | False |
 | Fetch event types | Possible values are: Audit, SIEM. | False |
-| First fetch timestamp (Audit Events only) | Should be in the &lt;number&gt; &lt;time unit&gt; format (for example, 12 hours, 7 days, 3 months, 1 year). This parameter is only relevant to Audit events. The first fetch timestamp of SIEM logs is internally set to the last minute due to API-side restrictions. | True |
+| First fetch timestamp (Audit Events only) | Should be in the &lt;number&gt; &lt;time unit&gt; format (for example, 12 hours, 7 days, 3 months, 1 year). This parameter is only relevant to Audit events. The first fetch timestamp of SIEM logs is internally set to the last minute due to API-side restrictions. | False |
 | Maximum number of events per fetch | Default is 1000. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
