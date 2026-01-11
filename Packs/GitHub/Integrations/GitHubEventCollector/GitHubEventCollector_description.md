@@ -1,6 +1,6 @@
-# Github Event Collector
+# GitHub Event Collector
 
-Integration with Github using REST API to get audit logs for an organization.
+Integration with GitHub using REST API to get audit logs for an organization.
 
 ## Server URL
 
@@ -13,14 +13,14 @@ Specify the endpoint for fetching audit logs; replace the `${ORGANIZATION}` valu
 3. In the left sidebar, click **Developer settings**.
 4. In the left sidebar, under **Personal access tokens**, click **Tokens (classic)**.
 5. Select **Generate new token**, then click **Generate new token (classic)**.
-6. In the "**Note**" field, give the token a descriptive name.
+6. In the **Note** field, give the token a descriptive name.
 7. Select a suitable **Expiration** date by choosing the default option or click **Custom** to enter a specific date.
 8. Select the **Scopes** to grant this token. To fetch audit logs, ensure the token has the `read:audit_log` permission scope.
 9. Click **Generate token**.
 10. Save the token in a safe location and use it to configure an instance of this integration.
 11. Test the configuration and save the integration instance.
 
-For more information, refer to the documentation on [creating a Github personal access token (classic)](https://docs.github.com/en/enterprise-cloud@latest/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and [accessing the Github audit logs of an organization](https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise).
+For more information, refer to the documentation on [creating a GitHub personal access token (classic)](https://docs.github.com/en/enterprise-cloud@latest/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and [accessing the GitHub audit logs of an organization](https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise).
 
 ## Permissions
 
