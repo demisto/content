@@ -1817,3 +1817,194 @@ def test_delete_windows_hello_method_command(mocker):
         "Windows Hello For Business Authentication Method object id windows-hello-method-id-1 has been successfully deleted"
         in result.readable_output
     )
+
+
+def test_list_owned_device_command_list_all(mocker):
+    """
+    Tests the list_owned_device_command function when listing all owned devices for a user.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_owned_device_command without filters
+    Then:
+        - Verify that the function returns the correct owned devices
+        - Verify that the output prefix and key field are correct
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_owned_device_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "limit": "50"}
+
+    mock_device_data = [
+        {
+            "id": "device-id-1",
+            "deviceId": "azure-device-id-1",
+            "displayName": "Work Laptop",
+            "accountEnabled": True,
+            "operatingSystem": "Windows",
+            "operatingSystemVersion": "10.0.19045",
+            "trustType": "AzureAd",
+        }
+    ]
+
+    mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, None))
+    result = list_owned_device_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert result.outputs_key_field == "ID"
+    assert "Owned Devices for User test-user" in result.readable_output
+
+
+def test_list_owned_device_command_with_pagination(mocker):
+    """
+    Tests the list_owned_device_command function with pagination.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and next_page
+    When:
+        - Running the list_owned_device_command with a next_page URL
+    Then:
+        - Verify that the function returns the correct owned devices
+        - Verify that the next page URL is included in the output
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_owned_device_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "limit": "2"}
+
+    mock_device_data = [
+        {
+            "id": "device-id-1",
+            "deviceId": "azure-device-id-1",
+            "displayName": "Work Laptop",
+        },
+        {
+            "id": "device-id-2",
+            "deviceId": "azure-device-id-2",
+            "displayName": "Personal Phone",
+        },
+    ]
+
+    next_page_url = "https://graph.microsoft.com/v1.0/users/test-user/ownedDevices?$skiptoken=abc123"
+
+    mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, next_page_url))
+    result = list_owned_device_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert "To get further results, enter this to the next_page argument" in result.readable_output
+    assert next_page_url in result.readable_output
+
+
+def test_list_owned_device_command_no_devices(mocker):
+    """
+    Tests the list_owned_device_command function when no devices are found.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user
+    When:
+        - Running the list_owned_device_command and no devices are returned
+    Then:
+        - Verify that the function returns an appropriate message
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_owned_device_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user"}
+
+    mocker.patch.object(client, "list_owned_devices", return_value=([], None))
+    result = list_owned_device_command(client, args)
+
+    assert "No owned devices found for user test-user" in result.readable_output
+
+
+def test_list_owned_device_command_with_filter(mocker):
+    """
+    Tests the list_owned_device_command function with a filter.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API
+        - Arguments for the command including user and filter
+    When:
+        - Running the list_owned_device_command with a filter
+    Then:
+        - Verify that the function returns the correct filtered devices
+    """
+    from MicrosoftGraphUser import MsGraphClient, list_owned_device_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-user",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test-user", "filter": "operatingSystem eq 'Windows'", "limit": "50"}
+
+    mock_device_data = [
+        {
+            "id": "device-id-1",
+            "deviceId": "azure-device-id-1",
+            "displayName": "Work Laptop",
+            "operatingSystem": "Windows",
+        }
+    ]
+
+    mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, None))
+    result = list_owned_device_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert "Owned Devices for User test-user" in result.readable_output

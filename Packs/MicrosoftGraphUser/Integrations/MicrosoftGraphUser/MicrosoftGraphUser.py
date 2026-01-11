@@ -340,7 +340,7 @@ class MsGraphClient:
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
 
-    def list_fido2_methods(self, user_id: str, method_id: str = "", limit: int = DEFAULT_LIMIT):
+    def list_fido2_methods(self, user_id: str, limit: int = DEFAULT_LIMIT):
         """
         Lists the FIDO2 authentication methods registered to a user, or retrieves a specific method.
 
@@ -365,7 +365,7 @@ class MsGraphClient:
             Get: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
 
-        url_suffix = f"users/{user_id}/authentication/fido2Methods"
+        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods"
         params = {}
         if limit:
             params["$top"] = limit
@@ -374,7 +374,7 @@ class MsGraphClient:
 
     def get_fido2_method(self, user_id: str, method_id: str) -> dict:
         """
-        Lists the FIDO2 authentication methods registered to a user, or retrieves a specific method.
+        Gets the FIDO2 authentication method registered to a user.
 
         Args:
             user_id (str): The Azure AD user ID.
@@ -382,7 +382,7 @@ class MsGraphClient:
             limit (int, optional): Maximum number of results to return when listing all methods.
 
         Returns:
-            list or dict: A list of FIDO2 authentication method objects, or a single object if method_id is provided.
+            dict: A dict of FIDO2 authentication method object.
             Each object contains:
             - id (str): The unique identifier for the FIDO2 authentication method.
             - displayName (str): The display name of the key as given by the user.
@@ -723,22 +723,27 @@ class MsGraphClient:
 
     def list_owned_devices(self, page_url: str, user_id: str, filters: str, page_size: int):
         """
+        Lists the devices owned by a user.
+
         Args:
-            user_id (str): The Azure AD user ID.
+            page_url (str): URL for the next page of results (optional).
+            user_id (str): The Azure AD user ID or user principal name.
+            filters (str): OData filter to apply to the results (optional).
+            page_size (int): Maximum number of results to return per page.
 
         Returns:
-            list: A list that contains a dictionary representing the TAP policy info with the following keys:
-            - id (str): The unique identifier for the TAP policy.
-            - isUsable (bool): Indicates whether the TAP is currently usable.
-            - methodUsabilityReason (str): Explanation of why the TAP is or is not usable (e.g., 'Expired', 'NotYetValid).
-            - temporaryAccessPass (str or None): The generated password for the TAP policy.
-            - createdDateTime (str): The ISO 8601 timestamp when the TAP was created.
-            - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
-            - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
-            - isUsableOnce (bool): Indicates whether the TAP can be used only once.
+            tuple: A tuple containing (list of device objects, next_page_url).
+            Each device object contains:
+            - id (str): The unique identifier for the device.
+            - deviceId (str): The Azure device registration ID.
+            - displayName (str): The display name of the device.
+            - accountEnabled (bool): Whether the device account is enabled.
+            - operatingSystem (str): The operating system of the device.
+            - operatingSystemVersion (str): The operating system version.
+            - trustType (str): The trust type of the device.
 
         API Reference:
-            https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+            https://learn.microsoft.com/en-us/graph/api/user-list-owneddevices?view=graph-rest-1.0&tabs=http
         """
         if page_url:
             response = self.ms_client.http_request(method="GET", full_url=page_url)
@@ -1339,19 +1344,18 @@ def list_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResul
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     if method_id:
         fido2_data = client.get_fido2_method(user, method_id)
     else:
-        fido2_data = client.list_fido2_methods(user, method_id, limit)  # type: ignore
+        fido2_data = client.list_fido2_methods(user, limit)  # type: ignore
 
     if not fido2_data:
         return CommandResults(readable_output=f"No FIDO2 authentication methods found for user {user}.")
 
     fido2_readable, fido2_outputs = parse_outputs(fido2_data)
 
-    # Map the field names to custom headers for human readable output
     field_mapping = {
         "ID": "Authentication method ID",
         "Display Name": "The display name of the key",

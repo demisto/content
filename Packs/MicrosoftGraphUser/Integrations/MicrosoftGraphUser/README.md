@@ -927,13 +927,7 @@ Permission:User.Read.All,Directory.Read.All - Delegated
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. |
-| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. |
-| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. |
-| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. |
-| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. |
-| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. |
-| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. |
+| MSGraphUser.OwnedDevice.ID | String | TAP policy's ID. |
 
 ### msgraph-user-fido2-method-list
 
@@ -962,7 +956,7 @@ Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWr
 | MSGraphUser.FIDO2Method.CreatedDateTime | String | The timestamp when this key was registered. |
 | MSGraphUser.FIDO2Method.AaGuid | String | Authenticator Attestation GUID, an identifier that indicates the type of authenticator. |
 | MSGraphUser.FIDO2Method.Model | String | The manufacturer-assigned model of the FIDO2 security key. |
-| MSGraphUser.FIDO2Method.AttestationCertificates | Unknown | The attestation certificate\(s\) attached to this security key. |
+| MSGraphUser.FIDO2Method.AttestationCertificates | String | The attestation certificate\(s\) attached to this security key. |
 | MSGraphUser.FIDO2Method.AttestationLevel | String | The attestation level of this FIDO2 security key. |
 
 ### msgraph-user-fido2-method-delete

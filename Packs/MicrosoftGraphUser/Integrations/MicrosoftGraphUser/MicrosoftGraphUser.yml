@@ -824,29 +824,11 @@ script:
       name: filter
     description: |-
       Get the list of devices that are owned by the user.
-      Permission:User.Read.All,Directory.Read.All - Delegated 
+      Permission: User.Read.All,Directory.Read.All - Delegated 
     name: msgraph-user-owned-devices-list
     outputs:
-    - contextPath: MSGraphUser.TAPPolicy.ID
+    - contextPath: MSGraphUser.OwnedDevice.ID
       description: TAP policy's ID.
-      type: String
-    - contextPath: MSGraphUser.TAPPolicy.IsUsable
-      description: TAP policy's usability.
-      type: Bool
-    - contextPath: MSGraphUser.TAPPolicy.IsUsableOnce
-      description: TAP policy's once - usability.
-      type: Bool
-    - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
-      description: TAP policy's creation date and time.
-      type: String
-    - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
-      description: TAP policy's method usability reason.
-      type: String
-    - contextPath: MSGraphUser.TAPPolicy.LifetimeInMinutes
-      description: TAP policy's lifetime in minutes.
-      type: Int
-    - contextPath: MSGraphUser.TAPPolicy.StartDateTime
-      description: TAP policy's start date and time.
       type: String
   - arguments:
     - description: User ID or userPrincipalName.
@@ -880,7 +862,7 @@ script:
       type: String
     - contextPath: MSGraphUser.FIDO2Method.AttestationCertificates
       description: The attestation certificate(s) attached to this security key.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.FIDO2Method.AttestationLevel
       description: The attestation level of this FIDO2 security key.
       type: String
@@ -935,7 +917,7 @@ script:
     - description: Maximum number of results to return when listing all methods.
       name: limit
       required: false
-      defaultValue: '50'
+      defaultValue: 50
     - description: The URL for the next page in the list.
       name: next_page
       required: false
