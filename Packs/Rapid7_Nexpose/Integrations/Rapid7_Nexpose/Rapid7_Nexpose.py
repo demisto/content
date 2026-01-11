@@ -374,6 +374,26 @@ class Client(BaseClient):
     GROUP BY
         dta.asset_id
 ),
+asset_softwares AS (
+    SELECT
+        das.asset_id,
+        json_agg(
+            json_build_object(
+                'Vendor', ds.vendor,
+                'Family', ds.family,
+                'Name', ds.name,
+                'Version', ds.version,
+                'Software_class', ds.software_class,
+                'Cpe', ds.cpe
+            )
+        ) AS aggregated_software_json
+    FROM
+        dim_software ds
+    JOIN
+        dim_asset_software das ON ds.software_id = das.software_id
+    GROUP BY
+        das.asset_id
+),
 asset_macs AS (
     SELECT
         dama.asset_id,
@@ -456,9 +476,9 @@ asset_latest_scan AS (
 
     FROM
         fact_asset_scan fas
-    JOIN 
+    JOIN
         dim_scan ds ON fas.scan_id = ds.scan_id
-    ORDER BY 
+    ORDER BY
         fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
 ),
 latest_os_certainty AS (
@@ -468,7 +488,7 @@ latest_os_certainty AS (
     FROM
         fact_asset_scan_operating_system fasos
     JOIN
-        dim_scan ds ON fasos.scan_id = ds.scan_id 
+        dim_scan ds ON fasos.scan_id = ds.scan_id
     ORDER BY
         fasos.asset_id, ds.finished DESC, fasos.certainty DESC -- Use certainty as a tie-breaker if dates are equal
 )
@@ -480,12 +500,12 @@ SELECT
     da.host_name AS "dim_asset.host_name",
     da.host_type_id AS "dim_asset.host_type_id",
     dht.description AS "dim_host_type.description",
-    CASE 
+    CASE
         WHEN da.ip_address LIKE '%:%' THEN NULL
         ELSE da.ip_address
     END AS "ipv4",
 
-    CASE 
+    CASE
         WHEN da.ip_address LIKE '%:%' THEN da.ip_address
         ELSE NULL
     END AS "ipv6",
@@ -500,7 +520,7 @@ SELECT
     dos.asset_type AS "dim_operating_system.asset_type",
     dos.vendor AS "dim_operating_system.vendor",
     dos.version AS "dim_operating_system.version",
-    dos.cpe AS "dim_operating_system.cpe",    
+    dos.cpe AS "dim_operating_system.cpe",
     loc.latest_os_certainty_value AS "fact_asset_scan_operating_system.certainty",
     atags.aggregated_tags_json AS "dim_tag_asset.tags",
     am.aggregated_mac_addresses AS "dim_asset_mac_address.mac_address",
@@ -508,12 +528,7 @@ SELECT
     af.aggregated_files_json AS "asset_files",
     das.software_id AS "dim_asset_software.software_id",
     das.fingerprint_source_id AS "dim_asset_software.fingerprint_source_id",
-    ds.vendor AS "dim_software.vendor",
-    ds.family AS "dim_software.family",
-    ds.name AS "dim_software.name",
-    ds.version AS "dim_software.version",
-    ds.software_class AS "dim_software.software_class",
-    ds.cpe AS "dim_software.cpe",
+    asoft.aggregated_software_json AS "asset_softwares",
     als.last_scan_date AS "dim_scan.finished",
     als.last_scan_status_id AS "dim_scan.status_id",
     als.scan_id AS "dim_scan.scan_id",
@@ -545,10 +560,10 @@ LEFT JOIN
 LEFT JOIN
     dim_asset_software das ON da.asset_id = das.asset_id
 LEFT JOIN
-    dim_software ds ON das.software_id = ds.software_id
+    asset_softwares asoft ON da.asset_id = asoft.asset_id
 LEFT JOIN
     assets_host ah ON da.asset_id = ah.asset_id
-INNER JOIN 
+INNER JOIN
     asset_latest_scan als ON da.asset_id = als.asset_id
 LEFT JOIN
     dim_aggregated_credential_status dacs ON als.aggregated_credential_status_id = dacs.aggregated_credential_status_id
@@ -563,6 +578,7 @@ WHERE
 
 ORDER BY
     da.asset_id ASC"""
+
 
 
 
