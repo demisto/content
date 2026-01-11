@@ -2670,7 +2670,7 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output=f"Successfully disassociated Elastic IP address (Association ID :  {args.get('association_id')})",
+            readable_output=f"Successfully disassociated Elastic IP address (Association ID: {args.get('association_id')})",
             raw_response=response,
         )
 
@@ -2702,7 +2702,7 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output=f"Successfully released Elastic IP address (Association ID : {args.get('association_id')})",
+            readable_output=f"Successfully released Elastic IP address (Allocation ID: {args.get('allocation_id')})",
             raw_response=response,
         )
 
