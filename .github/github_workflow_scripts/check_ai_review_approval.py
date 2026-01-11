@@ -88,6 +88,7 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
 def has_skip_label(pr_data: dict, label_to_check: str) -> bool:
     """Checks if the PR has the specified bypass label."""
     labels = [node["name"] for node in pr_data.get("labels", {}).get("nodes", [])]
+    print(f"The PR has the following labels: {', '.join(labels)}")
     return label_to_check in labels
 
 def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: str) -> tuple[bool, str | None]:
