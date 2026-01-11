@@ -112,7 +112,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Indicator Fetch Limit
-  additionalinfo: Maximum number of indicators to fetch per feed run. Default is 100000. Maximum allowed value is 100000.
+  additionalinfo: Maximum total number of indicators to fetch per feed run. The limit is distributed equally among all active types (Threat Objects, IP, Domain, URL, File). The last type (File) receives any remaining quota. Default is 100000. Maximum allowed value is 100000.
   name: fetch_limit
   type: 0
   defaultvalue: '100000'
