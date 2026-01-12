@@ -388,7 +388,9 @@ def fetch_params_check():
         str_error.append("Both Query and Raw Query are configured. Please choose between Query or Raw Query.")
 
     if len(str_error) > 0:
-        return_error("Got the following errors in test:\nFetches events is enabled.\n" + "\n".join(str_error))
+        return "Got the following errors in test:\nFetches events is enabled.\n" + "\n".join(str_error)
+    else:
+        return ""
 
 
 def test_connectivity_auth(proxies) -> tuple[bool, str]:
@@ -477,9 +479,14 @@ def test_func(proxies):
     success, message = test_connectivity_auth(proxies)
     if not success:
         return message
+
     if demisto.params().get("isFetch"):
         # check the existence of all necessary fields for fetch
-        fetch_params_check()
+        failed_message = fetch_params_check()
+        if failed_message:
+            return failed_message
+
+        get_events(proxies, is_test=True)
     return "ok"
 
 
@@ -790,16 +797,27 @@ def fetch_events(proxies):
         demisto.results("No events were found, last_run not updated.")
 
 
-def get_events(proxies):
-    args = demisto.args()
-    raw_query = args.get("raw_query", "")
-    fetch_query = args.get("fetch_query", "")
-    fetch_time_field = args.get("fetch_time_field", "")
-    fetch_index = args.get("fetch_index", "")
-    fetch_size = int(args.get("fetch_size", 10))
-    time_method = args.get("time_method", "Simple-Date")
-    start_time = args.get("start_time", "")
-    end_time = args.get("end_time")
+def get_events(proxies, is_test=False):
+    if is_test:
+        demisto.debug("Running get_events as test mode")
+        raw_query = '{"query": {"match_all": {}}}'
+        fetch_query = ""
+        fetch_index = ""
+        fetch_time_field = "timestamp"
+        fetch_size = 1
+        time_method = "Simple-Date"
+        start_time = "1 days"
+        end_time = "now"
+    else:
+        args = demisto.args()
+        raw_query = args.get("raw_query", "")
+        fetch_query = args.get("fetch_query", "")
+        fetch_time_field = args.get("fetch_time_field", "")
+        fetch_index = args.get("fetch_index", "")
+        fetch_size = int(args.get("fetch_size", 10))
+        time_method = args.get("time_method", "Simple-Date")
+        start_time = args.get("start_time", "")
+        end_time = args.get("end_time")
 
     if raw_query and fetch_query:
         demisto.debug("get_events - Only one of raw_query or fetch_query should be provided.")
