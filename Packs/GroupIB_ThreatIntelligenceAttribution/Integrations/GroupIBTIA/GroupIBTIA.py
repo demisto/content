@@ -2108,10 +2108,9 @@ def fetch_incidents_command(
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
-        try:
+        if collection_name != "compromised/breached":
             last_fetch = int(last_fetch)
-        except (TypeError, ValueError):
-            pass
+
         demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}")
         requests_count = 0
         sequpdate = 0
@@ -2161,10 +2160,16 @@ def fetch_incidents_command(
         if collection_name == "compromised/breached":
             next_run["last_fetch"][collection_name] = last_fetch
         else:
-            if(sequpdate==0):
-                sequpdate=last_fetch
-            next_run["last_fetch"][collection_name] = str(sequpdate)
-            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {sequpdate}")
+            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
+            effective_last_fetch = last_fetch
+            if isinstance(sequpdate, int) and sequpdate > 0:
+                if isinstance(last_fetch, int) and last_fetch > 0:
+                    effective_last_fetch = max(last_fetch, sequpdate)
+                else:
+                    effective_last_fetch = sequpdate
+
+            next_run["last_fetch"][collection_name] = str(effective_last_fetch)
+            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}")
 
     return next_run, incidents
 
