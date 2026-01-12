@@ -4079,6 +4079,167 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def visualize_case_grouping_graph(data):
+    """Create a simple visual graph showing all nodes and connections."""
+    lines = []
+
+    # Title
+    lines.append("\n" + "=" * 100)
+    lines.append("CASE GROUPING GRAPH - COMPLETE VISUALIZATION".center(100))
+    lines.append("=" * 100 + "\n")
+
+    # Summary
+    s = data.get('summary', {})
+    lines.append(f"Summary: {s.get('total_nodes', 0)} nodes, {s.get('total_links', 0)} links, "
+                 f"{s.get('cluster_count', 0)} clusters, {s.get('clustered_issues', 0)} clustered issues\n")
+
+    # Build node lookup
+    nodes = {n['id']: n for n in data.get('nodes', [])}
+
+    # Build adjacency lists
+    outgoing = {}
+    incoming = {}
+    for link in data.get('links', []):
+        src, tgt = link['source_id'], link['target_id']
+        outgoing.setdefault(src, []).append((tgt, link.get('label')))
+        incoming.setdefault(tgt, []).append((src, link.get('label')))
+
+    # Find root (CASE node)
+    case_nodes = [n for n in data['nodes'] if n.get('type') == 'CASE']
+
+    def get_symbol(node_type):
+        return {'CASE': '[C]', 'IssueGroupElement': '[G]', 'ISSUE': '(I)',
+                'ARTIFACT': '<A>', 'ASSET': '{S}'}.get(node_type, '[?]')
+
+    def get_label(node_id):
+        node = nodes.get(node_id, {})
+        ntype = node.get('type', '')
+
+        if ntype == 'CASE':
+            return f"CASE{node.get('data', {}).get('id', '')}"
+        elif ntype == 'IssueGroupElement':
+            count = node.get('issue_count', 0)
+            etype = node.get('edge_type', 'Artifact')
+            return f"Cluster({count},{etype})"
+        elif ntype == 'ISSUE':
+            iid = node.get('data', {}).get('ISSUE_DATA', {}).get('id', node_id.replace('ISSUE', ''))
+            cat = node.get('data', {}).get('ISSUE_DATA', {}).get('category', '')[:8]
+            sev = node.get('data', {}).get('ISSUE_DATA', {}).get('severity', '')
+            sev_short = 'H' if 'HIGH' in sev else 'M' if 'MEDIUM' in sev else 'L' if 'LOW' in sev else '?'
+            return f"I{iid}[{sev_short}]{cat}"
+        elif ntype == 'ARTIFACT':
+            return node.get('data', {}).get('pretty_name', 'Artifact')[:15]
+        elif ntype == 'ASSET':
+            return node.get('data', {}).get('pretty_name', 'Asset')[:15]
+        return node_id[:20]
+
+    # Draw tree starting from CASE
+    visited = set()
+
+    def draw_tree(node_id, prefix="", is_last=True):
+        if node_id in visited:
+            return []
+        visited.add(node_id)
+
+        result = []
+        node = nodes.get(node_id, {})
+        symbol = get_symbol(node.get('type'))
+        label = get_label(node_id)
+
+        connector = "└── " if is_last else "├── "
+        result.append(f"{prefix}{connector}{symbol} {label}")
+
+        # Get children
+        children = outgoing.get(node_id, [])
+
+        # If this is a cluster, show its issues
+        if node.get('type') == 'IssueGroupElement':
+            issue_ids = node.get('issue_ids', [])
+            result.append(f"{prefix}{'    ' if is_last else '│   '}    └─ Contains: {', '.join(issue_ids)}")
+
+        # Draw children
+        extension = "    " if is_last else "│   "
+        for i, (child_id, label_text) in enumerate(children):
+            is_last_child = (i == len(children) - 1)
+            result.extend(draw_tree(child_id, prefix + extension, is_last_child))
+
+        return result
+
+    # Start from CASE
+    if case_nodes:
+        lines.extend(draw_tree(case_nodes[0]['id']))
+
+    # Draw any unvisited nodes
+    unvisited = [nid for nid in nodes if nid not in visited]
+    if unvisited:
+        lines.append("\n--- Disconnected Nodes ---")
+        for nid in unvisited:
+            node = nodes[nid]
+            symbol = get_symbol(node.get('type'))
+            label = get_label(nid)
+            lines.append(f"{symbol} {label}")
+
+    # Show all relationships in table format
+    lines.append("\n" + "=" * 100)
+    lines.append("ALL RELATIONSHIPS")
+    lines.append("=" * 100)
+    lines.append(f"{'#':<4} {'Source':<35} {'-->':<5} {'Target':<35} {'Label':<15}")
+    lines.append("-" * 100)
+
+    for i, link in enumerate(data.get('links', []), 1):
+        src = link['source_id']
+        tgt = link['target_id']
+        lbl = link.get('label', '') or ''
+
+        src_node = nodes.get(src, {})
+        tgt_node = nodes.get(tgt, {})
+
+        src_str = f"{get_symbol(src_node.get('type'))} {get_label(src)}"
+        tgt_str = f"{get_symbol(tgt_node.get('type'))} {get_label(tgt)}"
+
+        lines.append(f"{i:<4} {src_str:<35} {'-->':<5} {tgt_str:<35} {lbl:<15}")
+
+    # Show all nodes in detail
+    lines.append("\n" + "=" * 100)
+    lines.append("ALL NODES DETAIL")
+    lines.append("=" * 100)
+
+    for node_type in ['CASE', 'IssueGroupElement', 'ISSUE', 'ARTIFACT', 'ASSET']:
+        type_nodes = [n for n in data['nodes'] if n.get('type') == node_type]
+        if not type_nodes:
+            continue
+
+        lines.append(f"\n{get_symbol(node_type)} {node_type} ({len(type_nodes)} nodes)")
+        lines.append("-" * 100)
+
+        for node in type_nodes:
+            nid = node['id']
+            label = get_label(nid)
+            lines.append(f"  • {nid}: {label}")
+
+            # Show specific details
+            if node_type == 'IssueGroupElement':
+                lines.append(f"    Issues ({node.get('issue_count', 0)}): {', '.join(node.get('issue_ids', []))}")
+            elif node_type == 'ISSUE':
+                idata = node.get('data', {}).get('ISSUE_DATA', {})
+                lines.append(f"    Category: {idata.get('category', 'N/A')}, "
+                             f"Severity: {idata.get('severity', 'N/A')}, "
+                             f"In Cluster: {node.get('in_cluster', False)}")
+
+    # Legend
+    lines.append("\n" + "=" * 100)
+    lines.append("LEGEND")
+    lines.append("=" * 100)
+    lines.append("[C] = CASE (root node)")
+    lines.append("[G] = Cluster/Group (IssueGroupElement)")
+    lines.append("(I) = ISSUE")
+    lines.append("<A> = ARTIFACT")
+    lines.append("{S} = ASSET")
+    lines.append("H/M/L = High/Medium/Low severity")
+    lines.append("=" * 100 + "\n")
+
+    print( '\n'.join(lines))
+
 def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
     """
     Preprocesses the case grouping graph response to create clusters.
@@ -4087,7 +4248,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
         response: API response containing 'nodes' and 'edges'
 
     Returns:
-        Processed graph with clusters, nodes, links, and summary
+        Processed graph with clusters, nodes, links, original_edges, and summary
     """
     from collections import defaultdict
 
@@ -4147,16 +4308,10 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
                 'id': group_id,
                 'type': 'IssueGroupElement',
                 'is_cluster': True,
-                'label': 'Issues',
                 'source_id': source_id,
                 'edge_type': edge_type,
                 'issue_count': len(targets),
                 'issue_ids': targets,
-                'pagination': {
-                    'currentPage': 0,
-                    'itemsPerPage': 8,
-                    'totalItems': len(targets)
-                }
             }
             output_nodes.append(cluster_node)
             clustered_issues.update(targets)
@@ -4180,6 +4335,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
                 for edge in issue_edges:
                     output_links.append({
                         'source_id': group_id,
+                        'source_issue_id' : target_id,
                         'target_id': edge['target_id'],
                         'label': None
                     })
@@ -4215,17 +4371,9 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
                 break
 
         if not skip:
-            target_node = nodes_map.get(edge['target_id'], {})
-            target_data = target_node.get('data', {})
-
-            label = None
-            if target_data.get('DUPLICATE') or target_data.get('LINKED'):
-                label = 'linked' if target_data.get('LINKED') else 'similar'
-
             output_links.append({
                 'source_id': edge['source_id'],
                 'target_id': edge['target_id'],
-                'label': label
             })
 
     return {
@@ -4250,6 +4398,7 @@ def get_case_grouping_graph(client, args):
     case_id = args.get("case_id")
     response = client.get_case_grouping_graph(case_id)
     processed_data = preprocess_get_case_grouping_graph_outputs(response.get('reply', {}))
+    visualize_case_grouping_graph(processed_data)
     return CommandResults(
         outputs_prefix='Core.CaseGroupingGraph',
         outputs_key_field='summary',

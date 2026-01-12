@@ -3172,6 +3172,9 @@ script:
         - contextPath: Core.CaseGroupingGraph.links.source_id
           description: Source node ID
           type: String
+        - contextPath: Core.CaseGroupingGraph.links.source_issue_id
+          description: Source node ID of the issue that originated a cluster link.
+          type: String
         - contextPath: Core.CaseGroupingGraph.links.target_id
           description: Target node ID
           type: String
