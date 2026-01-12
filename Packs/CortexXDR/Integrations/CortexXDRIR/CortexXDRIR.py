@@ -517,26 +517,62 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/get/",
-            json_data={"request_data": request_data},
-            headers=self.headers,
-            timeout=self.timeout,
+            json_data={"request_data": {}},
+            # headers=self.headers,
+            # timeout=self.timeout,
         )
         return reply.get("reply", {})
 
-    def insert_biocs(self, request_data: dict):
+    def insert_biocs(self, request_data):
+        request_data = [
+        {
+          "name": "TestBIOC",
+          "type": "EXECUTION",
+          "severity": "SEV_020_LOW",
+          "comment": "",
+          "status": "ENABLED",
+          "is_xql": False,
+          "indicator": {
+            "runOnCGO": True,
+            "investigationType": "FILE_EVENT",
+            "investigation": {
+              "FILE_EVENT": {
+                "filter": {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "action_file_name",
+                      "SEARCH_TYPE": "EQ",
+                      "SEARCH_VALUE": "aaaaaa",
+                      "EXTRA_FIELDS": [],
+                      "isExtended": False
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "mitre_tactic_id_and_name": [
+            ""
+          ],
+          "mitre_technique_id_and_name": [
+            ""
+          ]
+        }
+      ]
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/insert/",
-            json_data={"request_data": request_data},
+            json_data={"request_data": [request_data]},
             headers=self.headers,
             timeout=self.timeout,
         )
-        return reply.get("reply", {})
+        # return reply.get("reply", {})
+        return reply
 
     def delete_biocs(self, request_data: dict):
         reply = self._http_request(
             method="POST",
-            url_suffix="/bioc/delete/",
+            url_suffix="/bioc/delete",
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -547,7 +583,7 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/get/",
-            json_data={"request_data": request_data},
+            json_data={"request_data": {"search_from": 0, "search_to": 100}},
             headers=self.headers,
             timeout=self.timeout,
         )
@@ -556,7 +592,7 @@ class Client(CoreClient):
     def insert_correlation_rules(self, request_data: dict):
         reply = self._http_request(
             method="POST",
-            url_suffix="/correlations/insert/",
+            url_suffix="/correlations/insert",
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -566,7 +602,7 @@ class Client(CoreClient):
     def delete_correlation_rules(self, request_data: dict):
         reply = self._http_request(
             method="POST",
-            url_suffix="/correlations/delete/",
+            url_suffix="/correlations/delete",
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -1479,6 +1515,11 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
 def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Returns a list of BIOCs.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
     """
     filters = assign_params(
         name=args.get("name"),
@@ -1499,7 +1540,7 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     )
     reply = client.get_biocs(request_data)
     biocs = reply.get("objects", [])
-    readable_output = tableToMarkdown("BIOCs", biocs, headers=["name", "type", "severity", "status"], removeNull=True)
+    readable_output = tableToMarkdown(name="BIOCs", t=biocs, headers=["name", "type", "severity", "status"], removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
@@ -1512,6 +1553,40 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
 def bioc_create_command(client: Client, args: Dict) -> CommandResults:
     """
     Creates a new BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    bioc_data = assign_params(
+        name=args.get("name"),
+        severity=args.get("severity"),
+        type=args.get("type"),
+        is_xql=argToBoolean(args.get("is_xql", False)),
+        comment=args.get("comment"),
+        status=args.get("status"),
+        indicator=argToList(args.get("indicator")),
+        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
+        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
+    )
+    reply = client.insert_biocs(bioc_data)
+    return CommandResults(
+        readable_output="BIOC created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs={"rule_id": reply.get("id")},
+        raw_response=reply,
+    )
+
+
+def bioc_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
     """
     bioc_data = assign_params(
         rule_id=args.get("rule_id"),
@@ -1525,20 +1600,23 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
         mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
         mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
     )
-    client.insert_biocs(bioc_data)
-    return bioc_list_command(client, {"name": args.get("name")})
-
-
-def bioc_update_command(client: Client, args: Dict) -> CommandResults:
-    """
-    Updates an existing BIOC.
-    """
-    return bioc_create_command(client, args)
+    reply = client.insert_biocs(bioc_data)
+    return CommandResults(
+        readable_output="BIOC updated successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs={"rule_id": reply.get("id")},
+        raw_response=reply,
+    )
 
 
 def bioc_delete_command(client: Client, args: Dict) -> str:
     """
     Deletes a BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
     """
     filters = assign_params(
         name=args.get("name"),
@@ -1551,12 +1629,17 @@ def bioc_delete_command(client: Client, args: Dict) -> str:
         mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
     )
     client.delete_biocs(filters)
-    return "BIOC object deleted successfully"
+    return "BIOC deleted successfully."
 
 
 def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Returns a list of correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
     """
     filters = assign_params(
         name=args.get("name"),
@@ -1581,7 +1664,7 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     reply = client.get_correlation_rules(request_data)
     rules = reply.get("objects", [])
     readable_output = tableToMarkdown(
-        "Correlation Rules", rules, headers=["id", "name", "description", "is_enabled"], removeNull=True
+        name="Correlation Rules", t=rules, headers=["id", "name", "description", "is_enabled"], removeNull=True
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1595,6 +1678,57 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
 def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
     """
     Creates a new correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    rule_data = assign_params(
+        name=args.get("name"),
+        severity=args.get("severity"),
+        xql_query=args.get("xql_query"),
+        is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
+        description=args.get("description"),
+        alert_name=args.get("alert_name"),
+        alert_category=args.get("alert_category"),
+        alert_description=args.get("alert_description"),
+        alert_fields=args.get("alert_fields"),
+        execution_mode=args.get("execution_mode"),
+        search_window=args.get("search_window"),
+        schedule=args.get("schedule"),
+        schedule_linux=args.get("schedule_linux"),
+        timezone=args.get("timezone"),
+        suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
+        suppression_duration=args.get("suppression_duration"),
+        suppression_fields=args.get("suppression_fields"),
+        dataset=args.get("dataset"),
+        user_defined_severity=args.get("user_defined_severity"),
+        user_defined_category=args.get("user_defined_category"),
+        investigation_query_link=args.get("investigation_query_link"),
+        drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
+        mapping_strategy=args.get("mapping_strategy"),
+    )
+    if mitre_defs_json := args.get("mitre_defs_json"):
+        rule_data["mitre_defs"] = json.loads(mitre_defs_json)
+
+    reply = client.insert_correlation_rules(rule_data)
+    return CommandResults(
+        readable_output="Correlation rule created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs={"id": reply.get("id")},
+        raw_response=reply,
+    )
+
+
+def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
     """
     rule_data = assign_params(
         rule_id=args.get("rule_id"),
@@ -1625,25 +1759,27 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
     if mitre_defs_json := args.get("mitre_defs_json"):
         rule_data["mitre_defs"] = json.loads(mitre_defs_json)
 
-    client.insert_correlation_rules(rule_data)
-    # Run get to return the created rule
-    return correlation_rule_list_command(client, {"name": args.get("name")})
+    reply = client.insert_correlation_rules(rule_data)
+    return CommandResults(
+        readable_output="Correlation rule created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs={"id": reply.get("id")},
+        raw_response=reply,
+    )
 
 
-def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
-    """
-    Updates an existing correlation rule.
-    """
-    return correlation_rule_create_command(client, args)
-
-
-def correlation_rule_delete_command(client: Client, args: Dict) -> str:
+def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResults:
     """
     Deletes correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
     """
     rule_ids = argToList(args.get("rule_id"))
     client.delete_correlation_rules({"rule_id_list": rule_ids})
-    return "Correlation rule deleted successfully"
+    return CommandResults(readable_output="Correlation rule deleted successfully")
 
 
 def main():  # pragma: no cover
