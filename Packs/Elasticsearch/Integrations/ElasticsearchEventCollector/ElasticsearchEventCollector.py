@@ -518,7 +518,7 @@ def results_to_events_timestamp(response, last_fetch, seen_event_ids=None):
     seen_event_ids = seen_event_ids or set()
     new_seen_ids = set()
     events = []
-    
+
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
@@ -532,7 +532,7 @@ def results_to_events_timestamp(response, last_fetch, seen_event_ids=None):
 
                 if hit_timestamp > last_fetch:
                     last_fetch = hit_timestamp
-                    new_seen_ids = {hit_id}  # Reset seen IDs for new latest timestamp
+                    new_seen_ids = {hit_id}  # Reset seen ids for new latest timestamp
                 elif hit_timestamp == last_fetch:
                     new_seen_ids.add(hit_id)
 
@@ -578,7 +578,7 @@ def results_to_events_datetime(response, last_fetch, seen_event_ids=None):
     events = []
     hits = response.get("hits", {}).get("hits")
     demisto.debug(f"results_to_events_datetime - total hits to scan: {len(hits)}")
-    
+
     for hit in hits:
         source = hit.get("_source")
         if source is not None:
@@ -616,7 +616,8 @@ def results_to_events_datetime(response, last_fetch, seen_event_ids=None):
                     events.append(inc)
                 else:
                     demisto.debug(
-                        f"Skipping hit ID: {hit_id} since {hit_timestamp=} is earlier than the {current_fetch=} or this event was already processed"
+                        f"Skipping hit ID: {hit_id} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                        f"or this event was already processed"
                     )
 
     return events, last_fetch.isoformat(), new_seen_ids  # type:ignore[union-attr]
@@ -766,7 +767,7 @@ def fetch_events(proxies):
     events = []  # type: List
     updated_last_run = last_run
     new_seen_ids = set()
-    
+
     if total_results > 0:
         if "Timestamp" in TIME_METHOD:
             demisto.debug("fetch_events - calling results_to_events_timestamp")
