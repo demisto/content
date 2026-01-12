@@ -360,7 +360,7 @@ def test_incident_creation_e6(params, mocker):
     from ElasticsearchEventCollector import results_to_events_datetime
 
     last_fetch = "2019-08-29T14:44:00Z"
-    incidents, last_fetch2 = results_to_events_datetime(ES_V6_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_events_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-29T14:46:00.123456+00:00"
@@ -377,7 +377,7 @@ def test_incident_creation_e7(params, mocker):
     from ElasticsearchEventCollector import results_to_events_datetime
 
     last_fetch = "2019-08-27T17:59:00"
-    incidents, last_fetch2 = results_to_events_datetime(ES_V7_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_events_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-27T18:01:25.343212+00:00"
@@ -417,7 +417,7 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     from ElasticsearchEventCollector import results_to_events_timestamp
 
     lastfetch = int(datetime.strptime("2019-08-27T17:59:00Z", "%Y-%m-%dT%H:%M:%SZ").timestamp())
-    incidents, last_fetch2 = results_to_events_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
+    incidents, last_fetch2, _ = results_to_events_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     if params.get("map_labels"):
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
@@ -558,14 +558,14 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "",
             "1.1.2000 12:00:00Z",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         (
             "Timestamp-Milliseconds",
             946728000000,
             "",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         ("Timestamp-Milliseconds", "", "", "2.1.2000 12:00:00Z", {"range": {"time_field": {"lt": 949406400000}}}),
         (
@@ -576,7 +576,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
             {
                 "range": {
                     "time_field": {
-                        "gt": "2.1.2000 12:00:00.000000",
+                        "gte": "2.1.2000 12:00:00.000000",
                         "format": ElasticsearchEventCollector.ES_DEFAULT_DATETIME_FORMAT,
                     }
                 }
@@ -1073,12 +1073,23 @@ def test_results_to_events_datetime_exact_timestamp_boundary(mocker):
         }
     }
 
+    # No events seen yet
     last_fetch = "2024-01-01T10:00:01Z"
-    events, _ = results_to_events_datetime(response, last_fetch)
+    events, _, _ = results_to_events_datetime(response, last_fetch)
 
-    # Only event with timestamp > last_fetch should be included
+    assert len(events) == 3
+    assert "id2" in events[0]["rawJSON"] and "id3" in events[1]["rawJSON"] and "id4" in events[2]["rawJSON"]
+    
+    # event id2 is already seen, filtered out.
+    last_fetch = "2024-01-01T10:00:01Z"
+    events, _, _ = results_to_events_datetime(response, last_fetch, seen_event_ids=["id2"])
     assert len(events) == 2
-    assert "id3" in events[0]["rawJSON"] or "id4" in events[0]["rawJSON"]
+    assert "id3" in events[0]["rawJSON"] and "id4" in events[1]["rawJSON"]
+    
+    
+
+    
+    
 
 def test_fetch_events_with_api_failure(mocker):
     """Test fetch_events with API failures, response is missing the hits key"""

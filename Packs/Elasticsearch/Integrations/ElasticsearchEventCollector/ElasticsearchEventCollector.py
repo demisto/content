@@ -1,4 +1,5 @@
 import re
+import traceback
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -499,20 +500,25 @@ def event_label_maker(source):
     return labels
 
 
-def results_to_events_timestamp(response, last_fetch):
+def results_to_events_timestamp(response, last_fetch, seen_event_ids=None):
     """Converts the current results into events.
 
     Args:
         response(dict): the raw search results from Elasticsearch.
         last_fetch(num): the date or timestamp of the last fetch before this fetch
         - this will hold the last date of the event brought by this fetch.
+        seen_event_ids(set): set of event IDs already processed at the current timestamp
 
     Returns:
         (list).The events.
         (num).The date of the last event brought by this fetch.
+        (set).The set of event IDs at the last fetch timestamp.
     """
     current_fetch = last_fetch
+    seen_event_ids = seen_event_ids or set()
+    new_seen_ids = set()
     events = []
+    
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
@@ -522,19 +528,23 @@ def results_to_events_timestamp(response, last_fetch):
                 # if timestamp convert to iso format date and save the timestamp
                 hit_date = timestamp_to_date(str(time_field_value))
                 hit_timestamp = int(time_field_value)
+                hit_id = hit.get("_id")
 
                 if hit_timestamp > last_fetch:
                     last_fetch = hit_timestamp
+                    new_seen_ids = {hit_id}  # Reset seen IDs for new latest timestamp
+                elif hit_timestamp == last_fetch:
+                    new_seen_ids.add(hit_id)
 
-                # avoid duplication due to weak time query
-                if hit_timestamp > current_fetch:
+                # avoid duplication: skip if timestamp equals current_fetch and id was already seen
+                if hit_timestamp > current_fetch or (hit_timestamp == current_fetch and hit_id not in seen_event_ids):
                     inc = {
-                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit.get("_id")),
+                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit_id),
                         "rawJSON": json.dumps(hit),
                         "occurred": hit_date.isoformat() + "Z",
                     }
-                    if hit.get("_id"):
-                        inc["dbotMirrorId"] = hit.get("_id")
+                    if hit_id:
+                        inc["dbotMirrorId"] = hit_id
 
                     if MAP_LABELS:
                         inc["labels"] = event_label_maker(hit.get("_source"))
@@ -543,27 +553,32 @@ def results_to_events_timestamp(response, last_fetch):
 
                     events.append(inc)
 
-    return events, last_fetch
+    return events, last_fetch, new_seen_ids
 
 
-def results_to_events_datetime(response, last_fetch):
+def results_to_events_datetime(response, last_fetch, seen_event_ids=None):
     """Converts the current results into events.
 
     Args:
         response(dict): the raw search results from Elasticsearch.
         last_fetch(datetime): the date or timestamp of the last fetch before this fetch or parameter default fetch time
         - this will hold the last date of the event brought by this fetch.
+        seen_event_ids(set): set of event IDs already processed at the current timestamp
 
     Returns:
         (list).The events.
         (datetime).The date of the last event brought by this fetch.
+        (set).The set of event IDs at the last fetch timestamp.
     """
     last_fetch = dateparser.parse(last_fetch)
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
+    seen_event_ids = seen_event_ids or set()
+    new_seen_ids = set()
     events = []
     hits = response.get("hits", {}).get("hits")
     demisto.debug(f"results_to_events_datetime - total hits to scan: {len(hits)}")
+    
     for hit in hits:
         source = hit.get("_source")
         if source is not None:
@@ -571,23 +586,27 @@ def results_to_events_datetime(response, last_fetch):
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
+                hit_id = hit.get("_id")
 
                 if hit_timestamp > last_fetch_timestamp:
                     last_fetch = hit_date
                     last_fetch_timestamp = hit_timestamp
+                    new_seen_ids = {hit_id}  # Reset seen ids for new latest timestamp
+                elif hit_timestamp == last_fetch_timestamp:
+                    new_seen_ids.add(hit_id)
 
-                # avoid duplication due to weak time query
-                if hit_timestamp > current_fetch:
+                # avoid duplication: skip if timestamp equals current_fetch and id was already seen
+                if hit_timestamp > current_fetch or (hit_timestamp == current_fetch and hit_id not in seen_event_ids):
                     inc = {
-                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit.get("_id")),
+                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit_id),
                         "rawJSON": json.dumps(hit),
                         # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
                         # and sometimes as YYYY-MM-DDThh:mm:ss
                         # we want to return format: YYYY-MM-DDThh:mm:ssZ in our events
                         "occurred": format_to_iso(hit_date.isoformat()),
                     }
-                    if hit.get("_id"):
-                        inc["dbotMirrorId"] = hit.get("_id")
+                    if hit_id:
+                        inc["dbotMirrorId"] = hit_id
 
                     if MAP_LABELS:
                         inc["labels"] = event_label_maker(hit.get("_source"))
@@ -597,10 +616,10 @@ def results_to_events_datetime(response, last_fetch):
                     events.append(inc)
                 else:
                     demisto.debug(
-                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                        f"Skipping hit ID: {hit_id} since {hit_timestamp=} is earlier than the {current_fetch=} or this event was already processed"
                     )
 
-    return events, last_fetch.isoformat()  # type:ignore[union-attr]
+    return events, last_fetch.isoformat(), new_seen_ids  # type:ignore[union-attr]
 
 
 def format_to_iso(date_string):
@@ -634,8 +653,8 @@ def get_time_range(
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
-        start date (gt) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
-                          if this is not the fetch: use the last fetch provided
+        start date (gte) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
+                           if this is not the fetch: use the last fetch provided
         end date (lt) - use the given time range end param.
         When the `time_method` parameter is set to `Simple-Date` in order to avoid being related to the field datetime format,
             we add the format key to the query dict.
@@ -648,7 +667,7 @@ def get_time_range(
         time_method (str): The method of timestamp conversion (e.g., 'Simple-Date', 'Timestamp-Seconds', 'Timestamp-Milliseconds')
 
     Returns:
-        dictionary (Ex. {"range":{'gt': 1000 'lt': 1001}})
+        dictionary (Ex. {"range":{'gte': 1000 'lt': 1001}})
     """
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
@@ -660,7 +679,7 @@ def get_time_range(
 
     demisto.debug(f"Time range start time: {start_time}")
     if start_time:
-        range_dict["gt"] = start_time
+        range_dict["gte"] = start_time  # Use gte (>=) instead of gt (>) to include events at exact timestamp
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
@@ -717,7 +736,8 @@ def execute_raw_query(es, raw_query, index, size=None, page=None):
 def fetch_events(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time") or FETCH_TIME
-    demisto.debug(f"fetch_events - last_run before fetch:\n{last_fetch}")
+    seen_event_ids = set(last_run.get("event_ids", []))
+    demisto.debug(f"fetch_events - last_run before fetch:\n{last_fetch}, seen_event_ids: {len(seen_event_ids)}")
     es = elasticsearch_builder(proxies)
     time_range_dict = get_time_range(time_range_start=last_fetch)
 
@@ -745,16 +765,18 @@ def fetch_events(proxies):
 
     events = []  # type: List
     updated_last_run = last_run
+    new_seen_ids = set()
+    
     if total_results > 0:
         if "Timestamp" in TIME_METHOD:
             demisto.debug("fetch_events - calling results_to_events_timestamp")
-            events, last_fetch = results_to_events_timestamp(response, last_fetch)
-            updated_last_run = {"time": last_fetch}
+            events, last_fetch, new_seen_ids = results_to_events_timestamp(response, last_fetch, seen_event_ids)
+            updated_last_run = {"time": last_fetch, "event_ids": list(new_seen_ids)}
 
         else:
             demisto.debug("fetch_events - calling results_to_events_datetime")
-            events, last_fetch = results_to_events_datetime(response, last_fetch or FETCH_TIME)
-            updated_last_run = {"time": str(last_fetch)}
+            events, last_fetch, new_seen_ids = results_to_events_datetime(response, last_fetch or FETCH_TIME, seen_event_ids)
+            updated_last_run = {"time": str(last_fetch), "event_ids": list(new_seen_ids)}
 
     demisto.info(f"fetch_events - total events extracted: {len(events)}")
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -815,11 +837,11 @@ def get_events(proxies):
     if total_results > 0:
         if "Timestamp" in time_method:
             demisto.debug("get_events - calling results_to_events_timestamp")
-            events, _ = results_to_events_timestamp(response, start_time)
+            events, _, _ = results_to_events_timestamp(response, start_time)
 
         else:
             demisto.debug("get_events - calling results_to_events_datetime")
-            events, _ = results_to_events_datetime(response, start_time)
+            events, _, _ = results_to_events_datetime(response, start_time)
 
         demisto.info(f"get_events - total events extracted: {len(events)}")
         return CommandResults(readable_output=tableToMarkdown(name="Get Events", t=events))
@@ -829,17 +851,20 @@ def get_events(proxies):
 def main():  # pragma: no cover
     proxies = handle_proxy()
     proxies = proxies if proxies else None
+    command = demisto.command()
     try:
-        LOG(f"command is {demisto.command()}")
-        if demisto.command() == "test-module":
+        LOG(f"command is {command}")
+        if command == "test-module":
             return_results(test_func(proxies))
-        elif demisto.command() == "fetch-events":
+        elif command == "fetch-events":
             fetch_events(proxies)
-        elif demisto.command() == "es-get-events":
+        elif command == "es-get-events":
             results = get_events(proxies)
             return_results(results)
     except Exception as e:
-        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
+        error_msg = f"Failed executing {command}.\nError message: {e}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg, error=str(e))
 
 
 if __name__ in ("__main__", "builtin", "builtins"):
