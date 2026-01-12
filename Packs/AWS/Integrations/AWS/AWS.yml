@@ -206,7 +206,7 @@ script:
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix
-      - description: Marker is where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
+      - description: The limit is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
         name: limit
       - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 1,000."
         name: next_token
