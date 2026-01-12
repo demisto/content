@@ -4025,6 +4025,16 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
 
 
 def handle_xql_default_limit(query: str, default_limit: int) -> str:
+    """Add a default limit clause to an XQL query if one is not already present.
+
+    Args:
+        query (str): The XQL query string to process.
+        default_limit (int): The default limit value to append if no limit clause exists.
+
+    Returns:
+        str: The original query if it already contains a limit clause, or the query
+            with an appended limit clause if none was present.
+    """
     if not query or not query.strip():
         return query
 
