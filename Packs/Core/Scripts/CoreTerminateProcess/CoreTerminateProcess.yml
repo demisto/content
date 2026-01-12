@@ -70,7 +70,7 @@ outputs:
   type: Unknown
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.6391686
 fromversion: 6.1.0
 isInternal: true
 tests:
@@ -79,3 +79,5 @@ marketplaces:
 - platform
 supportedModules:
 - xsiam
+- cloud_runtime_security
+- edr
