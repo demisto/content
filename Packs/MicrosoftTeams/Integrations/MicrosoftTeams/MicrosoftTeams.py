@@ -1893,7 +1893,7 @@ def chat_message_list_command():
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
-            "MicrosoftTeams.ChatListMetadata": {"returned_results": len(messages_data), "filtered_results": limit}
+            "MicrosoftTeams.ChatListMetadata": {"returned_results": len(messages_data), "filtered_results": limit},
         },
     )
     return_results(result)
