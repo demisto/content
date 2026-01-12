@@ -357,36 +357,6 @@ class TokenScope:
     WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
 
 
-
-class TokenScope:
-    STORAGE = "STORAGE"
-    GRAPH = "GRAPH"
-    NETWORK = "NETWORK"
-    COMPUTE = "COMPUTE"
-    VAULT = "VAULT"
-    CONTAINER_REGISTRY = "CONTAINER_REGISTRY"
-    DATABASE = "DATABASE"
-    COSMOS = "COSMOS"
-    DATA_LAKE_1 = "DATA_LAKE_1"
-    DATA_LAKE_2 = "DATA_LAKE_2"
-    SIGNALR = "SIGNALR"
-    EVENT_HUBS = "EVENT_HUBS"
-    SERVICE_BUS = "SERVICE_BUS"
-    MONITOR = "MONITOR"
-    DIGITAL_TWINS = "DIGITAL_TWINS"
-    COGNITIVE_SERVICES = "COGNITIVE_SERVICES"
-    SYNAPSE_ANALYTICS = "SYNAPSE_ANALYTICS"
-    ML = "ML"
-    NONE = "NONE"
-    DEFAULT = "DEFAULT"
-    SEARCH = "SEARCH"
-    WORKSPACE_MEMBERSHIP = "WORKSPACE_MEMBERSHIP"
-    WORKSPACE_GROUP = "WORKSPACE_GROUP"
-    WORKSPACE_USER = "WORKSPACE_USER"
-    WORKSPACE_DOMAIN = "WORKSPACE_DOMAIN"
-    WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
-
-
 """ CLIENT CLASS """
 
 
@@ -1057,7 +1027,8 @@ class AzureClient:
 
         Args:
             container_name (str): Container name.
-            blob_name (str): Blob name.account_name (str): Name of the storage account.
+            blob_name (str): Blob name.
+            account_name (str): Name of the storage account.
             headers (dict): Request Headers.
 
         Returns:
@@ -2956,7 +2927,6 @@ def storage_container_blob_get_command(client: AzureClient, params: dict, args: 
     account_name = args.get("account_name", "")
 
     response = client.storage_container_blob_get_request(container_name, blob_name, account_name)
-
     if hasattr(response, "content"):
         return fileResult(filename=blob_name, data=response.content)  # type: ignore[attr-defined]
     else:
