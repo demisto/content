@@ -6918,7 +6918,7 @@ def test_ec2_allocate_address_command_success(mocker):
         "NetworkBorderGroup": "mock_network_border_group",
     }
 
-    args = {"domain": "vpc"}
+    args = {}
 
     result = EC2.allocate_address_command(mock_client, args)
     assert isinstance(result, CommandResults)
