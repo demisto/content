@@ -387,6 +387,8 @@ def fetch_params_check():
     if RAW_QUERY and FETCH_QUERY_PARM:
         str_error.append("Both Query and Raw Query are configured. Please choose between Query or Raw Query.")
 
+    demisto.debug(f"fetch_params_check errors:\n{str_error}")
+
     if len(str_error) > 0:
         return "Got the following errors in test:\nFetches events is enabled.\n" + "\n".join(str_error)
     else:
@@ -480,7 +482,7 @@ def test_func(proxies):
     if not success:
         return message
 
-    if demisto.params().get("isFetch"):
+    if demisto.params().get("isFetchEvents", False):
         # check the existence of all necessary fields for fetch
         failed_message = fetch_params_check()
         if failed_message:
@@ -799,7 +801,7 @@ def fetch_events(proxies):
 
 def get_events(proxies, is_test=False):
     if is_test:
-        demisto.debug("Running get_events as test mode")
+        demisto.debug("get_events - Running get_events as test mode")
         raw_query = '{"query": {"match_all": {}}}'
         fetch_query = ""
         fetch_index = ""
