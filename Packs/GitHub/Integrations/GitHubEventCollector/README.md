@@ -18,7 +18,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Permissions
 
-To fetch audit logs, ensure the API Token has the `read:audit_log` permission scope.
+To fetch audit logs, ensure the API Token includes the `read:audit_log` permission scope.
 
 ## Commands
 

@@ -15,7 +15,7 @@ Specify the endpoint for fetching audit logs; replace the `${ORGANIZATION}` valu
 5. Select **Generate new token**, then click **Generate new token (classic)**.
 6. In the **Note** field, give the token a descriptive name.
 7. Select a suitable **Expiration** date by choosing the default option or click **Custom** to enter a specific date.
-8. Select the **Scopes** to grant this token. To fetch audit logs, ensure the token has the `read:audit_log` permission scope.
+8. Select the **Scopes** to grant this token. To fetch audit logs, ensure the token includes the `read:audit_log` permission scope.
 9. Click **Generate token**.
 10. Save the token in a secure location and use it to configure an instance of this integration.
 11. Test the configuration and save the instance.
@@ -24,4 +24,4 @@ For more information, refer to the documentation on [creating a GitHub personal 
 
 ## Permissions
 
-To fetch audit logs, ensure the API Token has the `read:audit_log` permission scope.
+To fetch audit logs, ensure the API Token includes the `read:audit_log` permission scope.
