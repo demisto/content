@@ -1,3 +1,5 @@
+## Overview
+
 GitHub logs event collector integration for Cortex XSIAM.
 This integration was integrated and tested with GitHub REST API version `2022-11-28`.
 
