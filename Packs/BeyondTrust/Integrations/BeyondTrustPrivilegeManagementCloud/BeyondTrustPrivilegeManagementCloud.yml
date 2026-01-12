@@ -62,11 +62,11 @@ configuration:
   help: Maximum number of events to fetch per fetch cycle.
 - display: First fetch timestamp
   name: first_fetch
-  defaultvalue: "3 days"
+  defaultvalue: "1 minute"
   type: 0
   required: false
   section: Collect
-  help: The time from which to fetch events.
+  additionalinfo: "The time from which to start fetching events on first run. Defaults to 1 minute ago to fetch only new events. Use values like '3 days', '1 week' for historical data if needed."
 script:
   script: '-'
   type: python
@@ -79,12 +79,20 @@ script:
     arguments:
     - name: start_date
       required: false
-      description: "Start Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z"
+      description: "Start Date(UTC) to search events from (Elastic Ingestion Timestamp in UTC). Example: 2022-08-12T17:34:28.694Z. If not provided, defaults to 1 hour ago."
     - name: limit
       required: false
       description: "Maximum records that can be returned. Min size: 1, Max size: 1000."
       defaultValue: "50"
-    description: Retrieves the list of events by start date.
+    - name: should_push_events
+      required: false
+      description: "Set to true to push events to XSIAM. Used for debugging."
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    description: "This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding. Retrieves the list of events by start date."
     outputs:
     - contextPath: BeyondTrust.Event.id
       description: The ID of the event.

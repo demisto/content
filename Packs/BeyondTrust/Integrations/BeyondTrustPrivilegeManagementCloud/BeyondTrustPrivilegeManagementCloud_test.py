@@ -426,15 +426,15 @@ def test_fetch_events_with_last_run(client, mocker):
     """
     mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T12:30:00.000Z"}]}
     mocker.patch.object(client, "get_events", return_value=mock_events_response)
-    
+
     last_run = {"last_event_time": "2024-01-01T12:00:00.000000Z"}
     first_fetch = "3 days"
     max_fetch = 10
     events_types_to_fetch = ["Events"]
-    
+
     with freeze_time("2024-01-01 13:00:00"):
         next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
-    
+
     # Verify it used last_run timestamp, not first_fetch
     call_args = client.get_events.call_args
     assert call_args[0][0] == "2024-01-01T12:00:00.000000Z"
@@ -453,15 +453,15 @@ def test_fetch_events_max_fetch_limit(client, mocker):
     """
     mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}]}
     mocker.patch.object(client, "get_events", return_value=mock_events_response)
-    
+
     last_run: dict = {}
     first_fetch = "1 hour"
     max_fetch = 2  # Limit to 2 events
     events_types_to_fetch = ["Events"]
-    
+
     with freeze_time("2024-01-01 12:00:00"):
         next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
-    
+
     # Verify the parameter is passed correctly to the API
     call_args = client.get_events.call_args
     assert call_args[0][1] == 2  # Second positional argument is limit
@@ -479,18 +479,18 @@ def test_fetch_events_empty_response(client, mocker):
     """
     mock_events_response = {"events": []}
     mock_audit_response = {"data": [], "pageCount": 0}
-    
+
     mocker.patch.object(client, "get_events", return_value=mock_events_response)
     mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
-    
+
     last_run: dict = {}
     first_fetch = "1 hour"
     max_fetch = 10
     events_types_to_fetch = ["Events", "Activity Audits"]
-    
+
     with freeze_time("2024-01-01 12:00:00"):
         next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
-    
+
     assert len(events) == 0
     assert "last_event_time" in next_run
     assert "last_audit_time" in next_run
@@ -499,14 +499,15 @@ def test_fetch_events_empty_response(client, mocker):
 def test_http_request_with_authentication(client, mocker):
     """Test _http_request automatically gets token and adds Authorization header."""
     from BeyondTrustPrivilegeManagementCloud import BaseClient
+
     mock_token_response = {"access_token": "new_token_123"}
     mock_api_response = {"data": "test"}
-    
+
     mock_http = mocker.patch.object(BaseClient, "_http_request")
     mock_http.side_effect = [mock_token_response, mock_api_response]
-    
-    result = client._http_request(method="GET", url_suffix="/management-api/v3/test")
-    
+
+    client._http_request(method="GET", url_suffix="/management-api/v3/test")
+
     assert client.token == "new_token_123"
     assert mock_http.call_count == 2
 
@@ -514,11 +515,12 @@ def test_http_request_with_authentication(client, mocker):
 def test_http_request_token_endpoint(client, mocker):
     """Test _http_request does NOT add Authorization header for token endpoint."""
     from BeyondTrustPrivilegeManagementCloud import BaseClient
+
     mock_response = {"access_token": "token_123"}
     mock_http = mocker.patch.object(BaseClient, "_http_request", return_value=mock_response)
-    
+
     client._http_request(method="POST", url_suffix="/oauth/connect/token", data={})
-    
+
     call_headers = mock_http.call_args[1]["headers"]
     assert "Authorization" not in call_headers
 
@@ -527,49 +529,9 @@ def test_get_audit_activity_without_filters(client, mocker):
     """Test get_audit_activity without filter parameters."""
     mock_response = {"data": [], "pageCount": 0}
     mock_http = mocker.patch.object(client, "_http_request", return_value=mock_response)
-    
+
     client.get_audit_activity(page_size=50, page_number=1)
-    
-    call_params = mock_http.call_args[1]["params"]
-    assert "Pagination.PageSize" in call_params
-    assert "Pagination.PageNumber" in call_params
-    assert "Filter.Created.Dates" not in call_params
 
-
-def test_http_request_with_authentication(client, mocker):
-    """Test _http_request automatically gets token and adds Authorization header."""
-    from BeyondTrustPrivilegeManagementCloud import BaseClient
-    mock_token_response = {"access_token": "new_token_123"}
-    mock_api_response = {"data": "test"}
-    
-    mock_http = mocker.patch.object(BaseClient, "_http_request")
-    mock_http.side_effect = [mock_token_response, mock_api_response]
-    
-    result = client._http_request(method="GET", url_suffix="/management-api/v3/test")
-    
-    assert client.token == "new_token_123"
-    assert mock_http.call_count == 2
-
-
-def test_http_request_token_endpoint(client, mocker):
-    """Test _http_request does NOT add Authorization header for token endpoint."""
-    from BeyondTrustPrivilegeManagementCloud import BaseClient
-    mock_response = {"access_token": "token_123"}
-    mock_http = mocker.patch.object(BaseClient, "_http_request", return_value=mock_response)
-    
-    client._http_request(method="POST", url_suffix="/oauth/connect/token", data={})
-    
-    call_headers = mock_http.call_args[1]["headers"]
-    assert "Authorization" not in call_headers
-
-
-def test_get_audit_activity_without_filters(client, mocker):
-    """Test get_audit_activity without filter parameters."""
-    mock_response = {"data": [], "pageCount": 0}
-    mock_http = mocker.patch.object(client, "_http_request", return_value=mock_response)
-    
-    client.get_audit_activity(page_size=50, page_number=1)
-    
     call_params = mock_http.call_args[1]["params"]
     assert "Pagination.PageSize" in call_params
     assert "Pagination.PageNumber" in call_params
