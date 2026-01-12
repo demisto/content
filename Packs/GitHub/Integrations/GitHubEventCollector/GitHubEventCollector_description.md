@@ -17,7 +17,7 @@ Specify the endpoint for fetching audit logs; replace the `${ORGANIZATION}` valu
 7. Select a suitable **Expiration** date by choosing the default option or click **Custom** to enter a specific date.
 8. Select the **Scopes** to grant this token. To fetch audit logs, ensure the token has the `read:audit_log` permission scope.
 9. Click **Generate token**.
-10. Save the token in a safe location and use it to configure an instance of this integration.
+10. Save the token in a secure location and use it to configure an instance of this integration.
 11. Test the configuration and save the instance.
 
 For more information, refer to the documentation on [creating a GitHub personal access token (classic)](https://docs.github.com/en/enterprise-cloud@latest/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and [accessing the GitHub audit logs of an organization](https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise).
