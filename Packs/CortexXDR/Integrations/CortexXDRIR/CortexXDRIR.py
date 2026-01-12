@@ -452,11 +452,7 @@ class Client(CoreClient):
         Returns:
             list: A list of XQL queries.
         """
-        request_data = assign_params(
-            extended_view=extra_data,
-            xql_query_name=xql_query_name,
-            xql_query_tag=xql_query_tag
-        )
+        request_data = assign_params(extended_view=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
         reply = self._http_request(
             method="POST",
             url_suffix="/xql_library/get/",
@@ -481,7 +477,7 @@ class Client(CoreClient):
             xql_queries_override=override_existing,
             xql_query=xql_query,
             xql_query_name=xql_query_name,
-            xql_query_tag=xql_query_tag
+            xql_query_tag=xql_query_tag,
         )
         return self._http_request(
             method="POST",
@@ -500,10 +496,7 @@ class Client(CoreClient):
         Returns:
             dict: The API response.
         """
-        request_data = assign_params(
-            xql_query_name=xql_query_name,
-            xql_query_tag=xql_query_tag
-        )
+        request_data = assign_params(xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
         return self._http_request(
             method="POST",
             url_suffix="/xql_library/delete/",
@@ -1557,49 +1550,31 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: The results of the command.
     """
-    api_id_str_list = argToList(args.get('api_id', []))
-    roles_list = argToList(args.get('role', []))
-    expires_before = arg_to_timestamp(args.get('expires_before'), arg_name="expires_before") if args.get('expires_before') else None
-    expires_after = arg_to_timestamp(args.get('expires_after'), arg_name="expires_after") if args.get('expires_after') else None
+    api_id_str_list = argToList(args.get("api_id", []))
+    roles_list = argToList(args.get("role", []))
+    expires_before = (
+        arg_to_timestamp(args.get("expires_before"), arg_name="expires_before") if args.get("expires_before") else None
+    )
+    expires_after = arg_to_timestamp(args.get("expires_after"), arg_name="expires_after") if args.get("expires_after") else None
     api_id_int_list = [int(x) for x in api_id_str_list] if api_id_str_list else None
 
     filters = []
 
     if api_id_int_list:
-        filters.append({
-           "field": "id",
-           "operator": "in",
-           "value": api_id_int_list
-       })
+        filters.append({"field": "id", "operator": "in", "value": api_id_int_list})
 
     if roles_list:
-        filters.append({
-            "field": "roles",
-            "operator": "contains",
-            "value": roles_list
-        })
+        filters.append({"field": "roles", "operator": "contains", "value": roles_list})
 
     if expires_before:
-        filters.append({
-            "field": "expiration",
-            "operator": "lte",
-            "value": expires_before
-        })
+        filters.append({"field": "expiration", "operator": "lte", "value": expires_before})
 
     if expires_after:
-        filters.append({
-            "field": "expiration",
-            "operator": "gte",
-            "value": expires_after
-        })
+        filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
 
     api_keys = client.get_api_keys({"filters": filters})
 
-    readable_output = tableToMarkdown(
-        name="API Keys",
-        t=api_keys,
-        headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(name="API Keys", t=api_keys, headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1618,7 +1593,7 @@ def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    api_id = argToList(args.get('api_id'))
+    api_id = argToList(args.get("api_id"))
     client.delete_api_keys(api_id=api_id)
 
     return CommandResults(readable_output="API Keys deleted successfully.")
@@ -1633,26 +1608,18 @@ def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns:
         CommandResults: The results of the command.
     """
-    extra_data = args.get('extra_data')
-    xql_query_name = argToList(args.get('xql_query_name'))
-    xql_query_tag = argToList(args.get('xql_query_tag'))
+    extra_data = args.get("extra_data")
+    xql_query_name = argToList(args.get("xql_query_name"))
+    xql_query_tag = argToList(args.get("xql_query_tag"))
 
-    queries = client.get_xql_queries(
-        extra_data=extra_data,
-        xql_query_name=xql_query_name,
-        xql_query_tag=xql_query_tag
-    )
+    queries = client.get_xql_queries(extra_data=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
 
     # Human-Readable Output: All API outputs under xql_queries without query_metadata
     hr_queries = copy.deepcopy(queries)
     for query in hr_queries:
-        query.pop('query_metadata', None)
+        query.pop("query_metadata", None)
 
-    readable_output = tableToMarkdown(
-        "XQL Queries",
-        hr_queries,
-        headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown("XQL Queries", hr_queries, headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1671,16 +1638,13 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: The results of the command.
     """
-    override_existing = args.get('override_existing')
-    xql_query = argToList(args.get('xql_query'))
-    xql_query_name = argToList(args.get('xql_query_name'))
-    xql_query_tag = argToList(args.get('xql_query_tag'))
+    override_existing = args.get("override_existing")
+    xql_query = argToList(args.get("xql_query"))
+    xql_query_name = argToList(args.get("xql_query_name"))
+    xql_query_tag = argToList(args.get("xql_query_tag"))
 
     client.create_xql_queries(
-        override_existing=override_existing,
-        xql_query=xql_query,
-        xql_query_name=xql_query_name,
-        xql_query_tag=xql_query_tag
+        override_existing=override_existing, xql_query=xql_query, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag
     )
 
     return CommandResults(readable_output="XQL queries created successfully.")
@@ -1695,13 +1659,10 @@ def xql_library_delete_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: The results of the command.
     """
-    xql_query_name = argToList(args.get('xql_query_name'))
-    xql_query_tag = argToList(args.get('xql_query_tag'))
+    xql_query_name = argToList(args.get("xql_query_name"))
+    xql_query_tag = argToList(args.get("xql_query_tag"))
 
-    client.delete_xql_queries(
-        xql_query_name=xql_query_name,
-        xql_query_tag=xql_query_tag
-    )
+    client.delete_xql_queries(xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
 
     return CommandResults(readable_output="XQL queries deleted successfully.")
 
