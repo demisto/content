@@ -1,4 +1,5 @@
 This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches Domains data with information from multiple integrations an
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 
