@@ -5,7 +5,7 @@
 Microsoft is deprecating the legacy Remote PowerShell (RPS) protocol used by this integration. As a result, the **Security and Compliance – Content Search v2** integration is planned for deprecation on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
 Note: The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery) and now search by a case.
 
-### Commands with migration guidance (use the equivalent commands in Microsoft Graph Security)
+### Commands Replacement
 
 #### Compliance cases
 

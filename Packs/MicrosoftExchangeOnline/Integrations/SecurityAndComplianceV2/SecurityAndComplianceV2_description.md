@@ -1,6 +1,6 @@
 # O365 - Security And Compliance - Content Search V2
 
-**Important**
+**⚠️  Important**
 - This integration is planned for **deprecation** on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For detailed list on commands and Playbooks replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2)**.
 
 - The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery) and now search by a case.
