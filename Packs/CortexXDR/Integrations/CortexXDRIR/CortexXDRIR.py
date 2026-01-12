@@ -100,7 +100,7 @@ def clear_trailing_whitespace(res):
     return res
 
 
-def strip_prefix_from_list(data_list, prefix):
+def remove_prefix_from_keys(data_list, prefix):
     """
     Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
 
@@ -1564,8 +1564,8 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             }]
         assets = client.list_assets(request_data=request_data)
     readable_assets = []
-    assets = strip_prefix_from_list(assets, "xdm.")
-    assets = strip_prefix_from_list(assets, "asset.")
+    assets = remove_prefix_from_keys(assets, "xdm.")
+    assets = remove_prefix_from_keys(assets, "asset.")
     for asset in assets:
         readable_asset = {
             "ID": asset.get("id"),
@@ -1742,7 +1742,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     demisto.debug(f"Final {request_data=}")
 
     groups = client.list_asset_groups(request_data=request_data)
-    groups = strip_prefix_from_list(groups, "XDM.ASSET_GROUP.")
+    groups = remove_prefix_from_keys(groups, "XDM.ASSET_GROUP.")
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
         t=groups,
