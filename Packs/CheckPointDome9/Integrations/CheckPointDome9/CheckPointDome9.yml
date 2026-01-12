@@ -1,5 +1,4 @@
 category: Network Security
-provider: CheckPoint Software Technologies
 commonfields:
   id: checkpointdome9
   version: -1

@@ -1,5 +1,4 @@
 category: Endpoint
-provider: CrowdStrike
 commonfields:
   id: CrowdStrike Falcon Streaming v2
   version: -1

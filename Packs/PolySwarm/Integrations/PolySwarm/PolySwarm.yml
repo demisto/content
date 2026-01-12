@@ -1,6 +1,5 @@
 deprecated: true
 category: Data Enrichment & Threat Intelligence
-provider: PolySwarm
 commonfields:
   id: PolySwarm
   version: -1

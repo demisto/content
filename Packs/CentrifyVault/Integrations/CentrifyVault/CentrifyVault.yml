@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Delinea
 commonfields:
   id: Centrify Vault
   version: -1

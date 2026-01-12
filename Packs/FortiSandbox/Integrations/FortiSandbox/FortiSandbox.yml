@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Fortinet
 commonfields:
   id: FortiSandbox
   version: -1

@@ -1,5 +1,4 @@
 category: Utilities
-provider: Google
 commonfields:
   id: Google Cloud Functions
   version: -1

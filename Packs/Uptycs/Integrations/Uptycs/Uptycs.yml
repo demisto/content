@@ -3,7 +3,6 @@ sectionorder:
 - Connect
 - Collect
 category: Analytics & SIEM
-provider: Uptycs
 commonfields:
   id: Uptycs
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Broadcom
 commonfields:
   id: SymantecCloudSOCEventCollector
   version: -1

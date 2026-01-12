@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Google
 commonfields:
   id: AttackSurfaceManagement
   version: -1

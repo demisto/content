@@ -1,5 +1,4 @@
 category: IT Services
-provider: FileOrbis
 commonfields:
   id: FileOrbis
   version: -1
@@ -33,11 +32,11 @@ name: FileOrbis
 script:
   commands:
   - arguments:
-    - description: Id of the user whose status is to be changed.
+    - description: Id of the user whose status is to be changed
       name: user_id
       required: true
     - auto: PREDEFINED
-      description: New status of the user ( 0 = Passive, 1 = Active, 2 = Deleted ).
+      description: New status of the user ( 0 = Passive, 1 = Active, 2 = Deleted )
       name: status
       predefined:
       - '0'
@@ -51,13 +50,13 @@ script:
       description: User Id to change its status.
       type: String
     - contextPath: FileOrbis.UserStatus.Success
-      description: True if operation completed successfully.
+      description: True if operation completed successfully
       type: Boolean
     - contextPath: FileOrbis.UserStatus.Status
-      description: Result code of the operation.
+      description: Result code of the operation
       type: Number
     - contextPath: FileOrbis.UserStatus.Message
-      description: User friendly result message of the operation.
+      description: User friendly result message of the operation
       type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false

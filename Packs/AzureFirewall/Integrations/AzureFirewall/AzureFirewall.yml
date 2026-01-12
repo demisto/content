@@ -1,5 +1,4 @@
 category: IT Services
-provider: Microsoft
 commonfields:
   id: Azure Firewall
   version: -1

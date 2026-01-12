@@ -1,5 +1,4 @@
 category: Case Management
-provider: Salesforce
 commonfields:
   id: SalesforceV2
   version: -1

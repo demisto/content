@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Grafana Labs
 commonfields:
   id: Grafana
   version: -1

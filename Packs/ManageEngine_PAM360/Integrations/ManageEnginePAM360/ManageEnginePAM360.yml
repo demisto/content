@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Zoho Corporation
 commonfields:
   id: ManageEngine PAM360
   version: -1

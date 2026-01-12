@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Amber Security SAS
 commonfields:
   id: OpenCVE
   version: -1

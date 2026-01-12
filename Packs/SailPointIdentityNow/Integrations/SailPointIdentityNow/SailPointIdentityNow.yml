@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: SailPoint Technologies
 commonfields:
   id: SailPointIdentityNow
   version: -1

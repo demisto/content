@@ -1,5 +1,4 @@
 category: IT Services
-provider: CyberArk
 commonfields:
   id: VenafiTLSProtect
   version: -1

@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Cisco Systems
 commonfields:
   id: Kennav2
   version: -1

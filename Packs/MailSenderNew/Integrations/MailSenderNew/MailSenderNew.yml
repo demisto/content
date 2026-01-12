@@ -1,5 +1,4 @@
 category: Email
-provider: Open Source
 commonfields:
   id: Mail Sender (New)
   version: -1

@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: ReliaQuest
 commonfields:
   id: ReliaquestTakedown
   version: -1

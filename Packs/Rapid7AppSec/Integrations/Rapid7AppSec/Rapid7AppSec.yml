@@ -1,5 +1,4 @@
 category: Utilities
-provider: Rapid7
 commonfields:
   id: rapid7appsec
   version: -1

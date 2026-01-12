@@ -1,5 +1,4 @@
 category: Network Security
-provider: Vectra AI
 commonfields:
   id: VectraAIEventCollector
   version: -1

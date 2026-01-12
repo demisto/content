@@ -4,7 +4,6 @@ commonfields:
 name: Vertica
 display: Vertica
 category: Database
-provider: OpenText
 description: Analytic database management software.
 configuration:
 - display: Host (myhost.example.com)

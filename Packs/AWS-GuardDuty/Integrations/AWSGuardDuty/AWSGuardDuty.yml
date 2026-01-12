@@ -1,5 +1,4 @@
 category: IT Services
-provider: Amazon
 commonfields:
   id: AWS - GuardDuty
   version: -1

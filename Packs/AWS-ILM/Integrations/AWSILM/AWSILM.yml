@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Amazon
 commonfields:
   id: AWS-ILM
   version: -1

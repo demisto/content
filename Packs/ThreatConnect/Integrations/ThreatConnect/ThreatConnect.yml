@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Dataminr
 commonfields:
   id: ThreatConnect
   version: -1

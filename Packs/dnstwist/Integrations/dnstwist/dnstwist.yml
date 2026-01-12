@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Open Source
 commonfields:
   id: dnstwist
   version: -1
@@ -50,6 +49,4 @@ script:
   script: '-'
   type: python
   subtype: python3
-tests:
-- No tests
 fromversion: 5.0.0

@@ -1,5 +1,4 @@
 category: Email
-provider: Microsoft
 commonfields:
   id: SecurityAndCompliance
   version: -1

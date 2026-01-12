@@ -1,5 +1,4 @@
 category: "IT Services"
-provider: Atlassian
 commonfields:
   id: AtlassianJiraServiceManagement
   version: -1

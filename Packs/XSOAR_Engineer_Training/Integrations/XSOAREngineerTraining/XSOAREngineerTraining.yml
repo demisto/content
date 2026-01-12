@@ -1,5 +1,4 @@
 category: Utilities
-provider: Palo Alto Networks
 commonfields:
   id: XSOAR Engineer Training
   version: -1

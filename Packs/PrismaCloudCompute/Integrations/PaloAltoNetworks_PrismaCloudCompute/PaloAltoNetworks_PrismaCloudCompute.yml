@@ -1,5 +1,4 @@
 category: Network Security
-provider: Palo Alto Networks
 commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1

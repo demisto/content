@@ -4,7 +4,6 @@ commonfields:
 name: Nozomi Networks
 display: Nozomi Networks
 category: Network Security
-provider: Mitsubishi Electric
 fromversion: 5.0.0
 tests:
 - No tests

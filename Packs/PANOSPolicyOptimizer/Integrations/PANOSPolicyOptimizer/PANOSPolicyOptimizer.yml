@@ -1,5 +1,4 @@
 category: Network Security
-provider: Palo Alto Networks
 commonfields:
   id: PAN-OS Policy Optimizer
   version: -1

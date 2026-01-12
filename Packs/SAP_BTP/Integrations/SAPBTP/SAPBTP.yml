@@ -4,7 +4,6 @@ commonfields:
 name: SAPBTP
 display: SAP BTP (Business Technology Platform)
 category: Cloud Services
-provider: SAP
 description: SAP Business Technology Platform (BTP) is a cloud platform for building, integrating, and extending enterprise applications with data, analytics, AI, and automation.
 sectionorder:
 - Connect

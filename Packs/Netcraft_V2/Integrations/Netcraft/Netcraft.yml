@@ -4,7 +4,6 @@ commonfields:
 name: Netcraft V2
 display: Netcraft
 category: Utilities
-provider: Netcraft
 description: Netcraft takedown, submission and screenshot management.
 sectionorder:
 - Connect

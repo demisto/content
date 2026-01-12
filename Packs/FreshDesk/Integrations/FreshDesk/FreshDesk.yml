@@ -1,5 +1,4 @@
 category: Case Management
-provider: Freshworks Inc.
 commonfields:
   id: Freshdesk
   version: -1

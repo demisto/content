@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Microsoft
 commonfields:
   id: Azure Security Center
   version: -1

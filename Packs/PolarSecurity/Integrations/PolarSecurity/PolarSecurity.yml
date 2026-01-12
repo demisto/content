@@ -1,5 +1,4 @@
 category: Network Security
-provider: IBM
 commonfields:
   id: Polar Security
   version: -1

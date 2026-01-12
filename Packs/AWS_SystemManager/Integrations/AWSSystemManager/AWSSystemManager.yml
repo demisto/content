@@ -1,5 +1,4 @@
 category: Utilities
-provider: Amazon
 commonfields:
   id: AWS - System Manager
   version: -1

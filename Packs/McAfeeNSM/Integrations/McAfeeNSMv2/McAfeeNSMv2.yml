@@ -1,5 +1,4 @@
 category: Utilities
-provider: Trellix
 commonfields:
   id: McAfeeNSMv2
   version: -1

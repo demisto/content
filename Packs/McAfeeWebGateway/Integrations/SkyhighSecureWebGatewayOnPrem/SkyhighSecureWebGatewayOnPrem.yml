@@ -1,5 +1,4 @@
 category: Network Security
-provider: Skyhigh Security
 commonfields:
   id: Skyhigh Secure Web Gateway (On Prem)
   version: -1

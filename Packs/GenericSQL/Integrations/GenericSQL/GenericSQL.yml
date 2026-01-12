@@ -1,5 +1,4 @@
 category: Database
-provider: Microsoft
 commonfields:
   id: Generic SQL
   version: -1

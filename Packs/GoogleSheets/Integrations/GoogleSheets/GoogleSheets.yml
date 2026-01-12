@@ -1,5 +1,4 @@
 category: Utilities
-provider: Google
 commonfields:
   id: GoogleSheets
   version: -1

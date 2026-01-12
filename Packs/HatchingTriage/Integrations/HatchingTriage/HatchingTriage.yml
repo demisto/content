@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Recorded Future
 commonfields:
   id: Hatching Triage
   version: -1

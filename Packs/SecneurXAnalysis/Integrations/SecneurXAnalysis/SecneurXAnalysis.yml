@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: SecneurX
 commonfields:
   id: Secneurx Analysis
   version: -1

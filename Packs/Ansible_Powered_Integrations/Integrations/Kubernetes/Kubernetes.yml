@@ -1,5 +1,4 @@
 category: IT Services
-provider: Open Source
 commonfields:
   id: Kubernetes
   version: -1

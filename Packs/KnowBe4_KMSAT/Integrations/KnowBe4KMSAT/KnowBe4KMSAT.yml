@@ -1,5 +1,4 @@
 category: Network Security
-provider: Vista Equity Partners
 commonfields:
   id: KnowBe4_KMSAT
   version: -1

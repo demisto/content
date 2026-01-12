@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Zscaler
 commonfields:
   id: ZeroTrustAnalyticsPlatform
   version: -1

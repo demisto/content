@@ -1,5 +1,4 @@
 category: Network Security
-provider: Claroty
 commonfields:
   id: XDome
   version: -1

@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: NIST
 commonfields:
   id: Nist NVD
   version: -1

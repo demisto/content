@@ -1,5 +1,4 @@
 category: IT Services
-provider: Cisco Systems
 commonfields:
   id: CiscoNX-OS
   version: -1

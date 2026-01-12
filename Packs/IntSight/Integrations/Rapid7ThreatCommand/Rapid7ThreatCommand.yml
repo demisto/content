@@ -1,5 +1,4 @@
 category: Network Security
-provider: Rapid7
 commonfields:
   id: rapid7_threat_command
   version: -1

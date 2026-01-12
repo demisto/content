@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Skyview Capital
 commonfields:
   id: Fidelis EDR
   version: -1

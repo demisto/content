@@ -1,5 +1,4 @@
 category: IT Services
-provider: Amazon
 commonfields:
   id: AWS Network Firewall
   version: -1

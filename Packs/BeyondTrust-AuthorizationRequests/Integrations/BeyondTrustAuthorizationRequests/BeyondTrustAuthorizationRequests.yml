@@ -1,5 +1,4 @@
 category: Utilities
-provider: BeyondTrust
 commonfields:
   id: BeyondTrust - Authorization Requests
   version: -1

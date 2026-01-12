@@ -1,5 +1,4 @@
 category: Network Security
-provider: Asimily
 commonfields:
   id: Asimily Insight
   version: -1

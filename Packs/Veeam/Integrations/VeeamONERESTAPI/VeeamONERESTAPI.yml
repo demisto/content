@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Veeam
 commonfields:
   id: Veeam ONE REST API
   version: -1

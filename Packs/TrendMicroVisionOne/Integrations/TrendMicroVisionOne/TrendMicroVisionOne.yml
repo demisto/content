@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Trend Micro
 commonfields:
   id: Trend Micro Vision One
   version: -1

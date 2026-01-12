@@ -1,5 +1,4 @@
 category: Email
-provider: Open Source
 commonfields:
   id: MailListener - POP3
   version: -1

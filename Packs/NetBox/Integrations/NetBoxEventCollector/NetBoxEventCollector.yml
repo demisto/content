@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: NetBoxLabs
 commonfields:
   id: NetBox Event Collector
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Palo Alto Networks
 commonfields:
   id: QRadar_v2
   version: -1

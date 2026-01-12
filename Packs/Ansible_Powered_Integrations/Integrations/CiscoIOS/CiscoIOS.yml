@@ -1,5 +1,4 @@
 category: IT Services
-provider: Cisco Systems
 commonfields:
   id: CiscoIOS
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Google
 commonfields:
   id: Respond_Analyst
   version: -1

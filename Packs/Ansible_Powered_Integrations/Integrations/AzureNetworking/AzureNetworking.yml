@@ -1,5 +1,4 @@
 category: IT Services
-provider: Microsoft
 commonfields:
   id: AzureNetworking
   version: -1

@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Microsoft
 commonfields:
   id: Windows Defender Advanced Threat Protection
   version: -1

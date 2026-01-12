@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Cimcor Inc
 commonfields:
   id: CimTrak
   version: -1

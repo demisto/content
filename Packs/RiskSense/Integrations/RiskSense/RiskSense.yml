@@ -4,7 +4,6 @@ commonfields:
 name: RiskSense
 display: RiskSense
 category: Vulnerability Management
-provider: Ivanti
 description: RiskSense is a cloud-based platform that provides vulnerability management and prioritization to measure and control cybersecurity risk.
 configuration:
 - display: URL

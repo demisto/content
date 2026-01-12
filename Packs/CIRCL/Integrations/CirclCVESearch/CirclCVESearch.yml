@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Open Source
 commonfields:
   id: CIRCL CVE Search
   version: -1

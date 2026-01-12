@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: HackerOne
 commonfields:
   id: HackerOne
   version: -1

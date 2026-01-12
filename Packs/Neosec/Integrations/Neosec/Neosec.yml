@@ -1,5 +1,4 @@
 category: Network Security
-provider: Akamai Technologies
 commonfields:
   id: Neosec
   version: -1

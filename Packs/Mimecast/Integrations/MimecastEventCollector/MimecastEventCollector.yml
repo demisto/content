@@ -1,5 +1,4 @@
 category: Email
-provider: Permira
 commonfields:
   id: Mimecast Event Collector
   version: -1

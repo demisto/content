@@ -62,7 +62,9 @@ def test_icdm_fetch_incidents_command(mocker):
     client = Client("", "")
     incidents = util_load_json("test_data/icdm_incidents_without_events.json")
     mocker.patch.object(Client, "_http_request", return_value=incidents)
-    result = icdm_fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
+    result = icdm_fetch_incidents_command(
+        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc)
+    )
 
     assert result.outputs == incidents.get("incidents")
 
@@ -86,13 +88,17 @@ def test_fetch_incidents_command(mocker):
         return_value=util_load_json("test_data/icdm_incidents_without_events.json"),
     )
 
-    last_run, incidents = fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
+    last_run, incidents = fetch_incidents_command(
+        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc)
+    )
     expected_incidents = util_load_json("test_data/outputs/icdm_incidents_output.json")
     assert last_run == {"last_fetch": 1682545570.4}
     assert incidents == expected_incidents
 
 
-@pytest.mark.parametrize("response, result", [({"access_token": "YXNhbXBsZWFjY2Vzc3Rva2VudGNvZGU="}, True)])
+@pytest.mark.parametrize(
+    "response, result", [({"access_token": "YXNhbXBsZWFjY2Vzc3Rva2VudGNvZGU="}, True)]
+)
 def test_client_authenticate(response, result, mocker):
     client = Client("", "")
     mocker.patch.object(Client, "_http_request", return_value=response)
@@ -174,7 +180,9 @@ def test_domain_reputation_command(domain, output, mocker):
     mocker.patch.object(
         Client,
         "_http_request",
-        return_value=util_load_json("test_data/domain_insight_reputation_response.json"),
+        return_value=util_load_json(
+            "test_data/domain_insight_reputation_response.json"
+        ),
     )
 
     response = domain_reputation_command(client, {"domain": domain}, BASE_RELIABILITY)
@@ -312,11 +320,12 @@ def test_is_filtered(value: str, filters: list[str], output: bool):
         ),
     ],
 )
-def test_get_network_indicator_by_type(arg_type: str, indicator: str, score: int):
+def test_get_network_indicator_by_type(
+        arg_type: str, indicator: str, score: int):
     dbot_score = Common.DBotScore(
         indicator=indicator,
         indicator_type=arg_type,
-        integration_name="INTEGRATION_NAME",
+        integration_name='INTEGRATION_NAME',
         score=score,
         reliability=DBotScoreReliability.A,
         malicious_description=None,
@@ -324,16 +333,7 @@ def test_get_network_indicator_by_type(arg_type: str, indicator: str, score: int
     assert isinstance(get_network_indicator_by_type(type=arg_type, indicator=indicator, dbot_score=dbot_score), Common.Indicator)
 
 
-@pytest.mark.parametrize(
-    "type, indicator, score",
-    [
-        (
-            "",
-            "",
-            Common.DBotScore.GOOD,
-        )
-    ],
-)
+@pytest.mark.parametrize("type, indicator, score", [("", "", Common.DBotScore.GOOD, )])
 def test_get_network_indicator_by_type_exception(type: str, indicator: str, score: Common.DBotScore):
     with pytest.raises(DemistoException):
         get_network_indicator_by_type(type, indicator, score)

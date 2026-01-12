@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Proofpoint
 commonfields:
   id: Tessian
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Harness
 commonfields:
   id: Traceable
   version: -1

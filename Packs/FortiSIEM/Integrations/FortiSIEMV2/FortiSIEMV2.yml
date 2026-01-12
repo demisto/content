@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Fortinet
 commonfields:
   id: FortiSIEMV2
   version: -1

@@ -1,5 +1,4 @@
 category: Network Security
-provider: Fortinet
 commonfields:
   id: fortimail
   version: -1

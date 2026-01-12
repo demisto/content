@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Orca Security
 commonfields:
   id: Orca Event Collector
   version: -1

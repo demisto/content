@@ -1,5 +1,4 @@
 category: Case Management
-provider: Atlassian
 commonfields:
   id: jira-v2
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Cisco Systems
 commonfields:
   id: Cisco Stealthwatch
   version: -1

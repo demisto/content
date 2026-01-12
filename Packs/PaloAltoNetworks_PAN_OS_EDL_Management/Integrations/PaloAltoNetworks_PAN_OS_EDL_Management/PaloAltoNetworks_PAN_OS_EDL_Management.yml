@@ -1,5 +1,4 @@
 category: Utilities
-provider: Palo Alto Networks
 deprecated: true
 commonfields:
   id: palo_alto_networks_pan_os_edl_management

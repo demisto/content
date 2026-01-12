@@ -1,5 +1,4 @@
 category: Messaging and Conferencing
-provider: Twilio
 commonfields:
   id: SendGrid
   version: -1

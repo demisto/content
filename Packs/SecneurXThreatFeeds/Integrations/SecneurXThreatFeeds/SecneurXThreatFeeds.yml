@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: SecneurX
 commonfields:
   id: Secneurx Threat Feeds
   version: -1

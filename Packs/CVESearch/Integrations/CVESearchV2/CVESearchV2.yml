@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Open Source
 deprecated: true
 commonfields:
   id: CVE Search v2

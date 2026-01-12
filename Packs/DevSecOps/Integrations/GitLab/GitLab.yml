@@ -1,5 +1,4 @@
 category: Utilities
-provider: GitLab Inc.
 commonfields:
   id: GitLab
   version: -1

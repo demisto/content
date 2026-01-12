@@ -1,5 +1,4 @@
 category: Network Security
-provider: Fortinet
 commonfields:
   id: fortiweb_vm
   version: -1

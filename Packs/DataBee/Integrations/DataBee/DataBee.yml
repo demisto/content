@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Comcast Corporation
 commonfields:
   id: DataBee
   version: -1

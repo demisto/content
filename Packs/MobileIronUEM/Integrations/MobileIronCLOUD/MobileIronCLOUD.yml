@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Ivanti
 commonfields:
   id: MobileIronCLOUD
   version: -1

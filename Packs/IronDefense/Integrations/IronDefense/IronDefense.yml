@@ -1,5 +1,4 @@
 category: Network Security
-provider: IronNet Cybersecurity
 commonfields:
   id: IronDefense
   version: -1

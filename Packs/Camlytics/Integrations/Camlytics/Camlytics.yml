@@ -1,5 +1,4 @@
 category: Utilities
-provider: Camlytics
 commonfields:
   id: Camlytics
   version: -1

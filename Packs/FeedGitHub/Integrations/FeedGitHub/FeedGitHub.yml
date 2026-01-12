@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Microsoft
 commonfields:
   id: Github Feed
   version: -1

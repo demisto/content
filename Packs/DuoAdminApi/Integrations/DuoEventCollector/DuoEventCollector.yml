@@ -4,7 +4,6 @@ commonfields:
 name: Duo Event Collector
 display: Duo Event Collector
 category: Analytics & SIEM
-provider: Cisco Systems
 description: Collects Auth and Audit events for Duo using the API.
 configuration:
 - display: Server Host

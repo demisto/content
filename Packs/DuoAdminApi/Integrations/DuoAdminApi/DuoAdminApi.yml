@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Cisco Systems
 commonfields:
   id: DUO Admin
   version: -1

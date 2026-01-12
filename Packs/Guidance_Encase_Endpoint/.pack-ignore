@@ -4,5 +4,3 @@ ignore=IM111
 [file:GuidanceEncaseEndpoint.yml]
 ignore=RM110
 
-[file:README.md]
-ignore=RM110

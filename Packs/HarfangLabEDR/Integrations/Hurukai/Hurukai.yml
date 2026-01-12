@@ -1,5 +1,4 @@
 category: Endpoint
-provider: HarfangLab
 commonfields:
   id: Hurukai
   version: -1

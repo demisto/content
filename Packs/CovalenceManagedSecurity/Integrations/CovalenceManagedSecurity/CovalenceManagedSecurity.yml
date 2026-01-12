@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Field Effect Software Inc
 commonfields:
   id: Covalence Managed Security
   version: -1

@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: VOXX International
 commonfields:
   id: Viper
   version: -1
@@ -31,13 +30,13 @@ name: Viper
 script:
   commands:
   - arguments:
-    - description: SHA256 Value.
+    - description: SHA256 Value
       name: file_hash
       required: true
     description: Download a sample with file hash
     name: viper-download
   - arguments:
-    - description: SHA256 Value.
+    - description: SHA256 Value
       name: file_hash
       required: true
     description: Search for sample with file hash

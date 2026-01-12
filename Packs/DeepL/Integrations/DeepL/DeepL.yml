@@ -1,5 +1,4 @@
 category: Utilities
-provider: DeepL SE
 commonfields:
   id: DeepL
   version: -1

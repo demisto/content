@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Fortinet
 commonfields:
   id: FortiAuthenticator
   version: -1
@@ -30,7 +29,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: localusers
-      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users).'
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
       name: user_type
       predefined:
       - localusers
@@ -47,7 +46,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Define user''s active status:  false = Disabled, true = enabled.'
+      description: 'Define user''s active status:  false = Disabled, true = enabled'
       name: active
       predefined:
       - 'true'
@@ -55,7 +54,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: localusers
-      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users).'
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
       name: user_type
       predefined:
       - localusers

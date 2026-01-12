@@ -1,18 +1,26 @@
 {
-    "genesys_cloud_raw": {
-      "context": {
+    "paloaltonetworks_saassecurity_raw": {
+      "log_type": {
         "type": "string",
         "is_array": false
       },
-      "remoteIp": {
+      "timestamp": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "admin_role": {
         "type": "string",
         "is_array": false
       },
-      "serviceName": {
+      "ip": {
         "type": "string",
         "is_array": false
       },
-      "id": {
+      "event_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "item_type": {
         "type": "string",
         "is_array": false
       },
@@ -20,11 +28,19 @@
         "type": "string",
         "is_array": false
       },
-      "status": {
+      "remoteAddress": {
         "type": "string",
         "is_array": false
       },
-      "message": {
+      "resource_value_old": {
+        "type": "string",
+        "is_array": false
+      },
+      "resource_value_new": {
+        "type": "string",
+        "is_array": false
+      },
+      "asset_id": {
         "type": "string",
         "is_array": false
       },
@@ -32,19 +48,15 @@
         "type": "string",
         "is_array": false
       },
-      "level": {
+      "source_ip": {
         "type": "string",
         "is_array": false
       },
-      "entity": {
+      "location": {
         "type": "string",
         "is_array": false
       },
-      "entityType": {
-        "type": "string",
-        "is_array": false
-      },
-      "propertyChanges": {
+      "target_name": {
         "type": "string",
         "is_array": false
       }

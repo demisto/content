@@ -1,5 +1,4 @@
 category: Network Security
-provider: Razor Group
 commonfields:
   id: Perch
   version: -1

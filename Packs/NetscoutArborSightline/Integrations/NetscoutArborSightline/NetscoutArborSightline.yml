@@ -1,5 +1,4 @@
 category: Network Security
-provider: Netscout Systems
 commonfields:
   id: NetscoutArborSightline
   version: -1

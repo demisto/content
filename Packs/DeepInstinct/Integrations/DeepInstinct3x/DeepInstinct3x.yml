@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Deep Instinct
 commonfields:
   id: DeepInstinct v3
   version: -1

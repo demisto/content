@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: Open Source
 commonfields:
   id: Hello IAM World
   version: -1

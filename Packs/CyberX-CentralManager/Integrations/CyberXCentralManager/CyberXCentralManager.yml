@@ -1,5 +1,4 @@
 category: Network Security
-provider: Microsoft
 commonfields:
   id: CyberX - Central Manager
   version: -1

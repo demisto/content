@@ -1,5 +1,4 @@
 category: Utilities
-provider: Recorded Future
 commonfields:
   id: SecurityTrails
   version: -1

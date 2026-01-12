@@ -1,5 +1,4 @@
 category: Network Security
-provider: Picus Security
 commonfields:
   id: PicusNG
   version: -1

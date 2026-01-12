@@ -4,7 +4,6 @@ commonfields:
 name: Confluera
 display: Confluera
 category: Network Security
-provider: XM Cyber
 description: This is the confluera Iq-Hub integration with cortex.
 configuration:
 - display: Trust any certificate (not secure)

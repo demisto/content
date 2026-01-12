@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Microsoft
 commonfields:
   id: Azure Log Analytics
   version: -1

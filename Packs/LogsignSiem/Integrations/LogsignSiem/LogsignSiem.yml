@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Logsign
 commonfields:
   id: LogsignSiem
   version: -1

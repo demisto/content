@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: QwietAI
 commonfields:
   id: ShiftLeft CORE
   version: -1

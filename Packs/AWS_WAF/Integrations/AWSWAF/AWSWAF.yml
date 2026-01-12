@@ -1,5 +1,4 @@
 category: Network Security
-provider: Amazon
 commonfields:
   id: AWS-WAF
   version: -1

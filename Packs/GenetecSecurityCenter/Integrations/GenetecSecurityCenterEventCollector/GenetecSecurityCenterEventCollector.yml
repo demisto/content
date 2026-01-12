@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Genetec
 commonfields:
   id: Genetec Security Center Event Collector
   version: -1

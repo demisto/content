@@ -1,5 +1,4 @@
 category: Network Security
-provider: Cisco Systems
 commonfields:
   id: Cisco IronPort EMail API
   version: -1

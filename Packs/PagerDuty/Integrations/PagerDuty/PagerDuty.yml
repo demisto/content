@@ -1,5 +1,4 @@
 category: Messaging and Conferencing
-provider: PagerDuty
 commonfields:
   id: PagerDuty v2
   version: -1

@@ -1,5 +1,4 @@
 category: Utilities
-provider: IP2Location
 commonfields:
   id: IP2LocationIO
   version: -1

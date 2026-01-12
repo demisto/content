@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Amazon
 commonfields:
   id: AWS - GuardDuty Event Collector
   version: -1

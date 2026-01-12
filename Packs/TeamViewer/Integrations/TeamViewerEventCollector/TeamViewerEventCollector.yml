@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: TeamViewer
 commonfields:
   id: TeamViewer Event Collector
   version: -1

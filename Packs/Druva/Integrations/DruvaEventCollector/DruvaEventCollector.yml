@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Druva
 commonfields:
   id: DruvaEventCollector
   version: -1

@@ -1,5 +1,4 @@
 category: Utilities
-provider: CircleCI
 commonfields:
   id: CircleCI
   version: -1

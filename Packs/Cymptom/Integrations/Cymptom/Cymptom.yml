@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Tenable
 commonfields:
   id: Cymptom
   version: -1

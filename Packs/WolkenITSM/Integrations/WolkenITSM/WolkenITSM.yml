@@ -1,5 +1,4 @@
 category: Case Management
-provider: Serco
 commonfields:
   id: Wolken ITSM
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: QueryAI Inc.
 commonfields:
   id: Query.AI
   version: -1

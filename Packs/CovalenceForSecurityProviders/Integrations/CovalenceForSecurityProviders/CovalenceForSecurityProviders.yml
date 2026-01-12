@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Cobalt Strike
 commonfields:
   id: Covalence For Security Providers
   version: -1

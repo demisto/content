@@ -1,5 +1,4 @@
 category: Messaging and Conferencing
-provider: Trellix
 commonfields:
   id: McAfee DXL
   version: -1

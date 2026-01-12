@@ -1,5 +1,4 @@
 category: Utilities
-provider: Logpoint
 commonfields:
   id: LogPoint SIEM Integration
   version: -1

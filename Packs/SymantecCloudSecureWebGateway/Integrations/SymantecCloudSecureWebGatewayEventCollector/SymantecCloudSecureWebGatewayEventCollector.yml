@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Broadcom
 description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for Cortex XSIAM.
 display: Symantec Cloud Secure Web Gateway Event Collector
 name: Symantec Cloud Secure Web Gateway Event Collector

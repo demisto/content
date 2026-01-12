@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: BolsterAI
 commonfields:
   id: CheckPhish
   version: -1
@@ -207,5 +206,3 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 5.0.0
-tests:
-- No tests

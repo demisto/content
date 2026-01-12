@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Qualys
 commonfields:
   id: SSL Labs
   version: -1

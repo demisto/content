@@ -1,5 +1,4 @@
 category: Case Management
-provider: PenfieldAI
 commonfields:
   id: Penfield
   version: -1

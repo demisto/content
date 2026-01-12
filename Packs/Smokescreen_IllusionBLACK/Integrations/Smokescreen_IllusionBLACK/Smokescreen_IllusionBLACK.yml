@@ -1,5 +1,4 @@
 category: Deception & Breach Simulation
-provider: Zscaler
 commonfields:
   id: Smokescreen IllusionBLACK
   version: -1

@@ -1,5 +1,4 @@
 category: Database
-provider: Snowflake
 sectionorder:
 - Connect
 - Collect

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks Cortex
   version: -1

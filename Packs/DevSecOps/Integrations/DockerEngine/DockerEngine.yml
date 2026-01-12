@@ -1,5 +1,4 @@
 category: IT Services
-provider: Docker Inc
 commonfields:
   id: Docker Engine API
   version: -1

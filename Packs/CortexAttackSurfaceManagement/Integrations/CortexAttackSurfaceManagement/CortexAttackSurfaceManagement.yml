@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Palo Alto Networks
 commonfields:
   id: Cortex Attack Surface Management
   version: -1

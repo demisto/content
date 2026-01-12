@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Permira
 commonfields:
   id: Code42
   version: -1

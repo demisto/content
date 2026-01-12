@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Google
 commonfields:
   id: google-vault
   version: -1

@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Jamf
 commonfields:
   id: jamf v2
   version: -1

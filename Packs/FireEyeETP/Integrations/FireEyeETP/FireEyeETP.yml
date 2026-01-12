@@ -4,7 +4,6 @@ commonfields:
 name: FireEye ETP
 display: Trellix Email Security - Cloud
 category: Network Security
-provider: Trellix
 sectionorder:
 - Connect
 - Collect

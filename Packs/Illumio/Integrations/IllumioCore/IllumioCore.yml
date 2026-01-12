@@ -1,5 +1,4 @@
 category: Network Security
-provider: Illumio
 commonfields:
   id: IllumioCore
   version: -1

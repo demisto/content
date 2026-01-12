@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Workday
 commonfields:
   id: Workday
   version: -1

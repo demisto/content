@@ -7,7 +7,6 @@ sectionorder:
 name: RDAP
 display: RDAP
 category: Data Enrichment & Threat Intelligence
-provider: Open Source
 description: Use the RDAP integration to query domain and IP information.
 configuration:
 - display: BaseURL

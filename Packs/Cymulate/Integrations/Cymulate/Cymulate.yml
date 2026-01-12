@@ -1,5 +1,4 @@
 category: Deception & Breach Simulation
-provider: Cymulate
 commonfields:
   id: Cymulate
   version: -1

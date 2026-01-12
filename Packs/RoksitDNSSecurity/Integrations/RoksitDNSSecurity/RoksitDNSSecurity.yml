@@ -1,5 +1,4 @@
 category: Network Security
-provider: Roksit
 commonfields:
   id: Roksit DNS Security
   version: -1

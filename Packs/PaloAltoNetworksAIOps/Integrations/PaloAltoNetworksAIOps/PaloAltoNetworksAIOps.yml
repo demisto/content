@@ -1,5 +1,4 @@
 category: Utilities
-provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks AIOps
   version: -1

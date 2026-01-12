@@ -1,5 +1,4 @@
 category: Network Security
-provider: Broadcom
 commonfields:
   id: SymantecEDR
   version: -1

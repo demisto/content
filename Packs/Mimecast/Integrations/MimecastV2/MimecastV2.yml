@@ -1,5 +1,4 @@
 category: Email
-provider: Permira
 commonfields:
   id: MimecastV2
   version: -1

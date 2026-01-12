@@ -1,5 +1,4 @@
 category: Network Security
-provider: Gatewatcher
 commonfields:
   id: LastInfoSec
   version: -1

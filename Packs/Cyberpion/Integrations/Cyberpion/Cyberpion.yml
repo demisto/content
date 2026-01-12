@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: IONIX
 commonfields:
   id: Cyberpion
   version: -1

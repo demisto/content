@@ -1,5 +1,4 @@
 category: Utilities
-provider: Microsoft
 commonfields:
   id: AzureDevOps
   version: -1

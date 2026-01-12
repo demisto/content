@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Okta
 commonfields:
   id: OktaAuth0EventCollector
   version: -1

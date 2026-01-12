@@ -1,5 +1,4 @@
 category: IT Services
-provider: Microsoft
 commonfields:
   id: Azure Compute v2
   version: -1

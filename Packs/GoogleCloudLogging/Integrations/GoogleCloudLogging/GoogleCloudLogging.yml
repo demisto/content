@@ -1,5 +1,4 @@
 category: Cloud Services
-provider: Google
 commonfields:
   id: GoogleCloudLogging
   version: -1

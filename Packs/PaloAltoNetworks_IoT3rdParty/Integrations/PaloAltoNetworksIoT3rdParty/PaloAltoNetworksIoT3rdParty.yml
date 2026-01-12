@@ -1,5 +1,4 @@
 category: Network Security
-provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks IoT 3rd Party
   version: -1

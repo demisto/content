@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Cisco Systems
 commonfields:
   id: SplunkPy v2
   version: -1

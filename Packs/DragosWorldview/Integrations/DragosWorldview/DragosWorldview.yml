@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Dragos
 commonfields:
   id: Dragos Worldview
   version: -1

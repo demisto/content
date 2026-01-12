@@ -1,5 +1,4 @@
 category: Network Security
-provider: Ncurion
 commonfields:
   id: Ncurion
   version: -1

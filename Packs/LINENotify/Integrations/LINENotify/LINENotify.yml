@@ -1,5 +1,4 @@
 category: Utilities
-provider: LY Corporation
 commonfields:
   id: LINENotify
   version: -1

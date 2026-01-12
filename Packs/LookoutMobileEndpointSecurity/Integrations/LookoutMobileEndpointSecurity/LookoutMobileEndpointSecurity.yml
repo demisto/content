@@ -2,7 +2,6 @@ commonfields:
   id: LookoutMobileEndpointSecurity
   version: -1
 category: Analytics & SIEM
-provider: Lookout Inc.
 sectionorder:
 - Connect
 - Collect

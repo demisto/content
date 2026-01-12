@@ -4,7 +4,6 @@ commonfields:
 name: Zendesk v2
 display: Zendesk v2
 category: Case Management
-provider: Zendesk
 description: IT service management.
 detaileddescription: Zendesk integration requires the API key and a username.
 sectionorder:

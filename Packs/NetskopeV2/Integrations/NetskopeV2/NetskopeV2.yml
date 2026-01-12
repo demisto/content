@@ -1,5 +1,4 @@
 category: Network Security
-provider: Netskope
 commonfields:
   id: Netskope (API v2)
   version: -1

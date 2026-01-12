@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Kaspersky Lab
 commonfields:
   id: Kaspersky Security Center
   version: -1

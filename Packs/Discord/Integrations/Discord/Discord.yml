@@ -1,5 +1,4 @@
 category: Utilities
-provider: Tencent
 commonfields:
   id: Discord
   version: -1

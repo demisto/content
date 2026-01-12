@@ -1,5 +1,4 @@
 category: Network Security
-provider: Thoma Bravo
 commonfields:
   id: Proofpoint Protection Server v2
   version: -1

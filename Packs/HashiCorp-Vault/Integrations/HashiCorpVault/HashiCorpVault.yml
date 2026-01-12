@@ -4,7 +4,6 @@ commonfields:
 name: HashiCorp Vault
 display: HashiCorp Vault
 category: Authentication & Identity Management
-provider: IBM
 sectionorder:
 - Connect
 - Collect

@@ -1,5 +1,4 @@
 category: Deception & Breach Simulation
-provider: Akamai Technologies
 commonfields:
   id: GuardiCore v2
   version: -1

@@ -1,5 +1,4 @@
 category: Network Security
-provider: Advent International
 commonfields:
   id: Forescout
   version: -1

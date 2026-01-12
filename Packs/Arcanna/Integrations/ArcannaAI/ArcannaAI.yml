@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Arcanna.ai INC
 commonfields:
   id: Arcanna.AI
   version: -1

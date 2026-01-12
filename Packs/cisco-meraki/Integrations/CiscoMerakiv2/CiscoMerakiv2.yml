@@ -1,5 +1,4 @@
 category: IT Services
-provider: Cisco Systems
 commonfields:
   id: Cisco Meraki v2
   version: -1

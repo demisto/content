@@ -1,5 +1,4 @@
 category: Network Security
-provider: CTM360
 commonfields:
   id: CTM360_HackerView
   version: -1

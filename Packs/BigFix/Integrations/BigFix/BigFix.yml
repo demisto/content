@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: HCL Technologies
 commonfields:
   id: BigFix
   version: -1

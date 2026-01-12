@@ -2,7 +2,6 @@ sectionorder:
   - Connect
   - Collect
 category: Forensics & Malware Analysis
-provider: VMRay
 commonfields:
   id: vmray
   version: -1

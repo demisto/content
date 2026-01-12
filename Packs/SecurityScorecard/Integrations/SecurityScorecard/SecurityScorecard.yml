@@ -1,7 +1,6 @@
 name: SecurityScorecard
 display: SecurityScorecard
 category: Vulnerability Management
-provider: SecurityScorecard
 description: Provides scorecards for domains.
 defaultmapperin: SecurityScorecard Alert Mapper
 commonfields:

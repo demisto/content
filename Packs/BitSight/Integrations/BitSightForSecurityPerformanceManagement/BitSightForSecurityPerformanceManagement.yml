@@ -1,5 +1,4 @@
 category: Utilities
-provider: BitSight
 sectionorder:
 - Connect
 - Collect
@@ -664,7 +663,7 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: ''

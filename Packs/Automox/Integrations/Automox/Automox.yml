@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Automox Inc
 commonfields:
   id: Automox
   version: -1

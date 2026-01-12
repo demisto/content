@@ -1,5 +1,4 @@
 category: Endpoint
-provider: CheckPoint Software Technologies
 commonfields:
   id: CheckPointHarmonyEndpoint
   version: -1

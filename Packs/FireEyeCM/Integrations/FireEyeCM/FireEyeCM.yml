@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Trellix
 commonfields:
   id: FireEye Central Management
   version: -1

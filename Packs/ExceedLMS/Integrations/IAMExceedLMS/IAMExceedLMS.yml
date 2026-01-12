@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: Intellum
 commonfields:
   id: ExceedLMS IAM
   version: -1

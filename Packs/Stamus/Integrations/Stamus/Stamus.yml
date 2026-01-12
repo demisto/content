@@ -1,5 +1,4 @@
 category: Network Security
-provider: Stamus Networks
 commonfields:
   id: Stamus
   version: -1

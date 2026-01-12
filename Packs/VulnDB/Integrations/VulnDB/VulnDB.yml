@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Cyberint
 commonfields:
   id: VulnDB
   version: -1

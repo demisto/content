@@ -4,7 +4,6 @@ commonfields:
 name: FalconIntel
 display: CrowdStrike Falcon Intel (Deprecated)
 category: Data Enrichment & Threat Intelligence
-provider: CrowdStrike
 description: Deprecated. Use CrowdStrike Falcon Intel v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

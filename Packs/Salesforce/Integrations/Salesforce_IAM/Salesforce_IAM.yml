@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: Salesforce
 commonfields:
   id: Salesforce IAM
   version: -1

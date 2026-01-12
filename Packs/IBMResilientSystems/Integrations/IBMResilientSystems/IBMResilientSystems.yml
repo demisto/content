@@ -1,5 +1,4 @@
 category: Case Management
-provider: IBM
 commonfields:
   id: IBM Resilient Systems
   version: -1

@@ -1,5 +1,4 @@
 category: Identity and Access Management
-provider: Signum
 commonfields:
   id: Signum
   version: -1

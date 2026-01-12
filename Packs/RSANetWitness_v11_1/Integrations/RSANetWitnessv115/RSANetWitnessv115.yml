@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: PartnerOne
 commonfields:
   id: RSANetWitnessv115
   version: -1

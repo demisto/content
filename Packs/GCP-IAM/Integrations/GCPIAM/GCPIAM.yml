@@ -1,5 +1,4 @@
 category: IT Services
-provider: Google
 commonfields:
   id: GCP-IAM
   version: -1

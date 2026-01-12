@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Trellix
 commonfields:
   id: FireEye HX
   version: -1

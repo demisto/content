@@ -1,5 +1,4 @@
 category: Utilities
-provider: GitHub
 commonfields:
   id: LGTM
   version: -1

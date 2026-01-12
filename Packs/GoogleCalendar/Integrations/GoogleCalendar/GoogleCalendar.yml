@@ -1,5 +1,4 @@
 category: IT Services
-provider: Google
 commonfields:
   id: GoogleCalendar
   version: -1

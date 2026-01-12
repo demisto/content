@@ -1,5 +1,4 @@
 category: Network Security
-provider: Bain Capital Private Equity
 commonfields:
   id: ExtraHop v2
   version: -1

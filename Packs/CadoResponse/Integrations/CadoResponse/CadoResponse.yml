@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Darktrace
 commonfields:
   id: CadoResponse
   version: -1

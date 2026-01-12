@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Broadcom
 commonfields:
   id: Carbon Black Endpoint Standard v3
   version: -1

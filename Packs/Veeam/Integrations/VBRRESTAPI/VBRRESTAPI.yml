@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Veeam
 commonfields:
   id: VBR REST API
   version: -1

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Trend Micro
 description: Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
 display: Trend Micro Email Security Event Collector
 name: Trend Micro Email Security Event Collector

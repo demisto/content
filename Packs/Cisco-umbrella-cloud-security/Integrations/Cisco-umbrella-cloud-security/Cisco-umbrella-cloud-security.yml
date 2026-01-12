@@ -1,5 +1,4 @@
 category: Network Security
-provider: Cisco Systems
 commonfields:
   id: Cisco Umbrella Cloud Security
   version: -1

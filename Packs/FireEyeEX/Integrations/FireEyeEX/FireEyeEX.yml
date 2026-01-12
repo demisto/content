@@ -1,5 +1,4 @@
 category: Email
-provider: Trellix
 commonfields:
   id: FireEye Email Security
   version: -1

@@ -1,5 +1,4 @@
 category: Network Security
-provider: BlueCat Networks
 commonfields:
   id: Indeni
   version: -1

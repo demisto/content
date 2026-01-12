@@ -1,5 +1,4 @@
 category: Utilities
-provider: PagerDuty
 commonfields:
   id: Rundeck
   version: -1

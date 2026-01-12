@@ -1,5 +1,4 @@
 category: Email
-provider: CheckPoint Software Technologies
 commonfields:
   id: CheckPointHEC
   version: -1

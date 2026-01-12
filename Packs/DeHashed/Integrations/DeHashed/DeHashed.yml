@@ -1,5 +1,4 @@
 category: Utilities
-provider: DeHashed
 commonfields:
   id: DeHashed
   version: -1

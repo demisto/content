@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Hackuity
 commonfields:
   id: Hackuity
   version: -1

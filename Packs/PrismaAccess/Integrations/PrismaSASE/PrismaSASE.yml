@@ -1,5 +1,4 @@
 category: Network Security
-provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks - Prisma SASE
   version: -1

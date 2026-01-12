@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: RSTCloud
 commonfields:
   id: RST Cloud - Threat Feed API
   version: -1

@@ -1,5 +1,4 @@
 category: Utilities
-provider: Alpha Vantage
 commonfields:
   id: AlphaVantage
   version: -1

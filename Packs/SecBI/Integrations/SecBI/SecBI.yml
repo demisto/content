@@ -1,5 +1,4 @@
 category: Network Security
-provider: LogPoint
 commonfields:
   id: SecBI
   version: -1

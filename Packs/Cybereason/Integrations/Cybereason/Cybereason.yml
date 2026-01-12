@@ -1,5 +1,4 @@
 category: Endpoint
-provider: LevelBlue
 commonfields:
   id: Cybereason
   version: -1

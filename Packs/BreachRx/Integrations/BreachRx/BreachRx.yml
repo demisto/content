@@ -1,5 +1,4 @@
 category: Case Management
-provider: BreachRx
 commonfields:
   id: BreachRx
   version: -1

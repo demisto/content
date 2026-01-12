@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Meta
 commonfields:
   id: ThreatExchange v2
   version: -1

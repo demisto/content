@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: SentinelOne
 commonfields:
   id: SentinelOneEventCollector
   version: -1

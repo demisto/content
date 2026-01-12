@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Microsoft
 commonfields:
   id: AzureRiskyUsers
   version: -1

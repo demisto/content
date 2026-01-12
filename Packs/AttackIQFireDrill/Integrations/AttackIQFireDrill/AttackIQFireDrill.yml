@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: AttackIQ
 commonfields:
   id: AttackIQFireDrill
   version: -1
@@ -487,7 +486,7 @@ script:
       description: The name of the asset's group.
       type: String
   - arguments:
-    - description: The name of the new assesment.
+    - description: The name of the new assesment
       name: name
       required: true
     - description: The ID of the template from which to create the assesment.

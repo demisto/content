@@ -1,5 +1,4 @@
 category: Vulnerability Management
-provider: Cohesity
 commonfields:
   id: CohesityHelios
   version: -1

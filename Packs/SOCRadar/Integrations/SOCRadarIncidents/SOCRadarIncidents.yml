@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: SOCRadar
 commonfields:
   id: SOCRadarIncidents
   version: -1

@@ -1,5 +1,4 @@
 category: Utilities
-provider: BMC Software
 commonfields:
   id: BMCHelixRemedyforce
   version: -1

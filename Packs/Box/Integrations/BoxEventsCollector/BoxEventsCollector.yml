@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Box
 commonfields:
   id: BoxEventsCollector
   version: -1

@@ -1,5 +1,4 @@
 category: Forensics & Malware Analysis
-provider: Open Source
 commonfields:
   id: CapeSandbox
   version: -1

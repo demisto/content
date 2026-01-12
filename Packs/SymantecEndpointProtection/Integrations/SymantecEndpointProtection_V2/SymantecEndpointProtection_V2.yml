@@ -1,5 +1,4 @@
 category: Endpoint
-provider: Broadcom
 commonfields:
   id: Symantec Endpoint Protection V2
   version: -1
