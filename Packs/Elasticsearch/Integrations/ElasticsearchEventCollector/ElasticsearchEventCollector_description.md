@@ -9,21 +9,21 @@ There are 3 different authentication [methods](https://www.elastic.co/docs/api/d
 
 To use **Basic Authentication**:
 
-* Choose the **Basic Auth** type from the *Authorization type* dropdown list.
-* Enter your **Username** into the *Username* field.
-* Enter your **Password** into the *Password* field.
+* Select **Basic Auth** from the *Authorization type* dropdown.
+* Enter your **Username** in the *Username* field.
+* Enter your **Password** in the *Password* field.
 
 ### API Key Auth (http_api_key)
 
 To use **API Key Authentication**:
 
-* Choose the **API Key Auth** type from the *Authorization type* dropdown list.
-* Enter your **API key ID** into the *API key ID* field.
-* Enter your **API key** into the *API key* field.
+* Select **API Key Auth** from the *Authorization type* dropdown.
+* Enter your **API key ID** in the *API key ID* field.
+* Enter your **API key** in the *API key* field.
 
 For more info about API Key management see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html)
 
-**Note:** Optionally, you can choose **Basic Auth** type and use the *Username* and *Password* fields to enter the API key ID and API key.
+**Note:** Alternatively, you can select the **Basic Auth** type and enter the API key ID in the *Username* field and the API key in the *Password* field.
 Example:
 for *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
 for *API Key* ui2lp2axT enter: ui2lp2axT
@@ -32,9 +32,9 @@ for *API Key* ui2lp2axT enter: ui2lp2axT
 
 To use **Bearer Authentication**:
 
-* Choose the **Bearer Auth** type from the *Authorization type* dropdown list.
-* Enter your **Username** into the *Username* field.
-* Enter your **Password** into the *Password* field.
+* Select **Bearer Auth** type from the *Authorization type* dropdown.
+* Enter your **Username** in the *Username* field.
+* Enter your **Password** in the *Password* field.
 
 For more info see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-get-token.html#security-api-get-token-prereqs)
 
@@ -54,7 +54,7 @@ Fetch events requires:
 For further information about type mapping, see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type).
 
 **Query String**
-Query String is queried using the Lucene syntax. For more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax).
+Query String is queried using the Lucene syntax. For more information about Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax).
 
 **Raw Query**
 Allows raw DSL queries. For more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
