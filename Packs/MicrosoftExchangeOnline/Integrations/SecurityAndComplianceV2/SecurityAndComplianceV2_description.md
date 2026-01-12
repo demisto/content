@@ -1,5 +1,10 @@
 # O365 - Security And Compliance - Content Search V2
 
+**Important**
+- This integration is planned for **deprecation** on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For detailed list on commands and Playbooks replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#permissions-and-authentication-setup)**.
+
+- The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery) and now search by a case.
+
 This integration enables you to manage the features that are available in the Security & Compliance Center from Cortex XSOAR/XSIAM.
 
 This integration supports two authentication methods:

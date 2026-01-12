@@ -2,36 +2,42 @@
 
 ## Deprecation Notice (Security and Compliance – Content Search v2)
 
-Microsoft is deprecating the legacy Remote PowerShell (RPS) protocol used by Security & Compliance PowerShell. As a result, the **Security and Compliance – Content Search v2** pack is planned for deprecation on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
+Microsoft is deprecating the legacy Remote PowerShell (RPS) protocol used by this integration. As a result, the **Security and Compliance – Content Search v2** integration is planned for deprecation on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
 
 ### Commands with migration guidance (use the equivalent commands in Microsoft Graph Security)
 
 #### Compliance cases
+
 - `o365-sc-compliance-case-create` → Use `msg-create-ediscovery-case`. [Microsoft Learn: Create eDiscovery case](https://learn.microsoft.com/en-us/graph/api/security-casesroot-post-ediscoverycases?view=graph-rest-1.0&tabs=http)
 - `o365-sc-compliance-case-delete` → Use `msg-delete-ediscovery-case`. [Microsoft Learn: Delete eDiscovery case](https://learn.microsoft.com/en-us/graph/api/security-casesroot-delete-ediscoverycases?view=graph-rest-1.0)
 - `o365-sc-compliance-case-list` → Use `msg-list-ediscovery-cases`. [Microsoft Learn: List eDiscovery cases](https://learn.microsoft.com/en-us/graph/api/security-casesroot-list-ediscoverycases?view=graph-rest-1.0)
 
 #### Hold policies
+
 - `o365-sc-case-hold-policy-create` → Use `msg-create-ediscovery-case-hold-policy`. [Microsoft Learn: Create hold policy (legal hold)](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-legalholds?view=graph-rest-1.0)
 - `o365-sc-case-hold-policy-delete` → Use `msg-delete-ediscovery-case-hold-policy`. [Microsoft Learn: Delete hold policy](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-legalholds?view=graph-rest-1.0)
 - `o365-sc-case-hold-policy-get` → Use `msg-list-ediscovery-case-hold-policy`. [Microsoft Learn: List hold policies](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-legalholds?view=graph-rest-1.0) / [Microsoft Learn: Get hold policy](https://learn.microsoft.com/en-us/graph/api/security-ediscoveryholdpolicy-get?view=graph-rest-1.0)
 - `o365-sc-case-hold-policy-set` → Use `msg-update-ediscovery-case-hold-policy`. [Microsoft Learn: Update hold policy](https://learn.microsoft.com/en-us/graph/api/security-ediscoveryholdpolicy-update?view=graph-rest-1.0)
 
 #### Hold rules
+
 - `o365-sc-case-hold-rule-create` → Use `msg-create-ediscovery-case-hold-policy` (use the `contentQuery` property). [Microsoft Learn: Create hold policy](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-legalholds?view=graph-rest-1.0)
 - `o365-sc-case-hold-rule-delete` → Use `msg-delete-ediscovery-case-hold-policy`. [Microsoft Learn: Delete hold policy](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-legalholds?view=graph-rest-1.0)
 - `o365-sc-case-hold-rule-list` → Use `msg-list-ediscovery-case-hold-policy` (see the `contentQuery` property). [Microsoft Learn: List hold policies](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-legalholds?view=graph-rest-1.0)
 
 #### Legacy Content Search (case-based in Graph eDiscovery)
-- `o365-sc-get-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
-- `o365-sc-list-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
-- `o365-sc-new-search` → Use `msg-create-ediscovery-search`. [Microsoft Learn: Create search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-searches?view=graph-rest-1.0)
-- `o365-sc-remove-search` → Use `msg-delete-ediscovery-search`. [Microsoft Learn: Delete search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-searches?view=graph-rest-1.0)
-- `o365-sc-set-search` → Use `msg-update-ediscovery-search`. [Microsoft Learn: Update search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-update?view=graph-rest-1.0)
+
+- `o365-sc-get-search` → Use `msg-list-ediscovery-searchs`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
+- `o365-sc-list-search` → Use `msg-list-ediscovery-searchs`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
+- `o365-sc-new-search` → Use `msg-create-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Create search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-searches?view=graph-rest-1.0)
+- `o365-sc-remove-search` → Use `msg-delete-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Delete search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-searches?view=graph-rest-1.0)
+- `o365-sc-set-search` → Use `msg-update-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Update search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-update?view=graph-rest-1.0)
 
 #### Search execution and actions
-- `o365-sc-start-search` → Use `msg-run-estimate-statistics`. [Microsoft Learn: Estimate statistics](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-estimatestatistics?view=graph-rest-1.0)
-- `o365-sc-stop-search` → No equivalent in Microsoft Graph eDiscovery. [Microsoft Learn: eDiscovery search resource type](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoverysearch?view=graph-rest-1.0)
+
+- `o365-sc-start-search` → Use `msg-run-estimate-statistics`. Note: In Microsoft Graph eDiscovery, searches do not have a separate “start” command. Instead, a search is executed when you run the estimate command.
+ [Microsoft Learn: Estimate statistics](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-estimatestatistics?view=graph-rest-1.0)
+- `o365-sc-stop-search` → There is no Stop-ComplianceSearch equivalent in Microsoft Graph. In the new eDiscovery model a search never “runs” by itself.. [Microsoft Learn: eDiscovery search resource type](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoverysearch?view=graph-rest-1.0)
 
 - `o365-sc-new-search-action` → Use:
   - `msg-run-estimate-statistics`. [Microsoft Learn: Estimate statistics](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-estimatestatistics?view=graph-rest-1.0)

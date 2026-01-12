@@ -1,3 +1,6 @@
+The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
+The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery) and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
