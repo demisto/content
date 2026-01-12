@@ -1813,7 +1813,7 @@ def create_ediscovery_case_hold_policy_command(
     )
     return CommandResults(
         outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
-        outputs_key_field="Id",
+        outputs_key_field="ID",
         outputs=capitalize_dict_keys_first_letter(raw_resp),
         readable_output=human_readable,
         raw_response=raw_resp,
@@ -1932,7 +1932,7 @@ def list_ediscovery_case_hold_policy_command(
 
     return CommandResults(
         outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
-        outputs_key_field="Id",
+        outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(hold) for hold in hold_list],
         readable_output=tableToMarkdown(name="Results", t=hr),
         raw_response=raw_res,

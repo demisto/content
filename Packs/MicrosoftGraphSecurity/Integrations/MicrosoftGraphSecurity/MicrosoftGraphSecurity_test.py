@@ -45,6 +45,12 @@ from MicrosoftGraphSecurity import (
     update_ediscovery_case_command,
     update_ediscovery_search_command,
     update_incident_command,
+    create_ediscovery_case_hold_policy_command,
+    delete_ediscovery_case_hold_policy_command,
+    update_ediscovery_case_policy_command,
+    list_ediscovery_case_hold_policy_command,
+    list_case_operation_command,
+    export_result_ediscovery_data_command,
 )
 
 API_V2 = "Alerts v2"
@@ -1028,3 +1034,206 @@ def test_get_last_estimate_statistics_command_completed():
     assert result.response.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
     assert result.response.raw_response == response_data
     assert "eDiscovery Estimate Statistics" in result.response.readable_output
+
+
+def test_create_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID, display name, description, and content query.
+    When:
+        Calling create_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns the expected CommandResults with the created hold policy.
+    """
+    args = {
+        "case_id": "case_123",
+        "display_name": "Hold Policy 1",
+        "description": "Test Hold Policy",
+        "content_query": "size>100"
+    }
+    mock_response = {
+        "id": "hold_123",
+        "displayName": "Hold Policy 1",
+        "status": "enabled",
+        "description": "Test Hold Policy",
+        "contentQuery": "size>100"
+    }
+    mocker.patch.object(client_mocker, "create_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = create_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "hold_123"
+    assert result.outputs["DisplayName"] == "Hold Policy 1"
+    assert "Hold Policy 1" in result.readable_output
+
+
+def test_delete_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling delete_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {
+        "case_id": "case_123",
+        "hold_policy_id": "hold_123"
+    }
+    mocker.patch.object(client_mocker, "delete_ediscovery_case_hold_policy", return_value=None)
+
+    result = delete_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert "successfully deleted" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_update_ediscovery_case_policy_command(mocker):
+    """
+    Given:
+        Case ID, hold policy ID, and fields to update.
+    When:
+        Calling update_ediscovery_case_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {
+        "case_id": "case_123",
+        "hold_policy_id": "hold_123",
+        "description": "Updated Description"
+    }
+    mocker.patch.object(client_mocker, "update_ediscovery_case_policy", return_value=None)
+
+    result = update_ediscovery_case_policy_command(client_mocker, args)
+
+    assert "updated successfully" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (listing all).
+    Then:
+        Ensure the command returns the list of hold policies.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"},
+            {"id": "hold_2", "displayName": "Hold 2", "status": "disabled"}
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert result.outputs[1]["ID"] == "hold_2"
+    assert "Hold 1" in result.readable_output
+    assert "Hold 2" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_get(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (getting one).
+    Then:
+        Ensure the command returns the specific hold policy.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_1", "all_results": "true"}
+    mock_response = {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"}
+    mocker.patch.object(client_mocker, "get_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert "Hold 1" in result.readable_output
+
+
+def test_list_case_operation_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_case_operation_command (listing all).
+    Then:
+        Ensure the command returns the list of operations.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"},
+            {"id": "op_2", "action": "Export", "status": "InProgress"}
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "op_1"
+    assert result.outputs[1]["ID"] == "op_2"
+    assert "AddToReviewSet" in result.readable_output
+    assert "Export" in result.readable_output
+
+
+def test_list_case_operation_command_get(mocker):
+    """
+    Given:
+        Case ID and operation ID.
+    When:
+        Calling list_case_operation_command (getting one).
+    Then:
+        Ensure the command returns the specific operation.
+    """
+    args = {"case_id": "case_123", "operation_id": "op_1", "all_results": "true"}
+    mock_response = {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"}
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "op_1"
+    assert "AddToReviewSet" in result.readable_output
+
+
+def test_export_result_ediscovery_data_command(mocker):
+    """
+    Given:
+        Case ID, search ID, and export parameters.
+    When:
+        Calling export_result_ediscovery_data_command.
+    Then:
+        Ensure the command returns the export location.
+    """
+    args = {
+        "case_id": "case_123",
+        "search_id": "search_123",
+        "export_criteria": "searchHits",
+        "export_format": "standard"
+    }
+    mock_response = MagicMock()
+    mock_response.headers = {"Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_123"}
+    mocker.patch.object(client_mocker, "export_result_ediscovery_data", return_value=mock_response)
+
+    result = export_result_ediscovery_data_command(client_mocker, args)
+
+    assert "eDiscovery export location" in result.readable_output
+    assert "op_123" in result.readable_output
