@@ -3136,7 +3136,87 @@ script:
       name: core-get-case-grouping-graph
       description: Retrieves the grouping graph for a specific case.
       outputs:
-
+        - contextPath: Core.CaseGroupingGraph.nodes
+          description: List of all graph nodes including original nodes and cluster nodes
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.nodes.id
+          description: Node ID
+          type: String
+        - contextPath: Core.CaseGroupingGraph.nodes.type
+          description: Node type (CASE, ISSUE, ARTIFACT, ASSET, IssueGroupElement)
+          type: String
+        - contextPath: Core.CaseGroupingGraph.nodes.is_cluster
+          description: Whether this node is a cluster
+          type: Boolean
+        - contextPath: Core.CaseGroupingGraph.nodes.source_id
+          description: Source ID for cluster nodes
+          type: String
+        - contextPath: Core.CaseGroupingGraph.nodes.edge_type
+          description: Edge type for cluster (LINKED, DUPLICATE, or null)
+          type: String
+        - contextPath: Core.CaseGroupingGraph.nodes.issue_count
+          description: Number of issues in cluster
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.nodes.issue_ids
+          description: List of issue IDs in cluster
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.nodes.data
+          description: Original node data
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.nodes.in_cluster
+          description: Whether this node is inside a cluster
+          type: Boolean
+        - contextPath: Core.CaseGroupingGraph.links
+          description: List of all graph links/edges
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.links.source_id
+          description: Source node ID
+          type: String
+        - contextPath: Core.CaseGroupingGraph.links.target_id
+          description: Target node ID
+          type: String
+        - contextPath: Core.CaseGroupingGraph.links.label
+          description: Link label (linked, similar, or null)
+          type: String
+        - contextPath: Core.CaseGroupingGraph.clusters
+          description: Metadata about each cluster created
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.clusters.cluster_id
+          description: Cluster node ID
+          type: String
+        - contextPath: Core.CaseGroupingGraph.clusters.source_id
+          description: Original source node that spawned the cluster
+          type: String
+        - contextPath: Core.CaseGroupingGraph.clusters.source_type
+          description: Type of source node (CASE, ARTIFACT, ASSET)
+          type: String
+        - contextPath: Core.CaseGroupingGraph.clusters.edge_type
+          description: Edge type (LINKED, DUPLICATE, or null)
+          type: String
+        - contextPath: Core.CaseGroupingGraph.clusters.issue_ids
+          description: List of issue IDs in this cluster
+          type: Unknown
+        - contextPath: Core.CaseGroupingGraph.clusters.count
+          description: Number of issues in cluster
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.total_nodes
+          description: Total number of nodes (original + clusters)
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.total_links
+          description: Total number of links after clustering
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.cluster_count
+          description: Number of clusters created
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.clustered_issues
+          description: Number of issues inside clusters
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.original_nodes
+          description: Original input node count
+          type: Number
+        - contextPath: Core.CaseGroupingGraph.summary.original_edges
+          description: Original input edge count
+          type: Number
     - name: core-xql-generic-query-platform
       arguments:
       - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.

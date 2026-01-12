@@ -4079,48 +4079,168 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def preprocess_get_case_grouping_graph_outputs(response):
-    reply = response.get("reply", {})
-    nodes = reply.get("nodes", [])
-    nodes_map = {}
-    adj_list = defaultdict(list)
-    clusters = {}
+def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
+    """
+    Preprocesses the case grouping graph response to create clusters.
+
+    Args:
+        response: API response containing 'nodes' and 'edges'
+
+    Returns:
+        Processed graph with clusters, nodes, links, and summary
+    """
+    from collections import defaultdict
+
+    nodes = response.get('nodes', [])
+    edges = response.get('edges', [])
+    nodes_map = {node['id']: node for node in nodes}
+
+    output_nodes = []
+    output_links = []
+    clusters = []
+    nodes_group = defaultdict(list)
+
+    # Step 1: Categorize edges and build groups
+
+    # 1a. LINKED edges: CASE -> ISSUE with LINKED=true
+    for edge in edges:
+        if 'CASE' in edge['source_id'] and 'ISSUE' in edge['target_id']:
+            target_node = nodes_map.get(edge['target_id'])
+            if target_node and target_node.get('data', {}).get('LINKED'):
+                source_key = f"{edge['source_id']}_LINKED"
+                nodes_group[source_key].append(edge['target_id'])
+
+    # 1b. DUPLICATE edges: CASE -> ISSUE with DUPLICATE=true
+    for edge in edges:
+        if 'CASE' in edge['source_id'] and 'ISSUE' in edge['target_id']:
+            target_node = nodes_map.get(edge['target_id'])
+            if target_node and target_node.get('data', {}).get('DUPLICATE'):
+                source_key = f"{edge['source_id']}_DUPLICATE"
+                nodes_group[source_key].append(edge['target_id'])
+
+    # 1c. Other CASE edges: CASE -> ISSUE without LINKED/DUPLICATE/UNLINKED
+    for edge in edges:
+        if 'CASE' in edge['source_id'] and 'ISSUE' in edge['target_id']:
+            target_node = nodes_map.get(edge['target_id'])
+            if target_node:
+                data = target_node.get('data', {})
+                if not data.get('LINKED') and not data.get('DUPLICATE') and not data.get('UNLINKED'):
+                    nodes_group[edge['source_id']].append(edge['target_id'])
+
+    # 1d. Other edges: ARTIFACT/ASSET -> ISSUE
+    for edge in edges:
+        if 'CASE' not in edge['source_id'] and 'ISSUE' in edge['target_id']:
+            nodes_group[edge['source_id']].append(edge['target_id'])
+
+    # Step 2: Create clusters for groups with >1 target
+    clustered_issues = set()
+
+    for source, targets in nodes_group.items():
+        if len(targets) > 1:
+            source_parts = source.split('_')
+            source_id = source_parts[0]
+            edge_type = source_parts[1] if len(source_parts) > 1 else None
+            group_id = f"group_node_{source}"
+
+            # Create cluster node
+            cluster_node = {
+                'id': group_id,
+                'type': 'IssueGroupElement',
+                'is_cluster': True,
+                'label': 'Issues',
+                'source_id': source_id,
+                'edge_type': edge_type,
+                'issue_count': len(targets),
+                'issue_ids': targets,
+                'pagination': {
+                    'currentPage': 0,
+                    'itemsPerPage': 8,
+                    'totalItems': len(targets)
+                }
+            }
+            output_nodes.append(cluster_node)
+            clustered_issues.update(targets)
+
+            # Link from source to cluster
+            label = None
+            if edge_type == 'LINKED':
+                label = 'linked'
+            elif edge_type == 'DUPLICATE':
+                label = 'similar'
+
+            output_links.append({
+                'source_id': source_id,
+                'target_id': group_id,
+                'label': label
+            })
+
+            # Links from cluster to individual issues (for their outgoing edges)
+            for target_id in targets:
+                issue_edges = [e for e in edges if e['source_id'] == target_id]
+                for edge in issue_edges:
+                    output_links.append({
+                        'source_id': group_id,
+                        'target_id': edge['target_id'],
+                        'label': None
+                    })
+
+            # Store cluster metadata
+            clusters.append({
+                'cluster_id': group_id,
+                'source_id': source_id,
+                'source_type': nodes_map.get(source_id, {}).get('type'),
+                'edge_type': edge_type,
+                'issue_ids': targets,
+                'count': len(targets)
+            })
+
+    # Step 3: Add all original nodes
     for node in nodes:
-        nodes_map[node["id"]] = node
-        if node_type := node.get("type") != "ISSUE":
-            if node_type == "CASE":
-                clusters[node.get("id") + "_linked"] = {}
-                clusters[node.get("id") + "_unlinked"] = {}
+        output_nodes.append({
+            'id': node['id'],
+            'type': node['type'],
+            'sub_type': node.get('sub_type'),
+            'is_cluster': False,
+            'data': node.get('data', {}),
+            'in_cluster': node['id'] in clustered_issues
+        })
 
-    edges = reply.get("edges", [])
-
+    # Step 4: Add non-clustered links
     for edge in edges:
-        adj_list[edge['source_id']].append(edge['target_id'])
-    for edge in edges:
-        if source_id := edge.get("source_id") in clusters:
-            is_case = nodes_map.get(source_id, {}).get("type") == "CASE"
-            target_id = edge.get("target_id")
-            if is_case:
-                if nodes_map.get(target_id , {}).get("LINKED"):
-                    cluster = clusters.get(target_id + "_linked")
-                else:
-                    cluster = clusters.get(target_id + "_unlinked")
-            else:
-                cluster = clusters.get(source_id)
-            if not cluster.get("issues"):
-                cluster["issues"] = []
-            cluster["issues"].append(target_id)
-            if not cluster.get("targets"):
-                cluster["targets"] = []
-            cluster["targets"] += adj_list[target_id]
+        # Skip if this edge's target is in a cluster AND source is the cluster's source
+        skip = False
+        for cluster in clusters:
+            if edge['target_id'] in cluster['issue_ids'] and edge['source_id'] == cluster['source_id']:
+                skip = True
+                break
 
+        if not skip:
+            target_node = nodes_map.get(edge['target_id'], {})
+            target_data = target_node.get('data', {})
 
+            label = None
+            if target_data.get('DUPLICATE') or target_data.get('LINKED'):
+                label = 'linked' if target_data.get('LINKED') else 'similar'
 
+            output_links.append({
+                'source_id': edge['source_id'],
+                'target_id': edge['target_id'],
+                'label': label
+            })
 
-
-
-    clusters = {}
-    return reply
+    return {
+        'nodes': output_nodes,
+        'links': output_links,
+        'clusters': clusters,
+        'summary': {
+            'total_nodes': len(output_nodes),
+            'total_links': len(output_links),
+            'cluster_count': len(clusters),
+            'clustered_issues': len(clustered_issues),
+            'original_nodes': len(nodes),
+            'original_edges': len(edges)
+        }
+    }
 
 
 def get_case_grouping_graph(client, args):
@@ -4129,12 +4249,12 @@ def get_case_grouping_graph(client, args):
     """
     case_id = args.get("case_id")
     response = client.get_case_grouping_graph(case_id)
-    mapped_response = preprocess_get_case_grouping_graph_outputs(response)
+    processed_data = preprocess_get_case_grouping_graph_outputs(response.get('reply', {}))
     return CommandResults(
         readable_output=tableToMarkdown("Case Grouping Graph", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseGroupingGraph",
-        outputs=mapped_response,
-        raw_response=mapped_response,
+        outputs=processed_data,
+        raw_response=processed_data,
     )
 
 def main():  # pragma: no cover
