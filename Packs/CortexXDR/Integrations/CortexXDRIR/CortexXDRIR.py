@@ -552,22 +552,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("data")
 
-    def list_assets(self, filter_json: dict = None, sort_field: str = None,
-                    sort_order: str = None, page: int = 0, page_size: int = 50):
-        request_data: Dict[str, Any] = {
-            "request_data": {
-                "search_from": page * page_size,
-                "search_to": (page + 1) * page_size,
-            }
-        }
-        if filter_json:
-            request_data["request_data"]["filters"] = filter_json
-        if sort_field:
-            request_data["request_data"]["sort"] = [{
-                "FIELD": sort_field,
-                "ORDER": sort_order or "ASC"
-            }]
-
+    def list_assets(self, request_data: dict):
         res = self._http_request(
             method="POST",
             url_suffix="/assets",
@@ -596,23 +581,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("data", [])
 
-    def create_asset_group(self, group_name: str, group_type: str, group_description: str = "",
-                           membership_predicate_json: Any = None):
-        update_data = assign_params(
-            group_name=group_name,
-            group_type=group_type,
-            group_description=group_description,
-            membership_predicate=membership_predicate_json
-        )
-
-        request_data = {
-            "request_data": {
-                "asset_group": update_data
-            }
-        }
-        if membership_predicate_json:
-            request_data["request_data"]["asset_group"]["membership_predicate"] = membership_predicate_json
-
+    def create_asset_group(self, request_data: dict):
         res = self._http_request(
             method="POST",
             url_suffix="/asset-groups/create",
@@ -630,23 +599,7 @@ class Client(CoreClient):
             timeout=self.timeout,
         )
 
-    def list_asset_groups(self, filter_json: Any = None, sort_field: str = None,
-                          sort_order: str = None, page: int = 0, page_size: int = 30):
-        request_data = {
-            "request_data": {
-                "search_from": page * page_size,
-                "search_to": (page + 1) * page_size,
-            }
-        }
-        if filter_json:
-            request_data["request_data"]["filters"] = filter_json
-        if sort_field:
-            request_data["request_data"]["sort"] = [{
-                "FIELD": sort_field,
-                "ORDER": sort_order or "ASC"
-            }]
-        demisto.debug(f"Final {request_data=}")
-
+    def list_asset_groups(self, request_data: dict):
         res = self._http_request(
             method="POST",
             url_suffix="/asset-groups",
@@ -656,19 +609,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("data", [])
 
-    def update_asset_group(self, group_id: str, group_name: str = None, group_type: str = None,
-                           group_description: str = None, membership_predicate_json: Any = None):
-        update_data = assign_params(
-            group_name=group_name,
-            group_type=group_type,
-            group_description=group_description,
-            membership_predicate=membership_predicate_json,
-        )
-        request_data = {
-            "request_data": {
-                "asset_group": update_data
-            }
-        }
+    def update_asset_group(self, group_id: str, request_data: dict):
         self._http_request(
             method="POST",
             url_suffix=f"/asset-groups/update/{group_id}",
@@ -1608,13 +1549,20 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
                 asset = response.pop()
                 assets.append(asset)
     else:
-        assets = client.list_assets(
-            filter_json=filter_json,
-            sort_field=sort_field,
-            sort_order=sort_order,
-            page=page,
-            page_size=page_size
-        )
+        request_data: Dict[str, Any] = {
+            "request_data": {
+                "search_from": page * page_size,
+                "search_to": (page + 1) * page_size,
+            }
+        }
+        if filter_json:
+            request_data["request_data"]["filters"] = filter_json
+        if sort_field:
+            request_data["request_data"]["sort"] = [{
+                "FIELD": sort_field,
+                "ORDER": sort_order or "ASC"
+            }]
+        assets = client.list_assets(request_data=request_data)
     readable_assets = []
     assets = strip_prefix_from_list(assets, "xdm.")
     assets = strip_prefix_from_list(assets, "asset.")
@@ -1722,7 +1670,22 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
     if membership_predicate_json:
         membership_predicate_json = json.loads(membership_predicate_json)
 
-    res = client.create_asset_group(group_name, group_type, group_description, membership_predicate_json)
+    update_data = assign_params(
+        group_name=group_name,
+        group_type=group_type,
+        group_description=group_description,
+        membership_predicate=membership_predicate_json
+    )
+
+    request_data = {
+        "request_data": {
+            "asset_group": update_data
+        }
+    }
+    if membership_predicate_json:
+        request_data["request_data"]["asset_group"]["membership_predicate"] = membership_predicate_json
+
+    res = client.create_asset_group(request_data=request_data)
 
     return CommandResults(readable_output="Asset group created successfully", raw_response=res)
 
@@ -1763,13 +1726,22 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size')) or limit
     page = arg_to_number(args.get('page')) or 0
 
-    groups = client.list_asset_groups(
-        filter_json=filter_json,
-        sort_field=sort_field,
-        sort_order=sort_order,
-        page=page,
-        page_size=page_size
-    )
+    request_data = {
+        "request_data": {
+            "search_from": page * page_size,
+            "search_to": (page + 1) * page_size,
+        }
+    }
+    if filter_json:
+        request_data["request_data"]["filters"] = filter_json
+    if sort_field:
+        request_data["request_data"]["sort"] = [{
+            "FIELD": sort_field,
+            "ORDER": sort_order or "ASC"
+        }]
+    demisto.debug(f"Final {request_data=}")
+
+    groups = client.list_asset_groups(request_data=request_data)
     groups = strip_prefix_from_list(groups, "XDM.ASSET_GROUP.")
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
@@ -1807,7 +1779,18 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     if membership_predicate_json:
         membership_predicate_json = json.loads(membership_predicate_json)
 
-    client.update_asset_group(group_id, group_name, group_type, group_description, membership_predicate_json)
+    update_data = assign_params(
+        group_name=group_name,
+        group_type=group_type,
+        group_description=group_description,
+        membership_predicate=membership_predicate_json,
+    )
+    request_data = {
+        "request_data": {
+            "asset_group": update_data
+        }
+    }
+    client.update_asset_group(group_id, request_data=request_data)
 
     return CommandResults(readable_output="Asset group updated successfully")
 
