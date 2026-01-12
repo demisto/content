@@ -387,7 +387,7 @@ view: |-
     }
   }
 inputs:
-- key: 'Severity'
+- key: Severity
   value: {}
   required: false
   description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
@@ -417,7 +417,7 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
-  - 'Severity'
+  - Severity
   - IndicatorDescription
   - IndicatorTitle
   - GenerateAlert
