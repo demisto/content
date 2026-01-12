@@ -4175,6 +4175,8 @@ def visualize_case_grouping_graph(data):
         lines.append("\n--- Disconnected Nodes ---")
         for nid in unvisited:
             node = nodes[nid]
+            if node.get('in_cluster', False):
+                continue
             symbol = get_symbol(node.get('type'))
             label = get_label(nid)
             lines.append(f"{symbol} {label}")
@@ -4238,7 +4240,7 @@ def visualize_case_grouping_graph(data):
     lines.append("H/M/L = High/Medium/Low severity")
     lines.append("=" * 100 + "\n")
 
-    print( '\n'.join(lines))
+    return  '\n'.join(lines)
 
 def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
     """
@@ -4300,7 +4302,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
         if len(targets) > 1:
             source_parts = source.split('_')
             source_id = source_parts[0]
-            edge_type = source_parts[1] if len(source_parts) > 1 else None
+            edge_type = source_parts[1] if len(source_parts) > 1 else "related entities"
             group_id = f"group_node_{source}"
 
             # Create cluster node
@@ -4317,7 +4319,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
             clustered_issues.update(targets)
 
             # Link from source to cluster
-            label = None
+            label = "related entities"
             if edge_type == 'LINKED':
                 label = 'linked'
             elif edge_type == 'DUPLICATE':
@@ -4337,7 +4339,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
                         'source_id': group_id,
                         'source_issue_id' : target_id,
                         'target_id': edge['target_id'],
-                        'label': None
+                        'label': "related entities"
                     })
 
             # Store cluster metadata
@@ -4376,7 +4378,7 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
                 'target_id': edge['target_id'],
             })
 
-    return {
+    graph_data =  {
         'nodes': output_nodes,
         'links': output_links,
         'clusters': clusters,
@@ -4389,6 +4391,11 @@ def preprocess_get_case_grouping_graph_outputs(response: dict) -> dict:
             'original_edges': len(edges)
         }
     }
+
+    visual_representation = visualize_case_grouping_graph(graph_data)
+    graph_data["visual_representation"] = visual_representation
+
+    return graph_data
 
 
 def get_case_grouping_graph(client, args):

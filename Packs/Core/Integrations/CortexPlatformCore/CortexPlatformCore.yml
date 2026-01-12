@@ -3136,6 +3136,9 @@ script:
       name: core-get-case-grouping-graph
       description: Retrieves the grouping graph for a specific case.
       outputs:
+        - contextPath: Core.CaseGroupingGraph.visual_representation
+          description: visual_representation
+          type: String
         - contextPath: Core.CaseGroupingGraph.nodes
           description: List of all graph nodes including original nodes and cluster nodes
           type: Unknown
@@ -3152,7 +3155,7 @@ script:
           description: Source ID for cluster nodes
           type: String
         - contextPath: Core.CaseGroupingGraph.nodes.edge_type
-          description: Edge type for cluster (LINKED, DUPLICATE, or null)
+          description: Edge type for cluster (LINKED, DUPLICATE, or related entities)
           type: String
         - contextPath: Core.CaseGroupingGraph.nodes.issue_count
           description: Number of issues in cluster
@@ -3179,7 +3182,7 @@ script:
           description: Target node ID
           type: String
         - contextPath: Core.CaseGroupingGraph.links.label
-          description: Link label (linked, similar, or null)
+          description: Link label (linked, similar, or related entities)
           type: String
         - contextPath: Core.CaseGroupingGraph.clusters
           description: Metadata about each cluster created
@@ -3194,7 +3197,7 @@ script:
           description: Type of source node (CASE, ARTIFACT, ASSET)
           type: String
         - contextPath: Core.CaseGroupingGraph.clusters.edge_type
-          description: Edge type (LINKED, DUPLICATE, or null)
+          description: Edge type (LINKED, DUPLICATE, or related entities)
           type: String
         - contextPath: Core.CaseGroupingGraph.clusters.issue_ids
           description: List of issue IDs in this cluster
