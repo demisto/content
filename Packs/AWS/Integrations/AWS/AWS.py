@@ -546,6 +546,7 @@ class S3:
                 table_data,
                 headers=["Key", "Size (Bytes)", "LastModified", "StorageClass"],
                 removeNull=True,
+                headerTransform=pascalToSpace
             )
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets.BucketObjects",
