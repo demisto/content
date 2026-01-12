@@ -8299,19 +8299,16 @@ def test_get_cases_data(mocker):
     """
     from CrowdStrikeFalcon import get_cases_data
 
-    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request", return_value={
-        "meta": {"pagination": {"total": 10}},
-        "resources": ["case1", "case2"]
-    })
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 10}}, "resources": ["case1", "case2"]}
+    )
 
     total, ids = get_cases_data("some_filter", 10, 0)
 
     assert total == 10
     assert ids == ["case1", "case2"]
     http_request_mock.assert_called_with(
-        "GET",
-        "/cases/queries/cases/v1?filter=some_filter",
-        {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+        "GET", "/cases/queries/cases/v1?filter=some_filter", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
     )
 
 
@@ -8327,24 +8324,17 @@ def test_get_cases_details(mocker):
     """
     from CrowdStrikeFalcon import get_cases_details
 
-    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request", return_value={
-        "resources": [{"id": "case1", "status": "new"}]
-    })
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"resources": [{"id": "case1", "status": "new"}]}
+    )
 
     details = get_cases_details(["case1"])
 
     assert details == [{"id": "case1", "status": "new"}]
-    http_request_mock.assert_called_with(
-        "POST",
-        "/cases/entities/cases/v2",
-        data=json.dumps({"ids": ["case1"]})
-    )
+    http_request_mock.assert_called_with("POST", "/cases/entities/cases/v2", data=json.dumps({"ids": ["case1"]}))
 
 
-@pytest.mark.parametrize("status, expected_exception", [
-    ("new", False),
-    ("invalid_status", True)
-])
+@pytest.mark.parametrize("status, expected_exception", [("new", False), ("invalid_status", True)])
 def test_update_ngeism_case_request(mocker, status, expected_exception):
     """
     Given:
@@ -8365,9 +8355,7 @@ def test_update_ngeism_case_request(mocker, status, expected_exception):
     else:
         update_ngeism_case_request("case1", status)
         http_request_mock.assert_called_with(
-            "PATCH",
-            "/cases/entities/cases/v2",
-            data=json.dumps({"fields": {"status": status}, "id": "case1"})
+            "PATCH", "/cases/entities/cases/v2", data=json.dumps({"fields": {"status": status}, "id": "case1"})
         )
 
 
@@ -8392,10 +8380,10 @@ def test_get_remote_ngsiem_case_data(mocker):
     assert updated_object == {"incident_type": "ngsiem_case", "status": "new", "state": "open"}
 
 
-@pytest.mark.parametrize("delta, inc_status, close_in_cs_falcon_param, expected_status", [
-    ({"status": "in_progress"}, IncidentStatus.ACTIVE, False, "in_progress"),
-    ({}, IncidentStatus.ACTIVE, False, None)
-])
+@pytest.mark.parametrize(
+    "delta, inc_status, close_in_cs_falcon_param, expected_status",
+    [({"status": "in_progress"}, IncidentStatus.ACTIVE, False, "in_progress"), ({}, IncidentStatus.ACTIVE, False, None)],
+)
 def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon_param, expected_status):
     """
     Given:
@@ -8435,10 +8423,13 @@ def test_fetch_ngsiem_cases(mocker):
 
     mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=("start_time", "end_time"))
     mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case1"]))
-    mocker.patch("CrowdStrikeFalcon.get_cases_details", return_value=[
-        {"id": "case1", "created_timestamp": "2023-01-01T00:00:00.000Z", "severity": "High"}
-    ])
-    mocker.patch("CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **kwargs: incidents_res)
+    mocker.patch(
+        "CrowdStrikeFalcon.get_cases_details",
+        return_value=[{"id": "case1", "created_timestamp": "2023-01-01T00:00:00.000Z", "severity": "High"}],
+    )
+    mocker.patch(
+        "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **kwargs: incidents_res
+    )
     mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={"offset": 1})
 
     cases, last_run = fetch_ngsiem_cases({}, 3, "some_query")
