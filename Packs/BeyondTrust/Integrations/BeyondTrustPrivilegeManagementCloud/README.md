@@ -5,6 +5,7 @@
 BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs from the BeyondTrust PM Cloud Management API v3.
 
 This integration supports:
+
 - Fetching Activity Audits (audit logs of configuration changes and administrative actions)
 - Fetching Events (endpoint privilege management events)
 - Event collection for XSIAM
@@ -42,6 +43,7 @@ To create an API account in BeyondTrust PM Cloud:
 7. Copy the Client ID and Client Secret values to use in the integration configuration.
 
 **Important Notes:**
+
 - The instance URL can be found at the top of the API Settings page.
 - The client secret cannot be modified, but it can be regenerated on the Configuration > Settings > API Settings page.
 - Regenerating a client secret immediately invalidates any OAuth tokens associated with the account.
@@ -76,9 +78,11 @@ Retrieves the list of events by start date from the BeyondTrust PM Cloud.
 | BeyondTrust.Event.@timestamp | Date | The timestamp of the event. |
 
 #### Command example
+
 ```!beyondtrust-pm-cloud-get-events start_date="2025-01-01T00:00:00.000Z" limit="10"```
 
 #### Context Example
+
 ```json
 {
     "BeyondTrust": {
@@ -124,9 +128,11 @@ Retrieves list of Details of Activity Audits with pagination (sorting and filter
 | BeyondTrust.Audit.changedBy | String | Audit ChangedBy (API or Portal). |
 
 #### Command example
+
 ```!beyondtrust-pm-cloud-get-audit-activity page_size="10" page_number="1"```
 
 #### Context Example
+
 ```json
 {
     "BeyondTrust": {
@@ -159,6 +165,7 @@ This integration supports event collection for XSIAM. When configured with **Fet
 ### Continuous Event Coverage
 
 **Important**: The integration uses a **continuous coverage** approach to prevent event gaps:
+
 - Each fetch cycle stores the fetch start time (not the last event's timestamp) as the next run's start time
 - This ensures events created between fetch cycles are never missed
 - Example: If Fetch 1 runs at 12:00 and finds events up to 11:50, it stores 12:00 as the next start time
@@ -168,7 +175,9 @@ This integration supports event collection for XSIAM. When configured with **Fet
 ### Event Types
 
 #### Activity Audits
+
 Activity Audits track configuration changes and administrative actions in PM Cloud, including:
+
 - User management (create, modify, disable)
 - Group management
 - Policy changes
@@ -181,7 +190,9 @@ Activity Audits track configuration changes and administrative actions in PM Clo
 **Source Log Type**: `activity_audits`
 
 #### Events
+
 Events track endpoint privilege management activities, including:
+
 - Application execution events
 - Privilege elevation events
 - Authorization requests
@@ -194,6 +205,7 @@ Events track endpoint privilege management activities, including:
 ## API Documentation
 
 This integration uses the BeyondTrust PM Cloud Management API v3. For more information, refer to:
+
 - [BeyondTrust PM Cloud API Documentation](https://docs.beyondtrust.com/epm-wm/reference)
 - Activity Audits endpoint: `GET /management-api/v3/ActivityAudits/Details`
 - Events endpoint: `GET /management-api/v3/Events/FromStartDate`
@@ -207,17 +219,20 @@ This integration uses the BeyondTrust PM Cloud Management API v3. For more infor
 ## Troubleshooting
 
 ### Authentication Issues
+
 - Verify the Client ID and Client Secret are correct.
 - Ensure the API account has the necessary permissions in PM Cloud.
 - Check that the Server URL is in the correct format: `https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com`
 
 ### No Events Fetched
+
 - Verify the **First fetch timestamp** is set appropriately.
 - Check that events exist in the specified time range.
 - Ensure **Events types to fetch** is configured correctly.
 - Review the integration logs for any API errors.
 
 ### Token Expiration
+
 - OAuth tokens expire after 3600 seconds (1 hour).
 - The integration automatically refreshes tokens as needed.
 - If you regenerate the client secret in PM Cloud, update the integration configuration immediately.

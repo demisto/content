@@ -1,25 +1,25 @@
 import json
 import pytest
 from freezegun import freeze_time
-from BeyondTrustPrivilegeManagementCloud import Client, get_events_command, get_audit_activity_command, fetch_events, \
-    get_dedup_key, test_module
+from BeyondTrustPrivilegeManagementCloud import (
+    Client,
+    get_events_command,
+    get_audit_activity_command,
+    fetch_events,
+    get_dedup_key,
+)
+import BeyondTrustPrivilegeManagementCloud
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-BASE_URL = 'https://example.com'
-CLIENT_ID = 'client_id'
-CLIENT_SECRET = 'client_secret'
+BASE_URL = "https://example.com"
+CLIENT_ID = "client_id"
+CLIENT_SECRET = "client_secret"
 
 
 @pytest.fixture
 def client():
-    return Client(
-        base_url=BASE_URL,
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        verify=False,
-        proxy=False
-    )
+    return Client(base_url=BASE_URL, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, verify=False, proxy=False)
 
 
 def load_json(path):
@@ -27,7 +27,7 @@ def load_json(path):
         return json.load(f)
 
 
-''' TEST FUNCTIONS '''
+""" TEST FUNCTIONS """
 
 
 def test_get_token(client, mocker):
@@ -39,11 +39,11 @@ def test_get_token(client, mocker):
     Then:
         - The function should return an access token
     """
-    mock_response = {'access_token': 'test_token_123', 'token_type': 'Bearer', 'expires_in': 3600}
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    mock_response = {"access_token": "test_token_123", "token_type": "Bearer", "expires_in": 3600}
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
 
     token = client.get_token()
-    assert token == 'test_token_123'
+    assert token == "test_token_123"
 
 
 def test_module_success(client, mocker):
@@ -55,9 +55,9 @@ def test_module_success(client, mocker):
     Then:
         - The function should return 'ok' on success
     """
-    mocker.patch.object(client, 'get_token', return_value='test_token')
-    result = test_module(client)
-    assert result == 'ok'
+    mocker.patch.object(client, "get_token", return_value="test_token")
+    result = BeyondTrustPrivilegeManagementCloud.test_module(client)
+    assert result == "ok"
 
 
 def test_module_failure(client, mocker):
@@ -69,9 +69,9 @@ def test_module_failure(client, mocker):
     Then:
         - The function should return an error message
     """
-    mocker.patch.object(client, 'get_token', side_effect=Exception('Authentication failed'))
-    result = test_module(client)
-    assert 'Failed to connect' in result
+    mocker.patch.object(client, "get_token", side_effect=Exception("Authentication failed"))
+    result = BeyondTrustPrivilegeManagementCloud.test_module(client)
+    assert "Failed to connect" in result
 
 
 def test_get_events_command(client, mocker):
@@ -85,22 +85,19 @@ def test_get_events_command(client, mocker):
         - The command should return the expected results
     """
     mock_response = {
-        'events': [
-            {'id': '1', 'created': '2022-01-01T00:00:00.000Z'},
-            {'id': '2', 'created': '2022-01-01T00:00:01.000Z'}
-        ],
-        'totalRecordsReturned': 2
+        "events": [{"id": "1", "created": "2022-01-01T00:00:00.000Z"}, {"id": "2", "created": "2022-01-01T00:00:01.000Z"}],
+        "totalRecordsReturned": 2,
     }
-    mocker.patch.object(client, 'get_events', return_value=mock_response)
+    mocker.patch.object(client, "get_events", return_value=mock_response)
 
-    args = {'start_date': '2022-01-01T00:00:00.000Z', 'limit': '2'}
+    args = {"start_date": "2022-01-01T00:00:00.000Z", "limit": "2"}
     result = get_events_command(client, args)
 
     outputs = result.outputs
     assert isinstance(outputs, list)
     assert len(outputs) == 2
-    assert outputs[0]['id'] == '1'
-    assert outputs[1]['id'] == '2'
+    assert outputs[0]["id"] == "1"
+    assert outputs[1]["id"] == "2"
 
 
 def test_get_events_command_default_start_date(client, mocker):
@@ -113,14 +110,10 @@ def test_get_events_command_default_start_date(client, mocker):
     Then:
         - The command should use default start_date (1 hour ago)
     """
-    mock_response = {
-        'events': [
-            {'id': '1', 'created': '2022-01-01T00:00:00.000Z'}
-        ]
-    }
-    mocker.patch.object(client, 'get_events', return_value=mock_response)
+    mock_response = {"events": [{"id": "1", "created": "2022-01-01T00:00:00.000Z"}]}
+    mocker.patch.object(client, "get_events", return_value=mock_response)
 
-    args = {'limit': '1'}
+    args = {"limit": "1"}
     result = get_events_command(client, args)
 
     # Verify get_events was called with a start_date
@@ -139,23 +132,23 @@ def test_get_audit_activity_command(client, mocker):
         - The command should return the expected results
     """
     mock_response = {
-        'data': [
-            {'id': 1, 'created': '2022-01-01T00:00:00.000Z', 'details': 'User created'},
-            {'id': 2, 'created': '2022-01-01T00:00:01.000Z', 'details': 'Policy updated'}
+        "data": [
+            {"id": 1, "created": "2022-01-01T00:00:00.000Z", "details": "User created"},
+            {"id": 2, "created": "2022-01-01T00:00:01.000Z", "details": "Policy updated"},
         ],
-        'pageCount': 1,
-        'totalRecordCount': 2
+        "pageCount": 1,
+        "totalRecordCount": 2,
     }
-    mocker.patch.object(client, 'get_audit_activity', return_value=mock_response)
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_response)
 
-    args = {'page_size': '2', 'page_number': '1'}
+    args = {"page_size": "2", "page_number": "1"}
     result = get_audit_activity_command(client, args)
 
     outputs = result.outputs
     assert isinstance(outputs, list)
     assert len(outputs) == 2
-    assert outputs[0]['id'] == 1
-    assert outputs[1]['id'] == 2
+    assert outputs[0]["id"] == 1
+    assert outputs[1]["id"] == 2
 
 
 def test_get_audit_activity_command_with_filters(client, mocker):
@@ -168,19 +161,14 @@ def test_get_audit_activity_command_with_filters(client, mocker):
     Then:
         - The command should pass filters to the API
     """
-    mock_response = {
-        'data': [
-            {'id': 1, 'created': '2022-01-01T00:00:00.000Z'}
-        ],
-        'pageCount': 1
-    }
-    mocker.patch.object(client, 'get_audit_activity', return_value=mock_response)
+    mock_response = {"data": [{"id": 1, "created": "2022-01-01T00:00:00.000Z"}], "pageCount": 1}
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_response)
 
     args = {
-        'page_size': '10',
-        'page_number': '1',
-        'filter_created_dates': '2022-01-01,2022-01-02',
-        'filter_created_selection_mode': 'Range'
+        "page_size": "10",
+        "page_number": "1",
+        "filter_created_dates": "2022-01-01,2022-01-02",
+        "filter_created_selection_mode": "Range",
     }
     result = get_audit_activity_command(client, args)
 
@@ -202,43 +190,37 @@ def test_fetch_events(client, mocker):
         - next_run timestamps should be set to fetch_end_time (not last event time) to prevent gaps
     """
     mock_events_response = {
-        'events': [
-            {'id': '1', 'created': '2024-01-01T10:00:00.000Z'},
-            {'id': '2', 'created': '2024-01-01T11:00:00.000Z'}
-        ]
+        "events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}, {"id": "2", "created": "2024-01-01T11:00:00.000Z"}]
     }
     mock_audit_response = {
-        'data': [
-            {'id': 3, 'created': '2024-01-01T10:30:00.000Z'},
-            {'id': 4, 'created': '2024-01-01T11:30:00.000Z'}
-        ],
-        'pageCount': 1
+        "data": [{"id": 3, "created": "2024-01-01T10:30:00.000Z"}, {"id": 4, "created": "2024-01-01T11:30:00.000Z"}],
+        "pageCount": 1,
     }
 
-    mocker.patch.object(client, 'get_events', return_value=mock_events_response)
-    mocker.patch.object(client, 'get_audit_activity', return_value=mock_audit_response)
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
 
     last_run: dict = {}
-    first_fetch = '3 days'
+    first_fetch = "3 days"
     max_fetch = 10
-    events_types_to_fetch = ['Events', 'Activity Audits']
+    events_types_to_fetch = ["Events", "Activity Audits"]
 
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
 
     assert len(events) == 4
-    
+
     # CRITICAL: Verify next_run timestamps are set to fetch_end_time (frozen time), NOT the last event's timestamp
     # This ensures continuous coverage without gaps between fetch cycles
-    expected_timestamp = '2024-01-01T12:00:00.000000Z'
-    assert next_run['last_event_time'] == expected_timestamp
-    assert next_run['last_audit_time'] == expected_timestamp
-    
+    expected_timestamp = "2024-01-01T12:00:00.000000Z"
+    assert next_run["last_event_time"] == expected_timestamp
+    assert next_run["last_audit_time"] == expected_timestamp
+
     # Verify XSIAM fields are added
     for event in events:
-        assert '_time' in event
-        assert 'source_log_type' in event
-        assert 'vendor' in event
-        assert 'product' in event
+        assert "_time" in event
+        assert "source_log_type" in event
+        assert "vendor" in event
+        assert "product" in event
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -252,26 +234,22 @@ def test_fetch_events_only_events(client, mocker):
         - Only Events should be fetched
         - next_run should use fetch_end_time to prevent gaps
     """
-    mock_events_response = {
-        'events': [
-            {'id': '1', 'created': '2024-01-01T10:00:00.000Z'}
-        ]
-    }
-    mocker.patch.object(client, 'get_events', return_value=mock_events_response)
+    mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}]}
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
 
     last_run: dict = {}
-    first_fetch = '1 day'
+    first_fetch = "1 day"
     max_fetch = 10
-    events_types_to_fetch = ['Events']
+    events_types_to_fetch = ["Events"]
 
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
 
     assert len(events) == 1
-    assert 'last_event_time' in next_run
-    assert 'last_audit_time' not in next_run
-    assert events[0]['source_log_type'] == 'events'
+    assert "last_event_time" in next_run
+    assert "last_audit_time" not in next_run
+    assert events[0]["source_log_type"] == "events"
     # Verify timestamp is set to fetch_end_time
-    assert next_run['last_event_time'] == '2024-01-01T12:00:00.000000Z'
+    assert next_run["last_event_time"] == "2024-01-01T12:00:00.000000Z"
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -285,27 +263,22 @@ def test_fetch_events_only_audits(client, mocker):
         - Only Activity Audits should be fetched
         - next_run should use fetch_end_time to prevent gaps
     """
-    mock_audit_response = {
-        'data': [
-            {'id': 1, 'created': '2024-01-01T10:00:00.000Z'}
-        ],
-        'pageCount': 1
-    }
-    mocker.patch.object(client, 'get_audit_activity', return_value=mock_audit_response)
+    mock_audit_response = {"data": [{"id": 1, "created": "2024-01-01T10:00:00.000Z"}], "pageCount": 1}
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
 
     last_run: dict = {}
-    first_fetch = '1 day'
+    first_fetch = "1 day"
     max_fetch = 10
-    events_types_to_fetch = ['Activity Audits']
+    events_types_to_fetch = ["Activity Audits"]
 
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
 
     assert len(events) == 1
-    assert 'last_audit_time' in next_run
-    assert 'last_event_time' not in next_run
-    assert events[0]['source_log_type'] == 'activity_audits'
+    assert "last_audit_time" in next_run
+    assert "last_event_time" not in next_run
+    assert events[0]["source_log_type"] == "activity_audits"
     # Verify timestamp is set to fetch_end_time
-    assert next_run['last_audit_time'] == '2024-01-01T12:00:00.000000Z'
+    assert next_run["last_audit_time"] == "2024-01-01T12:00:00.000000Z"
 
 
 def test_fetch_events_pagination(client, mocker):
@@ -319,27 +292,18 @@ def test_fetch_events_pagination(client, mocker):
         - All pages should be fetched until max_fetch is reached
     """
     mock_audit_response_page1 = {
-        'data': [
-            {'id': 1, 'created': '2022-01-01T00:00:00.000Z'},
-            {'id': 2, 'created': '2022-01-01T00:00:01.000Z'}
-        ],
-        'pageCount': 2,
-        'pageNumber': 1
+        "data": [{"id": 1, "created": "2022-01-01T00:00:00.000Z"}, {"id": 2, "created": "2022-01-01T00:00:01.000Z"}],
+        "pageCount": 2,
+        "pageNumber": 1,
     }
-    mock_audit_response_page2 = {
-        'data': [
-            {'id': 3, 'created': '2022-01-01T00:00:02.000Z'}
-        ],
-        'pageCount': 2,
-        'pageNumber': 2
-    }
+    mock_audit_response_page2 = {"data": [{"id": 3, "created": "2022-01-01T00:00:02.000Z"}], "pageCount": 2, "pageNumber": 2}
 
-    mocker.patch.object(client, 'get_audit_activity', side_effect=[mock_audit_response_page1, mock_audit_response_page2])
+    mocker.patch.object(client, "get_audit_activity", side_effect=[mock_audit_response_page1, mock_audit_response_page2])
 
     last_run: dict = {}
-    first_fetch = '1 day'
+    first_fetch = "1 day"
     max_fetch = 10
-    events_types_to_fetch = ['Activity Audits']
+    events_types_to_fetch = ["Activity Audits"]
 
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
 
@@ -356,10 +320,10 @@ def test_get_dedup_key():
     Then:
         - The function should return the correct deduplication key
     """
-    event_with_id = {'id': '123', 'data': 'test'}
-    assert get_dedup_key(event_with_id) == '123'
+    event_with_id = {"id": "123", "data": "test"}
+    assert get_dedup_key(event_with_id) == "123"
 
-    event_without_id = {'data': 'test'}
+    event_without_id = {"data": "test"}
     # The hash will vary, but it should be a string
     assert isinstance(get_dedup_key(event_without_id), str)
 
@@ -373,8 +337,8 @@ def test_get_dedup_key_numeric_id():
     Then:
         - The function should convert ID to string
     """
-    event_with_numeric_id = {'id': 456, 'data': 'test'}
-    assert get_dedup_key(event_with_numeric_id) == '456'
+    event_with_numeric_id = {"id": 456, "data": "test"}
+    assert get_dedup_key(event_with_numeric_id) == "456"
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -390,22 +354,22 @@ def test_fetch_events_no_gap_between_fetches_first(client, mocker):
         - This ensures no events are missed between fetch cycles
     """
     mock_events_response = {
-        'events': [
-            {'id': '1', 'created': '2024-01-01T11:50:00.000Z'},  # Event before fetch time
+        "events": [
+            {"id": "1", "created": "2024-01-01T11:50:00.000Z"},  # Event before fetch time
         ]
     }
-    mocker.patch.object(client, 'get_events', return_value=mock_events_response)
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
 
     last_run: dict = {}
-    first_fetch = '1 hour'
+    first_fetch = "1 hour"
     max_fetch = 10
-    events_types_to_fetch = ['Events']
+    events_types_to_fetch = ["Events"]
 
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
-    
+
     # CRITICAL: Verify fetch stored fetch_end_time (12:00:00), not last event time (11:50:00)
     # This prevents missing events created between 11:50:00 and the next fetch
-    assert next_run['last_event_time'] == '2024-01-01T12:00:00.000000Z'
+    assert next_run["last_event_time"] == "2024-01-01T12:00:00.000000Z"
     assert len(events) == 1
 
 
@@ -424,27 +388,189 @@ def test_fetch_events_no_gap_between_fetches_second(client, mocker):
     """
     # Events created between first fetch (12:00:00) and second fetch (12:05:00)
     mock_events_response = {
-        'events': [
-            {'id': '2', 'created': '2024-01-01T12:01:00.000Z'},  # Event after first fetch
-            {'id': '3', 'created': '2024-01-01T12:03:00.000Z'},  # Another event
+        "events": [
+            {"id": "2", "created": "2024-01-01T12:01:00.000Z"},  # Event after first fetch
+            {"id": "3", "created": "2024-01-01T12:03:00.000Z"},  # Another event
         ]
     }
-    mocker.patch.object(client, 'get_events', return_value=mock_events_response)
-    
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+
     # Simulate last_run from previous fetch
-    last_run = {'last_event_time': '2024-01-01T12:00:00.000000Z'}
-    first_fetch = '1 hour'
+    last_run = {"last_event_time": "2024-01-01T12:00:00.000000Z"}
+    first_fetch = "1 hour"
     max_fetch = 10
-    events_types_to_fetch = ['Events']
-    
+    events_types_to_fetch = ["Events"]
+
     next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
-    
+
     # Verify events created between fetches are captured
     assert len(events) == 2
-    
+
     # Verify second fetch stored its fetch_end_time (12:05:00)
-    assert next_run['last_event_time'] == '2024-01-01T12:05:00.000000Z'
-    
+    assert next_run["last_event_time"] == "2024-01-01T12:05:00.000000Z"
+
     # Verify the get_events call used the correct start_date (from first fetch's end time)
     call_args = client.get_events.call_args
-    assert call_args[0][0] == '2024-01-01T12:00:00.000000Z'
+    assert call_args[0][0] == "2024-01-01T12:00:00.000000Z"
+
+
+def test_fetch_events_with_last_run(client, mocker):
+    """
+    Given:
+        - A client object
+        - Last run context with existing timestamps
+    When:
+        - fetch_events is called
+    Then:
+        - Should use last_run timestamps instead of first_fetch
+    """
+    mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T12:30:00.000Z"}]}
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    
+    last_run = {"last_event_time": "2024-01-01T12:00:00.000000Z"}
+    first_fetch = "3 days"
+    max_fetch = 10
+    events_types_to_fetch = ["Events"]
+    
+    with freeze_time("2024-01-01 13:00:00"):
+        next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+    
+    # Verify it used last_run timestamp, not first_fetch
+    call_args = client.get_events.call_args
+    assert call_args[0][0] == "2024-01-01T12:00:00.000000Z"
+    assert len(events) == 1
+
+
+def test_fetch_events_max_fetch_limit(client, mocker):
+    """
+    Given:
+        - A client object
+        - max_fetch limit of 2
+    When:
+        - fetch_events is called
+    Then:
+        - Should pass max_fetch as limit parameter to API
+    """
+    mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}]}
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 2  # Limit to 2 events
+    events_types_to_fetch = ["Events"]
+    
+    with freeze_time("2024-01-01 12:00:00"):
+        next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+    
+    # Verify the parameter is passed correctly to the API
+    call_args = client.get_events.call_args
+    assert call_args[0][1] == 2  # Second positional argument is limit
+
+
+def test_fetch_events_empty_response(client, mocker):
+    """
+    Given:
+        - A client object
+        - API returns empty events
+    When:
+        - fetch_events is called
+    Then:
+        - Should handle empty response gracefully
+    """
+    mock_events_response = {"events": []}
+    mock_audit_response = {"data": [], "pageCount": 0}
+    
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
+    
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    events_types_to_fetch = ["Events", "Activity Audits"]
+    
+    with freeze_time("2024-01-01 12:00:00"):
+        next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+    
+    assert len(events) == 0
+    assert "last_event_time" in next_run
+    assert "last_audit_time" in next_run
+
+
+def test_http_request_with_authentication(client, mocker):
+    """Test _http_request automatically gets token and adds Authorization header."""
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+    mock_token_response = {"access_token": "new_token_123"}
+    mock_api_response = {"data": "test"}
+    
+    mock_http = mocker.patch.object(BaseClient, "_http_request")
+    mock_http.side_effect = [mock_token_response, mock_api_response]
+    
+    result = client._http_request(method="GET", url_suffix="/management-api/v3/test")
+    
+    assert client.token == "new_token_123"
+    assert mock_http.call_count == 2
+
+
+def test_http_request_token_endpoint(client, mocker):
+    """Test _http_request does NOT add Authorization header for token endpoint."""
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+    mock_response = {"access_token": "token_123"}
+    mock_http = mocker.patch.object(BaseClient, "_http_request", return_value=mock_response)
+    
+    client._http_request(method="POST", url_suffix="/oauth/connect/token", data={})
+    
+    call_headers = mock_http.call_args[1]["headers"]
+    assert "Authorization" not in call_headers
+
+
+def test_get_audit_activity_without_filters(client, mocker):
+    """Test get_audit_activity without filter parameters."""
+    mock_response = {"data": [], "pageCount": 0}
+    mock_http = mocker.patch.object(client, "_http_request", return_value=mock_response)
+    
+    client.get_audit_activity(page_size=50, page_number=1)
+    
+    call_params = mock_http.call_args[1]["params"]
+    assert "Pagination.PageSize" in call_params
+    assert "Pagination.PageNumber" in call_params
+    assert "Filter.Created.Dates" not in call_params
+
+
+def test_http_request_with_authentication(client, mocker):
+    """Test _http_request automatically gets token and adds Authorization header."""
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+    mock_token_response = {"access_token": "new_token_123"}
+    mock_api_response = {"data": "test"}
+    
+    mock_http = mocker.patch.object(BaseClient, "_http_request")
+    mock_http.side_effect = [mock_token_response, mock_api_response]
+    
+    result = client._http_request(method="GET", url_suffix="/management-api/v3/test")
+    
+    assert client.token == "new_token_123"
+    assert mock_http.call_count == 2
+
+
+def test_http_request_token_endpoint(client, mocker):
+    """Test _http_request does NOT add Authorization header for token endpoint."""
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+    mock_response = {"access_token": "token_123"}
+    mock_http = mocker.patch.object(BaseClient, "_http_request", return_value=mock_response)
+    
+    client._http_request(method="POST", url_suffix="/oauth/connect/token", data={})
+    
+    call_headers = mock_http.call_args[1]["headers"]
+    assert "Authorization" not in call_headers
+
+
+def test_get_audit_activity_without_filters(client, mocker):
+    """Test get_audit_activity without filter parameters."""
+    mock_response = {"data": [], "pageCount": 0}
+    mock_http = mocker.patch.object(client, "_http_request", return_value=mock_response)
+    
+    client.get_audit_activity(page_size=50, page_number=1)
+    
+    call_params = mock_http.call_args[1]["params"]
+    assert "Pagination.PageSize" in call_params
+    assert "Pagination.PageNumber" in call_params
+    assert "Filter.Created.Dates" not in call_params
