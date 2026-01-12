@@ -63,6 +63,7 @@ ES_V7_RESPONSE = {
     },
 }
 
+
 ES_V8_RESPONSE = {
     "took": 8,
     "timed_out": False,
@@ -87,6 +88,12 @@ ES_V8_RESPONSE = {
             },
         ],
     },
+}
+# The "hits" key is missing
+ES_V8_CORRUPTED_RESPONSE = {
+    "took": 8,
+    "timed_out": False,
+    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
 }
 
 
@@ -1047,3 +1054,92 @@ class TestGetElasticToken:
             ElasticsearchEventCollector.get_elastic_token()
 
         assert reason in str(exc_info.value)
+
+def test_results_to_events_datetime_exact_timestamp_boundary(mocker):
+    """Test event deduplication at exact timestamp boundaries"""
+    mocker.patch("ElasticsearchEventCollector.TIME_FIELD", "Date")
+    mocker.patch("ElasticsearchEventCollector.MAP_LABELS", True)
+    from ElasticsearchEventCollector import results_to_events_datetime
+
+    response = {
+        "hits": {
+            "total": {"value": 2, "relation": "eq"},
+            "hits": [
+                {"_index": "test", "_id": "id1", "_source": {"Date": "2024-01-01T10:00:00Z"}},
+                {"_index": "test", "_id": "id2", "_source": {"Date": "2024-01-01T10:00:01Z"}},
+                {"_index": "test", "_id": "id3", "_source": {"Date": "2024-01-01T10:00:02Z"}},
+                {"_index": "test", "_id": "id4", "_source": {"Date": "2024-01-01T10:00:03Z"}},
+            ],
+        }
+    }
+
+    last_fetch = "2024-01-01T10:00:01Z"
+    events, _ = results_to_events_datetime(response, last_fetch)
+
+    # Only event with timestamp > last_fetch should be included
+    assert len(events) == 2
+    assert "id3" in events[0]["rawJSON"] or "id4" in events[0]["rawJSON"]
+
+def test_fetch_events_with_api_failure(mocker):
+    """Test fetch_events with API failures, response is missing the hits key"""
+    
+    from ElasticsearchEventCollector import fetch_events
+    
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "search", return_value=ES_V8_CORRUPTED_RESPONSE)
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "__init__", return_value=None)
+    es = ElasticsearchEventCollector.elasticsearch_builder({})
+    mocker.patch("ElasticsearchEventCollector.ELASTIC_SEARCH_CLIENT", "Elasticsearch_v8")
+    mocker.patch("ElasticsearchEventCollector.elasticsearch_builder", return_value=es)
+
+    with pytest.raises(Exception) as exc_info:
+        fetch_events({})
+
+    assert "AttributeError" in str(exc_info.type)
+
+def test_fetch_events_interrupted(mocker):
+    """Test fetch_events with interrupted fetch by send_events_to_xsiam raise exception"""
+
+    from ElasticsearchEventCollector import fetch_events
+    
+    mock_set_last_run = mocker.patch("ElasticsearchEventCollector.demisto.setLastRun")
+
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "search", return_value=ES_V8_RESPONSE)
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "__init__", return_value=None)
+    es = ElasticsearchEventCollector.elasticsearch_builder({})
+    mocker.patch("ElasticsearchEventCollector.ELASTIC_SEARCH_CLIENT", "Elasticsearch_v8")
+    mocker.patch("ElasticsearchEventCollector.elasticsearch_builder", return_value=es)
+
+    # Make send_events_to_xsiam raise an exception
+    mocker.patch("ElasticsearchEventCollector.send_events_to_xsiam", side_effect=Exception("Network error"))
+
+    with pytest.raises(Exception) as exc_info:
+        fetch_events({})
+
+    assert "Network error" in str(exc_info.value)
+    # Verify last run was not updated
+    assert mock_set_last_run.call_count == 0
+
+def test_get_events_with_parameters(mocker):
+    """Test get_events command with all parameter combinations"""
+    
+    from ElasticsearchEventCollector import get_events
+    
+    mocker.patch("ElasticsearchEventCollector.demisto.args", return_value={
+        "raw_query": "",
+        "fetch_query": "status:active",
+        "fetch_time_field": "Date",
+        "fetch_index": "test-index",
+        "fetch_size": "10",
+        "time_method": "Simple-Date",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2025-01-01T00:00:00Z",
+    })
+
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "search", return_value=ES_V8_RESPONSE)
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "__init__", return_value=None)
+    es = ElasticsearchEventCollector.elasticsearch_builder({})
+    mocker.patch("ElasticsearchEventCollector.ELASTIC_SEARCH_CLIENT", "Elasticsearch_v8")
+    mocker.patch("ElasticsearchEventCollector.elasticsearch_builder", return_value=es)
+
+    result = get_events({})
+    assert "999" in result.readable_output and "888" in result.readable_output
