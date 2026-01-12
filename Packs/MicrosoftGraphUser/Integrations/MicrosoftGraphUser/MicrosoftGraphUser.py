@@ -433,7 +433,7 @@ class MsGraphClient:
             return mfa_access_token.get("access_token")
         
 
-    def push_mfa_notification(self, user_principal_name: str, timeout: int) -> str:
+    def push_mfa_notification(self, user_principal_name: str, timeout: int, auth_method_id: Optional[str] = None) -> str:
         """
         Send a synchronous MFA push notification to the user with the given UPN.
         This is a blocking call that waits for user response or timeout.
@@ -441,6 +441,7 @@ class MsGraphClient:
         Args:
             user_principal_name (str): The user principal name of the user to send the MFA notification to.
             timeout (int): The timeout in seconds for the request.
+            auth_method_id (str, optional): The specific authentication method ID to use.
 
         Returns:
             str: Status message indicating the result of the MFA challenge.
@@ -456,6 +457,14 @@ class MsGraphClient:
         # Generate a unique GUID for ContextId
         context_id = str(uuid.uuid4())
 
+        auth_method_xml = ""
+        if auth_method_id:
+            auth_method_xml = f"""
+                <a:KeyValueOfstringstring>
+                    <a:Key>AuthenticationMethodId</a:Key>
+                    <a:Value>{auth_method_id}</a:Value>
+                </a:KeyValueOfstringstring>"""
+
         # Define the XML payload with SyncCall=true for blocking behavior
         xml_payload = f"""
         <BeginTwoWayAuthenticationRequest>
@@ -466,7 +475,7 @@ class MsGraphClient:
                 <a:KeyValueOfstringstring>
                     <a:Key>OverrideVoiceOtp</a:Key>
                     <a:Value>false</a:Value>
-                </a:KeyValueOfstringstring>
+                </a:KeyValueOfstringstring>{auth_method_xml}
             </AuthenticationMethodProperties>
             <ContextId>{context_id}</ContextId>
             <SyncCall>true</SyncCall>
@@ -478,13 +487,14 @@ class MsGraphClient:
         
         return self._send_mfa_request_and_parse_response(MFA_SERVICE_URI, xml_payload, timeout)
 
-    def initiate_mfa_push_async(self, user_principal_name: str) -> str:
+    def initiate_mfa_push_async(self, user_principal_name: str, auth_method_id: Optional[str] = None) -> str:
         """
         Initiate an asynchronous MFA push notification to the user.
         This is a non-blocking call that returns immediately with a context_id for polling.
         
         Args:
             user_principal_name (str): The user principal name of the user to send the MFA notification to.
+            auth_method_id (str, optional): The specific authentication method ID to use.
 
         Returns:
             str: The context_id to use for polling the MFA status.
@@ -499,6 +509,14 @@ class MsGraphClient:
         # Generate a unique GUID for ContextId
         context_id = str(uuid.uuid4())
 
+        auth_method_xml = ""
+        if auth_method_id:
+            auth_method_xml = f"""
+                <a:KeyValueOfstringstring>
+                    <a:Key>AuthenticationMethodId</a:Key>
+                    <a:Value>{auth_method_id}</a:Value>
+                </a:KeyValueOfstringstring>"""
+
         # Define the XML payload with SyncCall=false for non-blocking behavior
         xml_payload = f"""
         <BeginTwoWayAuthenticationRequest>
@@ -509,7 +527,7 @@ class MsGraphClient:
                 <a:KeyValueOfstringstring>
                     <a:Key>OverrideVoiceOtp</a:Key>
                     <a:Value>false</a:Value>
-                </a:KeyValueOfstringstring>
+                </a:KeyValueOfstringstring>{auth_method_xml}
             </AuthenticationMethodProperties>
             <ContextId>{context_id}</ContextId>
             <SyncCall>false</SyncCall>
@@ -1194,247 +1212,21 @@ def request_mfa_command(client: MsGraphClient, args: dict) -> CommandResults:
         args (dict): A dictionary of arguments, which must include:
             - user_mail (str): The mail of the user to pop the MFA to.
             - timeout (int, optional): Timeout in seconds. Default is 60 seconds.
+            - auth_method_id (str, optional): The specific authentication method ID to use.
 
     Returns:
         CommandResults: Result of the MFA request.
     """
     user_mail = args.get("user_mail", "")
+    auth_method_id = args.get("auth_method_id")
     timeout_val = arg_to_number(args.get("timeout", MAX_TIMEOUT_LIMIT))
     timeout = min(MAX_TIMEOUT_LIMIT, timeout_val) if timeout_val else MAX_TIMEOUT_LIMIT
     
     try:
-        result = client.push_mfa_notification(user_mail, timeout)
+        result = client.push_mfa_notification(user_mail, timeout, auth_method_id)
         return CommandResults(readable_output=result)
     except Exception as e:
         raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
-
-
-@polling_function(
-    "msgraph-user-request-mfa-polling",
-    poll_message="Waiting for MFA response from user:",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)) or 10,
-    timeout=arg_to_number(demisto.args().get("timeout", 30)) or 30
-)
-def request_mfa_polling_command(args: dict, client: MsGraphClient) -> PollResult:
-    """
-    Pops a request to MFA for the given user using XSOAR's polling mechanism.
-    This function uses the @polling_function decorator for cleaner async handling.
-    
-    The flow:
-    1. First call (no context_id): Initiate async MFA push
-    2. Subsequent calls (with context_id): Poll for status until complete
-
-    Args:
-        args (dict): A dictionary of arguments, which must include:
-            - user_mail (str): The mail of the user to pop the MFA to.
-            - polling (bool, optional): Enable polling mode. Default is true.
-            - interval_in_seconds (int, optional): Polling interval. Default is 10 seconds.
-            - timeout (int, optional): Timeout in seconds. Default is 120 seconds.
-
-    Returns:
-        PollResult: Result with continue_to_poll flag and response.
-    """
-    demisto.debug("Starting a new interval of requesting MFA.")
-    user_mail = args.get("user_mail", "")
-    context_id = args.get("context_id")
-    
-    if not context_id:
-        # First call - initiate the async MFA push
-        demisto.debug(f"Initiating async MFA push for user: {user_mail}")
-        
-        try:
-            context_id = client.initiate_mfa_push_async(user_mail)
-        except Exception as e:
-            raise DemistoException(f"Failed to initiate MFA request for user {user_mail}: {e}")
-        
-        # Return pending result and schedule next poll
-        command_results = CommandResults(
-            readable_output=f"MFA push notification sent to {user_mail}. Waiting for user response...",
-            outputs_prefix="MSGraphUser.MFA",
-            outputs_key_field="ContextId",
-            outputs={
-                "ContextId": context_id,
-                "UserMail": user_mail,
-                "Status": "pending"
-            }
-        )
-        
-        # Add context_id to args for next poll
-        args["context_id"] = context_id
-        return PollResult(
-            partial_result=command_results,
-            continue_to_poll=True,
-            args_for_next_run=args,
-            response=command_results
-        )
-    else:
-        # Subsequent call - poll for status
-        demisto.debug(f"Polling MFA status for context_id: {context_id}")
-        
-        try:
-            poll_result = client.poll_mfa_status(user_mail, context_id)
-        except Exception as e:
-            raise DemistoException(f"Failed to poll MFA status for user {user_mail}: {e}")
-        
-        status = poll_result.get('status')
-        message = poll_result.get('message')
-        continue_polling = poll_result.get('continue_polling', False)
-        
-        if continue_polling:
-            # Still waiting for user response
-            command_results = CommandResults(
-                readable_output=f"MFA Status: {message}",
-                outputs_prefix="MSGraphUser.MFA",
-                outputs_key_field="ContextId",
-                outputs={
-                    "ContextId": context_id,
-                    "UserMail": user_mail,
-                    "Status": status
-                }
-            )
-            
-            return PollResult(
-                response=command_results,
-                continue_to_poll=True,
-                args_for_next_run=args
-            )
-        else:
-            # Polling complete - return final result
-            if status == 'approved':
-                command_results = CommandResults(
-                    readable_output=f"✅ MFA Request Approved: {message}",
-                    outputs_prefix="MSGraphUser.MFA",
-                    outputs_key_field="ContextId",
-                    outputs={
-                        "ContextId": context_id,
-                        "UserMail": user_mail,
-                        "Status": status,
-                        "Result": "approved"
-                    }
-                )
-            elif status == 'denied':
-                command_results = CommandResults(
-                    readable_output=f"❌ MFA Request Denied: {message}",
-                    outputs_prefix="MSGraphUser.MFA",
-                    outputs_key_field="ContextId",
-                    outputs={
-                        "ContextId": context_id,
-                        "UserMail": user_mail,
-                        "Status": status,
-                        "Result": "denied"
-                    }
-                )
-            elif status == 'timeout':
-                command_results = CommandResults(
-                    readable_output=f"⏳ MFA Request Timed Out: {message}",
-                    outputs_prefix="MSGraphUser.MFA",
-                    outputs_key_field="ContextId",
-                    outputs={
-                        "ContextId": context_id,
-                        "UserMail": user_mail,
-                        "Status": status,
-                        "Result": "timeout"
-                    }
-                )
-            else:
-                # Error or unknown status
-                raise DemistoException(f"MFA Request Failed: {message}")
-            
-            return PollResult(
-                response=command_results,
-                continue_to_poll=False,
-                args_for_next_run=args
-            )
-            
-            
-def initiate_mfa_request(client: MsGraphClient, args: dict) -> CommandResults:
-    """
-    Pops a request to MFA for the given user.
-    """
-    demisto.debug("Starting a new interval of requesting MFA.")
-    user_mail = args.get("user_mail", "")
-        
-    try:
-        context_id = client.initiate_mfa_push_async(user_mail)
-    except Exception as e:
-        raise DemistoException(f"Failed to initiate MFA request for user {user_mail}: {e}")
-        
-    # Return pending result and schedule next poll
-    return CommandResults(
-        readable_output=f"MFA push notification sent to {user_mail}. Waiting for user response on job id {context_id}.",
-        outputs_prefix="MSGraphUser.MFA",
-        outputs_key_field="ContextId",
-        outputs={
-            "ContextId": context_id,
-            "UserMail": user_mail,
-            "Status": "pending"
-        }
-    )
-
-
-def get_mfa_request_status(client: MsGraphClient, args: dict) -> CommandResults:
-    user_mail = args.get("user_mail", "")
-    context_id = args.get("context_id", "")
-    demisto.debug(f"Checking MFA status for context_id: {context_id}")
-    
-    try:
-        poll_result = client.poll_mfa_status(user_mail, context_id)
-    except Exception as e:
-        raise DemistoException(f"Failed to poll MFA status for user {user_mail}: {e}")
-    
-    status = poll_result.get('status')
-    message = poll_result.get('message')
-
-    # Polling complete - return final result
-    if status == 'approved':
-        command_results = CommandResults(
-            readable_output=f"✅ MFA Request Approved: {message}",
-            outputs_prefix="MSGraphUser.MFA",
-            outputs_key_field="ContextId",
-            outputs={
-                "ContextId": context_id,
-                "UserMail": user_mail,
-                "Status": status,
-                "Result": "approved"
-            }
-        )
-    elif status == 'denied':
-        command_results = CommandResults(
-            readable_output=f"❌ MFA Request Denied: {message}",
-            outputs_prefix="MSGraphUser.MFA",
-            outputs_key_field="ContextId",
-            outputs={
-                "ContextId": context_id,
-                "UserMail": user_mail,
-                "Status": status,
-                "Result": "denied"
-            }
-        )
-    elif status == 'timeout':
-        command_results = CommandResults(
-            readable_output=f"⏳ MFA Request Timed Out: {message}",
-            outputs_prefix="MSGraphUser.MFA",
-            outputs_key_field="ContextId",
-            outputs={
-                "ContextId": context_id,
-                "UserMail": user_mail,
-                "Status": status,
-                "Result": "timeout"
-            }
-        )
-    else:
-        command_results = CommandResults(
-            readable_output=f"MFA Status: {message}",
-            outputs_prefix="MSGraphUser.MFA",
-            outputs_key_field="ContextId",
-            outputs={
-                "ContextId": context_id,
-                "UserMail": user_mail,
-                "Status": status
-            }
-        )
-    
-    return command_results
 
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
@@ -1575,9 +1367,6 @@ def main():
             return_results(generate_login_url(client.ms_client))
         elif command == "msgraph-user-auth-reset":
             return_results(reset_auth())
-        elif command == "msgraph-user-request-mfa-polling":
-            # Polling command uses decorator pattern - call directly with args
-            return_results(request_mfa_polling_command(demisto.args(), client))
         else:
             return_results(commands[command](client, demisto.args()))
 
