@@ -109,17 +109,21 @@ display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
 script:
   commands:
-  - description: OAuth2.0 - Start authorization.
+  - description: Deprecated. OAuth2.0 - Start authorization.
     name: o365-sc-auth-start
+    deprecated: true
     arguments: []
-  - description: OAuth2.0 - Complete authorization.
+  - description: Deprecated. OAuth2.0 - Complete authorization.
     name: o365-sc-auth-complete
+    deprecated: true
     arguments: []
-  - description: OAuth2.0 - Test authorization.
+  - description: Deprecated. OAuth2.0 - Test authorization.
     name: o365-sc-auth-test
+    deprecated: true
     arguments: []
-  - description: Create compliance search in the Security & Compliance Center.
+  - description: (Deprecated) Use the msg-delete-ediscovery-search command, in the Microsoft Graph Security integration. The legacy content search solution is retired and now search by a case.
     name: o365-sc-new-search
+    deprecated: true
     arguments:
     - description: |
         The name of the compliance search.
@@ -246,8 +250,9 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
       description: Security and compliance search Tenant ID.
       type: String
-  - description: Modifies non-running compliance searches in the Security & Compliance Center.
+  - description: (Deprecated) Use the msg-update-ediscovery-search command, in the Microsoft Graph Security integration. The legacy content search solution is retired and now search by a case.
     name: o365-sc-set-search
+    deprecated: true
     arguments:
     - description: The name of the compliance search.
       name: search_name
@@ -292,14 +297,16 @@ script:
     - description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location_exclusion
-  - description: Remove compliance search by name from the Security & Compliance Center.
+  - description: (Deprecated) Use the msg-delete-ediscovery-search command, in the Microsoft Graph Security integration. The legacy content search solution is retired and now search by a case.
     name: o365-sc-remove-search
+    deprecated: true
     arguments:
     - description: The name of the compliance search.
       name: search_name
       required: true
-  - description: List compliance searches in the Security & Compliance Center.
+  - description: (Deprecated) Use the msg-list-ediscovery-searchs command, in the Microsoft Graph Security integration. The legacy content search solution is retired and now search by a case.
     name: o365-sc-list-search
+    deprecated: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
       description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
@@ -420,8 +427,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Gets compliance search by name from the Security & Compliance Center.
+    description: (Deprecated) Use the msg-list-ediscovery-searchs command, in the Microsoft Graph Security integration. The legacy content search solution is retired and now search by a case.
     name: o365-sc-get-search
+    deprecated: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
       description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
@@ -529,9 +537,11 @@ script:
     - description: The name of the compliance search.
       name: search_name
       required: true
-    description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
+    description: (Deprecated) Use the msg-run-estimate-statistics commands, in the Microsoft Graph Security integration. In Microsoft Graph eDiscovery, searches do not have a separate “start” command. Instead, a search is executed when you run the estimate command.
+    deprecated: true
     name: o365-sc-start-search
-  - description: Stop running compliance search in the Security & Compliance Center.
+  - description: (Deprecated) There is no Stop-ComplianceSearch equivalent in Microsoft Graph. In the new eDiscovery model a search never “runs” by itself.
+    deprecated: true
     name: o365-sc-stop-search
     arguments:
     - description: The name of the compliance search.
@@ -603,7 +613,8 @@ script:
       - 'IndexedItemsOnly'
       - 'UnindexedItemsOnly'
       - 'BothIndexedAndUnindexedItems'
-    description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
+    description: (Deprecated) Use the msg-run-estimate-statistics, msg-purge-ediscovery-data, msg-export-result-ediscovery-data commands, in the Microsoft Graph Security integration.
+    deprecated: true
     name: o365-sc-new-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -706,9 +717,11 @@ script:
     - description: The name of the compliance search action.
       name: search_action_name
       required: true
-    description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
+    description: (Deprecated) Use the msg-purge-ediscovery-data command, in the Microsoft Graph Security integration.
+    deprecated: true
     name: o365-sc-remove-search-action
-  - description: Lists compliance search actions from the Security & Compliance Center.
+  - description: (Deprecated) Use the msg-list-case-operation command, in the Microsoft Graph Security integration.
+    deprecated: true
     name: o365-sc-list-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -826,7 +839,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Gets compliance search action from the Security & Compliance Center.
+    description: (Deprecated) Use the msg-list-case-operation command, in the Microsoft Graph Security integration.
+    deprecated: true
     name: o365-sc-get-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
@@ -953,7 +967,8 @@ script:
       description: Security and compliance search action Tenant ID.
       type: String
   - name: o365-sc-compliance-case-create
-    description: Create eDiscovery cases in the Microsoft Purview compliance portal.
+    description: (Deprecated) use the msg-create-ediscovery-case command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: case_name
       description: Case name create.
@@ -995,7 +1010,8 @@ script:
       description: Case created date time.
       type: String
   - name: o365-sc-compliance-case-list
-    description: List different types of compliance cases in the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-list-ediscovery-cases command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: List cases by identity.
@@ -1028,13 +1044,15 @@ script:
       description: Case created date time.
       type: String
   - name: o365-sc-compliance-case-delete
-    description: Removes compliance cases from the Microsoft Purview compliance portal or the Microsoft Purview compliance portal.
+    description: (Deprecated) use the msg-delete-ediscovery-case command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: Delete case by identity.
       required: true
   - name: o365-sc-case-hold-policy-create
-    description: Creates new case hold policies in the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-create-ediscovery-case-hold-policy command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: policy_name
       description: Name of the policy to create.
@@ -1074,7 +1092,8 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-get
-    description: View existing case hold policies in the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-list-ediscovery-case-hold-policy command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: Identity of the case hold policy to get.
@@ -1111,7 +1130,8 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-policy-delete
-    description: Removes case hold policies from the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-delete-ediscovery-case-hold-policy  command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: Identify of the case hold policy to delete.
@@ -1124,7 +1144,8 @@ script:
       - 'true'
       - 'false'
   - name: o365-sc-case-hold-rule-create
-    description: Creates new case hold rules in the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-create-ediscovery-case-hold-policy command, contentQuery property, in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: rule_name
       description: Create rule with the specified name.
@@ -1154,7 +1175,8 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-list
-    description: View case hold rules in the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-list-ediscovery-case-hold-policy command (look for the contentQuery property), in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: Get hold rule list by identity.
@@ -1177,7 +1199,8 @@ script:
       description: Case hold policy mode.
       type: String
   - name: o365-sc-case-hold-rule-delete
-    description: Removes case hold rules from the Microsoft Purview compliance portal.
+    description: (Deprecated) Use the msg-delete-ediscovery-case-hold-policy command in the Microsoft Graph Security integration.
+    deprecated: true
     arguments:
     - name: identity
       description: Delete rule by identity.
@@ -1219,14 +1242,16 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Update inputs for case hold policies.
+    description: (Deprecated) Use the msg-update-ediscovery-case-hold-policy command in the Microsoft Graph Security integration.
     name: o365-sc-case-hold-policy-set
+    deprecated: true
   - name: o365-sc-email-security-search-and-delete-email-office-365-quick-action
     prettyname: "[Email Security] Search And Delete Email - Office 365"
     hidden: true
     quickaction: true
     polling: true
     description: Deletes an email for all recipients.
+    deprecated: true
     arguments:
     - name: internet_message_id
       description: The unique identifier of the email message, e.g., <abc123@mail.example.com>.
@@ -1267,6 +1292,7 @@ script:
   script: ''
   type: powershell
 fromversion: 5.5.0
+deprecated: true
 supportsquickactions: true
 tests:
 - O365-SecurityAndComplianceV2-Test
