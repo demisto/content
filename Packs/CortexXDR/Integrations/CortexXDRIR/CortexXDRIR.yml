@@ -3865,6 +3865,91 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
+  - arguments:
+    - description: List of API key IDs.
+      isArray: true
+      name: api_id
+    - description: List of roles.
+      isArray: true
+      name: role
+    - description: API keys that expire before this date. Should support English expressions like "in a year". Filters API keys with expiration date only.
+      name: expires_before
+    - description: API keys that expire after this date. Should support English expressions like "in a year". Filters API keys with expiration date only.
+      name: expires_after
+    description: Gets a list of existing API keys.
+    name: xdr-api-key-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.api_key_id
+      description: The API key ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.role
+      description: The role associated with the API key.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.expiration_date
+      description: The expiration date of the API key.
+      type: Date
+  - arguments:
+    - description: List of API key IDs to delete.
+      isArray: true
+      name: api_id
+      required: true
+    description: Deletes the specified API keys.
+    name: xdr-api-key-delete
+  - arguments:
+    - description: Whether to return extended view.
+      name: extra_data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: List of XQL query names.
+      isArray: true
+      name: xql_query_name
+    - description: List of XQL query tags.
+      isArray: true
+      name: xql_query_tag
+    description: Gets a list of XQL queries from the library.
+    name: xdr-xql-library-list
+    outputs:
+    - contextPath: PaloAltoNetworksXQL.Library.query_name
+      description: The name of the XQL query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.query_tag
+      description: The tag of the XQL query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.query_description
+      description: The description of the XQL query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.query_xql
+      description: The XQL query string.
+      type: String
+  - arguments:
+    - description: Whether to override existing queries.
+      name: override_existing
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: List of XQL query strings.
+      isArray: true
+      name: xql_query
+    - description: List of XQL query names.
+      isArray: true
+      name: xql_query_name
+    - description: List of XQL query tags.
+      isArray: true
+      name: xql_query_tag
+    description: Creates or updates XQL queries in the library.
+    name: xdr-xql-library-create
+  - arguments:
+    - description: List of XQL query names to delete.
+      isArray: true
+      name: xql_query_name
+    - description: List of XQL query tags to delete.
+      isArray: true
+      name: xql_query_tag
+    description: Deletes XQL queries from the library.
+    name: xdr-xql-library-delete
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false

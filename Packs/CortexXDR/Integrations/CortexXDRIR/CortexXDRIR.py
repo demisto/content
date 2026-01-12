@@ -408,6 +408,110 @@ class Client(CoreClient):
 
         return reply.get("reply")
 
+    def get_api_keys(self, request_data: dict):
+        """
+        Gets a list of existing API keys.
+        Args:
+            request_data (list): The request data
+        Returns:
+            list: A list of API keys.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/api_keys/get_api_keys/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def delete_api_keys(self, api_id):
+        """
+        Deletes the specified API keys.
+        Args:
+            api_id (list): List of API key IDs to delete.
+        Returns:
+            dict: The API response.
+        """
+        request_data = {"api_id": api_id}
+        return self._http_request(
+            method="POST",
+            url_suffix="/api_keys/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    def get_xql_queries(self, extra_data=None, xql_query_name=None, xql_query_tag=None):
+        """
+        Gets a list of XQL queries from the library.
+        Args:
+            extra_data (bool): Whether to return extended view.
+            xql_query_name (list): List of XQL query names.
+            xql_query_tag (list): List of XQL query tags.
+        Returns:
+            list: A list of XQL queries.
+        """
+        request_data = assign_params(
+            extended_view=extra_data,
+            xql_query_name=xql_query_name,
+            xql_query_tag=xql_query_tag
+        )
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/xql_library/get/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {}).get("xql_queries", [])
+
+    def create_xql_queries(self, override_existing=None, xql_query=None, xql_query_name=None, xql_query_tag=None):
+        """
+        Creates or updates XQL queries in the library.
+        Args:
+            override_existing (bool): Whether to override existing queries.
+            xql_query (list): List of XQL query strings.
+            xql_query_name (list): List of XQL query names.
+            xql_query_tag (list): List of XQL query tags.
+        Returns:
+            dict: The API response.
+        """
+        request_data = assign_params(
+            xql_queries_override=override_existing,
+            xql_query=xql_query,
+            xql_query_name=xql_query_name,
+            xql_query_tag=xql_query_tag
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix="/xql_library/insert/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    def delete_xql_queries(self, xql_query_name=None, xql_query_tag=None):
+        """
+        Deletes XQL queries from the library.
+        Args:
+            xql_query_name (list): List of XQL query names to delete.
+            xql_query_tag (list): List of XQL query tags to delete.
+        Returns:
+            dict: The API response.
+        """
+        request_data = assign_params(
+            xql_query_name=xql_query_name,
+            xql_query_tag=xql_query_tag
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix="/xql_library/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
     def get_tenant_info(self):
         reply = self._http_request(
             method="POST",
@@ -1416,6 +1520,192 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
+def remove_prefix_from_keys(data_list: list, prefix: str) -> list:
+    """
+    Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
+    Args:
+        data_list (list): The list of dictionaries (e.g., from raw API response).
+        prefix (str): The prefix to remove (e.g., "XDM.ASSET_GROUP").
+    Returns:
+        list: A new list with cleaned dictionary keys.
+    """
+    cleaned_list = []
+    len_prefix = len(prefix)
+    for entry in data_list:
+        if not isinstance(entry, dict):
+            continue
+        new_dict = {}
+
+        for key, value in entry.items():
+            if key.startswith(prefix):
+                new_key = key[len_prefix:]
+                new_dict[new_key] = value
+            else:
+                new_dict[key] = value
+
+        cleaned_list.append(new_dict)
+
+    return cleaned_list
+
+
+def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a list of existing API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_id_str_list = argToList(args.get('api_id', []))
+    roles_list = argToList(args.get('role', []))
+    expires_before = arg_to_timestamp(args.get('expires_before'), arg_name="expires_before") if args.get('expires_before') else None
+    expires_after = arg_to_timestamp(args.get('expires_after'), arg_name="expires_after") if args.get('expires_after') else None
+    api_id_int_list = [int(x) for x in api_id_str_list] if api_id_str_list else None
+
+    filters = []
+
+    if api_id_int_list:
+        filters.append({
+           "field": "id",
+           "operator": "in",
+           "value": api_id_int_list
+       })
+
+    if roles_list:
+        filters.append({
+            "field": "roles",
+            "operator": "contains",
+            "value": roles_list
+        })
+
+    if expires_before:
+        filters.append({
+            "field": "expiration",
+            "operator": "lte",
+            "value": expires_before
+        })
+
+    if expires_after:
+        filters.append({
+            "field": "expiration",
+            "operator": "gte",
+            "value": expires_after
+        })
+
+    api_keys = client.get_api_keys({"filters": filters})
+
+    readable_output = tableToMarkdown(
+        name="API Keys",
+        t=api_keys,
+        headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.APIKeyData",
+        outputs=api_keys,
+        raw_response=api_keys,
+    )
+
+
+def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_id = argToList(args.get('api_id'))
+    client.delete_api_keys(api_id=api_id)
+
+    return CommandResults(readable_output="API Keys deleted successfully.")
+
+
+def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a list of XQL queries from the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    extra_data = args.get('extra_data')
+    xql_query_name = argToList(args.get('xql_query_name'))
+    xql_query_tag = argToList(args.get('xql_query_tag'))
+
+    queries = client.get_xql_queries(
+        extra_data=extra_data,
+        xql_query_name=xql_query_name,
+        xql_query_tag=xql_query_tag
+    )
+
+    # Human-Readable Output: All API outputs under xql_queries without query_metadata
+    hr_queries = copy.deepcopy(queries)
+    for query in hr_queries:
+        query.pop('query_metadata', None)
+
+    readable_output = tableToMarkdown(
+        "XQL Queries",
+        hr_queries,
+        headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksXQL.Library",
+        outputs=queries,
+        raw_response=queries,
+    )
+
+
+def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates or updates XQL queries in the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    override_existing = args.get('override_existing')
+    xql_query = argToList(args.get('xql_query'))
+    xql_query_name = argToList(args.get('xql_query_name'))
+    xql_query_tag = argToList(args.get('xql_query_tag'))
+
+    client.create_xql_queries(
+        override_existing=override_existing,
+        xql_query=xql_query,
+        xql_query_name=xql_query_name,
+        xql_query_tag=xql_query_tag
+    )
+
+    return CommandResults(readable_output="XQL queries created successfully.")
+
+
+def xql_library_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes XQL queries from the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    xql_query_name = argToList(args.get('xql_query_name'))
+    xql_query_tag = argToList(args.get('xql_query_tag'))
+
+    client.delete_xql_queries(
+        xql_query_name=xql_query_name,
+        xql_query_tag=xql_query_tag
+    )
+
+    return CommandResults(readable_output="XQL queries deleted successfully.")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1885,6 +2175,21 @@ def main():  # pragma: no cover
 
         elif command == "xdr-update-alert":
             return_results(update_alerts_in_xdr_command(client, args))
+
+        elif command == "xdr-api-key-list":
+            return_results(api_key_list_command(client, args))
+
+        elif command == "xdr-api-key-delete":
+            return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-xql-library-list":
+            return_results(xql_library_list_command(client, args))
+
+        elif command == "xdr-xql-library-create":
+            return_results(xql_library_create_command(client, args))
+
+        elif command == "xdr-xql-library-delete":
+            return_results(xql_library_delete_command(client, args))
 
     except Exception as err:
         return_error(str(err))
