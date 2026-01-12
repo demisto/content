@@ -1135,15 +1135,12 @@ def main():
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
         "msgraph-user-request-mfa": request_mfa_command,
         "msgraph-user-create-mfa-client-secret": create_client_secret_command,
-        "msgraph-user-initiate-mfa-request": initiate_mfa_request,
-        "msgraph-user-get-mfa-request-status": get_mfa_request_status,
         "msgraph-user-auth-methods-list": get_auth_methods_command
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
 
     try:
-        global _polling_client
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_id=auth_and_token_url,
@@ -1161,9 +1158,6 @@ def main():
             azure_cloud=azure_cloud,
             managed_identities_client_id=managed_identities_client_id,
         )
-        # Set global client for polling functions
-        _polling_client = client
-        
         if command == "msgraph-user-generate-login-url":
             return_results(generate_login_url(client.ms_client))
         elif command == "msgraph-user-auth-reset":
