@@ -174,7 +174,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
 
     response = client.get_events(start_date, limit)
     events = response.get("events", [])
-    
+
     # Add XSIAM fields if pushing events
     if should_push_events:
         for event in events:
@@ -359,7 +359,7 @@ def main():
 
             # Send events to XSIAM
             send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=final_events)
-            
+
             # IMPORTANT: Only update last_run AFTER successful event sending
             # This ensures failed fetches are retried on the next run (state protection)
             demisto.setLastRun(next_run)
