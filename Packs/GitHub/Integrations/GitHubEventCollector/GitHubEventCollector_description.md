@@ -9,7 +9,7 @@ Specify the endpoint for fetching audit logs; replace the `${ORGANIZATION}` valu
 ## API Token
 
 1. [Verify your email address](https://docs.github.com/en/enterprise-cloud@latest/account-and-profile/how-tos/email-preferences/verifying-your-email-address), if it has not been verified yet.
-2. In the upper-right corner of any page on GitHub, click the user profile picture, then click **Settings**.
+2. In GitHub, click your profile picture, then click **Settings**.
 3. In the left sidebar, click **Developer settings**.
 4. In the left sidebar, under **Personal access tokens**, click **Tokens (classic)**.
 5. Select **Generate new token**, then click **Generate new token (classic)**.
