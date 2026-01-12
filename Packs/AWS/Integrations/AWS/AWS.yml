@@ -7296,11 +7296,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-<<<<<<< HEAD
-  dockerimage: demisto/boto3py3:1.0.0.6578398
-=======
   dockerimage: demisto/boto3py3:1.0.0.6593929
->>>>>>> dev-cloud
 supportsquickactions: true
 fromversion: 5.5.0
 tests:
