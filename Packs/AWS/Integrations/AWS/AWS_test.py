@@ -6823,3 +6823,45 @@ def test_handle_port_range_with_port_range_single_dash():
     args = {"port": "80-80"}
     result = handle_port_range(args)
     assert result == (80, 80)
+
+
+def test_build_pagination_kwargs_with_custom_max_limit():
+    """Test build_pagination_kwargs with custom max limit constraint.
+    Given: A limit bigger than the max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 500}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
+
+
+def test_build_pagination_kwargs_with_custom_parameter_names():
+    """Test build_pagination_kwargs with custom AWS parameter names.
+    Given: pagination parameters
+    When: build_pagination_kwargs is called with this custom parameter names
+    Then: The returned value should have the custom names as the keys with their matching values.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 25, "next_token": "abc123"}
+    result = build_pagination_kwargs(args, next_token_name="ContinuationToken", limit_name="PageSize")
+    expected = {"ContinuationToken": "abc123", "PageSize": 25}
+    assert result == expected
+
+
+def test_build_pagination_kwargs_at_maximum_boundary():
+    """Test build_pagination_kwargs with limit exactly at maximum boundary.
+    Given: A limit who is equal to the custom max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit and limit.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 100}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
