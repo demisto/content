@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Data Residency field has been removed in favor of automatic routing. No configuration changes are required. See the release notes for more information."
+}
