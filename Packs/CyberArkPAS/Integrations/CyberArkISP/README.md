@@ -1,5 +1,3 @@
-# CyberArk Identity Security Platform
-
 ## Overview
 
 The CyberArk Identity Security Platform is a unified solution securing all human and machine identities (workforce, customers, non-human) across hybrid/multi-cloud environments, centered on intelligent privilege controls, AI-driven threat detection (CORA AI), and lifecycle automation to enforce least privilege and Zero Trust, providing a single portal for access management, PAM, and endpoint security.
