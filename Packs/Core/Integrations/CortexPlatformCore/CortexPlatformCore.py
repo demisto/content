@@ -4024,6 +4024,27 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     return outputs
 
 
+def handle_xql_default_limit(query: str, default_limit: int) -> str:
+    if not query or not query.strip():
+        return query
+
+    # Strip Comments to ignore possible commented clauses
+    clean_query = re.sub(r"/\*.*?\*/", "", query, flags=re.DOTALL)
+    clean_query = re.sub(r"//.*", "", clean_query)
+
+    # Split the query into stages. e.g. ['dataset=x', 'limit 50', 'sort a']
+    clause_pattern = r'(?:[^|"\']|"(?:[^"\\]|\\.)*"|\'(?:[^"\\]|\\.)*\')+'
+    clauses = re.findall(clause_pattern, clean_query)
+
+    # Check for existing 'limit' step
+    for clause in clauses:
+        if clause.strip().lower().startswith("limit "):
+            return query
+
+    # No limit found, add the default limit
+    return f"{query}\n| limit {default_limit}"
+
+
 def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
     """Execute an XQL query using Platform API.
 
@@ -4036,8 +4057,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
         str: The query execution ID.
     """
     DEFAULT_LIMIT = 1000
-    if "limit" not in query:  # Add default limit if no limit was provided
-        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+    query = handle_xql_default_limit(query, DEFAULT_LIMIT)
 
     data: Dict[str, Any] = {
         "query": query,

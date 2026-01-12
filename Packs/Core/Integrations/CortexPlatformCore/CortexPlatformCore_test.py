@@ -8798,18 +8798,29 @@ def test_start_xql_query_platform(mocker):
 def test_start_xql_query_platform_adds_limit(mocker):
     """
     Given:
-    - A query without a limit clause.
+    - A complex query without a limit clause.
 
     When:
     - Calling start_xql_query_platform function.
 
     Then:
-    - Ensure a default limit is added.
+    - Ensure a default limit is added as expected.
     """
     from CortexPlatformCore import start_xql_query_platform, Client
 
     client = Client(base_url="", headers={})
-    query = "dataset = xdr_data | fields *"
+    query = """dataset = xdr_data
+// "limit 10" - bad limit in comment
+| filter action_process_command_line contains "echo | limit speed"
+/*
+   Bad 'limit' appears in a quotes.
+   It also appears below in a field rename.
+*/
+| alter
+    my_limit_field = action_process_image_name
+| filter action_file_name ~= "limit.exe"
+| sort asc _time
+// Comment at the end about a limit"""
     timeframe = {"relativeTime": 86400000}
     mock_execution_id = "test_execution_id_456"
 
@@ -8819,7 +8830,46 @@ def test_start_xql_query_platform_adds_limit(mocker):
 
     call_args = mock_http_request.call_args
     submitted_query = call_args[1]["json_data"]["query"]
-    assert "| limit 1000" in submitted_query
+    assert submitted_query == f"{query}\n| limit 1000"
+
+
+def test_start_xql_query_platform_not_adding_limit(mocker):
+    """
+    Given:
+    - A complex query with a limit clause.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure a default limit is NOT added.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = """/* Starting the investigation
+   Check process events
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // filtering for processes
+| limit 5000 /* User wants a large sample size here,
+    so do not overwrite with default 1000!
+*/
+| sort desc _time
+| fields agent_hostname,
+         action_process_image_name,
+         action_process_command_line
+// End of query"""
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_456"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    start_xql_query_platform(client, query, timeframe)
+
+    call_args = mock_http_request.call_args
+    submitted_query = call_args[1]["json_data"]["query"]
+    assert submitted_query == query
 
 
 def test_get_xql_query_results_platform_success(mocker):
