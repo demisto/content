@@ -316,6 +316,6 @@ marketplaces:
 - marketplacev2
 - platform
 dockerimage: demisto/python3:3.12.12.6204436
-fromversion: 6.10.0
+fromversion: 8.0.0
 tests:
 - FileEnrichment - Test

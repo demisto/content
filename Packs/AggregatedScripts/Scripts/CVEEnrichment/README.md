@@ -1,4 +1,5 @@
 This script enriches CVE indicators using reputation data from multiple integrations and returns a consolidated CVEEnrichment object in the context output. It supports indicators of type "CVE" only and will create the CVE indicator in TIM if it does not exist.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches CVE indicators using reputation data from multiple integrat
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Used In
 

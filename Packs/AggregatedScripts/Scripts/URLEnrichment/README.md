@@ -1,4 +1,5 @@
 This script enriches URL indicators using reputation data from multiple integrations and returns a consolidated URLEnrichment object in the context output. It supports indicators of type "URL" only and will create the URL indicator in TIM if it does not exist.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches URL indicators using reputation data from multiple integrat
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 

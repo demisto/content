@@ -1,4 +1,5 @@
 This script enriches File indicators using reputation data from multiple integrations and returns a consolidated FileEnrichment object in the context output. It supports indicators of type "File" only and will create the File indicator in TIM if it does not exist. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches File indicators using reputation data from multiple integra
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Used In
 

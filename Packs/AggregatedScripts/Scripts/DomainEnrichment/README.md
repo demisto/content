@@ -1,4 +1,5 @@
 This script enriches Domain indicators using data from multiple integrations and returns a consolidated DomainEnrichment object in the context output. It supports indicators of type "Domain" only and will create the Domain indicator in TIM if it does not exist.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches Domain indicators using data from multiple integrations and
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 

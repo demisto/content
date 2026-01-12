@@ -1,4 +1,5 @@
 This script enriches IP indicators using reputation data from multiple integrations and returns a consolidated IPEnrichment object in the context output. It supports indicators of type "IP" only and will create the IP indicator in TIM if it does not exist. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.
+Note: This script is available for XSOAR 8 and above.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches IP indicators using reputation data from multiple integrati
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 
