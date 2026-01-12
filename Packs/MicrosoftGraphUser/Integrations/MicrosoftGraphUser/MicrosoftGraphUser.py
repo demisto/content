@@ -327,8 +327,16 @@ class MsGraphClient:
         """
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
-        
-        
+
+    def get_auth_methods(self, user: str):
+        """
+        Retrieves the authentication methods for a user.
+        API Reference: https://learn.microsoft.com/en-us/graph/api/authentication-list-methods?view=graph-rest-1.0&tabs=http
+        """
+        url_suffix = f"users/{quote(user)}/authentication/methods"
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
+
     def request_mfa_app_secret(self) -> str:
         """
         The function utilizes the MFA application ID (981f26a1-7f43-403b-a875-f8b09b8cd720) to retrieve the service principal ID.
@@ -1136,6 +1144,35 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
     return CommandResults(readable_output=human_readable)
 
 
+@suppress_errors_with_404_code
+def get_auth_methods_command(client: MsGraphClient, args: dict) -> CommandResults:
+    user = str(args.get("user"))
+    auth_methods = client.get_auth_methods(user)
+    print(auth_methods)
+    readable_auth_methods, outputs_auth_methods = parse_outputs(auth_methods)
+
+    # Add a summary field for MFA capability
+    # A user is MFA capable if they have any method other than just a password
+    is_mfa_capable = any(method.get("@odata.type") != "#microsoft.graph.passwordAuthenticationMethod" for method in auth_methods)
+
+    human_readable = tableToMarkdown(name=f"Authentication Methods for {user}", t=readable_auth_methods, removeNull=True)
+    human_readable += f"\n\n**MFA Capable:** {is_mfa_capable}"
+
+    outputs = {
+        "MSGraphUser.AuthMethod(val.ID === obj.ID)": outputs_auth_methods,
+        "MSGraphUser.MFAStatus(val.User === obj.User)": {
+            "User": user,
+            "IsMfaCapable": is_mfa_capable
+        }
+    }
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=auth_methods
+    )
+
+
 def create_client_secret_command(client: MsGraphClient, args: dict) -> CommandResults:
     ctx = get_integration_context()
     if ctx.get('mfa_app_client_secret'):
@@ -1506,7 +1543,8 @@ def main():
         "msgraph-user-request-mfa": request_mfa_command,
         "msgraph-user-create-mfa-client-secret": create_client_secret_command,
         "msgraph-user-initiate-mfa-request": initiate_mfa_request,
-        "msgraph-user-get-mfa-request-status": get_mfa_request_status
+        "msgraph-user-get-mfa-request-status": get_mfa_request_status,
+        "msgraph-user-auth-methods-list": get_auth_methods_command
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")

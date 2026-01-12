@@ -851,6 +851,25 @@ script:
     - contextPath: MSGraphUser.MFA.Result
       description: The final result of the MFA request (approved, denied, timeout).
       type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: Retrieves the authentication methods for a user and determines if they are MFA capable.
+    name: msgraph-user-auth-methods-list
+    outputs:
+    - contextPath: MSGraphUser.AuthMethod.ID
+      description: The ID of the authentication method.
+      type: String
+    - contextPath: MSGraphUser.AuthMethod.DisplayName
+      description: The display name of the authentication method.
+      type: String
+    - contextPath: MSGraphUser.MFAStatus.User
+      description: The user principal name.
+      type: String
+    - contextPath: MSGraphUser.MFAStatus.IsMfaCapable
+      description: Whether the user is MFA capable.
+      type: Boolean
   - name: msgraph-user-create-mfa-client-secret
     description: Issue a new client secret for the MFA app.
   dockerimage: demisto/crypto:1.0.0.4578119
