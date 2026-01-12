@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Migrated the 'Mimecast Event Collector' integration to Mimecast API 2.0. This requires re-configuration of all 'Mimecast Event Collector' integration instances and includes major changes relating to the fetching of SIEM logs. Refer to the version release notes for additional details."
-}
