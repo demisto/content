@@ -691,9 +691,6 @@ script:
       contextPath: Arkime.File.data.first
       description: The timestamp of the first  time the file data appears.
     - type: Number
-      contextPath: Arkime.File.data.compression
-      description: The file data compression.
-    - type: Number
       contextPath: Arkime.File.data.packetsSize
       description: The file data packets size.
     - type: Number
