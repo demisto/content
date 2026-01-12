@@ -147,7 +147,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity'
+          root: inputs.Severity
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -210,7 +210,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity'
+          root: inputs.Severity
     separatecontext: false
     continueonerrortype: ""
     view: |-
