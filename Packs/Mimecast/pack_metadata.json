@@ -18,7 +18,7 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Mimecast Event Collector",
+    "defaultDataSource": "Mimecast Event Collector v2",
     "supportedModules": [
         "X1",
         "X3",
