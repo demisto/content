@@ -60,7 +60,7 @@ configuration:
   required: false
   section: Connect
   type: 8
-description: 'Use the Mimecast Event Collector integration to fetch Audit events and SIEM logs for various SIEM event types, using API 2.0 with OAuth2 authentication.'
+description: 'Use the Mimecast Event Collector v2 integration to fetch Audit events and SIEM logs for various SIEM event types, using API 2.0 with OAuth2 authentication.'
 display: Mimecast Event Collector v2
 name: Mimecast Event Collector v2
 script:
