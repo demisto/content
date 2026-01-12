@@ -513,6 +513,66 @@ class Client(CoreClient):
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
 
+    def get_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/get/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
+    def insert_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/insert/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
+    def delete_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
+    def get_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/get/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
+    def insert_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/insert/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
+    def delete_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return reply.get("reply", {})
+
 
 def extract_paths_and_names(paths: list) -> tuple:
     """
@@ -1416,6 +1476,176 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
+def bioc_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of BIOCs.
+    """
+    filters = assign_params(
+        name=args.get("name"),
+        severity=args.get("severity"),
+        type=args.get("type"),
+        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        comment=args.get("comment"),
+        status=args.get("status"),
+        indicator=argToList(args.get("indicator")),
+        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
+        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
+    )
+    request_data = assign_params(
+        filters=filters,
+        extended_view=argToBoolean(args.get("extra_data", False)),
+        search_from=arg_to_number(args.get("page")),
+        search_to=arg_to_number(args.get("limit")),
+    )
+    reply = client.get_biocs(request_data)
+    biocs = reply.get("objects", [])
+    readable_output = tableToMarkdown("BIOCs", biocs, headers=["name", "type", "severity", "status"], removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="name",
+        outputs=biocs,
+        raw_response=reply,
+    )
+
+
+def bioc_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates a new BIOC.
+    """
+    bioc_data = assign_params(
+        rule_id=args.get("rule_id"),
+        name=args.get("name"),
+        severity=args.get("severity"),
+        type=args.get("type"),
+        is_xql=argToBoolean(args.get("is_xql", False)),
+        comment=args.get("comment"),
+        status=args.get("status"),
+        indicator=argToList(args.get("indicator")),
+        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
+        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
+    )
+    client.insert_biocs(bioc_data)
+    return bioc_list_command(client, {"name": args.get("name")})
+
+
+def bioc_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing BIOC.
+    """
+    return bioc_create_command(client, args)
+
+
+def bioc_delete_command(client: Client, args: Dict) -> str:
+    """
+    Deletes a BIOC.
+    """
+    filters = assign_params(
+        name=args.get("name"),
+        severity=args.get("severity"),
+        type=args.get("type"),
+        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        comment=args.get("comment"),
+        indicator=argToList(args.get("indicator")),
+        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
+        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
+    )
+    client.delete_biocs(filters)
+    return "BIOC object deleted successfully"
+
+
+def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of correlation rules.
+    """
+    filters = assign_params(
+        name=args.get("name"),
+        severity=args.get("severity"),
+        xql_query=args.get("xql_query"),
+        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        dataset=args.get("dataset"),
+        alert_name=args.get("alert_name"),
+        alert_category=args.get("alert_category"),
+        alert_fields=argToList(args.get("alert_fields")),
+        alet_domain=args.get("alert_domain"),
+    )
+    if filter_json := args.get("filter_json"):
+        filters.update(json.loads(filter_json))
+
+    request_data = assign_params(
+        filters=filters,
+        extended_view=argToBoolean(args.get("extra_data", False)),
+        search_from=arg_to_number(args.get("page")),
+        search_to=arg_to_number(args.get("limit")),
+    )
+    reply = client.get_correlation_rules(request_data)
+    rules = reply.get("objects", [])
+    readable_output = tableToMarkdown(
+        "Correlation Rules", rules, headers=["id", "name", "description", "is_enabled"], removeNull=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="id",
+        outputs=rules,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates a new correlation rule.
+    """
+    rule_data = assign_params(
+        rule_id=args.get("rule_id"),
+        name=args.get("name"),
+        severity=args.get("severity"),
+        xql_query=args.get("xql_query"),
+        is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
+        description=args.get("description"),
+        alert_name=args.get("alert_name"),
+        alert_category=args.get("alert_category"),
+        alert_description=args.get("alert_description"),
+        alert_fields=args.get("alert_fields"),
+        execution_mode=args.get("execution_mode"),
+        search_window=args.get("search_window"),
+        schedule=args.get("schedule"),
+        schedule_linux=args.get("schedule_linux"),
+        timezone=args.get("timezone"),
+        suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
+        suppression_duration=args.get("suppression_duration"),
+        suppression_fields=args.get("suppression_fields"),
+        dataset=args.get("dataset"),
+        user_defined_severity=args.get("user_defined_severity"),
+        user_defined_category=args.get("user_defined_category"),
+        investigation_query_link=args.get("investigation_query_link"),
+        drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
+        mapping_strategy=args.get("mapping_strategy"),
+    )
+    if mitre_defs_json := args.get("mitre_defs_json"):
+        rule_data["mitre_defs"] = json.loads(mitre_defs_json)
+
+    client.insert_correlation_rules(rule_data)
+    # Run get to return the created rule
+    return correlation_rule_list_command(client, {"name": args.get("name")})
+
+
+def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing correlation rule.
+    """
+    return correlation_rule_create_command(client, args)
+
+
+def correlation_rule_delete_command(client: Client, args: Dict) -> str:
+    """
+    Deletes correlation rules.
+    """
+    rule_ids = argToList(args.get("rule_id"))
+    client.delete_correlation_rules({"rule_id_list": rule_ids})
+    return "Correlation rule deleted successfully"
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1885,6 +2115,30 @@ def main():  # pragma: no cover
 
         elif command == "xdr-update-alert":
             return_results(update_alerts_in_xdr_command(client, args))
+
+        elif command == "xdr-bioc-list":
+            return_results(bioc_list_command(client, args))
+
+        elif command == "xdr-bioc-create":
+            return_results(bioc_create_command(client, args))
+
+        elif command == "xdr-bioc-update":
+            return_results(bioc_update_command(client, args))
+
+        elif command == "xdr-bioc-delete":
+            return_results(bioc_delete_command(client, args))
+
+        elif command == "xdr-correlation-rule-list":
+            return_results(correlation_rule_list_command(client, args))
+
+        elif command == "xdr-correlation-rule-create":
+            return_results(correlation_rule_create_command(client, args))
+
+        elif command == "xdr-correlation-rule-update":
+            return_results(correlation_rule_update_command(client, args))
+
+        elif command == "xdr-correlation-rule-delete":
+            return_results(correlation_rule_delete_command(client, args))
 
     except Exception as err:
         return_error(str(err))
