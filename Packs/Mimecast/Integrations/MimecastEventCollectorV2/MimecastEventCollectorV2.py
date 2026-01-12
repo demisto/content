@@ -875,9 +875,6 @@ async def fetch_events_command(
     """
     demisto.debug(f"Starting to fetch events with {max_fetch=} and {event_types=}. Got {last_run=}.")
 
-    # Detect and migrate old last run schema (API 1.0) to new schema (API 2.0)
-    last_run = ensure_new_last_run_schema(last_run)
-
     run_event_types: list[EventTypes] = []
     run_tasks: list[Awaitable[tuple[dict, list]]] = []
     # Prepare audit fetch task
