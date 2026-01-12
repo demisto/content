@@ -65,11 +65,7 @@ class Client(BaseClient):
 
         command_results_list = []
 
-        query = assign_params(
-            name="panw-known-ip-list",
-            version=VERSION,
-            listformat="array",
-        )
+        query = assign_params(name="panw-known-ip-list", version=VERSION, listformat="array", limit=1)
         try:
             self.get_indicators_request(args=query)
 
