@@ -1174,7 +1174,7 @@ Retrieves a list of chats that the consent user is a member of. If 'chat' is spe
 ***
 Retrieves a list of messages in a chat.
 
-Notes:
+ Notes:
 
 - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
 
@@ -1182,62 +1182,46 @@ Notes:
 
 `microsoft-teams-chat-message-list`
 
-##### Required Permissions
-
-`User.Read.All` - *Delegated*
-
-`Chat.Read` - *Delegated*
-
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                       | **Required** |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.                                                                                                   | Required     |
-| limit             | The number of results to retrieve. Default is 50.                                                                                                                                     | Optional     |
-| order_by          | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional     |
-| next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                                                   | Optional     |
-| page_size         | Number of results to return per page. Default is 50.                                                                                                                                  | Optional     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. | Required |
+| limit | The number of results to retrieve. Default is 50. | Optional |
+| order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional |
+| next_link | A link that specifies a starting point to use for subsequent calls. | Optional |
+| page_size | Number of results to return per page. Default is 50. | Optional |
 
 #### Context Output
 
-| **Path**                                              | **Type** | **Description**                                                                                                                                            |
-|-------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MicrosoftTeams.ChatList.chatId                        | String   | The chat's unique identifier.                                                                                                                              |
-| MicrosoftTeams.ChatList.messages.id                   | String   | Unique ID of the message.                                                                                                                                  |
-| MicrosoftTeams.ChatList.messages.replyToId            | String   | ID of the parent chat message or root chat message of the thread.                                                                                          |
-| MicrosoftTeams.ChatList.messages.etag                 | String   | Version number of the chat message.                                                                                                                        |
-| MicrosoftTeams.ChatList.messages.messageType          | String   | The type of chat message.                                                                                                                                  |
-| MicrosoftTeams.ChatList.messages.createdDateTime      | String   | Timestamp of when the chat message was created.                                                                                                            |
-| MicrosoftTeams.ChatList.messages.lastModifiedDateTime | String   | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed.                                 |
-| MicrosoftTeams.ChatList.messages.lastEditedDateTime   | String   | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.                     |
-| MicrosoftTeams.ChatList.messages.deletedDateTime      | String   | Timestamp at which the chat message was deleted, or null if not deleted.                                                                                   |
-| MicrosoftTeams.ChatList.messages.subject              | String   | The subject of the chat message, in plaintext.                                                                                                             |
-| MicrosoftTeams.ChatList.messages.summary              | String   | Summary text of the chat message that could be used for push notifications and summary views or fall back views.                                           |
-| MicrosoftTeams.ChatList.messages.chatId               | String   | If the message was sent in a chat, represents the identity of the chat.                                                                                    |
-| MicrosoftTeams.ChatList.messages.importance           | String   | The importance of the chat message.                                                                                                                        |
-| MicrosoftTeams.ChatList.messages.locale               | String   | Locale of the chat message set by the client.                                                                                                              |
-| MicrosoftTeams.ChatList.messages.webUrl               | String   | Link to the message in Microsoft Teams.                                                                                                                    |
-| MicrosoftTeams.ChatList.messages.channelIdentity      | String   | If the message was sent in a channel, represents identity of the channel.                                                                                  |
-| MicrosoftTeams.ChatList.messages.policyViolation      | String   | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application.                                                            |
-| MicrosoftTeams.ChatList.messages.eventDetail          | String   | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.                                 |
-| MicrosoftTeams.ChatList.messages.from                 | String   | Details of the sender of the chat message.                                                                                                                 |
-| MicrosoftTeams.ChatList.messages.body                 | String   | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.                          |
-| MicrosoftTeams.ChatList.messages.attachments          | String   | References to attached objects like files, tabs, meetings etc.                                                                                             |
-| MicrosoftTeams.ChatList.messages.mentions             | String   | List of entities mentioned in the chat message.                                                                                                            |
-| MicrosoftTeams.ChatList.messages.reactions            | String   | Reactions for this chat message \(for example, Like\).                                                                                                     |
-| MicrosoftTeams.MessageListNextLink                    | String   | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
-
-##### Command Example
-
-```!!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime```
-
-##### Human Readable Output
->
->### Messages list in "example chat" chat
->
->| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
->|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
->| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatList.chatId | String | The chat's unique identifier. |
+| MicrosoftTeams.ChatList.messages.id | String | Unique ID of the message. |
+| MicrosoftTeams.ChatList.messages.replyToId | String | ID of the parent chat message or root chat message of the thread. |
+| MicrosoftTeams.ChatList.messages.etag | String | Version number of the chat message. |
+| MicrosoftTeams.ChatList.messages.messageType | String | The type of chat message. |
+| MicrosoftTeams.ChatList.messages.createdDateTime | String | Timestamp of when the chat message was created. |
+| MicrosoftTeams.ChatList.messages.lastModifiedDateTime | String | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed. |
+| MicrosoftTeams.ChatList.messages.lastEditedDateTime | String | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. |
+| MicrosoftTeams.ChatList.messages.deletedDateTime | String | Timestamp when the chat message was deleted, or null if not deleted. |
+| MicrosoftTeams.ChatList.messages.subject | String | The subject of the chat message, in plaintext. |
+| MicrosoftTeams.ChatList.messages.summary | String | Summary text of the chat message that could be used for push notifications and summary views or fall back views. |
+| MicrosoftTeams.ChatList.messages.chatId | String | If the message was sent in a chat, represents the identity of the chat. |
+| MicrosoftTeams.ChatList.messages.importance | String | The importance of the chat message. |
+| MicrosoftTeams.ChatList.messages.locale | String | Locale of the chat message set by the client. |
+| MicrosoftTeams.ChatList.messages.webUrl | String | Link to the message in Microsoft Teams. |
+| MicrosoftTeams.ChatList.messages.channelIdentity | String | If the message was sent in a channel, represents the identity of the channel. |
+| MicrosoftTeams.ChatList.messages.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. |
+| MicrosoftTeams.ChatList.messages.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. |
+| MicrosoftTeams.ChatList.messages.from | String | Details of the sender of the chat message. |
+| MicrosoftTeams.ChatList.messages.body | String | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. |
+| MicrosoftTeams.ChatList.messages.attachments | String | References to attached objects like files, tabs, meetings, etc. |
+| MicrosoftTeams.ChatList.messages.mentions | String | List of entities mentioned in the chat message. |
+| MicrosoftTeams.ChatList.messages.reactions | String | Reactions for this chat message \(for example, Like\). |
+| MicrosoftTeams.MessageListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
+| MicrosoftTeams.ChatListMetadata.returned_count | Number | IMPORTANT: returned_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of script results returned in this specific execution. |
+| MicrosoftTeams.ChatListMetadata.filtered_count | Number | IMPORTANT: filtered_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of script results in the system that match the specified filter criteria. |
 
 ### microsoft-teams-chat-update
 
