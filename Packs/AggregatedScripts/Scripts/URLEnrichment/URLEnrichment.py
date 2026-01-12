@@ -24,7 +24,8 @@ def url_enrichment_script(
         CommandResult: The result of the command.
     """
     demisto.debug("Extracting indicators")
-    url_list = extract_indicators(url_list, "url")
+    url_instances, extract_verbose = create_and_extract_indicators(url_list, "url")
+    valid_inputs = [url_instance.extracted_value for url_instance in url_instances if url_instance.extracted_value]
 
     indicator_mapping = {
         "Data": "Data",
@@ -33,7 +34,7 @@ def url_enrichment_script(
         "Score": "Score",
         "Brand": "Brand",
     }
-    url_indicator = Indicator(
+    url_indicator_schema = IndicatorSchema(
         type="url",
         value_field="Data",
         context_path_prefix="URL(",  # add ( to prefix to distinct from URLhaus integration context path
@@ -45,7 +46,7 @@ def url_enrichment_script(
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": url_list, "type": "URL"},
+            args={"indicator_values": valid_inputs, "type": "URL"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
@@ -57,7 +58,7 @@ def url_enrichment_script(
     command_batch2: list[Command] = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": url_list},
+            args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         )
     ]
@@ -77,8 +78,9 @@ def url_enrichment_script(
         external_enrichment=external_enrichment,
         final_context_path="URLEnrichment",
         args=args,
-        data=url_list,
-        indicator=url_indicator,
+        indicator_instances=url_instances,
+        indicator_schema=url_indicator_schema,
+        verbose_outputs=[extract_verbose],
     )
     return url_reputation.run()
 
