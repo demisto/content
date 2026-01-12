@@ -3914,13 +3914,10 @@ script:
     - contextPath: PaloAltoNetworksXQL.Library.query_name
       description: The name of the XQL query.
       type: String
-    - contextPath: PaloAltoNetworksXQL.Library.query_tag
-      description: The tag of the XQL query.
+    - contextPath: PaloAltoNetworksXQL.Library.query_tags
+      description: The tags of the XQL query.
       type: String
-    - contextPath: PaloAltoNetworksXQL.Library.query_description
-      description: The description of the XQL query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.Library.query_xql
+    - contextPath: PaloAltoNetworksXQL.Library.xql_query
       description: The XQL query string.
       type: String
   - arguments:

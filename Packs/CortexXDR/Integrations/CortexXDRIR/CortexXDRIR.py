@@ -425,15 +425,14 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("DATA", [])
 
-    def delete_api_keys(self, api_id):
+    def delete_api_keys(self, request_data):
         """
         Deletes the specified API keys.
         Args:
-            api_id (list): List of API key IDs to delete.
+            request_data (dict): List of API key IDs to delete.
         Returns:
             dict: The API response.
         """
-        request_data = {"api_id": api_id}
         return self._http_request(
             method="POST",
             url_suffix="/api_keys/delete/",
@@ -442,43 +441,31 @@ class Client(CoreClient):
             timeout=self.timeout,
         )
 
-    def get_xql_queries(self, extra_data=None, xql_query_name=None, xql_query_tag=None):
+    def get_xql_queries(self, request_data):
         """
         Gets a list of XQL queries from the library.
         Args:
-            extra_data (bool): Whether to return extended view.
-            xql_query_name (list): List of XQL query names.
-            xql_query_tag (list): List of XQL query tags.
+            request_data (dict): The request data
         Returns:
             list: A list of XQL queries.
         """
-        request_data = assign_params(extended_view=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
-        reply = self._http_request(
+        res = self._http_request(
             method="POST",
-            url_suffix="/xql_library/get/",
+            url_suffix="../xql_library/get",
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
         )
-        return reply.get("reply", {}).get("xql_queries", [])
+        return res.get("reply", {})
 
-    def create_xql_queries(self, override_existing=None, xql_query=None, xql_query_name=None, xql_query_tag=None):
+    def create_xql_queries(self, request_data):
         """
         Creates or updates XQL queries in the library.
         Args:
-            override_existing (bool): Whether to override existing queries.
-            xql_query (list): List of XQL query strings.
-            xql_query_name (list): List of XQL query names.
-            xql_query_tag (list): List of XQL query tags.
+            request_data (dict): The request data.
         Returns:
             dict: The API response.
         """
-        request_data = assign_params(
-            xql_queries_override=override_existing,
-            xql_query=xql_query,
-            xql_query_name=xql_query_name,
-            xql_query_tag=xql_query_tag,
-        )
         return self._http_request(
             method="POST",
             url_suffix="/xql_library/insert/",
@@ -1573,7 +1560,6 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
 
     api_keys = client.get_api_keys({"filters": filters})
-
     readable_output = tableToMarkdown(name="API Keys", t=api_keys, headerTransform=string_to_table_header)
 
     return CommandResults(
@@ -1593,9 +1579,10 @@ def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    api_id = argToList(args.get("api_id"))
-    client.delete_api_keys(api_id=api_id)
-
+    api_id_list = argToList(args.get("api_id", []))
+    api_id_int_list = [int(x) for x in api_id_list] if api_id_list else None
+    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_id_int_list}]}
+    client.delete_api_keys(request_data=request_data)
     return CommandResults(readable_output="API Keys deleted successfully.")
 
 
@@ -1609,17 +1596,17 @@ def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: The results of the command.
     """
     extra_data = args.get("extra_data")
-    xql_query_name = argToList(args.get("xql_query_name"))
-    xql_query_tag = argToList(args.get("xql_query_tag"))
+    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_tag = argToList(args.get("xql_query_tag", []))
 
-    queries = client.get_xql_queries(extra_data=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
+    request_data = assign_params(extended_view=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
 
-    # Human-Readable Output: All API outputs under xql_queries without query_metadata
-    hr_queries = copy.deepcopy(queries)
-    for query in hr_queries:
+    queries = client.get_xql_queries(request_data)
+    xql_queries = queries.get("xql_queries", [])
+    for query in xql_queries:
         query.pop("query_metadata", None)
 
-    readable_output = tableToMarkdown("XQL Queries", hr_queries, headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(name="XQL Queries", t=xql_queries, headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1639,13 +1626,18 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: The results of the command.
     """
     override_existing = args.get("override_existing")
-    xql_query = argToList(args.get("xql_query"))
-    xql_query_name = argToList(args.get("xql_query_name"))
-    xql_query_tag = argToList(args.get("xql_query_tag"))
+    xql_query = argToList(args.get("xql_query", []))
+    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_tag = argToList(args.get("xql_query_tag", []))
 
-    client.create_xql_queries(
-        override_existing=override_existing, xql_query=xql_query, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag
+    request_data = assign_params(
+        xql_queries_override=override_existing,
+        xql_query=xql_query,
+        xql_query_name=xql_query_name,
+        xql_query_tag=xql_query_tag,
     )
+
+    client.create_xql_queries(request_data)
 
     return CommandResults(readable_output="XQL queries created successfully.")
 
