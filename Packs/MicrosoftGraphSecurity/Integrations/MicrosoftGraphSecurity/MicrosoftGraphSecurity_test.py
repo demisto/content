@@ -1049,14 +1049,14 @@ def test_create_ediscovery_case_hold_policy_command(mocker):
         "case_id": "case_123",
         "display_name": "Hold Policy 1",
         "description": "Test Hold Policy",
-        "content_query": "size>100"
+        "content_query": "size>100",
     }
     mock_response = {
         "id": "hold_123",
         "displayName": "Hold Policy 1",
         "status": "enabled",
         "description": "Test Hold Policy",
-        "contentQuery": "size>100"
+        "contentQuery": "size>100",
     }
     mocker.patch.object(client_mocker, "create_ediscovery_case_hold_policy", return_value=mock_response)
 
@@ -1078,10 +1078,7 @@ def test_delete_ediscovery_case_hold_policy_command(mocker):
     Then:
         Ensure the command returns a success message.
     """
-    args = {
-        "case_id": "case_123",
-        "hold_policy_id": "hold_123"
-    }
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123"}
     mocker.patch.object(client_mocker, "delete_ediscovery_case_hold_policy", return_value=None)
 
     result = delete_ediscovery_case_hold_policy_command(client_mocker, args)
@@ -1099,11 +1096,7 @@ def test_update_ediscovery_case_policy_command(mocker):
     Then:
         Ensure the command returns a success message.
     """
-    args = {
-        "case_id": "case_123",
-        "hold_policy_id": "hold_123",
-        "description": "Updated Description"
-    }
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123", "description": "Updated Description"}
     mocker.patch.object(client_mocker, "update_ediscovery_case_policy", return_value=None)
 
     result = update_ediscovery_case_policy_command(client_mocker, args)
@@ -1125,7 +1118,7 @@ def test_list_ediscovery_case_hold_policy_command_list(mocker):
     mock_response = {
         "value": [
             {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"},
-            {"id": "hold_2", "displayName": "Hold 2", "status": "disabled"}
+            {"id": "hold_2", "displayName": "Hold 2", "status": "disabled"},
         ]
     }
     mocker.patch.object(client_mocker, "list_ediscovery_case_hold_policy", return_value=mock_response)
@@ -1176,7 +1169,7 @@ def test_list_case_operation_command_list(mocker):
     mock_response = {
         "value": [
             {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"},
-            {"id": "op_2", "action": "Export", "status": "InProgress"}
+            {"id": "op_2", "action": "Export", "status": "InProgress"},
         ]
     }
     mocker.patch.object(client_mocker, "list_case_operation", return_value=mock_response)
@@ -1223,14 +1216,11 @@ def test_export_result_ediscovery_data_command(mocker):
     Then:
         Ensure the command returns the export location.
     """
-    args = {
-        "case_id": "case_123",
-        "search_id": "search_123",
-        "export_criteria": "searchHits",
-        "export_format": "standard"
-    }
+    args = {"case_id": "case_123", "search_id": "search_123", "export_criteria": "searchHits", "export_format": "standard"}
     mock_response = MagicMock()
-    mock_response.headers = {"Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_123"}
+    mock_response.headers = {
+        "Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_123"
+    }
     mocker.patch.object(client_mocker, "export_result_ediscovery_data", return_value=mock_response)
 
     result = export_result_ediscovery_data_command(client_mocker, args)
