@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Network Security
+provider: Cloudflare
 commonfields:
   id: CloudflareWAF
   version: -1
