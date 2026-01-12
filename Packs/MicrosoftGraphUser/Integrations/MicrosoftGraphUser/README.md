@@ -907,7 +907,7 @@ There is no context output for this command.
 ### msgraph-user-owned-devices-list
 
 ***
-Get the list of devices that are owned by the user.
+Lists the devices that are owned by the user.
 Permission:User.Read.All,Directory.Read.All - Delegated
 
 #### Base Command
