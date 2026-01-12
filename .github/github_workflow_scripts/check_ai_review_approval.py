@@ -74,7 +74,6 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
         response.raise_for_status()
         data = response.json()
         
-        # Navigate safely to the relevant part of the JSON
         pr_data = data.get("data", {}).get("repository", {}).get("pullRequest", {})
         if not pr_data:
             raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
