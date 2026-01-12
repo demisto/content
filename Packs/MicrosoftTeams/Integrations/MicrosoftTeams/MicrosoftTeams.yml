@@ -707,6 +707,14 @@ script:
     - contextPath: MicrosoftTeams.MessageListNextLink
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
+    - contextPath: MicrosoftTeams.ChatListMetadata.returned_count
+      description: |-
+        IMPORTANT: returned_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of script results returned in this specific execution.
+      type: Number
+    - contextPath: MicrosoftTeams.ChatListMetadata.filtered_count
+      description: |-
+        IMPORTANT: filtered_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of script results in the system that match the specified filter criteria.
+      type: Number
   - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
