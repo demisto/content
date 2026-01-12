@@ -8,7 +8,7 @@ This script gathers IP reputation data from multiple integrations and returns an
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 
