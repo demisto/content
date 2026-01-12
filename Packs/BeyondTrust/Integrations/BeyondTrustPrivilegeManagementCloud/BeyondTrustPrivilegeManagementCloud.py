@@ -239,6 +239,10 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
     """
     events = []
     next_run = last_run.copy()
+    
+    # Capture the current time at the start of this fetch cycle
+    # This will be used as the start time for the next fetch to ensure no gaps
+    fetch_end_time = datetime.now(timezone.utc)
 
     # Handle Events
     if 'Events' in events_types_to_fetch:
@@ -248,13 +252,7 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
         else:
             last_event_time = dateparser.parse(last_event_time_str).replace(tzinfo=timezone.utc)  # type: ignore
 
-        # Fetch events
-        # The API takes StartDate. We should probably add a small buffer or rely on the API to handle >=
-        # The API returns events *from* the start date.
-        # To avoid duplicates if the API is inclusive, we might need to filter locally or handle overlap.
-        # However, for simplicity and standard practice, we pass the last timestamp.
-
-        # We need to format the date as required by the API: ISO 8601
+        # Format the start date as required by the API: ISO 8601
         start_date_str = last_event_time.strftime(DATE_FORMAT)
 
         response = client.get_events(start_date_str, max_fetch)
@@ -267,13 +265,9 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
             event['vendor'] = VENDOR
             event['product'] = PRODUCT
 
-            # Update last_event_time if this event is newer
-            event_time = dateparser.parse(event['_time']).replace(tzinfo=timezone.utc)  # type: ignore
-            if event_time > last_event_time:
-                last_event_time = event_time
-
         events.extend(fetched_events)
-        next_run['last_event_time'] = last_event_time.strftime(DATE_FORMAT)
+        # Store the fetch end time as the next start time to ensure continuous coverage
+        next_run['last_event_time'] = fetch_end_time.strftime(DATE_FORMAT)
 
     # Handle Activity Audits
     if 'Activity Audits' in events_types_to_fetch:
@@ -284,17 +278,12 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
             last_audit_time = dateparser.parse(last_audit_time_str).replace(tzinfo=timezone.utc)  # type: ignore
 
         # Activity Audits API uses pagination and filtering.
-        # We can filter by Created Date Range.
-        # To fetch new events, we can set the range from last_audit_time to now.
-        now = datetime.now(timezone.utc)
-
-        # We need to fetch pages until we get all events in the range or hit max_fetch
-        # Note: The API documentation says "Filter.Created.Dates: array of date-times".
-        # And "Filter.Created.SelectionMode: Range".
-        # This implies we need to provide two dates for a range.
+        # We fetch from last_audit_time to fetch_end_time to ensure continuous coverage.
+        # The API documentation says "Filter.Created.Dates: array of date-times".
+        # And "Filter.Created.SelectionMode: Range" - this requires two dates for a range.
 
         start_date_str = last_audit_time.strftime('%Y-%m-%d %H:%M:%S.%f')
-        end_date_str = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+        end_date_str = fetch_end_time.strftime('%Y-%m-%d %H:%M:%S.%f')
 
         page_number = 1
         total_fetched_audits = 0
@@ -325,11 +314,6 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
                 audit['vendor'] = VENDOR
                 audit['product'] = PRODUCT
 
-                # Update last_audit_time if this audit is newer
-                audit_time = dateparser.parse(audit['_time']).replace(tzinfo=timezone.utc)  # type: ignore
-                if audit_time > last_audit_time:
-                    last_audit_time = audit_time
-
             events.extend(fetched_audits)
             total_fetched_audits += len(fetched_audits)
 
@@ -340,7 +324,8 @@ def fetch_events(client: Client, last_run: dict, first_fetch: str, max_fetch: in
 
             page_number += 1
 
-        next_run['last_audit_time'] = last_audit_time.strftime(DATE_FORMAT)
+        # Store the fetch end time as the next start time to ensure continuous coverage
+        next_run['last_audit_time'] = fetch_end_time.strftime(DATE_FORMAT)
 
     return next_run, events
 
