@@ -146,8 +146,11 @@ class Client(BaseClient):
                 "closure_reason_description": closure_reason_description,
             },
         }
+        demisto.info(f"[Cyberint Mirror] update_alerts body BEFORE remove_empty_elements: {body}")
         body = remove_empty_elements(body)
+        demisto.info(f"[Cyberint Mirror] update_alerts body AFTER remove_empty_elements: {body}")
         response = self._http_request(method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status")
+        demisto.info(f"[Cyberint Mirror] update_alerts raw response: {response}")
         return response
 
     def get_csv_file(self, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> Iterable[str]:
@@ -639,45 +642,89 @@ def update_remote_system(
     parsed_args = UpdateRemoteSystemArgs(args)
 
     incident_id = parsed_args.remote_incident_id
+    inc_status = parsed_args.inc_status  # XSOAR incident status (2 = Done/Closed)
+    incident_data = parsed_args.data or {}  # Full incident data from XSOAR
 
-    demisto.debug(
-        f"******** Got the following delta keys {list(parsed_args.delta.keys())!s}"
-        if parsed_args.delta
-        else "******** There is no delta fields in Cyberint"
-    )
+    demisto.info(f"[Cyberint Mirror] update_remote_system called for incident: {incident_id}")
+    demisto.info(f"[Cyberint Mirror] inc_status={inc_status}, incident_changed={parsed_args.incident_changed}")
+    demisto.info(f"[Cyberint Mirror] Delta: {parsed_args.delta}")
+    demisto.info(f"[Cyberint Mirror] incident_data keys: {list(incident_data.keys())}")
 
     try:
         if parsed_args.incident_changed:
-            demisto.debug(f"******** Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}")
-
             update_args = parsed_args.delta
-            demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
-            updated_arguments = {}
-            if updated_status := update_args.get("status"):
-                closure_reason = update_args.get("closure_reason", "other")
-                closure_reason_description = update_args.get(
-                    "closure_reason_description", "user wasn't specified closure reason when closed alert"
+            updated_arguments: dict[str, Any] = {}
+
+            # Check if status is in the delta (from the outgoing mapper)
+            delta_status = update_args.get("status")
+
+            # Check if XSOAR incident was closed (status 2 = Done)
+            xsoar_incident_closed = inc_status == 2
+
+            demisto.info(f"[Cyberint Mirror] delta_status={delta_status}, xsoar_incident_closed={xsoar_incident_closed}")
+
+            # Helper to resolve closure reason from multiple sources
+            def get_closure_reason() -> str:
+                # Priority: delta -> incident_data (mapped) -> incident_data (XSOAR native) -> default
+                reason = (
+                    update_args.get("closure_reason")
+                    or incident_data.get("closure_reason")
+                    or incident_data.get("cyberintclosurereason")
+                    or incident_data.get("closeReason")  # XSOAR native close reason
                 )
-                if updated_status != "closed":
-                    updated_arguments["status"] = updated_status
+                demisto.info(f"[Cyberint Mirror] closure_reason resolution: "
+                             f"delta={update_args.get('closure_reason')}, "
+                             f"incident_data.closure_reason={incident_data.get('closure_reason')}, "
+                             f"incident_data.cyberintclosurereason={incident_data.get('cyberintclosurereason')}, "
+                             f"incident_data.closeReason={incident_data.get('closeReason')}, "
+                             f"resolved={reason or 'other'}")
+                return reason or "other"
+
+            def get_closure_reason_description() -> str:
+                # Priority: delta -> incident_data (mapped) -> incident_data (XSOAR native) -> default
+                desc = (
+                    update_args.get("closure_reason_description")
+                    or incident_data.get("closure_reason_description")
+                    or incident_data.get("cyberintclosurereasondescription")
+                    or incident_data.get("closeNotes")  # XSOAR native close notes
+                )
+                return desc or "Closed from XSOAR"
+
+            if delta_status:
+                # Status change came through the mapper
+                if delta_status == "closed":
+                    updated_arguments["status"] = "closed"
+                    updated_arguments["closure_reason"] = get_closure_reason()
+                    updated_arguments["closure_reason_description"] = get_closure_reason_description()
                 else:
-                    updated_arguments["status"] = updated_status
-                    updated_arguments["closure_reason"] = closure_reason
-                    updated_arguments["closure_reason_description"] = closure_reason_description
+                    updated_arguments["status"] = delta_status
+            elif xsoar_incident_closed:
+                # XSOAR incident was closed via native close dialog
+                updated_arguments["status"] = "closed"
+                updated_arguments["closure_reason"] = get_closure_reason()
+                updated_arguments["closure_reason_description"] = get_closure_reason_description()
             else:
+                # No status change, fetch current status from Cyberint to avoid unnecessary updates
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
                 cyberint_alert: dict[str, Any] = cyberint_response["alert"]
                 cyberint_status = cyberint_alert.get("status")
                 updated_arguments["status"] = cyberint_status
+                # If status is closed, include closure reason from the remote alert
+                if cyberint_status == "closed":
+                    updated_arguments["closure_reason"] = cyberint_alert.get("closure_reason", "other")
+                    updated_arguments["closure_reason_description"] = cyberint_alert.get(
+                        "closure_reason_description", "Closed from Cyberint"
+                    )
 
             updated_arguments["alerts"] = [incident_id]
 
-            demisto.debug(f"******** Remote ID [{incident_id}] to Cyberint. {updated_arguments=}|| {update_args=}")
+            demisto.info(f"[Cyberint Mirror] UPDATING remote alert [{incident_id}] with: {updated_arguments}")
 
-            client.update_alerts(**updated_arguments)
+            response = client.update_alerts(**updated_arguments)
+            demisto.info(f"[Cyberint Mirror] API response: {response}")
 
-        demisto.debug(f"******** Remote data of {incident_id}: {parsed_args.data}")
+        demisto.debug(f"[Cyberint Mirror] Remote data of {incident_id}: {incident_data}")
 
     except Exception as error:
         demisto.error(f"Error in Cyberint outgoing mirror for incident {incident_id}\nError message: {error}")
