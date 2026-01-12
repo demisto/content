@@ -6837,6 +6837,7 @@ def test_build_pagination_kwargs_with_custom_max_limit():
     expected = {"MaxResults": 100}
     assert result == expected
 
+
 def test_build_pagination_kwargs_with_custom_parameter_names():
     """Test build_pagination_kwargs with custom AWS parameter names.
     Given: pagination parameters
@@ -6865,7 +6866,7 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
-    
+
 def test_parse_target_field_single_target_single_value():
     """
     Test parse_target_field function with a single target and single value.

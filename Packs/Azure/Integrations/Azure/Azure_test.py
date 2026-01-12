@@ -773,6 +773,9 @@ def test_main_function_success(mocker):
         return_value={"account_name": "teststorage", "sku": "Standard_LRS", "kind": "StorageV2", "location": "eastus"},
     )
 
+    # mock is_gov_account
+    mocker.patch("Azure.is_gov_account", return_value=False)
+
     # Mock return_results
     mock_return_results = mocker.patch("Azure.return_results")
 
@@ -1479,7 +1482,7 @@ def test_azure_client_create_policy_assignment(mocker, client):
         display_name="Test Policy",
         description="Test description",
         parameters={"param1": "value1"},
-        scope="/scope",
+        scope="scope",
     )
 
     # Verify correct API call was made
@@ -4075,7 +4078,7 @@ def test_create_set_tags_request_body():
         assert tag1.find("Value").text == "value1"
     else:
         assert tag1.find("Value").text == "value2"
-    
+
 
 def test_nsg_security_rules_list_command_success(mocker):
     """

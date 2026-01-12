@@ -143,8 +143,8 @@ def build_pagination_kwargs(
         args (Dict[str, Any]): Command arguments containing pagination parameters
         minimum_limit (int): The minimum possible limit for the pagination command.
         max_limit (int): The maximum possible limit for the pagination command.
-        next_token_name (str): The name of the next token argument in AWS
-        limit_name (str): The name of the limit argument in AWS
+        next_token_name (str): The name of the next token argument in AWS.
+        limit_name (str): The name of the limit argument in AWS.
 
     Returns:
         Dict[str, Any]: Validated pagination parameters for AWS API
