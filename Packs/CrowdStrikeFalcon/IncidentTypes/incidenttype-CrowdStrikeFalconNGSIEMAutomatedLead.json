@@ -24,7 +24,7 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.5.0",
     "marketplaces": [
         "xsoar"
     ]

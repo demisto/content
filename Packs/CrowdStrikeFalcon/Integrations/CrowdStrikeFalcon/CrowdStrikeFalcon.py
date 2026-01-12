@@ -2603,7 +2603,7 @@ def get_remote_data_command(args: dict[str, Any]):
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
         elif incident_type == IncidentType.NGSIEM_CASE:
-            mirrored_data, updated_object = get_remote_ngsiem_case_date(remote_incident_id)
+            mirrored_data, updated_object = get_remote_ngsiem_case_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update ngsiem case {remote_incident_id} with fields: {updated_object}")
                 set_xsoar_entries(updated_object, entries, remote_incident_id, NGSIEM_CASE, reopen_statuses_list)  # sets in place
@@ -2681,7 +2681,7 @@ def get_remote_incident_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_ngsiem_case_date(remote_case_id: str):
+def get_remote_ngsiem_case_data(remote_case_id: str):
     original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     mirrored_case = get_cases_details([original_remote_case_id])[0]
     updated_object = {"incident_type": NGSIEM_CASE}
