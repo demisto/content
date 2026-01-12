@@ -1,21 +1,37 @@
-## Mimecast Event Collector
+## Mimecast Event Collector  
 
-### Client ID and Client Secret
+In order to retrieve your Mimecast credentials for Cortex XSIAM, follow the instructions below. 
 
-Follow these steps in your Mimecast Administration Console to obtain OAuth2 client credentials:
+### Application ID and Application Key 
+Perform the following steps in your Mimecast application:  
 
-1. Log in to the Mimecast Administration Console.
+1. Go to **Administration console** -> **Administration** -> **Services** -> 
+**API and Platform Integrations** -> Your Application Integrations.  
+2. If you already have an application, 
+click the 3-dot menu and click **View** to retrieve your application ID and    
+application key.   
+   Otherwise, click **Add API Application** and follow the instructions.   
+  
+### Secret Key and Access Key 
 
-2. Navigate to **Integrations** > **API and Platform Integrations** > **Application Integrations**.
+1. Go to **Administration console** -> **Administration** -> **Services** -> 
+**API and Platform Integrations** -> Your Application Integrations.  
+2. Click the 3-dot menu and click **Create Keys** and
+follow the steps to retrieve your Access Key and Secret Key
 
-3. Under the **Available Integrations** tab, select **Mimecast API 2.0** and click **Generate Keys**.
+*Note: You may have to wait up to 20 minutes after creation of a new API Application.*
+  
+  
+### Base URL 
 
-4. Specify the application details, such as the name and description, and select a suitable role:
-    - To fetch Audit events, ensure the role assigned to the application is granted the **Account | Logs | Read** permission.
-    - To fetch SIEM logs, the logged-in user must be a Mimecast Administrator with the **Security Events and Data Retrieval | Threat and Security Events (SIEM) | Read** permission or higher.
+Insert your custom base URL or checkout 
+[Mimecast base url](https://integrations.mimecast.com/documentation/api-overview/global-base-urls/)
+in order to find your base URL (for example: https://us-api.mimecast.com).
 
-5. Once the application is created, retrieve the **Client ID** and **Client Secret**, store them in a secure location, and use them to configure an instance of this integration.
+### Pre-requisites
 
-### Base URL
+##### Audit Logs 
+[Audit pre-requisites](https://integrations.mimecast.com/documentation/endpoint-reference/logs-and-statistics/get-audit-events/#:~:text=Sample%20Code-,Pre,-%2Drequisites)
 
-Use the https://api.services.mimecast.com/ Base URL for the Global region. See the [Mimecast guide on API Gateway Options](https://developer.services.mimecast.com/api-overview#api-gateway-options) to find the relevant Base URL for other regions.
+##### SIEM Logs
+[SIEM pre-requisites](https://integrations.mimecast.com/documentation/endpoint-reference/logs-and-statistics/get-siem-logs/#description:~:text=in%20logs%27%20downloaded.-,Pre%2Drequisites,-The%20data%20served)

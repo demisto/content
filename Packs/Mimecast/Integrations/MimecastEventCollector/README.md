@@ -1,25 +1,32 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM. This integration was developed and tested using Mimecast API 2.0.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Mimecast Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Base URL | Use the https://api.services.mimecast.com/ Base URL for the Global region. See the the [Mimecast guide on API Gateway Options](https://developer.services.mimecast.com/api-overview#api-gateway-options) to find the relevant Base URL for other regions. | True |
-| Client ID | Refer to the help section for instructions on how to obtain the API 2.0 OAuth2 client credentials. | True |
-| Client secret | Refer to the help section for instructions on how to obtain the API 2.0 OAuth2 client credentials. | True |
-| Fetch events | | False |
-| Fetch event types | Possible values are: Audit, SIEM. | False |
-| First fetch timestamp (Audit Events only) | Should be in the &lt;number&gt; &lt;time unit&gt; format (for example, 12 hours, 7 days, 3 months, 1 year). This parameter is only relevant to Audit events. The first fetch timestamp of SIEM logs is internally set to the last minute due to API-side restrictions. | False |
-| Maximum number of events per fetch | Default is 1000. | False |
+| Base URL |  | True |
+| Application ID |  | True |
+| Application Key |  | True |
+| Access Key |  | True |
+| Secret Key |  | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | This parameter is used only for the Audit logs configuration. SIEM logs always set to "7 days ago". For additional information, review the pack README. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
-## Permissions
+## General information
 
-Ensure the following permissions when generating OAuth2 credentials for integrating with Mimecast API 2.0:
+This integration is collecting events from 2 end points.
 
-* To fetch Audit events, ensure the role assigned to the application is granted the **Account | Logs | Read** permission.
-* To fetch SIEM logs, the logged-in user must be a Mimecast Administrator with the **Security Events and Data Retrieval | Threat and Security Events (SIEM) | Read** permission or higher.
+* ### audit events
+
+    All events are fetched at once when activating the integration from **first fetch timestamp** until now.
+    After that the fetch mechanism will call every 1 minute to update the audit events from Mimecast.
+
+* ### SIEM logs
+
+    The logs will **always be fetched from 7 days ago**. Once the integration is activated, the logs will
+    stream in batches of 350 logs per fetch.
+    When all available logs are retrieved, the fetch mechanism will call every 1 minute to update the SIEM logs from Mimecast.  
 
 ## Commands
 
@@ -29,7 +36,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### mimecast-get-events
 
 ***
-Retrieves Mimecast Audit events and SIEM logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+Manual command to fetch events and display them.
 
 #### Base Command
 
@@ -39,20 +46,8 @@ Retrieves Mimecast Audit events and SIEM logs. Use this command for development 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If True, pushes the events to the Cortex XSIAM dataset. If False, only displays them. Default is False. | Required |
-| event_types | The event types to retrieve. Possible values are: Audit, SIEM. | Optional |
-| limit | The maximum number of events to retrieve per event type. Default is 10. | Optional |
-| start_date | The start date for retrieving events, expressed as relative time (for example, '3 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is 1 hour ago. | Optional |
-| end_date | The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs. Default is now. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
-## Limitations
-
-Due to the data retention period of the Mimecast SIEM CG events endpoint, SIEM logs are only available for fetching within a 24-hour rolling window.
-
-* If the integration instance is disabled or the _**Fetch events**_ checkbox is unchecked for a period of more than 24 hours, the event collector will automatically adjust the SIEM collection start time to the most recent available data (within the last 24 hours) upon resumption. This prevents collection failures but may result in a gap in SIEM log coverage during the downtime period.
-
-* When retrieving SIEM logs using the _**mimecast-get-events**_ command, ensure both the `start_date` and `end_date` arguments are within the last 24 hours in the UTC timezone. Values outside this time window will return an error.
