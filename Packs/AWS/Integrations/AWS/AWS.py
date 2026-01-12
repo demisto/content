@@ -2535,7 +2535,6 @@ class EC2:
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
-                - domain (str, optional): The network (vpc or standard). Default is vpc.
                 - address (str, optional): The Elastic IP address to recover
                 - public_ipv4_pool (str, optional): The ID of an address pool
                 - network_border_group (str, optional): A unique set of Availability Zones, Local Zones, or Wavelength Zones
@@ -2546,7 +2545,6 @@ class EC2:
             CommandResults: Results containing the allocated Elastic IP information
         """
         kwargs = {
-            "Domain": args.get("domain", "vpc"),
             "Address": args.get("address"),
             "PublicIpv4Pool": args.get("public_ipv4_pool"),
             "NetworkBorderGroup": args.get("network_border_group"),
@@ -2558,9 +2556,9 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Allocating address with parameters: {kwargs}")
-
+        demisto.info(f"{kwargs=}")
         response = client.allocate_address(**kwargs)
-
+        demisto.info(f"{response=}")
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 

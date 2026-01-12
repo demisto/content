@@ -7386,14 +7386,6 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    - name: domain
-      description: "The network (vpc or standard). Default: vpc."
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - vpc
-      - standard
-      defaultValue: vpc
     - name: address
       description: The Elastic IP address to recover or an IPv4 address from an address pool.
       required: false
