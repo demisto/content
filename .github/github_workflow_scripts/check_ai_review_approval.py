@@ -24,6 +24,7 @@ def arguments_handler():
     parser.add_argument("-g", "--github_token", help="The GitHub token to authenticate the GitHub client.")
     return parser.parse_args()
 
+
 def get_pr_query_string():
     """Returns the GraphQL query string."""
     return """
@@ -51,6 +52,7 @@ def get_pr_query_string():
     }
     """
 
+
 def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
     """Executes the GraphQL query and returns the specific PR data dictionary."""
     url = "https://api.github.com/graphql"
@@ -58,31 +60,25 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
-    variables = {
-        "owner": owner,
-        "repo": repo,
-        "pr_number": int(pr_number)
-    }
+    variables = {"owner": owner, "repo": repo, "pr_number": int(pr_number)}
 
     try:
         response = requests.post(
-            url,
-            json={"query": get_pr_query_string(), "variables": variables},
-            headers=headers,
-            verify=False
+            url, json={"query": get_pr_query_string(), "variables": variables}, headers=headers, verify=False
         )
         response.raise_for_status()
         data = response.json()
-        
+
         pr_data = data.get("data", {}).get("repository", {}).get("pullRequest", {})
         if not pr_data:
             raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
-            
+
         return pr_data
 
     except Exception as e:
         print(f"API Request Failed: {e}")
         sys.exit(1)
+
 
 def has_skip_label(pr_data: dict, label_to_check: str) -> bool:
     """Checks if the PR has the specified bypass label."""
@@ -90,11 +86,12 @@ def has_skip_label(pr_data: dict, label_to_check: str) -> bool:
     print(f"The PR has the following labels: {', '.join(labels)}")
     return label_to_check in labels
 
+
 def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: str) -> tuple[bool, str | None]:
     """
-    Scans reviews to find one from the bot with the required text 
+    Scans reviews to find one from the bot with the required text
     that also has a THUMBS_UP reaction.
-    
+
     Returns:
         (found_bot_comment: bool, approver_username: str | None)
     """
@@ -117,6 +114,7 @@ def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: 
                     return True, approver
 
     return bot_review_found, None
+
 
 def main():
     options = arguments_handler()
@@ -142,6 +140,7 @@ def main():
     else:
         print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
