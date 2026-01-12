@@ -679,7 +679,7 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
     # For predefined categories, these fields are optional but included if available.
     configured_name = category_name or category_data.get("configuredName")
     super_category = category_data.get("superCategory")
-    is_custom = category_data.get("customCategory")
+    is_custom = argToBoolean(category_data.get("customCategory"))
 
     if is_custom and not configured_name:
         raise DemistoException(
