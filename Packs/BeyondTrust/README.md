@@ -1,15 +1,11 @@
-# BeyondTrust
+# BeyondTrust Pack
 
-BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs.
+Use BeyondTrust Privilege Management Cloud to collect and analyze endpoint privilege management events and audit logs.
 
-## Integrations
+## What does this pack do?
 
-### BeyondTrust Privilege Management Cloud
+- Retrieve endpoint privilege management events.
+- Retrieve activity audit logs tracking configuration changes and administrative actions.
+- Collect events for XSIAM ingestion.
 
-This integration allows you to retrieve audit events and activity logs from BeyondTrust Privilege Management Cloud.
-
-#### Commands
-
-* **beyondtrust-pm-cloud-get-events**: Retrieves the list of events by start date.
-* **beyondtrust-pm-cloud-get-audit-activity**: Retrieves list of Details of Activity Audits.
-* **fetch-events**: Fetches events from the service.
+This pack contains an integration for BeyondTrust Privilege Management Cloud (PM Cloud), designed to collect security events and audit logs.
