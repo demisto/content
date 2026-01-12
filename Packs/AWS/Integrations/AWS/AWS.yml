@@ -7243,7 +7243,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.5295752
+  dockerimage: demisto/boto3py3:1.0.0.6593929
 supportsquickactions: true
 fromversion: 5.5.0
 tests:
