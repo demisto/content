@@ -89,9 +89,12 @@ To configure a Microsoft integration that uses this authorization flow with a se
 
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command.
 
-## Configure AzureWAF on Cortex XSOAR
+## Configure AzureWAF on Cortex XSOAR/XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to one of the following:
+    - Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances
+    - Cortex XSOAR 6: Settings > Integrations > Servers & Services.
+    - Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations
 2. Search for Azure Web Application Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 

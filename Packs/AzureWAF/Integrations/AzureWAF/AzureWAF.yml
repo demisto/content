@@ -580,7 +580,7 @@ script:
     description: Deletes a Front Door policy.
     name: azure-waf-front-door-policy-delete
   - description: |-
-      Run this command to start the authorization process and follow the instructions in the command results.
+      Run this command to start the authorization process and follow the instructions provided in the command results.
     name: azure-waf-auth-start
   - description: |-
       Run this command to complete the authorization process.
