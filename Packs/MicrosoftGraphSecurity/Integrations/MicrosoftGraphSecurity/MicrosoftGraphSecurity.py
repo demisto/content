@@ -329,7 +329,6 @@ class MsGraphClient:
         remove_nulls_from_dictionary(body)
         return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body)
 
-
     def delete_ediscovery_case_hold_policy(
         self,
         case_id: str,
@@ -347,9 +346,11 @@ class MsGraphClient:
         """
         url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
         self.ms_client.http_request(
-            ok_codes=[204], method="DELETE", url_suffix=url, return_empty_response=True,
+            ok_codes=[204],
+            method="DELETE",
+            url_suffix=url,
+            return_empty_response=True,
         )
-
 
     def update_ediscovery_case_policy(
         self,
@@ -384,7 +385,6 @@ class MsGraphClient:
             return_empty_response=True,
         )
 
-
     def list_ediscovery_case_hold_policy(
         self,
         case_id: str,
@@ -405,7 +405,6 @@ class MsGraphClient:
             url += f"?$top={limit}"
         return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
 
-
     def get_ediscovery_case_hold_policy(
         self,
         case_id: str,
@@ -423,7 +422,6 @@ class MsGraphClient:
         """
         url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
         return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
-
 
     def list_case_operation(
         self,
@@ -445,7 +443,6 @@ class MsGraphClient:
             url += f"?$top={limit}"
         return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
 
-
     def get_case_operation(
         self,
         case_id: str,
@@ -463,7 +460,6 @@ class MsGraphClient:
         """
         url = f"security/cases/ediscoveryCases/{case_id}/operations/{operation_id}"
         return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
-
 
     def export_result_ediscovery_data(
         self,
@@ -1844,8 +1840,7 @@ def delete_ediscovery_case_hold_policy_command(
     )
     return CommandResults(
         readable_output=(
-            f'The hold policy {args.get("hold_policy_id")} '
-            f'for the case {args.get("case_id")} has been successfully deleted.'
+            f'The hold policy {args.get("hold_policy_id")} ' f'for the case {args.get("case_id")} has been successfully deleted.'
         ),
     )
 
@@ -1890,14 +1885,13 @@ def update_ediscovery_case_policy_command(
                 "and the underlying hold rule is not available to be updated via Microsoft Graph yet.\n\n"
                 "Recommended actions:\n"
                 "1) Retry the hold policy distribution in Purview (Policy actions → Retry) and try again.\n"
-                "2) If the issue persists, recreate the hold policy using Microsoft Graph Security and then manage it via the Graph commands.\n\n"
+                "2) If the issue persists, recreate the hold policy using Microsoft Graph Security and "
+                "then manage it via the Graph commands.\n\n"
                 f"Error message: {err}"
             ) from e
 
         raise e
-    return CommandResults(
-        readable_output=f'Hold policy {args.get("hold_policy_id")} was updated successfully.'
-    )
+    return CommandResults(readable_output=f'Hold policy {args.get("hold_policy_id")} was updated successfully.')
 
 
 def list_ediscovery_case_hold_policy_command(
@@ -1943,7 +1937,7 @@ def list_ediscovery_case_hold_policy_command(
         readable_output=tableToMarkdown(name="Results", t=hr),
         raw_response=raw_res,
     )
-    
+
 
 def list_case_operation_command(
     client: MsGraphClient,
@@ -2022,9 +2016,8 @@ def export_result_ediscovery_data_command(
     if not operation_url:
         raise DemistoException("Missing Location header in exportResult response")
 
-    return CommandResults(
-        readable_output=f"eDiscovery export location: {operation_url}."
-    )
+    return CommandResults(readable_output=f"eDiscovery export location: {operation_url}.")
+
 
 # @polling_function(
 #     "msg-get-last-estimate-statistics-operation",
