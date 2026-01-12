@@ -1,9 +1,11 @@
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ssh_agent_setup
 
 # Import Generated code
+
 from AnsibleApiModule import *  # noqa: E402
-from CommonServerPython import *  # noqa: F401
+
 
 host_type = "ios"
 

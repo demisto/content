@@ -1,12 +1,13 @@
-import json
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 import re
 from json import JSONDecodeError
 from typing import Any, cast
 
 import ansible_runner  # pylint: disable=E0401
-from CommonServerPython import *  # noqa: F403
 
-from CommonServerUserPython import *  # noqa: F403
+
+
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 
@@ -286,6 +287,13 @@ def generic_ansible(
     if args.get("concurrency"):
         fork_count = cast(int, args.get("concurrency"))
 
+    # Define Ansible Environment Overrides (The equivalent of adding configurations to ansible.cfg)
+    ansible_env_vars = {
+        "ANSIBLE_PERSISTENT_COMMAND_TIMEOUT": str(int_params.get('command_timeout', '60')),
+        "ANSIBLE_PERSISTENT_CONNECT_TIMEOUT": str(int_params.get('connect_timeout', '60')),
+        "ANSIBLE_TIMEOUT": str(int_params.get('ssh_timeout', '60'))
+    }
+
     # generate ansible host inventory
     inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type, int_params=int_params)
 
@@ -325,6 +333,7 @@ def generic_ansible(
         ssh_key=sshkey,
         module_args=module_args,
         forks=fork_count,
+        envvars=ansible_env_vars,  # This injects the custom environment configurations defined in the ansible_env_vars variable defined above to override server configurations
     )
 
     results = []
