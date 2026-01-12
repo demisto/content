@@ -1168,7 +1168,16 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully")
+        output = {
+            'Location': response.get("Location"),
+            'BucketArn': response.get("BucketArn"),
+            'BucketName': bucket_name
+        }
+
+        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully",
+                              outputs=output,
+                              outputs_prefix="AWS.S3.Buckets",
+                              outputs_key_field="BucketName")
 
     @staticmethod
     def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:

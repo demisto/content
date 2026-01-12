@@ -7283,3 +7283,71 @@ def test_build_kwargs_network_interface_attribute_attachment_missing_attachment_
     ni_id = "eni-12345"
     with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
         build_kwargs_network_interface_attribute(args, ni_id)
+
+
+def test_bucket_create_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: bucket_create_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                              "Location": "eu-cental-1",
+                                              "BucketArn": "arn"}
+    bucket_name = "test-bucket"
+    args = {"bucket_name": bucket_name}
+    expected_output = {"Location": "eu-cental-1","BucketArn": "arn", "BucketName": bucket_name}
+
+    result = S3.bucket_create_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert f"The bucket {bucket_name}, was created successfully" in result.readable_output
+    mock_client.create_bucket.assert_called_once_with(Bucket=bucket_name)
+    assert expected_output == result.outputs
+
+
+def test_bucket_create_command_with_grants(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name with grants.
+    When: bucket_create_command is called with grant arguments.
+    Then: It should return CommandResults with success message and pass grants to the API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "bucket_name": "test-bucket",
+        "grant_full_control": "id=user1",
+        "grant_read": "id=user2"
+    }
+
+    result = S3.bucket_create_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The bucket test-bucket, was created successfully" in result.readable_output
+    mock_client.create_bucket.assert_called_once_with(
+        Bucket="test-bucket",
+        GrantFullControl="id=user1",
+        GrantRead="id=user2"
+    )
+
+
+def test_bucket_create_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-OK status code.
+    When: bucket_create_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"bucket_name": "test-bucket"}
+
+    S3.bucket_create_command(mock_client, args)
+    mock_handle_error.assert_called_once()
