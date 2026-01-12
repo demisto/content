@@ -90,6 +90,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {  # pragma: no cover
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
+    "software": FeedIndicatorType.Software,
 }
 STIX_SUPPORTED_TYPES = {
     "url": ("value",),
@@ -2467,6 +2468,7 @@ class STIX2XSOARParser(BaseClient):
             "autonomous-system": self.parse_sco_autonomous_system_indicator,
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
+            "software": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,
