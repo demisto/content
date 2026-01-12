@@ -251,6 +251,7 @@ class MsGraphClient:
             "dataSourceScopes": data_source_scopes,
         }
         remove_nulls_from_dictionary(body)
+        demisto.debug(body)
         self.ms_client.http_request(ok_codes=[204], method="PATCH", url_suffix=url, json_data=body, resp_type="text")
 
     def list_ediscovery_search(self, case_id, search_id):
@@ -1749,7 +1750,7 @@ def update_ediscovery_search_command(client: MsGraphClient, args):
         args.get("search_id"),
         args.get("display_name"),
         args.get("description"),
-        args.get("query"),
+        args.get("content_query"),
         args.get("data_source_scopes"),
     )
 
@@ -1863,12 +1864,37 @@ def update_ediscovery_case_policy_command(
     Returns:
         CommandResults with a success message.
     """
-    client.update_ediscovery_case_policy(
-        args.get("case_id"),
-        args.get("hold_policy_id"),
-        args.get("description"),
-        args.get("content_query"),
-    )
+    case_id = args.get("case_id")
+    hold_policy_id = args.get("hold_policy_id")
+    description = args.get("description")
+    content_query = args.get("content_query")
+
+    if description is None and content_query is None:
+        raise DemistoException("Please provide at least one field to update: description and/or content_query.")
+
+    try:
+        client.update_ediscovery_case_policy(
+            case_id,
+            hold_policy_id,
+            description,
+            content_query,
+        )
+    except DemistoException as e:
+        err = str(e)
+
+        # Only enrich message when the user tried to update contentQuery and we recognize the failure
+        if content_query and "ErrorRuleNotFoundException" in err:
+            raise DemistoException(
+                f"Failed to update hold policy '{hold_policy_id}' content query.\n\n"
+                "This can happen when the hold policy was created using the legacy Security & Compliance (PowerShell/RPS) flow "
+                "and the underlying hold rule is not available to be updated via Microsoft Graph yet.\n\n"
+                "Recommended actions:\n"
+                "1) Retry the hold policy distribution in Purview (Policy actions → Retry) and try again.\n"
+                "2) If the issue persists, recreate the hold policy using Microsoft Graph Security and then manage it via the Graph commands.\n\n"
+                f"Error message: {err}"
+            ) from e
+
+        raise e
     return CommandResults(
         readable_output=f'Hold policy {args.get("hold_policy_id")} was updated successfully.'
     )
