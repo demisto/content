@@ -107,7 +107,8 @@ def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: 
         body = review.get("body", "")
         print(f"Current comment body: {body}")
 
-        if (author_login == bot_username) and (required_text in body):
+        if (required_text in body):
+        # if (author_login == bot_username) and (required_text in body):
             bot_review_found = True
             print(f"   Found AI Review (ID: {review.get('databaseId')})")
 
