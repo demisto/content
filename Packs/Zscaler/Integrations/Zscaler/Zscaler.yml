@@ -254,7 +254,7 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
-    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01) in newer Zscaler API versions. You can retrieve the category name by running the 'zscaler-get-categories' command.
+    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01). You can retrieve the category name by running the 'zscaler-get-categories' command.
       name: category-name
       required: false
     description: Adds URLs to the specified category.
@@ -284,7 +284,7 @@ script:
       isArray: true
       name: retaining-parent-category-ip
       required: false
-    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01) in newer Zscaler API versions. You can retrieve the category name by running the 'zscaler-get-categories' command.
+    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01). You can retrieve the category name by running the 'zscaler-get-categories' command.
       name: category-name
       required: false
     description: Adds IP address to the specified category.
@@ -314,7 +314,7 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
-    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01) in newer Zscaler API versions. You can retrieve the category name by running the 'zscaler-get-categories' command.
+    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01). You can retrieve the category name by running the 'zscaler-get-categories' command.
       name: category-name
       required: false
     description: Removes URLs from the specified category.
@@ -344,7 +344,7 @@ script:
       isArray: true
       name: retaining-parent-category-ip
       required: false
-    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01) in newer Zscaler API versions. You can retrieve the category name by running the 'zscaler-get-categories' command.
+    - description: The name of the custom category. Required for custom categories (e.g., CUSTOM_01). You can retrieve the category name by running the 'zscaler-get-categories' command.
       name: category-name
       required: false
     description: Removes IP address from the specified category.

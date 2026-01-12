@@ -674,34 +674,24 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
     if "description" in category_data:
         data["description"] = category_data["description"]
 
-    # For custom categories, configuredName and superCategory are required per Zscaler API documentation:
-    # "If you are modifying a custom URL category, this request must additionally specify the
-    # configuredName and superCategory information in the request Body."
-    if category_data.get("customCategory"):
-        # configuredName - use provided category_name or get from category_data
-        configured_name = category_name or category_data.get("configuredName")
-        if configured_name:
-            data["configuredName"] = configured_name
-        else:
-            raise DemistoException(
-                "The 'configuredName' field is required for custom categories but was not found in the category data. "
-                "Please provide the category name using the 'category-name' argument. "
-                "You can find the category name by running 'zscaler-get-categories' command."
-            )
+    # Per Zscaler API documentation: If you are modifying a custom URL category, this request must
+    # additionally specify the configuredName and superCategory information in the request Body.
+    # For predefined categories, these fields are optional but included if available.
+    configured_name = category_name or category_data.get("configuredName")
+    super_category = category_data.get("superCategory")
+    is_custom = category_data.get("customCategory")
 
-        # superCategory - get from category_data (required for custom categories)
-        super_category = category_data.get("superCategory")
-        if super_category:
-            data["superCategory"] = super_category
-        else:
-            demisto.debug("Warning: superCategory not found in category data for custom category")
-    elif category_name or category_data.get("configuredName"):
-        # For non-custom categories, still include configuredName if available
-        data["configuredName"] = category_name or category_data.get("configuredName")
+    if is_custom and not configured_name:
+        raise DemistoException(
+            "The 'configuredName' field is required for custom categories but was not found in the category data. "
+            "Please provide the category name using the 'category-name' argument. "
+            "You can find the category name by running 'zscaler-get-categories' command."
+        )
 
-    # Include superCategory for predefined categories if available (as shown in docs example)
-    if not category_data.get("customCategory") and category_data.get("superCategory"):
-        data["superCategory"] = category_data.get("superCategory")
+    if configured_name:
+        data["configuredName"] = configured_name
+    if super_category:
+        data["superCategory"] = super_category
 
     demisto.debug(f"{data=}")
     json_data = json.dumps(data)
