@@ -4251,10 +4251,14 @@ def get_case_grouping_graph(client, args):
     response = client.get_case_grouping_graph(case_id)
     processed_data = preprocess_get_case_grouping_graph_outputs(response.get('reply', {}))
     return CommandResults(
-        readable_output=tableToMarkdown("Case Grouping Graph", mapped_response, headerTransform=string_to_table_header),
-        outputs_prefix="Core.CaseGroupingGraph",
+        outputs_prefix='Core.CaseGroupingGraph',
+        outputs_key_field='summary',
         outputs=processed_data,
-        raw_response=processed_data,
+        readable_output=tableToMarkdown(
+            f'Case {case_id} Grouping Graph',
+            processed_data.get('summary'),
+            headers=['total_nodes', 'total_links', 'cluster_count', 'clustered_issues']
+        )
     )
 
 def main():  # pragma: no cover
