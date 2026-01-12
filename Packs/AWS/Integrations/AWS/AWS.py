@@ -522,7 +522,7 @@ class S3:
             response = client.list_objects(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-                raise DemistoException(f"AWS returned status code: {response['ResponseMetadata']['HTTPStatusCode']}")
+                raise AWSErrorHandler.handle_response_error(response)
 
             serialized_response = serialize_response_with_datetime_encoding(response)
             contents = serialized_response.get("Contents", [])
