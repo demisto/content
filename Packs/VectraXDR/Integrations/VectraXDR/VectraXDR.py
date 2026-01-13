@@ -426,10 +426,10 @@ class VectraClient(BaseClient):
 
     def list_detection_note_request(self, detection_id: int = None) -> dict:
         """
-        List entity notes.
+        List detection notes.
 
         Args:
-            entity_id (int): The ID of the detection to get the notes for.
+            detection_id (int): The ID of the detection to get the notes for.
 
         Returns:
             Dict: Response from the API.
@@ -466,7 +466,7 @@ class VectraClient(BaseClient):
 
     def add_detection_note_request(self, detection_id: int = None, note: str = None) -> dict:
         """
-        Add a note to an detection.
+        Add a note to a detection.
 
         Args:
             detection_id (int): The ID of the detection to add the note to.
@@ -512,10 +512,10 @@ class VectraClient(BaseClient):
 
     def update_detection_note_request(self, detection_id: int = None, note: str = None, note_id: int = None) -> dict:
         """
-        Updates the note of an entity.
+        Updates the note of a detection.
 
         Args:
-            entity_id (int): The ID of the detection to update the note for.
+            detection_id (int): The ID of the detection to update the note for.
             note (str): The updated note for the detection.
             note_id (int): The ID of the note to be updated.
 
@@ -554,10 +554,10 @@ class VectraClient(BaseClient):
 
     def remove_detection_note_request(self, detection_id: int = None, note_id: int = None):
         """
-        Removes a note from an entity.
+        Removes a note from a detection.
 
         Args:
-            entity_id (int): The ID of the detection to remove the note from.
+            detection_id (int): The ID of the detection to remove the note from.
             note_id (int): The ID of the note to be removed.
 
         Returns:
@@ -1143,7 +1143,7 @@ def validate_entity_note_list_command_args(args: dict[Any, Any]):
 
 def validate_detection_note_list_command_args(args: dict[Any, Any]):
     """
-    Validates the arguments provided for the detection list add command.
+    Validates the arguments provided for the detection note list command.
 
     Args:
         args (dict[Any, Any]): The arguments dictionary.
@@ -1151,9 +1151,9 @@ def validate_detection_note_list_command_args(args: dict[Any, Any]):
     Raises:
         ValueError: If any of the arguments are invalid.
     """
-    entity_id = args.get("detection_id")
+    detection_id = args.get("detection_id")
     # Validate detection_id value
-    validate_positive_integer_arg(entity_id, arg_name="detection_id", required=True)
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
 
 
 def validate_entity_note_add_command_args(args: dict[Any, Any]):
@@ -1195,7 +1195,7 @@ def validate_detection_note_add_command_args(args: dict[Any, Any]):
     detection_id = args.get("detection_id")
     # Validate detection_id value
     validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
-    # Validate entity_type value
+
     if not note:
         raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("note"))
 
@@ -1229,7 +1229,7 @@ def validate_entity_note_update_command_args(args: dict[Any, Any]):
 
 def validate_detection_note_update_command_args(args: dict[Any, Any]):
     """
-    Validates the arguments provided for the entity note update command.
+    Validates the arguments provided for the detection note update command.
 
     Args:
         args (dict[Any, Any]): The arguments dictionary.
@@ -1275,7 +1275,7 @@ def validate_entity_note_remove_command_args(args: dict[Any, Any]):
 
 def validate_detection_note_remove_command_args(args: dict[Any, Any]):
     """
-    Validates the arguments provided for the entity note update command.
+    Validates the arguments provided for the detection note remove command.
 
     Args:
         args (dict[Any, Any]): The arguments dictionary.
@@ -2063,7 +2063,7 @@ def get_list_detection_notes_command_hr(notes: dict, detection_id: Optional[int]
     Returns the human-readable output for the detection notes.
 
     Args:
-        notes (Dict): The assignment details dictionary.
+        notes (Dict): list of detection notes.
         detection_id (Optional[int]): Detection ID.
 
     Returns:
@@ -2860,7 +2860,7 @@ def vectra_entity_note_list_command(client: VectraClient, args: dict[str, Any]):
 
 def vectra_detection_note_list_command(client: VectraClient, args: dict[str, Any]):
     """
-    List entity notes.
+    List detection notes.
 
     Args:
         client (VectraClient): An instance of the VectraClient class.
@@ -2873,7 +2873,7 @@ def vectra_detection_note_list_command(client: VectraClient, args: dict[str, Any
     # Get function arguments
     detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
 
-    # Call Vectra API to add entity note
+    # Call Vectra API to list detection notes
     notes = client.list_detection_note_request(detection_id=detection_id)  # type: ignore
     notes = remove_empty_elements(notes)
     if notes:
@@ -2931,7 +2931,7 @@ def vectra_entity_note_add_command(client: VectraClient, args: dict[str, Any]):
 
 def vectra_detection_note_add_command(client: VectraClient, args: dict[str, Any]):
     """
-    Adds a note to an detection in Vectra API.
+    Adds a note to a detection in Vectra API.
 
     Args:
         client (VectraClient): An instance of the VectraClient class.
@@ -2945,7 +2945,7 @@ def vectra_detection_note_add_command(client: VectraClient, args: dict[str, Any]
     detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
     note = args.get("note")
 
-    # Call Vectra API to add entity note
+    # Call Vectra API to add detection note
     notes = client.add_detection_note_request(detection_id=detection_id, note=note)  # type: ignore
     if notes:
         notes["note_id"] = notes["id"]
@@ -3020,7 +3020,7 @@ def vectra_detection_note_update_command(client: VectraClient, args: dict[str, A
     note = args.get("note")
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
-    # Call Vectra API to update entity note
+    # Call Vectra API to update detection note
     notes = client.update_detection_note_request(
         detection_id=detection_id,  # type: ignore
         note=note,  # type: ignore
@@ -3073,7 +3073,7 @@ def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]
 
 def vectra_detection_note_remove_command(client: VectraClient, args: dict[str, Any]):
     """
-    Updates a note to an entity in Vectra API.
+    Removes a note from a detection
 
     Args:
         client (VectraClient): An instance of the VectraClient class.
@@ -3093,7 +3093,7 @@ def vectra_detection_note_remove_command(client: VectraClient, args: dict[str, A
         note_id=note_id,  # type: ignore
     )
     if response.status_code == 204:
-        human_readable = "##### The note has been successfully removed from the entity."
+        human_readable = "##### The note has been successfully removed from the detection."
     else:
         human_readable = "Something went wrong."
     return CommandResults(outputs={}, readable_output=human_readable)
@@ -4500,10 +4500,10 @@ def main():
         "vectra-entity-tag-list": vectra_entity_tag_list_command,
         "vectra-detections-mark-fixed": vectra_detections_mark_fixed_command,
         "vectra-detections-unmark-fixed": vectra_detections_unmark_fixed_command,
-        "vectra-detections-note-list": vectra_detection_note_list_command,
-        "vectra-detections-note-add": vectra_detection_note_add_command,
-        "vectra-detections-note-update": vectra_detection_note_update_command,
-        "vectra-detections-note-remove": vectra_detection_note_remove_command,
+        "vectra-detection-note-list": vectra_detection_note_list_command,
+        "vectra-detection-note-add": vectra_detection_note_add_command,
+        "vectra-detection-note-update": vectra_detection_note_update_command,
+        "vectra-detection-note-remove": vectra_detection_note_remove_command,
         "vectra-assignment-list": vectra_assignment_list_command,
         "vectra-entity-assignment-add": vectra_entity_assignment_add_command,
         "vectra-entity-assignment-update": vectra_entity_assignment_update_command,

@@ -2935,14 +2935,14 @@ Remove tags from the detection.
 >
 >Updated list of tags: **tag**, **tag1**, **tag2**
 
-### vectra-detections-note-remove
+### vectra-detection-note-remove
 
 ***
 Remove a note from the detection.
 
 #### Base Command
 
-`vectra-detections-note-remove`
+`vectra-detection-note-remove`
 
 #### Input
 
@@ -2957,7 +2957,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!vectra-detections-note-remove entity_id=1 entity_type=account note_id=1"```
+```!vectra-detection-note-remove note_id=1"```
 
 #### Context Example
 
@@ -2965,20 +2965,20 @@ There is no context output for this command.
 {}
 ```
 
-### vectra-detections-note-update
+### vectra-detection-note-update
 
 ***
 Update a note in the detection.
 
 #### Base Command
 
-`vectra-detections-note-update`
+`vectra-detection-note-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_id | Specify the id of the detection. | Required |
+| detection_id | Specify the ID of the detection. | Required |
 | note_id | Specify the ID of the note. | Required |
 | note | Note to be updated for the specified note_id. | Required |
 
@@ -2986,17 +2986,17 @@ Update a note in the detection.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Detection.Notes.entity_id | String | ID of the entity associated with the note. |
+| Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Detection.Notes.date_modified | Unknown | Date when the note was last modified. |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
-| Vectra.Detection.Notes.modified_by | Unknown | User who last modified the note. |
+| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
 
 #### Command example
 
-```!vectra-detections-note-update detection_id=1 entity_type=account note_id=1 note="note modified"```
+```!vectra-detection-note-update detection_id=1 note_id=1 note="note modified"```
 
 #### Context Example
 
@@ -3016,16 +3016,16 @@ Update a note in the detection.
 
 #### Human Readable Output
 
->##### The note has been successfully updated in the entity
+>##### The note has been successfully updated in the detection
 
-### vectra-detections-note-list
+### vectra-detection-note-list
 
 ***
 Returns a list of notes for a specified detection.
 
 #### Base Command
 
-`vectra-detections-note-list`
+`vectra-detection-note-list`
 
 #### Input
 
@@ -3040,16 +3040,16 @@ Returns a list of notes for a specified detection.
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.id | Number | ID of the note. |
 | Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Detection.Notes.date_modified | Unknown | Date when the note was last modified. |
+| Vectra.Detection.Notes.date_modified | Date | Date when the note was last modified. |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
-| Vectra.Detection.Notes.modified_by | Unknown | User who last modified the note. |
+| Vectra.Detection.Notes.modified_by | String | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
 | Vectra.Detection.Notes.entity_id | String | ID of the entity associated with the note. |
 | Vectra.Detection.Notes.entity_type | String | Type of the entity associated with the note. |
 
 #### Command example
 
-```!vectra-detections-note-list detection_id=1```
+```!vectra-detection-note-list detection_id=1```
 
 #### Context Example
 
@@ -3093,37 +3093,35 @@ Returns a list of notes for a specified detection.
 }
 ```
 
-### vectra-detections-note-add
+### vectra-detection-note-add
 
 ***
 Add a note to the detection.
 
 #### Base Command
 
-`vectra-detections-note-add`
+`vectra-detection-note-add`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_id | Specify the id of the detection. | Required |
+| detection_id | Specify the ID of the detection. | Required |
 | note | Note to be added in the specified detection_id. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Detection.Notes.entity_id | String | ID of the entity associated with the note. |
+| Vectra.Detection.Notes.detection_id | String | ID of the detection associated with the note. |
 | Vectra.Detection.Notes.note_id | Number | ID of the note. |
 | Vectra.Detection.Notes.date_created | Date | Date when the note was created. |
-| Vectra.Detection.Notes.date_modified | Unknown | Date when the note was last modified. |
 | Vectra.Detection.Notes.created_by | String | User who created the note. |
-| Vectra.Detection.Notes.modified_by | Unknown | User who last modified the note. |
 | Vectra.Detection.Notes.note | String | Content of the note. |
 
 #### Command example
 
-```!vectra-detections-note-add detection_id=1 note="test note"```
+```!vectra-detection-note-add detection_id=1 note="test note"```
 
 #### Context Example
 

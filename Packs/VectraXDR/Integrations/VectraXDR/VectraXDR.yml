@@ -1063,7 +1063,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the detection.
+      description: Specify the ID of the detection.
       isArray: false
       name: detection_id
       required: true
@@ -1077,10 +1077,10 @@ script:
     deprecated: false
     description: Add a note to the detection.
     execution: false
-    name: vectra-detections-note-add
+    name: vectra-detection-note-add
     outputs:
-    - contextPath: Vectra.Detection.Notes.entity_id
-      description: ID of the entity associated with the note.
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
       type: String
     - contextPath: Vectra.Detection.Notes.note_id
       description: ID of the note.
@@ -1088,15 +1088,9 @@ script:
     - contextPath: Vectra.Detection.Notes.date_created
       description: Date when the note was created.
       type: Date
-    - contextPath: Vectra.Detection.Notes.date_modified
-      description: Date when the note was last modified.
-      type: Unknown
     - contextPath: Vectra.Detection.Notes.created_by
       description: User who created the note.
       type: String
-    - contextPath: Vectra.Detection.Notes.modified_by
-      description: User who last modified the note.
-      type: Unknown
     - contextPath: Vectra.Detection.Notes.note
       description: Content of the note.
       type: String
@@ -1177,10 +1171,10 @@ script:
     deprecated: false
     description: Update a note in the detection.
     execution: false
-    name: vectra-detections-note-update
+    name: vectra-detection-note-update
     outputs:
-    - contextPath: Vectra.Detection.Notes.entity_id
-      description: ID of the entity associated with the note.
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
       type: String
     - contextPath: Vectra.Detection.Notes.note_id
       description: ID of the note.
@@ -1190,13 +1184,13 @@ script:
       type: Date
     - contextPath: Vectra.Detection.Notes.date_modified
       description: Date when the note was last modified.
-      type: Unknown
+      type: Date
     - contextPath: Vectra.Detection.Notes.created_by
       description: User who created the note.
       type: String
     - contextPath: Vectra.Detection.Notes.modified_by
       description: User who last modified the note.
-      type: Unknown
+      type: String
     - contextPath: Vectra.Detection.Notes.note
       description: Content of the note.
       type: String
@@ -1243,7 +1237,7 @@ script:
     deprecated: false
     description: Remove a note from the detection.
     execution: false
-    name: vectra-detections-note-remove
+    name: vectra-detection-note-remove
   - arguments:
     - default: false
       description: Provide a list of detection IDs separated by commas or a single detection ID.
@@ -2015,16 +2009,16 @@ script:
       description: Type of the entity associated with the note.
       type: String
   - arguments:
-    - default: false
-      description: Specify the ID of the detection.
-      isArray: false
+    - description: Specify the ID of the detection.
       name: detection_id
       required: true
+      default: false
+      isArray: false
       secret: false
-    deprecated: false
     description: Returns a list of notes for a specified detection.
     execution: false
-    name: vectra-detections-note-list
+    name: vectra-detection-note-list
+    deprecated: false
     outputs:
     - contextPath: Vectra.Detection.Notes.note_id
       description: ID of the note.
@@ -2043,7 +2037,7 @@ script:
       type: String
     - contextPath: Vectra.Detection.Notes.modified_by
       description: User who last modified the note.
-      type: Unknown
+      type: Date
     - contextPath: Vectra.Detection.Notes.note
       description: Content of the note.
       type: String
@@ -2054,26 +2048,26 @@ script:
       description: Type of the entity associated with the note.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Filter by group type.
+    - description: Filter by group type.
       isArray: false
       name: group_type
+      required: false
+      auto: PREDEFINED
+      default: false
       predefined:
       - account
       - host
       - ip
       - domain
-      required: false
       secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter by Account Names. Supports comma-separated values.
 
         Note: Only valid when the group_type parameter is set to "account".
-      isArray: true
       name: account_names
       required: false
+      default: false
+      isArray: true
       secret: false
     - default: false
       description: |-
@@ -2152,10 +2146,10 @@ script:
       name: group_name
       required: false
       secret: false
-    deprecated: false
     description: Returns a list of all groups.
     execution: false
     name: vectra-group-list
+    deprecated: false
     outputs:
     - contextPath: Vectra.Group.group_id
       description: ID of the group.
@@ -2212,11 +2206,11 @@ script:
       description: Whether the group is managed by Cognito or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: Specify Group ID to unassign members.
+    - description: Specify Group ID to unassign members.
       isArray: false
       name: group_id
       required: true
+      default: false
       secret: false
     - default: false
       description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
@@ -2224,10 +2218,10 @@ script:
       name: members
       required: true
       secret: false
-    deprecated: false
     description: Unassign members from the specified group.
     execution: false
     name: vectra-group-unassign
+    deprecated: false
     outputs:
     - contextPath: Vectra.Group.group_id
       description: ID of the group.
@@ -2278,11 +2272,11 @@ script:
       description: Description of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Specify Group ID to assign members.
-      isArray: false
+    - description: Specify Group ID to assign members.
       name: group_id
       required: true
+      default: false
+      isArray: false
       secret: false
     - default: false
       description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
@@ -2347,13 +2341,13 @@ script:
     - description: Specify the ID of the entity.
       name: entity_id
       required: true
-    - auto: PREDEFINED
-      description: Specify the type of the entity.
+    - description: Specify the type of the entity.
       name: entity_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - account
       - host
-      required: true
     - auto: PREDEFINED
       description: Specify the close reason.
       name: close_reason
@@ -2366,16 +2360,16 @@ script:
     name: vectra-entity-detections-mark-asclosed
   - arguments:
     - description: Provide a list of detection IDs separated by commas or a single detection ID.
-      isArray: true
       name: detection_ids
       required: true
-    - auto: PREDEFINED
-      description: Specify the close reason.
+      isArray: true
+    - description: Specify the close reason.
       name: close_reason
+      required: true
+      auto: PREDEFINED
       predefined:
       - benign
       - remediated
-      required: true
     description: Mark detections as close with provided detection IDs in the argument.
     execution: false
     name: vectra-detections-mark-asclosed
@@ -2465,12 +2459,12 @@ script:
       - account
       - host
       required: true
-      secret: false    
+      secret: false
     deprecated: false
     description: Reset the given entity to refetch incidents.
     execution: false
-    name: vectra-entity-reset-fetch    
-  dockerimage: demisto/python3:3.12.12.5490952
+    name: vectra-entity-reset-fetch
+  dockerimage: demisto/python3:3.12.12.6391686
   feed: false
   isfetch: true
   isremotesyncin: true
