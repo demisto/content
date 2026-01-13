@@ -1611,10 +1611,7 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     if len(xql_query_list) > 0:  # in case there is something in the lists
         request_data["xql_queries"] = []
         for i in range(0, len(xql_query_list)):
-            request_data["xql_queries"].append({
-                "xql_query": xql_query_list[i],
-                "xql_query_name": xql_query_name_list[i]
-            })
+            request_data["xql_queries"].append({"xql_query": xql_query_list[i], "xql_query_name": xql_query_name_list[i]})
 
     client.create_xql_queries(request_data)
 
