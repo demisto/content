@@ -902,7 +902,7 @@ class RequestTrace:
 @dataclass
 class DiagnosticReport:
     """Comprehensive diagnostic report for troubleshooting."""
-    collector_name: str
+    content_item_name: str
     configuration: Dict[str, Any]
     request_traces: List[RequestTrace]
     state_snapshots: List[Dict[str, Any]]
@@ -1293,7 +1293,7 @@ class ContentClientLogger:
                 recommendations.append("High retry rate detected. Check API health and retry policy configuration.")
         
         return DiagnosticReport(
-            collector_name=self.client_name,
+            content_item_name=self.client_name,
             configuration=configuration,
             request_traces=self._traces.copy(),
             state_snapshots=state_snapshots or [],
