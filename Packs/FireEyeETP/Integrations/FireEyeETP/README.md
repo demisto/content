@@ -9,6 +9,48 @@ Use the Trellix Email Security - Cloud integration to import messages as inciden
 * Search for messages using specific message attributes as indicators.
 * Import messages as Cortex incidents/issues, using the message status as indicator.
 
+## Authentication and Authorization
+
+### Configuring API Keys
+
+If the IAM domain you use to access the Trellix UI ends in **fireeye.com**, follow these steps to configure API keys:
+
+1. Log in to the **Email Security — Cloud Web Portal** or **IAM console**.
+2. Click **My Settings** in the top navigation bar.
+3. Click the **API Keys** tab in the IAM console.
+4. Click **Create API Key**.
+5. On the **Manage API Key** page, specify the following:
+
+* **API key name**
+* **Expiration time** for the API key.
+The expiration time should be set as `"100d"` for 100 days or `"1y"` for 1 year, for example.
+* **Products**  
+Select both **Email Threat Prevention** and **Identity Access Management**.
+
+6. Select all entitlementsFor any API access, the following entitlements are required:
+
+    * `iam.users.browse`
+    * `iam.orgs.self.read`
+
+    #### Alerts APIs
+
+    For accessing alerts APIs, the following additional entitlements are required:
+
+    * `etp.alerts.read`
+
+    #### Trace APIs
+
+    For accessing trace APIs, the following additional entitlements are required:
+
+    * `etp.email_trace.read`
+
+    #### Quarantine APIs
+
+    For accessing quarantine APIs, the following additional entitlements are required:
+
+    * `etp.quarantine.update`
+    * `etp.quar`
+
 ## Authentication Prerequisites
 
 To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.

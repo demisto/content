@@ -32,6 +32,9 @@ SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
 BASE_PATH = "{}/api/v1".format(PARAMS.get("server"))
+ALERT_BASE_PATH = "{}/api/v2/public".format(PARAMS.get("server"))
+
+
 HTTP_HEADERS = {"Content-Type": "application/json"}
 USE_SSL = not PARAMS.get("unsecure")
 MESSAGE_STATUS = argToList(PARAMS.get("message_status"))
@@ -569,7 +572,7 @@ def alert_context_data(alert):
 
 
 def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
-    url = f"{BASE_PATH}/alerts"
+    url = f"{ALERT_BASE_PATH}/alerts"
 
     # constract the body for the request
     body = {}
