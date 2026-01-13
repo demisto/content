@@ -67,6 +67,8 @@ Delete AWS S3 bucket.
 | --- | --- | --- |
 | bucket | The name of S3 bucket. | Required |
 | account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+
 
 #### Context Output
 
@@ -87,6 +89,7 @@ Returns some or all (up to 1,000) of the objects in a bucket.
 | --- | --- | --- |
 | bucket | The name of S3 bucket. | Required |
 | account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
 | delimiter | A delimiter is a character you use to group keys. | Optional |
 | prefix | Limits the response to keys that begin with the specified prefix. | Optional |
 
