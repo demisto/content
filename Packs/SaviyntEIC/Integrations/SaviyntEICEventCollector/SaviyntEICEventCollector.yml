@@ -19,7 +19,7 @@ configuration:
   section: Connect
 - display: Analytics Name
   name: analytics_name
-  required: true
+  required: false
   type: 0
   section: Collect
   defaultvalue: SIEMAuditLogs

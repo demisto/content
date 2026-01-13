@@ -3,16 +3,16 @@ This integration was tested with Saviynt EIC [API Reference for Amsterdam GA Rel
 
 ## Configure Saviynt EIC Event Collector in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Username | True |
-| Password | True |
-| Analytics Name | True |
-| Maximum number of events per fetch | False |
-| Trust any certificate (not secure) | False |
-| Events Fetch Interval | False |
-| Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | | True |
+| Username | | True |
+| Password | | True |
+| Analytics Name | The name of the Analytics Runtime Control to fetch events from. This value must match an existing Analytics Record configured in Saviynt. Default is SIEMAuditLogs | False |
+| Maximum number of events per fetch | | False |
+| Trust any certificate (not secure) | | False |
+| Events Fetch Interval | | False |
+| Use system proxy settings | | False |
 
 ## Commands
 

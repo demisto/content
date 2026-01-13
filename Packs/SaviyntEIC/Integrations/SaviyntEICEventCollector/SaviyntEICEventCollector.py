@@ -614,9 +614,7 @@ def fetch_events(
         overall_max_events=max_events,
         page_size=page_size,
     )
-    demisto.debug(
-        f"[fetch_events] {analytics_name}: collected={len(events)} for analytics_name={analytics_name} (concurrent)"
-    )
+    demisto.debug(f"[fetch_events] {analytics_name}: collected={len(events)} for analytics_name={analytics_name} (concurrent)")
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
     # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
