@@ -110,7 +110,9 @@ COMMANDS
 """
 
 
-def threatvault_get_indicators_command(client: Client, list_format: str, args: Dict, limit: int) -> CommandResults:
+def threatvault_get_indicators_command(
+    client: Client, list_format: str, args: Dict, limit: int = DEFAULT_LIMIT
+) -> CommandResults:
     """Threatvault get indicators query main command.
 
     Args:
@@ -203,7 +205,7 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
 
 
 def fetch_indicators_command(
-    client: Client, predefined_edl_name: str, list_format: str, tlp_color: str, feed_tags: str, limit: int
+    client: Client, predefined_edl_name: str, list_format: str, tlp_color: str, feed_tags: str, limit: int = DEFAULT_LIMIT
 ):
     """Threatvault fetch indicators query main command.
 
