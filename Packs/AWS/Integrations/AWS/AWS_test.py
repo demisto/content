@@ -7573,3 +7573,75 @@ def test_regions_describe_command_validation_error(mocker):
 
     with pytest.raises(DemistoException, match="Only one of the arguments 'region_name' and 'all_regions' should be provided."):
         EC2.regions_describe_command(mock_client, args)
+
+
+def test_inventory_entries_list_command_success(mocker):
+    """
+    Given: A mocked boto3 SSM client returning inventory entries.
+    When: inventory_entries_list_command is called.
+    Then: It should return CommandResults with the entries and proper outputs.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entries": [
+            {"Name": "entry1", "URL": "http://entry1", "Summary": "summary1"},
+            {"Name": "entry2", "URL": "http://entry2", "Summary": "summary2"},
+        ],
+        "InstanceId": "i-12345",
+        "TypeName": "AWS:InstanceInformation"
+    }
+    mock_client.list_inventory_entries.return_value = mock_response
+
+    args = {"instance_id": "i-12345", "type_name": "AWS:InstanceInformation"}
+
+    result = SSM.inventory_entries_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The inventory entries of item i-12345 with the type AWS:InstanceInformation" in result.readable_output
+    assert result.outputs_prefix == "AWS.SSM.Inventory"
+    assert result.outputs == mock_response
+
+
+def test_inventory_entries_list_command_no_entries(mocker):
+    """
+    Given: A mocked boto3 SSM client returning no inventory entries.
+    When: inventory_entries_list_command is called.
+    Then: It should return CommandResults with a message indicating no entries were found.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Entries": []
+    }
+    mock_client.list_inventory_entries.return_value = mock_response
+
+    args = {"instance_id": "i-12345", "type_name": "AWS:InstanceInformation"}
+
+    result = SSM.inventory_entries_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No entries found for the item i-12345." in result.readable_output
+
+
+def test_inventory_entries_list_command_failure(mocker):
+    """
+    Given: A mocked boto3 SSM client returning a non-OK status code.
+    When: inventory_entries_list_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import SSM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.list_inventory_entries.return_value = mock_response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"instance_id": "i-12345"}
+
+    SSM.inventory_entries_list_command(mock_client, args)
+    mock_handle_error.assert_called_once()

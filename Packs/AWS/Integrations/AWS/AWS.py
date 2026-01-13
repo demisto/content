@@ -4292,7 +4292,7 @@ class SSM:
     service = AWSServices.SSM
 
     @staticmethod
-    def inventory_entries_list(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+    def inventory_entries_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns an inventory item, and it's list of entries.
         Args:
@@ -4529,7 +4529,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
-    "aws-ssm-inventory-entries-list": SSM.inventory_entries_list,
+    "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
 }
 
