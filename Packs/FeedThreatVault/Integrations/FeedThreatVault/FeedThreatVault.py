@@ -256,7 +256,7 @@ def fetch_indicators_command(
 
     if response.get("success"):
         count = response.get("count", 0)
-        ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
+        ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
 
         # get next page of data until there is none left
         while count > offset:
