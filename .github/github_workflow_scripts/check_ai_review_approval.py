@@ -103,7 +103,6 @@ def main():
             print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
 
             reactions = fetch_reactions_via_graphql(review.raw_data['node_id'], github_token)
-            print(reactions)
             for reaction in reactions:
                 content = reaction.get("content")
                 user = reaction.get("user", {}).get("login")
