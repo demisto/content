@@ -26,15 +26,19 @@ def arguments_handler():
 
 
 def get_pr_query_string():
-    """Returns the GraphQL query string."""
+    """Returns the GraphQL query string with pagination support."""
     return """
-    query($owner: String!, $repo: String!, $pr_number: Int!) {
+    query($owner: String!, $repo: String!, $pr_number: Int!, $cursor: String) {
       repository(owner: $owner, name: $repo) {
         pullRequest(number: $pr_number) {
           labels(first: 20) {
             nodes { name }
           }
-          reviews(last: 50) {
+          reviews(first: 1, after: $cursor) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
             nodes {
               databaseId
               body
@@ -52,32 +56,65 @@ def get_pr_query_string():
     }
     """
 
-
 def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
-    """Executes the GraphQL query and returns the specific PR data dictionary."""
+    """Executes the GraphQL query with pagination and returns the aggregated PR data."""
     url = "https://api.github.com/graphql"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
-    variables = {"owner": owner, "repo": repo, "pr_number": int(pr_number)}
+    
+    # Initial variables
+    variables = {
+        "owner": owner, 
+        "repo": repo, 
+        "pr_number": int(pr_number), 
+        "cursor": None
+    }
+    
+    all_reviews = []
+    final_pr_data = {}
+    has_next_page = True
 
     try:
-        response = requests.post(
-            url, json={"query": get_pr_query_string(), "variables": variables}, headers=headers, verify=False
-        )
-        response.raise_for_status()
-        data = response.json()
+        while has_next_page:
+            response = requests.post(
+                url, 
+                json={"query": get_pr_query_string(), "variables": variables}, 
+                headers=headers, 
+                verify=False
+            )
+            response.raise_for_status()
+            data = response.json()
 
-        pr_data = data.get("data", {}).get("repository", {}).get("pullRequest", {})
-        if not pr_data:
-            raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
+            repository = data.get("data", {}).get("repository", {})
+            if not repository:
+                raise ValueError(f"Repository {owner}/{repo} not found or access denied.")
+                
+            pr_data = repository.get("pullRequest", {})
+            if not pr_data:
+                raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
 
-        return pr_data
+            reviews_data = pr_data.get("reviews", {})
+            new_reviews = reviews_data.get("nodes", [])
+            all_reviews.extend(new_reviews)
 
-    except Exception as e:
-        print(f"API Request Failed: {e}")
-        sys.exit(1)
+            page_info = reviews_data.get("pageInfo", {})
+            has_next_page = page_info.get("hasNextPage", False)
+            
+            variables["cursor"] = page_info.get("endCursor")
+
+        final_pr_data["reviews"]["nodes"] = all_reviews
+        
+        final_pr_data["reviews"].pop("pageInfo", None)
+        
+        print(final_pr_data)
+
+        return final_pr_data
+
+    except requests.exceptions.RequestException as e:
+        print(f"Network error fetching PR data: {e}")
+        raise
 
 
 def has_skip_label(pr_data: dict, label_to_check: str) -> bool:
