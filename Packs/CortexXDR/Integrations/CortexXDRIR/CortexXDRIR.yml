@@ -3865,7 +3865,7 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: 'The asset IDs. For example: "1,2,3"'
+    - description: 'The asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
       isArray: true
       name: asset_id
     - description: 'The field by which to sort the results. For example: xdm.asset.first_observed'
@@ -3878,7 +3878,7 @@ script:
       - DESC
     - description: The JSON to use for the "filter" field in the API. You can use the xdr-asset-schema-get in order to get the schema.
       name: filter_json
-    - description: Maximum number of assets to return.
+    - description: Maximum number of assets to return. Default is 50.
       name: limit
       defaultvalue: '50'
     - description: Page size for pagination.
@@ -3993,7 +3993,7 @@ script:
       description: The pretty name of the field.
       type: String
   - arguments:
-    - description: The name of the field to get options for. Must be from type ENUM.
+    - description: The name of the field to get options for. You can use the xdr-asset-schema-get in order to get the schema.  Must be of type ENUM.
       name: field_name
       required: true
     description: Gets the enum values of a specified field in the asset schema.
@@ -4018,7 +4018,7 @@ script:
       required: true
     - description: The description of the asset group.
       name: group_description
-    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case.'
       name: membership_predicate_json
     description: Creates an asset group.
     name: xdr-asset-group-create
@@ -4039,12 +4039,12 @@ script:
       - DESC
     - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}"'
       name: filter_json
-    - defaultValue: '50'
-      description: Maximum number of asset groups to return.
+    - defaultvalue: '50'
+      description: Maximum number of asset groups to return. Default is 50.
       name: limit
     - description: Page size for pagination.
       name: page_size
-    - defaultValue: '0'
+    - defaultvalue: '0'
       description: Page number for pagination. 0 is the first page.
       name: page
     description: Returns a list of asset groups.
@@ -4091,7 +4091,7 @@ script:
       - Dynamic
     - description: The description of the asset group.
       name: group_description
-    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group.. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case.'
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update

@@ -1533,9 +1533,9 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object containing the assets.
     """
     asset_id_list = argToList(args.get('asset_id', ""))
-    sort_field = args.get('sort_field', "")
+    sort_field = args.get('sort_field', "").upper()
     sort_order = args.get('sort_order', "")
-    filter_json = args.get('filter_json', "")
+    filter_json = args.get('filter_json', "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
     limit = arg_to_number(args.get('limit')) or 30
@@ -1611,6 +1611,7 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
         name="Cortex XDR Asset Schema",
         t=schema,
         headerTransform=string_to_table_header,
+        headers=["field_pretty_name", "field_name", "data_type"],
         removeNull=True
     )
 
@@ -1717,9 +1718,9 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the asset groups.
     """
-    sort_field = args.get('sort_field', "")
+    sort_field = args.get('sort_field', "").upper()
     sort_order = args.get('sort_order', "")
-    filter_json = args.get('filter_json', "")
+    filter_json = args.get('filter_json', "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
     limit = arg_to_number(args.get('limit')) or 50
