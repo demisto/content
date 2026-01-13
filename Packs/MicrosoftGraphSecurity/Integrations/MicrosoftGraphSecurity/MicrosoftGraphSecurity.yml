@@ -3003,7 +3003,7 @@ script:
       isArray: false
       name: search_id
       required: true
-    - description: The additional options for the export. Use the Prefer header include-unknown-enum-members.
+    - description: The additional options for the export.
       isArray: false
       name: additional_options
       required: true
@@ -3056,7 +3056,7 @@ script:
       required: false
     - description: The display name of the export result.
       isArray: false
-      name: displayName
+      name: display_name
       required: true
     - description: The versions of files in SharePoint to include. Default Value is latest.
       isArray: false
@@ -3080,6 +3080,10 @@ script:
     description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate.
     name: msg-export-result-ediscovery-data
     outputs: []
+  - arguments:
+    - name: url
+    name: msg-download-file
+    description: downloadfile
   dockerimage: demisto/crypto:1.0.0.6308375
   isfetch: true
   runonce: false

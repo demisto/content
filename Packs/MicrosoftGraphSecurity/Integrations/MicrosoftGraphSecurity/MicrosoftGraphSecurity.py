@@ -666,7 +666,12 @@ class MsGraphClient:
             method="PATCH", url_suffix=f"security/incidents/{incident_id}", json_data=body, timeout=timeout
         )
         return updated_incident
-
+    
+    
+    def download_file(self, url):
+        return self.ms_client.http_request(
+            method="GET", url_suffix=url,
+        )
 
 """ HELPER FUNCTIONS """
 
@@ -1884,7 +1889,7 @@ def update_ediscovery_case_policy_command(
                 "This can happen when the hold policy was created using the legacy Security & Compliance (PowerShell/RPS) flow "
                 "and the underlying hold rule is not available to be updated via Microsoft Graph yet.\n\n"
                 "Recommended actions:\n"
-                "1) Retry the hold policy distribution in Purview (Policy actions → Retry) and try again.\n"
+                "1) Retry the hold policy in Purview (Policy actions → Retry) and try again.\n"
                 "2) If the issue persists, recreate the hold policy using Microsoft Graph Security and "
                 "then manage it via the Graph commands.\n\n"
                 f"Error message: {err}"
@@ -1965,13 +1970,16 @@ def list_case_operation_command(
         operation_list = raw_res.get("value")
 
     demisto.debug(f"returned {len(operation_list)} results from the api")
-
     hr = [
         {
             "ID": operation.get("id"),
             "Action": operation.get("action"),
             "Status": operation.get("status"),
             "Created By": operation.get("createdBy"),
+            "Link to download a file":
+                (m if isinstance(m := operation.get("exportFileMetadata"), dict)
+                else (m[0] if isinstance(m, list) and m and isinstance(m[0], dict) else {}))
+        .get("downloadUrl")
         }
         for operation in operation_list
     ]
@@ -1980,7 +1988,7 @@ def list_case_operation_command(
         outputs_prefix="MsGraph.eDiscoveryCase.Operation",
         outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
-        readable_output=tableToMarkdown(name="Results", t=hr),
+        readable_output=tableToMarkdown(name="Results", t=hr, removeNull=True),
         raw_response=raw_res,
     )
 
@@ -2584,6 +2592,10 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
     return command_results
 
+def download_export_file(client: MsGraphClient, args) -> dict:
+    result = client.download_file(args.get("url"))
+    demisto.debug(result)
+    return fileResult(args.get("name", "Unknown"), result)
 
 def main():
     params: dict = demisto.params()
@@ -2652,6 +2664,7 @@ def main():
         "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
+        "msg-download-file": download_export_file,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
