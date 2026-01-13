@@ -280,7 +280,7 @@ script:
           - sa-east-1
           - us-gov-east-1
           - us-gov-west-1
-      - description: A delimiter is a character that you use to group keys. For example, using '/' will group objects by folder.
+      - description: A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy.
         name: delimiter
       - description: Limits the response to keys that begin with the specified prefix.
         name: prefix
