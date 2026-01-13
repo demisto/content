@@ -1573,9 +1573,9 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             "Critical Cases Count": asset.get("related_issues.critical_assets"),
             "Critical Issues Count": asset.get("related_issues.critical_issues"),
         }
-        if asset.get("xdm.asset.first_observed"):
+        if asset.get("first_observed"):
             readable_asset["First Observed"] = timestamp_to_datestring(asset.get("first_observed"))
-        if asset.get("xdm.asset.last_observed"):
+        if asset.get("last_observed"):
             readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("last_observed"))
         readable_assets.append(readable_asset)
 

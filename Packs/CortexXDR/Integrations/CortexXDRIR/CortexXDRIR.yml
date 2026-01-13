@@ -3865,10 +3865,10 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: An array or CSV string of asset IDs.
+    - description: 'The asset IDs. For example: "1,2,3"'
       isArray: true
       name: asset_id
-    - description: The field by which to sort the results.
+    - description: 'The field by which to sort the results. For example: xdm.asset.first_observed'
       name: sort_field
     - auto: PREDEFINED
       description: The order in which to sort the results.
@@ -4018,7 +4018,7 @@ script:
       required: true
     - description: The description of the asset group.
       name: group_description
-    - description: 'The JSON to use for the "membership_predicate" field in the API. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
       name: membership_predicate_json
     description: Creates an asset group.
     name: xdr-asset-group-create
@@ -4029,7 +4029,7 @@ script:
     description: Deletes an asset group.
     name: xdr-asset-group-delete
   - arguments:
-    - description: The field by which to sort the results.
+    - description: 'The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME'
       name: sort_field
     - auto: PREDEFINED
       description: The order in which to sort the results.
@@ -4091,7 +4091,7 @@ script:
       - Dynamic
     - description: The description of the asset group.
       name: group_description
-    - description: 'The JSON to use for the "membership_predicate" field in the API. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group.. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"'
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update
