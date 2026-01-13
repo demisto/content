@@ -43,6 +43,7 @@ def get_reactions_query():
     }
     """
 
+
 def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
     """
     Uses GraphQL to fetch reactions for a specific GitHub Node ID (the review).
@@ -57,24 +58,17 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
 
     try:
         response = requests.post(
-            url,
-            json={"query": get_reactions_query(), "variables": variables},
-            headers=headers,
-            verify=False
+            url, json={"query": get_reactions_query(), "variables": variables}, headers=headers, verify=False
         )
         response.raise_for_status()
         data = response.json()
-        
-        reactions = (
-            data.get("data", {})
-            .get("node", {})
-            .get("reactions", {})
-            .get("nodes", [])
-        )
+
+        reactions = data.get("data", {}).get("node", {}).get("reactions", {}).get("nodes", [])
         return reactions
     except Exception as e:
         print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
         return []
+
 
 def find_reaction_on_review(reviews, github_token):
     ai_review_found = False
@@ -83,36 +77,37 @@ def find_reaction_on_review(reviews, github_token):
             ai_review_found = True
             print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
 
-            reactions = fetch_reactions_via_graphql(review.raw_data['node_id'], github_token)
+            reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
             for reaction in reactions:
                 content = reaction.get("content")
                 user = reaction.get("user", {}).get("login")
-                
+
                 if content == "THUMBS_UP":
                     print(f"Found 👍 reaction from user: {user}")
                     print("✅ AI Review approved.")
                     sys.exit(0)
     return ai_review_found
 
+
 def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
     print(f"Checking PR {pr_number}")
-    
+
     g = Github(github_token, verify=False)
     repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
     pr = repo.get_pull(int(pr_number))
 
     current_labels = [label.name for label in pr.get_labels()]
-    
+
     if SKIP_LABEL in current_labels:
         print(f'✅ Found "{SKIP_LABEL}" label. Skipping AI review check.')
         sys.exit(0)
 
     print("Fetching reviews...")
     reviews = pr.get_reviews()
-    
+
     ai_review_found = find_reaction_on_review(reviews, github_token)
 
     if ai_review_found:
@@ -121,6 +116,7 @@ def main():
     else:
         print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
