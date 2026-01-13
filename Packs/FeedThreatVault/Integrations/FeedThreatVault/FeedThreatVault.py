@@ -147,7 +147,8 @@ def threatvault_get_indicators_command(
         elif err.res is not None and err.res.status_code == 504:
             raise DemistoException(
                 f"Request timed out. Current page size limit is {limit}. "
-                f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                f"Consider reducing the 'Page Size Limit' parameter "
+                f"in the integration configuration to improve performance. "
             )
         else:
             raise
@@ -176,7 +177,8 @@ def threatvault_get_indicators_command(
                     raise DemistoException(
                         f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
                         f"Current page size limit is {limit}. "
-                        f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                        f"Consider reducing the 'Page Size Limit' parameter "
+                        f"in the integration configuration to improve performance."
                     )
                 raise
 
@@ -251,7 +253,8 @@ def fetch_indicators_command(
             raise DemistoException(
                 f"Request timed out (504 Gateway Timeout) during indicator fetch. "
                 f"Current page size limit is {limit}. "
-                f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                f"Consider reducing the 'Page Size Limit' parameter "
+                f"in the integration configuration to improve performance."
             )
         else:
             raise
@@ -279,7 +282,8 @@ def fetch_indicators_command(
                     raise DemistoException(
                         f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
                         f"Current page size limit is {limit}. "
-                        f"Consider reducing the 'Page Size Limit' parameter in the integration configuration to improve performance."
+                        f"Consider reducing the 'Page Size Limit' parameter "
+                        f"in the integration configuration to improve performance."
                     )
                 raise
 
