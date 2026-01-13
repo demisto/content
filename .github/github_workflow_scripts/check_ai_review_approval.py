@@ -79,7 +79,8 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
 def find_reaction_on_review(reviews, github_token):
     ai_review_found = False
     for review in reviews:
-        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+        # if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+        if REQUIRED_TEXT in review.body:
             ai_review_found = True
             print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
 
