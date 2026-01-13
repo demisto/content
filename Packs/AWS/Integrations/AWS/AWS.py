@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+#from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -1204,7 +1204,7 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        buckets = response.get("Buckets")
+        buckets = response.get("Buckets", [])
         for bucket in buckets:
             bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
         readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
@@ -2658,7 +2658,7 @@ class EC2:
 
         regions = response.get("Regions")
         readable_output = tableToMarkdown(
-            f"The regions {region_names} information:",
+            "The regions information:",
             regions,
             removeNull=True,
             headerTransform=pascalToSpace,

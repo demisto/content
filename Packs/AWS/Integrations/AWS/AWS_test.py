@@ -7299,13 +7299,17 @@ def test_bucket_create_command_success(mocker):
                                               "Location": "eu-cental-1",
                                               "BucketArn": "arn"}
     bucket_name = "test-bucket"
-    args = {"bucket_name": bucket_name}
+    args = {"bucket_name": bucket_name, "region": "eu-cental-1"}
+    expected_api_args = {
+        "Bucket": bucket_name,
+        "CreateBucketConfiguration": {"LocationConstraint": args.get("region")}
+    }
     expected_output = {"Location": "eu-cental-1","BucketArn": "arn", "BucketName": bucket_name}
 
     result = S3.bucket_create_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert f"The bucket {bucket_name}, was created successfully" in result.readable_output
-    mock_client.create_bucket.assert_called_once_with(Bucket=bucket_name)
+    mock_client.create_bucket.assert_called_once_with(**expected_api_args)
     assert expected_output == result.outputs
 
 
@@ -7323,7 +7327,8 @@ def test_bucket_create_command_with_grants(mocker):
     args = {
         "bucket_name": "test-bucket",
         "grant_full_control": "id=user1",
-        "grant_read": "id=user2"
+        "grant_read": "id=user2",
+        "region": "us-east-1"
     }
 
     result = S3.bucket_create_command(mock_client, args)
@@ -7348,7 +7353,92 @@ def test_bucket_create_command_failure(mocker):
     mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
 
-    args = {"bucket_name": "test-bucket"}
+    args = {"bucket_name": "test-bucket", "region": "us-east-1"}
 
     S3.bucket_create_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_buckets_list_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client returning a list of buckets.
+    When: buckets_list_command is called.
+    Then: It should return CommandResults with the list of buckets and proper outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    creation_date = datetime(2023, 10, 15, 14, 30, 45)
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Buckets": [
+            {"Name": "bucket1", "CreationDate": creation_date},
+            {"Name": "bucket2", "CreationDate": creation_date},
+        ],
+        "Owner": {"DisplayName": "owner", "ID": "id"},
+        "ContinuationToken": "token",
+        "Prefix": "prefix",
+    }
+    mock_client.list_buckets.return_value = mock_response
+
+    args = {"filter_by_region": "us-east-1", "prefix": "prefix", "limit": "10"}
+
+    result = S3.buckets_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The list of buckets" in result.readable_output
+    assert "bucket1" in result.readable_output
+    assert "bucket2" in result.readable_output
+
+    buckets_output = result.outputs["AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)"]
+    assert len(buckets_output) == 2
+    assert buckets_output[0]["Name"] == "bucket1"
+    assert buckets_output[0]["CreationDate"] == "2023-10-15T14:30:45"
+
+    s3_output = result.outputs["AWS.S3(true)"]
+    assert s3_output["BucketsOwner"] == {"DisplayName": "owner", "ID": "id"}
+    assert s3_output["BucketsNextPageToken"] == "token"
+    assert s3_output["BucketsPrefix"] == "prefix"
+
+
+def test_buckets_list_command_with_pagination(mocker):
+    """
+    Given: A mocked boto3 S3 client and pagination arguments.
+    When: buckets_list_command is called with limit and next_token.
+    Then: It should pass the correct pagination parameters to the list_buckets API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.list_buckets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Buckets": [],
+    }
+
+    args = {"limit": "100", "next_token": "continuation-token"}
+
+    S3.buckets_list_command(mock_client, args)
+
+    mock_client.list_buckets.assert_called_once()
+    call_kwargs = mock_client.list_buckets.call_args[1]
+    assert call_kwargs["MaxBuckets"] == 100
+    assert call_kwargs["ContinuationToken"] == "continuation-token"
+
+
+def test_buckets_list_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client returning a non-OK status code.
+    When: buckets_list_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.list_buckets.return_value = mock_response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {}
+
+    S3.buckets_list_command(mock_client, args)
     mock_handle_error.assert_called_once()
