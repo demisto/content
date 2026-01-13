@@ -4748,19 +4748,17 @@ def fetch_handler(client: Client, args):
     last_fetch = last_run.get("time")
     uam_last_fetch = last_run.get("uam_time")
 
-    default_timestamp = None
-    if last_fetch is None or uam_last_fetch is None:
-        default_date = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
-        if not default_date:
-            raise DemistoException("Please provide an initial First fetch timestamp")
-
-        default_timestamp = int(default_date.timestamp() * 1000)
-
     if last_fetch is None:
-        last_fetch = default_timestamp
+        last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+        if not last_fetch:
+            raise DemistoException("Please provide an initial First fetch timestamp")
+        last_fetch = int(last_fetch.timestamp() * 1000)
 
     if uam_last_fetch is None:
-        uam_last_fetch = default_timestamp
+        uam_last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+        if not uam_last_fetch:
+            raise DemistoException("Please provide an initial First fetch timestamp")
+        uam_last_fetch = int(uam_last_fetch.timestamp() * 1000)
 
     current_fetch = last_fetch
     uam_current_fetch = uam_last_fetch
