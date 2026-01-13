@@ -1487,7 +1487,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
         if nextPageToken:
             if "EntryContext" not in res:
                 res["EntryContext"] = {}
-            res["EntryContext"]["GmailMailsNextPageToken"] = nextPageToken
+            res["EntryContext"]["GmailMails"]["NextPageToken"] = nextPageToken
         return res
     return None
 
@@ -1532,6 +1532,7 @@ def search(
         "includeSpamTrash": include_spam_trash,
     }
     service = get_service("gmail", "v1", ["https://www.googleapis.com/auth/gmail.readonly"], command_args["userId"])
+    nextPageToken = None
 
     try:
         result = service.users().messages().list(**command_args).execute()

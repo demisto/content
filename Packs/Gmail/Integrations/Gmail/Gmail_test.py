@@ -1187,4 +1187,4 @@ def test_search_command_without_next_page_token(mocker):
 
     assert result is not None
     assert "EntryContext" in result
-    assert "GmailPageToken" not in result["EntryContext"]
+    assert "GmailMails" not in result["EntryContext"]
