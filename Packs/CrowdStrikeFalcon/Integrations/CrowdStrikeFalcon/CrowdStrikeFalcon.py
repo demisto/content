@@ -3702,7 +3702,8 @@ async def fetch_spotlight_assets_enrichment_async(session: aiohttp.ClientSession
                         product="spotlight_assets",
                         data_type="assets",
                         snapshot_id=snapshot_id,
-                        items_count=len(resources)
+                        items_count=len(resources),
+                        multiple_threads=True
                     )))
         except Exception as e:
             demisto.error(f"Error enriching assets batch: {e}")
@@ -3712,23 +3713,6 @@ async def fetch_spotlight_assets_async():
     demisto.info("Starting fetch spotlight assets execution.")
     last_run = demisto.getAssetsLastRun()
     spotlight_last_run = last_run.get("spotlight", {})
-
-    # Concurrency check
-    status = spotlight_last_run.get("status")
-    start_time_str = spotlight_last_run.get("start_time")
-
-    if status == "running" and start_time_str:
-        start_time = dateparser.parse(start_time_str)
-        if start_time and (datetime.now() - start_time).total_seconds() < 86400:
-            demisto.info("Spotlight assets fetch is already running. Skipping.")
-            return
-        demisto.info("Spotlight assets fetch was marked running but seems stuck. Resetting.")
-
-    # Update status to running
-    spotlight_last_run["status"] = "running"
-    spotlight_last_run["start_time"] = datetime.now().isoformat()
-    last_run["spotlight"] = spotlight_last_run
-    demisto.setAssetsLastRun(last_run)
 
     snapshot_id = str(round(time.time() * 1000))
     
@@ -3779,7 +3763,8 @@ async def fetch_spotlight_assets_async():
                             product="spotlight_vulnerabilities",
                             data_type="assets",
                             snapshot_id=snapshot_id,
-                            items_count=len(resources)
+                            items_count=len(resources),
+                            multiple_threads=True
                         )))
                         
                         for item in resources:
@@ -3805,10 +3790,8 @@ async def fetch_spotlight_assets_async():
     if tasks:
         await asyncio.gather(*tasks)
         
-    spotlight_last_run["status"] = "completed"
-    spotlight_last_run["last_finish_time"] = datetime.now().isoformat()
     spotlight_last_run["last_fetch_timestamp"] = datetime.now().strftime(DATE_FORMAT)
-    
+
     last_run["spotlight"] = spotlight_last_run
     demisto.setAssetsLastRun(last_run)
     demisto.info("Finished fetch spotlight assets execution.")
