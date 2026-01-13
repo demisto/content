@@ -5433,9 +5433,9 @@ def test_conversation_history_with_pagination(mocker):
 
     # Verify second CommandResult (pagination token)
     pagination_result = results[1]
-    assert pagination_result.outputs_prefix == "SlackConversationsNextPageToken"
-    assert pagination_result.outputs_key_field == "SlackConversationsNextPageToken"
-    assert pagination_result.outputs == "dGVhbTpDQ0M3UENUTks="
+    assert pagination_result.outputs_prefix == "SlackConversationHistory"
+    assert pagination_result.outputs_key_field == "NextPageToken"
+    assert pagination_result.outputs == {"NextPageToken": "dGVhbTpDQ0M3UENUTks="}
 
 
 def test_conversation_history_with_page_token(mocker):
