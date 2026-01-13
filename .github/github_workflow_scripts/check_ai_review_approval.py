@@ -1,5 +1,6 @@
 import sys
 import argparse
+from github import Github
 import requests
 import urllib3
 from utils import timestamped_print
@@ -25,30 +26,16 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def get_pr_query_string():
-    """Returns the GraphQL query string with pagination support."""
+def get_reactions_query():
+    """Returns the GraphQL query to fetch reactions for a specific Node ID."""
     return """
-    query($owner: String!, $repo: String!, $pr_number: Int!, $cursor: String) {
-      repository(owner: $owner, name: $repo) {
-        pullRequest(number: $pr_number) {
-          labels(first: 20) {
-            nodes { name }
-          }
-          reviews(first: 50, after: $cursor) {
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
+    query($nodeId: ID!) {
+      node(id: $nodeId) {
+        ... on PullRequestReview {
+          reactions(first: 20) {
             nodes {
-              databaseId
-              body
-              author { login }
-              reactions(first: 10) {
-                nodes {
-                  content
-                  user { login }
-                }
-              }
+              content
+              user { login }
             }
           }
         }
@@ -56,136 +43,83 @@ def get_pr_query_string():
     }
     """
 
-def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
-    """Executes the GraphQL query with pagination and returns the aggregated PR data."""
+def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
+    """
+    Uses GraphQL to fetch reactions for a specific GitHub Node ID (the review).
+    This allows us to get the specific reaction content (THUMBS_UP) reliably.
+    """
     url = "https://api.github.com/graphql"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
-    
-    # Initial variables
-    variables = {
-        "owner": owner, 
-        "repo": repo, 
-        "pr_number": int(pr_number), 
-        "cursor": None
-    }
-    
-    all_reviews = []
-    final_pr_data = {"reviews": {"nodes": {}}}
-    has_next_page = True
+    variables = {"nodeId": node_id}
 
     try:
-        while has_next_page:
-            response = requests.post(
-                url, 
-                json={"query": get_pr_query_string(), "variables": variables}, 
-                headers=headers, 
-                verify=False
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            # Navigate the response structure
-            repository = data.get("data", {}).get("repository", {})
-            if not repository:
-                raise ValueError(f"Repository {owner}/{repo} not found or access denied.")
-                
-            pr_data = repository.get("pullRequest", {})
-            if not pr_data:
-                raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
-
-            # On the first pass, capture the base PR data (like labels)
-            if final_pr_data is None:
-                final_pr_data = pr_data
-
-            # Extract reviews and pagination info
-            reviews_data = pr_data.get("reviews", {})
-            new_reviews = reviews_data.get("nodes", [])
-            all_reviews.extend(new_reviews)
-
-            page_info = reviews_data.get("pageInfo", {})
-            has_next_page = page_info.get("hasNextPage", False)
-            
-            # Update cursor for the next iteration
-            variables["cursor"] = page_info.get("endCursor")
-
-        # Overwrite the reviews in the final object with the complete list
-        # We perform a shallow copy or direct assignment to structurally match the original return format
-        final_pr_data["reviews"]["nodes"] = all_reviews
+        response = requests.post(
+            url,
+            json={"query": get_reactions_query(), "variables": variables},
+            headers=headers,
+            verify=False
+        )
+        response.raise_for_status()
+        data = response.json()
         
-        # Clean up pagination info from the final output if you want it to look like the original non-paginated structure
-        # (Optional) final_pr_data["reviews"].pop("pageInfo", None)
-
-        return final_pr_data
-
-    except requests.exceptions.RequestException as e:
-        print(f"Network error fetching PR data: {e}")
-        raise
-
-
-def has_skip_label(pr_data: dict, label_to_check: str) -> bool:
-    """Checks if the PR has the specified bypass label."""
-    labels = [node["name"] for node in pr_data.get("labels", {}).get("nodes", [])]
-    print(f"The PR has the following labels: {', '.join(labels)}")
-    return label_to_check in labels
-
-
-def check_reviews_for_approval(pr_data: dict, bot_username: str, required_text: str) -> tuple[bool, str | None]:
-    """
-    Scans reviews to find one from the bot with the required text
-    that also has a THUMBS_UP reaction.
-
-    Returns:
-        (found_bot_comment: bool, approver_username: str | None)
-    """
-    reviews = pr_data.get("reviews", {}).get("nodes", [])
-    bot_review_found = False
-
-    for review in reviews:
-        author_login = review.get("author", {}).get("login")
-        body = review.get("body", "")
-        print(f"Current comment body: {body}")
-
-        if (author_login == bot_username) and (required_text in body):
-            bot_review_found = True
-            print(f"   Found AI Review (ID: {review.get('databaseId')})")
-
-            reactions = review.get("reactions", {}).get("nodes", [])
-            for reaction in reactions:
-                if reaction["content"] == "THUMBS_UP":
-                    approver = reaction["user"]["login"]
-                    return True, approver
-
-    return bot_review_found, None
-
+        reactions = (
+            data.get("data", {})
+            .get("node", {})
+            .get("reactions", {})
+            .get("nodes", [])
+        )
+        return reactions
+    except Exception as e:
+        print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
+        return []
 
 def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
-    print(f"Checking PR {pr_number} via GraphQL...")
+    print(f"Checking PR {pr_number}")
+    
+    # 1. Initialize PyGithub
+    g = Github(github_token, verify=False)
+    repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
+    pr = repo.get_pull(pr_number)
 
-    pr_data = fetch_pr_data(REPO_OWNER, REPO_NAME, pr_number, github_token)
-
-    if has_skip_label(pr_data, SKIP_LABEL):
+    current_labels = [label.name for label in pr.get_labels()]
+    
+    if SKIP_LABEL in current_labels:
         print(f'✅ Found "{SKIP_LABEL}" label. Skipping AI review check.')
         sys.exit(0)
 
-    found_bot_comment, approver = check_reviews_for_approval(pr_data, BOT_USERNAME, REQUIRED_TEXT)
+    print("Fetching reviews...")
+    reviews = pr.get_reviews()
+    
+    bot_review_found = False
 
-    if approver:
-        print(f"Found 👍 reaction from user: {approver}")
-        print("✅ AI Review approved.")
-        sys.exit(0)
-    elif found_bot_comment:
+    for review in reviews:
+        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+            bot_review_found = True
+            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+
+            reactions = fetch_reactions_via_graphql(review.raw_data['node_id'], github_token)
+            print(reactions)
+            for reaction in reactions:
+                content = reaction.get("content")
+                user = reaction.get("user", {}).get("login")
+                
+                if content == "THUMBS_UP":
+                    print(f"Found 👍 reaction from user: {user}")
+                    print("✅ AI Review approved.")
+                    sys.exit(0)
+
+    if bot_review_found:
         print("❌ AI Review found, but no 👍 reaction detected.")
         sys.exit(1)
     else:
         print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
