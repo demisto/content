@@ -7505,3 +7505,71 @@ def test_network_interface_attribute_modify_command_validation_error(mocker):
 
     with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
         EC2.network_interface_attribute_modify_command(mock_client, args)
+
+
+def test_regions_describe_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning a list of regions.
+    When: regions_describe_command is called.
+    Then: It should return CommandResults with the list of regions and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Regions": [
+            {"RegionName": "us-east-1", "Endpoint": "ec2.us-east-1.amazonaws.com", "OptInStatus": "opt-in-not-required"},
+            {"RegionName": "us-west-2", "Endpoint": "ec2.us-west-2.amazonaws.com", "OptInStatus": "opt-in-not-required"},
+        ]
+    }
+    mock_client.describe_regions.return_value = mock_response
+
+    args = {"region_names": "us-east-1,us-west-2"}
+
+    result = EC2.regions_describe_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The regions information:" in result.readable_output
+    assert "us-east-1" in result.readable_output
+    assert "us-west-2" in result.readable_output
+    assert result.outputs_prefix == "AWS.EC2.Regions"
+    assert result.outputs_key_field == "RegionName"
+    assert len(result.outputs) == 2
+
+
+def test_regions_describe_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning a non-OK status code.
+    When: regions_describe_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.describe_regions.return_value = mock_response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"account_id": "12345", "region": "us-east-1"}
+
+    EC2.regions_describe_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_regions_describe_command_validation_error(mocker):
+    """
+    Given: Arguments with both region_names and all_regions provided.
+    When: regions_describe_command is called.
+    Then: It should raise a DemistoException indicating only one of the arguments should be provided.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {
+        "region_names": "us-east-1",
+        "all_regions": "true"
+    }
+
+    with pytest.raises(DemistoException, match="Only one of the arguments 'region_name' and 'all_regions' should be provided."):
+        EC2.regions_describe_command(mock_client, args)
