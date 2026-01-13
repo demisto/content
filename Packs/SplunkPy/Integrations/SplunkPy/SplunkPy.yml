@@ -207,6 +207,18 @@ configuration:
   - Asset
   - Identity
   required: false
+- display: 'Enrichment Mode'
+  name: enrichment_search_mode
+  type: 15
+  section: Collect
+  advanced: true
+  defaultvalue: Fast
+  additionalinfo: Search Mode to use during enrichment. Possible modes are "fast" (default), "verbose" and "smart".
+  options:
+  - Fast
+  - Smart
+  - Verbose
+  required: false
 - additionalinfo: CSV of the Splunk lookup tables from which to take the Asset enrichment data.
   defaultvalue: asset_lookup_by_str,asset_lookup_by_cidr
   display: Asset enrichment lookup tables

@@ -59,6 +59,7 @@ OUTGOING_MIRRORED_FIELDS = ["comment", "status", "owner", "urgency", "reviewer",
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get("enabled_enrichments", [])
+ENRICHMENT_SEARCH_MODE: str = str(params.get("enrichment_search_mode", "Fast")).lower()
 
 DRILLDOWN_ENRICHMENT = "Drilldown"
 ASSET_ENRICHMENT = "Asset"
@@ -1337,7 +1338,11 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
 
                 if (earliest_offset and latest_offset) or earliest_time_exists_in_query(searchable_query):
-                    kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
+                    kwargs = {
+                        "max_count": num_enrichment_events,
+                        "exec_mode": "normal",
+                        "adhoc_search_level": ENRICHMENT_SEARCH_MODE,
+                    }
                     if latest_offset:
                         kwargs["latest_time"] = latest_offset
                     if earliest_offset:
@@ -1390,7 +1395,11 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
             query += f"| inputlookup {table} where {users}"
         demisto.debug(f"Identity query for notable {notable_data[EVENT_ID]}: {query}")
         try:
-            kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
+            kwargs = {
+                "max_count": num_enrichment_events,
+                "exec_mode": "normal",
+                "adhoc_search_level": ENRICHMENT_SEARCH_MODE,
+            }
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error(f"Caught an exception in identity_enrichment function: {e!s}")
@@ -1426,7 +1435,11 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
 
         demisto.debug(f"Asset query for notable {notable_data[EVENT_ID]}: {query}")
         try:
-            kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
+            kwargs = {
+                "max_count": num_enrichment_events,
+                "exec_mode": "normal",
+                "adhoc_search_level": ENRICHMENT_SEARCH_MODE,
+            }
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error(f"Caught an exception in asset_enrichment function: {e!s}")
