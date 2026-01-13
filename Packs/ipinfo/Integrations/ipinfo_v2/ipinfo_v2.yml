@@ -166,11 +166,13 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/fastapi:0.123.5.6111791
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  dependson:
+    ContentClientApiModule: ''
 tests:
 - IPInfo_v2Test
 fromversion: 5.5.0
