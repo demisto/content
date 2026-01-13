@@ -9,7 +9,7 @@ provider: EclecticIQ
 sectionorder:
 - Connect
 - Collect
-description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+description: Integrates with Cyware Threat Intelligence eXchange (CTIX) to enrich indicators, manage tags and notes, view related objects, perform vulnerability lookups, and run generic API requests.
 configuration:
 - display: Endpoint URL
   name: base_url
@@ -34,6 +34,13 @@ configuration:
   section: Connect
   type: 8
   required: false
+- display: Timeout
+  name: timeout
+  defaultvalue: "15"
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: Connection timeout in seconds (default is 15).
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -128,17 +135,6 @@ script:
       description: Modified at timestamp.
       type: number
     description: Get paginated list of tags.
-  - name: ctix-delete-tag
-    arguments:
-    - name: tag_name
-      required: true
-      description: Name of the tag.
-    outputs:
-    - contextPath: CTIX.DeleteTag.result
-      description: Status.
-      type: string
-    description: Delete a tag with given tag_name.
-    execution: true
   - name: ctix-allowed-iocs
     arguments:
     - name: type
@@ -585,8 +581,12 @@ script:
       defaultValue: "10"
     - name: label_name
       description: label name.
-    - name: query
-      description: CQL.
+    - name: version
+      auto: PREDEFINED
+      predefined:
+      - v2
+      - v3
+      description: Saved Result Set Version.
     outputs:
     - contextPath: CTIX.SavedResultSet.analyst_score
       description: Analyst score of the IOC.
@@ -942,7 +942,7 @@ script:
     - contextPath: CTIX.IndicatorTags.type
       description: Type of Indicator.
     description: Get Indicator Tags.
-  - name: ctix-get-indicator-relations
+  - name: ctix-get-object-relations
     arguments:
     - name: page
       description: page.
@@ -963,7 +963,7 @@ script:
       description: Indicator sources.
     - contextPath: CTIX.IndicatorRelations.target_ref
       description: "Indicator target reference."
-    description: Get Indicator Relations.
+    description: Get Object Relations.
   - name: ctix-get-indicator-observations
     arguments:
     - name: page
@@ -1869,7 +1869,27 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.12.11.4284848
+  - name: ctix-disable-or-enable-tags
+    arguments:
+    - name: tag_ids
+      required: true
+      description: ID of the tag.
+      type: 0
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - disabled
+      - enabled
+      description: Choose to Enable or Disable the tag.
+      defaultValue: enabled
+      type: 15
+    outputs:
+    - contextPath: CTIX.TagAction.result
+      description: Status.
+      type: String
+    description: Disables or enables one or more tags based on their IDs.
+  dockerimage: demisto/python3:3.12.12.6204436
   subtype: python3
 tests:
 - No tests (auto formatted)
