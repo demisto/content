@@ -694,7 +694,7 @@ def _query_set_limit(query: str, limit: int) -> str:
     """
     Add limit to given query. If the query has limit, changes it.
     This function now properly handles complex queries with parentheses, unions, and joins.
-    
+
     Args:
         query: the original query
         limit: new limit value, if the value is negative return the original query.
@@ -704,62 +704,61 @@ def _query_set_limit(query: str, limit: int) -> str:
         return query
 
     # Check if query already has a limit or take at the top level (not inside parentheses)
-    # We'll use a simple approach: only add/modify limit if it appears at the end of the query
-    # outside of any parentheses
-    
+    # We'll use a simple approach: only add/modify limit at the top level (outside parentheses)
+
     # Count parentheses to track nesting level
     def get_top_level_pipes(query_str: str) -> list:
         """Split query by pipes that are at parenthesis level 0 (top level)."""
         parts = []
         current_part = []
         paren_depth = 0
-        
+
         i = 0
         while i < len(query_str):
             char = query_str[i]
-            
-            if char == '(':
+
+            if char == "(":
                 paren_depth += 1
                 current_part.append(char)
-            elif char == ')':
+            elif char == ")":
                 paren_depth -= 1
                 current_part.append(char)
-            elif char == '|' and i + 1 < len(query_str) and query_str[i + 1] != '|' and paren_depth == 0:
+            elif char == "|" and i + 1 < len(query_str) and query_str[i + 1] != "|" and paren_depth == 0:
                 # Single pipe at top level (not ||)
                 if current_part:
-                    parts.append(''.join(current_part))
+                    parts.append("".join(current_part))
                     current_part = []
                 # Skip the pipe
             else:
                 current_part.append(char)
-            
+
             i += 1
-        
+
         # Add the last part
         if current_part:
-            parts.append(''.join(current_part))
-        
+            parts.append("".join(current_part))
+
         return parts
 
     # Split query into top-level sections
     query_parts = get_top_level_pipes(query)
-    
+
     # Check if any top-level section starts with limit or take
     changed = False
     for i, part in enumerate(query_parts):
         stripped = part.strip()
-        if stripped.startswith('limit ') or stripped.startswith('take '):
+        if stripped.startswith(("limit ", "take ")):
             # Replace this section with new limit
             query_parts[i] = f" limit {limit} "
             changed = True
             break
-    
+
     # If no limit found, append it
     if not changed:
         query_parts.append(f" limit {limit} ")
-    
-    # Rejoin with pipes
-    fixed_query = " | ".join(query_parts)
+
+    # Rejoin with pipes (using single pipe to match original behavior)
+    fixed_query = "|".join(query_parts)
     return fixed_query
 
 
