@@ -699,7 +699,8 @@ def get_groups_command(client: MsGraphClient, args: Dict):
     user_readable, user_outputs = parse_outputs(group_data["value"])
     human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
     outputs = {"MSGraphUser(val.ID == obj.ID)": user_outputs}
-    return human_readable, outputs, group_data
+
+    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=group_data)
 
 
 @suppress_errors_with_404_code
@@ -709,7 +710,8 @@ def get_owned_devices_command(client: MsGraphClient, args: Dict):
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - owned devices", t=manager_readable, removeNull=True)
     outputs = {"MSGraphUserOwnedDevices(val.User == obj.User)": {"User": user, "OwnedDevices": manager_outputs}}
-    return human_readable, outputs, manager_data
+
+    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=manager_data)
 
 
 @suppress_errors_with_404_code
@@ -719,18 +721,8 @@ def get_auth_methods_command(client: MsGraphClient, args: Dict):
     readable, outputs = parse_outputs(data)
     human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
     outputs = {"MSGraphUserAuthMethods(val.User == obj.User)": {"User": user, "AuthMethods": outputs}}
-    return human_readable, outputs, data
 
-
-def validate_password_command(client: MsGraphClient, args: Dict):
-    password = args.get("password")
-    try:
-        validation_response = client.validate_password(password)
-    except DemistoException as e:
-        raise e
-    human_readable = tableToMarkdown(name="Validate Password", t=validation_response, removeNull=True)
-    outputs = {"Password Is valid": validation_response.get("isValid")}
-    return human_readable, outputs, validation_response
+    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=data)
 
 
 def list_users_command(client: MsGraphClient, args: dict):
@@ -1016,7 +1008,6 @@ def main():
         "msgraph-user-get-groups": get_groups_command,
         "msgraph-user-get-owned-devices": get_owned_devices_command,
         "msgraph-user-get-auth-methods": get_auth_methods_command,
-        "msgraph-user-validate-password": validate_password_command,
         "msgraph-user-list": list_users_command,
         "msgraph-direct-reports": get_direct_reports_command,
         "msgraph-user-get-manager": get_manager_command,

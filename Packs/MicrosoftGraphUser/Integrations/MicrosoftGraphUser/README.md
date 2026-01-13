@@ -333,7 +333,7 @@ Retrieves the properties and relationships of a user object. For more informatio
 
 ***
 Retrieves a list of user objects.
-**Permissions**: User.ReadBasic.All (Delegated), User.Read.All (Application)
+Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
 
 #### Base Command
 
@@ -343,9 +343,7 @@ Retrieves a list of user objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional |
-| next_page | The URL for the next page in the list. | Optional |
-| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional |
+| user | The User ID or userPrincipalName of the user for which to get the owned devices properties. | Required |
 
 #### Context Output
 
@@ -371,94 +369,6 @@ Retrieves a list of user objects.
 | Account.TelephoneNumber | String | User’s mobile phone number. |
 | Account.Office | String | User’s office location. |
 | Account.Type | String | The account entity type. |
-
-#### Command example
-
-```!msgraph-user-list```
-
-#### Context Example
-
-```json
-{
-    "Account": [
-        {
-            "DisplayName": "Test1",
-            "Email": {
-                "Address": "test1@demistodev.onmicrosoft.com"
-            },
-            "ID": "123456-abcd-7890-erty-987qwe988",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": "050505050",
-            "Type": "Azure AD",
-            "Username": null
-        },
-        {
-            "DisplayName": "Test2",
-            "Email": {
-                "Address": "test2@demistodev.onmicrosoft.com"
-            },
-            "ID": "123456-abcd-7890-erty-987qwe989",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": null,
-            "Type": "Azure AD",
-            "Username": null
-        },
-        {
-            "DisplayName": "Test3",
-            "Email": {
-                "Address": null
-            },
-            "ID": "123456-abcd-7890-erty-987qwe990",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": null,
-            "Type": "Azure AD",
-            "Username": null
-        }
-    ],
-    "MSGraphUser": [
-        {
-            "NextPage": "https://graph.microsoft.com/v1.0/users?$select=id%2cdisplayName%2cjobTitle%2cmobilePhone%2cmail&$count=true&$skiptoken=m~AQAnO2Q2MjljMzcwNjFjOTQ4NTE4ZjNkODBlYTZjMDc2NTVmOzswOzA7"
-        },
-        {
-            "DisplayName": "Test 1",
-            "ID": "123456-abcd-7890-erty-987qwe991",
-            "JobTitle": null,
-            "Mail": "test1@demistodev.onmicrosoft.com",
-            "MobilePhone": "050505050"
-        },
-        {
-            "DisplayName": "Test 2",
-            "ID": "123456-abcd-7890-erty-987qwe992",
-            "JobTitle": null,
-            "Mail": "test2@demistodev.onmicrosoft.com",
-            "MobilePhone": null
-        },
-        {
-            "DisplayName": "Test 3",
-            "ID": "123456-abcd-7890-erty-987qwe993",
-            "JobTitle": null,
-            "Mail": null,
-            "MobilePhone": null
-        }
-    ]
-}
-```
-
-#### Human Readable Output
-
->### All Graph Users
->
->To get further results, enter this to the next_page parameter:
->https:<span>//</span>graph.microsoft.com/v1.0/users?$select=id%2cdisplayName%2cjobTitle%2cmobilePhone%2cmail&$count=true&$skiptoken=m~AQAnO2Q2MjljMzcwNjFjOTQ4NTE4ZjNkODBlYTZjMDc2NTVmOzswOzA7
->
->|Display Name|ID|Job Title|Mail|Mobile Phone|
->|---|---|---|---|---|
->| Test 1 | 023096d0-595e-47b5-80dd-ea5886ab9294 |  | test1@demistodev.onmicrosoft.com | 050505050 |
->| Test 2 | 0628c545-94f6-4d07-8bc6-e6718ba1bc95 |  | test2@demistodev.onmicrosoft.com |  |
->| Test 3 | 082b3bc9-bb2d-4d12-8b1a-d84a53229696 |  |  |  |
 
 ### msgraph-direct-reports
 
@@ -630,7 +540,8 @@ There is no context output for this command.
 
 ***
 Changes the user password.
-Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
+Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
+Note: In order to change the password, you need additional permissions: Auth Admin, Privileged Auth Admin or Global Admin, depending on the target user's role.
 
 #### Base Command
 
@@ -640,11 +551,10 @@ Supported only in a self deployed app flow with the Permission: Directory.Access
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| password | The password to validate. | Required |
-
-#### Context Output
-
-There is no context output for this command.
+| user | User ID or userPrincipalName to update password for. | Required |
+| password | The new password. | Required |
+| force_change_password_next_sign_in | Whether the password will be changed on the next sign in. Possible values are: true, false. Default is true. | Optional |
+| force_change_password_with_mfa | Whether to change the password with MFA. Possible values are: true, false. Default is false. | Optional |
 
 ### msgraph-user-test
 
@@ -917,12 +827,47 @@ Retrieves the properties from the owned devices of a user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The onPremisesSamAccountName. | Required |
-| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional |
+| user | The User ID or userPrincipalName of the user for which to get the MFA methods properties. | Required |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.accountEnabled | Bool | Account enablement. |
+| MSGraphUser.alternativeSecurityIds | String | Owned devices alternativeSecurityIds. |
+| MSGraphUser.approximateLastSignInDateTime | String | Owned devices approximateLastSignIn date and time. |
+| MSGraphUser.complianceExpirationDateTime | String | Owned devices complianceExpiration date and time. |
+| MSGraphUser.createdDateTime | String | Owned devices creation date and time. |
+| MSGraphUser.deletedDateTime | String | Owned devices deletion date and time. |
+| MSGraphUser.deviceCategory | String | Owned devices deviceCategory. |
+| MSGraphUser.deviceId | String | Owned devices deviceId. |
+| MSGraphUser.deviceMetadata | String | Owned devices deviceMetadata. |
+| MSGraphUser.deviceOwnership | String | Owned devices deviceOwnership. |
+| MSGraphUser.deviceVersion | Int | Owned devices deviceVersion. |
+| MSGraphUser.displayName | String | Owned devices displayName. |
+| MSGraphUser.domainName | String | Owned devices domainName. |
+| MSGraphUser.enrollmentProfileName | String | Owned devices enrollmentProfileName. |
+| MSGraphUser.enrollmentType | String | Owned devices enrollmentType. |
+| MSGraphUser.extensionAttributes | String | Owned devices extensionAttributes. |
+| MSGraphUser.externalSourceName | String | Owned devices externalSourceName. |
+| MSGraphUser.id | String | Owned devices id. |
+| MSGraphUser.isCompliant | Bool | Owned devices isCompliant. |
+| MSGraphUser.isManaged | Bool | Owned devices isManaged. |
+| MSGraphUser.isRooted | Bool | Owned devices isRooted. |
+| MSGraphUser.managementType | String | Owned devices managementType. |
+| MSGraphUser.manufacturer | String | Owned devices manufacturer. |
+| MSGraphUser.mdmAppId | String | Owned devices mdmAppId. |
+| MSGraphUser.model | String | Owned devices model. |
+| MSGraphUser.onPremisesLastSyncDateTime | String | Owned devices onPremisesLastSync date and time. |
+| MSGraphUser.onPremisesSyncEnabled | Bool | Owned devices onPremisesSyncEnabled. |
+| MSGraphUser.operatingSystem | String | Owned devices operatingSystem. |
+| MSGraphUser.operatingSystemVersion | String | Owned devices operatingSystemVersion. |
+| MSGraphUser.physicalIds | String | Owned devices physicalIds. |
+| MSGraphUser.profileType | String | Owned devices profileType. |
+| MSGraphUser.registrationDateTime | String | Owned devices registration date and time.. |
+| MSGraphUser.sourceType | String | Owned devices sourceType. |
+| MSGraphUser.systemLabels | String | Owned devices systemLabels. |
+| MSGraphUser.trustType | String | Owned devices trustType. |
 
 ### msgraph-user-get-groups
 
@@ -937,58 +882,54 @@ Retrieves the groups a user is part of.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The User ID or userPrincipalName of the user for which to get the MFA methods properties. | Required |
+| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional |
+| next_page | The URL for the next page in the list. | Optional |
+| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
-
-### msgraph-user-get-by-sam
-
-***
-Retrieves the properties and relationships of a user object by its onPremisesSamAccountName. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-Permissions: - User.Read (Delegated) - User.Read.All (Application).
-
-#### Base Command
-
-`msgraph-user-get-by-sam`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName to update password for. | Required |
-| password | The new password. | Required |
-| force_change_password_next_sign_in | Whether the password will be changed on the next sign in. Possible values are: true, false. Default is true. | Optional |
-| force_change_password_with_mfa | Whether to change the password with MFA. Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### msgraph-user-validate-password
-
-***
-Validates whether a password is valid according to the password policies.
-
-#### Base Command
-
-`msgraph-user-validate-password`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
-
-#### Context Output
-
-There is no context output for this command.
+| MSGraphUser.classification | String | Value used to classify data types in your groups. |
+| MSGraphUser.createdDateTime | String | Groups creation date and time. |
+| MSGraphUser.creationOptions | String | Groups creation options. |
+| MSGraphUser.deletedDateTime | String | Groups deletion date and time. |
+| MSGraphUser.description | String | Groups description string. |
+| MSGraphUser.displayName | String | Groups display name. |
+| MSGraphUser.expirationDateTime | String | Groups expiration date and time. |
+| MSGraphUser.groupTypes | String | Groups group Types. |
+| MSGraphUser.id | String | Groups id. |
+| MSGraphUser.isAssignableToRole | Bool | Groups role assignability. |
+| MSGraphUser.mail | String | Groups associated mail. |
+| MSGraphUser.mailEnabled | Bool | Groups mail enablement. |
+| MSGraphUser.mailNickname | String | Groups mailNickname. |
+| MSGraphUser.membershipRule | String | Groups membershipRule. |
+| MSGraphUser.membershipRuleProcessingState | String | Groups membershipRuleProcessingState. |
+| MSGraphUser.onPremisesDomainName | String | Groups onPremisesDomainName. |
+| MSGraphUser.onPremisesLastSyncDateTime | String | Groups onPremisesLastSyncDateTime. |
+| MSGraphUser.onPremisesNetBiosName | String | Groups onPremisesNetBiosName. |
+| MSGraphUser.onPremisesProvisioningErrors | String | Groups onPremisesProvisioningErrors. |
+| MSGraphUser.onPremisesSamAccountName | String | Groups onPremisesSamAccountName. |
+| MSGraphUser.onPremisesSecurityIdentifier | String | Groups onPremisesSecurityIdentifier. |
+| MSGraphUser.onPremisesSyncEnabled | String | Groups onPremisesSyncEnabled. |
+| MSGraphUser.preferredDataLocation | String | Groups preferredDataLocation. |
+| MSGraphUser.preferredLanguage | String | Groups preferredLanguage. |
+| MSGraphUser.proxyAddresses | String | Groups proxyAddresses. |
+| MSGraphUser.renewedDateTime | String | Groups renewed date and time. |
+| MSGraphUser.resourceBehaviorOptions | String | Groups resourceBehaviorOptions. |
+| MSGraphUser.resourceProvisioningOptions | String | Groups resourceProvisioningOptions. |
+| MSGraphUser.securityEnabled | Bool | Groups security enablement. |
+| MSGraphUser.securityIdentifier | String | Groups securityIdentifier. |
+| MSGraphUser.serviceProvisioningErrors | String | Groups serviceProvisioningErrors. |
+| MSGraphUser.theme | String | Groups theme. |
+| MSGraphUser.uniqueName | String | Groups uniqueName. |
+| MSGraphUser.visibility | String | Groups visibility. |
+| MSGraphUser.wellKnownObject | String | Groups wellKnownObject. |
 
 ### msgraph-user-get-auth-methods
 
 ***
-Retrieves the properties from the owned devices of a user.
+Retrieve a list of authentication methods registered to a user.
 
 #### Base Command
 
@@ -998,8 +939,14 @@ Retrieves the properties from the owned devices of a user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The User ID or userPrincipalName of the user for which to get the owned devices properties. | Required |
+| user | User ID or userPrincipalName. | Required |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.createdDateTime | String | Authentication methods creation date and time. |
+| MSGraphUser.deviceTag | String | Authentication methods deviceTag. |
+| MSGraphUser.displayName | String | Authentication methods displayName. |
+| MSGraphUser.id | String | Authentication methods id. |
+| MSGraphUser.phoneAppVersion | String | Authentication methods phoneAppVersion. |
