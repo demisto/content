@@ -85,7 +85,7 @@ def main():
     # 1. Initialize PyGithub
     g = Github(github_token, verify=False)
     repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
-    pr = repo.get_pull(pr_number)
+    pr = repo.get_pull(int(pr_number))
 
     current_labels = [label.name for label in pr.get_labels()]
     
