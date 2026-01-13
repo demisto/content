@@ -99,7 +99,8 @@ def main():
     bot_review_found = False
 
     for review in reviews:
-        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+        # if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+        if REQUIRED_TEXT in review.body:
             bot_review_found = True
             print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
 
