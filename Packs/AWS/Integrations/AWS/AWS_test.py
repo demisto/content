@@ -7442,3 +7442,66 @@ def test_buckets_list_command_failure(mocker):
 
     S3.buckets_list_command(mock_client, args)
     mock_handle_error.assert_called_once()
+
+
+def test_network_interface_attribute_modify_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid network interface modification arguments.
+    When: network_interface_attribute_modify_command is called.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_network_interface_attribute.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
+    }
+
+    args = {
+        "network_interface_id": "eni-12345",
+        "description": "new description",
+        "source_dest_check": "true"
+    }
+
+    result = EC2.network_interface_attribute_modify_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The Network Interface attribute eni-12345 was modified successfully." in result.readable_output
+    mock_client.modify_network_interface_attribute.assert_called_once()
+
+
+def test_network_interface_attribute_modify_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning a non-OK status code.
+    When: network_interface_attribute_modify_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.modify_network_interface_attribute.return_value = mock_response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"network_interface_id": "eni-12345"}
+
+    EC2.network_interface_attribute_modify_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_network_interface_attribute_modify_command_validation_error(mocker):
+    """
+    Given: Arguments with attachment_id but missing delete_on_termination.
+    When: network_interface_attribute_modify_command is called.
+    Then: It should raise a DemistoException due to validation failure in build_kwargs_network_interface_attribute.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {
+        "network_interface_id": "eni-12345",
+        "attachment_id": "attach-123"
+    }
+
+    with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
+        EC2.network_interface_attribute_modify_command(mock_client, args)
