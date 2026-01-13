@@ -527,7 +527,7 @@ script:
     - contextPath: Slack.Messages.ThreadTimeStamp
       description: The thread timestamp of the message.
       type: string
-    - contextPath: SlackConversationsNextPageToken
+    - contextPath: SlackConversationHistory.NextPageToken
       description: Token to retrieve the next page of results.
       type: string
   - arguments:

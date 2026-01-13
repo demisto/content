@@ -2919,9 +2919,9 @@ def conversation_history() -> None:
     if cursor:
         results.append(
             CommandResults(
-                outputs_prefix="SlackConversationsNextPageToken",
-                outputs_key_field="SlackConversationsNextPageToken",
-                outputs=cursor,
+                outputs_prefix="SlackConversationHistory",
+                outputs_key_field="NextPageToken",
+                outputs={"NextPageToken": cursor},
             )
         )
 

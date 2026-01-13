@@ -720,7 +720,7 @@ Fetches a conversation's history of messages and events
 | Slack.Messages.TimeStamp          | string   | The timestamp of the message.                        |
 | Slack.Messages.HasReplies         | string   | Whether the message has replies.                     |
 | Slack.Messages.ThreadTimeStamp    | string   | The thread timestamp of the message.                 |
-| SlackConversationsNextPageToken   | string   | Token to retrieve the next page of results.          |
+| SlackConversationHistory.NextPageToken   | string   | Token to retrieve the next page of results.          |
 
 ### slack-get-conversation-replies
 
