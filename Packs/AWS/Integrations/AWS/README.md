@@ -69,7 +69,6 @@ Delete AWS S3 bucket.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.

@@ -482,7 +482,7 @@ class S3:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_bucket_objects_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         List objects in an Amazon S3 bucket (up to 1000 objects).
 
@@ -522,7 +522,7 @@ class S3:
             response = client.list_objects(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-                raise AWSErrorHandler.handle_response_error(response)
+                return AWSErrorHandler.handle_response_error(response)
 
             serialized_response = serialize_response_with_datetime_encoding(response)
             contents = serialized_response.get("Contents", [])
@@ -546,7 +546,7 @@ class S3:
                 table_data,
                 headers=["Key", "Size (Bytes)", "LastModified", "StorageClass"],
                 removeNull=True,
-                headerTransform=pascalToSpace
+                headerTransform=pascalToSpace,
             )
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets.BucketObjects",
