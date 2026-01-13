@@ -76,6 +76,24 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
         print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
         return []
 
+def find_reaction_on_review(reviews, github_token):
+    ai_review_found = False
+    for review in reviews:
+        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+            ai_review_found = True
+            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+
+            reactions = fetch_reactions_via_graphql(review.raw_data['node_id'], github_token)
+            for reaction in reactions:
+                content = reaction.get("content")
+                user = reaction.get("user", {}).get("login")
+                
+                if content == "THUMBS_UP":
+                    print(f"Found 👍 reaction from user: {user}")
+                    print("✅ AI Review approved.")
+                    sys.exit(0)
+    return ai_review_found
+
 def main():
     options = arguments_handler()
     pr_number = options.pr_number
@@ -95,24 +113,9 @@ def main():
     print("Fetching reviews...")
     reviews = pr.get_reviews()
     
-    bot_review_found = False
+    ai_review_found = find_reaction_on_review(reviews, github_token)
 
-    for review in reviews:
-        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
-            bot_review_found = True
-            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
-
-            reactions = fetch_reactions_via_graphql(review.raw_data['node_id'], github_token)
-            for reaction in reactions:
-                content = reaction.get("content")
-                user = reaction.get("user", {}).get("login")
-                
-                if content == "THUMBS_UP":
-                    print(f"Found 👍 reaction from user: {user}")
-                    print("✅ AI Review approved.")
-                    sys.exit(0)
-
-    if bot_review_found:
+    if ai_review_found:
         print("❌ AI Review found, but no 👍 reaction detected.")
         sys.exit(1)
     else:
