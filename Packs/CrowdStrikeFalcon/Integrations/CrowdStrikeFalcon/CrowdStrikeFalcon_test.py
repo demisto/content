@@ -8391,12 +8391,12 @@ def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon
     When:
         - Running update_remote_ngsiem_case.
     Then:
-        - Verify that update_ngeism_case_request is called with the correct status if applicable.
+        - Verify that update_remote_ngsiem_case is called with the correct status if applicable.
     """
     from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
 
     mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
-    update_mock = mocker.patch("CrowdStrikeFalcon.update_ngeism_case_request", return_value="success")
+    update_mock = mocker.patch("CrowdStrikeFalcon.update_remote_ngsiem_case", return_value="success")
 
     remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
     result = update_remote_ngsiem_case(delta, inc_status, remote_id)
