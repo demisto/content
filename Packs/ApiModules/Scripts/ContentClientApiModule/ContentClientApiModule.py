@@ -1,12 +1,3 @@
-
-"""ContentClientApiModule - Enhanced HTTP client for XSOAR/XSIAM integrations.
-
-This module provides a drop-in replacement for BaseClient with advanced features
-including retry policies, circuit breakers, rate limiting, and diagnostic capabilities.
-"""
-
-from __future__ import annotations
-
 import asyncio
 import concurrent.futures
 import json
@@ -31,7 +22,7 @@ from typing import (
 import anyio
 import demistomock as demisto
 import httpx
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
@@ -203,15 +194,6 @@ class RetryPolicy(BaseModel):
     )
     respect_retry_after: bool = True
 
-    @root_validator(pre=False)
-    def validate_delay(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # noqa: N805
-        """Validate that max_delay is greater than initial_delay."""
-        max_delay = values.get("max_delay")
-        initial_delay = values.get("initial_delay")
-        if max_delay is not None and initial_delay is not None and max_delay <= initial_delay:
-            raise ValueError(f"max_delay ({max_delay}) must be > initial_delay ({initial_delay})")
-        return values
-
     def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
         """Calculate the next delay for retry with exponential backoff and jitter.
         
@@ -377,15 +359,6 @@ class TimeoutSettings(BaseModel):
     pool: float = Field(60.0, gt=0)
     execution: Optional[float] = Field(None, gt=0)
     safety_buffer: float = Field(30.0, gt=0)
-
-    @root_validator(pre=False)
-    def validate_execution_safety(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # noqa: N805
-        """Validate that execution timeout is greater than safety buffer."""
-        execution = values.get("execution")
-        safety_buffer = values.get("safety_buffer")
-        if execution is not None and safety_buffer is not None and execution <= safety_buffer:
-            raise ValueError(f"execution ({execution}) must be > safety_buffer ({safety_buffer})")
-        return values
 
     def as_httpx(self) -> httpx.Timeout:
         return httpx.Timeout(connect=self.connect, read=self.read, write=self.write, pool=self.pool)
