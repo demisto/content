@@ -474,16 +474,15 @@ class Client(CoreClient):
             timeout=self.timeout,
         )
 
-    def delete_xql_queries(self, xql_query_name=None, xql_query_tag=None):
+    def delete_xql_queries(self, request_data: dict):
         """
         Deletes XQL queries from the library.
         Args:
-            xql_query_name (list): List of XQL query names to delete.
-            xql_query_tag (list): List of XQL query tags to delete.
+            request_data (dict): List of XQL query names to delete.
         Returns:
             dict: The API response.
         """
-        request_data = assign_params(xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
+        # The API returns 200 even if xql query doesn't exist
         return self._http_request(
             method="POST",
             url_suffix="../xql_library/delete/",  # The endpoint is without v1
@@ -1607,7 +1606,7 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     request_data = assign_params(
         xql_queries_override=override_existing,
-        xql_query_tag=xql_query_tag,
+        xql_query_tags=xql_query_tag,
     )
     if len(xql_query_list) > 0:  # in case there is something in the lists
         request_data["xql_queries"] = []
@@ -1631,10 +1630,12 @@ def xql_library_delete_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: The results of the command.
     """
-    xql_query_name = argToList(args.get("xql_query_name"))
-    xql_query_tag = argToList(args.get("xql_query_tag"))
+    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_tag = argToList(args.get("xql_query_tag", []))
 
-    client.delete_xql_queries(xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
+    request_data = assign_params(xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
+
+    client.delete_xql_queries(request_data)
 
     return CommandResults(readable_output="XQL queries deleted successfully.")
 

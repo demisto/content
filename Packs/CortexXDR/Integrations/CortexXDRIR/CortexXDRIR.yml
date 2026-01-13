@@ -3939,10 +3939,10 @@ script:
     description: Creates or updates XQL queries in the library.
     name: xdr-xql-library-create
   - arguments:
-    - description: List of XQL query names to delete.
+    - description: List of XQL query names to delete. If searching by xql_query_names, you cannot search by xql_query_tags in the same call.
       isArray: true
       name: xql_query_name
-    - description: List of XQL query tags to delete.
+    - description: List of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Deletes XQL queries from the library.
