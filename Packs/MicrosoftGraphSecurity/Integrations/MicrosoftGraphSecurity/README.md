@@ -2481,3 +2481,319 @@ Retrieves the most recent eDiscovery estimate statistics operation for a given s
 | MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize | Number | The total size \(in bytes\) of unindexed items. |
 | MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount | Number | The total number of items \(indexed \+ unindexed\). |
 | MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize | Number | The total size \(in bytes\) of all items \(indexed \+ unindexed\). |
+
+### msg-list-ediscovery-case-hold-policy
+
+***
+Get a list of the ediscoveryHoldPolicy objects and their properties.
+
+#### Base Command
+
+`msg-list-ediscovery-case-hold-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| hold_policy_id | The ID of the legal hold policy. | Optional | 
+| limit | Number of total results to return. The default is 50. Default is 50. | Optional | 
+| all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryCase.HoldPolicy.ID | String | The ID of the eDiscovery hold policy. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.DisplayName | String | The display name of the legal hold. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Description | String | The legal hold description. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.ContentQuery | String | KQL query that specifies content to be held. If empty, all content in the specified locations is held. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.IsEnabled | Boolean | Indicates whether the hold is enabled and actively holding content. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Status | String | The status of the legal hold. Possible values are Pending, Error, Success. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Errors | String | Lists any errors that happened while placing the hold. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedDateTime | Date | The date and time the legal hold was created. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedDateTime | Date | The date and time the legal hold was last modified. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.ID | String | The unique identifier of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.DisplayName | String | The display name of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.TenantId | String | The tenant ID of the application identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.ID | String | The unique identifier of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.DisplayName | String | The display name of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.TenantId | String | The tenant ID of the application instance identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.ID | String | The unique identifier of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.DisplayName | String | The display name of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.TenantId | String | The tenant ID of the conversation identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.ID | String | The identifier describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.DisplayName | String | The display name describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.TenantId | String | The tenant ID of the conversation identity type. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.ID | String | The unique identifier of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.DisplayName | String | The display name of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.TenantId | String | The tenant ID of the device identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.ID | String | The unique identifier of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.DisplayName | String | The display name of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.TenantId | String | The tenant ID of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.ID | String | The unique identifier of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.DisplayName | String | The display name of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.TenantId | String | The tenant ID of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.ID | String | The unique identifier of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.DisplayName | String | The display name of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.TenantId | String | The tenant ID of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.ID | String | The unique identifier of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.DisplayName | String | The display name of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.TenantId | String | The tenant ID of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.ID | String | The unique identifier of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.DisplayName | String | The display name of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.ID | String | The unique identifier of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.DisplayName | String | The display name of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.TenantId | String | The tenant ID of the application identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.ID | String | The unique identifier of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.DisplayName | String | The display name of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.TenantId | String | The tenant ID of the application instance identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.ID | String | The unique identifier of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.DisplayName | String | The display name of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.TenantId | String | The tenant ID of the conversation identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.ID | String | The identifier describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.DisplayName | String | The display name describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.TenantId | String | The tenant ID of the conversation identity type. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.ID | String | The unique identifier of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.DisplayName | String | The display name of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.TenantId | String | The tenant ID of the device identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.ID | String | The unique identifier of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.DisplayName | String | The display name of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.TenantId | String | The tenant ID of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.ID | String | The unique identifier of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.DisplayName | String | The display name of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.TenantId | String | The tenant ID of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.ID | String | The unique identifier of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.DisplayName | String | The display name of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.TenantId | String | The tenant ID of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.ID | String | The unique identifier of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.DisplayName | String | The display name of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.TenantId | String | The tenant ID of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.ID | String | The unique identifier of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.DisplayName | String | The display name of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. | 
+
+### msg-export-result-ediscovery-data
+
+***
+Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate.
+
+#### Base Command
+
+`msg-export-result-ediscovery-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the search. | Required | 
+| additional_options | The additional options for the export. Use the Prefer header include-unknown-enum-members. Possible values are: none, teamsAndYammerConversations, cloudAttachments, allDocumentVersions, subfolderContents, listAttachments, htmlTranscripts, advancedIndexing, allItemsInFolder, includeFolderAndPath, condensePaths, friendlyName, splitSource, includeReport. | Required | 
+| export_criteria | The portion of the estimate results to be exported. Possible values are: searchHits, partiallyIndexed. | Required | 
+| export_format | The desired format of the exported emails. Possible values are: pst, msg. | Required | 
+| cloud_attachment_version | The versions of cloud attachments to include in messages. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional | 
+| description | The description of the export result. | Optional | 
+| displayName | The display name of the export result. | Required | 
+| document_version | The versions of files in SharePoint to include. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional | 
+| export_location | Location scope for partially indexed items. You can choose to include partially indexed items only in responsive locations with search hits or in all targeted locations. Possible values are: responsiveLocations, nonresponsiveLocations. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### msg-delete-ediscovery-case-hold-policy
+
+***
+Delete an ediscoveryHoldPolicy object.
+
+#### Base Command
+
+`msg-delete-ediscovery-case-hold-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| hold_policy_id | The policy ID that is intended to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### msg-list-case-operation
+
+***
+Get a list of the caseOperation objects and their properties.
+
+#### Base Command
+
+`msg-list-case-operation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| operation_id | The ID of the operation. | Optional | 
+| limit | Number of total results to return. The default is 50. Default is 50. | Optional | 
+| all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryCase.Operation.ID | String | The ID of the case operation. Read-only. | 
+| MsGraph.eDiscoveryCase.Operation.Action | String | The type of action the operation represents \(caseAction\). Example values: contentExport, applyTags, convertToPdf, index, estimateStatistics, addToReviewSet, holdUpdate, purgeData, exportReport, exportResult, holdPolicySync.
+ | 
+| MsGraph.eDiscoveryCase.Operation.Status | String | The status of the case operation. Possible values: notStarted, submissionFailed, running, succeeded, partiallySucceeded, failed.
+ | 
+| MsGraph.eDiscoveryCase.Operation.PercentProgress | Number | The progress of the operation. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedDateTime | Date | The date and time the operation was created. | 
+| MsGraph.eDiscoveryCase.Operation.CompletedDateTime | Date | The date and time the operation was completed. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.ID | String | The unique identifier of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.DisplayName | String | The display name of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.TenantId | String | The tenant ID of the application identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.ID | String | The unique identifier of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.DisplayName | String | The display name of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.TenantId | String | The tenant ID of the application instance identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.ID | String | The unique identifier of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.DisplayName | String | The display name of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.TenantId | String | The tenant ID of the conversation identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.ID | String | The identifier describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.DisplayName | String | The display name describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.TenantId | String | The tenant ID of the conversation identity type. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.ID | String | The unique identifier of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.DisplayName | String | The display name of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.TenantId | String | The tenant ID of the device identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.ID | String | The unique identifier of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.DisplayName | String | The display name of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.TenantId | String | The tenant ID of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.ID | String | The unique identifier of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.DisplayName | String | The display name of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.TenantId | String | The tenant ID of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.ID | String | The unique identifier of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.DisplayName | String | The display name of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.TenantId | String | The tenant ID of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.ID | String | The unique identifier of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.DisplayName | String | The display name of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.TenantId | String | The tenant ID of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.User.ID | String | The unique identifier of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.User.DisplayName | String | The display name of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.CreatedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. | 
+| MsGraph.eDiscoveryCase.Operation.ResultInfo.Code | Number | The result code \(2xx success, 4xx client error, 5xx server error\). | 
+| MsGraph.eDiscoveryCase.Operation.ResultInfo.Message | String | The result message. | 
+| MsGraph.eDiscoveryCase.Operation.ResultInfo.Subcode | Number | The result subcode. | 
+
+### msg-create-ediscovery-case-hold-policy
+
+***
+Create a new ediscoveryHoldPolicy object.
+
+#### Base Command
+
+`msg-create-ediscovery-case-hold-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| display_name | The display name of the legal hold policy. | Required | 
+| description | The description of the legal hold policy. | Optional | 
+| content_query | KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&amp;preserve-view=true ). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscoveryCase.HoldPolicy.ID | String | The ID of the eDiscovery hold policy. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.DisplayName | String | The display name of the legal hold. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Description | String | The legal hold description. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.ContentQuery | String | KQL query that specifies content to be held. If empty, all content in the specified locations is held. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.IsEnabled | Boolean | Indicates whether the hold is enabled and actively holding content. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Status | String | The status of the legal hold. Possible values are Pending, Error, Success. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.Errors | String | Lists any errors that happened while placing the hold. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedDateTime | Date | The date and time the legal hold was created. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedDateTime | Date | The date and time the legal hold was last modified. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.ID | String | The unique identifier of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.DisplayName | String | The display name of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.TenantId | String | The tenant ID of the application identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.ID | String | The unique identifier of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.DisplayName | String | The display name of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.TenantId | String | The tenant ID of the application instance identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.ID | String | The unique identifier of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.DisplayName | String | The display name of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.TenantId | String | The tenant ID of the conversation identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.ID | String | The identifier describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.DisplayName | String | The display name describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.TenantId | String | The tenant ID of the conversation identity type. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.ID | String | The unique identifier of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.DisplayName | String | The display name of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.TenantId | String | The tenant ID of the device identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.ID | String | The unique identifier of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.DisplayName | String | The display name of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.TenantId | String | The tenant ID of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.ID | String | The unique identifier of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.DisplayName | String | The display name of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.TenantId | String | The tenant ID of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.ID | String | The unique identifier of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.DisplayName | String | The display name of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.TenantId | String | The tenant ID of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.ID | String | The unique identifier of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.DisplayName | String | The display name of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.TenantId | String | The tenant ID of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.ID | String | The unique identifier of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.DisplayName | String | The display name of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.ID | String | The unique identifier of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.DisplayName | String | The display name of the application associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.TenantId | String | The tenant ID of the application identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.ID | String | The unique identifier of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.DisplayName | String | The display name of the application instance associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.TenantId | String | The tenant ID of the application instance identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.ID | String | The unique identifier of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.DisplayName | String | The display name of the conversation \(team or channel\) associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.TenantId | String | The tenant ID of the conversation identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.ID | String | The identifier describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.DisplayName | String | The display name describing whether the conversation identifies a team or channel. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.TenantId | String | The tenant ID of the conversation identity type. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.ID | String | The unique identifier of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.DisplayName | String | The display name of the device associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.TenantId | String | The tenant ID of the device identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.ID | String | The unique identifier of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.DisplayName | String | The display name of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.TenantId | String | The tenant ID of the encrypted identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.ID | String | The unique identifier of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.DisplayName | String | The display name of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.TenantId | String | The tenant ID of the on-premises identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.ID | String | The unique identifier of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.DisplayName | String | The display name of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.TenantId | String | The tenant ID of the guest identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.ID | String | The unique identifier of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.DisplayName | String | The display name of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.TenantId | String | The tenant ID of the phone identity associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.ID | String | The unique identifier of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.DisplayName | String | The display name of the user associated with this action. | 
+| MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. | 
+
+### msg-update-ediscovery-case-policy
+
+***
+Update the properties of an ediscoveryHoldPolicy object.
+
+#### Base Command
+
+`msg-update-ediscovery-case-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| hold_policy_id | The policy ID that is intended to be updated. | Required | 
+| description | The description of the legal hold policy. | Optional | 
+| content_query | KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&amp;preserve-view=true ). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

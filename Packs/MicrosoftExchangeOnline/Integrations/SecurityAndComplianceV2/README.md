@@ -38,7 +38,7 @@ Note: The legacy content search solution is [retired](https://learn.microsoft.co
 
 - `o365-sc-start-search` → Use `msg-run-estimate-statistics`. Note: In Microsoft Graph eDiscovery, searches do not have a separate “start” command. Instead, a search is executed when you run the estimate command.
  [Microsoft Learn: Estimate statistics](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-estimatestatistics?view=graph-rest-1.0)
-- `o365-sc-stop-search` → There is no Stop-ComplianceSearch equivalent in Microsoft Graph. In the new eDiscovery model a search never “runs” by itself.. [Microsoft Learn: eDiscovery search resource type](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoverysearch?view=graph-rest-1.0)
+- `o365-sc-stop-search` → There is no Stop-ComplianceSearch equivalent in Microsoft Graph. In the new eDiscovery model a search never “runs” by itself. [Microsoft Learn: eDiscovery search resource type](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoverysearch?view=graph-rest-1.0)
 
 - `o365-sc-new-search-action` → Use:
   - `msg-run-estimate-statistics`. [Microsoft Learn: Estimate statistics](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-estimatestatistics?view=graph-rest-1.0)
@@ -48,6 +48,8 @@ Note: The legacy content search solution is [retired](https://learn.microsoft.co
 - `o365-sc-remove-search-action` → Use `msg-purge-ediscovery-data`. [Microsoft Learn: Purge data](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-purgedata?view=graph-rest-1.0)
 - `o365-sc-get-search-action` → Use `msg-list-case-operation`. [Microsoft Learn: Get case operation](https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0)
 - `o365-sc-list-search-action` → Use `msg-list-case-operation`. [Microsoft Learn: Get case operation](https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0)
+
+---
 
 This integration allows you to manage and interact with Microsoft Security & Compliance Center's content search capabilities. You can perform comprehensive searches across your organization’s emails, SharePoint sites, OneDrive accounts, and more. Actions like previewing and deleting emails are supported, making it easier to manage potential security threats.
 
