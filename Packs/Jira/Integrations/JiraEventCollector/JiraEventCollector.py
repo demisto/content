@@ -9,6 +9,8 @@ from CommonServerPython import *  # noqa: F401
 from pydantic import AnyUrl, BaseConfig, BaseModel, Field, Json  # pylint: disable=no-name-in-module
 from requests.auth import HTTPBasicAuth
 
+from AtlassianApiModule import create_atlassian_oauth_client  # type: ignore[import] # noqa: F401
+
 urllib3.disable_warnings()
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
@@ -70,9 +72,10 @@ class Request(BaseModel):
 
 
 class Client:
-    def __init__(self, request: Request, session=requests.Session()):
+    def __init__(self, request: Request, session=requests.Session(), oauth_client=None):
         self.request = request
         self.session = session
+        self.oauth_client = oauth_client
         self._set_proxy()
         self._set_cert_verification()
 
@@ -84,7 +87,18 @@ class Client:
 
     def call(self) -> requests.Response:
         try:
-            response = self.session.request(**self.request.dict(by_alias=True))
+            request_dict = self.request.dict(by_alias=True)
+            
+            # Handle OAuth authentication
+            if self.oauth_client:
+                access_token = self.oauth_client.get_access_token()
+                if 'headers' not in request_dict:
+                    request_dict['headers'] = {}
+                request_dict['headers']['Authorization'] = f"Bearer {access_token}"
+                # Remove basic auth if present
+                request_dict.pop('auth', None)
+            
+            response = self.session.request(**request_dict)
             response.raise_for_status()
             return response
         except Exception as exc:
@@ -174,35 +188,144 @@ class GetEvents:
         return last_run
 
 
+def oauth_start_command(oauth_client) -> CommandResults:
+    """Start OAuth authentication flow."""
+    url = oauth_client.oauth_start()
+    return CommandResults(
+        readable_output=(
+            f"### Authorization Instructions\n"
+            f"1. Click on the following link to authorize:\n{url}\n\n"
+            f"2. After authorizing, you will be redirected to the callback URL\n"
+            f"3. Copy the authorization code from the 'code' parameter in the URL\n"
+            f"4. Run the command: `!jira-oauth-complete code=<your_code>`"
+        )
+    )
+
+
+def oauth_complete_command(oauth_client, code: str) -> CommandResults:
+    """Complete OAuth authentication flow."""
+    oauth_client.oauth_complete(code=code)
+    return CommandResults(
+        readable_output=(
+            "### Successfully authenticated!\n"
+            "The access token and refresh token have been saved.\n"
+            "You can now use the integration to fetch events."
+        )
+    )
+
+
+def oauth_test_command(oauth_client) -> CommandResults:
+    """Test OAuth authentication."""
+    try:
+        oauth_client.test_connection()
+        return CommandResults(readable_output="✓ Authentication successful")
+    except Exception as e:
+        raise DemistoException(f"Authentication failed: {str(e)}")
+
+
 def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    
+    # Get authentication parameters
+    auth_method = demisto_params.get("auth_method", "Basic")
+    is_oauth = auth_method == "OAuth 2.0"
+    
+    # OAuth client initialization
+    oauth_client = None
+    if is_oauth:
+        client_creds = demisto_params.get("client_credentials", {})
+        client_id = client_creds.get("identifier", "")
+        client_secret = client_creds.get("password", "")
+        cloud_id = demisto_params.get("cloud_id", "")
+        callback_url = demisto_params.get("callback_url", "")
+        server_url = str(demisto_params.get("url", "")).removesuffix("/")
+        
+        if not client_id or not client_secret:
+            raise DemistoException(
+                "Client ID and Client Secret are required for OAuth 2.0 authentication"
+            )
+        if not callback_url:
+            raise DemistoException("Callback URL is required for OAuth 2.0 authentication")
+        
+        # Create OAuth client using ApiModule (supports both Cloud and On-Prem)
+        oauth_client = create_atlassian_oauth_client(
+            client_id=client_id,
+            client_secret=client_secret,
+            callback_url=callback_url,
+            cloud_id=cloud_id,
+            server_url=server_url,
+            verify=not demisto_params.get("insecure", False),
+            proxy=demisto_params.get("proxy", False)
+        )
 
-    demisto_params["url"] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
+    # Build the API URL
+    base_url = str(demisto_params.get("url", "")).removesuffix("/")
+    if is_oauth and oauth_client and hasattr(oauth_client, 'cloud_id') and oauth_client.cloud_id:
+        # For OAuth with Cloud ID, use the cloud-specific URL
+        demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/3/auditing/record"
+    else:
+        # For Basic auth or On-Prem OAuth
+        demisto_params["url"] = f"{base_url}/rest/api/3/auditing/record"
+    
     demisto_params["params"] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 
     request = Request.model_validate(demisto_params)  # type: ignore[attr-defined]
-    client = Client(request)
+    client = Client(request, oauth_client=oauth_client)
     get_events = GetEvents(client)
     command = demisto.command()
 
-    if command == "test-module":
-        get_events.run(max_fetch=1)
-        demisto.results("ok")
+    try:
+        if command == "test-module":
+            if oauth_client:
+                # For OAuth, test the authentication
+                oauth_client.test_connection()
+            else:
+                # For basic auth, try to fetch events
+                get_events.run(max_fetch=1)
+            demisto.results("ok")
 
-    elif command in ("fetch-events", "jira-get-events"):
-        events = get_events.run(int(demisto_params.get("max_fetch", 1000)))
-        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-        if events:
-            demisto.setLastRun(get_events.set_next_run(events[0]))
-            demisto.debug(f"Last run set to {demisto.getLastRun()}")
-            if command == "jira-get-events":
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown("Jira Audit Records", events, removeNull=True, headerTransform=pascalToSpace),
-                    raw_response=events,
+        elif command == "jira-oauth-start":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
                 )
-                return_results(command_results)
+            return_results(oauth_start_command(oauth_client))
+
+        elif command == "jira-oauth-complete":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
+                )
+            code = demisto.args().get("code", "")
+            if not code:
+                raise DemistoException("Authorization code is required")
+            return_results(oauth_complete_command(oauth_client, code))
+
+        elif command == "jira-oauth-test":
+            if not oauth_client:
+                raise DemistoException(
+                    "OAuth commands are only available when using OAuth 2.0 authentication"
+                )
+            return_results(oauth_test_command(oauth_client))
+
+        elif command in ("fetch-events", "jira-get-events"):
+            events = get_events.run(int(demisto_params.get("max_fetch", 1000)))
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            if events:
+                demisto.setLastRun(get_events.set_next_run(events[0]))
+                demisto.debug(f"Last run set to {demisto.getLastRun()}")
+                if command == "jira-get-events":
+                    command_results = CommandResults(
+                        readable_output=tableToMarkdown(
+                            "Jira Audit Records", events, removeNull=True, headerTransform=pascalToSpace
+                        ),
+                        raw_response=events,
+                    )
+                    return_results(command_results)
+    except Exception as e:
+        return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
