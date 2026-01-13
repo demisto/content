@@ -1500,34 +1500,6 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
-def remove_prefix_from_keys(data_list: list, prefix: str) -> list:
-    """
-    Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
-    Args:
-        data_list (list): The list of dictionaries (e.g., from raw API response).
-        prefix (str): The prefix to remove (e.g., "XDM.ASSET_GROUP").
-    Returns:
-        list: A new list with cleaned dictionary keys.
-    """
-    cleaned_list = []
-    len_prefix = len(prefix)
-    for entry in data_list:
-        if not isinstance(entry, dict):
-            continue
-        new_dict = {}
-
-        for key, value in entry.items():
-            if key.startswith(prefix):
-                new_key = key[len_prefix:]
-                new_dict[new_key] = value
-            else:
-                new_dict[key] = value
-
-        cleaned_list.append(new_dict)
-
-    return cleaned_list
-
-
 def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Gets a list of existing API keys.
@@ -1626,16 +1598,24 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: The results of the command.
     """
     override_existing = args.get("override_existing")
-    xql_query = argToList(args.get("xql_query", []))
-    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_list = argToList(args.get("xql_query", []))
+    xql_query_name_list = argToList(args.get("xql_query_name", []))
     xql_query_tag = argToList(args.get("xql_query_tag", []))
+
+    if len(xql_query_list) != len(xql_query_name_list):
+        raise DemistoException("need to be the same")
 
     request_data = assign_params(
         xql_queries_override=override_existing,
-        xql_query=xql_query,
-        xql_query_name=xql_query_name,
         xql_query_tag=xql_query_tag,
     )
+    if len(xql_query_list) > 0:  # in case there is something in the lists
+        request_data["xql_queries"] = []
+        for i in range(0, len(xql_query_list)):
+            request_data["xql_queries"].append({
+                "xql_query": xql_query_list[i],
+                "xql_query_name": xql_query_name_list[i]
+            })
 
     client.create_xql_queries(request_data)
 
