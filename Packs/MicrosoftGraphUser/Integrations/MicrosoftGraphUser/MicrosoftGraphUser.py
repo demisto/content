@@ -267,14 +267,6 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def validate_password(self, password) -> Dict:
-        response = self.ms_client.http_request(
-            method="POST",
-            full_url="https://graph.microsoft.com/beta/users/validatePassword",
-            json_data={"password": password},
-        )
-        return response
-
     def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method="GET", url_suffix="users", full_url=page_url)
