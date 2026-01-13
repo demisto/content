@@ -14,16 +14,10 @@ configuration:
   section: Connect
   help: "The server URL, e.g. https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com"
 - display: Client ID
-  name: client_id
-  defaultvalue: ""
-  type: 0
+  displaypassword: Client Secret
+  name: credentials
   required: true
-  section: Connect
-- display: Client Secret
-  name: client_secret
-  defaultvalue: ""
-  type: 4
-  required: true
+  type: 9
   section: Connect
 - display: Events types to fetch
   name: events_types_to_fetch
@@ -53,9 +47,9 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: Maximum number of audit events (per type)
+- display: Maximum number of events (per type)
   name: max_fetch
-  defaultvalue: "6000"
+  defaultvalue: "5000"
   type: 0
   required: false
   section: Collect

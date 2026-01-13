@@ -208,110 +208,159 @@ def get_audit_activity_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(outputs_prefix="BeyondTrust.Audit", outputs_key_field="id", outputs=audits, raw_response=response)
 
 
-def fetch_events(
-    client: Client, last_run: dict, first_fetch: str, max_fetch: int, events_types_to_fetch: list[str]
+def fetch_pm_events(
+    client: Client, last_run: dict, first_fetch: str, max_fetch: int, fetch_end_time: datetime
 ) -> tuple[dict, list[dict]]:
-    """Fetches events from the service.
+    """Fetches PM Cloud events from the Events API.
 
     Args:
         client (Client): The client to use.
         last_run (dict): The last run context.
         first_fetch (str): The first fetch time.
-        max_fetch (int): The maximum number of events to fetch.
+        max_fetch (int): The maximum number of events to fetch for this event type.
+        fetch_end_time (datetime): The end time for this fetch cycle.
+
+    Returns:
+        tuple[dict, list[dict]]: The updated run context and the fetched events.
+    """
+    next_run = last_run.copy()
+    last_event_time_str = last_run.get("last_event_time")
+
+    if not last_event_time_str:
+        last_event_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
+    else:
+        last_event_time = dateparser.parse(last_event_time_str).replace(tzinfo=timezone.utc)  # type: ignore
+
+    # Format the start date as required by the API: ISO 8601
+    start_date_str = last_event_time.strftime(DATE_FORMAT)
+
+    response = client.get_events(start_date_str, max_fetch)
+    fetched_events = response.get("events", [])
+
+    for event in fetched_events:
+        # Add fields for XSIAM
+        event["_time"] = event.get("created") or event.get("@timestamp")
+        event["source_log_type"] = "events"
+        event["vendor"] = VENDOR
+        event["product"] = PRODUCT
+
+    # Store the fetch end time as the next start time to ensure continuous coverage
+    next_run["last_event_time"] = fetch_end_time.strftime(DATE_FORMAT)
+
+    return next_run, fetched_events
+
+
+def fetch_activity_audits(
+    client: Client, last_run: dict, first_fetch: str, max_fetch: int, fetch_end_time: datetime
+) -> tuple[dict, list[dict]]:
+    """Fetches Activity Audit events from the Activity Audits API.
+
+    Args:
+        client (Client): The client to use.
+        last_run (dict): The last run context.
+        first_fetch (str): The first fetch time.
+        max_fetch (int): The maximum number of events to fetch for this event type.
+        fetch_end_time (datetime): The end time for this fetch cycle.
+
+    Returns:
+        tuple[dict, list[dict]]: The updated run context and the fetched audit events.
+    """
+    next_run = last_run.copy()
+    last_audit_time_str = last_run.get("last_audit_time")
+
+    if not last_audit_time_str:
+        last_audit_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
+    else:
+        last_audit_time = dateparser.parse(last_audit_time_str).replace(tzinfo=timezone.utc)  # type: ignore
+
+    # Activity Audits API uses pagination and filtering.
+    # We fetch from last_audit_time to fetch_end_time to ensure continuous coverage.
+    # The API documentation says "Filter.Created.Dates: array of date-times".
+    # And "Filter.Created.SelectionMode: Range" - this requires two dates for a range.
+
+    start_date_str = last_audit_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+    end_date_str = fetch_end_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    page_number = 1
+    total_fetched_audits = 0
+    fetched_audits_list: list[dict] = []
+
+    while True:
+        # Calculate remaining limit for this cycle
+        remaining_limit = max_fetch - total_fetched_audits
+        if remaining_limit <= 0:
+            break
+
+        current_page_size = min(DEFAULT_PAGE_SIZE, remaining_limit)
+
+        response = client.get_audit_activity(
+            page_size=current_page_size,
+            page_number=page_number,
+            filter_created_dates=[start_date_str, end_date_str],
+            filter_created_selection_mode="Range",
+        )
+
+        fetched_audits = response.get("data", [])
+        if not fetched_audits:
+            break
+
+        for audit in fetched_audits:
+            # Add fields for XSIAM
+            audit["_time"] = audit.get("created")
+            audit["source_log_type"] = "activity_audits"
+            audit["vendor"] = VENDOR
+            audit["product"] = PRODUCT
+
+        fetched_audits_list.extend(fetched_audits)
+        total_fetched_audits += len(fetched_audits)
+
+        # Check if we have more pages
+        # The response has "pageCount" and "totalRecordCount"
+        if page_number >= response.get("pageCount", 0):
+            break
+
+        page_number += 1
+
+    # Store the fetch end time as the next start time to ensure continuous coverage
+    next_run["last_audit_time"] = fetch_end_time.strftime(DATE_FORMAT)
+
+    return next_run, fetched_audits_list
+
+
+def fetch_events(
+    client: Client, last_run: dict, first_fetch: str, max_fetch: int, events_types_to_fetch: list[str]
+) -> tuple[dict, list[dict]]:
+    """Fetches events from the service.
+
+    This is the main orchestrator function that calls the appropriate fetch functions
+    based on the event types configured to fetch.
+
+    Args:
+        client (Client): The client to use.
+        last_run (dict): The last run context.
+        first_fetch (str): The first fetch time.
+        max_fetch (int): The maximum number of events to fetch per event type.
         events_types_to_fetch (list[str]): The types of events to fetch.
 
     Returns:
         tuple[dict, list[dict]]: The next run context and the fetched events.
     """
-    events = []
+    events: list[dict] = []
     next_run = last_run.copy()
 
     # Capture the current time at the start of this fetch cycle
     # This will be used as the start time for the next fetch to ensure no gaps
     fetch_end_time = datetime.now(timezone.utc)
 
-    # Handle Events
+    # Handle Events - max_fetch applies per event type
     if "Events" in events_types_to_fetch:
-        last_event_time_str = last_run.get("last_event_time")
-        if not last_event_time_str:
-            last_event_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
-        else:
-            last_event_time = dateparser.parse(last_event_time_str).replace(tzinfo=timezone.utc)  # type: ignore
-
-        # Format the start date as required by the API: ISO 8601
-        start_date_str = last_event_time.strftime(DATE_FORMAT)
-
-        response = client.get_events(start_date_str, max_fetch)
-        fetched_events = response.get("events", [])
-
-        for event in fetched_events:
-            # Add fields for XSIAM
-            event["_time"] = event.get("created") or event.get("@timestamp")
-            event["source_log_type"] = "events"
-            event["vendor"] = VENDOR
-            event["product"] = PRODUCT
-
+        next_run, fetched_events = fetch_pm_events(client, next_run, first_fetch, max_fetch, fetch_end_time)
         events.extend(fetched_events)
-        # Store the fetch end time as the next start time to ensure continuous coverage
-        next_run["last_event_time"] = fetch_end_time.strftime(DATE_FORMAT)
 
-    # Handle Activity Audits
+    # Handle Activity Audits - max_fetch applies per event type
     if "Activity Audits" in events_types_to_fetch:
-        last_audit_time_str = last_run.get("last_audit_time")
-        if not last_audit_time_str:
-            last_audit_time = dateparser.parse(first_fetch).replace(tzinfo=timezone.utc)  # type: ignore
-        else:
-            last_audit_time = dateparser.parse(last_audit_time_str).replace(tzinfo=timezone.utc)  # type: ignore
-
-        # Activity Audits API uses pagination and filtering.
-        # We fetch from last_audit_time to fetch_end_time to ensure continuous coverage.
-        # The API documentation says "Filter.Created.Dates: array of date-times".
-        # And "Filter.Created.SelectionMode: Range" - this requires two dates for a range.
-
-        start_date_str = last_audit_time.strftime("%Y-%m-%d %H:%M:%S.%f")
-        end_date_str = fetch_end_time.strftime("%Y-%m-%d %H:%M:%S.%f")
-
-        page_number = 1
-        total_fetched_audits = 0
-
-        while True:
-            # Calculate remaining limit for this cycle
-            remaining_limit = max_fetch - total_fetched_audits
-            if remaining_limit <= 0:
-                break
-
-            current_page_size = min(DEFAULT_PAGE_SIZE, remaining_limit)
-
-            response = client.get_audit_activity(
-                page_size=current_page_size,
-                page_number=page_number,
-                filter_created_dates=[start_date_str, end_date_str],
-                filter_created_selection_mode="Range",
-            )
-
-            fetched_audits = response.get("data", [])
-            if not fetched_audits:
-                break
-
-            for audit in fetched_audits:
-                # Add fields for XSIAM
-                audit["_time"] = audit.get("created")
-                audit["source_log_type"] = "activity_audits"
-                audit["vendor"] = VENDOR
-                audit["product"] = PRODUCT
-
-            events.extend(fetched_audits)
-            total_fetched_audits += len(fetched_audits)
-
-            # Check if we have more pages
-            # The response has "pageCount" and "totalRecordCount"
-            if page_number >= response.get("pageCount", 0):
-                break
-
-            page_number += 1
-
-        # Store the fetch end time as the next start time to ensure continuous coverage
-        next_run["last_audit_time"] = fetch_end_time.strftime(DATE_FORMAT)
+        next_run, fetched_audits = fetch_activity_audits(client, next_run, first_fetch, max_fetch, fetch_end_time)
+        events.extend(fetched_audits)
 
     return next_run, events
 
@@ -326,8 +375,8 @@ def main():
     command = demisto.command()
 
     base_url = params.get("url")
-    client_id = params.get("client_id")
-    client_secret = params.get("client_secret")
+    client_id: str = params.get("credentials", {}).get("identifier", "")
+    client_secret: str = params.get("credentials", {}).get("password", "")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -352,16 +401,11 @@ def main():
             next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
 
             # Deduplicate events
-            # We use a dictionary to deduplicate by ID (or hash)
-            # This is important because we might fetch overlapping ranges or the same event in multiple calls
             deduped_events = {get_dedup_key(event): event for event in events}
             final_events = list(deduped_events.values())
 
             # Send events to XSIAM
             send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=final_events)
-
-            # IMPORTANT: Only update last_run AFTER successful event sending
-            # This ensures failed fetches are retried on the next run (state protection)
             demisto.setLastRun(next_run)
 
     except Exception as e:

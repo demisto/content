@@ -1,11 +1,14 @@
 import json
 import pytest
 from freezegun import freeze_time
+from datetime import datetime, UTC
 from BeyondTrustPrivilegeManagementCloud import (
     Client,
     get_events_command,
     get_audit_activity_command,
     fetch_events,
+    fetch_pm_events,
+    fetch_activity_audits,
     get_dedup_key,
 )
 import BeyondTrustPrivilegeManagementCloud
@@ -536,3 +539,113 @@ def test_get_audit_activity_without_filters(client, mocker):
     assert "Pagination.PageSize" in call_params
     assert "Pagination.PageNumber" in call_params
     assert "Filter.Created.Dates" not in call_params
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_pm_events(client, mocker):
+    """
+    Given:
+        - A client object
+        - Last run context
+    When:
+        - fetch_pm_events is called directly
+    Then:
+        - The function should return the next run context and events
+        - Events should have XSIAM fields added
+    """
+    mock_events_response = {
+        "events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}, {"id": "2", "created": "2024-01-01T11:00:00.000Z"}]
+    }
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, events = fetch_pm_events(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(events) == 2
+    assert next_run["last_event_time"] == "2024-01-01T12:00:00.000000Z"
+
+    # Verify XSIAM fields are added
+    for event in events:
+        assert event["source_log_type"] == "events"
+        assert event["vendor"] == "beyondtrust"
+        assert event["product"] == "pm_cloud"
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_activity_audits(client, mocker):
+    """
+    Given:
+        - A client object
+        - Last run context
+    When:
+        - fetch_activity_audits is called directly
+    Then:
+        - The function should return the next run context and audit events
+        - Audit events should have XSIAM fields added
+    """
+    mock_audit_response = {
+        "data": [{"id": 1, "created": "2024-01-01T10:00:00.000Z"}, {"id": 2, "created": "2024-01-01T11:00:00.000Z"}],
+        "pageCount": 1,
+    }
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, events = fetch_activity_audits(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(events) == 2
+    assert next_run["last_audit_time"] == "2024-01-01T12:00:00.000000Z"
+
+    # Verify XSIAM fields are added
+    for event in events:
+        assert event["source_log_type"] == "activity_audits"
+        assert event["vendor"] == "beyondtrust"
+        assert event["product"] == "pm_cloud"
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_events_max_fetch_per_type(client, mocker):
+    """
+    Given:
+        - A client object configured to fetch both Events and Activity Audits
+        - max_fetch limit of 5
+    When:
+        - fetch_events is called
+    Then:
+        - Each event type should get its own max_fetch limit (5 each)
+        - Total events could be up to 10 (5 Events + 5 Activity Audits)
+    """
+    # Mock 5 events
+    mock_events_response = {"events": [{"id": f"event_{i}", "created": f"2024-01-01T10:0{i}:00.000Z"} for i in range(5)]}
+    # Mock 5 audit events
+    mock_audit_response = {"data": [{"id": i, "created": f"2024-01-01T10:0{i}:00.000Z"} for i in range(5)], "pageCount": 1}
+
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 5  # 5 per event type
+    events_types_to_fetch = ["Events", "Activity Audits"]
+
+    next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+
+    # Should have 10 total events (5 Events + 5 Activity Audits)
+    assert len(events) == 10
+
+    # Verify get_events was called with max_fetch=5
+    events_call_args = client.get_events.call_args
+    assert events_call_args[0][1] == 5
+
+    # Count events by type
+    event_count = sum(1 for e in events if e.get("source_log_type") == "events")
+    audit_count = sum(1 for e in events if e.get("source_log_type") == "activity_audits")
+    assert event_count == 5
+    assert audit_count == 5
