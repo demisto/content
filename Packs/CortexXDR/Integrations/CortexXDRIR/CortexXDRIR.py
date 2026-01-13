@@ -425,7 +425,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("DATA", [])
 
-    def delete_api_keys(self, request_data):
+    def delete_api_keys(self, request_data: dict):
         """
         Deletes the specified API keys.
         Args:
@@ -441,17 +441,17 @@ class Client(CoreClient):
             timeout=self.timeout,
         )
 
-    def get_xql_queries(self, request_data):
+    def get_xql_queries(self, request_data: dict):
         """
         Gets a list of XQL queries from the library.
         Args:
             request_data (dict): The request data
         Returns:
-            list: A list of XQL queries.
+            dict: A dict of XQL queries and the queries count.
         """
         res = self._http_request(
             method="POST",
-            url_suffix="../xql_library/get",
+            url_suffix="../xql_library/get",  # The endpoint is without v1
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -468,7 +468,7 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="POST",
-            url_suffix="/xql_library/insert/",
+            url_suffix="../xql_library/insert/",  # The endpoint is without v1
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -486,7 +486,7 @@ class Client(CoreClient):
         request_data = assign_params(xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
         return self._http_request(
             method="POST",
-            url_suffix="/xql_library/delete/",
+            url_suffix="../xql_library/delete/",  # The endpoint is without v1
             json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
@@ -1599,7 +1599,7 @@ def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     xql_query_name = argToList(args.get("xql_query_name", []))
     xql_query_tag = argToList(args.get("xql_query_tag", []))
 
-    request_data = assign_params(extended_view=extra_data, xql_query_name=xql_query_name, xql_query_tag=xql_query_tag)
+    request_data = assign_params(extended_view=extra_data, xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
 
     queries = client.get_xql_queries(request_data)
     xql_queries = queries.get("xql_queries", [])

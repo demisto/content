@@ -3902,10 +3902,10 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: List of XQL query names.
+    - description: An array of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
-    - description: List of XQL query tags.
+    - description: An array of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Gets a list of XQL queries from the library.
