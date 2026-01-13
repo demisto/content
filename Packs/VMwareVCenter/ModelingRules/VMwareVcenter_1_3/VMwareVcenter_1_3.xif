@@ -299,6 +299,7 @@ alter
     process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
     process_name = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+([^\s]+)"), 0)
 | alter
+    xdm.event.tags = arraycreate("VIRTUALIZATION"),
 	xdm.source.process.identifier = process_id,
 	xdm.source.process.name = process_name,
     xdm.event.format = if(_raw_log ~= "^<\d+>1\s", "0", // Matches RFC 5424
