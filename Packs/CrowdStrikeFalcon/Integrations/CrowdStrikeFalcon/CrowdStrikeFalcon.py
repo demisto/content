@@ -2379,7 +2379,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     )
 
 
-def update_ngeism_case_request(id: str, status: str) -> dict:
+def update_ngsiem_case_request(id: str, status: str) -> dict:
     list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
@@ -2683,7 +2683,10 @@ def get_remote_incident_data(remote_incident_id: str):
 
 def get_remote_ngsiem_case_data(remote_case_id: str):
     original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
-    mirrored_case = get_cases_details([original_remote_case_id])[0]
+    mirrored_case_list = get_cases_details([original_remote_case_id])
+    if not mirrored_case_list:
+        raise DemistoException(f"Could not find ngsiem case with {original_remote_case_id=}")
+    mirrored_case = mirrored_case_list[0]
     updated_object = {"incident_type": NGSIEM_CASE}
     set_updated_object(updated_object, mirrored_case, NGSIEM_MIRRORING_FIELDS)
     return mirrored_case, updated_object
@@ -3018,9 +3021,9 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(update_ngeism_case_request(remote_id, "closed"))
+        return str(update_ngsiem_case_request(remote_id, "closed"))
     elif "status" in delta:
-        return str(update_ngeism_case_request(remote_id, delta.get("status")))
+        return str(update_ngsiem_case_request(remote_id, delta.get("status")))
     return ""
 
 

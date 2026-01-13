@@ -8335,25 +8335,25 @@ def test_get_cases_details(mocker):
 
 
 @pytest.mark.parametrize("status, expected_exception", [("new", False), ("invalid_status", True)])
-def test_update_ngeism_case_request(mocker, status, expected_exception):
+def test_update_ngsiem_case_request(mocker, status, expected_exception):
     """
     Given:
         - Case ID and status.
     When:
-        - Running update_ngeism_case_request.
+        - Running update_ngsiem_case_request.
     Then:
         - Verify that the http_request is called with the correct arguments if status is valid.
         - Verify that DemistoException is raised if status is invalid.
     """
-    from CrowdStrikeFalcon import update_ngeism_case_request
+    from CrowdStrikeFalcon import update_ngsiem_case_request
 
     http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request")
 
     if expected_exception:
         with pytest.raises(DemistoException):
-            update_ngeism_case_request("case1", status)
+            update_ngsiem_case_request("case1", status)
     else:
-        update_ngeism_case_request("case1", status)
+        update_ngsiem_case_request("case1", status)
         http_request_mock.assert_called_with(
             "PATCH", "/cases/entities/cases/v2", data=json.dumps({"fields": {"status": status}, "id": "case1"})
         )

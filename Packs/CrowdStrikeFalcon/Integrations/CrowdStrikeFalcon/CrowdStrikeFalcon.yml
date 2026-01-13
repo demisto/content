@@ -156,12 +156,14 @@ configuration:
   section: Collect
   required: false
   advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: NGSIEM cases fetch query
   name: ngsiem_cases_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: NGSIEM incidents fetch query
   name: ngsiem_incidents_fetch_query
   type: 0
