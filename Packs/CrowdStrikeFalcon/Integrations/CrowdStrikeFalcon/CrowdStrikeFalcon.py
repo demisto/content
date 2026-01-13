@@ -3664,14 +3664,12 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
-async def fetch_spotlight_assets_enrichment_async(session: aiohttp.ClientSession, headers: dict, aids: list[str], snapshot_id: str, tasks: list):
+async def fetch_spotlight_assets_host_async(session: aiohttp.ClientSession, headers: dict, aids: list[str], snapshot_id: str, tasks: list):
     url = f"{SERVER}/devices/entities/devices/v2"
-    batch_size = 500
+    batch_size = 5000
 
-    for i in range(0, len(aids), batch_size):
-        batch_aids = aids[i : i + batch_size]
+    async def fetch_and_send_batch(batch_aids):
         payload = {"ids": batch_aids}
-
         try:
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 429:
@@ -3689,13 +3687,13 @@ async def fetch_spotlight_assets_enrichment_async(session: aiohttp.ClientSession
 
                 if response.status != 200:
                     demisto.error(f"Failed to enrich assets batch: {response.status} - {await response.text()}")
-                    continue
+                    return
 
                 data = await response.json()
                 resources = data.get("resources", [])
 
                 if resources:
-                    tasks.append(asyncio.create_task(asyncio.to_thread(
+                    await asyncio.to_thread(
                         send_data_to_xsiam,
                         data=resources,
                         vendor=VENDOR,
@@ -3704,9 +3702,77 @@ async def fetch_spotlight_assets_enrichment_async(session: aiohttp.ClientSession
                         snapshot_id=snapshot_id,
                         items_count=len(resources),
                         multiple_threads=True
-                    )))
+                    )
         except Exception as e:
             demisto.error(f"Error enriching assets batch: {e}")
+
+    for i in range(0, len(aids), batch_size):
+        batch_aids = aids[i : i + batch_size]
+        tasks.append(asyncio.create_task(fetch_and_send_batch(batch_aids)))
+
+
+async def fetch_spotlight_assets_vulnerabilities_async(session: aiohttp.ClientSession, headers: dict, snapshot_id: str, tasks: list) -> set[str]:
+    url = f"{SERVER}/spotlight/combined/vulnerabilities/v1"
+    limit = 5000
+    params = {
+        "limit": limit,
+        "filter": "status:['open', 'reopen']",
+        "facet": "cve"
+    }
+    
+    aids = set()
+    
+    while True:
+        try:
+            async with session.get(url, params=params, headers=headers) as response:
+                if response.status == 429:
+                    demisto.debug("Rate limit reached, sleeping for 5 seconds.")
+                    await asyncio.sleep(5)
+                    continue
+                
+                if response.status == 401:
+                    demisto.info("Token expired during vulnerability fetch, refreshing...")
+                    new_token = await asyncio.to_thread(get_token, new_token=True)
+                    headers["Authorization"] = f"Bearer {new_token}"
+                    continue
+
+                if response.status != 200:
+                    demisto.error(f"Failed to fetch vulnerabilities: {response.status} - {await response.text()}")
+                    break
+                    
+                data = await response.json()
+                resources = data.get("resources", [])
+                
+                if resources:
+                    tasks.append(asyncio.create_task(asyncio.to_thread(
+                        send_data_to_xsiam,
+                        data=resources,
+                        vendor=VENDOR,
+                        product="spotlight_vulnerabilities",
+                        data_type="assets",
+                        snapshot_id=snapshot_id,
+                        items_count=len(resources),
+                        multiple_threads=True
+                    )))
+                    
+                    for item in resources:
+                        if aid := item.get("aid"):
+                            aids.add(aid)
+                            
+                meta = data.get("meta", {})
+                pagination = meta.get("pagination", {})
+                after = pagination.get("after")
+                
+                if not after:
+                    break
+                    
+                params["after"] = after
+                
+        except Exception as e:
+            demisto.error(f"Error in vulnerability fetch loop: {e}")
+            break
+            
+    return aids
 
 
 async def fetch_spotlight_assets_async():
@@ -3722,73 +3788,16 @@ async def fetch_spotlight_assets_async():
         "Authorization": f"Bearer {get_token()}",
     }
     
-    url = f"{SERVER}/spotlight/combined/vulnerabilities/v1"
-    limit = 5000
-    params = {
-        "limit": limit,
-        "filter": "status:['open', 'reopen']",
-        "facet": "cve"
-    }
-    
     tasks = []
-    aids = set()
     
     async with aiohttp.ClientSession() as session:
-        while True:
-            try:
-                async with session.get(url, params=params, headers=headers) as response:
-                    if response.status == 429:
-                        demisto.debug("Rate limit reached, sleeping for 5 seconds.")
-                        await asyncio.sleep(5)
-                        continue
-                    
-                    if response.status == 401:
-                        demisto.info("Token expired during vulnerability fetch, refreshing...")
-                        new_token = await asyncio.to_thread(get_token, new_token=True)
-                        headers["Authorization"] = f"Bearer {new_token}"
-                        continue
-
-                    if response.status != 200:
-                        demisto.error(f"Failed to fetch vulnerabilities: {response.status} - {await response.text()}")
-                        break
-                        
-                    data = await response.json()
-                    resources = data.get("resources", [])
-                    
-                    if resources:
-                        tasks.append(asyncio.create_task(asyncio.to_thread(
-                            send_data_to_xsiam,
-                            data=resources,
-                            vendor=VENDOR,
-                            product="spotlight_vulnerabilities",
-                            data_type="assets",
-                            snapshot_id=snapshot_id,
-                            items_count=len(resources),
-                            multiple_threads=True
-                        )))
-                        
-                        for item in resources:
-                            if aid := item.get("aid"):
-                                aids.add(aid)
-                                
-                    meta = data.get("meta", {})
-                    pagination = meta.get("pagination", {})
-                    after = pagination.get("after")
-                    
-                    if not after:
-                        break
-                        
-                    params["after"] = after
-                    
-            except Exception as e:
-                demisto.error(f"Error in vulnerability fetch loop: {e}")
-                break
+        aids = await fetch_spotlight_assets_vulnerabilities_async(session, headers, snapshot_id, tasks)
         
         if aids:
-            await fetch_spotlight_assets_enrichment_async(session, headers, list(aids), snapshot_id, tasks)
+            await fetch_spotlight_assets_host_async(session, headers, list(aids), snapshot_id, tasks)
 
-    if tasks:
-        await asyncio.gather(*tasks)
+        if tasks:
+            await asyncio.gather(*tasks)
         
     spotlight_last_run["last_fetch_timestamp"] = datetime.now().strftime(DATE_FORMAT)
 
