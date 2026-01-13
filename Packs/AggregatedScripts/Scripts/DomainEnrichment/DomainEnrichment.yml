@@ -52,7 +52,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'Enriches Domain indicators with reputation data from multiple integrations and outputs a consolidated DomainEnrichment object. This script exclusively supports indicators of type Domain and will automatically create the indicator in the TIM if it is not already present.'
+comment: 'Enriches Domain indicators with reputation data from multiple integrations and outputs a consolidated DomainEnrichment object. This script exclusively supports indicators of type Domain and will automatically create the indicator in TIM if it is not already present.'
 commonfields:
   id: domain-enrichment
   version: -1
