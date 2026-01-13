@@ -129,6 +129,7 @@ class GraphPermissions(str, Enum):
     CHANNEL_CREATE = "Channel.Create"
     CHANNELMEMBER_READ_ALL = "ChannelMember.Read.All"
     CHANNELMEMBER_READWRITE_ALL = "ChannelMember.ReadWrite.All"
+    CHANNELMESSAGE_READ_ALL = "ChannelMessage.Read.All"
     CHANNELMESSAGE_SEND = "ChannelMessage.Send"
     CHAT_READ = "Chat.Read"
     CHAT_READBASIC = "Chat.ReadBasic"
@@ -204,6 +205,11 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ],
+        "microsoft-teams-list-messages": [
+            Perms.USER_READ_ALL,
+            Perms.CHAT_READ,
+            Perms.CHANNELMESSAGE_READ_ALL,
+        ],
         "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -255,6 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
+        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -1512,6 +1519,20 @@ def get_messages_list(chat_id: str, odata_params: dict) -> dict[str, Any]:
     return cast(dict[str, Any], http_request("GET", url, params=odata_params))
 
 
+def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict, message_id: str = "") -> dict[str, Any]:
+    """
+    Retrieve the list of messages in a channel.
+    :param team_id: The team_id
+    :param channel_id: The channel_id
+    :param odata_params: The OData query parameters.
+    :return: The response body - collection of chatMessage objects.
+    """
+    url = f"{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/messages"
+    if message_id:
+        url = f"{url}/{message_id}/replies"
+    return cast(dict[str, Any], http_request("GET", url, params=odata_params))
+
+
 def get_chat_members(chat_id: str) -> list[dict[str, Any]]:
     """
     Retrieves chat members given a chat
@@ -1894,6 +1915,74 @@ def chat_message_list_command():
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
             "MicrosoftTeams.ChatListMetadata": {"returned_results": len(messages_data), "filtered_results": limit},
+        },
+    )
+    return_results(result)
+
+
+def list_messages_command():
+    """
+    Retrieve the list of messages in a chat or channel.
+    """
+    args = demisto.args()
+    chat_or_channel = args.get("chat_id", "")
+    team_name = args.get("team", "")
+    message_id = args.get("message_id", "")
+    if team_name:
+        team_id = get_team_aad_id(team_name)
+        
+    next_link = args.get("next_link", "")
+
+    limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
+    top = min(MAX_ITEMS_PER_RESPONSE, limit)
+
+    if next_link:
+        messages_list_response: dict = cast(dict[str, Any], http_request("GET", next_link))
+    else:
+        try:
+            # Try to get messages from chat
+            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+            messages_list_response = get_messages_list(
+                chat_id=chat_id,
+                odata_params={"$orderBy": args.get("order_by", "lastModifiedDateTime") + " desc", "$top": top},
+            )
+        except Exception as e:
+            demisto.debug(f"Failed to get messages from chat: {e}")
+            # If failed, try to get messages from channel
+            if not team_id:
+                raise ValueError(
+                    "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team'."
+                )
+            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+            messages_list_response = get_channel_messages_list(
+                team_id=team_id,
+                channel_id=channel_id,
+                odata_params={"$top": top},
+                message_id=message_id,
+            )
+
+    messages_data, next_link = pages_puller(messages_list_response, limit)
+
+    hr = [get_message_human_readable(message) for message in messages_data]
+    result = CommandResults(
+        readable_output=tableToMarkdown(
+            f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True
+        )
+        + (
+            f"\nThere are more results than shown. "
+            f"For more data please enter the next_link argument:\n "
+            f"next_link={next_link}"
+            if next_link
+            else ""
+        ),
+        outputs_key_field="chatId",
+        outputs={
+            "MicrosoftTeams(true)": {"MessagesListNextLink": next_link},
+            "MicrosoftTeams.MessagesList(val.chatId && val.chatId === obj.chatId)": {
+                "messages": messages_data,
+                "chatId": chat_or_channel,
+            },
+            "MicrosoftTeams.MessagesListMetadata": {"returned_results": len(messages_data), "filtered_results": limit},
         },
     )
     return_results(result)
@@ -3605,6 +3694,7 @@ def main():  # pragma: no cover
         "microsoft-teams-chat-list": chat_list_command,
         "microsoft-teams-chat-member-list": chat_member_list_command,
         "microsoft-teams-chat-message-list": chat_message_list_command,
+        "microsoft-teams-list-messages": list_messages_command,
         "microsoft-teams-chat-update": chat_update_command,
     }
 
