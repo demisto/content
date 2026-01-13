@@ -25,6 +25,17 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Data residency
+  name: region
+  type: 15
+  required: false
+  hidden: true
+  additionalinfo: Deprecated. Data residency field has been removed in favor of automatic routing.
+  options:
+  - US
+  - EU
+  defaultvalue: US
+  section: Connect
 - display: Create an incident per CSV record
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.
   name: duplicate_alert
