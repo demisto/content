@@ -82,7 +82,6 @@ def main():
     github_token = options.github_token
     print(f"Checking PR {pr_number}")
     
-    # 1. Initialize PyGithub
     g = Github(github_token, verify=False)
     repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
     pr = repo.get_pull(int(pr_number))
