@@ -17,6 +17,13 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: Analytics Name
+  name: analytics_name
+  required: true
+  type: 0
+  section: Collect
+  defaultvalue: SIEMAuditLogs
+  additionalinfo: The name of the Analytics Runtime Control to fetch events from. This value must match an existing Analytics Record configured in Saviynt.
 - defaultvalue: '30000'
   section: Collect
   display: Maximum number of events per fetch

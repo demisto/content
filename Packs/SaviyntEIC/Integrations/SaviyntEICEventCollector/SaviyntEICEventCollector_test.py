@@ -3,6 +3,7 @@ from datetime import datetime, UTC
 import pytest
 from freezegun import freeze_time
 from SaviyntEICEventCollector import (
+    DEFAULT_ANALYTICS_NAME,
     DEFAULT_FETCH_TIME_FRAME_MINUTES,
     LAST_RUN_EVENT_HASHES,
     LAST_RUN_TIMESTAMP,
@@ -217,7 +218,7 @@ class TestClientBehavior:
 
         # Spy on obtain_token to ensure force_refresh=True used on retry
         # We already patched obtain_token above; use that mock
-        client.fetch_events(analytics_name="SIEMAuditLogs", time_frame_minutes=1, max_results=1, offset=None)
+        client.fetch_events(analytics_name=DEFAULT_ANALYTICS_NAME, time_frame_minutes=1, max_results=1, offset=None)
         obtain_mock.assert_called_once()
         # Verify force_refresh=True in call kwargs if provided
         called_kwargs = obtain_mock.call_args.kwargs if obtain_mock.call_args else {}
@@ -297,6 +298,7 @@ class TestFetchUseCases:
             last_run={},
             max_events=max_events,
             time_frame_minutes=None,
+            analytics_name=DEFAULT_ANALYTICS_NAME,
         )
 
         assert len(events) == expected_count
@@ -347,7 +349,7 @@ class TestConcurrentPaging:
 
         results = _fetch_analytics_pages_concurrently(
             client=client,
-            analytics_name="SIEMAuditLogs",
+            analytics_name=DEFAULT_ANALYTICS_NAME,
             effective_time_frame_minutes=60,
             overall_max_events=overall_max_events,
             page_size=page_size,
@@ -385,7 +387,7 @@ class TestConcurrentPaging:
 
         results = _fetch_analytics_pages_concurrently(
             client=client,
-            analytics_name="SIEMAuditLogs",
+            analytics_name=DEFAULT_ANALYTICS_NAME,
             effective_time_frame_minutes=60,
             overall_max_events=50000,
             page_size=10000,
@@ -424,7 +426,7 @@ class TestConcurrentPaging:
 
         results = _fetch_analytics_pages_concurrently(
             client=client,
-            analytics_name="SIEMAuditLogs",
+            analytics_name=DEFAULT_ANALYTICS_NAME,
             effective_time_frame_minutes=60,
             overall_max_events=30000,
             page_size=10000,
