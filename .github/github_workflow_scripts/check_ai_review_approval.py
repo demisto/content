@@ -34,7 +34,7 @@ def get_pr_query_string():
           labels(first: 20) {
             nodes { name }
           }
-          reviews(first: 1, after: $cursor) {
+          reviews(first: 50, after: $cursor) {
             pageInfo {
               hasNextPage
               endCursor
@@ -73,7 +73,7 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
     }
     
     all_reviews = []
-    final_pr_data = {}
+    final_pr_data = {"reviews": {"nodes": {}}}
     has_next_page = True
 
     try:
@@ -87,6 +87,7 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
             response.raise_for_status()
             data = response.json()
 
+            # Navigate the response structure
             repository = data.get("data", {}).get("repository", {})
             if not repository:
                 raise ValueError(f"Repository {owner}/{repo} not found or access denied.")
@@ -95,6 +96,11 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
             if not pr_data:
                 raise ValueError(f"Could not find PR {pr_number} in {owner}/{repo}")
 
+            # On the first pass, capture the base PR data (like labels)
+            if final_pr_data is None:
+                final_pr_data = pr_data
+
+            # Extract reviews and pagination info
             reviews_data = pr_data.get("reviews", {})
             new_reviews = reviews_data.get("nodes", [])
             all_reviews.extend(new_reviews)
@@ -102,13 +108,15 @@ def fetch_pr_data(owner: str, repo: str, pr_number: int, token: str) -> dict:
             page_info = reviews_data.get("pageInfo", {})
             has_next_page = page_info.get("hasNextPage", False)
             
+            # Update cursor for the next iteration
             variables["cursor"] = page_info.get("endCursor")
 
+        # Overwrite the reviews in the final object with the complete list
+        # We perform a shallow copy or direct assignment to structurally match the original return format
         final_pr_data["reviews"]["nodes"] = all_reviews
         
-        final_pr_data["reviews"].pop("pageInfo", None)
-        
-        print(final_pr_data)
+        # Clean up pagination info from the final output if you want it to look like the original non-paginated structure
+        # (Optional) final_pr_data["reviews"].pop("pageInfo", None)
 
         return final_pr_data
 
