@@ -61,7 +61,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.13",
+            "X-Integration-Version": "1.2.0",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=self._headers)
 
@@ -146,11 +146,8 @@ class Client(BaseClient):
                 "closure_reason_description": closure_reason_description,
             },
         }
-        demisto.info(f"[Cyberint Mirror] update_alerts body BEFORE remove_empty_elements: {body}")
         body = remove_empty_elements(body)
-        demisto.info(f"[Cyberint Mirror] update_alerts body AFTER remove_empty_elements: {body}")
         response = self._http_request(method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status")
-        demisto.info(f"[Cyberint Mirror] update_alerts raw response: {response}")
         return response
 
     def get_csv_file(self, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> Iterable[str]:
@@ -642,8 +639,6 @@ def update_remote_system(
     parsed_args = UpdateRemoteSystemArgs(args)
 
     incident_id = parsed_args.remote_incident_id
-    inc_status = parsed_args.inc_status  # XSOAR incident status (2 = Done/Closed)
-    incident_data = parsed_args.data or {}  # Full incident data from XSOAR
 
     demisto.debug(
         f"******** Got the following delta keys {list(parsed_args.delta.keys())!s}"
@@ -658,48 +653,23 @@ def update_remote_system(
             update_args = parsed_args.delta
             demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
-            updated_arguments: dict[str, Any] = {}
-
-            # Check if status is in the delta (from the outgoing mapper)
-            delta_status = update_args.get("status")
-
-            # Check if XSOAR incident was closed (status 2 = Done)
-            xsoar_incident_closed = inc_status == 2
-
-            # Helper to resolve closure reason from multiple sources
-            def get_closure_reason() -> str:
-                reason = (
-                    update_args.get("closure_reason")
-                    or incident_data.get("closure_reason")
-                    or incident_data.get("cyberintclosurereason")
+            updated_arguments = {}
+            if updated_status := update_args.get("status"):
+                closure_reason = update_args.get("closure_reason", "other")
+                closure_reason_description = update_args.get(
+                    "closure_reason_description", "user wasn't specified closure reason when closed alert"
                 )
-                return reason or "other"
-
-            if delta_status:
-                # Status change came through the mapper
-                if delta_status == "closed":
-                    updated_arguments["status"] = "closed"
-                    updated_arguments["closure_reason"] = get_closure_reason()
-                    updated_arguments["closure_reason_description"] = "Closed from XSOAR"
+                if updated_status != "closed":
+                    updated_arguments["status"] = updated_status
                 else:
-                    updated_arguments["status"] = delta_status
-            elif xsoar_incident_closed:
-                # XSOAR incident was closed via native close dialog
-                updated_arguments["status"] = "closed"
-                updated_arguments["closure_reason"] = get_closure_reason()
-                updated_arguments["closure_reason_description"] = "Closed from XSOAR"
+                    updated_arguments["status"] = updated_status
+                    updated_arguments["closure_reason"] = closure_reason
+                    updated_arguments["closure_reason_description"] = closure_reason_description
             else:
-                # No status change, fetch current status from Cyberint to avoid unnecessary updates
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
                 cyberint_alert: dict[str, Any] = cyberint_response["alert"]
                 cyberint_status = cyberint_alert.get("status")
                 updated_arguments["status"] = cyberint_status
-                # If status is closed, include closure reason from the remote alert
-                if cyberint_status == "closed":
-                    updated_arguments["closure_reason"] = cyberint_alert.get("closure_reason", "other")
-                    updated_arguments["closure_reason_description"] = cyberint_alert.get(
-                        "closure_reason_description", "Closed from Cyberint"
-                    )
 
             updated_arguments["alerts"] = [incident_id]
 
