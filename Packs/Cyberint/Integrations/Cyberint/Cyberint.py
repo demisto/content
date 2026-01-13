@@ -645,14 +645,18 @@ def update_remote_system(
     inc_status = parsed_args.inc_status  # XSOAR incident status (2 = Done/Closed)
     incident_data = parsed_args.data or {}  # Full incident data from XSOAR
 
-    demisto.info(f"[Cyberint Mirror] update_remote_system called for incident: {incident_id}")
-    demisto.info(f"[Cyberint Mirror] inc_status={inc_status}, incident_changed={parsed_args.incident_changed}")
-    demisto.info(f"[Cyberint Mirror] Delta: {parsed_args.delta}")
-    demisto.info(f"[Cyberint Mirror] incident_data keys: {list(incident_data.keys())}")
+    demisto.debug(
+        f"******** Got the following delta keys {list(parsed_args.delta.keys())!s}"
+        if parsed_args.delta
+        else "******** There is no delta fields in Cyberint"
+    )
 
     try:
         if parsed_args.incident_changed:
+            demisto.debug(f"******** Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}")
+
             update_args = parsed_args.delta
+            demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
             updated_arguments: dict[str, Any] = {}
 
@@ -662,48 +666,28 @@ def update_remote_system(
             # Check if XSOAR incident was closed (status 2 = Done)
             xsoar_incident_closed = inc_status == 2
 
-            demisto.info(f"[Cyberint Mirror] delta_status={delta_status}, xsoar_incident_closed={xsoar_incident_closed}")
-
             # Helper to resolve closure reason from multiple sources
             def get_closure_reason() -> str:
-                # Priority: delta -> incident_data (mapped) -> incident_data (XSOAR native) -> default
                 reason = (
                     update_args.get("closure_reason")
                     or incident_data.get("closure_reason")
                     or incident_data.get("cyberintclosurereason")
-                    or incident_data.get("closeReason")  # XSOAR native close reason
                 )
-                demisto.info(f"[Cyberint Mirror] closure_reason resolution: "
-                             f"delta={update_args.get('closure_reason')}, "
-                             f"incident_data.closure_reason={incident_data.get('closure_reason')}, "
-                             f"incident_data.cyberintclosurereason={incident_data.get('cyberintclosurereason')}, "
-                             f"incident_data.closeReason={incident_data.get('closeReason')}, "
-                             f"resolved={reason or 'other'}")
                 return reason or "other"
-
-            def get_closure_reason_description() -> str:
-                # Priority: delta -> incident_data (mapped) -> incident_data (XSOAR native) -> default
-                desc = (
-                    update_args.get("closure_reason_description")
-                    or incident_data.get("closure_reason_description")
-                    or incident_data.get("cyberintclosurereasondescription")
-                    or incident_data.get("closeNotes")  # XSOAR native close notes
-                )
-                return desc or "Closed from XSOAR"
 
             if delta_status:
                 # Status change came through the mapper
                 if delta_status == "closed":
                     updated_arguments["status"] = "closed"
                     updated_arguments["closure_reason"] = get_closure_reason()
-                    updated_arguments["closure_reason_description"] = get_closure_reason_description()
+                    updated_arguments["closure_reason_description"] = "Closed from XSOAR"
                 else:
                     updated_arguments["status"] = delta_status
             elif xsoar_incident_closed:
                 # XSOAR incident was closed via native close dialog
                 updated_arguments["status"] = "closed"
                 updated_arguments["closure_reason"] = get_closure_reason()
-                updated_arguments["closure_reason_description"] = get_closure_reason_description()
+                updated_arguments["closure_reason_description"] = "Closed from XSOAR"
             else:
                 # No status change, fetch current status from Cyberint to avoid unnecessary updates
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
@@ -719,12 +703,11 @@ def update_remote_system(
 
             updated_arguments["alerts"] = [incident_id]
 
-            demisto.info(f"[Cyberint Mirror] UPDATING remote alert [{incident_id}] with: {updated_arguments}")
+            demisto.debug(f"******** Remote ID [{incident_id}] to Cyberint. {updated_arguments=}|| {update_args=}")
 
-            response = client.update_alerts(**updated_arguments)
-            demisto.info(f"[Cyberint Mirror] API response: {response}")
+            client.update_alerts(**updated_arguments)
 
-        demisto.debug(f"[Cyberint Mirror] Remote data of {incident_id}: {incident_data}")
+        demisto.debug(f"******** Remote data of {incident_id}: {parsed_args.data}")
 
     except Exception as error:
         demisto.error(f"Error in Cyberint outgoing mirror for incident {incident_id}\nError message: {error}")
