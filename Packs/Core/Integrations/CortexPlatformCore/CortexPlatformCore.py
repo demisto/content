@@ -4125,8 +4125,9 @@ def visualize_case_grouping_graph(data):
             iid = node.get('data', {}).get('ISSUE_DATA', {}).get('id', node_id.replace('ISSUE', ''))
             cat = node.get('data', {}).get('ISSUE_DATA', {}).get('category', '')[:8]
             sev = node.get('data', {}).get('ISSUE_DATA', {}).get('severity', '')
+            name = node.get('data', {}).get('ISSUE_DATA', {}).get('name', '')
             sev_short = 'H' if 'HIGH' in sev else 'M' if 'MEDIUM' in sev else 'L' if 'LOW' in sev else '?'
-            return f"I{iid}[{sev_short}]{cat}"
+            return f"I{name}{iid}[{sev_short}]{cat}"
         elif ntype == 'ARTIFACT':
             return node.get('data', {}).get('pretty_name', 'Artifact')[:15]
         elif ntype == 'ASSET':
@@ -4414,7 +4415,7 @@ def get_case_grouping_graph(client, args):
             f'Case {case_id} Grouping Graph',
             processed_data.get('summary'),
             headers=['total_nodes', 'total_links', 'cluster_count', 'clustered_issues']
-        )
+        ) + "\n\n" + processed_data.get('visual_representation')
     )
 
 def main():  # pragma: no cover
