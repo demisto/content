@@ -30,7 +30,7 @@ def test_instance_info(mocker):
         "integration_instance": "fake-integration",
     }
     result = ec2_instance_info(**args)
-    assert result == ("eni-00000000000000000", ["sg-00000000000000000"])
+    assert result == ("eni-00000000000000000", ["sg-00000000000000000"], "AWS")
 
 
 def test_identify_sgs(mocker):
@@ -47,7 +47,7 @@ def test_identify_sgs(mocker):
     from AWSIdentifySGPublicExposure import identify_sgs
 
     mocker.patch.object(
-        AWSIdentifySGPublicExposure, "ec2_instance_info", return_value=("eni-00000000000000000", ["sg-00000000000000000"])
+        AWSIdentifySGPublicExposure, "ec2_instance_info", return_value=("eni-00000000000000000", ["sg-00000000000000000"], "fake-integration")
     )
     args = {
         "account_id": "000000000000",
@@ -62,6 +62,7 @@ def test_identify_sgs(mocker):
         "NetworkInterfaceID": "eni-00000000000000000",
         "PublicIP": "1.1.1.1",
         "SecurityGroups": ["sg-00000000000000000"],
+        "IntegrationInstance": "fake-integration",
     }
     assert result.readable_output == (
         "EC2 instance fake-instance-id has public IP 1.1.1.1 on ENI eni-00000000000000000: "

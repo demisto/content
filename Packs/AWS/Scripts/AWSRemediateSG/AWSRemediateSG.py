@@ -283,7 +283,7 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
         if isError(new_sg):
             raise DemistoException(
                 f"Error on creating new security group with command 'aws-ec2-security-group-create'.\n"
-                f"Error: {json.dumps(new_sg)}"
+                f"Error: {json.dumps(new_sg[0]['Contents'])}"
             )
 
         new_id = dict_safe_get(new_sg, (0, "Contents", "GroupId"))
@@ -305,7 +305,7 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
             if isError(create_tags_result):
                 raise DemistoException(
                     f"Error on creating tags for new security group with command 'aws-ec2-tags-create'.\n"
-                    f"Error: {json.dumps(create_tags_result)}"
+                    f"Error: {json.dumps(create_tags_result[0]['Contents'])}"
                 )
 
     for item in recreate_list:
@@ -324,7 +324,7 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
             else:
                 raise DemistoException(
                     f"Error on adding security group ingress rules to new security group with command "
-                    f"'aws-ec2-security-group-ingress-authorize'.\nError: {json.dumps(new_ingress_rule_res)}"
+                    f"'aws-ec2-security-group-ingress-authorize'.\nError: {json.dumps(new_ingress_rule_res[0]['Contents'])}"
                 )
 
     # Check if there was a rule for `all traffic` (added by default), but break if it is the only egress rule.
@@ -350,7 +350,7 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
             else:
                 raise DemistoException(
                     f"Error on adding security group egress rules to new security group with command "
-                    f"'aws-ec2-security-group-egress-authorize'.\nError: {json.dumps(new_egress_rule_res)}"
+                    f"'aws-ec2-security-group-egress-authorize'.\nError: {json.dumps(new_egress_rule_res[0]['Contents'])}"
                 )
 
     # If `all traffic` rule before, remove the default one.
@@ -407,7 +407,7 @@ def fix_excessive_access(
         if isError(sg_info):
             raise DemistoException(
                 f"Error on describing security group with command 'aws-ec2-security-groups-describe'.\n"
-                f"Error: {json.dumps(sg_info)}"
+                f"Error: {json.dumps(sg_info[0]['Contents'])}"
             )
         elif sg_info:
             res = sg_fix(account_id, sg_info, port, protocol, integration_instance, region)
@@ -418,6 +418,49 @@ def fix_excessive_access(
     return replace_list
 
 
+def identify_integration_instance(account_id: str, sg: str, region: str) -> str:
+    """
+    Runs command 'aws-ec2-security-groups-describe' to identify the AWS integration instance can be used.
+
+    Args:
+        account_id (str): AWS Account ID
+        sg (str): The ID of a single Security Group to check
+        region (str): AWS Region where the Security Group is located
+
+    Returns:
+        str: The name of the AWS integration instance that can be used to interact with the specified Security Group
+
+    Raises:
+        DemistoException: If there's an error describing the security group
+    """    
+    cmd_args = {"group_ids": sg, "account_id": account_id, "region": region}
+    result = demisto.executeCommand("aws-ec2-security-groups-describe", cmd_args)
+
+    sg_info = []
+
+    if result and len(result) > 1:
+        # If multiple entries were returned, such as when multiple AWS integration instances are configured,
+        # Identify the first entry with valid results.
+        for entry in result:
+            if not isError(entry):
+                sg_info = [entry]
+                break
+        else:
+            # If all entries are errors, use the first entry
+            sg_info = [result[0]]
+    else:
+        sg_info = result
+
+    if isError(sg_info) or not sg_info:
+        raise DemistoException(
+            f"Error retrieving security group details with command 'aws-ec2-security-groups-describe'.\n"
+            f"Error: {json.dumps(sg_info[0]['Contents'])}"
+        )
+
+    instance_to_use = dict_safe_get(sg_info, (0, "Metadata", "instance"))
+    return instance_to_use
+
+    
 def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
     """
     Main command function to remediate overly permissive security group rules.
@@ -448,8 +491,11 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
     region = args.get("region", "")
     integration_instance = args.get("integration_instance", "")
 
-    if not account_id or not sg_list or not port or not protocol or not integration_instance:
-        raise ValueError("account_id, sg_list, instance_id, port, protocol, and integration_instance all need to be specified")
+    if not account_id or not sg_list or not port or not protocol:
+        raise ValueError("account_id, sg_list, instance_id, port, and protocol all need to be specified")
+
+    if not integration_instance:
+        integration_instance = identify_integration_instance(account_id, sg_list[0], region)
 
     replace_list = fix_excessive_access(account_id, sg_list, port, protocol, integration_instance, region)
 

@@ -47,7 +47,6 @@ args:
   - sa-east-1
 - description: The AWS Integration Instance to use.
   name: integration_instance
-  required: true
 comment: Automation to determine which interface on an EC2 instance has a given public IP and identify associated security groups.
 commonfields:
   id: AWSIdentifySGPublicExposure
@@ -80,4 +79,7 @@ outputs:
   type: unknown
 - contextPath: AWSPublicExposure.PublicIP
   description: Public IP address exposed.
+  type: string
+- contextPath: AWSPublicExposure.IntegrationInstance
+  description: The AWS Integration Instance used for identification.
   type: string

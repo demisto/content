@@ -7,7 +7,7 @@ import traceback
 
 def ec2_instance_info(
     account_id: str, instance_id: str, public_ip: str, region: str, integration_instance: str
-) -> tuple[str, list]:
+) -> tuple[str, list, str]:
     """
     Finds interface with public_ip and from this creates interface ID/SG mapping
 
@@ -19,21 +19,44 @@ def ec2_instance_info(
         integration_instance (str): The AWS Integration Instance to use
 
     Returns:
-        tuple: A tuple containing the identified network interface and a list of its security groups
+        tuple: A tuple containing:
+            - The identified network interface
+            - List of its security groups
+            - The AWS integration instance used to retrieve the information
     """
-    cmd_args = {"instance_ids": instance_id}
-    cmd_args.update({"region": region})
-    cmd_args.update({"account_id": account_id})
-    cmd_args.update({"using": integration_instance})
+    cmd_args = {
+        "instance_ids": instance_id,
+        "region": region,
+        "account_id": account_id,
+        "using": integration_instance if integration_instance else None
+    }
 
-    instance_info = demisto.executeCommand("aws-ec2-instances-describe", cmd_args)
+    result = demisto.executeCommand("aws-ec2-instances-describe", cmd_args)
+    
+    instance_info = {}
+    
+    if result and len(result) > 1:
+        # If multiple entries were returned, such as when multiple AWS integration instances are configured,
+        # Identify the first entry with valid results.
+        for entry in result:
+            if not isError(entry):
+                instance_info = [entry]
+                break
+        else:
+            # If all entries are errors, use the first entry
+            instance_info = [result[0]]
+    else:
+        instance_info = result
 
-    interfaces = dict_safe_get(instance_info, (0, "Contents", "Reservations", 0, "Instances", 0, "NetworkInterfaces"))
-    if isError(instance_info):
+    if isError(instance_info) or not instance_info:
         raise DemistoException(
             f"Error retrieving instance network interface details with command 'aws-ec2-instances-describe'.\n"
-            f"Error: {json.dumps(instance_info)}"
+            f"Error: {json.dumps(instance_info[0]['Contents'])}"
         )
+
+    interfaces = dict_safe_get(instance_info, (0, "Contents", "Reservations", 0, "Instances", 0, "NetworkInterfaces"))
+    instance_to_use = dict_safe_get(instance_info, (0, "Metadata", "instance"))
+
 
     if interfaces:
         for interface in interfaces:
@@ -41,7 +64,7 @@ def ec2_instance_info(
                 group_list = []
                 for sg in interface["Groups"]:
                     group_list.append(sg["GroupId"])
-                return interface["NetworkInterfaceId"], group_list
+                return interface["NetworkInterfaceId"], group_list, instance_to_use
 
     # Raise an error if no interface was found with the given public IP
     raise ValueError("Unable to find interface associated with the given public IP address.")
@@ -68,10 +91,10 @@ def identify_sgs(args: dict[str, Any]) -> CommandResults:
     region = args.get("region", "")
     integration_instance = args.get("integration_instance", "")
 
-    if not account_id or not instance_id or not public_ip or not integration_instance:
-        raise ValueError("instance_id, port, protocol, public_ip, and integration_instance all need to be specified")
+    if not account_id or not instance_id or not public_ip:
+        raise ValueError("instance_id, port, protocol, and public_ip all need to be specified")
 
-    ec2_interface, sg_list = ec2_instance_info(account_id, instance_id, public_ip, region, integration_instance)
+    ec2_interface, sg_list, instance_to_use = ec2_instance_info(account_id, instance_id, public_ip, region, integration_instance)
 
     readable_output = (
         f"EC2 instance {instance_id} has public IP {public_ip} on ENI {ec2_interface}: \r\n"
@@ -86,6 +109,7 @@ def identify_sgs(args: dict[str, Any]) -> CommandResults:
             "NetworkInterfaceID": ec2_interface,
             "PublicIP": public_ip,
             "SecurityGroups": sg_list,
+            "IntegrationInstance": instance_to_use,
         },
         outputs_prefix="AWSPublicExposure.SGAssociations",
     )
