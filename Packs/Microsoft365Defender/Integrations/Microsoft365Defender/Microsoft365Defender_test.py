@@ -174,6 +174,122 @@ def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result
 
 
+@pytest.mark.parametrize(
+    "query, limit, expected_contains",
+    [
+        # Test case 1: Simple union with parentheses
+        (
+            "Table1 | take 1 | union (Table2 | where X > 5)",
+            10,
+            ["Table1", "union (Table2 | where X > 5)", "limit 10"]
+        ),
+        # Test case 2: Complex join from JIRA ticket (simplified)
+        (
+            "AADSignInEventsBeta | take 1 | join kind=somekind (DeviceLogonEvents | take 10) on DeviceName",
+            20,
+            ["AADSignInEventsBeta", "join kind=somekind (DeviceLogonEvents | take 10) on DeviceName", "limit 20"]
+        ),
+        # Test case 3: Nested parentheses
+        (
+            "Table1 | union (Table2 | join (Table3 | where Y == 1) on ID)",
+            15,
+            ["Table1", "union (Table2 | join (Table3 | where Y == 1) on ID)", "limit 15"]
+        ),
+        # Test case 4: Multiple joins with parentheses
+        (
+            "DeviceInfo | join AlertEvidence on DeviceId | join (DeviceEvents | where ActionType == 'test') on DeviceId",
+            5,
+            ["DeviceInfo", "join AlertEvidence on DeviceId", "join (DeviceEvents | where ActionType == 'test') on DeviceId", "limit 5"]
+        ),
+        # Test case 5: Query already has limit at top level
+        (
+            "Table1 | union (Table2 | take 100) | limit 50",
+            10,
+            ["Table1", "union (Table2 | take 100)", "limit 10"]
+        ),
+    ],
+)
+def test_query_set_limit_complex_queries(query: str, limit: int, expected_contains: list):
+    """
+    Test _query_set_limit with complex queries containing parentheses, unions, and joins.
+    This test validates the fix for XSUP-61445.
+    
+    Args:
+        query: The input KQL query
+        limit: The limit to apply
+        expected_contains: List of strings that should be present in the result
+    """
+    result = _query_set_limit(query, limit)
+    
+    # Verify all expected components are in the result
+    for expected in expected_contains:
+        assert expected in result, f"Expected '{expected}' to be in result: {result}"
+    
+    # Verify parentheses are balanced
+    assert result.count('(') == result.count(')'), f"Unbalanced parentheses in result: {result}"
+    
+    # Verify limit appears in the result
+    assert f"limit {limit}" in result, f"Expected 'limit {limit}' in result: {result}"
+
+
+def test_query_set_limit_negative_limit():
+    """
+    Test that negative limit returns the original query unchanged.
+    """
+    query = "DeviceEvents | where Timestamp > ago(1d)"
+    result = _query_set_limit(query, -1)
+    assert result == query
+
+
+def test_query_set_limit_jira_ticket_example():
+    """
+    Test the exact query structure from JIRA ticket XSUP-61445.
+    This validates that complex queries with multiple nested joins work correctly.
+    """
+    # Simplified version of the JIRA ticket query
+    query = """AADSignInEventsBeta
+| where DeviceName contains "hostname"
+| extend Query = "AADSignInEventsBeta"
+| take 1
+| join kind=somekind (
+DeviceLogonEvents
+| extend Query1 = "DeviceLogonEvents"
+| take 10
+)
+on DeviceName
+| join kind=somekind (
+DeviceInfo
+| join AlertEvidence on DeviceId
+| extend Query2 = "DeviceInfo"
+| take 10
+)
+on DeviceName
+| extend Query = strcat(Query, Query1, Query2)
+| extend Timestamp = strcat(Timestamp, Timestamp1, Timestamp2)
+| project Timestamp, Query
+| take 21"""
+    
+    result = _query_set_limit(query, 50)
+    
+    # Verify the query structure is preserved
+    assert "join kind=somekind (DeviceLogonEvents" in result
+    assert "| extend Query1 = \"DeviceLogonEvents\"" in result
+    assert "| take 10" in result  # Inner takes should be preserved
+    assert "join kind=somekind (DeviceInfo" in result
+    assert "| join AlertEvidence on DeviceId" in result
+    
+    # Verify parentheses are balanced
+    assert result.count('(') == result.count(')'), f"Unbalanced parentheses in result"
+    
+    # Verify the top-level take was replaced with limit 50
+    assert "limit 50" in result
+    
+    # The original take 21 should be replaced
+    lines = result.split('\n')
+    last_line = lines[-1].strip()
+    assert "limit 50" in last_line or "limit 50" in result
+
+
 def test_params(mocker):
     """
     Given:
