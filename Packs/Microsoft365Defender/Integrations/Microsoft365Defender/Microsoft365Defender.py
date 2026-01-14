@@ -708,8 +708,8 @@ def _query_set_limit(query: str, limit: int) -> str:
 
     def get_top_level_pipes(query_str: str) -> list:
         """Split query by pipes that are at parenthesis level 0 (top level)."""
-        parts = []
-        current_part = []
+        parts: list[str] = []
+        current_part: list[str] = []
         paren_depth = 0
 
         i = 0
@@ -724,7 +724,7 @@ def _query_set_limit(query: str, limit: int) -> str:
                 paren_depth -= 1
 
             # Handle pipes (avoid splitting on ||)
-            is_pipe = (char == "|" and next_char != "|" and prev_char != "|")
+            is_pipe = char == "|" and next_char != "|" and prev_char != "|"
 
             if is_pipe and paren_depth == 0:
                 parts.append("".join(current_part))
