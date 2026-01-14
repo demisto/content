@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Palo Alto Networks
 sectionorder:
 - Connect
 - Collect
@@ -15,7 +16,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
   defaultvalue: 'Cortex XDR - Lite'
 - name: url
