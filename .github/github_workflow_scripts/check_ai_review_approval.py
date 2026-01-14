@@ -1,9 +1,10 @@
 import sys
 import argparse
-import urllib3
 from github import Github
 from github.Repository import Repository
 from github.PullRequest import PullRequest
+import requests
+import urllib3
 from utils import timestamped_print
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -16,18 +17,82 @@ REPO = "demisto/content"
 ORG_NAME = "demisto"
 PERMITTED_TEAM_SLUG = "content-ai-reviewer-developers"
 CONTRIB_BRANCH_PREFIX = "contrib/"
+REPO_OWNER = "demisto"
+REPO_NAME = "content"
 
 
 def arguments_handler():
     """Validates and parses script arguments.
-
-    Returns:
-       Namespace: Parsed arguments object.
+    Return
+        Namespace: Parsed arguments object.
     """
     parser = argparse.ArgumentParser(description="Check if AI review is approved.")
     parser.add_argument("-p", "--pr_number", help="The PR number to check.")
     parser.add_argument("-g", "--github_token", help="The GitHub token to authenticate the GitHub client.")
     return parser.parse_args()
+
+
+def get_reactions_query():
+    """Returns the GraphQL query to fetch reactions for a specific Node ID."""
+    return """
+    query($nodeId: ID!) {
+      node(id: $nodeId) {
+        ... on PullRequestReview {
+          reactions(first: 20) {
+            nodes {
+              content
+              user { login }
+            }
+          }
+        }
+      }
+    }
+    """
+
+
+def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
+    """
+    Uses GraphQL to fetch reactions for a specific GitHub Node ID (the review).
+    This allows us to get the specific reaction content (THUMBS_UP) reliably.
+    """
+    url = "https://api.github.com/graphql"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+    variables = {"nodeId": node_id}
+
+    try:
+        response = requests.post(
+            url, json={"query": get_reactions_query(), "variables": variables}, headers=headers, verify=False
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        reactions = data.get("data", {}).get("node", {}).get("reactions", {}).get("nodes", [])
+        return reactions
+    except Exception as e:
+        print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
+        return []
+
+
+def find_reaction_on_review(reviews, github_token):
+    ai_review_found = False
+    for review in reviews:
+        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
+            ai_review_found = True
+            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+
+            reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
+            for reaction in reactions:
+                content = reaction.get("content")
+                user = reaction.get("user", {}).get("login")
+
+                if content == "THUMBS_UP":
+                    print(f"Found 👍 reaction from user: {user}")
+                    print("✅ AI Review approved.")
+                    sys.exit(0)
+    return ai_review_found
 
 
 def is_user_in_permitted_team(github_client: Github, username: str) -> bool:
@@ -95,10 +160,11 @@ def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
+    print(f"Checking PR {pr_number}")
 
-    github_client: Github = Github(github_token, verify=False)
-    content_repo: Repository = github_client.get_repo(REPO)
-    pr: PullRequest = content_repo.get_pull(int(pr_number))
+    g = Github(github_token, verify=False)
+    repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
+    pr = repo.get_pull(int(pr_number))
 
     # 1. Check for Bypass Label with proper authorization
     pr_label_names = [label.name for label in pr.labels]
@@ -107,6 +173,11 @@ def main():
         if is_contrib_branch_by_content_bot(pr):
             print(f'✅ Found "{SKIP_LABEL}" label on contrib branch PR by {BOT_USERNAME}. Skipping AI review check.')
             sys.exit(0)
+    current_labels = [label.name for label in pr.get_labels()]
+
+    if SKIP_LABEL in current_labels:
+        print(f'✅ Found "{SKIP_LABEL}" label. Skipping AI review check.')
+        sys.exit(0)
 
         # Check if the label was added by a permitted team member
         is_permitted, added_by = was_skip_label_added_by_permitted_user(pr, github_client)
@@ -117,21 +188,16 @@ def main():
         # Label exists but not authorized
         print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {PERMITTED_TEAM_SLUG}. Ignoring label.')
 
-    print(f"Checking for AI review approval in PR {pr_number}...")
-
-    # 2. Verify content-bot's comment existance and review approval.
+    print("Fetching reviews...")
     reviews = pr.get_reviews()
-    found_bot_comment = False
 
-    for review_comment in reviews:
-        print(review_comment.body)
-        # Check if comment is from the bot and has the required text
-        if (review_comment.user.login == BOT_USERNAME) and (REQUIRED_TEXT in review_comment.body):
-            found_bot_comment = True
-            print(f"Found AI Review comment (ID: {review_comment.id})")
+    ai_review_found = find_reaction_on_review(reviews, github_token)
 
-    if not found_bot_comment:
-        print("❌ AI Review check failed. No AI Review comment found from content-bot.")
+    if ai_review_found:
+        print("❌ AI Review found, but no 👍 reaction detected.")
+        sys.exit(1)
+    else:
+        print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
 
 
