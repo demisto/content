@@ -43,4 +43,4 @@ This section alters the timestamp
     tmp_full_timestamp = arraystring(arraycreate(tmp_get_year, tmp_get_month_day, tmp_get_time_milli), " ")
 | alter
     _time = if(tmp_full_timestamp ~= "1970", _insert_time, parse_timestamp("%Y %h %e %H:%M:%E3S", tmp_full_timestamp))
-| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp, tmp_get_prefix, tmp_get_time , tmp_get_year , tmp_remove_year , tmp_change_location, tmp_raw_log;
+| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp, tmp_get_prefix, tmp_get_time, tmp_remove_year , tmp_change_location, tmp_raw_log;
