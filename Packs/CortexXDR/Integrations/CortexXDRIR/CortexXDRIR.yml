@@ -3866,15 +3866,15 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: List of API key IDs.
+    - description: List of API key IDs to retrieve.
       isArray: true
       name: api_id
-    - description: List of roles.
+    - description: List of roles of API keys to retrieve.
       isArray: true
       name: role
-    - description: API keys that expire before this date. Should support English expressions like "in a year". Filters API keys with expiration date only.
+    - description: 'Filters API keys that expire before this date. For example: "in a year". Filters API keys that have an expiration date.'
       name: expires_before
-    - description: API keys that expire after this date. Should support English expressions like "in a year". Filters API keys with expiration date only.
+    - description: 'Filters API keys that expire after this date. For example: "in a year". Filters API keys that have an expiration date.'
       name: expires_after
     description: Gets a list of existing API keys.
     name: xdr-api-key-list
@@ -3896,7 +3896,7 @@ script:
     description: Deletes the specified API keys.
     name: xdr-api-key-delete
   - arguments:
-    - description: Whether to return extended view.
+    - description: Whether to return an extended view.
       name: extra_data
       auto: PREDEFINED
       predefined:
@@ -3930,7 +3930,7 @@ script:
     - description: 'List of XQL query strings. For example: "dataset = xdr_data |limit 1"'
       isArray: true
       name: xql_query
-    - description: List of the new XQL query names. XQL query name should be unique.
+    - description: List of the new XQL query names. The XQL query name should be unique.
       isArray: true
       name: xql_query_name
     - description: List of the new XQL query tags.
