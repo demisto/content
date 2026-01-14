@@ -1219,8 +1219,6 @@ Retrieves a list of messages in a chat.
 | MicrosoftTeams.ChatList.messages.mentions | String | List of entities mentioned in the chat message. | 
 | MicrosoftTeams.ChatList.messages.reactions | String | Reactions for this chat message \(for example, Like\). | 
 | MicrosoftTeams.MessageListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
-| MicrosoftTeams.ChatListMetadata.returned_count | Number | IMPORTANT: returned_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of script results returned in this specific execution. | 
-| MicrosoftTeams.ChatListMetadata.filtered_count | Number | IMPORTANT: filtered_count must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of script results in the system that match the specified filter criteria. | 
 
 ### microsoft-teams-chat-update
 

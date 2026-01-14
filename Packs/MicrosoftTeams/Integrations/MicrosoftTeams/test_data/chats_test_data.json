@@ -931,10 +931,6 @@
           "webUrl": null
         }
       ]
-    },
-    "MicrosoftTeams.ChatListMetadata": {
-        "returned_results": 2,
-        "filtered_results": 2
     }
   },
   "get_chat_id_and_type_response": {
