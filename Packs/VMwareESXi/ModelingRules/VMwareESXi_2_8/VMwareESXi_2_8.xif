@@ -92,7 +92,8 @@ alter // Extract the <PRI> value from the syslog header
         severity),
     xdm.event.description = msg,
     xdm.event.type = esxi_event_type,
-    xdm.event.format = if(_raw_log ~= "\<\d+\>1", "RFC-5424", _raw_log ~= "\<\d+\>", "RFC-3164");
+    xdm.event.format = if(_raw_log ~= "\<\d+\>1", "RFC-5424", _raw_log ~= "\<\d+\>", "RFC-3164"),
+    xdm.event.tags = arraycreate("VIRTUALIZATION");
 
 // ==========================================
 // Modeling Rule
@@ -902,7 +903,7 @@ call esxi_event_classification
     event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0),
     username_1 = arrayindex(regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0),
     username_2 = arrayindex(regextract(_raw_log ,"for\s+(\S+)\s+from"),0),
-    username_3 = arrayindex(regextract(_raw_log, "[Uu]ser\s+(?:name\:\s+)*(\w+)",0),
+    username_3 = arrayindex(regextract(_raw_log , "[Uu]ser\s+(?:name\:\s+)*(\w+)"),0),
     command_line = arrayindex( regextract(_raw_log ,"command\s\'([^\']+)\'"),0),
     source_ip_1 = arrayindex( regextract(_raw_log ,"from\s(\d+\.\d+\.\d+\.\d+)\s"),0),
     source_ip_2 = arrayindex(regextract(_raw_log, "(\S+)\s+port"),0),
