@@ -4771,8 +4771,6 @@ def fetch_handler(client: Client, args):
     args["uam_current_fetch"] = uam_current_fetch
 
     incidents = []
-    current_fetch = 0
-    uam_current_fetch = 0
     if args.get("fetch_type") == "Both":
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
