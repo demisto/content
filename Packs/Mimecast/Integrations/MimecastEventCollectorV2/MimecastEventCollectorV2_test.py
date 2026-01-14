@@ -509,7 +509,9 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
     mock_siem_events = [{"id": "event-2", "timestamp": 1704067200000, "_time": "2025-01-01T00:00:00Z"}]
 
     mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC))
-    mock_get_audit_events = mocker.patch("MimecastEventCollectorV2.get_audit_events", new=AsyncMock(return_value=mock_audit_events))
+    mock_get_audit_events = mocker.patch(
+        "MimecastEventCollectorV2.get_audit_events", new=AsyncMock(return_value=mock_audit_events)
+    )
     mock_get_siem_events = mocker.patch(
         "MimecastEventCollectorV2.get_siem_events", new=AsyncMock(return_value=(mock_siem_events, "next_page"))
     )
@@ -768,7 +770,9 @@ async def test_test_module(async_client: AsyncClient, mocker: MockerFixture):
 
     mock_audit_first_fetch = datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC)
     mocker.patch("MimecastEventCollectorV2.UTC_MINUTE_AGO", mock_audit_first_fetch)
-    mock_fetch_events_command = mocker.patch("MimecastEventCollectorV2.fetch_events_command", new=AsyncMock(return_value=({}, [])))
+    mock_fetch_events_command = mocker.patch(
+        "MimecastEventCollectorV2.fetch_events_command", new=AsyncMock(return_value=({}, []))
+    )
 
     result = await test_module(async_client, event_types)
 
