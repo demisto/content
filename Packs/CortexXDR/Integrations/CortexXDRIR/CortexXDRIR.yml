@@ -3930,7 +3930,7 @@ script:
     - description: List of XQL query strings.
       isArray: true
       name: xql_query
-    - description: List of XQL query names.
+    - description: List of the new XQL query names. XQL query name should be unique.
       isArray: true
       name: xql_query_name
     - description: List of XQL query tags.
@@ -3939,7 +3939,7 @@ script:
     description: Creates or updates XQL queries in the library.
     name: xdr-xql-library-create
   - arguments:
-    - description: List of XQL query names to delete. If searching by xql_query_names, you cannot search by xql_query_tags in the same call.
+    - description: List of XQL query names to delete. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
     - description: List of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
