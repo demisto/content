@@ -1136,10 +1136,10 @@ class TestParsingIndicators:
             }
         ]
 
-        # Test using parse_sco_mutex_indicator since software reuses the same parser
-        assert taxii_2_client.parse_sco_mutex_indicator(software_obj) == xsoar_expected_response
+        # Test using the dedicated parse_sco_software_indicator method
+        assert taxii_2_client.parse_sco_software_indicator(software_obj) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
-        assert taxii_2_client.parse_sco_mutex_indicator(software_obj) == xsoar_expected_response_with_update_custom_fields
+        assert taxii_2_client.parse_sco_software_indicator(software_obj) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_sco_windows_registry_key_indicator(self, taxii_2_client):
         """
