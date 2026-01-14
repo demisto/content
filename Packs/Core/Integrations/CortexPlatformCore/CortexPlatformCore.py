@@ -62,7 +62,6 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
-    "core-get-case-ai-summary",
     "core-list-exception-rules",
     "core-update-case",
     "core-get-endpoint-update-version",
@@ -1871,11 +1870,12 @@ def add_cases_ai_summary(client, cases_list):
     try:
         for case in cases_list:
             case_id = case.get("case_id")
-            case_summary = get_case_ai_summary_command(client, {"case_id": case_id})
-            if case_summary:
-                if case_description := case_summary.outputs.get("case_description"):  # type: ignore
+            response = client.get_case_ai_summary(case_id)
+            if response:
+                reply = response.get("reply", {})
+                if case_description := reply.get("case_description"):
                     case["description"] = case_description
-                if case_name := case_summary.outputs.get("case_name"):  # type: ignore
+                if case_name := reply.get("case_name"):
                     case["name"] = case_name
     except Exception as e:
         demisto.debug(str(e))
@@ -4122,44 +4122,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_case_ai_summary_command(client: Client, args: dict) -> CommandResults:
-    """
-    Retrieves AI-generated summary for a specific case ID.
-
-    Args:
-        client (Client): The client instance used to send the request.
-        args (dict): Dictionary containing the arguments for the command.
-                     Expected to include:
-                         - case_id (str): The ID of the case to retrieve AI summary for.
-
-    Returns:
-        CommandResults: Object containing the formatted AI summary data,
-                        raw response, and outputs for integration context.
-    """
-    case_id = arg_to_number(args.get("case_id"))
-    if case_id is None:
-        raise DemistoException("get_case_ai_summary_command: case_id is required.")
-    response = client.get_case_ai_summary(case_id)
-    if not response:
-        raise DemistoException(f"Failed to fetch ai summary for case {case_id}. Ensure the asset ID is valid.")
-
-    reply = response.get("reply", {})
-
-    output = {
-        "case_id": reply.get("case_id"),
-        "case_name": reply.get("case_name"),
-        "case_description": reply.get("case_description"),
-    }
-
-    return CommandResults(
-        readable_output=tableToMarkdown("Case AI Summary", output, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseAISummary",
-        outputs_key_field="case_id",
-        outputs=output,
-        raw_response=response,
-    )
-
-
 def init_client(api_type: str) -> Client:
     """
     Initializes the Client for a specific API type.
@@ -4334,10 +4296,6 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
-
-        elif command == "core-get-case-ai-summary":
-            verify_platform_version()
-            return_results(get_case_ai_summary_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
