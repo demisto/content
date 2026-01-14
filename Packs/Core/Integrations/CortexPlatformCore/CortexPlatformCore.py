@@ -4024,35 +4024,59 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     return outputs
 
 
-def handle_xql_default_limit(query: str, default_limit: int) -> str:
-    """Add a default limit clause to an XQL query if one is not already present.
+def handle_xql_limit(query: str, max_limit: int) -> str:
+    """Ensure the given query does not exceed the max limit.
+    Overrides the limit if it exceeds the maximum or if a limit clause isn't present.
 
     Args:
         query (str): The XQL query string to process.
-        default_limit (int): The default limit value to append if no limit clause exists.
+        max_limit (int): The max limit value.
 
     Returns:
-        str: The original query if it already contains a limit clause, or the query
-            with an appended limit clause if none was present.
+        str: The original query if it already contains a valid limit clause, or the query
+            with a max limit clause appended or the limit value replaced if it exceeds max_limit.
     """
     if not query or not query.strip():
         return query
 
-    # Strip Comments to ignore possible commented clauses
-    clean_query = re.sub(r"/\*.*?\*/", "", query, flags=re.DOTALL)
-    clean_query = re.sub(r"//.*", "", clean_query)
+    # Pattern to match limit keyword with number, skipping over comments and quotes
+    # The pattern uses alternation: first try to match things to skip (comments/quotes),
+    # then try to match the actual limit clause. This ensures we don't match "limit"
+    # inside comments or quoted strings.
+    limit_pattern = re.compile(
+        r"""
+        (?P<skip>                           # Group for things to skip (not replace)
+            /\*.*?\*/                       # Block comments
+            |//[^\n]*                       # Line comments
+            |"(?:[^"\\]|\\.)*"              # Double-quoted strings
+            |'(?:[^'\\]|\\.)*'              # Single-quoted strings
+        )
+        |(?P<limit>limit\s+)(?P<num>\d+)    # Or match limit keyword with number
+        """,
+        re.IGNORECASE | re.DOTALL | re.VERBOSE,
+    )
 
-    # Split the query into stages. e.g. ['dataset=x', 'limit 50', 'sort a']
-    clause_pattern = r'(?:[^|"\']|"(?:[^"\\]|\\.)*"|\'(?:[^"\\]|\\.)*\')+'
-    clauses = re.findall(clause_pattern, clean_query)
+    limit_found = False
 
-    # Check for existing 'limit' step
-    for clause in clauses:
-        if clause.strip().lower().startswith("limit "):
-            return query
+    def replace_limit(match):
+        """Replace limit value if it exceeds max_limit, skip comments/quotes."""
+        nonlocal limit_found
+        # We matched a limit clause
+        if match.group("limit"):
+            limit_found = True
+            current_limit = int(match.group("num"))
+            if current_limit > max_limit:
+                return f"{match.group('limit')}{max_limit}"
 
-    # No limit found, add the default limit
-    return f"{query}\n| limit {default_limit}"
+        return match.group(0)
+
+    result = limit_pattern.sub(replace_limit, query)
+
+    # Add a max limit clause if no limit was found anywhere in the query
+    if not limit_found:
+        result = f"{result}\n| limit {max_limit}"
+
+    return result
 
 
 def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
@@ -4066,8 +4090,8 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    DEFAULT_LIMIT = 1000
-    query = handle_xql_default_limit(query, DEFAULT_LIMIT)
+    MAX_LIMIT = 1000
+    query = handle_xql_limit(query, MAX_LIMIT)
 
     data: Dict[str, Any] = {
         "query": query,
