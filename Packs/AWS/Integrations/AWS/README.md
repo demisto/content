@@ -96,13 +96,13 @@ Returns some or all (up to 1,000) of the objects in a bucket.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.Objects.BucketName | String | The name of S3 bucket. |
-| AWS.S3-Buckets.Objects.Objects.Key | String | The name of S3 object. |
-| AWS.S3-Buckets.Objects.Objects.Size | Number | Object size in bytes. |
-| AWS.S3-Buckets.Objects.Objects.LastModified | String | Last date object was modified. |
-| AWS.S3-Buckets.Objects.Objects.StorageClass | String | The storage class of the object. |
-| AWS.S3-Buckets.Objects.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
-| AWS.S3-Buckets.Objects.Objects.ETag | String | The entity tag (hash) of the object. |
+| AWS.S3-Buckets.BucketObjects.BucketName | String | The name of S3 bucket. |
+| AWS.S3-Buckets.BucketObjects.Objects.Key | String | The name of S3 object. |
+| AWS.S3-Buckets.BucketObjects.Objects.Size | Number | Object size in bytes. |
+| AWS.S3-Buckets.BucketObjects.Objects.LastModified | String | Last date object was modified. |
+| AWS.S3-Buckets.BucketObjects.Objects.StorageClass | String | The storage class of the object. |
+| AWS.S3-Buckets.BucketObjects.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
+| AWS.S3-Buckets.BucketObjects.Objects.ETag | String | The entity tag (hash) of the object. |
 
 ### aws-iam-account-password-policy-get
 
