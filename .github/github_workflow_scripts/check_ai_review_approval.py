@@ -147,19 +147,20 @@ def is_contrib_branch_by_content_bot(pr: PullRequest) -> bool:
     """
     return pr.head.ref.startswith(CONTRIB_BRANCH_PREFIX) and pr.user.login == BOT_USERNAME
 
+
 def should_bypass_check(github_client: Github, pr: PullRequest):
     """
     Check for Bypass Label with proper authorization
-    
+
     Arguments:
-    
+
     """
     current_labels = [label.name for label in pr.get_labels()]
     if SKIP_LABEL in current_labels:
-        if is_contrib_branch_by_content_bot(pr):    
+        if is_contrib_branch_by_content_bot(pr):
             print(f'✅ Found "{SKIP_LABEL}" label on contrib branch PR by {BOT_USERNAME}. Skipping AI review check.')
             return True
-                
+
         # Check if the label was added by an authorized team member
         is_authorized, added_by = was_skip_label_added_by_authorized_user(pr, github_client)
         if is_authorized:
@@ -171,6 +172,7 @@ def should_bypass_check(github_client: Github, pr: PullRequest):
         # Label exists but not authorized
         print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {PERMITTED_TEAM_SLUG}. Ignoring label.')
     return False
+
 
 def main():
     """
@@ -191,7 +193,7 @@ def main():
 
     if should_bypass_check(github_client, pr):
         sys.exit(0)
-        
+
     print("Fetching reviews...")
     reviews = pr.get_reviews()
 
