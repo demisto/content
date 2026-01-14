@@ -755,9 +755,9 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
 
     args = {
-        "remote_incident_id": "INT-123",
+        "remoteId": "INT-123",
         "status": 2,  # XSOAR closed status
-        "incident_changed": True,
+        "incidentChanged": True,
         "delta": {"closure_reason": "resolved"},
         "data": {},
     }
@@ -775,9 +775,9 @@ def test_update_remote_system_status_closed_in_delta(requests_mock, client):
     requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
 
     args = {
-        "remote_incident_id": "INT-124",
+        "remoteId": "INT-124",
         "status": 1,
-        "incident_changed": True,
+        "incidentChanged": True,
         "delta": {"status": "closed", "closure_reason": "other"},
         "data": {},
     }
@@ -797,9 +797,9 @@ def test_update_remote_system_cyberint_alert_already_closed(requests_mock, clien
     requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
 
     args = {
-        "remote_incident_id": "INT-125",
+        "remoteId": "INT-125",
         "status": 1,
-        "incident_changed": True,
+        "incidentChanged": True,
         "delta": {},  # No status change
         "data": {},
     }
