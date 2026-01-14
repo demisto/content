@@ -105,7 +105,7 @@ async def _fetch_events_for_type(
     if after_timestamp:
         filters["date"] = {"gte": after_timestamp}
 
-    params = {"sortDirection": "asc", "filters": json.dumps(filters)}
+    params = {"sortDirection": "asc", "filters": json.dumps(filters), "sortField": "date"}
 
     all_events: list[dict] = []
     page = 1
