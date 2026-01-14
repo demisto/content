@@ -66,6 +66,7 @@ WEBAPP_COMMANDS = [
     "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-case-grouping-graph"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -989,6 +990,13 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/case/set_data",
             json_data=request_data,
+        )
+
+    def get_case_grouping_graph(self, case_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="case/get_case_grouping_graph",
+            json_data={"case_id": case_id},
         )
 
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
@@ -4086,6 +4094,64 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def preprocess_get_case_grouping_graph_outputs(response):
+    reply = response.get("reply", {})
+    nodes = reply.get("nodes", [])
+    nodes_map = {}
+    adj_list = defaultdict(list)
+    clusters = {}
+    for node in nodes:
+        nodes_map[node["id"]] = node
+        if node_type := node.get("type") != "ISSUE":
+            if node_type == "CASE":
+                clusters[node.get("id") + "_linked"] = {}
+                clusters[node.get("id") + "_unlinked"] = {}
+
+    edges = reply.get("edges", [])
+
+    for edge in edges:
+        adj_list[edge['source_id']].append(edge['target_id'])
+    for edge in edges:
+        if source_id := edge.get("source_id") in clusters:
+            is_case = nodes_map.get(source_id, {}).get("type") == "CASE"
+            target_id = edge.get("target_id")
+            if is_case:
+                if nodes_map.get(target_id , {}).get("LINKED"):
+                    cluster = clusters.get(target_id + "_linked")
+                else:
+                    cluster = clusters.get(target_id + "_unlinked")
+            else:
+                cluster = clusters.get(source_id)
+            if not cluster.get("issues"):
+                cluster["issues"] = []
+            cluster["issues"].append(target_id)
+            if not cluster.get("targets"):
+                cluster["targets"] = []
+            cluster["targets"] += adj_list[target_id]
+
+
+
+
+
+
+    clusters = {}
+    return reply
+
+
+def get_case_grouping_graph(client, args):
+    """
+    Retrieve the case-grouping graph for a specific case.
+    """
+    case_id = args.get("case_id")
+    response = client.get_case_grouping_graph(case_id)
+    mapped_response = preprocess_get_case_grouping_graph_outputs(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Grouping Graph", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseGroupingGraph",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4231,8 +4297,14 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             if not is_demisto_version_ge("8.13.0"):
                 raise DemistoException("This command is not available for this platform version")
-
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-get-case-grouping-graph":
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+            return_results(get_case_grouping_graph(client, args))
+
+
 
     except Exception as err:
         demisto.error(traceback.format_exc())

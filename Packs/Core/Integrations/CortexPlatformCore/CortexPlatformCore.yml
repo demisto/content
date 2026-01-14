@@ -3177,6 +3177,15 @@ script:
         - contextPath: Core.User.groups
           description: A specific name of a group the user belongs to within this instance.
           type: String
+    - arguments:
+      - description: The ID of the case to retrieve grouping graph for.
+        name: case_id
+        required: true
+        type: number
+      name: core-get-case-grouping-graph
+      description: Retrieves the grouping graph for a specific case.
+      outputs:
+
     - name: core-xql-generic-query-platform
       arguments:
       - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.
