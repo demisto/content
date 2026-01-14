@@ -102,7 +102,7 @@ def clear_trailing_whitespace(res):
 
 def replace_dots_in_keys(data: Any) -> Any:
     if isinstance(data, dict):
-        return {k.replace('.', '_'): replace_dots_in_keys(v) for k, v in data.items()}
+        return {k.replace(".", "_"): replace_dots_in_keys(v) for k, v in data.items()}
     if isinstance(data, list):
         return [replace_dots_in_keys(i) for i in data]
     return data
@@ -1540,15 +1540,15 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the assets.
     """
-    asset_id_list = argToList(args.get('asset_id', ""))
-    sort_field = args.get('sort_field', "").lower()
-    sort_order = args.get('sort_order', "").upper()
-    filter_json = args.get('filter_json', "").upper()
+    asset_id_list = argToList(args.get("asset_id", ""))
+    sort_field = args.get("sort_field", "").lower()
+    sort_order = args.get("sort_order", "").upper()
+    filter_json = args.get("filter_json", "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
-    limit = arg_to_number(args.get('limit')) or 30
-    page_size = arg_to_number(args.get('page_size')) or limit
-    page = arg_to_number(args.get('page')) or 0
+    limit = arg_to_number(args.get("limit")) or 30
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
 
     assets = []
     if asset_id_list:
@@ -1566,10 +1566,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         if filter_json:
             request_data["request_data"]["filters"] = filter_json
         if sort_field:
-            request_data["request_data"]["sort"] = [{
-                "FIELD": sort_field,
-                "ORDER": sort_order or "ASC"
-            }]
+            request_data["request_data"]["sort"] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
         assets = client.list_assets(request_data=request_data)
 
     readable_assets = []
@@ -1590,7 +1587,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         name="Cortex XDR Assets",
         t=readable_assets,
         headers=["ID", "Name", "First Observed", "Last Observed", "Critical Cases Count", "Critical Issues Count"],
-        removeNull=True
+        removeNull=True,
     )
 
     assets = replace_dots_in_keys(assets)
@@ -1600,7 +1597,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
         outputs_key_field="id",
         outputs=assets,
-        raw_response=assets
+        raw_response=assets,
     )
 
 
@@ -1621,14 +1618,14 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
         t=schema,
         headerTransform=string_to_table_header,
         headers=["field_pretty_name", "field_name", "data_type"],
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
         outputs=schema,
-        raw_response=schema
+        raw_response=schema,
     )
 
 
@@ -1643,22 +1640,22 @@ def get_asset_schema_field_options_command(client: Client, args: Dict) -> Comman
     Returns:
     - CommandResults: A CommandResults object containing the field options.
     """
-    field_name = args.get('field_name', "")
+    field_name = args.get("field_name", "")
     options = client.get_asset_schema_field_options(field_name)
 
     readable_output = tableToMarkdown(
         name=f"Cortex XDR Asset Schema Options for {field_name}",
         t=options,
         headerTransform=string_to_table_header,
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
         outputs_key_field="field_name",
-        outputs={'field_name': field_name, 'options': options},
-        raw_response=options
+        outputs={"field_name": field_name, "options": options},
+        raw_response=options,
     )
 
 
@@ -1673,10 +1670,10 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the created asset group.
     """
-    group_name = args.get('group_name', "")
-    group_type = args.get('group_type', "")
-    group_description = args.get('group_description', "")
-    membership_predicate_json = args.get('membership_predicate_json', "")
+    group_name = args.get("group_name", "")
+    group_type = args.get("group_type", "")
+    group_description = args.get("group_description", "")
+    membership_predicate_json = args.get("membership_predicate_json", "")
     if membership_predicate_json:
         membership_predicate_json = json.loads(membership_predicate_json)
 
@@ -1684,14 +1681,10 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
         group_name=group_name,
         group_type=group_type,
         group_description=group_description,
-        membership_predicate=membership_predicate_json
+        membership_predicate=membership_predicate_json,
     )
 
-    request_data = {
-        "request_data": {
-            "asset_group": update_data
-        }
-    }
+    request_data = {"request_data": {"asset_group": update_data}}
     if membership_predicate_json:
         request_data["request_data"]["asset_group"]["membership_predicate"] = membership_predicate_json
 
@@ -1711,7 +1704,7 @@ def delete_asset_group_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
-    group_id = args.get('group_id', "")
+    group_id = args.get("group_id", "")
     client.delete_asset_group(group_id)
     return CommandResults(readable_output="Asset group deleted successfully.")
 
@@ -1727,14 +1720,14 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the asset groups.
     """
-    sort_field = args.get('sort_field', "").upper()
-    sort_order = args.get('sort_order', "").upper()
-    filter_json = args.get('filter_json', "").upper()
+    sort_field = args.get("sort_field", "").upper()
+    sort_order = args.get("sort_order", "").upper()
+    filter_json = args.get("filter_json", "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
-    limit = arg_to_number(args.get('limit')) or 50
-    page_size = arg_to_number(args.get('page_size')) or limit
-    page = arg_to_number(args.get('page')) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
 
     request_data = {
         "request_data": {
@@ -1745,10 +1738,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     if filter_json:
         request_data["request_data"]["filters"] = filter_json
     if sort_field:
-        request_data["request_data"]["sort"] = [{
-            "FIELD": sort_field,
-            "ORDER": sort_order or "ASC"
-        }]
+        request_data["request_data"]["sort"] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
 
     groups = client.list_asset_groups(request_data=request_data)
 
@@ -1765,9 +1755,9 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
         t=readable_groups,
-        headers=['ID', 'Name', 'Type', 'Description'],
+        headers=["ID", "Name", "Type", "Description"],
         headerTransform=string_to_table_header,
-        removeNull=True
+        removeNull=True,
     )
 
     groups = replace_dots_in_keys(groups)
@@ -1777,7 +1767,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
         outputs_key_field="ID",
         outputs=groups,
-        raw_response=groups
+        raw_response=groups,
     )
 
 
@@ -1792,11 +1782,11 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
-    group_id = args.get('group_id', "")
-    group_name = args.get('group_name', "")
-    group_type = args.get('group_type', "")
-    group_description = args.get('group_description', "")
-    membership_predicate_json = args.get('membership_predicate_json', "")
+    group_id = args.get("group_id", "")
+    group_name = args.get("group_name", "")
+    group_type = args.get("group_type", "")
+    group_description = args.get("group_description", "")
+    membership_predicate_json = args.get("membership_predicate_json", "")
     if membership_predicate_json:
         membership_predicate_json = json.loads(membership_predicate_json)
 
@@ -1806,11 +1796,7 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
         group_description=group_description,
         membership_predicate=membership_predicate_json,
     )
-    request_data = {
-        "request_data": {
-            "asset_group": update_data
-        }
-    }
+    request_data = {"request_data": {"asset_group": update_data}}
     client.update_asset_group(group_id, request_data=request_data)
 
     return CommandResults(readable_output="Asset group updated successfully")
