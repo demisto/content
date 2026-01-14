@@ -232,40 +232,15 @@ class MsGraphClient:
             raise e
 
     def get_groups(self, user):
-        try:
-            group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
-            # clean up the response
-            group_data.pop("@odata.context", None)
-            return group_data
-        except NotFoundError as e:
-            demisto.debug(f"User {user} was not found")
-            return {"NotFound": e.message}
-        except Exception as e:
-            raise e
-
-    def get_owned_devices(self, user):
-        try:
-            data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/ownedDevices")
-            data.pop("@odata.context", None)
-            data.pop("@odata.type", None)
-            return data
-        except NotFoundError as e:
-            demisto.debug(f"User {user} was not found")
-            return {"NotFound": e.message}
-        except Exception as e:
-            raise e
+        group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
+        group_data.pop("@odata.context", None)
+        return group_data
 
     def get_auth_methods(self, user):
-        try:
-            data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
-            data.pop("@odata.context", None)
-            data.pop("@odata.type", None)
-            return data
-        except NotFoundError as e:
-            demisto.debug(f"User {user} was not found")
-            return {"NotFound": e.message}
-        except Exception as e:
-            raise e
+        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
+        data.pop("@odata.context", None)
+        data.pop("@odata.type", None)
+        return data
 
     def list_users(self, properties, page_url, filters):
         if page_url:
@@ -677,33 +652,20 @@ def get_user_command(client: MsGraphClient, args: dict):
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
 
 
+@suppress_errors_with_404_code
 def get_groups_command(client: MsGraphClient, args: Dict):
     user = args.get("user")
-    try:
-        group_data = client.get_groups(user)
-    except DemistoException as e:
-        raise e
-    # In case the request returned a 404 error display a proper message to the war room
+    group_data = client.get_groups(user)
+
     if group_data.get("NotFound", ""):
         error_message = group_data.get("NotFound")
-        human_readable = f"### User {user} was not found.\nMicrosoft Graph Response: {error_message}"
-        return human_readable, {}, error_message
+        return CommandResults(readable_output=f"### User {user} was not found.\nMicrosoft Graph Response: {error_message}")
+
     user_readable, user_outputs = parse_outputs(group_data["value"])
     human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
-    outputs = {"MSGraphUser(val.ID == obj.ID)": user_outputs}
+    outputs = {"MSGraphUserGroups(val.ID == obj.ID)": user_outputs}
 
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=group_data)
-
-
-@suppress_errors_with_404_code
-def get_owned_devices_command(client: MsGraphClient, args: Dict):
-    user = args.get("user")
-    manager_data = client.get_owned_devices(user)
-    manager_readable, manager_outputs = parse_outputs(manager_data)
-    human_readable = tableToMarkdown(name=f"{user} - owned devices", t=manager_readable, removeNull=True)
-    outputs = {"MSGraphUserOwnedDevices(val.User == obj.User)": {"User": user, "OwnedDevices": manager_outputs}}
-
-    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=manager_data)
 
 
 @suppress_errors_with_404_code
@@ -998,7 +960,6 @@ def main():
         "msgraph-user-get-delta": get_delta_command,
         "msgraph-user-get": get_user_command,
         "msgraph-user-get-groups": get_groups_command,
-        "msgraph-user-get-owned-devices": get_owned_devices_command,
         "msgraph-user-get-auth-methods": get_auth_methods_command,
         "msgraph-user-list": list_users_command,
         "msgraph-direct-reports": get_direct_reports_command,

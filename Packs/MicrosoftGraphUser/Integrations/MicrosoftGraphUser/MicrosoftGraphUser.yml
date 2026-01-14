@@ -451,109 +451,112 @@ script:
       Retrieves the groups a user is part of.
     name: msgraph-user-get-groups
     outputs:
-    - contextPath: MSGraphUser.classification
+    - contextPath: MSGraphUserGroups.Classification
       description: Value used to classify data types in your groups.
       type: String
-    - contextPath: MSGraphUser.createdDateTime
+    - contextPath: MSGraphUserGroups.@Odata.Type
+      description: A string value that can be used to classify the user's groups.
+      type: String
+    - contextPath: MSGraphUserGroups.createdDateTime
       description: Groups creation date and time.
       type: String
-    - contextPath: MSGraphUser.creationOptions
+    - contextPath: MSGraphUserGroups.creationOptions
       description: Groups creation options.
       type: String
-    - contextPath: MSGraphUser.deletedDateTime
+    - contextPath: MSGraphUserGroups.deletedDateTime
       description: Groups deletion date and time.
       type: String
-    - contextPath: MSGraphUser.description
+    - contextPath: MSGraphUserGroups.description
       description: Groups description string.
       type: String
-    - contextPath: MSGraphUser.displayName
+    - contextPath: MSGraphUserGroups.displayName
       description: Groups display name.
       type: String
-    - contextPath: MSGraphUser.expirationDateTime
+    - contextPath: MSGraphUserGroups.expirationDateTime
       description: Groups expiration date and time.
       type: String
-    - contextPath: MSGraphUser.groupTypes
+    - contextPath: MSGraphUserGroups.groupTypes
       description: Groups group Types.
       type: String
-    - contextPath: MSGraphUser.id
+    - contextPath: MSGraphUserGroups.id
       description: Groups id.
       type: String
-    - contextPath: MSGraphUser.isAssignableToRole
+    - contextPath: MSGraphUserGroups.isAssignableToRole
       description: Groups role assignability.
       type: Bool
-    - contextPath: MSGraphUser.mail
+    - contextPath: MSGraphUserGroups.mail
       description: Groups associated mail.
       type: String
-    - contextPath: MSGraphUser.mailEnabled
+    - contextPath: MSGraphUserGroups.mailEnabled
       description: Groups mail enablement.
       type: Bool
-    - contextPath: MSGraphUser.mailNickname
+    - contextPath: MSGraphUserGroups.mailNickname
       description: Groups mailNickname.
       type: String
-    - contextPath: MSGraphUser.membershipRule
+    - contextPath: MSGraphUserGroups.membershipRule
       description: Groups membershipRule.
       type: String
-    - contextPath: MSGraphUser.membershipRuleProcessingState
+    - contextPath: MSGraphUserGroups.membershipRuleProcessingState
       description: Groups membershipRuleProcessingState.
       type: String
-    - contextPath: MSGraphUser.onPremisesDomainName
+    - contextPath: MSGraphUserGroups.onPremisesDomainName
       description: Groups onPremisesDomainName.
       type: String
-    - contextPath: MSGraphUser.onPremisesLastSyncDateTime
+    - contextPath: MSGraphUserGroups.onPremisesLastSyncDateTime
       description: Groups onPremisesLastSyncDateTime.
       type: String
-    - contextPath: MSGraphUser.onPremisesNetBiosName
+    - contextPath: MSGraphUserGroups.onPremisesNetBiosName
       description: Groups onPremisesNetBiosName.
       type: String
-    - contextPath: MSGraphUser.onPremisesProvisioningErrors
+    - contextPath: MSGraphUserGroups.onPremisesProvisioningErrors
       description: Groups onPremisesProvisioningErrors.
       type: String
-    - contextPath: MSGraphUser.onPremisesSamAccountName
+    - contextPath: MSGraphUserGroups.onPremisesSamAccountName
       description: Groups onPremisesSamAccountName.
       type: String
-    - contextPath: MSGraphUser.onPremisesSecurityIdentifier
+    - contextPath: MSGraphUserGroups.onPremisesSecurityIdentifier
       description: Groups onPremisesSecurityIdentifier.
       type: String
-    - contextPath: MSGraphUser.onPremisesSyncEnabled
+    - contextPath: MSGraphUserGroups.onPremisesSyncEnabled
       description: Groups onPremisesSyncEnabled.
       type: String
-    - contextPath: MSGraphUser.preferredDataLocation
+    - contextPath: MSGraphUserGroups.preferredDataLocation
       description: Groups preferredDataLocation.
       type: String
-    - contextPath: MSGraphUser.preferredLanguage
+    - contextPath: MSGraphUserGroups.preferredLanguage
       description: Groups preferredLanguage.
       type: String
-    - contextPath: MSGraphUser.proxyAddresses
+    - contextPath: MSGraphUserGroups.proxyAddresses
       description: Groups proxyAddresses.
       type: String
-    - contextPath: MSGraphUser.renewedDateTime
+    - contextPath: MSGraphUserGroups.renewedDateTime
       description: Groups renewed date and time.
       type: String
-    - contextPath: MSGraphUser.resourceBehaviorOptions
+    - contextPath: MSGraphUserGroups.resourceBehaviorOptions
       description: Groups resourceBehaviorOptions.
       type: String
-    - contextPath: MSGraphUser.resourceProvisioningOptions
+    - contextPath: MSGraphUserGroups.resourceProvisioningOptions
       description: Groups resourceProvisioningOptions.
       type: String
-    - contextPath: MSGraphUser.securityEnabled
+    - contextPath: MSGraphUserGroups.securityEnabled
       description: Groups security enablement.
       type: Bool
-    - contextPath: MSGraphUser.securityIdentifier
+    - contextPath: MSGraphUserGroups.securityIdentifier
       description: Groups securityIdentifier.
       type: String
-    - contextPath: MSGraphUser.serviceProvisioningErrors
+    - contextPath: MSGraphUserGroups.serviceProvisioningErrors
       description: Groups serviceProvisioningErrors.
       type: String
-    - contextPath: MSGraphUser.theme
+    - contextPath: MSGraphUserGroups.theme
       description: Groups theme.
       type: String
-    - contextPath: MSGraphUser.uniqueName
+    - contextPath: MSGraphUserGroups.uniqueName
       description: Groups uniqueName.
       type: String
-    - contextPath: MSGraphUser.visibility
+    - contextPath: MSGraphUserGroups.visibility
       description: Groups visibility.
       type: String
-    - contextPath: MSGraphUser.wellKnownObject
+    - contextPath: MSGraphUserGroups.wellKnownObject
       description: Groups wellKnownObject.
       type: String
   - arguments:
@@ -564,136 +567,26 @@ script:
       Retrieve a list of authentication methods registered to a user.
     name: msgraph-user-get-auth-methods
     outputs:
-    - contextPath: MSGraphUser.createdDateTime
+    - contextPath: MSGraphUserAuthMethods.CreatedDateTime
       description: Authentication methods creation date and time.
       type: String
-    - contextPath: MSGraphUser.deviceTag
+    - contextPath: MSGraphUserAuthMethods.@Odata.Type
+      description: A string value that can be used to classify the user's auth methods.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.deviceTag
       description: Authentication methods deviceTag.
       type: String
-    - contextPath: MSGraphUser.displayName
+    - contextPath: MSGraphUserAuthMethods.displayName
       description: Authentication methods displayName.
       type: String
-    - contextPath: MSGraphUser.id
+    - contextPath: MSGraphUserAuthMethods.id
       description: Authentication methods id.
       type: String
-    - contextPath: MSGraphUser.phoneAppVersion
+    - contextPath: MSGraphUserAuthMethods.phoneAppVersion
       description: Authentication methods phoneAppVersion.
       type: String
   - arguments:
     - description: The User ID or userPrincipalName of the user for which to get the MFA methods properties.
-      name: user
-      required: true
-    description: |-
-      Retrieves the properties from the owned devices of a user.
-    name: msgraph-user-get-owned-devices
-    outputs:
-    - contextPath: MSGraphUser.accountEnabled
-      description: Account enablement.
-      type: Bool
-    - contextPath: MSGraphUser.alternativeSecurityIds
-      description: Owned devices alternativeSecurityIds.
-      type: String
-    - contextPath: MSGraphUser.approximateLastSignInDateTime
-      description: Owned devices approximateLastSignIn date and time.
-      type: String
-    - contextPath: MSGraphUser.complianceExpirationDateTime
-      description: Owned devices complianceExpiration date and time.
-      type: String
-    - contextPath: MSGraphUser.createdDateTime
-      description: Owned devices creation date and time.
-      type: String
-    - contextPath: MSGraphUser.deletedDateTime
-      description: Owned devices deletion date and time.
-      type: String
-    - contextPath: MSGraphUser.deviceCategory
-      description: Owned devices deviceCategory.
-      type: String
-    - contextPath: MSGraphUser.deviceId
-      description: Owned devices deviceId.
-      type: String
-    - contextPath: MSGraphUser.deviceMetadata
-      description: Owned devices deviceMetadata.
-      type: String
-    - contextPath: MSGraphUser.deviceOwnership
-      description: Owned devices deviceOwnership.
-      type: String
-    - contextPath: MSGraphUser.deviceVersion
-      description: Owned devices deviceVersion.
-      type: Int
-    - contextPath: MSGraphUser.displayName
-      description: Owned devices displayName.
-      type: String
-    - contextPath: MSGraphUser.domainName
-      description: Owned devices domainName.
-      type: String
-    - contextPath: MSGraphUser.enrollmentProfileName
-      description: Owned devices enrollmentProfileName.
-      type: String
-    - contextPath: MSGraphUser.enrollmentType
-      description: Owned devices enrollmentType.
-      type: String
-    - contextPath: MSGraphUser.extensionAttributes
-      description: Owned devices extensionAttributes.
-      type: String
-    - contextPath: MSGraphUser.externalSourceName
-      description: Owned devices externalSourceName.
-      type: String
-    - contextPath: MSGraphUser.id
-      description: Owned devices id.
-      type: String
-    - contextPath: MSGraphUser.isCompliant
-      description: Owned devices isCompliant.
-      type: Bool
-    - contextPath: MSGraphUser.isManaged
-      description: Owned devices isManaged.
-      type: Bool
-    - contextPath: MSGraphUser.isRooted
-      description: Owned devices isRooted.
-      type: Bool
-    - contextPath: MSGraphUser.managementType
-      description: Owned devices managementType.
-      type: String
-    - contextPath: MSGraphUser.manufacturer
-      description: Owned devices manufacturer.
-      type: String
-    - contextPath: MSGraphUser.mdmAppId
-      description: Owned devices mdmAppId.
-      type: String
-    - contextPath: MSGraphUser.model
-      description: Owned devices model.
-      type: String
-    - contextPath: MSGraphUser.onPremisesLastSyncDateTime
-      description: Owned devices onPremisesLastSync date and time.
-      type: String
-    - contextPath: MSGraphUser.onPremisesSyncEnabled
-      description: Owned devices onPremisesSyncEnabled.
-      type: Bool
-    - contextPath: MSGraphUser.operatingSystem
-      description: Owned devices operatingSystem.
-      type: String
-    - contextPath: MSGraphUser.operatingSystemVersion
-      description: Owned devices operatingSystemVersion.
-      type: String
-    - contextPath: MSGraphUser.physicalIds
-      description: Owned devices physicalIds.
-      type: String
-    - contextPath: MSGraphUser.profileType
-      description: Owned devices profileType.
-      type: String
-    - contextPath: MSGraphUser.registrationDateTime
-      description: Owned devices registration date and time..
-      type: String
-    - contextPath: MSGraphUser.sourceType
-      description: Owned devices sourceType.
-      type: String
-    - contextPath: MSGraphUser.systemLabels
-      description: Owned devices systemLabels.
-      type: String
-    - contextPath: MSGraphUser.trustType
-      description: Owned devices trustType.
-      type: String
-  - arguments:
-    - description: The User ID or userPrincipalName of the user for which to get the owned devices properties.
       name: user
       required: true
     description: |-
