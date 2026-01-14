@@ -148,12 +148,20 @@ def is_contrib_branch_by_content_bot(pr: PullRequest) -> bool:
     return pr.head.ref.startswith(CONTRIB_BRANCH_PREFIX) and pr.user.login == BOT_USERNAME
 
 
-def should_bypass_check(github_client: Github, pr: PullRequest):
+def should_bypass_check(github_client: Github, pr: PullRequest) -> bool:
     """
-    Check for Bypass Label with proper authorization
+    Check for Bypass Label with proper authorization.
 
-    Arguments:
+    Determines if the AI review check should be bypassed based on:
+    1. The PR has a 'skip-ai-review' label AND is from a contrib/* branch authored by content-bot.
+    2. OR the 'skip-ai-review' label was added by a member of the permitted team.
 
+    Args:
+        github_client (Github): The authenticated GitHub client used to check team membership.
+        pr (PullRequest): The pull request to check for bypass conditions.
+
+    Returns:
+        bool: True if the AI review check should be bypassed, False otherwise.
     """
     current_labels = [label.name for label in pr.get_labels()]
     if SKIP_LABEL in current_labels:
@@ -176,11 +184,7 @@ def should_bypass_check(github_client: Github, pr: PullRequest):
 
 def main():
     """
-    This script checks if the AI review has been approved by a human reviewer.
-    It passes if:
-    1. The PR there exists a 'skip-ai-review' label AND it was added by a permitted user
-       OR the PR is from a contrib/* branch authored by content-bot.
-    2. OR there is a comment from 'content-bot' with the required text AND a '+1' reaction.
+    This script checks if the AI review has been executed and approved by a human reviewer or intentionally bypassed.
     """
     options = arguments_handler()
     pr_number = options.pr_number
