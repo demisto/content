@@ -1729,7 +1729,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
 
-    request_data = {
+    request_data: Dict[str, Any] = {
         "request_data": {
             "search_from": page * page_size,
             "search_to": (page + 1) * page_size,
@@ -1738,7 +1738,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     if filter_json:
         request_data["request_data"]["filters"] = filter_json
     if sort_field:
-        request_data["request_data"]["sort"]: list[dict[str, Any]] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
+        request_data["request_data"]["sort"] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
 
     groups = client.list_asset_groups(request_data=request_data)
 
