@@ -21,14 +21,13 @@ from MicrosoftApiModule import *
 from CommonServerUserPython import *  # noqa
 
 # Configuration
-# Sequential pagination within each event type, but all 3 event types run concurrently
-MAX_FETCH_PER_TYPE = 10000  # Max events per type per fetch cycle
+MAX_FETCH_PER_TYPE = 1000  # Max events per type per fetch cycle
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 CONCURRENT_REQUESTS = 3  # One per event type (alerts, admin, login)
-MAX_PAGES_PER_TYPE = 100  # Allow more pages for high-volume types
+MAX_PAGES_PER_TYPE = 10  # Safety limit to prevent infinite loops
 
 # Debug version identifier
-DEBUG_VERSION = "2026-01-14-async-v13-revert-scan-mode"
+DEBUG_VERSION = "2026-01-14-async-v15"
 
 
 class EventFilter(NamedTuple):
@@ -87,7 +86,7 @@ async def _fetch_events_for_type(
     after_timestamp: int | None,
     max_events: int = MAX_FETCH_PER_TYPE,
 ) -> list[dict]:
-    """Fetch all events for a single event type.
+    """Fetch all events for a single event type with pagination.
 
     Args:
         session: aiohttp session
@@ -101,33 +100,27 @@ async def _fetch_events_for_type(
         List of events for this event type
     """
     url = f"{base_url}{event_filter.endpoint}"
-
-    # Build initial filters
     filters = dict(event_filter.filters)
+
     if after_timestamp:
         filters["date"] = {"gte": after_timestamp}
 
-    # Request body
-    request_body: dict = {
-        "filters": filters,
-        "limit": 100,
-        "sortDirection": "asc",
-    }
+    params = {"sortDirection": "asc", "filters": json.dumps(filters)}
 
     all_events: list[dict] = []
     page = 1
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== FETCHING {event_filter.name} =====")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: URL: {url}, after_timestamp={after_timestamp}, max_events={max_events}")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Initial request body: {json.dumps(request_body)}")
+    demisto.debug(
+        f"MD-DEBUG [{DEBUG_VERSION}]: Fetching {event_filter.name} from {url}, "
+        f"after_timestamp={after_timestamp}, max_events={max_events}"
+    )
 
     while page <= MAX_PAGES_PER_TYPE:
         try:
-            # Use POST with JSON body
-            async with session.post(url, json=request_body, headers=headers) as response:
+            async with session.get(url, params=params, headers=headers) as response:
                 if response.status == 429:
                     retry_after = int(response.headers.get("Retry-After", 60))
-                    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Rate limited, waiting {retry_after}s")
+                    demisto.debug(f"MD-DEBUG: Rate limited, waiting {retry_after}s")
                     await asyncio.sleep(retry_after)
                     continue
 
@@ -135,21 +128,15 @@ async def _fetch_events_for_type(
                 data = await response.json()
 
         except aiohttp.ClientError as e:
-            demisto.error(f"MD-DEBUG [{DEBUG_VERSION}]: Error fetching {event_filter.name}: {e}")
+            demisto.error(f"MD-DEBUG: Error fetching {event_filter.name}: {e}")
             raise DemistoException(f"Failed to fetch {event_filter.name}: {e}") from e
 
         events = data.get("data", [])
         has_next = data.get("hasNext", False)
 
-        # Log first and last event timestamps for this page
-        first_ts = events[0].get("timestamp") if events else None
-        last_ts = events[-1].get("timestamp") if events else None
-
         demisto.debug(
             f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} page {page}: "
-            f"{len(events)} events, hasNext={has_next}, "
-            f"first_ts={first_ts}, last_ts={last_ts}, "
-            f"total_so_far={len(all_events) + len(events)}"
+            f"{len(events)} events, hasNext={has_next}, total_so_far={len(all_events) + len(events)}"
         )
 
         # Tag events with their type
@@ -160,16 +147,11 @@ async def _fetch_events_for_type(
 
         # Check if we've reached our limit
         if len(all_events) >= max_events:
-            events_before_truncate = len(all_events)
-            all_events = all_events[:max_events]
-
-            max_ts_in_kept = max((e.get("timestamp", 0) for e in all_events), default=0)
-
             demisto.debug(
-                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} TRUNCATING: "
-                f"had {events_before_truncate} events, keeping {len(all_events)}, "
-                f"max_ts in kept events: {max_ts_in_kept}"
+                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max_events limit ({max_events}), "
+                f"stopping with {len(all_events)} events"
             )
+            all_events = all_events[:max_events]
             break
 
         # Check if there are no more events
@@ -177,19 +159,13 @@ async def _fetch_events_for_type(
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no more events (hasNext={has_next})")
             break
 
-        # Fallback to timestamp-based pagination
-        # Note: API might return events in descending order despite sortDirection: asc
-        # So we must find the MAX timestamp in the batch to ensure we move forward
-        if events:
-            max_timestamp = max(e.get("timestamp", 0) for e in events)
-            filters = dict(event_filter.filters)
-            filters["date"] = {"gte": max_timestamp + 1}
-            request_body["filters"] = filters
-            demisto.debug(
-                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} pagination: gte={max_timestamp + 1}"
-            )
+        # Update filter for next page - use last event's timestamp
+        last_timestamp = events[-1].get("timestamp")
+        if last_timestamp:
+            filters["date"] = {"gte": last_timestamp + 1}
+            params["filters"] = json.dumps(filters)
         else:
-            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no pagination info, stopping")
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no timestamp in last event, stopping")
             break
 
         page += 1
@@ -197,18 +173,7 @@ async def _fetch_events_for_type(
     if page > MAX_PAGES_PER_TYPE:
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max pages limit ({MAX_PAGES_PER_TYPE})")
 
-    # Final summary with min/max timestamps
-    if all_events:
-        min_ts = min(e.get("timestamp", float("inf")) for e in all_events)
-        max_ts = max(e.get("timestamp", 0) for e in all_events)
-        demisto.debug(
-            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE: "
-            f"{len(all_events)} events in {page} pages, "
-            f"timestamp range: {min_ts} to {max_ts}"
-        )
-    else:
-        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE: 0 events")
-
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} complete: " f"{len(all_events)} total events in {page} pages")
     return all_events
 
 
@@ -251,10 +216,11 @@ async def fetch_all_events(
     if not params.get("verify", True):
         ssl_context = False
     connector = aiohttp.TCPConnector(ssl=ssl_context, limit=CONCURRENT_REQUESTS)
+    timeout = aiohttp.ClientTimeout(total=300)
 
     requested_start_times: dict[str, int | None] = {}
 
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
         # Create tasks for all event types
         tasks = []
         for ef in event_filters:
@@ -289,30 +255,6 @@ async def fetch_all_events(
     return all_events, requested_start_times
 
 
-def _timestamp_to_human(ts: int | None) -> str:
-    """Convert millisecond timestamp to human readable format."""
-    if ts is None:
-        return "None"
-    try:
-        dt = datetime.fromtimestamp(ts / 1000, tz=UTC)
-        return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
-    except Exception:
-        return f"Invalid({ts})"
-
-
-def _get_time_gap(ts: int | None) -> str:
-    """Get time gap from now."""
-    if ts is None:
-        return "N/A"
-    try:
-        now = datetime.now(tz=UTC)
-        event_time = datetime.fromtimestamp(ts / 1000, tz=UTC)
-        gap = now - event_time
-        return f"{gap.days}d {gap.seconds // 3600}h {(gap.seconds % 3600) // 60}m ago"
-    except Exception:
-        return "N/A"
-
-
 def calculate_last_run(events: list[dict], requested_start_times: dict[str, int | None]) -> dict[str, int]:
     """Calculate next last_run based on fetched events.
 
@@ -324,73 +266,25 @@ def calculate_last_run(events: list[dict], requested_start_times: dict[str, int 
         Updated last_run dictionary
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== CALCULATING LAST_RUN ==========")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Total events to process: {len(events)}")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Previous last_run: {last_run}")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: requested_start_times: {requested_start_times}")
 
-    # Count events and find min/max timestamps per type
-    event_stats: dict[str, dict] = {}
+    # Find max timestamp per event type
+    max_timestamps: dict[str, int] = {}
     for event in events:
-        event_type = event.get("event_type_name", "unknown")
+        event_type = event.get("event_type_name")
         timestamp = event.get("timestamp")
+        if event_type and timestamp and (event_type not in max_timestamps or timestamp > max_timestamps[event_type]):
+            max_timestamps[event_type] = timestamp
 
-        if event_type not in event_stats:
-            event_stats[event_type] = {"count": 0, "min_ts": None, "max_ts": None}
+    # Update last_run
+    for event_type, timestamp in max_timestamps.items():
+        last_run[event_type] = timestamp + 1  # +1 to avoid re-fetching
 
-        event_stats[event_type]["count"] += 1
-
-        if timestamp:
-            if event_stats[event_type]["min_ts"] is None or timestamp < event_stats[event_type]["min_ts"]:
-                event_stats[event_type]["min_ts"] = timestamp
-            if event_stats[event_type]["max_ts"] is None or timestamp > event_stats[event_type]["max_ts"]:
-                event_stats[event_type]["max_ts"] = timestamp
-
-    # Log detailed stats per event type
-    for event_type, stats in event_stats.items():
-        min_ts = stats["min_ts"]
-        max_ts = stats["max_ts"]
-        demisto.debug(
-            f"MD-DEBUG [{DEBUG_VERSION}]: {event_type}: "
-            f"count={stats['count']}, "
-            f"min_ts={min_ts} ({_timestamp_to_human(min_ts)}), "
-            f"max_ts={max_ts} ({_timestamp_to_human(max_ts)}, {_get_time_gap(max_ts)})"
-        )
-
-    # Update last_run with new timestamps (max_ts + 1)
-    for event_type, stats in event_stats.items():
-        max_ts = stats["max_ts"]
-        if max_ts:
-            old_value = last_run.get(event_type)
-            new_value = max_ts + 1  # +1 to avoid re-fetching the same event
-            last_run[event_type] = new_value
-
-            # Calculate progress
-            if isinstance(old_value, int):
-                progress_ms = new_value - old_value
-                progress_sec = progress_ms / 1000
-                demisto.debug(
-                    f"MD-DEBUG [{DEBUG_VERSION}]: {event_type}: "
-                    f"{old_value} ({_timestamp_to_human(old_value)}) -> "
-                    f"{new_value} ({_timestamp_to_human(new_value)}) "
-                    f"[progress: {progress_sec:.1f}s = {progress_ms}ms]"
-                )
-            else:
-                demisto.debug(
-                    f"MD-DEBUG [{DEBUG_VERSION}]: {event_type}: " f"None -> {new_value} ({_timestamp_to_human(new_value)})"
-                )
-
-    # Ensure all requested types have entries (for types with no events)
+    # Ensure all requested types have entries
     for event_type, start_time in requested_start_times.items():
         if event_type not in last_run and start_time:
-            demisto.debug(
-                f"MD-DEBUG [{DEBUG_VERSION}]: {event_type} had no events, "
-                f"keeping start_time: {start_time} ({_timestamp_to_human(start_time)})"
-            )
             last_run[event_type] = start_time
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Final last_run: {last_run}")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ========== END CALCULATING LAST_RUN ==========")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Updated last_run: {last_run}")
     return last_run
 
 
