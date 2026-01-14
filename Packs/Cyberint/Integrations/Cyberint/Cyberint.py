@@ -654,7 +654,7 @@ def update_remote_system(
             update_args = parsed_args.delta
             demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
-            updated_arguments = {}
+            updated_arguments: dict[str, Any] = {}
             updated_status = update_args.get("status")
             xsoar_incident_closed = inc_status == 2
 
@@ -671,7 +671,7 @@ def update_remote_system(
                 # No status change from XSOAR, check current Cyberint status
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
                 cyberint_alert: dict[str, Any] = cyberint_response["alert"]
-                cyberint_status = cyberint_alert.get("status")
+                cyberint_status = cyberint_alert.get("status", "open")
                 updated_arguments["status"] = cyberint_status
                 if cyberint_status == "closed":
                     updated_arguments["closure_reason"] = cyberint_alert.get("closure_reason", "other")

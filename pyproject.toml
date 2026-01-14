@@ -11,7 +11,7 @@ name = "pypi-public"
 url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
+python = "^3.11,<3.12"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
@@ -388,7 +388,7 @@ unfixable = [
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 check_untyped_defs = true
 ignore_missing_imports = true
 namespace_packages = true
