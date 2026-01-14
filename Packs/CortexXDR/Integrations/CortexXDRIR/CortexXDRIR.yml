@@ -3866,10 +3866,10 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: List of API key IDs to retrieve.
+    - description: A list of API key IDs to retrieve.
       isArray: true
       name: api_id
-    - description: List of roles of API keys to retrieve.
+    - description: A list of API key roles to retrieve.
       isArray: true
       name: role
     - description: 'Filters API keys that expire before this date. For example: "in a year". Filters API keys that have an expiration date.'
@@ -3889,7 +3889,7 @@ script:
       description: The expiration date of the API key.
       type: Date
   - arguments:
-    - description: List of API key IDs to delete.
+    - description: A list of API key IDs to delete.
       isArray: true
       name: api_id
       required: true
@@ -3902,10 +3902,10 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: An array of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
+    - description: A list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
-    - description: An array of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
+    - description: A list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Gets a list of XQL queries from the library.
@@ -3927,22 +3927,22 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: 'List of XQL query strings. For example: "dataset = xdr_data |limit 1"'
+    - description: 'A list of XQL query strings. For example: "dataset = xdr_data |limit 1"'
       isArray: true
       name: xql_query
-    - description: List of the new XQL query names. The XQL query name should be unique.
+    - description: A list of new XQL query names. The XQL query name should be unique.
       isArray: true
       name: xql_query_name
-    - description: List of the new XQL query tags.
+    - description: A list of new XQL query tags.
       isArray: true
       name: xql_query_tag
     description: Creates or updates XQL queries in the library.
     name: xdr-xql-library-create
   - arguments:
-    - description: List of XQL query names to delete. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
+    - description: A list of XQL query names to delete. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
-    - description: List of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
+    - description: A list of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Deletes XQL queries from the library.
