@@ -707,7 +707,7 @@ def get_headers(params: dict) -> dict:
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
     readable_output = tableToMarkdown(
-        "Tenant Information", tenant_info, headerTransform=string_to_table_header, removeNull=True, is_auto_json_transform=True
+        "Tenant Information", tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1454,7 +1454,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 alerts.append(alert_with_events)
 
         readable_output = tableToMarkdown(
-            "Contributing events", alerts, headerTransform=string_to_table_header, removeNull=True, is_auto_json_transform=True
+            "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
         )
         return CommandResults(
             readable_output=readable_output,
@@ -1488,7 +1488,7 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
     result = {"fieldType": field_type, "fields": fields}
 
     readable_output = tableToMarkdown(
-        f'Replaced featured: {result.get("fieldType")}', result.get("fields"), headerTransform=string_to_table_header
+        f'Replaced featured: {result.get("fieldType")}', result.get("fields"), headerTransform=pascalToSpace
     )
 
     return CommandResults(
@@ -1564,19 +1564,19 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             }]
         assets = client.list_assets(request_data=request_data)
     readable_assets = []
-    assets = remove_prefix_from_keys(assets, "xdm.")
-    assets = remove_prefix_from_keys(assets, "asset.")
+    # assets = remove_prefix_from_keys(assets, "xdm.")
+    # assets = remove_prefix_from_keys(assets, "asset.")
     for asset in assets:
         readable_asset = {
-            "ID": asset.get("id"),
-            "Name": asset.get("name"),
-            "Critical Cases Count": asset.get("related_issues.critical_assets"),
-            "Critical Issues Count": asset.get("related_issues.critical_issues"),
+            "ID": asset.get("xdm.asset.id"),
+            "Name": asset.get("xdm.asset.name"),
+            "Critical Cases Count": asset.get("xdm.asset.related_issues.critical_assets"),
+            "Critical Issues Count": asset.get("xdm.asset.related_issues.critical_issues"),
         }
-        if asset.get("first_observed"):
-            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("first_observed"))
-        if asset.get("last_observed"):
-            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("last_observed"))
+        if asset.get("xdm.asset.first_observed"):
+            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("xdm.asset.first_observed"))
+        if asset.get("xdm.asset.last_observed"):
+            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("xdm.asset.last_observed"))
         readable_assets.append(readable_asset)
 
     readable_output = tableToMarkdown(
