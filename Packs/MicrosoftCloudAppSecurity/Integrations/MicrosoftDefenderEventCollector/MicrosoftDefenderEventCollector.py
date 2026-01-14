@@ -27,7 +27,7 @@ CONCURRENT_REQUESTS = 3  # One per event type (alerts, admin, login)
 MAX_PAGES_PER_TYPE = 100  # Safety limit to prevent infinite loops
 
 # Debug version identifier
-DEBUG_VERSION = "2026-01-13-async-v2"
+DEBUG_VERSION = "2026-01-14-async-v3"
 
 
 class EventFilter(NamedTuple):
