@@ -811,6 +811,9 @@ script:
     - contextPath: MicrosoftTeams.MessagesList.messages.attachments
       description: References to attached objects like files, tabs, meetings, etc.
       type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.attachments.content
+      type: String
+      description: The content of the attachments.
     - contextPath: MicrosoftTeams.MessagesList.messages.mentions
       description: List of entities mentioned in the chat message.
       type: String
