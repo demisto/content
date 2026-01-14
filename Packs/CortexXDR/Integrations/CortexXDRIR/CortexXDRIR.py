@@ -100,6 +100,14 @@ def clear_trailing_whitespace(res):
     return res
 
 
+def replace_dots_in_keys(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {k.replace('.', '_'): replace_dots_in_keys(v) for k, v in data.items()}
+    if isinstance(data, list):
+        return [replace_dots_in_keys(i) for i in data]
+    return data
+
+
 def remove_prefix_from_keys(data_list, prefix):
     """
     Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
@@ -1534,7 +1542,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     """
     asset_id_list = argToList(args.get('asset_id', ""))
     sort_field = args.get('sort_field', "").upper()
-    sort_order = args.get('sort_order', "")
+    sort_order = args.get('sort_order', "").upper()
     filter_json = args.get('filter_json', "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
@@ -1565,8 +1573,6 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         assets = client.list_assets(request_data=request_data)
 
     readable_assets = []
-    # assets = remove_prefix_from_keys(assets, "xdm.")
-    # assets = remove_prefix_from_keys(assets, "asset.")
     for asset in assets:
         readable_asset = {
             "ID": asset.get("xdm.asset.id"),
@@ -1586,6 +1592,8 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         headers=["ID", "Name", "First Observed", "Last Observed", "Critical Cases Count", "Critical Issues Count"],
         removeNull=True
     )
+
+    assets = replace_dots_in_keys(assets)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1720,7 +1728,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object containing the asset groups.
     """
     sort_field = args.get('sort_field', "").upper()
-    sort_order = args.get('sort_order', "")
+    sort_order = args.get('sort_order', "").upper()
     filter_json = args.get('filter_json', "").upper()
     if filter_json:
         filter_json = json.loads(filter_json)
@@ -1743,14 +1751,26 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
         }]
 
     groups = client.list_asset_groups(request_data=request_data)
-    groups = remove_prefix_from_keys(groups, "XDM.ASSET_GROUP.")
+
+    readable_groups = []
+    for group in groups:
+        readable_asset = {
+            "ID": group.get("XDM.GROUP_ASSET.ID"),
+            "Name": group.get("XDM.GROUP_ASSET.NAME"),
+            "Type": group.get("XDM.GROUP_ASSET.TYPE"),
+            "Description": group.get("XDM.GROUP_ASSET.DESCRIPTION"),
+        }
+        readable_groups.append(readable_asset)
+
     readable_output = tableToMarkdown(
         name="Cortex XDR Asset Groups",
-        t=groups,
-        headers=['ID', 'NAME', 'TYPE', 'DESCRIPTION'],
+        t=readable_groups,
+        headers=['ID', 'Name', 'Type', 'Description'],
         headerTransform=string_to_table_header,
         removeNull=True
     )
+
+    groups = replace_dots_in_keys(groups)
 
     return CommandResults(
         readable_output=readable_output,
