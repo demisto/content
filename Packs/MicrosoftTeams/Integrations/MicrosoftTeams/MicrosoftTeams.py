@@ -1927,6 +1927,7 @@ def list_messages_command():
     chat_or_channel = args.get("chat_id", "")
     team_name = args.get("team", "")
     message_id = args.get("message_id", "")
+    team_id = ""
     if team_name:
         team_id = get_team_aad_id(team_name)
 
