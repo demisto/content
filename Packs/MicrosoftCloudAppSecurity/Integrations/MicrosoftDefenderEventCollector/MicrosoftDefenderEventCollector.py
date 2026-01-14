@@ -28,7 +28,7 @@ CONCURRENT_REQUESTS = 3  # One per event type (alerts, admin, login)
 MAX_PAGES_PER_TYPE = 100  # Allow more pages for high-volume types
 
 # Debug version identifier
-DEBUG_VERSION = "2026-01-14-async-v11-no-time-limit"
+DEBUG_VERSION = "2026-01-14-async-v13-revert-scan-mode"
 
 
 class EventFilter(NamedTuple):
@@ -79,7 +79,7 @@ def _get_token(params: dict) -> str:
     return ms_client.get_access_token()
 
 
-async def _fetch_events_for_type_scan_mode(
+async def _fetch_events_for_type(
     session: aiohttp.ClientSession,
     base_url: str,
     headers: dict,
@@ -87,11 +87,7 @@ async def _fetch_events_for_type_scan_mode(
     after_timestamp: int | None,
     max_events: int = MAX_FETCH_PER_TYPE,
 ) -> list[dict]:
-    """Fetch all events for a single event type using SCAN MODE.
-
-    Scan mode is Microsoft's recommended approach for bulk data retrieval.
-    It uses POST requests with isScan=true and uses nextQueryFilters for pagination,
-    which is more efficient than timestamp-based pagination.
+    """Fetch all events for a single event type.
 
     Args:
         session: aiohttp session
@@ -111,23 +107,23 @@ async def _fetch_events_for_type_scan_mode(
     if after_timestamp:
         filters["date"] = {"gte": after_timestamp}
 
-    # Request body for scan mode - this is the key difference!
+    # Request body
     request_body: dict = {
         "filters": filters,
-        "isScan": True,  # Enable scan mode for bulk retrieval
+        "limit": 100,
         "sortDirection": "asc",
     }
 
     all_events: list[dict] = []
     page = 1
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== FETCHING {event_filter.name} (SCAN MODE) =====")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== FETCHING {event_filter.name} =====")
     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: URL: {url}, after_timestamp={after_timestamp}, max_events={max_events}")
     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Initial request body: {json.dumps(request_body)}")
 
     while page <= MAX_PAGES_PER_TYPE:
         try:
-            # Use POST with JSON body for scan mode
+            # Use POST with JSON body
             async with session.post(url, json=request_body, headers=headers) as response:
                 if response.status == 429:
                     retry_after = int(response.headers.get("Retry-After", 60))
@@ -144,7 +140,6 @@ async def _fetch_events_for_type_scan_mode(
 
         events = data.get("data", [])
         has_next = data.get("hasNext", False)
-        next_query_filters = data.get("nextQueryFilters")  # Key for scan mode pagination!
 
         # Log first and last event timestamps for this page
         first_ts = events[0].get("timestamp") if events else None
@@ -154,8 +149,7 @@ async def _fetch_events_for_type_scan_mode(
             f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} page {page}: "
             f"{len(events)} events, hasNext={has_next}, "
             f"first_ts={first_ts}, last_ts={last_ts}, "
-            f"total_so_far={len(all_events) + len(events)}, "
-            f"nextQueryFilters={'present' if next_query_filters else 'none'}"
+            f"total_so_far={len(all_events) + len(events)}"
         )
 
         # Tag events with their type
@@ -183,24 +177,20 @@ async def _fetch_events_for_type_scan_mode(
             demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no more events (hasNext={has_next})")
             break
 
-        # Use nextQueryFilters for pagination (scan mode approach)
-        if next_query_filters:
-            # In scan mode, the API returns the next filter to use
-            request_body["filters"] = next_query_filters
-            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} using nextQueryFilters for page {page + 1}")
+        # Fallback to timestamp-based pagination
+        # Note: API might return events in descending order despite sortDirection: asc
+        # So we must find the MAX timestamp in the batch to ensure we move forward
+        if events:
+            max_timestamp = max(e.get("timestamp", 0) for e in events)
+            filters = dict(event_filter.filters)
+            filters["date"] = {"gte": max_timestamp + 1}
+            request_body["filters"] = filters
+            demisto.debug(
+                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} pagination: gte={max_timestamp + 1}"
+            )
         else:
-            # Fallback to timestamp-based pagination if nextQueryFilters not provided
-            last_timestamp = events[-1].get("timestamp") if events else None
-            if last_timestamp:
-                filters = dict(event_filter.filters)
-                filters["date"] = {"gte": last_timestamp + 1}
-                request_body["filters"] = filters
-                demisto.debug(
-                    f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} fallback to timestamp pagination: gte={last_timestamp + 1}"
-                )
-            else:
-                demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no pagination info, stopping")
-                break
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no pagination info, stopping")
+            break
 
         page += 1
 
@@ -212,12 +202,12 @@ async def _fetch_events_for_type_scan_mode(
         min_ts = min(e.get("timestamp", float("inf")) for e in all_events)
         max_ts = max(e.get("timestamp", 0) for e in all_events)
         demisto.debug(
-            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE (SCAN MODE): "
+            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE: "
             f"{len(all_events)} events in {page} pages, "
             f"timestamp range: {min_ts} to {max_ts}"
         )
     else:
-        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE (SCAN MODE): 0 events")
+        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE: 0 events")
 
     return all_events
 
@@ -275,7 +265,7 @@ async def fetch_all_events(
                 f"(from last_run: {last_run.get(ef.name)}, default: {default_after})"
             )
 
-            task = _fetch_events_for_type_scan_mode(session, base_url, headers, ef, after_ts, max_events_per_type)
+            task = _fetch_events_for_type(session, base_url, headers, ef, after_ts, max_events_per_type)
             tasks.append(task)
 
         # Run all fetches concurrently
