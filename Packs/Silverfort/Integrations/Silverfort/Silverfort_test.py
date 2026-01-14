@@ -35,7 +35,7 @@ def api_key():
 
 @pytest.fixture(autouse=True)
 def operational_api_key():
-    return 'OP_USER_ID:OP_USER_SECRET'
+    return "OP_USER_ID:OP_USER_SECRET"
 
 
 @pytest.fixture(autouse=True)
@@ -86,7 +86,7 @@ def client(base_url, api_key, operational_api_key):
         operational_user_secret=op_user_secret,
         external_api_key=None,
         base_url=base_url,
-        verify=False
+        verify=False,
     )
 
 
@@ -105,19 +105,16 @@ def expected_jwt_token(api_key, current_time):
     import jwt
 
     app_user_id, app_user_secret = api_key.split(":")
-    payload = {
-        "iss": app_user_id,
-        "iat": current_time,
-        "exp": current_time + 60
-    }
+    payload = {"iss": app_user_id, "iat": current_time, "exp": current_time + 60}
     return jwt.encode(payload, app_user_secret, algorithm="HS256")
 
 
 class TestSiverfort:
     def test_get_status(self, requests_mock, base_url, api_key, client):
         from Silverfort import test_module
+
         # test_module uses getEntityRisk with ok_codes=(200, 400, 404)
-        requests_mock.get(f'{base_url}/getEntityRisk', json={'risk': 'Low', 'reasons': []})
+        requests_mock.get(f"{base_url}/getEntityRisk", json={"risk": "Low", "reasons": []})
         output = test_module(client)
         assert output == "ok"
 
@@ -204,6 +201,7 @@ class TestSiverfort:
     def test_build_operational_headers_falls_back_to_main_credentials(self, base_url, api_key):
         """Test fallback to main credentials when operational ones are not provided"""
         from Silverfort import Client
+
         app_user_id, app_user_secret = api_key.split(":")
         client_without_op = Client(
             app_user_id=app_user_id,
@@ -212,7 +210,7 @@ class TestSiverfort:
             operational_user_secret=None,
             external_api_key=None,
             base_url=base_url,
-            verify=False
+            verify=False,
         )
         headers = client_without_op.build_operational_headers()
         assert "Authorization" in headers

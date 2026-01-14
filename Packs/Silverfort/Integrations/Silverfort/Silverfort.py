@@ -26,8 +26,9 @@ def get_jwt_token(app_user_id: str, app_user_secret: str, current_time=None, exp
 
 
 class Client(BaseClient):
-    def __init__(self, app_user_id, app_user_secret, operational_user_id, operational_user_secret, external_api_key,
-                 *args, **kwargs):
+    def __init__(
+        self, app_user_id, app_user_secret, operational_user_id, operational_user_secret, external_api_key, *args, **kwargs
+    ):
         self.app_user_id = app_user_id
         self.app_user_secret = app_user_secret
         self.operational_user_id = operational_user_id
@@ -36,9 +37,7 @@ class Client(BaseClient):
         super().__init__(*args, **kwargs)
 
     def build_headers(self):
-        headers = {
-            "Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"
-        }
+        headers = {"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"}
         if self.external_api_key:
             headers["X-Console-API-Key"] = self.external_api_key
         return headers
@@ -46,14 +45,10 @@ class Client(BaseClient):
     def build_operational_headers(self):
         """Build headers using operational API key for getUPN endpoint"""
         if self.operational_user_id and self.operational_user_secret:
-            headers = {
-                "Authorization": f"Bearer {get_jwt_token(self.operational_user_id, self.operational_user_secret)}"
-            }
+            headers = {"Authorization": f"Bearer {get_jwt_token(self.operational_user_id, self.operational_user_secret)}"}
         else:
             # Fall back to main credentials if operational key not provided
-            headers = {
-                "Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"
-            }
+            headers = {"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"}
         if self.external_api_key:
             headers["X-Console-API-Key"] = self.external_api_key
         return headers
@@ -182,8 +177,10 @@ def test_module(client):
             pass
 
         if status in (401, 403):
-            return_error(f"Authentication failed (HTTP {status}). "
-                         "Check the App User ID:Secret, server URL, JWT clock skew, and permissions.")
+            return_error(
+                f"Authentication failed (HTTP {status}). "
+                "Check the App User ID:Secret, server URL, JWT clock skew, and permissions."
+            )
         elif status:
             return_error(f"Unexpected response from getEntityRisk (HTTP {status}): {str(e)}")
         else:
@@ -274,12 +271,15 @@ def main():  # pragma: no cover
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(app_user_id=app_user_id,
-                        app_user_secret=app_user_secret,
-                        operational_user_id=operational_user_id,
-                        operational_user_secret=operational_user_secret,
-                        base_url=base_url, verify=verify_certificate,
-                        external_api_key=external_api_key)
+        client = Client(
+            app_user_id=app_user_id,
+            app_user_secret=app_user_secret,
+            operational_user_id=operational_user_id,
+            operational_user_secret=operational_user_secret,
+            base_url=base_url,
+            verify=verify_certificate,
+            external_api_key=external_api_key,
+        )
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
