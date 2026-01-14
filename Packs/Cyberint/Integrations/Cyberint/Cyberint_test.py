@@ -792,13 +792,7 @@ def test_update_remote_system_cyberint_alert_already_closed(requests_mock, clien
     """
     from Cyberint import update_remote_system
 
-    mock_alert = {
-        "alert": {
-            "status": "closed",
-            "closure_reason": "resolved",
-            "closure_reason_description": "Already resolved"
-        }
-    }
+    mock_alert = {"alert": {"status": "closed", "closure_reason": "resolved", "closure_reason_description": "Already resolved"}}
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/INT-125", json=mock_alert)
     requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
 
