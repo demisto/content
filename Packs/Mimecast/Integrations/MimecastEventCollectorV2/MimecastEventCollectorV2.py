@@ -390,7 +390,8 @@ def generate_event_id_if_not_exists(events: list[dict[str, Any]], event_type: Ev
             continue
 
         # SIEM logs do *not* have an "id" field, so we need to generate a unique hash for deduplication
-        encoded_event: bytes = json.dumps(event, sort_keys=True).encode("utf-8")
+        event_copy = event.copy()
+        encoded_event: bytes = json.dumps(event_copy, sort_keys=True).encode("utf-8")
         event_id = str(hashlib.sha256(encoded_event).hexdigest())
         event[EVENT_ID_KEY] = event_id
         demisto.debug(f"{log_prefix} Generated a unique SHA256 {event_id=} using the contents of {event=}.")
