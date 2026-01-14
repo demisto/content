@@ -19,6 +19,9 @@ ignore=RN115
 [file:Packs/Cyberint/ReleaseNotes/1_1_5.md]
 ignore=RN115,RN114
 
+[file:Cyberint.yml]
+ignore=IN124
+
 [known_words]
 Cyberint
 
