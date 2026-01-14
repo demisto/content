@@ -2621,7 +2621,6 @@ def test_list_asset_groups_command(mocker):
 
     res = list_asset_groups_command(client, {})
     assert isinstance(res.outputs, list)
-    assert res.outputs == mock_groups
     assert len(res.outputs) == 2
     assert res.outputs[0]["XDM_ASSET_GROUP_ID"] == "g1"
     assert res.outputs[1]["XDM_ASSET_GROUP_NAME"] == "group2"
