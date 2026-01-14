@@ -1,4 +1,5 @@
 category: Authentication & Identity Management
+provider: Delinea
 commonfields:
   id: DelineaSS
   version: -1

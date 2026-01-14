@@ -22,7 +22,7 @@ def add_padding(value: str) -> str:
     # Since white spaces are ignored, we must ignore them when calculating the length in order to calculate the correct padding.
     value_length = len(value) - value.count(" ")
     padding_length = (MULTIPLIER - (value_length % MULTIPLIER)) % MULTIPLIER
-    return f"{value}{PADDING_CHAR*padding_length}"
+    return f"{value}{PADDING_CHAR * padding_length}"
 
 
 def decode(value: str) -> CommandResults:
