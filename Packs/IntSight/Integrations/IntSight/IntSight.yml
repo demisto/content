@@ -7,6 +7,7 @@ sectionorder:
 name: IntSights
 display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: Rapid7
 description: Deprecated. Use Rapid7 Threat Command instead.
 deprecated: true
 configuration:
