@@ -7,7 +7,7 @@ alerts, admin activities, and login activities concurrently.
 
 import asyncio
 import ssl
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import NamedTuple
 
 import aiohttp
@@ -88,7 +88,7 @@ async def _fetch_events_for_type_scan_mode(
     max_events: int = MAX_FETCH_PER_TYPE,
 ) -> list[dict]:
     """Fetch all events for a single event type using SCAN MODE.
-    
+
     Scan mode is Microsoft's recommended approach for bulk data retrieval.
     It uses POST requests with isScan=true and uses nextQueryFilters for pagination,
     which is more efficient than timestamp-based pagination.
@@ -105,7 +105,7 @@ async def _fetch_events_for_type_scan_mode(
         List of events for this event type
     """
     url = f"{base_url}{event_filter.endpoint}"
-    
+
     # Build initial filters
     filters = dict(event_filter.filters)
     if after_timestamp:
@@ -121,15 +121,9 @@ async def _fetch_events_for_type_scan_mode(
     all_events: list[dict] = []
     page = 1
 
-    demisto.debug(
-        f"MD-DEBUG [{DEBUG_VERSION}]: ===== FETCHING {event_filter.name} (SCAN MODE) ====="
-    )
-    demisto.debug(
-        f"MD-DEBUG [{DEBUG_VERSION}]: URL: {url}, after_timestamp={after_timestamp}, max_events={max_events}"
-    )
-    demisto.debug(
-        f"MD-DEBUG [{DEBUG_VERSION}]: Initial request body: {json.dumps(request_body)}"
-    )
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: ===== FETCHING {event_filter.name} (SCAN MODE) =====")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: URL: {url}, after_timestamp={after_timestamp}, max_events={max_events}")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Initial request body: {json.dumps(request_body)}")
 
     while page <= MAX_PAGES_PER_TYPE:
         try:
@@ -151,7 +145,7 @@ async def _fetch_events_for_type_scan_mode(
         events = data.get("data", [])
         has_next = data.get("hasNext", False)
         next_query_filters = data.get("nextQueryFilters")  # Key for scan mode pagination!
-        
+
         # Log first and last event timestamps for this page
         first_ts = events[0].get("timestamp") if events else None
         last_ts = events[-1].get("timestamp") if events else None
@@ -174,9 +168,9 @@ async def _fetch_events_for_type_scan_mode(
         if len(all_events) >= max_events:
             events_before_truncate = len(all_events)
             all_events = all_events[:max_events]
-            
+
             max_ts_in_kept = max((e.get("timestamp", 0) for e in all_events), default=0)
-            
+
             demisto.debug(
                 f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} TRUNCATING: "
                 f"had {events_before_truncate} events, keeping {len(all_events)}, "
@@ -193,9 +187,7 @@ async def _fetch_events_for_type_scan_mode(
         if next_query_filters:
             # In scan mode, the API returns the next filter to use
             request_body["filters"] = next_query_filters
-            demisto.debug(
-                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} using nextQueryFilters for page {page + 1}"
-            )
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} using nextQueryFilters for page {page + 1}")
         else:
             # Fallback to timestamp-based pagination if nextQueryFilters not provided
             last_timestamp = events[-1].get("timestamp") if events else None
@@ -226,7 +218,7 @@ async def _fetch_events_for_type_scan_mode(
         )
     else:
         demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} COMPLETE (SCAN MODE): 0 events")
-    
+
     return all_events
 
 
@@ -312,7 +304,7 @@ def _timestamp_to_human(ts: int | None) -> str:
     if ts is None:
         return "None"
     try:
-        dt = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
+        dt = datetime.fromtimestamp(ts / 1000, tz=UTC)
         return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
         return f"Invalid({ts})"
@@ -323,8 +315,8 @@ def _get_time_gap(ts: int | None) -> str:
     if ts is None:
         return "N/A"
     try:
-        now = datetime.now(tz=timezone.utc)
-        event_time = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
+        now = datetime.now(tz=UTC)
+        event_time = datetime.fromtimestamp(ts / 1000, tz=UTC)
         gap = now - event_time
         return f"{gap.days}d {gap.seconds // 3600}h {(gap.seconds % 3600) // 60}m ago"
     except Exception:
@@ -352,12 +344,12 @@ def calculate_last_run(events: list[dict], requested_start_times: dict[str, int 
     for event in events:
         event_type = event.get("event_type_name", "unknown")
         timestamp = event.get("timestamp")
-        
+
         if event_type not in event_stats:
             event_stats[event_type] = {"count": 0, "min_ts": None, "max_ts": None}
-        
+
         event_stats[event_type]["count"] += 1
-        
+
         if timestamp:
             if event_stats[event_type]["min_ts"] is None or timestamp < event_stats[event_type]["min_ts"]:
                 event_stats[event_type]["min_ts"] = timestamp
@@ -382,7 +374,7 @@ def calculate_last_run(events: list[dict], requested_start_times: dict[str, int 
             old_value = last_run.get(event_type)
             new_value = max_ts + 1  # +1 to avoid re-fetching the same event
             last_run[event_type] = new_value
-            
+
             # Calculate progress
             if isinstance(old_value, int):
                 progress_ms = new_value - old_value
@@ -395,8 +387,7 @@ def calculate_last_run(events: list[dict], requested_start_times: dict[str, int 
                 )
             else:
                 demisto.debug(
-                    f"MD-DEBUG [{DEBUG_VERSION}]: {event_type}: "
-                    f"None -> {new_value} ({_timestamp_to_human(new_value)})"
+                    f"MD-DEBUG [{DEBUG_VERSION}]: {event_type}: " f"None -> {new_value} ({_timestamp_to_human(new_value)})"
                 )
 
     # Ensure all requested types have entries (for types with no events)
@@ -431,7 +422,7 @@ def main():
     params["client_secret"] = params.get("credentials", {}).get("password", "")
 
     demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Command: {command}")
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Time: " f"{datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Time: " f"{datetime.now(tz=UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
 
     try:
         # Determine which event types to fetch
