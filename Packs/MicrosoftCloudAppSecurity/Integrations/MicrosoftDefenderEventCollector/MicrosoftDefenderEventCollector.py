@@ -21,9 +21,10 @@ from MicrosoftApiModule import *
 from CommonServerUserPython import *  # noqa
 
 # Configuration
-MAX_FETCH = 5000  # Target: 5000 events per minute (standard fetch interval)
+MAX_FETCH_PER_TYPE = 5000  # Max events per type per fetch cycle
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 CONCURRENT_REQUESTS = 3  # One per event type (alerts, admin, login)
+MAX_PAGES_PER_TYPE = 100  # Safety limit to prevent infinite loops
 
 # Debug version identifier
 DEBUG_VERSION = "2026-01-13-async-v2"
@@ -83,7 +84,7 @@ async def _fetch_events_for_type(
     headers: dict,
     event_filter: EventFilter,
     after_timestamp: int | None,
-    limit: int | None = None,
+    max_events: int = MAX_FETCH_PER_TYPE,
 ) -> list[dict]:
     """Fetch all events for a single event type with pagination.
 
@@ -93,7 +94,7 @@ async def _fetch_events_for_type(
         headers: Request headers with auth token
         event_filter: Event filter configuration
         after_timestamp: Fetch events after this timestamp (ms)
-        limit: Optional limit on number of events
+        max_events: Maximum number of events to fetch for this type
 
     Returns:
         List of events for this event type
@@ -109,9 +110,12 @@ async def _fetch_events_for_type(
     all_events: list[dict] = []
     page = 1
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Fetching {event_filter.name} from {url}")
+    demisto.debug(
+        f"MD-DEBUG [{DEBUG_VERSION}]: Fetching {event_filter.name} from {url}, "
+        f"after_timestamp={after_timestamp}, max_events={max_events}"
+    )
 
-    while True:
+    while page <= MAX_PAGES_PER_TYPE:
         try:
             async with session.get(url, params=params, headers=headers) as response:
                 if response.status == 429:
@@ -131,7 +135,8 @@ async def _fetch_events_for_type(
         has_next = data.get("hasNext", False)
 
         demisto.debug(
-            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} page {page}: " f"{len(events)} events, hasNext={has_next}"
+            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} page {page}: "
+            f"{len(events)} events, hasNext={has_next}, total_so_far={len(all_events) + len(events)}"
         )
 
         # Tag events with their type
@@ -140,35 +145,47 @@ async def _fetch_events_for_type(
 
         all_events.extend(events)
 
-        # Check if we should stop
+        # Check if we've reached our limit
+        if len(all_events) >= max_events:
+            demisto.debug(
+                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max_events limit ({max_events}), "
+                f"stopping with {len(all_events)} events"
+            )
+            all_events = all_events[:max_events]
+            break
+
+        # Check if there are no more events
         if not has_next or not events:
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no more events (hasNext={has_next})")
             break
 
-        if limit and len(all_events) >= limit:
-            all_events = all_events[:limit]
-            break
-
-        # Update filter for next page
+        # Update filter for next page - use last event's timestamp
         last_timestamp = events[-1].get("timestamp")
         if last_timestamp:
             filters["date"] = {"gte": last_timestamp + 1}
             params["filters"] = json.dumps(filters)
+        else:
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no timestamp in last event, stopping")
+            break
 
         page += 1
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} complete: " f"{len(all_events)} total events")
+    if page > MAX_PAGES_PER_TYPE:
+        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max pages limit ({MAX_PAGES_PER_TYPE})")
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} complete: " f"{len(all_events)} total events in {page} pages")
     return all_events
 
 
 async def fetch_all_events(
-    params: dict, event_filters: list[EventFilter], limit: int | None = None
+    params: dict, event_filters: list[EventFilter], max_events_per_type: int = MAX_FETCH_PER_TYPE
 ) -> tuple[list[dict], dict[str, int | None]]:
     """Fetch events from all event types concurrently.
 
     Args:
         params: Integration parameters
         event_filters: List of event filters to fetch
-        limit: Optional limit per event type
+        max_events_per_type: Maximum events to fetch per event type
 
     Returns:
         Tuple of (all_events, requested_start_times)
@@ -181,6 +198,8 @@ async def fetch_all_events(
 
     # Get last run timestamps
     last_run = demisto.getLastRun()
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current last_run state: {last_run}")
+
     after_param = params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
 
     default_after: int | None = None
@@ -189,6 +208,8 @@ async def fetch_all_events(
         default_after = int(parsed.timestamp() * 1000) if parsed else None
     elif isinstance(after_param, int):
         default_after = after_param
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: default_after={default_after}")
 
     # Configure SSL
     ssl_context: ssl.SSLContext | bool = True
@@ -205,12 +226,19 @@ async def fetch_all_events(
         for ef in event_filters:
             after_ts: int | None = last_run.get(ef.name) or default_after
             requested_start_times[ef.name] = after_ts
+            demisto.debug(
+                f"MD-DEBUG [{DEBUG_VERSION}]: {ef.name} starting from timestamp {after_ts} "
+                f"(from last_run: {last_run.get(ef.name)}, default: {default_after})"
+            )
 
-            task = _fetch_events_for_type(session, base_url, headers, ef, after_ts, limit)
+            task = _fetch_events_for_type(session, base_url, headers, ef, after_ts, max_events_per_type)
             tasks.append(task)
 
         # Run all fetches concurrently
-        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Starting concurrent fetch for " f"{len(tasks)} event types")
+        demisto.debug(
+            f"MD-DEBUG [{DEBUG_VERSION}]: Starting concurrent fetch for {len(tasks)} event types, "
+            f"max_events_per_type={max_events_per_type}"
+        )
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
     # Collect results
@@ -220,9 +248,10 @@ async def fetch_all_events(
         if isinstance(result, BaseException):
             demisto.error(f"MD-DEBUG: Failed to fetch {ef.name}: {result}")
         elif isinstance(result, list):
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {ef.name} returned {len(result)} events")
             all_events.extend(result)
 
-    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Total events fetched: {len(all_events)}")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Total events fetched across all types: {len(all_events)}")
     return all_events, requested_start_times
 
 
@@ -262,7 +291,7 @@ def calculate_last_run(events: list[dict], requested_start_times: dict[str, int 
 async def test_module_async(params: dict) -> str:
     """Test API connectivity."""
     try:
-        events, _ = await fetch_all_events(params, [ALERTS_FILTER], limit=1)
+        events, _ = await fetch_all_events(params, [ALERTS_FILTER], max_events_per_type=1)
         return "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "authenticate" in str(e):
@@ -295,11 +324,16 @@ def main():
             return_results(reset_auth())
 
         elif command in ("fetch-events", "microsoft-defender-cloud-apps-get-events"):
-            # Get optional limit for manual command
-            limit = arg_to_number(params.get("limit")) if command != "fetch-events" else None
+            # Get limit - use MAX_FETCH_PER_TYPE for fetch-events, or user-specified for manual command
+            if command == "fetch-events":
+                max_events = MAX_FETCH_PER_TYPE
+            else:
+                max_events = arg_to_number(params.get("limit")) or MAX_FETCH_PER_TYPE
+
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Using max_events_per_type={max_events}")
 
             # Fetch events asynchronously
-            events, requested_start_times = asyncio.run(fetch_all_events(params, event_filters, limit))
+            events, requested_start_times = asyncio.run(fetch_all_events(params, event_filters, max_events))
 
             if command == "fetch-events":
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
