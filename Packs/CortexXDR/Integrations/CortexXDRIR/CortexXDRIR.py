@@ -1541,7 +1541,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object containing the assets.
     """
     asset_id_list = argToList(args.get('asset_id', ""))
-    sort_field = args.get('sort_field', "").upper()
+    sort_field = args.get('sort_field', "").lower()
     sort_order = args.get('sort_order', "").upper()
     filter_json = args.get('filter_json', "").upper()
     if filter_json:
@@ -1755,10 +1755,10 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     readable_groups = []
     for group in groups:
         readable_asset = {
-            "ID": group.get("XDM.GROUP_ASSET.ID"),
-            "Name": group.get("XDM.GROUP_ASSET.NAME"),
-            "Type": group.get("XDM.GROUP_ASSET.TYPE"),
-            "Description": group.get("XDM.GROUP_ASSET.DESCRIPTION"),
+            "ID": group.get("XDM.ASSET_GROUP.ID"),
+            "Name": group.get("XDM.ASSET_GROUP.NAME"),
+            "Type": group.get("XDM.ASSET_GROUP.TYPE"),
+            "Description": group.get("XDM.ASSET_GROUP.DESCRIPTION"),
         }
         readable_groups.append(readable_asset)
 
