@@ -1563,6 +1563,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
                 "ORDER": sort_order or "ASC"
             }]
         assets = client.list_assets(request_data=request_data)
+
     readable_assets = []
     # assets = remove_prefix_from_keys(assets, "xdm.")
     # assets = remove_prefix_from_keys(assets, "asset.")
@@ -1601,7 +1602,7 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
 
     Parameters:
     - client (Client): The client to use for the request.
-    - args (dict): The command arguments.
+    - args (dict): The command arguments (not in use).
 
     Returns:
     - CommandResults: A CommandResults object containing the asset schema.
@@ -1740,7 +1741,6 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
             "FIELD": sort_field,
             "ORDER": sort_order or "ASC"
         }]
-    demisto.debug(f"Final {request_data=}")
 
     groups = client.list_asset_groups(request_data=request_data)
     groups = remove_prefix_from_keys(groups, "XDM.ASSET_GROUP.")
