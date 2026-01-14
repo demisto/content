@@ -1501,6 +1501,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
 
 def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-existing-API-keys
     Gets a list of existing API keys.
     Args:
         client (Client): The Cortex XDR client.
@@ -1543,6 +1544,7 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
     Deletes the specified API keys.
     Args:
         client (Client): The Cortex XDR client.
@@ -1559,6 +1561,7 @@ def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-XQL-Queries
     Gets a list of XQL queries from the library.
     Args:
         client (Client): The Cortex XDR client.
@@ -1589,6 +1592,7 @@ def xql_library_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-XQL-queries
     Creates or updates XQL queries in the library.
     Args:
         client (Client): The Cortex XDR client.
@@ -1602,7 +1606,7 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     xql_query_tag = argToList(args.get("xql_query_tag", []))
 
     if len(xql_query_list) != len(xql_query_name_list):
-        raise DemistoException("need to be the same")
+        raise DemistoException("Please provide equal size lists of xql_query and xql_query_name.")
 
     request_data = assign_params(
         xql_queries_override=override_existing,
@@ -1620,6 +1624,7 @@ def xql_library_create_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def xql_library_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-XQL-Queries
     Deletes XQL queries from the library.
     Args:
         client (Client): The Cortex XDR client.
