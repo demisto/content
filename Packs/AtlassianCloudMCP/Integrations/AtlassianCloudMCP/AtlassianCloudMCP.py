@@ -16,6 +16,7 @@ SERVER_NAME = "Atlassian Cloud MCP"
 
 
 async def main() -> None:  # pragma: no cover
+
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

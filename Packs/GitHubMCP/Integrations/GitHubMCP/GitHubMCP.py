@@ -14,6 +14,7 @@ SERVER_NAME = "GitHub MCP"
 
 
 async def main() -> None:  # pragma: no cover
+
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
