@@ -13,7 +13,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
 import urllib3
@@ -32,7 +32,7 @@ SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
 BASE_PATH = "{}/api/v1".format(PARAMS.get("server"))
-ALERT_BASE_PATH = "{}/api/v2/public".format(PARAMS.get("server"))
+ALERT_BASE_PATH = "{}/api/v2/public/alerts".format(PARAMS.get("server"))
 
 
 HTTP_HEADERS = {"Content-Type": "application/json"}
@@ -47,6 +47,12 @@ OAUTH_EXPIRES_KEY = "oauth_token_expires_at"
 SEARCH ATTRIBUTES VALID VALUES
 """
 
+#TODO: refactor this comments
+# Cloud REST APIs have a rate limit of 60 requests per minute per API route (/trace, /alert, and /quarantine) for every customer.
+# The fetch command includes 1 request for retrieving the alerts, and then 1 request prt each fetched alert for retrieving the severity.
+# (which means max 59 alerts cab be fetched in 1 minutes)
+# TODO: change back to 59
+MAX_FETCHED_ALERT= 50
 REJECTION_REASONS = [
     "ETP102",
     "ETP103",
@@ -81,6 +87,7 @@ STATUS_VALUES = [
     "temporary failure",
 ]
 
+ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 """
 BASIC FUNCTIONS
 """
@@ -567,33 +574,25 @@ def malware_readable_data(malware):
 def alert_context_data(alert):
     context_data = copy.deepcopy(alert)
     # remove 'attributes' level
-    context_data.update(context_data.pop("attributes", {}))
+    context_data.update(context_data.pop("attributes", {})) # TODO: how to change it? there is no attributes field in the response, how to flat the response?
     return context_data
 
 
-def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
-    url = f"{ALERT_BASE_PATH}/alerts"
-
-    # constract the body for the request
-    body = {}
-    attributes = {}
-    if legacy_id:
-        attributes["legacy_id"] = legacy_id
-    if etp_message_id:
-        attributes["etp_message_id"] = etp_message_id
-    if attributes:
-        body["attribute"] = attributes
-    if size:
-        body["size"] = size
+def get_alerts_request(size, from_last_modified_on=None, search_after=None):
+    '''
+    Fetching alerts from /api/v2/public/alerts/search endpoint
+    '''
+    url = f"{ALERT_BASE_PATH}/search"
+    now_utc = datetime.now(timezone.utc).strftime(ISO_FORMAT)
+    
+    body = {"size": size, "sort":{"order": "asc"}}
     if from_last_modified_on:
-        body["fromLastModifiedOn"] = from_last_modified_on
+        body["date_range"] = { "from": from_last_modified_on, "to": now_utc}
+    if search_after:
+        body["sort"]["search_after"] = search_after
 
     response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
-    if raw_response:
-        return response
-    if response["meta"]["total"] == 0:
-        return []
-    return response["data"]
+    return response
 
 
 def get_alerts_command():
@@ -726,11 +725,9 @@ def download_yara_file_command(client, args):
 
 
 def get_alert_request(alert_id):
-    url = f"{BASE_PATH}/alerts/{alert_id}"
+    url = f"{ALERT_BASE_PATH}/{alert_id}" # TODO: i change the url here, check which function calls this function too.
     response = http_request("GET", url)
-    if response["meta"]["total"] == 0:
-        return {}
-    return response["data"][0]
+    return response
 
 
 def quarantine_release_command(client, args):
@@ -796,50 +793,68 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
 
 def parse_alert_to_incident(alert):
     context_data = alert_context_data(alert)
-    incident = {"name": context_data["email"]["headers"]["subject"], "rawJSON": json.dumps(context_data)}
+    incident = {"name": context_data["email-header"]["subject"], "rawJSON": json.dumps(context_data)}
     return incident
 
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    week_ago = datetime.now() - timedelta(days=7)
-    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
+    # TODO: rollback.
+    # week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    # last_timestamp = last_run.get("last_timestamp") or week_ago
 
-    if "last_modified" not in last_run:
-        # parse datetime to iso format string yyy-mm-ddThh:mm:ss.fff
-        last_run["last_modified"] = week_ago.strftime(iso_format)[:-3]
-    if "last_created" not in last_run:
-        last_run["last_created"] = week_ago.strftime(iso_format)
+    week_ago = (datetime.now(timezone.utc) - timedelta(days=700)).strftime(ISO_FORMAT)
+    last_timestamp = "2025-12-17T12:07:00Z"
+    seen_ids = set(last_run.get("seen_ids", []))
 
-    alerts_raw_response = get_alerts_request(from_last_modified_on=last_run["last_modified"], size=100, raw_response=True)
-    # end if no results returned
-    if not alerts_raw_response or not alerts_raw_response.get("data"):
+    response = get_alerts_request(from_last_modified_on=last_timestamp, size=MAX_FETCHED_ALERT)
+
+    if not response or not response.get("data"):
+        demisto.debug(f"[FireEyeETP - fetch_incidents] No incident found from time: {last_timestamp}")
         demisto.incidents([])
         return
 
-    alerts = alerts_raw_response.get("data", [])
-    last_alert_created = parse_string_in_iso_format_to_datetime(last_run["last_created"])
-    alert_creation_limit = parse_string_in_iso_format_to_datetime(last_run["last_created"])
-    incidents = []
+    total_alert_available = response.get("meta", {}).get("total")
+    total_alert_fetched = response.get("meta", {}).get("size")
+    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incident fetched: {total_alert_fetched} from {total_alert_available}")
 
+    alerts = response.get("data", [])
+    filtered_alerts = []
     for alert in alerts:
-        # filter by message status if specified
-        if MESSAGE_STATUS and alert["attributes"]["email"]["status"] not in MESSAGE_STATUS:
-            continue
-        # filter alerts created before 'last_created'
-        current_alert_created = parse_string_in_iso_format_to_datetime(alert["attributes"]["alert"]["timestamp"])
-        if current_alert_created < alert_creation_limit:
-            continue
-        # append alert to incident
-        incidents.append(parse_alert_to_incident(alert))
-        # set last created
-        if current_alert_created > last_alert_created:
-            last_alert_created = current_alert_created
+        alert_id = alert.get("id")
+        email_status = alert.get("email_status")
 
-    last_run["last_modified"] = alerts_raw_response["meta"]["fromLastModifiedOn"]["end"]
-    last_run["last_created"] = last_alert_created.strftime(iso_format)
+        if MESSAGE_STATUS and email_status not in MESSAGE_STATUS:
+            demisto.debug(f"[FireEyeETP - fetch_incidents] incident {alert_id} with status {email_status} filtered out.\n"
+                          "The fetched statuses configured are: {MESSAGE_STATUS}")
+            continue
+        if alert_id in seen_ids:
+            demisto.debug(f"[FireEyeETP - fetch_incidents] incident {alert_id} skipped, already fetched.")
+            continue
 
-    demisto.incidents(incidents)
+        filtered_alerts.append(alert)
+
+    if not filtered_alerts:
+        demisto.debug("[FireEyeETP - fetch_incidents] all incident filtered out.")
+        demisto.incidents([])
+        return
+
+    # TODO: check how to flat alert and use parse_alert_to_incident which gets single alerts.
+    incident = []
+    for alert in filtered_alerts:
+        response = get_alert_request(alert.get("id"))
+        incident.append(response)
+
+    # update last_timestamp and seen_ids for the next fetch cycle
+    last_alert_created = filtered_alerts[-1].get("alert_date") # The response is sorted in ascending order, so the last alert is the newest.
+    updated_seen_ids = []
+    for alert in filtered_alerts[::]:
+        if alert.get("alert_date") == last_alert_created:
+            updated_seen_ids = []
+        
+    last_run["last_timestamp"] = last_alert_created
+
+    demisto.incidents(incident)
     demisto.setLastRun(last_run)
 
 

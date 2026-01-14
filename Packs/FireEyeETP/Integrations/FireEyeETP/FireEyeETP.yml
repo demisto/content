@@ -327,7 +327,9 @@ script:
       description: Email eccepted time.
     - contextPath: FireEyeETP.Alerts.id
       description: The alert unique ID.
-    description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
+    description: 'Detailed information from any particular alert. Alerts more than 90 days old are not available.
+      Deprecated. Use the fireeye-etp-list-alert instead.'
+    deprecated: true
   - name: fireeye-etp-download-alert-artifact
     arguments:
     - name: alert_id
