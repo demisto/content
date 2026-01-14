@@ -706,7 +706,6 @@ def _query_set_limit(query: str, limit: int) -> str:
     # Check if query already has a limit or take at the top level (not inside parentheses)
     # We'll use a simple approach: only add/modify limit at the top level (outside parentheses)
 
-    # Count parentheses to track nesting level
     def get_top_level_pipes(query_str: str) -> list:
         """Split query by pipes that are at parenthesis level 0 (top level)."""
         parts = []
@@ -716,19 +715,20 @@ def _query_set_limit(query: str, limit: int) -> str:
         i = 0
         while i < len(query_str):
             char = query_str[i]
+            next_char = query_str[i + 1] if i + 1 < len(query_str) else ""
+            prev_char = query_str[i - 1] if i > 0 else ""
 
             if char == "(":
                 paren_depth += 1
-                current_part.append(char)
             elif char == ")":
                 paren_depth -= 1
-                current_part.append(char)
-            elif char == "|" and i + 1 < len(query_str) and query_str[i + 1] != "|" and paren_depth == 0:
-                # Single pipe at top level (not ||)
-                if current_part:
-                    parts.append("".join(current_part))
-                    current_part = []
-                # Skip the pipe
+
+            # Handle pipes (avoid splitting on ||)
+            is_pipe = (char == "|" and next_char != "|" and prev_char != "|")
+
+            if is_pipe and paren_depth == 0:
+                parts.append("".join(current_part))
+                current_part = []
             else:
                 current_part.append(char)
 
@@ -743,15 +743,14 @@ def _query_set_limit(query: str, limit: int) -> str:
     # Split query into top-level sections
     query_parts = get_top_level_pipes(query)
 
-    # Check if any top-level section starts with limit or take
+    # Check if any top-level section starts with limit or take (case-insensitive)
     changed = False
     for i, part in enumerate(query_parts):
         stripped = part.strip()
-        if stripped.startswith(("limit ", "take ")):
+        if stripped.lower().startswith(("limit ", "take ")):
             # Replace this section with new limit
             query_parts[i] = f" limit {limit} "
             changed = True
-            break
 
     # If no limit found, append it
     if not changed:

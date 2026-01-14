@@ -216,6 +216,14 @@ def test_query_set_limit(query: str, limit: int, expected_has_limit: bool):
         ),
         # Test case 5: Query already has limit at top level
         ("Table1 | union (Table2 | take 100) | limit 50", 10, ["Table1", "union (Table2 | take 100)", "limit 10"]),
+        # Test case 6: Pipe in string literal (should be preserved via split/rejoin)
+        ('Table | where A == "B | C"', 10, ['where A == "B | C"', "limit 10"]),
+        # Test case 7: Logical OR operator || (should not be split)
+        ("Table | where A == B || C == D", 10, ["where A == B || C == D", "limit 10"]),
+        # Test case 8: Case-insensitive limit/take
+        ("Table | TAKE 5", 10, ["limit 10"]),
+        # Test case 9: Multiple top-level limits
+        ("Table | limit 5 | limit 10", 20, ["limit 20", "limit 20"]),
     ],
 )
 def test_query_set_limit_complex_queries(query: str, limit: int, expected_contains: list):
