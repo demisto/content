@@ -1,4 +1,5 @@
 category: Utilities
+provider: UltraMSG
 commonfields:
   id: UltraMSG
   version: -1
@@ -13,16 +14,16 @@ configuration:
   name: instance
   required: true
   type: 0
-description: This is the UltraMSG integration for getting started made by Trustnet
+description: This is the UltraMSG integration for getting started made by Trustnet.
 display: UltraMSG
 name: UltraMSG
 script:
   commands:
   - arguments:
-    - description: 'Phone Number or Group ID. Example: +972501234567'
+    - description: 'Phone Number or Group ID. Example: +972501234567.'
       name: id
       required: true
-    - description: Message Body
+    - description: Message Body.
       name: text
       required: true
     description: Send WhatsApp Message
