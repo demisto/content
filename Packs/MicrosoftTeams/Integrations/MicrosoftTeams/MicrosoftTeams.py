@@ -1896,7 +1896,7 @@ def chat_message_list_command():
         messages_list_response: dict = cast(dict[str, Any], http_request("GET", next_link))
     else:
         messages_list_response = get_messages_list(
-            chat_id=chat_id, odata_params={"$orderBy": args.get("order_by", "lastModifiedDateTime") + " desc", "$top": top}
+            chat_id=chat_id, odata_params={"$orderBy": args.get("order_by") + " desc", "$top": top}
         )
     messages_data, next_link = pages_puller(messages_list_response, limit)
 
@@ -1914,7 +1914,6 @@ def chat_message_list_command():
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
-            "MicrosoftTeams.ChatListMetadata": {"returned_results": len(messages_data), "filtered_results": limit},
         },
     )
     return_results(result)
@@ -1930,7 +1929,7 @@ def list_messages_command():
     message_id = args.get("message_id", "")
     if team_name:
         team_id = get_team_aad_id(team_name)
-        
+
     next_link = args.get("next_link", "")
 
     limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
@@ -1965,9 +1964,7 @@ def list_messages_command():
 
     hr = [get_message_human_readable(message) for message in messages_data]
     result = CommandResults(
-        readable_output=tableToMarkdown(
-            f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True
-        )
+        readable_output=tableToMarkdown(f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True)
         + (
             f"\nThere are more results than shown. "
             f"For more data please enter the next_link argument:\n "
