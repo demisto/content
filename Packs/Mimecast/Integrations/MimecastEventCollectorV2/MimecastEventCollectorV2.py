@@ -248,7 +248,7 @@ class AsyncClient:
             except aiohttp.ClientResponseError as e:
                 status_code = e.status
 
-                # Handle 401 Unauthorized - regenerate token and retry once
+                # Handle 401 Unauthorized - regenerate token and retry once and return
                 if status_code == HTTPStatus.UNAUTHORIZED:
                     demisto.debug(f"{log_prefix} Received HTTP 401 Unauthorized. Generating new token and retrying...")
                     headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
@@ -258,7 +258,7 @@ class AsyncClient:
                         response.raise_for_status()
                         return response_json
 
-                # Handle 429 Too Many Requests - exponential backoff
+                # Handle 429 Too Many Requests - retry up to `max_retries` with exponential backoff
                 elif status_code == HTTPStatus.TOO_MANY_REQUESTS:
                     if retry_count >= max_retries:
                         raise
