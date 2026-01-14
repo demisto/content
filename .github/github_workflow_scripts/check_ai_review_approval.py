@@ -115,7 +115,7 @@ def is_user_in_permitted_team(github_client: Github, username: str) -> bool:
         return False
 
 
-def was_skip_label_added_by_permitted_user(pr: PullRequest, github_client: Github) -> tuple[bool, str]:
+def was_skip_label_added_by_authorized_user(pr: PullRequest, github_client: Github) -> tuple[bool, str]:
     """
     Check if the skip-ai-review label was added by a member of the permitted team.
 
@@ -147,6 +147,30 @@ def is_contrib_branch_by_content_bot(pr: PullRequest) -> bool:
     """
     return pr.head.ref.startswith(CONTRIB_BRANCH_PREFIX) and pr.user.login == BOT_USERNAME
 
+def should_bypass_check(github_client: Github, pr: PullRequest):
+    """
+    Check for Bypass Label with proper authorization
+    
+    Arguments:
+    
+    """
+    current_labels = [label.name for label in pr.get_labels()]
+    if SKIP_LABEL in current_labels:
+        if is_contrib_branch_by_content_bot(pr):    
+            print(f'✅ Found "{SKIP_LABEL}" label on contrib branch PR by {BOT_USERNAME}. Skipping AI review check.')
+            return True
+                
+        # Check if the label was added by an authorized team member
+        is_authorized, added_by = was_skip_label_added_by_authorized_user(pr, github_client)
+        if is_authorized:
+            print(
+                f'✅ Found "{SKIP_LABEL}" label added by {added_by} (member of {PERMITTED_TEAM_SLUG}). Skipping AI review check.'
+            )
+            return True
+
+        # Label exists but not authorized
+        print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {PERMITTED_TEAM_SLUG}. Ignoring label.')
+    return False
 
 def main():
     """
@@ -161,30 +185,13 @@ def main():
     github_token = options.github_token
     print(f"Checking PR {pr_number}")
 
-    g = Github(github_token, verify=False)
-    repo = g.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
+    github_client = Github(github_token, verify=False)
+    repo = github_client.get_repo(f"{REPO_OWNER}/{REPO_NAME}")
     pr = repo.get_pull(int(pr_number))
 
-    # 1. Check for Bypass Label with proper authorization
-    pr_label_names = [label.name for label in pr.labels]
-    if SKIP_LABEL in pr_label_names and is_contrib_branch_by_content_bot(pr):
-        print(f'✅ Found "{SKIP_LABEL}" label on contrib branch PR by {BOT_USERNAME}. Skipping AI review check.')
+    if should_bypass_check(github_client, pr):
         sys.exit(0)
-
-    current_labels = [label.name for label in pr.get_labels()]
-
-    if SKIP_LABEL in current_labels:
-        # Check if the label was added by a permitted team member
-        is_permitted, added_by = was_skip_label_added_by_permitted_user(pr, g)
-        if is_permitted:
-            print(
-                f'✅ Found "{SKIP_LABEL}" label added by {added_by} (member of {PERMITTED_TEAM_SLUG}). Skipping AI review check.'
-            )
-            sys.exit(0)
-
-        # Label exists but not authorized
-        print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {PERMITTED_TEAM_SLUG}. Ignoring label.')
-
+        
     print("Fetching reviews...")
     reviews = pr.get_reviews()
 
