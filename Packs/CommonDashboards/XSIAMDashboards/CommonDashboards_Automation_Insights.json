@@ -86,7 +86,7 @@
                                 "title": "Automated vs manual actions",
                                 "width": 33.333333333333336,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics\n| alter action_type = if(is_manual = true, \"Manual\", \"Automated\")\n| comp count() as action_count by action_type\n| sort desc action_count\n| view graph type = pie xaxis = action_type yaxis = action_count legend_percentage = `true` ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| alter action_type = if(is_manual = true, \"Manual\", \"Automated\")\n| comp count() as action_count by action_type\n| sort desc action_count\n| view graph type = pie xaxis = action_type yaxis = action_count legend_percentage = `true` ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -130,7 +130,7 @@
                                 "title": "Incidents closed over time",
                                 "width": 33.333333333333336,
                                 "height": 511,
-                                "phrase": "dataset = incidents \n| filter resolved_ts != null and resolved_ts != \"\"\n| alter resolved_time = to_timestamp(resolved_ts)\n| bin resolved_time span = 1d\n| comp count() as closed_count by resolved_time, alert_categories\n| sort asc resolved_time\n| view graph type = line xaxis = resolved_ts yaxis = closed_count series = alert_categories ",
+                                "phrase": "dataset = incidents \n| filter resolved_ts != null\n| bin resolved_ts span = 1d\n| comp count() as closed_count by resolved_ts\n| sort asc resolved_ts\n| view graph type = line xaxis = resolved_ts yaxis = closed_count",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -207,7 +207,7 @@
                                 "type": "Custom XQL",
                                 "title": "Command executions per integration category",
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as exec_count by category\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = category yaxis = exec_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as exec_count by category\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = category yaxis = exec_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
