@@ -3156,7 +3156,7 @@ script:
         name: private_dns_hostname_type_on_launch
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of VPC IDs.
       name: vpc_ids
@@ -3258,7 +3258,7 @@ script:
       type: string
 
   - arguments:
-    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of subnet IDs.
       name: subnet_ids
@@ -3359,7 +3359,7 @@ script:
   - arguments:
     - description: A comma-separated list of the IPAM resource discovery IDs.
       name: ipam_resource_discovery_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -3429,7 +3429,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: ipam_resource_discovery_association_ids
-    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
