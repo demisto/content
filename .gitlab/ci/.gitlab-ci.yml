@@ -1,9 +1,9 @@
 variables:
   # CURRENT_BRANCH_NAME: $INFRA_BRANCH
-  CURRENT_BRANCH_NAME: "test-ai-security-alerts"
+  CURRENT_BRANCH_NAME: "cache-ai-reviewer-results"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     # ref: $INFRA_BRANCH
-    ref: "test-ai-security-alerts"
+    ref: "cache-ai-reviewer-results"
     project: "${CI_PROJECT_NAMESPACE}/infra"
