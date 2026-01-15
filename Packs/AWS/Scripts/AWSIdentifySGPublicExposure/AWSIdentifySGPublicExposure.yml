@@ -69,17 +69,17 @@ tests:
 engineinfo: {}
 runonce: false
 outputs:
-- contextPath: AWSPublicExposure.EC2InstanceID
+- contextPath: AWSPublicExposure.SGAssociations.EC2InstanceID
   description: ID of the EC2 instance with public exposure.
   type: string
-- contextPath: AWSPublicExposure.NetworkInterfaceID
+- contextPath: AWSPublicExposure.SGAssociations.NetworkInterfaceID
   description: ID of the Elastic Network Interface with public exposure.
-- contextPath: AWSPublicExposure.SecurityGroups
+- contextPath: AWSPublicExposure.SGAssociations.SecurityGroups
   description: Security Group IDs associated with this interface.
   type: unknown
-- contextPath: AWSPublicExposure.PublicIP
+- contextPath: AWSPublicExposure.SGAssociations.PublicIP
   description: Public IP address exposed.
   type: string
-- contextPath: AWSPublicExposure.IntegrationInstance
+- contextPath: AWSPublicExposure.SGAssociations.IntegrationInstance
   description: The AWS Integration Instance used for identification.
   type: string

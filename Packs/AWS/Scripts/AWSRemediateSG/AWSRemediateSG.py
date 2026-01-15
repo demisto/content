@@ -499,21 +499,26 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
 
     replace_list = fix_excessive_access(account_id, sg_list, port, protocol, integration_instance, region)
 
-    # Create updated_sg_list with old SGs replaced by new ones
-    updated_sg_list = sg_list.copy()
-    for replacement in replace_list:
-        old_sg = replacement.get("old-sg")
-        new_sg = replacement.get("new-sg")
-        if old_sg and new_sg and old_sg in updated_sg_list:
-            # Replace the old SG with the new SG in the list
-            index = updated_sg_list.index(old_sg)
-            updated_sg_list[index] = new_sg
+    if replace_list:
+        # Create updated_sg_list with old SGs replaced by new ones
+        updated_sg_list = sg_list.copy()
+        for replacement in replace_list:
+            old_sg = replacement.get("old-sg")
+            new_sg = replacement.get("new-sg")
+            if old_sg and new_sg and old_sg in updated_sg_list:
+                # Replace the old SG with the new SG in the list
+                index = updated_sg_list.index(old_sg)
+                updated_sg_list[index] = new_sg
 
-    return CommandResults(
-        outputs_prefix="AWSPublicExposure.SGReplacements",
-        outputs_key_field="ResourceID",
-        outputs={"ResourceID": resource_id, "ReplacementSet": replace_list, "UpdatedSGList": updated_sg_list},
-    )
+        return CommandResults(
+            outputs_prefix="AWSPublicExposure.SGReplacements",
+            outputs_key_field="ResourceID",
+            outputs={"ResourceID": resource_id, "ReplacementSet": replace_list, "UpdatedSGList": updated_sg_list},
+        )
+    else:
+        return CommandResults(
+            readable_output="No security groups required remediation based on the provided inputs.",
+        )
 
 
 def main():
