@@ -9116,6 +9116,7 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
 
+
 def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
     """
     GIVEN:
@@ -9129,16 +9130,9 @@ def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
 
     mock_client = mocker.Mock()
     # Mock get_webapp_data to return a single case with issue_count > 1
-    mock_client.get_webapp_data.return_value = {
-        "reply": {
-            "DATA": [{"CASE_ID": 12345, "issue_count": 2}],
-            "FILTER_COUNT": "1"
-        }
-    }
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 12345, "issue_count": 2}], "FILTER_COUNT": "1"}}
     # Mock get_case_ai_summary
-    mock_client.get_case_ai_summary.return_value = {
-        "reply": {"case_description": "AI Summary", "case_name": "AI Name"}
-    }
+    mock_client.get_case_ai_summary.return_value = {"reply": {"case_description": "AI Summary", "case_name": "AI Name"}}
     # Mock map_case_format to return the case with the same ID
     mocker.patch("CortexPlatformCore.map_case_format", return_value=[{"case_id": "12345", "issue_count": 2}])
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
@@ -9164,12 +9158,7 @@ def test_init_client(mocker: MockerFixture):
     """
     from CortexPlatformCore import init_client
 
-    mocker.patch.object(demisto, "params", return_value={
-        "api_key": "test_key",
-        "proxy": True,
-        "insecure": True,
-        "timeout": "60"
-    })
+    mocker.patch.object(demisto, "params", return_value={"api_key": "test_key", "proxy": True, "insecure": True, "timeout": "60"})
 
     client = init_client("webapp")
     assert client._base_url == "/api/webapp"
@@ -9192,6 +9181,7 @@ def test_verify_platform_version_success(mocker: MockerFixture):
         No exception is raised.
     """
     from CortexPlatformCore import verify_platform_version
+
     mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=True)
 
     # Should not raise
@@ -9208,6 +9198,7 @@ def test_verify_platform_version_failure(mocker: MockerFixture):
         A DemistoException is raised.
     """
     from CortexPlatformCore import verify_platform_version, DemistoException
+
     mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=False)
 
     with pytest.raises(DemistoException, match="This command is not available for this platform version"):
