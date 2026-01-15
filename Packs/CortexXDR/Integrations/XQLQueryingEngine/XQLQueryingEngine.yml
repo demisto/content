@@ -1588,58 +1588,6 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  - arguments:
-    - description: Whether to return an extended view.
-      name: extra_data
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-    - description: A list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
-      isArray: true
-      name: xql_query_name
-    - description: A list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
-      isArray: true
-      name: xql_query_tag
-    description: Gets a list of XQL queries from the library.
-    name: xdr-xql-library-list
-    outputs:
-    - contextPath: PaloAltoNetworksXQL.Library.query_name
-      description: The name of the XQL query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.Library.query_tags
-      description: The tags of the XQL query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.Library.xql_query
-      description: The XQL query string.
-      type: String
-  - arguments:
-    - description: Whether to override existing queries.
-      name: override_existing
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-    - description: 'A list of XQL query strings. For example: "dataset = xdr_data |limit 1"'
-      isArray: true
-      name: xql_query
-    - description: A list of new XQL query names. The XQL query name should be unique.
-      isArray: true
-      name: xql_query_name
-    - description: A list of new XQL query tags.
-      isArray: true
-      name: xql_query_tag
-    description: Creates or updates XQL queries in the library.
-    name: xdr-xql-library-create
-  - arguments:
-    - description: A list of XQL query names to delete. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
-      isArray: true
-      name: xql_query_name
-    - description: A list of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
-      isArray: true
-      name: xql_query_tag
-    description: Deletes XQL queries from the library.
-    name: xdr-xql-library-delete
   dockerimage: demisto/python3:3.12.12.6151721
   runonce: false
   script: '-'
