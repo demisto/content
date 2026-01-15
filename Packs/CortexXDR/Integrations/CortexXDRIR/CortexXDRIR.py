@@ -1264,14 +1264,11 @@ def fetch_incidents(
             description = incident_data.get("description")
             occurred = timestamp_to_datestring(incident_data["creation_time"], TIME_FORMAT + "Z")
             incident: dict[str, Any] = {
+                "name": f"XDR Incident {incident_id} - {incident_name or description}",
                 "occurred": occurred,
                 "rawJSON": json.dumps(incident_data),
+                "details": description
             }
-            if incident_name:  # for XDR V4
-                incident["name"] = f"XDR Incident {incident_id} - {incident_name}"
-                incident["description"] = description
-            else:  # for XDR Legacy
-                incident["name"] = f"XDR Incident {incident_id} - {description}"
             if demisto.params().get("sync_owners") and incident_data.get("assigned_user_mail"):
                 incident["owner"] = demisto.findUser(email=incident_data["assigned_user_mail"]).get("username")
             # Update last run and add incident if the incident is newer than last fetch
