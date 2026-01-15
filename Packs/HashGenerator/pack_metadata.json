@@ -1,0 +1,30 @@
+{
+    "name": "HashGenerator",
+    "description": "A utility pack for generating MD5, SHA1, and SHA256 hashes from input text.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2026-01-15T00:00:00Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "hash",
+        "transformer"
+    ],
+    "useCases": [],
+    "keywords": [
+        "hash",
+        "md5",
+        "sha1",
+        "sha256",
+        "checksum"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
