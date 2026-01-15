@@ -51,8 +51,8 @@ SEARCH ATTRIBUTES VALID VALUES
 # Cloud REST APIs have a rate limit of 60 requests per minute per API route (/trace, /alert, and /quarantine) for every customer.
 # The fetch command includes 1 request for retrieving the alerts, and then 1 request prt each fetched alert for retrieving the severity.
 # (which means max 59 alerts cab be fetched in 1 minutes)
-# TODO: change back to 59
-MAX_FETCHED_ALERT= 50
+
+MAX_FETCHED_ALERT= 59 # TODO: change it to incidents_per_fetch configuration param and add to readme
 REJECTION_REASONS = [
     "ETP102",
     "ETP103",
@@ -578,18 +578,17 @@ def alert_context_data(alert):
     return context_data
 
 
-def get_alerts_request(size, from_last_modified_on=None, search_after=None):
+def get_alerts_request(size, start_time=None, end_time=None, pagination_token=None):
     '''
     Fetching alerts from /api/v2/public/alerts/search endpoint
     '''
     url = f"{ALERT_BASE_PATH}/search"
-    now_utc = datetime.now(timezone.utc).strftime(ISO_FORMAT)
     
     body = {"size": size, "sort":{"order": "asc"}}
-    if from_last_modified_on:
-        body["date_range"] = { "from": from_last_modified_on, "to": now_utc}
-    if search_after:
-        body["sort"]["search_after"] = search_after
+    if start_time and end_time:
+        body["date_range"] = { "from": start_time, "to": end_time}
+    if pagination_token:
+        body["sort"]["search_after"] = pagination_token
 
     response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
     return response
@@ -607,7 +606,8 @@ def get_alerts_command():
     # get raw data
     alerts_raw = get_alerts_request(
         legacy_id=args.get("legacy_id"),
-        from_last_modified_on=args.get("from_last_modified_on"),
+        start_time=args.get("from_last_modified_on"),
+        end_time = datetime.now(timezone.utc).strftime(ISO_FORMAT),
         etp_message_id=args.get("etp_message_id"),
         size=args.get("size"),
     )
@@ -799,24 +799,25 @@ def parse_alert_to_incident(alert):
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    # TODO: rollback.
-    # week_ago = datetime.now(timezone.utc) - timedelta(days=7)
-    # last_timestamp = last_run.get("last_timestamp") or week_ago
 
-    week_ago = (datetime.now(timezone.utc) - timedelta(days=700)).strftime(ISO_FORMAT)
-    last_timestamp = "2025-12-17T12:07:00Z"
-    seen_ids = set(last_run.get("seen_ids", []))
+    week_ago = (datetime.now(timezone.utc) - timedelta(days=700)).strftime(ISO_FORMAT) # TODO: change it to fetch_time configuration param? or ask Dmitry about it, should it be "now"?
+    now_utc =  datetime.now(timezone.utc).strftime(ISO_FORMAT)
+    pagination_token = last_run.get("pagination_token")
 
-    response = get_alerts_request(from_last_modified_on=last_timestamp, size=MAX_FETCHED_ALERT)
+    response = get_alerts_request(size=MAX_FETCHED_ALERT, start_time=week_ago, end_time=now_utc, pagination_token=pagination_token)
 
+    # When no alerts are found, there is no search_after token in the response.
     if not response or not response.get("data"):
-        demisto.debug(f"[FireEyeETP - fetch_incidents] No incident found from time: {last_timestamp}")
+        demisto.debug("[FireEyeETP - fetch_incidents] No incident found.")
         demisto.incidents([])
         return
+    
+    pagination_token = response.get("meta", {}).get("search_after")
+    if pagination_token:
+        last_run["pagination_token"] = pagination_token
 
-    total_alert_available = response.get("meta", {}).get("total")
     total_alert_fetched = response.get("meta", {}).get("size")
-    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incident fetched: {total_alert_fetched} from {total_alert_available}")
+    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incident fetched: {total_alert_fetched}.")
 
     alerts = response.get("data", [])
     filtered_alerts = []
@@ -828,10 +829,6 @@ def fetch_incidents():
             demisto.debug(f"[FireEyeETP - fetch_incidents] incident {alert_id} with status {email_status} filtered out.\n"
                           "The fetched statuses configured are: {MESSAGE_STATUS}")
             continue
-        if alert_id in seen_ids:
-            demisto.debug(f"[FireEyeETP - fetch_incidents] incident {alert_id} skipped, already fetched.")
-            continue
-
         filtered_alerts.append(alert)
 
     if not filtered_alerts:
@@ -839,20 +836,12 @@ def fetch_incidents():
         demisto.incidents([])
         return
 
-    # TODO: check how to flat alert and use parse_alert_to_incident which gets single alerts.
+    # TODO: check how to flat alert and use parse_alert_to_incident which gets single alerts, which info shpuld apper on the incident? the first or second request?
     incident = []
     for alert in filtered_alerts:
         response = get_alert_request(alert.get("id"))
+        severity = response.get("alert", {}).get("severity")
         incident.append(response)
-
-    # update last_timestamp and seen_ids for the next fetch cycle
-    last_alert_created = filtered_alerts[-1].get("alert_date") # The response is sorted in ascending order, so the last alert is the newest.
-    updated_seen_ids = []
-    for alert in filtered_alerts[::]:
-        if alert.get("alert_date") == last_alert_created:
-            updated_seen_ids = []
-        
-    last_run["last_timestamp"] = last_alert_created
 
     demisto.incidents(incident)
     demisto.setLastRun(last_run)
