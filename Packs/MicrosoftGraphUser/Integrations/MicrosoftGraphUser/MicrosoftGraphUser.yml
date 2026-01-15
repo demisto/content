@@ -576,10 +576,10 @@ script:
     - contextPath: MSGraphUserAuthMethods.ID
       description: The user ID.
       type: String
-    - contextPath: MSGraphUserAuthMethods.AuthMethods.Methods.CreatedDateTime
+    - contextPath: MSGraphUserAuthMethods.Methods.CreatedDateTime
       description: Authentication method's creation date and time.
       type: String
-    - contextPath: MSGraphUserAuthMethods.AuthMethods.Methods.ID
+    - contextPath: MSGraphUserAuthMethods.Methods.ID
       description: The unique identifier for the authentication method.
       type: String
     - contextPath: MSGraphUserAuthMethods.Methods.@Odata.Type
