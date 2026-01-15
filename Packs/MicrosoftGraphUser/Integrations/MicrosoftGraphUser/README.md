@@ -343,32 +343,32 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The User ID or userPrincipalName of the user for which to get the owned devices properties. | Required |
+| user | The User ID or userPrincipalName of the user for which to get the MFA methods properties. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.ID | String | User's ID. |
-| MSGraphUser.DisplayName | String | User's display name. |
-| MSGraphUser.GivenName | String | User's given name. |
-| MSGraphUser.BusinessPhones | String | User's business phone numbers. |
-| MSGraphUser.JobTitle | String | User's job title. |
-| MSGraphUser.Mail | String | User's mail address. |
-| MSGraphUser.MobilePhone | String | User's mobile phone number. |
-| MSGraphUser.OfficeLocation | String | User's office location. |
-| MSGraphUser.PreferredLanguage | String | User's preferred language. |
-| MSGraphUser.Surname | String | User's surname. |
-| MSGraphUser.UserPrincipalName | String | User's principal name. |
-| MSGraphUser.NextPage | String | A token to pass to the next list command to retrieve additional results. |
-| Account.ID | String | User’s ID. |
-| Account.DisplayName | String | User’s display name. |
-| Account.Username | String | User’s principal name. |
-| Account.JobTitle | String | User’s job title. |
-| Account.Email.Address | String | User’s mail address. |
-| Account.TelephoneNumber | String | User’s mobile phone number. |
-| Account.Office | String | User’s office location. |
-| Account.Type | String | The account entity type. |
+| MSGraphUser.ID | String | User's ID. | 
+| MSGraphUser.DisplayName | String | User's display name. | 
+| MSGraphUser.GivenName | String | User's given name. | 
+| MSGraphUser.BusinessPhones | String | User's business phone numbers. | 
+| MSGraphUser.JobTitle | String | User's job title. | 
+| MSGraphUser.Mail | String | User's mail address. | 
+| MSGraphUser.MobilePhone | String | User's mobile phone number. | 
+| MSGraphUser.OfficeLocation | String | User's office location. | 
+| MSGraphUser.PreferredLanguage | String | User's preferred language. | 
+| MSGraphUser.Surname | String | User's surname. | 
+| MSGraphUser.UserPrincipalName | String | User's principal name. | 
+| MSGraphUser.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
+| Account.ID | String | User’s ID. | 
+| Account.DisplayName | String | User’s display name. | 
+| Account.Username | String | User’s principal name. | 
+| Account.JobTitle | String | User’s job title. | 
+| Account.Email.Address | String | User’s mail address. | 
+| Account.TelephoneNumber | String | User’s mobile phone number. | 
+| Account.Office | String | User’s office location. | 
+| Account.Type | String | The account entity type. | 
 
 ### msgraph-direct-reports
 
@@ -813,7 +813,6 @@ This operation is supported only when using a self-deployed app flow with the Di
 #### Context Output
 
 There is no context output for this command.
-
 ### msgraph-user-get-groups
 
 ***
@@ -827,75 +826,52 @@ Retrieves the groups a user is part of.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
+| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional | 
+| next_page | The URL for the next page in the list. | Optional | 
+| filter | Filter to be used directly with the API. For more information on the filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUserGroups.classification | String | Value used to classify data types in your groups. |
-| MSGraphUserGroups.@Odata.Type | String | A string value that can be used to classify user's groups. |
-| MSGraphUserGroups.createdDateTime | String | Groups creation date and time. |
-| MSGraphUserGroups.creationOptions | String | Groups creation options. |
-| MSGraphUserGroups.deletedDateTime | String | Groups deletion date and time. |
-| MSGraphUserGroups.description | String | Groups description string. |
-| MSGraphUserGroups.displayName | String | Groups display name. |
-| MSGraphUserGroups.expirationDateTime | String | Groups expiration date and time. |
-| MSGraphUserGroups.groupTypes | String | Groups group Types. |
-| MSGraphUserGroups.id | String | Groups id. |
-| MSGraphUserGroups.isAssignableToRole | Bool | Groups role assignability. |
-| MSGraphUserGroups.mail | String | Groups associated mail. |
-| MSGraphUserGroups.mailEnabled | Bool | Groups mail enablement. |
-| MSGraphUserGroups.mailNickname | String | Groups mailNickname. |
-| MSGraphUserGroups.membershipRule | String | Groups membershipRule. |
-| MSGraphUserGroups.membershipRuleProcessingState | String | Groups membershipRuleProcessingState. |
-| MSGraphUserGroups.onPremisesDomainName | String | Groups onPremisesDomainName. |
-| MSGraphUserGroups.onPremisesLastSyncDateTime | String | Groups onPremisesLastSyncDateTime. |
-| MSGraphUserGroups.onPremisesNetBiosName | String | Groups onPremisesNetBiosName. |
-| MSGraphUserGroups.onPremisesProvisioningErrors | String | Groups onPremisesProvisioningErrors. |
-| MSGraphUserGroups.onPremisesSamAccountName | String | Groups onPremisesSamAccountName. |
-| MSGraphUserGroups.onPremisesSecurityIdentifier | String | Groups onPremisesSecurityIdentifier. |
-| MSGraphUserGroups.onPremisesSyncEnabled | String | Groups onPremisesSyncEnabled. |
-| MSGraphUserGroups.preferredDataLocation | String | Groups preferredDataLocation. |
-| MSGraphUserGroups.preferredLanguage | String | Groups preferredLanguage. |
-| MSGraphUserGroups.proxyAddresses | String | Groups proxyAddresses. |
-| MSGraphUserGroups.renewedDateTime | String | Groups renewed date and time. |
-| MSGraphUserGroups.resourceBehaviorOptions | String | Groups resourceBehaviorOptions. |
-| MSGraphUserGroups.resourceProvisioningOptions | String | Groups resourceProvisioningOptions. |
-| MSGraphUserGroups.securityEnabled | Bool | Groups security enablement. |
-| MSGraphUserGroups.securityIdentifier | String | Groups securityIdentifier. |
-| MSGraphUserGroups.serviceProvisioningErrors | String | Groups serviceProvisioningErrors. |
-| MSGraphUserGroups.theme | String | Groups theme. |
-| MSGraphUserGroups.uniqueName | String | Groups uniqueName. |
-| MSGraphUserGroups.visibility | String | Groups visibility. |
-| MSGraphUserGroups.wellKnownObject | String | Groups wellKnownObject. |
-
-#### Command example
-
-```!msgraph-user-get-groups user=123456-abcd-7890-erty-987qwe987```
-
-#### Context Example
-
-```json
-{
-    "@odata.type": "#microsoft.graph.group"
-    "classification": "test_classification"
-    "createdDateTime": "2022-06-27T12:36:12Z"
-    "creationOptions": "test_options"
-    "deletedDateTime": "2022-06-27T12:36:12Z"
-    "description": "test_desc"
-    "displayName": "test_display_name"
-    "expirationDateTime": "2022-06-27T12:36:12Z"
-    "groupTypes": "test_group_types"
-    "id": "123456-abcd-7890-erty-987qwe987"
-    "isAssignableToRole": true
-    "mail": "test_mail"
-    "mailEnabled": false
-    "mailNickname": "test_nickname"
-    "renewedDateTime": "2022-06-27T12:36:12Z"
-    "securityEnabled": true
-}
-```
+| MSGraphUserGroups.ID | String | The user ID. | 
+| MSGraphUserGroups.Groups.Classification | String | Value used to classify data types in your groups. | 
+| MSGraphUserGroups.Groups.@Odata.Type | String | A string value that can be used to classify the user's groups. | 
+| MSGraphUserGroups.Groups.CreatedDateTime | String | Group creation date and time. | 
+| MSGraphUserGroups.Groups.CreationOptions | String | Group creation options. | 
+| MSGraphUserGroups.Groups.DeletedDateTime | String | Group deletion date and time. | 
+| MSGraphUserGroups.Groups.Description | String | Group description string. | 
+| MSGraphUserGroups.Groups.DisplayName | String | Group display name. | 
+| MSGraphUserGroups.Groups.ExpirationDateTime | String | Group expiration date and time. | 
+| MSGraphUserGroups.Groups.GroupTypes | String | The types assigned to the group. | 
+| MSGraphUserGroups.Groups.ID | String | Group id. | 
+| MSGraphUserGroups.Groups.IsAssignableToRole | Bool | Indicates whether the group can be assigned to roles. | 
+| MSGraphUserGroups.Groups.Mail | String | Group associated mail. | 
+| MSGraphUserGroups.Groups.MailEnabled | Bool | Indicates whether the group has mail enabled. | 
+| MSGraphUserGroups.Groups.MailNickname | String | Mail nickname of the group. | 
+| MSGraphUserGroups.Groups.MembershipRule | String | Membership rule applied to the group. | 
+| MSGraphUserGroups.Groups.MembershipRuleProcessingState | String | Processing state of the group’s membership rule. | 
+| MSGraphUserGroups.Groups.OnPremisesDomainName | String | On-premises domain name associated with the group. | 
+| MSGraphUserGroups.Groups.OnPremisesLastSyncDateTime | String | Date and time when the group was last synchronized from on-premises. | 
+| MSGraphUserGroups.Groups.OnPremisesNetBiosName | String | On-premises NetBIOS name of the group. | 
+| MSGraphUserGroups.Groups.OnPremisesProvisioningErrors | String | Errors encountered during on-premises provisioning of the group. | 
+| MSGraphUserGroups.Groups.OnPremisesSamAccountName | String | SAM account name of the group in on-premises Active Directory. | 
+| MSGraphUserGroups.Groups.OnPremisesSecurityIdentifier | String | Security identifier \(SID\) of the group in on-premises Active Directory. | 
+| MSGraphUserGroups.Groups.OnPremisesSyncEnabled | String | Indicates whether the group is synchronized from on-premises. | 
+| MSGraphUserGroups.Groups.PreferredDataLocation | String | Preferred geographic location for the group’s data. | 
+| MSGraphUserGroups.Groups.PreferredLanguage | String | Preferred language for the group. | 
+| MSGraphUserGroups.Groups.ProxyAddresses | String | Email addresses associated with the group. | 
+| MSGraphUserGroups.Groups.RenewedDateTime | String | Date and time the group was last renewed. | 
+| MSGraphUserGroups.Groups.ResourceBehaviorOptions | String | Options defining the group’s behavior as a resource. | 
+| MSGraphUserGroups.Groups.ResourceProvisioningOptions | String | Options used for provisioning the group as a resource. | 
+| MSGraphUserGroups.Groups.SecurityEnabled | Bool | Indicates whether the group is security-enabled. | 
+| MSGraphUserGroups.Groups.SecurityIdentifier | String | Security identifier of the group. | 
+| MSGraphUserGroups.Groups.ServiceProvisioningErrors | String | Errors encountered during service provisioning of the group. | 
+| MSGraphUserGroups.Groups.Theme | String | Theme associated with the group. | 
+| MSGraphUserGroups.Groups.UniqueName | String | Unique name of the group. | 
+| MSGraphUserGroups.Groups.Visibility | String | Groups visibility. | 
+| MSGraphUserGroups.Groups.WellKnownObject | String | Indicates if the group is a well-known system object. | 
 
 ### msgraph-user-get-auth-methods
 
@@ -910,32 +886,20 @@ Retrieve a list of authentication methods registered to a user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUserAuthMethods.createdDateTime | String | Authentication methods creation date and time. |
-| MSGraphUserAuthMethods.@Odata.Type | String | A string value that can be used to classify user's auth methods. |
-| MSGraphUserAuthMethods.deviceTag | String | Authentication methods deviceTag. |
-| MSGraphUserAuthMethods.displayName | String | Authentication methods displayName. |
-| MSGraphUserAuthMethods.id | String | Authentication methods id. |
-| MSGraphUserAuthMethods.phoneAppVersion | String | Authentication methods phoneAppVersion. |
+| MSGraphUserAuthMethods.ID | String | The user ID. | 
+| MSGraphUserAuthMethods.AuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. | 
+| MSGraphUserAuthMethods.AuthMethods.Methods.ID | String | The unique identifier for the authentication method. | 
+| MSGraphUserAuthMethods.Methods.@Odata.Type | String | The type of the authentication method. | 
+| MSGraphUserAuthMethods.Methods.Password | String | The password associated with the authentication method, if applicable. | 
+| MSGraphUserAuthMethods.Methods.DisplayName | String | Authentication methods displayName. | 
+| MSGraphUserAuthMethods.Methods.DeviceTag | String | The device tag associated with the authentication method. | 
+| MSGraphUserAuthMethods.Methods.IsUsable | String | Indicates whether the authentication method is currently usable. | 
+| MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. | 
+| MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. | 
 
-#### Command example
-
-```!msgraph-user-get-auth-methods user=123456-abcd-7890-erty-987qwe987```
-
-#### Context Example
-
-```json
-{
-    "@odata.type": "#microsoft.graph.passwordAuthenticationMethod"
-    "createdDateTime": "2023-08-23T12:58:04Z"
-    "deviceTag": "SoftwareTokenActivated"
-    "displayName": "AA-11111"
-    "id": "test_id"
-    "phoneAppVersion": "0.0000.000"
-}
-```

@@ -239,8 +239,7 @@ class MsGraphClient:
     def get_auth_methods(self, user):
         data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
         data.pop("@odata.context", None)
-        data.pop("@odata.type", None)
-        return data
+        return data.get("value", [])
 
     def list_users(self, properties, page_url, filters):
         if page_url:
@@ -657,15 +656,16 @@ def get_groups_command(client: MsGraphClient, args: Dict):
     user = args.get("user")
     group_data = client.get_groups(user)
 
-    if group_data.get("NotFound", ""):
-        error_message = group_data.get("NotFound")
-        return CommandResults(readable_output=f"### User {user} was not found.\nMicrosoft Graph Response: {error_message}")
-
     user_readable, user_outputs = parse_outputs(group_data["value"])
     human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
-    outputs = {"MSGraphUserGroups(val.ID == obj.ID)": user_outputs}
+    outputs = {"ID": user, "Groups": user_outputs}
 
-    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=group_data)
+    return CommandResults(outputs_prefix="MSGraphUserGroups",
+                          outputs_key_field="ID",
+                          outputs=outputs,
+                          readable_output=human_readable,
+                          raw_response=group_data
+                        )
 
 
 @suppress_errors_with_404_code
@@ -674,9 +674,13 @@ def get_auth_methods_command(client: MsGraphClient, args: Dict):
     data = client.get_auth_methods(user)
     readable, outputs = parse_outputs(data)
     human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
-    outputs = {"MSGraphUserAuthMethods(val.User == obj.User)": {"User": user, "AuthMethods": outputs}}
+    outputs = {"ID": user, "Methods": outputs}
 
-    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=data)
+    return CommandResults(outputs_prefix="MSGraphUserAuthMethods.AuthMethods",
+                          outputs_key_field="ID",
+                          outputs=outputs,
+                          readable_output=human_readable,
+                          raw_response=data)
 
 
 def list_users_command(client: MsGraphClient, args: dict):

@@ -441,6 +441,9 @@ script:
       description: The account entity type.
       type: String
   - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
     - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
       name: properties
     - description: The URL for the next page in the list.
@@ -451,112 +454,115 @@ script:
       Retrieves the groups a user is part of.
     name: msgraph-user-get-groups
     outputs:
-    - contextPath: MSGraphUserGroups.Classification
+    - contextPath: MSGraphUserGroups.ID
+      description: The user ID.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.Classification
       description: Value used to classify data types in your groups.
       type: String
-    - contextPath: MSGraphUserGroups.@Odata.Type
+    - contextPath: MSGraphUserGroups.Groups.@Odata.Type
       description: A string value that can be used to classify the user's groups.
       type: String
-    - contextPath: MSGraphUserGroups.createdDateTime
+    - contextPath: MSGraphUserGroups.Groups.CreatedDateTime
       description: Group creation date and time.
       type: String
-    - contextPath: MSGraphUserGroups.creationOptions
+    - contextPath: MSGraphUserGroups.Groups.CreationOptions
       description: Group creation options.
       type: String
-    - contextPath: MSGraphUserGroups.deletedDateTime
+    - contextPath: MSGraphUserGroups.Groups.DeletedDateTime
       description: Group deletion date and time.
       type: String
-    - contextPath: MSGraphUserGroups.description
+    - contextPath: MSGraphUserGroups.Groups.Description
       description: Group description string.
       type: String
-    - contextPath: MSGraphUserGroups.displayName
+    - contextPath: MSGraphUserGroups.Groups.DisplayName
       description: Group display name.
       type: String
-    - contextPath: MSGraphUserGroups.expirationDateTime
+    - contextPath: MSGraphUserGroups.Groups.ExpirationDateTime
       description: Group expiration date and time.
       type: String
-    - contextPath: MSGraphUserGroups.groupTypes
+    - contextPath: MSGraphUserGroups.Groups.GroupTypes
       description: The types assigned to the group.
       type: String
-    - contextPath: MSGraphUserGroups.id
+    - contextPath: MSGraphUserGroups.Groups.ID
       description: Group id.
       type: String
-    - contextPath: MSGraphUserGroups.isAssignableToRole
+    - contextPath: MSGraphUserGroups.Groups.IsAssignableToRole
       description: Indicates whether the group can be assigned to roles.
       type: Bool
-    - contextPath: MSGraphUserGroups.mail
+    - contextPath: MSGraphUserGroups.Groups.Mail
       description: Group associated mail.
       type: String
-    - contextPath: MSGraphUserGroups.mailEnabled
+    - contextPath: MSGraphUserGroups.Groups.MailEnabled
       description: Indicates whether the group has mail enabled.
       type: Bool
-    - contextPath: MSGraphUserGroups.mailNickname
+    - contextPath: MSGraphUserGroups.Groups.MailNickname
       description: Mail nickname of the group.
       type: String
-    - contextPath: MSGraphUserGroups.membershipRule
+    - contextPath: MSGraphUserGroups.Groups.MembershipRule
       description: Membership rule applied to the group.
       type: String
-    - contextPath: MSGraphUserGroups.membershipRuleProcessingState
+    - contextPath: MSGraphUserGroups.Groups.MembershipRuleProcessingState
       description: Processing state of the group’s membership rule.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesDomainName
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesDomainName
       description: On-premises domain name associated with the group.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesLastSyncDateTime
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesLastSyncDateTime
       description: Date and time when the group was last synchronized from on-premises.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesNetBiosName
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesNetBiosName
       description: On-premises NetBIOS name of the group.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesProvisioningErrors
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesProvisioningErrors
       description: Errors encountered during on-premises provisioning of the group.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesSamAccountName
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSamAccountName
       description: SAM account name of the group in on-premises Active Directory.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesSecurityIdentifier
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSecurityIdentifier
       description: Security identifier (SID) of the group in on-premises Active Directory.
       type: String
-    - contextPath: MSGraphUserGroups.onPremisesSyncEnabled
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSyncEnabled
       description: Indicates whether the group is synchronized from on-premises.
       type: String
-    - contextPath: MSGraphUserGroups.preferredDataLocation
+    - contextPath: MSGraphUserGroups.Groups.PreferredDataLocation
       description: Preferred geographic location for the group’s data.
       type: String
-    - contextPath: MSGraphUserGroups.preferredLanguage
+    - contextPath: MSGraphUserGroups.Groups.PreferredLanguage
       description: Preferred language for the group.
       type: String
-    - contextPath: MSGraphUserGroups.proxyAddresses
+    - contextPath: MSGraphUserGroups.Groups.ProxyAddresses
       description: Email addresses associated with the group.
       type: String
-    - contextPath: MSGraphUserGroups.renewedDateTime
+    - contextPath: MSGraphUserGroups.Groups.RenewedDateTime
       description: Date and time the group was last renewed.
       type: String
-    - contextPath: MSGraphUserGroups.resourceBehaviorOptions
+    - contextPath: MSGraphUserGroups.Groups.ResourceBehaviorOptions
       description: Options defining the group’s behavior as a resource.
       type: String
-    - contextPath: MSGraphUserGroups.resourceProvisioningOptions
+    - contextPath: MSGraphUserGroups.Groups.ResourceProvisioningOptions
       description: Options used for provisioning the group as a resource.
       type: String
-    - contextPath: MSGraphUserGroups.securityEnabled
+    - contextPath: MSGraphUserGroups.Groups.SecurityEnabled
       description: Indicates whether the group is security-enabled.
       type: Bool
-    - contextPath: MSGraphUserGroups.securityIdentifier
+    - contextPath: MSGraphUserGroups.Groups.SecurityIdentifier
       description: Security identifier of the group.
       type: String
-    - contextPath: MSGraphUserGroups.serviceProvisioningErrors
+    - contextPath: MSGraphUserGroups.Groups.ServiceProvisioningErrors
       description: Errors encountered during service provisioning of the group.
       type: String
-    - contextPath: MSGraphUserGroups.theme
+    - contextPath: MSGraphUserGroups.Groups.Theme
       description: Theme associated with the group.
       type: String
-    - contextPath: MSGraphUserGroups.uniqueName
+    - contextPath: MSGraphUserGroups.Groups.UniqueName
       description: Unique name of the group.
       type: String
-    - contextPath: MSGraphUserGroups.visibility
+    - contextPath: MSGraphUserGroups.Groups.Visibility
       description: Groups visibility.
       type: String
-    - contextPath: MSGraphUserGroups.wellKnownObject
+    - contextPath: MSGraphUserGroups.Groups.WellKnownObject
       description: Indicates if the group is a well-known system object.
       type: String
   - arguments:
@@ -567,23 +573,35 @@ script:
       Retrieve a list of authentication methods registered to a user.
     name: msgraph-user-get-auth-methods
     outputs:
-    - contextPath: MSGraphUserAuthMethods.CreatedDateTime
+    - contextPath: MSGraphUserAuthMethods.ID
+      description: The user ID.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.AuthMethods.Methods.CreatedDateTime
       description: Authentication method's creation date and time.
       type: String
-    - contextPath: MSGraphUserAuthMethods.@Odata.Type
-      description: A string value that can be used to classify the user's auth methods.
+    - contextPath: MSGraphUserAuthMethods.AuthMethods.Methods.ID
+      description: The unique identifier for the authentication method.
       type: String
-    - contextPath: MSGraphUserAuthMethods.deviceTag
-      description: Authentication methods deviceTag.
+    - contextPath: MSGraphUserAuthMethods.Methods.@Odata.Type
+      description: The type of the authentication method.
       type: String
-    - contextPath: MSGraphUserAuthMethods.displayName
+    - contextPath: MSGraphUserAuthMethods.Methods.Password
+      description: The password associated with the authentication method, if applicable.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.DisplayName
       description: Authentication methods displayName.
       type: String
-    - contextPath: MSGraphUserAuthMethods.id
-      description: Authentication methods id.
+    - contextPath: MSGraphUserAuthMethods.Methods.DeviceTag
+      description: The device tag associated with the authentication method.
       type: String
-    - contextPath: MSGraphUserAuthMethods.phoneAppVersion
-      description: Authentication methods phoneAppVersion.
+    - contextPath: MSGraphUserAuthMethods.Methods.IsUsable
+      description: Indicates whether the authentication method is currently usable.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.IsUsableOnce
+      description: Indicates whether the authentication method can be used only once.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.MethodUsabilityReason
+      description: The reason why the authentication method is or is not usable.
       type: String
   - arguments:
     - description: The User ID or userPrincipalName of the user for which to get the MFA methods properties.
