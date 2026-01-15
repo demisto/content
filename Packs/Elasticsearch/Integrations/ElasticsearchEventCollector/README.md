@@ -1,7 +1,7 @@
-ElasticsearchEventCollector integration is used to search for and analyze data in real time.
+Elasticsearch Event Collector integration is used to search for and analyze data in real time.
 Supports version 6 and later.
 
-## Configure ElasticsearchEventCollector in Cortex
+## Configure Elasticsearch Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

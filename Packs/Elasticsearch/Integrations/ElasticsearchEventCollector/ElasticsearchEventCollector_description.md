@@ -1,4 +1,4 @@
-The ElasticsearchEventCollector integration supports Elasticsearch 6.0.0 and later.
+The Elasticsearch Event Collector integration supports Elasticsearch 6.0.0 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
 ## Authentication

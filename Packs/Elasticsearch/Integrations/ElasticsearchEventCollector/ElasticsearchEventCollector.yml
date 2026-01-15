@@ -134,7 +134,7 @@ configuration:
   section: Collect
   required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: ElasticsearchEventCollector
+display: Elasticsearch Event Collector
 name: ElasticsearchEventCollector
 script:
   commands:
