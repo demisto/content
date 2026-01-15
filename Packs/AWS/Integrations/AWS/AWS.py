@@ -2518,46 +2518,40 @@ class EC2:
             CommandResults: Results of the operation with monitoring status information
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
-        
-        try:
-            response = client.monitor_instances(InstanceIds=instance_ids)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            instance_monitorings = response.get("InstanceMonitorings", [])
-            
-            if not instance_monitorings:
-                return CommandResults(readable_output="No instances were monitored.")
-            
-            # Format output data
-            readable_data = []
-            for monitoring in instance_monitorings:
-                readable_data.append({
-                    "InstanceId": monitoring.get("InstanceId"),
-                    "MonitoringState": monitoring.get("Monitoring", {}).get("State")
-                })
-            
-            readable_output = tableToMarkdown(
-                "Successfully enabled monitoring for instances",
-                readable_data,
-                headers=["InstanceId", "MonitoringState"],
-                headerTransform=pascalToSpace,
-                removeNull=True
-            )
-            
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Instances",
-                outputs_key_field="InstanceId",
-                outputs=instance_monitorings,
-                readable_output=readable_output,
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error enabling monitoring for instances: {str(e)}")
+
+        response = client.monitor_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were monitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append({
+                "InstanceId": monitoring.get("InstanceId"),
+                "MonitoringState": monitoring.get("Monitoring", {}).get("State")
+            })
+
+        readable_output = tableToMarkdown(
+            "Successfully enabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response
+        )
 
     @staticmethod
     def unmonitor_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2573,46 +2567,40 @@ class EC2:
             CommandResults: Results of the operation with monitoring status information
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
-        
-        try:
-            response = client.unmonitor_instances(InstanceIds=instance_ids)
+
+        response = client.unmonitor_instances(InstanceIds=instance_ids)
             
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            instance_monitorings = response.get("InstanceMonitorings", [])
-            
-            if not instance_monitorings:
-                return CommandResults(readable_output="No instances were unmonitored.")
-            
-            # Format output data
-            readable_data = []
-            for monitoring in instance_monitorings:
-                readable_data.append({
-                    "InstanceId": monitoring.get("InstanceId"),
-                    "MonitoringState": monitoring.get("Monitoring", {}).get("State")
-                })
-            
-            readable_output = tableToMarkdown(
-                "Successfully disabled monitoring for instances",
-                readable_data,
-                headers=["InstanceId", "MonitoringState"],
-                headerTransform=pascalToSpace,
-                removeNull=True
-            )
-            
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Instances",
-                outputs_key_field="InstanceId",
-                outputs=instance_monitorings,
-                readable_output=readable_output,
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error disabling monitoring for instances: {str(e)}")
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were unmonitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append({
+                "InstanceId": monitoring.get("InstanceId"),
+                "MonitoringState": monitoring.get("Monitoring", {}).get("State")
+            })
+
+        readable_output = tableToMarkdown(
+            "Successfully disabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response
+        )
 
     @staticmethod
     def reboot_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2628,22 +2616,15 @@ class EC2:
             CommandResults: Results of the operation with reboot confirmation
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
-        
-        try:
-            response = client.reboot_instances(InstanceIds=instance_ids)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            return CommandResults(
-                readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}",
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error rebooting instances: {str(e)}")
+        response = client.reboot_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}",
+            raw_response=response
+        )
 
     @staticmethod
     def instance_running_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2657,6 +2638,8 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+                - limit: The maximum number of results to return.
+                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are running
@@ -2668,7 +2651,13 @@ class EC2:
         
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
-        
+
+        if max_results := args.get("limit"):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2679,10 +2668,7 @@ class EC2:
             waiter = client.get_waiter("instance_running")
             waiter.wait(**kwargs)
             
-            return CommandResults(
-                readable_output="Instance(s) are now running.",
-                raw_response={"Status": "Success"}
-            )
+            return CommandResults(readable_output="Instance(s) are now running.")
             
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
@@ -2699,6 +2685,8 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+                - limit: The maximum number of results to return.
+                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instance status is OK
@@ -2710,7 +2698,13 @@ class EC2:
         
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
-        
+
+        if max_results := args.get("limit"):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2721,10 +2715,7 @@ class EC2:
             waiter = client.get_waiter("instance_status_ok")
             waiter.wait(**kwargs)
             
-            return CommandResults(
-                readable_output="Instance status is now OK.",
-                raw_response={"Status": "Success"}
-            )
+            return CommandResults(readable_output="Instance status is now OK.")
             
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
@@ -2741,6 +2732,8 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+                - limit: The maximum number of results to return.
+                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are stopped
@@ -2752,7 +2745,13 @@ class EC2:
         
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
-        
+
+        if max_results := args.get("limit"):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2763,10 +2762,7 @@ class EC2:
             waiter = client.get_waiter("instance_stopped")
             waiter.wait(**kwargs)
             
-            return CommandResults(
-                readable_output="Instance(s) are now stopped.",
-                raw_response={"Status": "Success"}
-            )
+            return CommandResults(readable_output="Instance(s) are now stopped.")
             
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
@@ -2783,6 +2779,8 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+                - limit: The maximum number of results to return.
+                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are terminated
@@ -2794,7 +2792,13 @@ class EC2:
         
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
-        
+
+        if max_results := args.get("limit"):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2805,10 +2809,7 @@ class EC2:
             waiter = client.get_waiter("instance_terminated")
             waiter.wait(**kwargs)
             
-            return CommandResults(
-                readable_output="Instance(s) are now terminated.",
-                raw_response={"Status": "Success"}
-            )
+            return CommandResults(readable_output="Instance(s) are now terminated.")
             
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
@@ -2836,57 +2837,52 @@ class EC2:
         
         if association_ids := args.get("association_ids"):
             kwargs["AssociationIds"] = parse_resource_ids(association_ids)
-        
-        if not association_ids:
-            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
-            kwargs.update(pagination_kwargs)
-        
-        remove_nulls_from_dictionary(kwargs)
-        
-        try:
-            response = client.describe_iam_instance_profile_associations(**kwargs)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            associations = response.get("IamInstanceProfileAssociations", [])
-            
-            if not associations:
-                return CommandResults(readable_output="No IAM instance profile associations were found.")
-            
-            # Format output data
-            readable_data = []
-            for association in associations:
-                readable_data.append({
-                    "AssociationId": association.get("AssociationId"),
-                    "InstanceId": association.get("InstanceId"),
-                    "State": association.get("State"),
-                    "IamInstanceProfile": association.get("IamInstanceProfile")
-                })
-            
-            readable_output = tableToMarkdown(
-                "AWS IAM Instance Profile Associations",
-                readable_data,
-                headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
-                headerTransform=pascalToSpace,
-                removeNull=True
-            )
-            
-            outputs = {
-                "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
-                "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")}
-            }
-            
-            return CommandResults(
-                outputs=outputs,
-                readable_output=readable_output,
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error describing IAM instance profile associations: {str(e)}")
+
+        if max_results := args.get("limit"):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
+        response = client.describe_iam_instance_profile_associations(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        associations = response.get("IamInstanceProfileAssociations", [])
+
+        if not associations:
+            return CommandResults(readable_output="No IAM instance profile associations were found.")
+
+        # Format output data
+        readable_data = []
+        for association in associations:
+            readable_data.append({
+                "AssociationId": association.get("AssociationId"),
+                "InstanceId": association.get("InstanceId"),
+                "State": association.get("State"),
+                "IamInstanceProfile": association.get("IamInstanceProfile")
+            })
+
+        readable_output = tableToMarkdown(
+            "AWS IAM Instance Profile Associations",
+            readable_data,
+            headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+
+        outputs = {
+            "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")}
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
+
 
     @staticmethod
     def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2902,47 +2898,41 @@ class EC2:
             CommandResults: Results containing the password data
         """
         instance_id = args.get("instance_id")
-        
-        try:
-            response = client.get_password_data(InstanceId=instance_id)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            # Serialize datetime
-            response = serialize_response_with_datetime_encoding(response)
-            
-            password_data = {
-                "InstanceId": response.get("InstanceId"),
-                "PasswordData": response.get("PasswordData"),
-                "Timestamp": response.get("Timestamp")
-            }
-            
-            readable_output = tableToMarkdown(
-                "AWS EC2 Instance Password Data",
-                password_data,
-                headers=["InstanceId", "PasswordData", "Timestamp"],
-                headerTransform=pascalToSpace,
-                removeNull=True
-            )
-            
-            outputs = {
-                "PasswordData": password_data,
-                "InstanceId": password_data.get("InstanceId")
-            }
-            
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Instances",
-                outputs_key_field="InstanceId",
-                outputs=outputs,
-                readable_output=readable_output,
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error retrieving password data for instance {instance_id}: {str(e)}")
+
+        response = client.get_password_data(InstanceId=instance_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize datetime
+        response = serialize_response_with_datetime_encoding(response)
+
+        password_data = {
+            "InstanceId": response.get("InstanceId"),
+            "PasswordData": response.get("PasswordData"),
+            "Timestamp": response.get("Timestamp")
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Instance Password Data",
+            password_data,
+            headers=["InstanceId", "PasswordData", "Timestamp"],
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+
+        outputs = {
+            "PasswordData": password_data,
+            "InstanceId": password_data.get("InstanceId")
+        }
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
 
     @staticmethod
     def describe_reserved_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2955,6 +2945,8 @@ class EC2:
                 - reserved_instances_ids (str, optional): Comma-separated list of Reserved Instance IDs
                 - filters (str, optional): Filters for Reserved Instances
                 - offering_class (str, optional): The offering class (standard or convertible)
+                - offering_type (str, optional): The offering type (Heavy Utilization |
+                 Medium Utilization | Light Utilization | No Upfront | Partial Upfront | All Upfront)
 
         Returns:
             CommandResults: Results containing Reserved Instance information
@@ -2966,62 +2958,57 @@ class EC2:
         
         if offering_class := args.get("offering_class"):
             kwargs["OfferingClass"] = offering_class
-        
+
+        if offering_type := args.get("offering_type"):
+            kwargs["OfferingType"] = offering_type
+
         if reserved_instances_ids := args.get("reserved_instances_ids"):
             kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
-        
-        remove_nulls_from_dictionary(kwargs)
-        
-        try:
-            response = client.describe_reserved_instances(**kwargs)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            
-            reserved_instances = response.get("ReservedInstances", [])
-            
-            if not reserved_instances:
-                return CommandResults(readable_output="No Reserved Instances were found.")
-            
-            # Serialize datetime objects
-            response = serialize_response_with_datetime_encoding(response)
-            reserved_instances = response.get("ReservedInstances", [])
-            
-            # Format output data
-            readable_data = []
-            for reservation in reserved_instances:
-                readable_data.append({
-                    "ReservedInstancesId": reservation.get("ReservedInstancesId"),
-                    "InstanceType": reservation.get("InstanceType"),
-                    "InstanceCount": reservation.get("InstanceCount"),
-                    "State": reservation.get("State"),
-                    "Start": reservation.get("Start"),
-                    "End": reservation.get("End"),
-                    "Duration": reservation.get("Duration"),
-                    "OfferingClass": reservation.get("OfferingClass"),
-                    "Scope": reservation.get("Scope")
-                })
-            
-            readable_output = tableToMarkdown(
-                "AWS EC2 Reserved Instances",
-                readable_data,
-                headers=["ReservedInstancesId", "InstanceType", "InstanceCount", "State", "Start", "End", "Duration", "OfferingClass", "Scope"],
-                headerTransform=pascalToSpace,
-                removeNull=True
-            )
-            
-            return CommandResults(
-                outputs_prefix="AWS.EC2.ReservedInstances",
-                outputs_key_field="ReservedInstancesId",
-                outputs=reserved_instances,
-                readable_output=readable_output,
-                raw_response=response
-            )
-            
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error describing Reserved Instances: {str(e)}")
+
+        response = client.describe_reserved_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        reserved_instances = response.get("ReservedInstances", [])
+
+        if not reserved_instances:
+            return CommandResults(readable_output="No Reserved Instances were found.")
+
+        # Serialize datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        reserved_instances = response.get("ReservedInstances", [])
+
+        # Format output data
+        readable_data = []
+        for reservation in reserved_instances:
+            readable_data.append({
+                "ReservedInstancesId": reservation.get("ReservedInstancesId"),
+                "InstanceType": reservation.get("InstanceType"),
+                "InstanceCount": reservation.get("InstanceCount"),
+                "State": reservation.get("State"),
+                "Start": reservation.get("Start"),
+                "End": reservation.get("End"),
+                "Duration": reservation.get("Duration"),
+                "OfferingClass": reservation.get("OfferingClass"),
+                "Scope": reservation.get("Scope")
+            })
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Reserved Instances",
+            readable_data,
+            headers=["ReservedInstancesId", "InstanceType", "InstanceCount", "State", "Start", "End", "Duration", "OfferingClass", "Scope"],
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ReservedInstances",
+            outputs_key_field="ReservedInstancesId",
+            outputs=reserved_instances,
+            readable_output=readable_output,
+            raw_response=response
+        )
 
 
 class EKS:
