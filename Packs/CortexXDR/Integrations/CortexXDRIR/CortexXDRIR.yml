@@ -3877,7 +3877,7 @@ script:
       predefined:
       - asc
       - desc
-    - description: The JSON to use for the "filter" field in the API. You can use the xdr-asset-schema-get in order to get the schema.
+    - description: The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema.
       name: filter_json
     - description: Maximum number of assets to return. Default is 50.
       name: limit
