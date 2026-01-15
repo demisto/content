@@ -20,7 +20,6 @@ from enum import Enum
 from itertools import chain
 from collections.abc import Iterable
 from typing import cast
-from datetime import datetime
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -2217,6 +2216,26 @@ class BuilderCommandResponses:
 """ Commands """
 
 
+def _parse_seq_update(value: Any) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+    return None
+
+
+def _serialize_seq_update(value: int) -> str:
+    return str(value)
+
+
 def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -2273,16 +2292,34 @@ def fetch_incidents_command(
     for collection_name in incident_collections:  # noqa: B007
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
-        last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+        last_fetch_raw = None
+        if isinstance(last_run, dict):
+            embedded = last_run.get("last_fetch")
+            if isinstance(embedded, dict):
+                last_fetch_raw = embedded.get(collection_name)
+            else:
+                last_fetch_raw = last_run.get(collection_name)
         demisto.debug(
-            f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}"
+            f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch_raw}"
         )
         requests_count = 0
         sequpdate = 0
-        portions, last_fetch = client.create_poll_generator(
+
+        last_fetch_for_generator: Any
+        if collection_name == "compromised/breached":
+            last_fetch_for_generator = last_fetch_raw
+        else:
+            last_fetch_int = _parse_seq_update(last_fetch_raw)
+            last_fetch_for_generator = (
+                _serialize_seq_update(last_fetch_int)
+                if isinstance(last_fetch_int, int) and last_fetch_int > 0
+                else None
+            )
+
+        portions, generator_cursor_raw = client.create_poll_generator(
             collection_name=collection_name,
             hunting_rules=hunting_rules,
-            last_fetch=last_fetch,
+            last_fetch=last_fetch_for_generator,
             first_fetch_time=first_fetch_time,
             enable_probable_corporate_access=enable_probable_corporate_access,
             combolist=combolist,
@@ -2293,6 +2330,10 @@ def fetch_incidents_command(
         demisto.debug(
             f"[fetch-incidents] Collection={collection_name} generator created: {portions}"
         )
+
+        generator_cursor_int = _parse_seq_update(generator_cursor_raw)
+        max_seen_seq_update: int | None = None
+
         for portion in portions:
             sequpdate = portion.sequpdate
             demisto.debug(
@@ -2305,14 +2346,15 @@ def fetch_incidents_command(
             if not isinstance(new_parsed_json, list):
                 raise Exception("new_parsed_json in portion should be a list")
 
+            portion_seq_int = _parse_seq_update(sequpdate)
             if (
-                isinstance(last_fetch, int)
-                and isinstance(sequpdate, int)
-                and sequpdate <= last_fetch
+                isinstance(generator_cursor_int, int)
+                and isinstance(portion_seq_int, int)
+                and portion_seq_int <= generator_cursor_int
             ):
                 demisto.debug(
                     f"[fetch-incidents] seqUpdate did not advance (portion_seq={sequpdate}, "
-                    f"last_fetch={last_fetch}); skipping portion to avoid duplicates."
+                    f"cursor_seq={generator_cursor_raw}); skipping portion to avoid duplicates."
                 )
                 break
 
@@ -2347,26 +2389,38 @@ def fetch_incidents_command(
                 f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}"
             )
 
+            if isinstance(portion_seq_int, int) and portion_seq_int > 0:
+                max_seen_seq_update = (
+                    portion_seq_int
+                    if max_seen_seq_update is None
+                    else max(max_seen_seq_update, portion_seq_int)
+                )
+
             requests_count += 1
             if requests_count >= max_requests:
                 break
 
         if collection_name == "compromised/breached":
-            next_run["last_fetch"][collection_name] = last_fetch
+            next_run["last_fetch"][collection_name] = generator_cursor_raw
         else:
             demisto.debug(
                 f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}"
             )
-            effective_last_fetch = last_fetch
-            if isinstance(sequpdate, int) and sequpdate > 0:
-                if isinstance(last_fetch, int) and last_fetch > 0:
-                    effective_last_fetch = max(last_fetch, sequpdate)
-                else:
-                    effective_last_fetch = sequpdate
+            effective_last_fetch_int: int | None = None
+            if isinstance(max_seen_seq_update, int) and max_seen_seq_update > 0:
+                effective_last_fetch_int = max_seen_seq_update
+            elif isinstance(generator_cursor_int, int) and generator_cursor_int > 0:
+                effective_last_fetch_int = generator_cursor_int
 
-            next_run["last_fetch"][collection_name] = effective_last_fetch
+            next_run["last_fetch"][collection_name] = (
+                _serialize_seq_update(effective_last_fetch_int)
+                if isinstance(effective_last_fetch_int, int)
+                and effective_last_fetch_int > 0
+                else None
+            )
             demisto.debug(
-                f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}"
+                f"[fetch-incidents] Updated next_run for collection={collection_name}: "
+                f"{next_run['last_fetch'][collection_name]}"
             )
 
     return next_run, incidents
