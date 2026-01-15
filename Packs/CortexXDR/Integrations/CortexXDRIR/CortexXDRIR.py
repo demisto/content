@@ -1243,6 +1243,7 @@ def fetch_incidents(
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get("incident") else raw_incident
             incident_id = incident_data.get("incident_id")
+            incident_name = incident_data.get("incident_name")
             alert_count = arg_to_number(incident_data.get("alert_count")) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1263,10 +1264,13 @@ def fetch_incidents(
             description = incident_data.get("description")
             occurred = timestamp_to_datestring(incident_data["creation_time"], TIME_FORMAT + "Z")
             incident: dict[str, Any] = {
-                "name": f"XDR Incident {incident_id} - {description}",
                 "occurred": occurred,
                 "rawJSON": json.dumps(incident_data),
             }
+            if incident_name:
+                incident["name"] = f"XDR Incident {incident_id} - {incident_name}"
+            else:
+                incident["name"] = f"XDR Incident {incident_id} - {description}"
             if demisto.params().get("sync_owners") and incident_data.get("assigned_user_mail"):
                 incident["owner"] = demisto.findUser(email=incident_data["assigned_user_mail"]).get("username")
             # Update last run and add incident if the incident is newer than last fetch
