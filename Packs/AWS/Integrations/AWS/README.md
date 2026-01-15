@@ -65,13 +65,14 @@ Delete AWS S3 bucket, the bucket must be empty from files.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bucket | The name of S3 bucket. | Required | 
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-objects-list
 
 ***
@@ -85,26 +86,26 @@ Returns some or all (up to 1,000) of the objects in a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bucket | The name of S3 bucket. | Required | 
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional | 
-| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional | 
-| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional | 
-| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional | 
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional |
+| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional |
+| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional |
+| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. | 
-| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. | 
-| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. | 
-| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. | 
-| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. | 
-| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. | 
-| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. | 
-| AWS.S3.Buckets.NextToken | String | Token to use for pagination in subsequent requests. | 
+| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. |
+| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. |
+| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. |
+| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. |
+| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. |
+| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
+| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. |
+| AWS.S3.Buckets.NextToken | String | Token to use for pagination in subsequent requests. |
 
 ### aws-iam-account-password-policy-get
 
