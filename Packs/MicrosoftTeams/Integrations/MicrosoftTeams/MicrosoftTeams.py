@@ -261,7 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
-        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
+        "microsoft-teams-list-messages": [],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -1919,45 +1919,103 @@ def chat_message_list_command():
     return_results(result)
 
 
+def resolve_chat_or_channel(
+    chat_or_channel: str,
+    team_name: str,
+) -> tuple[str, str | None]:
+    """
+    Resolve whether the identifier refers to a chat or a channel.
+
+    Returns:
+        ("chat", chat_id) or ("channel", channel_id)
+
+    Raises:
+        ValueError if channel is intended but team is missing.
+    """
+    # First, try to resolve as chat
+    try:
+        chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+        if chat_id:
+            demisto.debug(f"Resolved {chat_or_channel} as chat.")
+            return "chat", chat_id
+    except Exception:
+        pass
+
+    # If not chat, must be channel → requires team
+    if not team_name:
+        raise ValueError(
+            "Unable to resolve chat. If you are trying to retrieve channel messages, please provide the 'team_name' argument."
+        )
+
+    team_id = get_team_aad_id(team_name)
+    channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+    demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
+    return "channel", channel_id
+
+
+def fetch_chat_messages(
+    chat_id: str,
+    top: int,
+    order_by: str,
+) -> dict[str, Any]:
+    demisto.debug(f"Fetching messages from chat {chat_id}.")
+    return get_messages_list(
+        chat_id=chat_id,
+        odata_params={
+            "$orderBy": f"{order_by} desc",
+            "$top": top,
+        },
+    )
+
+
+def fetch_channel_messages(
+    channel_id: str,
+    team_name: str,
+    top: int,
+    message_id: str = "",
+) -> dict[str, Any]:
+    team_id = get_team_aad_id(team_name)
+    demisto.debug(f"Fetching messages from channel {channel_id} in team {team_name}.")
+    return get_channel_messages_list(
+        team_id=team_id,
+        channel_id=channel_id,
+        odata_params={"$top": top},
+        message_id=message_id,
+    )
+
+
 def list_messages_command():
     """
     Retrieve the list of messages in a chat or channel.
     """
     args = demisto.args()
     chat_or_channel = args.get("chat_id", "")
-    team_name = args.get("team", "")
+    team_name = args.get("team_name", "")
     message_id = args.get("message_id", "")
-    team_id = ""
-    if team_name:
-        team_id = get_team_aad_id(team_name)
-
     next_link = args.get("next_link", "")
 
     limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
     top = min(MAX_ITEMS_PER_RESPONSE, limit)
+    order_by = args.get("order_by", "lastModifiedDateTime")
 
     if next_link:
-        messages_list_response: dict = cast(dict[str, Any], http_request("GET", next_link))
+        messages_list_response = cast(dict[str, Any], http_request("GET", next_link))
     else:
-        try:
-            # Try to get messages from chat
-            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
-            messages_list_response = get_messages_list(
-                chat_id=chat_id,
-                odata_params={"$orderBy": args.get("order_by", "lastModifiedDateTime") + " desc", "$top": top},
+        entity_type, resolved_id = resolve_chat_or_channel(chat_or_channel, team_name)
+        if not resolved_id:
+            raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
+
+        if entity_type == "chat":
+            messages_list_response = fetch_chat_messages(
+                chat_id=resolved_id,
+                top=top,
+                order_by=order_by,
             )
-        except Exception as e:
-            demisto.debug(f"Failed to get messages from chat: {e}")
-            # If failed, try to get messages from channel
-            if not team_id:
-                raise ValueError(
-                    "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team'."
-                )
-            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
-            messages_list_response = get_channel_messages_list(
-                team_id=team_id,
-                channel_id=channel_id,
-                odata_params={"$top": top},
+        else:
+            messages_list_response = fetch_channel_messages(
+                channel_id=resolved_id,
+                team_name=team_name,
+                top=top,
                 message_id=message_id,
             )
 
@@ -1980,7 +2038,7 @@ def list_messages_command():
                 "messages": messages_data,
                 "chatId": chat_or_channel,
             },
-            "MicrosoftTeams.MessagesListMetadata": {"returned_results": len(messages_data), "filtered_results": limit},
+            "MicrosoftTeams.MessagesListMetadata": {"returned_count": len(messages_data), "filtered_count": limit},
         },
     )
     return_results(result)

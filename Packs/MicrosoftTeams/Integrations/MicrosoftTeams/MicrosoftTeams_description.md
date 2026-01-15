@@ -28,6 +28,7 @@ In order to use the following commands, you must use the **Authorization Code fl
   - ***microsoft-teams-chat-member-list***
   - ***microsoft-teams-chat-message-list***
   - ***microsoft-teams-chat-update***
+  - ***microsoft-teams-list-messages***
 
 
 **Notes:** 

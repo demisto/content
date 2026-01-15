@@ -1076,8 +1076,8 @@
             ]
         },
         "MicrosoftTeams.MessagesListMetadata": {
-            "returned_results": 2,
-            "filtered_results": 2
+            "returned_count": 2,
+            "filtered_count": 2
         }
     }
 }
