@@ -893,8 +893,8 @@ Retrieve a list of authentication methods registered to a user.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphUserAuthMethods.ID | String | The user ID. | 
-| MSGraphUserAuthMethods.AuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. | 
-| MSGraphUserAuthMethods.AuthMethods.Methods.ID | String | The unique identifier for the authentication method. | 
+| MSGraphUserAuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. | 
+| MSGraphUserAuthMethods.Methods.ID | String | The unique identifier for the authentication method. | 
 | MSGraphUserAuthMethods.Methods.@Odata.Type | String | The type of the authentication method. | 
 | MSGraphUserAuthMethods.Methods.Password | String | The password associated with the authentication method, if applicable. | 
 | MSGraphUserAuthMethods.Methods.DisplayName | String | Authentication methods displayName. | 
