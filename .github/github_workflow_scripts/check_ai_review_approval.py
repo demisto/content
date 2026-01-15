@@ -17,6 +17,7 @@ REPO_NAME = "content"
 PERMITTED_TEAM_SLUG = "content-ai-reviewer-developers"
 CONTRIB_BRANCH_PREFIX = "contrib/"
 
+
 def arguments_handler():
     """Validates and parses script arguments.
     Return
