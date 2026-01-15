@@ -660,12 +660,13 @@ def get_groups_command(client: MsGraphClient, args: Dict):
     human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
     outputs = {"ID": user, "Groups": user_outputs}
 
-    return CommandResults(outputs_prefix="MSGraphUserGroups",
-                          outputs_key_field="ID",
-                          outputs=outputs,
-                          readable_output=human_readable,
-                          raw_response=group_data
-                        )
+    return CommandResults(
+        outputs_prefix="MSGraphUserGroups",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=group_data,
+    )
 
 
 @suppress_errors_with_404_code
@@ -676,11 +677,13 @@ def get_auth_methods_command(client: MsGraphClient, args: Dict):
     human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
     outputs = {"ID": user, "Methods": outputs}
 
-    return CommandResults(outputs_prefix="MSGraphUserAuthMethods",
-                          outputs_key_field="ID",
-                          outputs=outputs,
-                          readable_output=human_readable,
-                          raw_response=data)
+    return CommandResults(
+        outputs_prefix="MSGraphUserAuthMethods",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=data,
+    )
 
 
 def list_users_command(client: MsGraphClient, args: dict):
