@@ -676,7 +676,7 @@ def get_auth_methods_command(client: MsGraphClient, args: Dict):
     human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
     outputs = {"ID": user, "Methods": outputs}
 
-    return CommandResults(outputs_prefix="MSGraphUserAuthMethods.AuthMethods",
+    return CommandResults(outputs_prefix="MSGraphUserAuthMethods",
                           outputs_key_field="ID",
                           outputs=outputs,
                           readable_output=human_readable,
