@@ -8919,6 +8919,473 @@ def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
     assert len(result.outputs) == 50
 
 
+def test_update_case_command_single_case_basic_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with single case_id and basic update fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with provided fields and returns proper CommandResults.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Case Name",
+        "description": "Updated description",
+        "notes": "Case notes",
+    }
+
+    result = update_case_command(client, args)
+
+    assert result.outputs_prefix == "Core.Case"
+    assert result.outputs_key_field == "case_id"
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Updated Case Name"
+    assert call_args["description"] == "Updated description"
+    assert call_args["notes"] == "Case notes"
+
+
+def test_update_case_command_bulk_update_allowed_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and bulk-allowed fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "user_defined_severity": "high",
+        "starred": "true",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["severity"] == "SEV_040_HIGH"
+    assert call_args[0]["starred"] is True
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_bulk_update_assignee_unassigned(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and assignee='unassigned'.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed with assignee set to None and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "assignee": "unassigned",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["assignedUser"] is None
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and valid resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with resolved status and reason.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+        "resolved_comment": "This was a false alarm",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_060_RESOLVED_FALSE_POSITIVE"
+    assert call_args["caseResolvedComment"] == "This was a false alarm"
+
+
+def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved but no resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating resolve_reason is required.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+    }
+
+    with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_resolve_reason_without_resolved_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_reason but status is not resolved.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating status must be resolved.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "new",
+        "resolve_reason": "false_positive",
+    }
+
+    with pytest.raises(ValueError, match="the case status must be set to 'resolved'."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid status.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "invalid_status",
+    }
+
+    with pytest.raises(ValueError, match="Invalid status 'invalid_status'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid user_defined_severity value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid severity.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "user_defined_severity": "invalid_severity",
+    }
+
+    with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only case_id (no update fields).
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating no valid update parameters.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {"case_id": "123"}
+
+    with pytest.raises(ValueError, match="No valid update parameters provided."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_non_bulk_fields_trigger_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with fields not allowed in bulk update.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual update is performed instead of bulk update.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Name",
+        "notes": "Some notes",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_resolved_status_not_allowed_in_bulk(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved for multiple cases.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual updates are performed (bulk not allowed for resolved status).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+    }
+
+    update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_multiple_cases_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids requiring individual updates.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        update_case is called for each case individually.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(
+        client,
+        "update_case",
+        side_effect=[{"reply": {"caseId": "123"}}, {"reply": {"caseId": "456"}}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "description": "Updated description",
+    }
+
+    result = update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_empty_string_fields_filtered(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty string values.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Empty string fields are filtered out from the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Valid Name",
+        "description": "",
+        "notes": "",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Valid Name"
+    assert "description" not in call_args
+    assert "notes" not in call_args
+
+
+def test_update_case_command_repackage_to_update_case_format(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance performing bulk update that returns raw case data.
+    WHEN:
+        The update_case_command function processes the response.
+    THEN:
+        Raw case data is properly repackaged to update case format.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "bulk_update_case")
+    raw_case_data = {
+        "CASE_ID": 123,
+        "NAME": "Test Case",
+        "STATUS_PROGRESS": "STATUS_010_NEW",
+        "SEVERITY": "SEV_040_HIGH",
+        "ASSIGNED_USER": "user@example.com",
+        "ASSIGNED_USER_PRETTY": "User Name",
+        "CREATION_TIME": 1640000000000,
+        "LAST_UPDATE_TIME": 1640100000000,
+        "INCIDENT_DOMAIN": "Security",
+        "CASE_STARRED": True,
+        "CURRENT_TAGS": [{"tag_name": "DOM:Security"}],
+        "CASE_GROUPING_STATUS": "GROUPING_STATUS_010_ENABLED",
+    }
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": [raw_case_data]}},
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "starred": "false",
+    }
+
+    result = update_case_command(client, args)
+
+    assert len(result.outputs) == 1
+    output = result.outputs[0]
+    assert output["id"] == "123"
+    assert output["name"]["value"] == "Test Case"
+    assert output["status"]["value"] == "STATUS_010_NEW"
+    assert output["severity"] == "SEV_040_HIGH"
+
+
+def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_all_alerts.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        resolve_all_alerts is included in the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+        "resolve_all_alerts": "true",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["resolve_all_alerts"] == "true"
+
+
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:

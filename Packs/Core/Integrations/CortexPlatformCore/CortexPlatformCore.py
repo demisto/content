@@ -65,7 +65,6 @@ WEBAPP_COMMANDS = [
     "core-run-script-agentix",
     "core-list-endpoints",
     "core-list-exception-rules",
-    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
@@ -990,6 +989,19 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/case/set_data",
+            json_data=request_data,
+        )
+
+    def bulk_update_case(self, case_update_payload, case_ids):
+        request_data = {
+            "request_data": {
+                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
+                "update_attrs": case_update_payload,
+            }
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/bulk_update_cases",
             json_data=request_data,
         )
 
@@ -3134,10 +3146,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
-    if assignee == "unassigned":
-        for case_id in case_ids:
-            client.unassign_case(case_id)
-        assignee = ""
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
@@ -3145,7 +3153,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved.'"
+            "'resolved'."
         )
 
     if status and not CaseManagement.STATUS.get(status):
@@ -3165,7 +3173,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "description": description if description else None,
         "assignedUser": assignee if assignee else None,
         "notes": notes if notes else None,
-        "starred": starred if starred else None,
+        "starred": argToBoolean(starred) if starred else None,
         "status": CaseManagement.STATUS.get(status) if status else None,
         "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
@@ -3175,11 +3183,129 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+    if not case_update_payload:
         raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = [process_case_response(resp) for resp in responses]
+    def is_bulk_update_allowed(case_update_payload: dict) -> bool:
+        # Bulk update supports only those fields
+        allowed_bulk_fields = {"userSeverity", "status", "starred", "assignedUser"}
+
+        for field_name, field_value in case_update_payload.items():
+            if (
+                field_name == "status"
+                and field_value == CaseManagement.STATUS["resolved"]
+                or field_name not in allowed_bulk_fields
+            ):
+                return False
+        return True
+
+    def repackage_to_update_case_format(case_list):
+        """
+        Maps raw API case data to the Update Case Format,
+        """
+        if not case_list or not isinstance(case_list, list):
+            return []
+
+        reverse_tags = {v: k for k, v in CaseManagement.TAGS.items()}
+        grouping_status_map = {"enabled": "GROUPING_STATUS_010_ENABLED", "disabled": "GROUPING_STATUS_020_DISABLED"}
+
+        target = []
+        for raw_case in case_list:
+            raw_status = str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", ""))).split("_")[-1].lower()
+            status_key = raw_status.replace("investigation", "under_investigation")
+            raw_severity = str(raw_case.get("SEVERITY", "")).split("_")[-1].lower()
+            raw_grouping = str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
+
+            target.append(
+                {
+                    "id": str(raw_case.get("CASE_ID")),
+                    "name": {"isUser": True, "value": raw_case.get("NAME")},
+                    "score": {
+                        "manual_score": raw_case.get("MANUAL_SCORE"),
+                        "score": raw_case.get("SCORE"),
+                        "score_source": raw_case.get("SCORE_SOURCE"),
+                        "scoring_rules": raw_case.get("CALCULATED_SCORE"),
+                        "scortex": raw_case.get("SCORTEX"),
+                    },
+                    "notes": None,
+                    "description": {"isUser": True, "value": raw_case.get("DESCRIPTION")},
+                    "caseDomain": raw_case.get("INCIDENT_DOMAIN"),
+                    "creationTime": raw_case.get("CREATION_TIME"),
+                    "lastUpdateTime": raw_case.get("LAST_UPDATE_TIME"),
+                    "modifiedBy": None,
+                    "starred": raw_case.get("CASE_STARRED"),
+                    "status": {
+                        "value": CaseManagement.STATUS.get(status_key),
+                        "resolveComment": raw_case.get("RESOLVED_COMMENT"),
+                        "resolve_reason": raw_case.get("RESOLVED_REASON"),
+                    },
+                    "severity": CaseManagement.SEVERITY.get(raw_severity),
+                    "userSeverity": raw_case.get("USER_SEVERITY"),
+                    "assigned": {"mail": raw_case.get("ASSIGNED_USER"), "pretty": raw_case.get("ASSIGNED_USER_PRETTY")},
+                    "severityCounters": {
+                        "SEV_020_LOW": raw_case.get("LOW_SEVERITY_ALERTS", 0),
+                        "SEV_030_MEDIUM": raw_case.get("MEDIUM_SEVERITY_ALERTS", 0),
+                        "SEV_040_HIGH": raw_case.get("HIGH_SEVERITY_ALERTS", 0),
+                        "SEV_050_CRITICAL": raw_case.get("CRITICAL_SEVERITY_ALERTS", 0),
+                    },
+                    "topCounters": {
+                        "HOSTS": len(raw_case.get("HOSTS", []) or []),
+                        "MAL_ARTIFACTS": raw_case.get("WF_HITS", 0),
+                        "USERS": len(raw_case.get("USERS", []) or []),
+                    },
+                    "tags": [
+                        {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
+                        for tag in (raw_case.get("CURRENT_TAGS", []) or [])
+                    ],
+                    "groupingStatus": {
+                        "pretty": raw_grouping.capitalize(),
+                        "raw": grouping_status_map.get(raw_grouping),
+                        "reason": None,
+                    },
+                    "hasAttachment": raw_case.get("HAS_ATTACHMENT", False),
+                    "internalStatus": raw_case.get("INTERNAL_STATUS", "STATUS_010_NONE"),
+                }
+            )
+
+        return target
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    replies = []
+    if is_bulk_update_allowed(case_update_payload):
+        demisto.debug("Performing bulk case update")
+        if case_update_payload.get("userSeverity"):
+            case_update_payload["severity"] = case_update_payload.pop("userSeverity")
+        if case_update_payload.get("assignedUser") == "unassigned":
+            case_update_payload["assignedUser"] = None
+
+        client.bulk_update_case(case_update_payload, case_ids)
+        filter_builder = FilterBuilder()
+        filter_builder.add_field(
+            CaseManagement.FIELDS["case_id_list"],
+            FilterType.EQ,
+            case_ids,
+        )
+        request_data = build_webapp_request_data(
+            table_name=CASES_TABLE,
+            filter_dict=filter_builder.to_dict(),
+            limit=len(case_ids),
+            sort_field="CREATION_TIME",
+        )
+        demisto.debug(f"request_data to retrieve cases that were updated via bulk: {request_data}")
+        response = client.get_webapp_data(request_data)
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        replies = repackage_to_update_case_format(data)
+
+    else:
+        demisto.debug("Performing iterative case update")
+        if assignee == "unassigned":
+            for case_id in case_ids:
+                client.unassign_case(case_id)
+        responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+        replies = []
+        for resp in responses:
+            replies.append(process_case_response(resp))
 
     command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
