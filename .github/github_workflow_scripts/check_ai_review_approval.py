@@ -178,7 +178,7 @@ def should_bypass_check(github_client: Github, pr: PullRequest) -> bool:
             return True
 
         # Label exists but not authorized
-        print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {PERMITTED_TEAM_SLUG}. Ignoring label.')
+        print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {" ".join(PERMITTED_TEAMS)}. Ignoring label.')
     return False
 
 
