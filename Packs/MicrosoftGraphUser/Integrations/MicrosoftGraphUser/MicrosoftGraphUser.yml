@@ -830,15 +830,48 @@ script:
     - contextPath: MSGraphUser.OwnedDevice.ID
       description: Owned device's ID.
       type: String
+    - contextPath: MSGraphUser.OwnedDevice.PhysicalIds
+      description: Physical IDs of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DeviceVersion
+      description: The version of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.ProfileType
+      description: The profile type of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.CreatedDateTime
+      description: The date and time when the device was created.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.ApproximateLastSignInDateTime
+      description: The approximate date and time of the last sign-in.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.OperatingSystemVersion
+      description: The version of the operating system.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.AlternativeSecurityIds
+      description: Alternative security IDs of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DisplayName
+      description: The display name of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.OperatingSystem
+      description: The operating system of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DeviceId
+      description: The unique identifier for the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.TrustType
+      description: The trust type of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.RegistrationDateTime
+      description: The date and time when the device was registered.
+      type: String
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
     - description: The ID of a specific FIDO2 authentication method to retrieve.
       name: method_id
-      required: false
-    - description: Maximum number of FIDO2 methods to return when listing all methods.
-      name: limit
       required: false
     description: |-
       Lists the FIDO2 authentication methods registered to a user, or retrieves a specific FIDO2 method by ID.

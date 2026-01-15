@@ -340,36 +340,19 @@ class MsGraphClient:
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
 
-    def list_fido2_methods(self, user_id: str, limit: int = DEFAULT_LIMIT):
+    def list_fido2_methods(self, user_id: str) -> list:
         """
         Lists the FIDO2 authentication methods registered to a user, or retrieves a specific method.
 
         Args:
             user_id (str): The Azure AD user ID.
-            method_id (str, optional): The ID of a specific FIDO2 authentication method to retrieve.
-            limit (int, optional): Maximum number of results to return when listing all methods.
-
-        Returns:
-            list or dict: A list of FIDO2 authentication method objects, or a single object if method_id is provided.
-            Each object contains:
-            - id (str): The unique identifier for the FIDO2 authentication method.
-            - displayName (str): The display name of the key as given by the user.
-            - createdDateTime (str): The ISO 8601 timestamp when this key was registered.
-            - aaGuid (str): Authenticator Attestation GUID, an identifier that indicates the type of authenticator.
-            - model (str): The manufacturer-assigned model of the FIDO2 security key.
-            - attestationCertificates (list): The attestation certificate(s) attached to this security key.
-            - attestationLevel (str): The attestation level of this FIDO2 security key.
 
         API Reference:
             List: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-list?view=graph-rest-1.0&tabs=http
-            Get: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
 
         url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods"
-        params = {}
-        if limit:
-            params["$top"] = limit
-        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
         return res.get("value", [])
 
     def get_fido2_method(self, user_id: str, method_id: str) -> dict:
@@ -381,23 +364,13 @@ class MsGraphClient:
             method_id (str, optional): The ID of a specific FIDO2 authentication method to retrieve.
             limit (int, optional): Maximum number of results to return when listing all methods.
 
-        Returns:
-            dict: A dict of FIDO2 authentication method object.
-            Each object contains:
-            - id (str): The unique identifier for the FIDO2 authentication method.
-            - displayName (str): The display name of the key as given by the user.
-            - createdDateTime (str): The ISO 8601 timestamp when this key was registered.
-            - aaGuid (str): Authenticator Attestation GUID, an identifier that indicates the type of authenticator.
-            - model (str): The manufacturer-assigned model of the FIDO2 security key.
-            - attestationCertificates (list): The attestation certificate(s) attached to this security key.
-            - attestationLevel (str): The attestation level of this FIDO2 security key.
-
         API Reference:
             Get: https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
-        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods/{quote(method_id)}"
+        url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods/{method_id}"
         res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-        return res.get("value", {})
+        res.pop("@odata.context", None)
+        return res
 
     def delete_fido2_method(self, user_id: str, method_id: str):
         """
@@ -407,14 +380,11 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the FIDO2 authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/fido2authenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/fido2Methods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
     def list_email_methods(self, user_id: str):
         """
@@ -422,11 +392,6 @@ class MsGraphClient:
 
         Args:
             user_id (str): The Azure AD user ID.
-
-        Returns:
-            list: A list of email authentication method objects with the following keys:
-            - id (str): The unique identifier for the email authentication method.
-            - emailAddress (str): The email address registered to this user.
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/authentication-list-emailmethods?view=graph-rest-1.0&tabs=http
@@ -443,17 +408,13 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of a specific email authentication method to retrieve.
 
-        Returns:
-            dict: An email authentication method object with the following keys:
-            - id (str): The unique identifier for the email authentication method.
-            - emailAddress (str): The email address registered to this user.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/emailauthenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/emailMethods/{quote(method_id)}"
         res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-        return res.get("value", {})
+        res.pop("@odata.context", None)
+        return res
 
     def delete_email_method(self, user_id: str, method_id: str):
         """
@@ -463,14 +424,11 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the email authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/emailauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/emailMethods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
     def list_authenticator_methods(self, user_id: str, limit: int = DEFAULT_LIMIT, page_url: str = ""):
         """
@@ -480,9 +438,6 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             limit (int, optional): Maximum number of results to return.
             page_url (str, optional): URL for the next page of results.
-
-        Returns:
-            tuple: A tuple containing (list of authenticator method objects, next_page_url)
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-list?view=graph-rest-1.0&tabs=http
@@ -508,9 +463,6 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of a specific authenticator method to retrieve.
 
-        Returns:
-            dict: An authenticator method object.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
@@ -519,7 +471,7 @@ class MsGraphClient:
         res.pop("@odata.context", None)
         return res
 
-    def delete_authenticator_method(self, user_id: str, method_id: str):
+    def delete_authenticator_method(self, user_id: str, method_id: str) -> None:
         """
         Deletes a Microsoft Authenticator authentication method from a user.
 
@@ -527,25 +479,19 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the Microsoft Authenticator authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/microsoftauthenticatorauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/microsoftAuthenticatorMethods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_phone_methods(self, user_id: str, page_url: str = None):
+    def list_phone_methods(self, user_id: str, page_url: str = ""):
         """
         Lists the phone authentication methods registered to a user.
 
         Args:
             user_id (str): The Azure AD user ID.
             page_url (str, optional): URL for the next page of results.
-
-        Returns:
-            tuple: A tuple containing (list of phone method objects, next_page_url)
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/authentication-list-phonemethods?view=graph-rest-1.0&tabs=http
@@ -568,9 +514,6 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of a specific phone method to retrieve.
 
-        Returns:
-            dict: A phone method object.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/phoneauthenticationmethod-get?view=graph-rest-1.0&tabs=http
         """
@@ -587,14 +530,11 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the phone authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/phoneauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/phoneMethods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
     def list_software_oath_methods(self, user_id: str):
         """
@@ -602,9 +542,6 @@ class MsGraphClient:
 
         Args:
             user_id (str): The Azure AD user ID.
-
-        Returns:
-            list: A list of software OATH method objects.
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/authentication-list-softwareoathmethods?view=graph-rest-1.0&tabs=http
@@ -620,9 +557,6 @@ class MsGraphClient:
         Args:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of a specific software OATH method to retrieve.
-
-        Returns:
-            dict: A software OATH method object.
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/softwareoathauthenticationmethod-get?view=graph-rest-1.0&tabs=http
@@ -640,14 +574,11 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the software OATH authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/softwareoathauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/softwareOathMethods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
     def list_windows_hello_methods(self, user_id: str):
         """
@@ -655,9 +586,6 @@ class MsGraphClient:
 
         Args:
             user_id (str): The Azure AD user ID.
-
-        Returns:
-            list: A list of Windows Hello for Business authentication method objects.
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-list?view=graph-rest-1.0&tabs=http
@@ -673,9 +601,6 @@ class MsGraphClient:
         Args:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of a specific Windows Hello for Business method to retrieve.
-
-        Returns:
-            dict: A Windows Hello for Business authentication method object.
 
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-get?view=graph-rest-1.0&tabs=http
@@ -693,14 +618,11 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
             method_id (str): The ID of the Windows Hello for Business authentication method to delete.
 
-        Returns:
-            None.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/windowshelloforbusinessauthenticationmethod-delete?view=graph-rest-1.0&tabs=http
         """
         url_suffix = f"users/{quote(user_id)}/authentication/windowsHelloForBusinessMethods/{quote(method_id)}"
-        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
     def get_temp_access_pass_method(self, user_id: str, method_id: str) -> dict:
         """
@@ -731,17 +653,6 @@ class MsGraphClient:
             filters (str): OData filter to apply to the results (optional).
             page_size (int): Maximum number of results to return per page.
 
-        Returns:
-            tuple: A tuple containing (list of device objects, next_page_url).
-            Each device object contains:
-            - id (str): The unique identifier for the device.
-            - deviceId (str): The Azure device registration ID.
-            - displayName (str): The display name of the device.
-            - accountEnabled (bool): Whether the device account is enabled.
-            - operatingSystem (str): The operating system of the device.
-            - operatingSystemVersion (str): The operating system version.
-            - trustType (str): The trust type of the device.
-
         API Reference:
             https://learn.microsoft.com/en-us/graph/api/user-list-owneddevices?view=graph-rest-1.0&tabs=http
         """
@@ -768,7 +679,10 @@ def suppress_errors_with_404_code(func):
         except NotFoundError as e:
             if client.handle_error:
                 if (user := args.get("user", "___")) in str(e):
-                    human_readable = f"#### User -> {user} does not exist"
+                    if "A key with identifier" in str(e) and (method_id := args.get("method_id")):
+                        human_readable = f"#### Did not find the method_id {method_id} for user {user}"
+                    else:
+                        human_readable = f"#### User -> {user} does not exist"
                     return human_readable
                 elif (manager := args.get("manager", "___")) in str(e):
                     human_readable = f"#### Manager -> {manager} does not exist"
@@ -1344,12 +1258,11 @@ def list_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResul
     """
     user = args.get("user", "")
     method_id = args.get("method_id", "")
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     if method_id:
         fido2_data = client.get_fido2_method(user, method_id)
     else:
-        fido2_data = client.list_fido2_methods(user, limit)  # type: ignore
+        fido2_data = client.list_fido2_methods(user)  # type: ignore
 
     if not fido2_data:
         return CommandResults(readable_output=f"No FIDO2 authentication methods found for user {user}.")

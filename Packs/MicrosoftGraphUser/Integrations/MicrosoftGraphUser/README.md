@@ -908,7 +908,8 @@ There is no context output for this command.
 
 ***
 Lists the devices that are owned by the user.
-Permission:User.Read.All,Directory.Read.All - Delegated
+Permission:User.Read.All, Directory.Read.All - Delegated
+Note: When using the Xsoar app, this command will only show partial data. for the full data, use a self-deployed Azure app with the correct permissions.
 
 #### Base Command
 
@@ -927,7 +928,19 @@ Permission:User.Read.All,Directory.Read.All - Delegated
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.OwnedDevice.ID | String | TAP policy's ID. |
+| MSGraphUser.OwnedDevice.ID | String | Owned device's ID. |
+| MSGraphUser.OwnedDevice.PhysicalIds | String | Physical IDs of the device. |
+| MSGraphUser.OwnedDevice.DeviceVersion | String | The version of the device. |
+| MSGraphUser.OwnedDevice.ProfileType | String | The profile type of the device. |
+| MSGraphUser.OwnedDevice.CreatedDateTime | String | The date and time when the device was created. |
+| MSGraphUser.OwnedDevice.ApproximateLastSignInDateTime | String | The approximate date and time of the last sign-in. |
+| MSGraphUser.OwnedDevice.OperatingSystemVersion | String | The version of the operating system. |
+| MSGraphUser.OwnedDevice.AlternativeSecurityIds | String | Alternative security IDs of the device. |
+| MSGraphUser.OwnedDevice.DisplayName | String | The display name of the device. |
+| MSGraphUser.OwnedDevice.OperatingSystem | String | The operating system of the device. |
+| MSGraphUser.OwnedDevice.DeviceId | String | The unique identifier for the device. |
+| MSGraphUser.OwnedDevice.TrustType | String | The trust type of the device. |
+| MSGraphUser.OwnedDevice.RegistrationDateTime | String | The date and time when the device was registered. |
 
 ### msgraph-user-fido2-method-list
 
