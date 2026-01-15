@@ -505,7 +505,7 @@ class S3:
         print_debug_logs(client, f"Listing objects from bucket: {bucket}")
 
         pagination_kwargs = build_pagination_kwargs(
-            args, minimum_limit=1, max_limit=1000, next_token_name="Marker", limit_name="MaxKeys"
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxKeys"
         )
 
         print_debug_logs(client, f"Created those pagination parameters {pagination_kwargs=}")
