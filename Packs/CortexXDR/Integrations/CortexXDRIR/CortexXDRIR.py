@@ -441,56 +441,6 @@ class Client(CoreClient):
             timeout=self.timeout,
         )
 
-    # def get_xql_queries(self, request_data: dict):
-    #     """
-    #     Gets a list of XQL queries from the library.
-    #     Args:
-    #         request_data (dict): The request data
-    #     Returns:
-    #         dict: A dict of XQL queries and the queries count.
-    #     """
-    #     res = self._http_request(
-    #         method="POST",
-    #         url_suffix="../xql_library/get",  # The endpoint is without v1
-    #         json_data={"request_data": request_data},
-    #         headers=self.headers,
-    #         timeout=self.timeout,
-    #     )
-    #     return res.get("reply", {})
-    #
-    # def create_xql_queries(self, request_data):
-    #     """
-    #     Creates or updates XQL queries in the library.
-    #     Args:
-    #         request_data (dict): The request data.
-    #     Returns:
-    #         dict: The API response.
-    #     """
-    #     return self._http_request(
-    #         method="POST",
-    #         url_suffix="../xql_library/insert/",  # The endpoint is without v1
-    #         json_data={"request_data": request_data},
-    #         headers=self.headers,
-    #         timeout=self.timeout,
-    #     )
-    #
-    # def delete_xql_queries(self, request_data: dict):
-    #     """
-    #     Deletes XQL queries from the library.
-    #     Args:
-    #         request_data (dict): List of XQL query names to delete.
-    #     Returns:
-    #         dict: The API response.
-    #     """
-    #     # The API returns 200 even if xql query doesn't exist
-    #     return self._http_request(
-    #         method="POST",
-    #         url_suffix="../xql_library/delete/",  # The endpoint is without v1
-    #         json_data={"request_data": request_data},
-    #         headers=self.headers,
-    #         timeout=self.timeout,
-    #     )
-
     def get_tenant_info(self):
         reply = self._http_request(
             method="POST",
