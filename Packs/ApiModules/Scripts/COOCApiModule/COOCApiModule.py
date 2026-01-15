@@ -393,3 +393,42 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
 
     # Return formatted error response
     return error_entry
+
+
+def is_gov_account(connector_id: str, account_id: str = "") -> bool:
+    """
+    Return whether the account connected to the connector_id is a gov account or not.
+
+    Args:
+        connector_id (str): The connector id of the cloud provider.
+        account_id (str): The relevant account id
+
+    Returns:
+        A boolean representing whether the account is a gov account or not.
+    """
+    accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
+
+    relevant_account = {}
+    if account_id:
+        demisto.debug(f"[COOC API]The found {account_id=}")
+        for account in accounts_info:
+            if account.get("account_id") == account_id:
+                relevant_account = account
+                demisto.debug("[COOC API] found the account")
+                break
+    elif accounts_info:
+        demisto.debug(f"[COOC API] {account_id=}. Getting the first account for the health check from the existing accounts.")
+        relevant_account = accounts_info[0]
+    else:
+        demisto.debug(f"[COOC API] There are no {account_id=} or {accounts_info=} for the {connector_id=}.")
+        return False
+
+    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
+        demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
+        return account_cloud_partition.upper() == "GOV"
+    else:
+        demisto.debug(f"[COOC API] The information found for account_id: {account_id}, {relevant_account=}.")
+        demisto.debug(
+            f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
+        )
+        return False
