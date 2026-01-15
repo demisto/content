@@ -17,13 +17,13 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class Client(BaseClient):
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix=f"{ip}")
+        return self._http_request(method="GET", url_suffix=f"/{ip}")
 
     def get_email_reputation(self, email: str) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix=f"{email}")
+        return self._http_request(method="GET", url_suffix=f"/{email}")
 
     def get_url_reputation(self, url: str) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix=f"{url}")
+        return self._http_request(method="GET", url_suffix=f"/{url}")
 
 
 def get_reputation_reliability(reliability):
