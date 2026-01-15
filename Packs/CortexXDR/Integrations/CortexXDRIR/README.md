@@ -3878,7 +3878,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Alerts with IDs 35326 have been updated successfully.
->
+
 ### xdr-asset-group-update
 
 ***
@@ -3890,13 +3890,13 @@ Updates an asset group.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | The ID of the asset group to update. | Required |
-| group_name | The name of the asset group. | Optional |
-| group_type | The type of the asset group. Possible values are: Static, Dynamic. | Optional |
-| group_description | The description of the asset group. | Optional |
-| membership_predicate_json | Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                        | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| group_id | The ID of the asset group to update.                                                                                                                                                                                                                                   | Required |
+| group_name | The name of the asset group.                                                                                                                                                                                                                                           | Optional |
+| group_type | The type of the asset group. Possible values are: Static, Dynamic.                                                                                                                                                                                                     | Optional |
+| group_description | The description of the asset group.                                                                                                                                                                                                                                    | Optional |
+| membership_predicate_json | Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to be in lower case. | Optional |
 
 #### Context Output
 
@@ -4041,7 +4041,7 @@ Returns a list of assets.
 | filter_json | The JSON to use for the "filter" field in the API. You can use the xdr-asset-schema-get in order to get the schema. | Optional |
 | limit | Maximum number of assets to return. Default is 50. | Optional |
 | page_size | Page size for pagination. | Optional |
-| page | Page number for pagination. | Optional |
+| page | Page number for pagination. 0 is the first page. | Optional |
 
 #### Context Output
 

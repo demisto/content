@@ -108,36 +108,6 @@ def replace_dots_in_keys(data: Any) -> Any:
     return data
 
 
-def remove_prefix_from_keys(data_list, prefix):
-    """
-    Takes a list of dictionaries and removes a specific prefix from keys in each dictionary.
-
-    Args:
-        data_list (list): The list of dictionaries (e.g., from raw API response).
-        prefix (str): The prefix to remove (e.g., "XDM.ASSET_GROUP").
-
-    Returns:
-        list: A new list with cleaned dictionary keys.
-    """
-    cleaned_list = []
-    len_prefix = len(prefix)
-    for entry in data_list:
-        if not isinstance(entry, dict):
-            continue
-        new_dict = {}
-
-        for key, value in entry.items():
-            if key.startswith(prefix):
-                new_key = key[len_prefix:]
-                new_dict[new_key] = value
-            else:
-                new_dict[key] = value
-
-        cleaned_list.append(new_dict)
-
-    return cleaned_list
-
-
 def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_already_filtered_incidents: int) -> List:
     """
     Filters incidents that were seen already and saves the unseen incidents to LastRun object.
@@ -1543,10 +1513,13 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     asset_id_list = argToList(args.get("asset_id", ""))
     sort_field = args.get("sort_field", "").lower()
     sort_order = args.get("sort_order", "").upper()
-    filter_json = args.get("filter_json", "").upper()
+    filter_json = args.get("filter_json", "")
     if filter_json:
-        filter_json = json.loads(filter_json)
-    limit = arg_to_number(args.get("limit")) or 30
+        try:
+            filter_json = json.loads(filter_json)
+        except ValueError:
+            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+    limit = arg_to_number(args.get("limit", 50))
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
 
@@ -1595,7 +1568,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
-        outputs_key_field="id",
+        outputs_key_field="xdm_asset_id",
         outputs=assets,
         raw_response=assets,
     )
@@ -1675,13 +1648,15 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
     group_description = args.get("group_description", "")
     membership_predicate_json = args.get("membership_predicate_json", "")
     if membership_predicate_json:
-        membership_predicate_json = json.loads(membership_predicate_json)
+        try:
+            membership_predicate_json = json.loads(membership_predicate_json)
+        except ValueError:
+            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
 
     update_data = assign_params(
         group_name=group_name,
         group_type=group_type,
         group_description=group_description,
-        membership_predicate=membership_predicate_json,
     )
 
     request_data = {"request_data": {"asset_group": update_data}}
@@ -1722,10 +1697,13 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     """
     sort_field = args.get("sort_field", "").upper()
     sort_order = args.get("sort_order", "").upper()
-    filter_json = args.get("filter_json", "").upper()
+    filter_json = args.get("filter_json", "")
     if filter_json:
-        filter_json = json.loads(filter_json)
-    limit = arg_to_number(args.get("limit")) or 50
+        try:
+            filter_json = json.loads(filter_json)
+        except ValueError:
+            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+    limit = arg_to_number(args.get("limit", 50))
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
 
@@ -1765,7 +1743,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
-        outputs_key_field="ID",
+        outputs_key_field="XDM_ASSET_GROUP_ID",
         outputs=groups,
         raw_response=groups,
     )
@@ -1788,7 +1766,11 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     group_description = args.get("group_description", "")
     membership_predicate_json = args.get("membership_predicate_json", "")
     if membership_predicate_json:
-        membership_predicate_json = json.loads(membership_predicate_json)
+        try:
+            membership_predicate_json = json.loads(membership_predicate_json)
+        except ValueError:
+            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+
 
     update_data = assign_params(
         group_name=group_name,
