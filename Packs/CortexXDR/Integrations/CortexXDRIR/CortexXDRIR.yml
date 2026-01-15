@@ -3869,7 +3869,7 @@ script:
     - description: 'The asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
       isArray: true
       name: asset_id
-    - description: 'The field by which to sort the results. For example: xdm.asset.first_observed'
+    - description: 'The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
       name: sort_field
     - auto: PREDEFINED
       description: The order in which to sort the results.
@@ -4030,7 +4030,7 @@ script:
     description: Deletes an asset group.
     name: xdr-asset-group-delete
   - arguments:
-    - description: 'The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME'
+    - description: 'The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups.'
       name: sort_field
     - auto: PREDEFINED
       description: The order in which to sort the results.
