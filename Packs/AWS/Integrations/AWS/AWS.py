@@ -549,7 +549,7 @@ class S3:
                 headerTransform=pascalToSpace,
             )
             return CommandResults(
-                outputs_prefix="AWS.S3-Buckets.BucketObjects",
+                outputs_prefix="AWS.S3.Buckets",
                 outputs_key_field="BucketName",
                 outputs={"BucketName": bucket, "NextToken": serialized_response.get("NextMarker"), "Objects": contents},
                 readable_output=human_readable,

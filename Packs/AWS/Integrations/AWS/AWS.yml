@@ -310,7 +310,7 @@ script:
       - contextPath: AWS.S3.Buckets.Objects.ETag
         description: The entity tag (hash) of the object.
         type: String
-      - contextPath: AWS.S3.Buckets.ObjectsNextToken
+      - contextPath: AWS.S3.Buckets.NextToken
         description: Token to use for pagination in subsequent requests.
         type: String
 
