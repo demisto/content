@@ -373,7 +373,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     """
     policies: list[dict] = []
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit = arg_to_number(str(args.get("limit", "10")))
+    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
@@ -492,7 +492,7 @@ def front_door_policies_list_command(client: AzureWAFClient, **args) -> CommandR
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit = arg_to_number(str(args.get("limit", "10")))
+    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
 
     policies: list[dict] = []
     try:
@@ -522,7 +522,7 @@ def front_door_policies_list_all_in_subscription_command(client: AzureWAFClient,
     """
     policies: list[dict] = []
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit = arg_to_number(str(args.get("limit", "10")))
+    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
