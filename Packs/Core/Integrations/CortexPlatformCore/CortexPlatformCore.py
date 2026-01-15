@@ -18,11 +18,13 @@ SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -1044,6 +1046,38 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data=request_data,
+        )
+
+    def add_assessment_profile(self, profile_payload: dict) -> dict:
+        """
+        Add a new assessment profile to Cortex XDR.
+
+        Args:
+            profile_payload (dict): The assessment profile configuration payload.
+
+        Returns:
+            dict: The response from the API for adding the assessment profile.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/add_assessment_profile",
+            json_data=profile_payload,
+        )
+
+    def list_compliance_standards_command(self, payload: dict) -> dict:
+        """
+        List compliance standards from Cortex XDR.
+
+        Args:
+            payload (dict): The request payload for listing compliance standards.
+
+        Returns:
+            dict: The response from the API containing compliance standards data.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_standards",
+            json_data=payload,
         )
 
     def get_users(self):
@@ -3667,6 +3701,284 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def parse_frequency(day: str | None, time: str | None) -> str:
+    """
+    Convert day and time to cron-style frequency string
+
+    Cron format: Minute Hour Day-of-Month Month Day-of-Week
+    Example: "0 12 * * 2" means:
+    - Minute: 0 (The task starts at the 0th minute of the hour)
+    - Hour: 12 (The task starts at the 12th hour - 12:00 PM in 24-hour time)
+    - Day of Month: * (Every day of the month)
+    - Month: * (Every month)
+    - Day of Week: 2 (Tuesday)
+
+    :param day: Day of month (optional)
+    :param time: Time in HH:MM format
+    :return: Cron-style frequency string
+    """
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
+
+    target_time = time if time else "12:00"
+    try:
+        hours, minutes = map(int, target_time.split(":"))
+        if not (0 <= hours < 24 and 0 <= minutes < 60):
+            raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
+    except ValueError:
+        raise ValueError("Invalid time format. Use HH:MM.")
+
+    if day is None:
+        # If no day is provided -> Daily (represented by * in cron)
+        cron_day = "*"
+    else:
+        # If day is provided -> Weekly (look up the day index)
+        day_key = day.lower()
+        if day_key not in DAY_MAP:
+            raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+        cron_day = str(DAY_MAP[day_key])
+
+    return f"{minutes} {hours} * * {cron_day}"
+
+
+def create_assessment_profile_payload(
+    name: str,
+    description: str,
+    standard_id: str,
+    asset_group_id: str,
+    day: str | None,
+    time: str | None,
+    report_type: str = "ALL",
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    report_frequency = parse_frequency(day, time)
+
+    payload = {
+        "request_data": {
+            "profile_name": name,
+            "asset_group_id": asset_group_id,
+            "standard_id": standard_id,
+            "description": description,
+            "report_targets": [],
+            "report_type": report_type,
+            "evaluation_frequency": report_frequency,
+        }
+    }
+
+    return payload
+
+
+def list_compliance_standards_payload(
+    name: str | None = None,
+    created_by: str | None = None,
+    labels: list[str] | None = None,
+    page=0,
+    page_size=MAX_COMPLIANCE_STANDARDS,
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+    payload: dict = {"request_data": {"filters": []}}
+
+    if name:
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
+
+    if created_by:
+        payload["request_data"]["filters"].append(
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
+        )
+
+    if labels:
+        for label in labels:
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
+    payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
+
+    payload["request_data"]["pagination"] = {
+        "search_from": start_index,
+        "search_to": end_index,
+    }
+
+    return payload
+
+
+def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
+    """
+    Adds a new assessment profile to the Cortex Platform.
+
+    Args:
+        client (Client): The integration client used to add the assessment profile.
+        args (dict): Command arguments containing profile details.
+
+    Returns:
+        CommandResults: Contains the result of adding the assessment profile.
+    """
+    profile_name = args.get("profile_name", "")
+    profile_description = args.get("profile_description", "")
+    standard_name = args.get("standard_name", "")
+    asset_group_name = args.get("asset_group_name", "")
+    day = args.get("day")
+    time = args.get("time", "12:00")
+
+    payload = list_compliance_standards_payload(
+        name=standard_name,
+    )
+    demisto.debug(f"Listing compliance standards with payload: {payload}")
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+
+    if not standards:
+        return_error("No compliance standards found matching the provided name.")
+
+    if len(standards) > 1:
+        standard_names = [standard.get("name") for standard in standards]
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one standard:\n\n{new_line.join(standard_names)}\n\n"
+            "Please provide a more specific name."
+        )
+
+    standard_id = standards[0].get("id")
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
+    filter_str = filter.to_dict()
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
+
+    if not group_ids:
+        return_error("No asset group found matching the provided name.")
+
+    if len(group_ids) > 1:
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one asset group:\n\n{new_line.join(group_names)}\n\n"
+            "Please provide a more specific name."
+        )
+    demisto.debug(f"{group_ids=}")
+    asset_group_id = group_ids[0]
+
+    payload = create_assessment_profile_payload(
+        name=profile_name,
+        description=profile_description,
+        standard_id=str(standard_id),
+        asset_group_id=asset_group_id,
+        day=day,
+        time=time,
+        report_type="ALL",
+    )
+    demisto.debug(f"Creating assessment profile with payload: {payload}")
+
+    reply = client.add_assessment_profile(payload)
+    assessment_profile_id = reply.get("assessment_profile_id")
+    return CommandResults(
+        readable_output=f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix="Core.AssessmentProfile",
+        outputs_key_field="assessment_profile_id",
+        outputs=assessment_profile_id,
+        raw_response=reply,
+    )
+
+
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Lists compliance standards with optional filtering.
+
+    Args:
+        client (Client): The client instance for API communication.
+        args (dict): Command arguments containing optional filters:
+            - name (str): Filter by standard name
+            - created_by (str): Filter by creator
+            - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
+            - page (int): Page number for pagination (default: 0)
+            - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with filtered compliance standards data and metadata
+            - CommandResults with pagination metadata (filtered_count, returned_count)
+    """
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by,
+        labels=labels,
+        page=page,
+        page_size=page_size,
+    )
+
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+    filtered_count = reply.get("result_count")
+    returned_count = len(standards)
+
+    filtered_standards = [
+        {
+            "id": s.get("id"),
+            "name": s.get("name"),
+            "description": s.get("description"),
+            "controls_count": len(s.get("controls_ids", [])),
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0),
+            "labels": s.get("labels", []),
+        }
+        for s in standards
+    ]
+
+    demisto.debug(f"{filtered_standards=}")
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Compliance Standards", filtered_standards),
+            outputs_prefix="Core.ComplianceStandards",
+            outputs_key_field="id",
+            outputs=filtered_standards,
+            raw_response=reply,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
+
+
 def validate_start_end_times(start_time, end_time):
     """
     Validate that start_time and end_time are provided correctly and represent
@@ -4347,6 +4659,10 @@ def main():  # pragma: no cover
             return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+        elif command == "core-add-assessment-profile":
+            return_results(core_add_assessment_profile_command(client, args))
+        elif command == "core-list-compliance-standards":
+            return_results(core_list_compliance_standards_command(client, args))
 
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
