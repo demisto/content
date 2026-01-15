@@ -51,8 +51,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 **eDiscovery**:
 
-1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
-2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
+1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery`  commands)
+2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update/delete-ediscovery`, `msg-export-result-ediscovery-data` commands)
 
 **Threat Assessment**:
 

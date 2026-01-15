@@ -1988,7 +1988,12 @@ def list_case_operation_command(
         outputs_prefix="MsGraph.eDiscoveryCase.Operation",
         outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
-        readable_output=tableToMarkdown(name="Results", t=hr, removeNull=True),
+        readable_output=tableToMarkdown(
+            name="Results",
+            headers=["ID", "Action", "Status", "Created By", "Link to download a file"],
+            t=hr,
+            removeNull=True
+        ),
         raw_response=raw_res,
     )
 
@@ -2024,7 +2029,31 @@ def export_result_ediscovery_data_command(
     if not operation_url:
         raise DemistoException("Missing Location header in exportResult response")
 
-    return CommandResults(readable_output=f"eDiscovery export location: {operation_url}.")
+    case_id_from_url = (
+        re.search(r"ediscoveryCases\('([^']+)'\)", operation_url)
+        or re.search(r"ediscoveryCases/([^/]+)/", operation_url)
+    )
+    operation_id_from_url = (
+        re.search(r"operations\('([^']+)'\)", operation_url)
+        or re.search(r"operations/([^/?]+)", operation_url)
+    )
+
+    case_id = (case_id_from_url.group(1) if case_id_from_url else args.get("case_id")) or "N/A"
+    operation_id = (operation_id_from_url.group(1) if operation_id_from_url else "N/A")
+
+    readable_output = (
+        "eDiscovery export request was submitted successfully.\n"
+        f"- Case ID: {case_id}\n"
+        f"- Operation ID: {operation_id}\n"
+    )
+    outputs = {
+        "Location": operation_url,
+        "OperationID": operation_id,
+        "CaseID": case_id
+    }
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          outputs_prefix="MsGraph.eDiscoveryCase.Export")
 
 
 # @polling_function(
@@ -2736,7 +2765,7 @@ def main():
                 return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command.\nError:\n{err}\nTraceback:{traceback.format_exc()}")
+        return_error(str(err))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
