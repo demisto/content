@@ -2669,7 +2669,6 @@ class EC2:
         """
         kwargs = {"AssociationId": args.get("association_id")}
 
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Disassociating address with parameters: {kwargs}")
 
         response = client.disassociate_address(**kwargs)

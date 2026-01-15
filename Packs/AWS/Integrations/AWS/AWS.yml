@@ -7284,7 +7284,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: "One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options."
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
       required: false
     - name: public_ips
       description: "One or more Elastic IP addresses, separated by commas."
@@ -7475,7 +7475,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: allocation_id
-      description: The allocation ID. This is required.
+      description: The allocation ID.
       required: true
     - name: instance_id
       description: The ID of the instance. The instance must have exactly one attached network interface.
