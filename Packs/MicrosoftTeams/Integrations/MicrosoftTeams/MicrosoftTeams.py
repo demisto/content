@@ -1525,6 +1525,7 @@ def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict,
     :param team_id: The team_id
     :param channel_id: The channel_id
     :param odata_params: The OData query parameters.
+    :param message_id: The message_id to get its replies.
     :return: The response body - collection of chatMessage objects.
     """
     url = f"{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/messages"

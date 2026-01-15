@@ -1463,7 +1463,7 @@ Message was sent successfully.
 ***
 Retrieves a list of messages in a chat or channel.
 
- Notes:
+Notes:
 
 - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
 
@@ -1475,8 +1475,8 @@ Retrieves a list of messages in a chat or channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| chat_id | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat. | Required |
-| team_name | The channel's team. Required if specifying a channel name in the chat_id argument. | Optional |
+| chat | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat. | Required |
+| team_name | The channel's team. Required if specifying a channel name in the chat argument. | Optional |
 | limit | The number of results to retrieve. Default is 50. | Optional |
 | order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional |
 | next_link | A link that specifies a starting point to use for subsequent calls. | Optional |
