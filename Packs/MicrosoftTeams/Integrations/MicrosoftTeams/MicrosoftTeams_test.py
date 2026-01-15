@@ -3684,13 +3684,13 @@ def test_get_bot_access_token_single_tenant_no_tenant_id(mocker):
     "args, expected_response, expected_request_url, expected_outputs",
     [
         (
-            {"chat_id": GROUP_CHAT_ID, "limit": 2, "order_by": "createdDateTime"},
+            {"chat": GROUP_CHAT_ID, "limit": 2, "order_by": "createdDateTime"},
             "list_messages",
             f"https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}/messages?$top=2&$orderBy=createdDateTime desc",
             "expected_outputs_list_messages_new_command",
         ),
         (
-            {"next_link": "https://graph.microsoft.com/v1.0/chats/test_next_link", "limit": 2, "chat_id": GROUP_CHAT_ID},
+            {"next_link": "https://graph.microsoft.com/v1.0/chats/test_next_link", "limit": 2, "chat": GROUP_CHAT_ID},
             "list_messages",
             "https://graph.microsoft.com/v1.0/chats/test_next_link",
             "expected_outputs_list_messages_new_command",
@@ -3733,7 +3733,7 @@ def test_list_messages_command_channel(mocker, requests_mock):
     channel_name = "incident-1"
     team_name = "The-A-Team"
     channel_id = mirrored_channels[0]["channel_id"]
-    args = {"chat_id": channel_name, "team_name": team_name, "limit": 2}
+    args = {"chat": channel_name, "team_name": team_name, "limit": 2}
 
     mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
     mocker.patch("MicrosoftTeams.get_channel_id", return_value=channel_id)
@@ -3768,7 +3768,7 @@ def test_list_messages_command_replies(mocker, requests_mock):
     team_name = "The-A-Team"
     channel_id = mirrored_channels[0]["channel_id"]
     message_id = "1616964509832"
-    args = {"chat_id": channel_name, "team_name": team_name, "message_id": message_id, "limit": 2}
+    args = {"chat": channel_name, "team_name": team_name, "message_id": message_id, "limit": 2}
 
     mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
     mocker.patch("MicrosoftTeams.get_channel_id", return_value=channel_id)
@@ -3801,7 +3801,7 @@ def test_list_messages_command_error(mocker):
     from MicrosoftTeams import list_messages_command
 
     channel_name = "incident-1"
-    args = {"chat_id": channel_name, "limit": 2}
+    args = {"chat": channel_name, "limit": 2}
 
     # Mock get_chat_id_and_type to raise exception as it's not a chat
     mocker.patch("MicrosoftTeams.get_chat_id_and_type", side_effect=ValueError("Could not find chat"))

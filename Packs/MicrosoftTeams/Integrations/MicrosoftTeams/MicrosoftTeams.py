@@ -1944,7 +1944,7 @@ def resolve_chat_or_channel(
     # If not chat, must be channel → requires team
     if not team_name:
         raise ValueError(
-            "Unable to resolve chat. If you are trying to retrieve channel messages, please provide the 'team_name' argument."
+            "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'."
         )
 
     team_id = get_team_aad_id(team_name)
@@ -1989,7 +1989,7 @@ def list_messages_command():
     Retrieve the list of messages in a chat or channel.
     """
     args = demisto.args()
-    chat_or_channel = args.get("chat_id", "")
+    chat_or_channel = args.get("chat", "")
     team_name = args.get("team_name", "")
     message_id = args.get("message_id", "")
     next_link = args.get("next_link", "")
