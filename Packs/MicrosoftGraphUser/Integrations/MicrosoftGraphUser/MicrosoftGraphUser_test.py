@@ -1116,9 +1116,10 @@ def test_get_groups_command(mocker):
     args = {"user": "test-user"}
     result = get_groups_command(client, args)
 
+    assert result.outputs_prefix == "MSGraphUserGroups"
     assert result.outputs_key_field == "ID"
-    assert "MSGraphUserGroups" in result.outputs
-    assert result.outputs["MSGraphUserGroups"][0]["ID"] == "group-id-1"
+    assert result.outputs["ID"] == "test-user"
+    assert result.outputs["Groups"][0]["ID"] == "group-id-1"
     assert "test-user group data" in result.readable_output
 
 
@@ -1147,14 +1148,14 @@ def test_get_auth_methods_command(mocker):
         True,
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
-    mock_auth_data = {"value": [{"id": "auth-id-1", "displayName": "Auth Method 1"}]}
+    mock_auth_data = [{"id": "auth-id-1", "displayName": "Auth Method 1"}]
     mocker.patch.object(client, "get_auth_methods", return_value=mock_auth_data)
 
     args = {"user": "test-user"}
     result = get_auth_methods_command(client, args)
 
+    assert result.outputs_prefix == "MSGraphUserAuthMethods"
     assert result.outputs_key_field == "ID"
-    assert "MSGraphUserAuthMethods" in result.outputs
-    assert result.outputs["MSGraphUserAuthMethods"]["User"] == "test-user"
-    assert result.outputs["MSGraphUserAuthMethods"]["AuthMethods"]["Value"][0]["ID"] == "auth-id-1"
+    assert result.outputs["ID"] == "test-user"
+    assert result.outputs["Methods"][0]["ID"] == "auth-id-1"
     assert "test-user - auth methods" in result.readable_output
