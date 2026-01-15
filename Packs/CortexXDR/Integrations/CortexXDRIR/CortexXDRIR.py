@@ -1519,9 +1519,9 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
             filter_json = json.loads(filter_json)
         except ValueError:
             raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page", 0))
+    page = arg_to_number(args.get("page")) or 0
 
     assets = []
     if asset_id_list:
@@ -1703,9 +1703,9 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
             filter_json = json.loads(filter_json)
         except ValueError:
             raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page", 0))
+    page = arg_to_number(args.get("page")) or 0
 
     request_data: Dict[str, Any] = {
         "request_data": {
