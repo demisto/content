@@ -250,6 +250,7 @@ filter _raw_log = null or _raw_log ~= "CEF:0"
     xdm.source.port = to_integer(spt),
     xdm.event.outcome = if(act ~= "DROP|BLOCK", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.outcome_reason = act,
+    xdm.alert.description = msg,
     xdm.intermediate.ipv4 = if(is_ipv4(dst),dst,null),
     xdm.intermediate.port = to_integer(dpt),
     xdm.target.domain = if(fqdn != "NA",fqdn,null),
