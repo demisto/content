@@ -267,7 +267,7 @@ class AzureWAFClient:
                 res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
         return res
 
-    def get_front_door_policy_list_by_subscription_id(self, subscription_ids) -> list[dict]:
+    def get_front_door_policy_list_by_subscription_id(self, subscription_ids: list) -> list[dict]:
         res = []
         for subscription_id in subscription_ids:
             base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
@@ -289,13 +289,16 @@ class AzureWAFClient:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_names:
-            result = self.http_request(
-                method="PUT",
-                full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
-                data=data,
-                params={"api-version": FRONT_DOOR_API_VERSION},
-            )
-            res.append(result)
+            try:
+                result = self.http_request(
+                    method="PUT",
+                    full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+                    data=data,
+                    params={"api-version": FRONT_DOOR_API_VERSION},
+                )
+                res.append(result)
+            except Exception as e:
+                res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
         return res
 
     def delete_front_door_policy(self, policy_name: str, resource_group_name: str) -> requests.Response:
@@ -339,7 +342,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     policy_name: str = args.get("policy_name", "")
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
-    verbose = args.get("verbose", "false") == "true"
+    verbose = argToBoolean(args.get("verbose", "false"))
     limit = int(str(args.get("limit", "20")))
 
     policies: list[dict] = []
@@ -369,8 +372,8 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     Retrieve all policies within the subscription id.
     """
     policies: list[dict] = []
-    verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", "10")))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit = arg_to_number(str(args.get("limit", "10")))
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
@@ -392,6 +395,16 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     )
 
 
+def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
+    """A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
+    if len(keys) == 1:
+        base_dict[keys[0]] = value
+    else:
+        if keys[0] not in base_dict:
+            base_dict[keys[0]] = {}
+        parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
+
+
 def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
     Gets a policy name, resource groups (or taking instance's default), location,
@@ -399,21 +412,12 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     Updates the policy if exists, otherwise creates a new policy.
     """
 
-    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
-        """A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
-        if len(keys) == 1:
-            base_dict[keys[0]] = value
-        else:
-            if keys[0] not in base_dict:
-                base_dict[keys[0]] = {}
-            parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
-
     policy_name = str(args.get("policy_name", ""))
     resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
     subscription_id = args.get("subscription_id", client.subscription_id)
     managed_rules = args.get("managed_rules", {})
     location = args.get("location", "")  # location is not required by documentation but is required by the api itself.
-    verbose = args.get("verbose", "false") == "true"
+    verbose = argToBoolean(args.get("verbose", "false"))
 
     if not policy_name or not managed_rules or not location:
         raise Exception("In order to add/ update policy, please provide policy_name, location and managed_rules. ")
@@ -487,8 +491,8 @@ def front_door_policies_list_command(client: AzureWAFClient, **args) -> CommandR
     policy_name: str = args.get("policy_name", "")
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
-    verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", "10")))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit = arg_to_number(str(args.get("limit", "10")))
 
     policies: list[dict] = []
     try:
@@ -517,8 +521,8 @@ def front_door_policies_list_all_in_subscription_command(client: AzureWAFClient,
     Retrieve all Front Door policies within the subscription id.
     """
     policies: list[dict] = []
-    verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", "10")))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    limit = arg_to_number(str(args.get("limit", "10")))
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
@@ -547,21 +551,12 @@ def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandR
     Updates the policy if exists, otherwise creates a new Front Door policy.
     """
 
-    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: str | dict) -> None:
-        """A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
-        if len(keys) == 1:
-            base_dict[keys[0]] = value
-        else:
-            if keys[0] not in base_dict:
-                base_dict[keys[0]] = {}
-            parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
-
     policy_name = str(args.get("policy_name", ""))
     resource_group_names = argToList(args.get("resource_group_name", client.resource_group_name))
     subscription_id = args.get("subscription_id", client.subscription_id)
     managed_rules = args.get("managed_rules", {})
     sku = args.get("sku", "Classic_AzureFrontDoor")
-    verbose = args.get("verbose", "false") == "true"
+    verbose = argToBoolean(args.get("verbose", "false"))
 
     if not policy_name or not managed_rules:
         raise Exception("In order to add/update Front Door policy, please provide policy_name and managed_rules.")
@@ -613,8 +608,6 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
         md = ""
         context: dict = {}
         if status.status_code in [200, 202]:
-            if not context:
-                context = {}
             if old_context := demisto.dt(demisto.context(), f'AzureWAF.FrontDoorPolicy(val.id === "{policy_id}")'):
                 if isinstance(old_context, list):
                     old_context = old_context[0]
@@ -677,7 +670,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
 
         table_data.append(row)
     md = tableToMarkdown("Policies", table_data)
-    md += f"\nShowing {min(limit, len(policies))} policies out of {policies_num}"
+    md += f"\nShowing {len(policies)} policies out of {policies_num}"
     return md
 
 

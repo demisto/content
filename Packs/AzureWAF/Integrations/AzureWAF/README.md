@@ -138,8 +138,8 @@ Retrieves protection policies within a resource group.
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
 | resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
-| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
-| limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".| Optional |
+| limit | Maximum number of policies to fetch. Default is "10".| Optional |
 
 #### Context Output
 
@@ -497,8 +497,8 @@ Lists all of the Front Door protection policies within a resource group.
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
 | resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
-| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
-| limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
 
 #### Context Output
 
@@ -528,7 +528,7 @@ Lists all of the Front Door protection policies within a subscription.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
-| limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
 
 #### Context Output
@@ -567,7 +567,7 @@ Creates or updates a Front Door policy with a specified rule set name within a r
 | location | Describes the resource location. | Optional |
 | sku | The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
 | etag | A unique read-only string that changes whenever the resource is updated. | Optional |
-| verbose | Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
 | tags | Resource tags. | Optional |
 
 #### Context Output
