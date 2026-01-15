@@ -6917,6 +6917,301 @@ def test_normalize_key_without_prefix():
     assert normalize_key("some_xdm_field") == "some_xdm_field"
 
 
+class TestCoreAddAssessmentProfileCommand:
+    def test_core_add_assessment_profile_command_success(self, mocker):
+        """Test successful assessment profile creation
+
+        Given: Mock client with valid standards and asset groups responses
+        When: core_add_assessment_profile_command is called with valid arguments
+        Then: Returns successful result with profile ID
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        # Mock compliance standards response
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        # Mock asset groups response
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        # Mock add assessment profile response
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        # Mock payload functions
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+            "day": "monday",
+            "time": "14:30",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        assert result.readable_output == "Assessment Profile profile-789 successfully added"
+        assert result.outputs_prefix == "Core.AssessmentProfile"
+        assert result.outputs_key_field == "assessment_profile_id"
+        assert result.outputs == "profile-789"
+
+    def test_core_add_assessment_profile_command_no_compliance_standards(self, mocker):
+        """Test when no compliance standards are found
+
+        Given: Mock client with empty standards response
+        When: core_add_assessment_profile_command is called with nonexistent standard
+        Then: Raises exception indicating no compliance standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": []}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No compliance standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Nonexistent Standard", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="No compliance standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_compliance_standards(self, mocker):
+        """Test when multiple compliance standards match
+
+        Given: Mock client with multiple standards that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous standard name
+        Then: Raises exception indicating multiple standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {
+            "reply": {"standards": [{"id": "std-123", "name": "Test Standard 1"}, {"id": "std-456", "name": "Test Standard 2"}]}
+        }
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="Multiple standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_no_asset_groups(self, mocker):
+        """Test when no asset groups are found
+
+        Given: Mock client with valid standards but empty asset groups response
+        When: core_add_assessment_profile_command is called with nonexistent asset group
+        Then: Raises exception indicating no asset group found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": []}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No asset group found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Nonexistent Group"}
+
+        with pytest.raises(Exception, match="No asset group found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_asset_groups(self, mocker):
+        """Test when multiple asset groups match
+
+        Given: Mock client with multiple asset groups that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous asset group name
+        Then: Raises exception indicating multiple asset groups found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group 1"},
+                    {"XDM.ASSET_GROUP.ID": "group-789", "XDM.ASSET_GROUP.NAME": "Test Group 2"},
+                ]
+            }
+        }
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple asset groups found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Test"}
+
+        with pytest.raises(Exception, match="Multiple asset groups found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_default_values(self, mocker):
+        """Test with default day and time values
+
+        Given: Mock client with valid responses and arguments without day/time specified
+        When: core_add_assessment_profile_command is called with minimal arguments
+        Then: Uses default values for day (sunday) and time (12:00) and returns successful result
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        mock_create_payload = mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        mock_create_payload.assert_called_with(
+            name="Test Profile",
+            description="Test Description",
+            standard_id="std-123",
+            asset_group_id="group-456",
+            day=None,
+            time="12:00",
+            report_type="ALL",
+        )
+        assert result.outputs == "profile-789"
+
+
+class TestCoreListComplianceStandardsCommand:
+    def test_core_list_compliance_standards_command_with_empty_args(self, mocker):
+        """Test list compliance standards command with empty arguments
+
+        Given: A mock client and empty arguments
+        When: core_list_compliance_standards_command is called with empty args
+        Then: Returns proper response structure with correct counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["label1", "label2"],
+                    }
+                ],
+                "result_count": 1,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs_prefix == "Core.ComplianceStandards"
+        assert result[1].outputs["filtered_count"] == 1
+        assert result[1].outputs["returned_count"] == 1
+
+    def test_core_list_compliance_standards_command_with_empty_standards_list(self, mocker):
+        """Test handling of empty standards list
+
+        Given: A mock client returning empty standards list
+        When: core_list_compliance_standards_command is called
+        Then: Returns empty outputs with zero counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {"reply": {"standards": [], "result_count": 0}}
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs == []
+        assert result[1].outputs["filtered_count"] == 0
+        assert result[1].outputs["returned_count"] == 0
+
+    def test_core_list_compliance_standards_command_multiple_standards(self, mocker):
+        """Test handling of multiple compliance standards
+
+        Given: A mock client returning multiple standards
+        When: core_list_compliance_standards_command is called
+        Then: Returns all standards with correct control counts and metadata
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard 1",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 2,
+                        "labels": ["lbl1"],
+                    },
+                    {
+                        "id": "std2",
+                        "name": "Standard 2",
+                        "description": "Test standard 2",
+                        "controls_ids": ["ctrl3"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["lbl2", "lbl3"],
+                    },
+                ],
+                "result_count": 2,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result[0].outputs) == 2
+        assert result[0].outputs[0]["id"] == "std1"
+        assert result[0].outputs[0]["controls_count"] == 2
+        assert result[0].outputs[1]["id"] == "std2"
+        assert result[0].outputs[1]["controls_count"] == 1
+        assert result[1].outputs["returned_count"] == 2
+
+
 def test_run_script_agentix_command_both_script_uid_and_name_provided():
     """
     Given:
@@ -8724,3 +9019,422 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+# =========================================== TEST platform_http_request Method ===========================================#
+def test_platform_http_request_success(mocker):
+    """
+    Given:
+        - A client with RBAC enabled and valid JSON response from platform API.
+    When:
+        - Calling platform_http_request with json_data parameter.
+    Then:
+        - Ensure demisto._platformAPICall is called correctly and JSON response is parsed.
+    """
+    from CortexPlatformCore import Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", True)
+
+    mock_platform_api_call = mocker.patch.object(
+        demisto, "_platformAPICall", return_value={"status": 200, "data": '{"result": "success", "query_id": "abc123"}'}
+    )
+
+    response = client.platform_http_request(
+        method="POST",
+        url_suffix="/xql_queries/submit/",
+        json_data={"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}},
+        params={"param1": "value1"},
+        timeout=120,
+        ok_codes=[200],
+    )
+
+    assert response == {"result": "success", "query_id": "abc123"}
+    mock_platform_api_call.assert_called_once_with(
+        path="/xql_queries/submit/",
+        method="POST",
+        params={"param1": "value1"},
+        data='{"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}}',
+        timeout=120,
+    )
+
+
+# =========================================== TEST Platform Query Functions ===========================================#
+def test_start_xql_query_platform(mocker):
+    """
+    Given:
+    - A query to execute.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure execution_id is returned.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = "dataset = xdr_data | fields *"
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_123"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    response = start_xql_query_platform(client, query, timeframe)
+
+    assert response == mock_execution_id
+    mock_http_request.assert_called_once()
+    call_args = mock_http_request.call_args
+    assert call_args[1]["url_suffix"] == "/xql_queries/submit/"
+    assert call_args[1]["method"] == "POST"
+    assert call_args[1]["ok_codes"] == [200]
+
+
+def test_start_xql_query_platform_adds_limit(mocker):
+    """
+    Given:
+    - A query without a limit clause.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure a default limit is added.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = "dataset = xdr_data | fields *"
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_456"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    start_xql_query_platform(client, query, timeframe)
+
+    call_args = mock_http_request.call_args
+    submitted_query = call_args[1]["json_data"]["query"]
+    assert "| limit 1000" in submitted_query
+
+
+def test_get_xql_query_results_platform_success(mocker):
+    """
+    Given:
+    - A query_id for a completed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure results are retrieved correctly.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {
+        "status": "SUCCESS",
+        "stream_id": "test_stream_id",
+        "number_of_results": 2,
+    }
+    mock_results_data = '{"field1": "value1", "field2": "value3"}\n{"field2": "value2"}'
+
+    mocker.patch.object(client, "platform_http_request", side_effect=[mock_info_response, mock_results_data])
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == "test_query_id"
+    assert len(response["results"]) == 2
+    assert response["results"][0]["field1"] == "value1"
+    assert response["results"][0]["field2"] == "value3"
+    assert response["results"][1]["field2"] == "value2"
+
+
+def test_get_xql_query_results_platform_pending(mocker):
+    """
+    Given:
+    - A query_id for a pending query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure pending status is returned.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_response = {"status": "PENDING"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == "test_query_id"
+    assert "results" not in response
+
+
+def test_get_xql_query_results_platform_failure(mocker):
+    """
+    Given:
+    - A query_id for a failed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure error details are retrieved.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {"status": "FAIL"}
+    mock_error_response = {"reply": "Query execution failed"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_info_response)
+    mocker.patch.object(client, "_http_request", return_value=mock_error_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "FAIL"
+    assert response["error_details"] == "Query execution failed"
+
+
+def test_get_xql_query_results_platform_polling_success(mocker):
+    """
+    Given:
+    - An execution_id for a query that completes successfully.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure results are returned after polling.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 60
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_results)
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == execution_id
+    assert len(response["results"]) == 1
+
+
+def test_xql_query_platform_command_no_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to False.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure execution_id is returned without polling.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+    get_results_polling_mock = mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling")
+
+    res = xql_query_platform_command(client, args)
+
+    get_results_polling_mock.assert_not_called()
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert "query_url" in res.outputs
+    assert "results" not in res.outputs
+
+
+def test_xql_query_platform_command_with_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to True.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure results are polled and returned.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "true"}
+    mock_execution_id = "test_exec_id"
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": mock_execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling", return_value=mock_results)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    res = xql_query_platform_command(client, args)
+
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert res.outputs["status"] == "SUCCESS"
+    assert len(res.outputs["results"]) == 1
+
+
+def test_convert_timeframe_string_to_json_relative_time(mocker):
+    """
+    Given:
+    - A relative time string.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned timestamp is correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock datetime.utcnow to return a fixed time
+    fixed_now = datetime(2023, 1, 15, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.utcnow", return_value=fixed_now)
+
+    # Mock dateparser.parse to return a time 24 hours ago
+    time_24h_ago = datetime(2023, 1, 14, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=time_24h_ago)
+
+    response = convert_timeframe_string_to_json("24 hours")
+
+    assert "relativeTime" in response
+    assert response["relativeTime"] == 86400000  # 24 hours in milliseconds
+
+
+def test_convert_timeframe_string_to_json_between_times(mocker):
+    """
+    Given:
+    - A time range string with 'between' keyword.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned from/to timestamps are correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock dateparser.parse to return specific times
+    time_from = datetime(2023, 1, 1, 0, 0, 0)
+    time_to = datetime(2023, 1, 2, 12, 0, 0)
+
+    def mock_parse(time_str, settings=None):
+        if "2023-01-01" in time_str:
+            return time_from
+        elif "2023-01-02" in time_str:
+            return time_to
+        return None
+
+    mocker.patch("CortexPlatformCore.dateparser.parse", side_effect=mock_parse)
+
+    response = convert_timeframe_string_to_json("between 2023-01-01 00:00:00Z and 2023-01-02 12:00:00Z")
+
+    assert "from" in response
+    assert "to" in response
+    assert response["from"] == int(time_from.timestamp()) * 1000
+    assert response["to"] == int(time_to.timestamp()) * 1000
+
+
+def test_xql_query_platform_command_missing_query(mocker):
+    """
+    Given:
+    - Arguments without a query parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure ValueError is raised.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"wait_for_results": "false"}
+
+    with pytest.raises(ValueError, match="query is not specified"):
+        xql_query_platform_command(client, args)
+
+
+def test_xql_query_platform_command_default_timeframe(mocker):
+    """
+    Given:
+    - A query without a timeframe parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure default timeframe of 24 hours is used.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mock_start_query = mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.convert_timeframe_string_to_json", return_value={"relativeTime": 86400000})
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    xql_query_platform_command(client, args)
+
+    # Verify convert_timeframe_string_to_json was called with default "24 hours"
+    assert mock_start_query.called
+
+
+def test_get_xql_query_results_platform_polling_timeout(mocker):
+    """
+    Given:
+    - An execution_id for a query that remains pending beyond timeout.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure the function returns after timeout with pending status.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 1  # Very short timeout
+    mock_pending_response = {
+        "status": "PENDING",
+        "execution_id": execution_id,
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_pending_response)
+    mocker.patch("CortexPlatformCore.time.sleep")  # Mock sleep to avoid actual waiting
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == execution_id

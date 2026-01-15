@@ -18,11 +18,13 @@ SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -716,6 +718,57 @@ def filter_context_fields(output_keys: list, context: list):
 
 
 class Client(CoreClient):
+    def platform_http_request(
+        self,
+        method,
+        url_suffix="",
+        json_data=None,
+        params=None,
+        data=None,
+        timeout=None,
+        ok_codes=None,
+        error_handler=None,
+        with_metrics=False,
+    ):
+        """A wrapper for the platformAPICall method to better handle requests and responses.
+
+        Args:
+            method (str): The HTTP method, for example: GET, POST, and so on.
+            url_suffix (str): The API endpoint suffix to append to the base URL.
+            json_data (dict, optional): Dictionary to send in the request body as JSON.
+                Will be automatically serialized to JSON string.
+            params (dict, optional): URL parameters to specify the query string.
+            data (str, optional): Raw data to send in the request body.
+                Used when json_data is not provided.
+            timeout (float or tuple, optional): The amount of time (in seconds) that a request
+                will wait for a client to establish a connection to a remote machine before
+                a timeout occurs. Can be only float (Connection Timeout) or a tuple
+                (Connection Timeout, Read Timeout).
+            ok_codes (list, optional): List of HTTP status codes that are considered successful.
+                If the response status is not in this list, an error will be raised.
+            error_handler (callable, optional): Custom error handler function to process errors.
+            with_metrics (bool): Whether to include metrics in error handling.
+
+        Returns:
+            dict or str: The parsed JSON response as a dictionary, or the raw response data
+                if JSON parsing fails.
+
+        Raises:
+            DemistoException: If FORWARD_USER_RUN_RBAC is not enabled, indicating the integration
+                is cloned or the server version is too low.
+        """
+        data = json.dumps(json_data) if json_data is not None else data
+
+        response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
+
+        if ok_codes and response.get("status") not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            return json.loads(response["data"])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response["data"]
+
     def test_module(self):
         """
         Performs basic get request to get item samples
@@ -981,6 +1034,38 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data=request_data,
+        )
+
+    def add_assessment_profile(self, profile_payload: dict) -> dict:
+        """
+        Add a new assessment profile to Cortex XDR.
+
+        Args:
+            profile_payload (dict): The assessment profile configuration payload.
+
+        Returns:
+            dict: The response from the API for adding the assessment profile.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/add_assessment_profile",
+            json_data=profile_payload,
+        )
+
+    def list_compliance_standards_command(self, payload: dict) -> dict:
+        """
+        List compliance standards from Cortex XDR.
+
+        Args:
+            payload (dict): The request payload for listing compliance standards.
+
+        Returns:
+            dict: The response from the API containing compliance standards data.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_standards",
+            json_data=payload,
         )
 
     def get_users(self):
@@ -1476,6 +1561,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
             "assigned": FilterType.NIS_EMPTY,
         },
     )
+    filter_builder.add_field("CORTEX_VULNERABILITY_RISK_SCORE", FilterType.GTE, arg_to_number(args.get("cvrs_gte")))
+    filter_builder.add_field(
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage"))
+    )
 
     request_data = build_webapp_request_data(
         table_name=VULNERABLE_ISSUES_TABLE,
@@ -1506,6 +1595,17 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "EXPLOITABLE",
         "ASSET_IDS",
         "FINDING_SOURCES",
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE",
+        "CORTEX_VULNERABILITY_RISK_SCORE",
+        "FIX_VERSIONS",
+        "ASSET_TYPES",
+        "COMPENSATING_CONTROLS_DETECTED_CONTROLS",
+        "EXPLOIT_LEVEL",
+        "ISSUE_NAME",
+        "PACKAGE_IN_USE",
+        "PROVIDERS",
+        "OS_FAMILY",
+        "IMAGE",
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
@@ -3475,6 +3575,284 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def parse_frequency(day: str | None, time: str | None) -> str:
+    """
+    Convert day and time to cron-style frequency string
+
+    Cron format: Minute Hour Day-of-Month Month Day-of-Week
+    Example: "0 12 * * 2" means:
+    - Minute: 0 (The task starts at the 0th minute of the hour)
+    - Hour: 12 (The task starts at the 12th hour - 12:00 PM in 24-hour time)
+    - Day of Month: * (Every day of the month)
+    - Month: * (Every month)
+    - Day of Week: 2 (Tuesday)
+
+    :param day: Day of month (optional)
+    :param time: Time in HH:MM format
+    :return: Cron-style frequency string
+    """
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
+
+    target_time = time if time else "12:00"
+    try:
+        hours, minutes = map(int, target_time.split(":"))
+        if not (0 <= hours < 24 and 0 <= minutes < 60):
+            raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
+    except ValueError:
+        raise ValueError("Invalid time format. Use HH:MM.")
+
+    if day is None:
+        # If no day is provided -> Daily (represented by * in cron)
+        cron_day = "*"
+    else:
+        # If day is provided -> Weekly (look up the day index)
+        day_key = day.lower()
+        if day_key not in DAY_MAP:
+            raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+        cron_day = str(DAY_MAP[day_key])
+
+    return f"{minutes} {hours} * * {cron_day}"
+
+
+def create_assessment_profile_payload(
+    name: str,
+    description: str,
+    standard_id: str,
+    asset_group_id: str,
+    day: str | None,
+    time: str | None,
+    report_type: str = "ALL",
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    report_frequency = parse_frequency(day, time)
+
+    payload = {
+        "request_data": {
+            "profile_name": name,
+            "asset_group_id": asset_group_id,
+            "standard_id": standard_id,
+            "description": description,
+            "report_targets": [],
+            "report_type": report_type,
+            "evaluation_frequency": report_frequency,
+        }
+    }
+
+    return payload
+
+
+def list_compliance_standards_payload(
+    name: str | None = None,
+    created_by: str | None = None,
+    labels: list[str] | None = None,
+    page=0,
+    page_size=MAX_COMPLIANCE_STANDARDS,
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+    payload: dict = {"request_data": {"filters": []}}
+
+    if name:
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
+
+    if created_by:
+        payload["request_data"]["filters"].append(
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
+        )
+
+    if labels:
+        for label in labels:
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
+    payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
+
+    payload["request_data"]["pagination"] = {
+        "search_from": start_index,
+        "search_to": end_index,
+    }
+
+    return payload
+
+
+def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
+    """
+    Adds a new assessment profile to the Cortex Platform.
+
+    Args:
+        client (Client): The integration client used to add the assessment profile.
+        args (dict): Command arguments containing profile details.
+
+    Returns:
+        CommandResults: Contains the result of adding the assessment profile.
+    """
+    profile_name = args.get("profile_name", "")
+    profile_description = args.get("profile_description", "")
+    standard_name = args.get("standard_name", "")
+    asset_group_name = args.get("asset_group_name", "")
+    day = args.get("day")
+    time = args.get("time", "12:00")
+
+    payload = list_compliance_standards_payload(
+        name=standard_name,
+    )
+    demisto.debug(f"Listing compliance standards with payload: {payload}")
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+
+    if not standards:
+        return_error("No compliance standards found matching the provided name.")
+
+    if len(standards) > 1:
+        standard_names = [standard.get("name") for standard in standards]
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one standard:\n\n{new_line.join(standard_names)}\n\n"
+            "Please provide a more specific name."
+        )
+
+    standard_id = standards[0].get("id")
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
+    filter_str = filter.to_dict()
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
+
+    if not group_ids:
+        return_error("No asset group found matching the provided name.")
+
+    if len(group_ids) > 1:
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one asset group:\n\n{new_line.join(group_names)}\n\n"
+            "Please provide a more specific name."
+        )
+    demisto.debug(f"{group_ids=}")
+    asset_group_id = group_ids[0]
+
+    payload = create_assessment_profile_payload(
+        name=profile_name,
+        description=profile_description,
+        standard_id=str(standard_id),
+        asset_group_id=asset_group_id,
+        day=day,
+        time=time,
+        report_type="ALL",
+    )
+    demisto.debug(f"Creating assessment profile with payload: {payload}")
+
+    reply = client.add_assessment_profile(payload)
+    assessment_profile_id = reply.get("assessment_profile_id")
+    return CommandResults(
+        readable_output=f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix="Core.AssessmentProfile",
+        outputs_key_field="assessment_profile_id",
+        outputs=assessment_profile_id,
+        raw_response=reply,
+    )
+
+
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Lists compliance standards with optional filtering.
+
+    Args:
+        client (Client): The client instance for API communication.
+        args (dict): Command arguments containing optional filters:
+            - name (str): Filter by standard name
+            - created_by (str): Filter by creator
+            - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
+            - page (int): Page number for pagination (default: 0)
+            - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with filtered compliance standards data and metadata
+            - CommandResults with pagination metadata (filtered_count, returned_count)
+    """
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by,
+        labels=labels,
+        page=page,
+        page_size=page_size,
+    )
+
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+    filtered_count = reply.get("result_count")
+    returned_count = len(standards)
+
+    filtered_standards = [
+        {
+            "id": s.get("id"),
+            "name": s.get("name"),
+            "description": s.get("description"),
+            "controls_count": len(s.get("controls_ids", [])),
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0),
+            "labels": s.get("labels", []),
+        }
+        for s in standards
+    ]
+
+    demisto.debug(f"{filtered_standards=}")
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Compliance Standards", filtered_standards),
+            outputs_prefix="Core.ComplianceStandards",
+            outputs_key_field="id",
+            outputs=filtered_standards,
+            raw_response=reply,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
+
+
 def validate_start_end_times(start_time, end_time):
     """
     Validate that start_time and end_time are provided correctly and represent
@@ -3840,6 +4218,186 @@ def list_system_users_command(client, args):
     )
 
 
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+    """Convert a timeframe string to a json required for XQL queries.
+
+    Args:
+        time_to_convert (str): The time frame string to convert (supports seconds, minutes, hours, days, months, years, between).
+
+    Returns:
+        dict: The timeframe parameters in JSON.
+    """
+    try:
+        time_to_convert_lower = time_to_convert.strip().lower()
+        if time_to_convert_lower.startswith("between "):
+            tokens = time_to_convert_lower[len("between ") :].split(" and ")
+            if len(tokens) == 2:
+                time_from = dateparser.parse(tokens[0], settings={"TIMEZONE": "UTC"})
+                time_to = dateparser.parse(tokens[1], settings={"TIMEZONE": "UTC"})
+                if time_from is None or time_to is None:
+                    raise DemistoException(
+                        "Failed to parse timeframe argument, please use a valid format."
+                        " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                    )
+                return {"from": int(time_from.timestamp() * 1000), "to": int(time_to.timestamp() * 1000)}
+        else:
+            relative = dateparser.parse(time_to_convert, settings={"TIMEZONE": "UTC"})
+            now_date = datetime.utcnow()
+            if relative is None or now_date is None:
+                raise DemistoException(
+                    "Failed to parse timeframe argument, please use a valid format."
+                    " (e.g. '1 day', '3 weeks ago', 'between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00')"
+                )
+            return {"relativeTime": int((now_date - relative).total_seconds() * 1000)}
+
+        raise ValueError(f"Invalid timeframe: {time_to_convert}")
+    except Exception as exc:
+        raise DemistoException(
+            f"Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, years, between).\n{exc!s}"
+        )
+
+
+def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
+    """Retrieve results of an executed XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to retrieve.
+
+    Returns:
+        dict: The query results including status, execution_id, and results if completed.
+    """
+    data: dict[str, Any] = {
+        "query_id": execution_id,
+    }
+
+    # Call the Client function and get the raw response
+    demisto.debug(f"Calling get_query_results with {data=}")
+    response = client.platform_http_request(
+        method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
+    )
+
+    response["execution_id"] = execution_id
+    stream_id = response.get("stream_id")
+    if response.get("status") != "PENDING" and stream_id:
+        data = {
+            "stream_id": stream_id,
+        }
+        demisto.debug(f"Requesting query results using {data=}")
+        query_data = client.platform_http_request(
+            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
+        )
+        if isinstance(query_data, str):
+            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+        else:
+            response["results"] = query_data
+
+    if response.get("status") == "FAIL":
+        # Get full error details using PAPI
+        data = {
+            "request_data": {
+                "query_id": execution_id,
+                "pending_flag": True,
+                "format": "json",
+            }
+        }
+        res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
+        response["error_details"] = res.get("reply", "")
+
+    return response
+
+
+def get_xql_query_results_platform_polling(client: Client, execution_id: str, timeout: int) -> dict:
+    """Retrieve results of an executed XQL query using Platform API with polling.
+
+    Args:
+        client (Client): The XDR Client.
+        execution_id (str): The execution ID of the query to fetch.
+        timeout (int): The polling timeout in seconds.
+
+    Returns:
+        dict: The query results after polling completes or timeout is reached.
+    """
+    interval_in_secs = 10
+
+    # Block execution until the execution status isn't pending or we time out
+    polling_start_time = datetime.now()
+    while (datetime.now() - polling_start_time).total_seconds() < timeout:
+        outputs = get_xql_query_results_platform(client, execution_id)
+        if outputs.get("status") != "PENDING":
+            break
+
+        t_to_timeout = (datetime.now() - polling_start_time).total_seconds()
+        demisto.debug(
+            f"Got status 'PENDING' for {execution_id}, next poll in {interval_in_secs} seconds. Timeout in {t_to_timeout}"
+        )
+        time.sleep(interval_in_secs)  # pylint: disable=E9003
+
+    return outputs
+
+
+def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
+    """Execute an XQL query using Platform API.
+
+    Args:
+        client (Client): The XDR Client.
+        query (str): The XQL query string to execute.
+        timeframe (dict): The timeframe for the query.
+
+    Returns:
+        str: The query execution ID.
+    """
+    DEFAULT_LIMIT = 1000
+    if "limit" not in query:  # Add default limit if no limit was provided
+        query = f"{query} | limit {DEFAULT_LIMIT!s}"
+
+    data: Dict[str, Any] = {
+        "query": query,
+        "timeframe": timeframe,
+    }
+
+    demisto.debug(f"Calling xql_queries/submit with {data=}")
+    res = client.platform_http_request(url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200])
+    return str(res)
+
+
+def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
+    """Execute an XQL query using Platform API and poll for results.
+
+    Args:
+        client (Client): The XDR Client.
+        args (dict): Command arguments including query, timeframe, wait_for_results, and timeout_in_seconds.
+
+    Returns:
+        CommandResults: The command results with execution_id, query_url, and optionally status and results.
+    """
+    query = args.get("query", "")
+    if not query:
+        raise ValueError("query is not specified")
+
+    timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
+
+    execution_id = start_xql_query_platform(client, query, timeframe)
+
+    if not execution_id:
+        raise DemistoException("Failed to start query\n")
+
+    query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
+    outputs = {
+        "execution_id": execution_id,
+        "query_url": query_url,
+    }
+
+    if argToBoolean(args.get("wait_for_results", True)):
+        demisto.debug(f"Polling query execution with {execution_id=}")
+        timeout_in_secs = int(args.get("timeout_in_seconds", 180))
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
+
+    return CommandResults(
+        outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -3975,12 +4533,22 @@ def main():  # pragma: no cover
             return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+        elif command == "core-add-assessment-profile":
+            return_results(core_add_assessment_profile_command(client, args))
+        elif command == "core-list-compliance-standards":
+            return_results(core_list_compliance_standards_command(client, args))
 
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
+
+        elif command == "core-xql-generic-query-platform":
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+
+            return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
