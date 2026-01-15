@@ -1269,6 +1269,7 @@ def fetch_incidents(
             }
             if incident_name:  # for XDR V4
                 incident["name"] = f"XDR Incident {incident_id} - {incident_name}"
+                incident["description"] = description
             else:  # for XDR Legacy
                 incident["name"] = f"XDR Incident {incident_id} - {description}"
             if demisto.params().get("sync_owners") and incident_data.get("assigned_user_mail"):
