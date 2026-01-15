@@ -333,7 +333,7 @@ Retrieves the properties and relationships of a user object. For more informatio
 
 ***
 Retrieves a list of user objects.
-**Permissions**: User.ReadBasic.All (Delegated), User.Read.All (Application)
+Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
 
 #### Base Command
 
@@ -343,9 +343,7 @@ Retrieves a list of user objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". | Optional |
-| next_page | The URL for the next page in the list. | Optional |
-| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional |
+| user | The User ID or userPrincipalName of the user for which to get the owned devices properties. | Required |
 
 #### Context Output
 
@@ -371,94 +369,6 @@ Retrieves a list of user objects.
 | Account.TelephoneNumber | String | User’s mobile phone number. |
 | Account.Office | String | User’s office location. |
 | Account.Type | String | The account entity type. |
-
-#### Command example
-
-```!msgraph-user-list```
-
-#### Context Example
-
-```json
-{
-    "Account": [
-        {
-            "DisplayName": "Test1",
-            "Email": {
-                "Address": "test1@demistodev.onmicrosoft.com"
-            },
-            "ID": "123456-abcd-7890-erty-987qwe988",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": "050505050",
-            "Type": "Azure AD",
-            "Username": null
-        },
-        {
-            "DisplayName": "Test2",
-            "Email": {
-                "Address": "test2@demistodev.onmicrosoft.com"
-            },
-            "ID": "123456-abcd-7890-erty-987qwe989",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": null,
-            "Type": "Azure AD",
-            "Username": null
-        },
-        {
-            "DisplayName": "Test3",
-            "Email": {
-                "Address": null
-            },
-            "ID": "123456-abcd-7890-erty-987qwe990",
-            "JobTitle": null,
-            "Office": null,
-            "TelephoneNumber": null,
-            "Type": "Azure AD",
-            "Username": null
-        }
-    ],
-    "MSGraphUser": [
-        {
-            "NextPage": "https://graph.microsoft.com/v1.0/users?$select=id%2cdisplayName%2cjobTitle%2cmobilePhone%2cmail&$count=true&$skiptoken=m~AQAnO2Q2MjljMzcwNjFjOTQ4NTE4ZjNkODBlYTZjMDc2NTVmOzswOzA7"
-        },
-        {
-            "DisplayName": "Test 1",
-            "ID": "123456-abcd-7890-erty-987qwe991",
-            "JobTitle": null,
-            "Mail": "test1@demistodev.onmicrosoft.com",
-            "MobilePhone": "050505050"
-        },
-        {
-            "DisplayName": "Test 2",
-            "ID": "123456-abcd-7890-erty-987qwe992",
-            "JobTitle": null,
-            "Mail": "test2@demistodev.onmicrosoft.com",
-            "MobilePhone": null
-        },
-        {
-            "DisplayName": "Test 3",
-            "ID": "123456-abcd-7890-erty-987qwe993",
-            "JobTitle": null,
-            "Mail": null,
-            "MobilePhone": null
-        }
-    ]
-}
-```
-
-#### Human Readable Output
-
->### All Graph Users
->
->To get further results, enter this to the next_page parameter:
->https:<span>//</span>graph.microsoft.com/v1.0/users?$select=id%2cdisplayName%2cjobTitle%2cmobilePhone%2cmail&$count=true&$skiptoken=m~AQAnO2Q2MjljMzcwNjFjOTQ4NTE4ZjNkODBlYTZjMDc2NTVmOzswOzA7
->
->|Display Name|ID|Job Title|Mail|Mobile Phone|
->|---|---|---|---|---|
->| Test 1 | 023096d0-595e-47b5-80dd-ea5886ab9294 |  | test1@demistodev.onmicrosoft.com | 050505050 |
->| Test 2 | 0628c545-94f6-4d07-8bc6-e6718ba1bc95 |  | test2@demistodev.onmicrosoft.com |  |
->| Test 3 | 082b3bc9-bb2d-4d12-8b1a-d84a53229696 |  |  |  |
 
 ### msgraph-direct-reports
 
@@ -903,3 +813,129 @@ This operation is supported only when using a self-deployed app flow with the Di
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-get-groups
+
+***
+Retrieves the groups a user is part of.
+
+#### Base Command
+
+`msgraph-user-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUserGroups.classification | String | Value used to classify data types in your groups. |
+| MSGraphUserGroups.@Odata.Type | String | A string value that can be used to classify user's groups. |
+| MSGraphUserGroups.createdDateTime | String | Groups creation date and time. |
+| MSGraphUserGroups.creationOptions | String | Groups creation options. |
+| MSGraphUserGroups.deletedDateTime | String | Groups deletion date and time. |
+| MSGraphUserGroups.description | String | Groups description string. |
+| MSGraphUserGroups.displayName | String | Groups display name. |
+| MSGraphUserGroups.expirationDateTime | String | Groups expiration date and time. |
+| MSGraphUserGroups.groupTypes | String | Groups group Types. |
+| MSGraphUserGroups.id | String | Groups id. |
+| MSGraphUserGroups.isAssignableToRole | Bool | Groups role assignability. |
+| MSGraphUserGroups.mail | String | Groups associated mail. |
+| MSGraphUserGroups.mailEnabled | Bool | Groups mail enablement. |
+| MSGraphUserGroups.mailNickname | String | Groups mailNickname. |
+| MSGraphUserGroups.membershipRule | String | Groups membershipRule. |
+| MSGraphUserGroups.membershipRuleProcessingState | String | Groups membershipRuleProcessingState. |
+| MSGraphUserGroups.onPremisesDomainName | String | Groups onPremisesDomainName. |
+| MSGraphUserGroups.onPremisesLastSyncDateTime | String | Groups onPremisesLastSyncDateTime. |
+| MSGraphUserGroups.onPremisesNetBiosName | String | Groups onPremisesNetBiosName. |
+| MSGraphUserGroups.onPremisesProvisioningErrors | String | Groups onPremisesProvisioningErrors. |
+| MSGraphUserGroups.onPremisesSamAccountName | String | Groups onPremisesSamAccountName. |
+| MSGraphUserGroups.onPremisesSecurityIdentifier | String | Groups onPremisesSecurityIdentifier. |
+| MSGraphUserGroups.onPremisesSyncEnabled | String | Groups onPremisesSyncEnabled. |
+| MSGraphUserGroups.preferredDataLocation | String | Groups preferredDataLocation. |
+| MSGraphUserGroups.preferredLanguage | String | Groups preferredLanguage. |
+| MSGraphUserGroups.proxyAddresses | String | Groups proxyAddresses. |
+| MSGraphUserGroups.renewedDateTime | String | Groups renewed date and time. |
+| MSGraphUserGroups.resourceBehaviorOptions | String | Groups resourceBehaviorOptions. |
+| MSGraphUserGroups.resourceProvisioningOptions | String | Groups resourceProvisioningOptions. |
+| MSGraphUserGroups.securityEnabled | Bool | Groups security enablement. |
+| MSGraphUserGroups.securityIdentifier | String | Groups securityIdentifier. |
+| MSGraphUserGroups.serviceProvisioningErrors | String | Groups serviceProvisioningErrors. |
+| MSGraphUserGroups.theme | String | Groups theme. |
+| MSGraphUserGroups.uniqueName | String | Groups uniqueName. |
+| MSGraphUserGroups.visibility | String | Groups visibility. |
+| MSGraphUserGroups.wellKnownObject | String | Groups wellKnownObject. |
+
+#### Command example
+
+```!msgraph-user-get-groups user=123456-abcd-7890-erty-987qwe987```
+
+#### Context Example
+
+```json
+{
+    "@odata.type": "#microsoft.graph.group"
+    "classification": "test_classification"
+    "createdDateTime": "2022-06-27T12:36:12Z"
+    "creationOptions": "test_options"
+    "deletedDateTime": "2022-06-27T12:36:12Z"
+    "description": "test_desc"
+    "displayName": "test_display_name"
+    "expirationDateTime": "2022-06-27T12:36:12Z"
+    "groupTypes": "test_group_types"
+    "id": "123456-abcd-7890-erty-987qwe987"
+    "isAssignableToRole": true
+    "mail": "test_mail"
+    "mailEnabled": false
+    "mailNickname": "test_nickname"
+    "renewedDateTime": "2022-06-27T12:36:12Z"
+    "securityEnabled": true
+}
+```
+
+### msgraph-user-get-auth-methods
+
+***
+Retrieve a list of authentication methods registered to a user.
+
+#### Base Command
+
+`msgraph-user-get-auth-methods`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUserAuthMethods.createdDateTime | String | Authentication methods creation date and time. |
+| MSGraphUserAuthMethods.@Odata.Type | String | A string value that can be used to classify user's auth methods. |
+| MSGraphUserAuthMethods.deviceTag | String | Authentication methods deviceTag. |
+| MSGraphUserAuthMethods.displayName | String | Authentication methods displayName. |
+| MSGraphUserAuthMethods.id | String | Authentication methods id. |
+| MSGraphUserAuthMethods.phoneAppVersion | String | Authentication methods phoneAppVersion. |
+
+#### Command example
+
+```!msgraph-user-get-auth-methods user=123456-abcd-7890-erty-987qwe987```
+
+#### Context Example
+
+```json
+{
+    "@odata.type": "#microsoft.graph.passwordAuthenticationMethod"
+    "createdDateTime": "2023-08-23T12:58:04Z"
+    "deviceTag": "SoftwareTokenActivated"
+    "displayName": "AA-11111"
+    "id": "test_id"
+    "phoneAppVersion": "0.0000.000"
+}
+```
