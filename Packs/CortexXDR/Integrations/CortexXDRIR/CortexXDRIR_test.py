@@ -2415,16 +2415,10 @@ def test_fetch_incidents_name_generation(mocker):
                 "incident_id": "100",
                 "incident_name": "V4 Incident Name",
                 "creation_time": 740314800000,
-                "description": "V4 Description"
+                "description": "V4 Description",
             }
         },
-        {
-            "incident": {
-                "incident_id": "200",
-                "creation_time": 740314800000,
-                "description": "Legacy Description"
-            }
-        }
+        {"incident": {"incident_id": "200", "creation_time": 740314800000, "description": "Legacy Description"}},
     ]
 
     mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=raw_incidents)
