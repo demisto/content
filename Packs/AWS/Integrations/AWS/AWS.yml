@@ -289,28 +289,28 @@ script:
       - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50."
         name: limit
     outputs:
-      - contextPath: AWS.S3-Buckets.BucketObjects.BucketName
+      - contextPath: AWS.S3.Buckets.BucketName
         description: The name of S3 bucket.
         type: String
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.Key
+      - contextPath: AWS.S3.Buckets.Objects.Key
         description: The name of S3 object.
         type: String
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.Size
+      - contextPath: AWS.S3.Buckets.Objects.Size
         description: Object size in bytes.
         type: Number
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.LastModified
+      - contextPath: AWS.S3.Buckets.Objects.LastModified
         description: Last date object was modified.
         type: String
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.StorageClass
+      - contextPath: AWS.S3.Buckets.Objects.StorageClass
         description: The storage class of the object.
         type: String
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.ChecksumType
+      - contextPath: AWS.S3.Buckets.Objects.ChecksumType
         description: The checksum algorithm used to calculate the object checksum.
         type: Array
-      - contextPath: AWS.S3-Buckets.BucketObjects.Objects.ETag
+      - contextPath: AWS.S3.Buckets.Objects.ETag
         description: The entity tag (hash) of the object.
         type: String
-      - contextPath: AWS.S3-Buckets.BucketObjects.NextToken
+      - contextPath: AWS.S3.Buckets.ObjectsNextToken
         description: Token to use for pagination in subsequent requests.
         type: String
 
