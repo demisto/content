@@ -173,12 +173,15 @@ def should_bypass_check(github_client: Github, pr: PullRequest) -> bool:
         is_authorized, added_by = was_skip_label_added_by_authorized_user(pr, github_client)
         if is_authorized:
             print(
-                f'✅ Found "{SKIP_LABEL}" label added by {added_by} (member of {" or ".join(PERMITTED_TEAMS)}). Skipping AI review check.'
+                f'✅ Found "{SKIP_LABEL}" label added by {added_by} (member of {" or ".join(PERMITTED_TEAMS)}). '
+                'Skipping AI review check.'
             )
             return True
 
         # Label exists but not authorized
-        print(f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {" or ".join(PERMITTED_TEAMS)}. Ignoring label.')
+        print(
+            f'⚠️ Found "{SKIP_LABEL}" label, but it was not added by a member of {" or ".join(PERMITTED_TEAMS)}. Ignoring label.'
+        )
     return False
 
 
