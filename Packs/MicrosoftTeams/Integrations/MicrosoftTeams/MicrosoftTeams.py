@@ -1943,9 +1943,7 @@ def resolve_chat_or_channel(
 
     # If not chat, must be channel → requires team
     if not team_name:
-        raise ValueError(
-            "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'."
-        )
+        raise ValueError("Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'.")
 
     team_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)

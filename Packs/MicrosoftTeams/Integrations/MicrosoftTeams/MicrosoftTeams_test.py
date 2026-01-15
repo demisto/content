@@ -3809,4 +3809,6 @@ def test_list_messages_command_error(mocker):
 
     with pytest.raises(ValueError) as e:
         list_messages_command()
-    assert str(e.value) == "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'."
+    assert (
+        str(e.value) == "Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'."
+    )
