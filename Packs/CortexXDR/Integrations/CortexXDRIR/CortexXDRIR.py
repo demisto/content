@@ -1267,7 +1267,7 @@ def fetch_incidents(
                 "name": f"XDR Incident {incident_id} - {incident_name or description}",
                 "occurred": occurred,
                 "rawJSON": json.dumps(incident_data),
-                "details": description
+                "details": description,
             }
             if demisto.params().get("sync_owners") and incident_data.get("assigned_user_mail"):
                 incident["owner"] = demisto.findUser(email=incident_data["assigned_user_mail"]).get("username")
