@@ -115,7 +115,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- defaultvalue: '50'
+- defaultvalue: '5000'
   display: The maximum number of results per fetch
   name: fetch_size
   type: 0
