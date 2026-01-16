@@ -57,7 +57,7 @@ These filters have no effect on other collections.
 
 ## Data Collections Overview
 
-Once the configuration is complete, the following collections become available in Cortex XSOAR. For detailed information about each collection, its structure, and available fields, please refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
+Once the configuration is complete, the following collections become available in Cortex XSOAR. For detailed information about each collection, its structure, and available fields, please refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors).
 
 **Note:** If you're using a POC or partner license, access to data is limited to 30 days. The recommended date ranges below are guidelines and can be adjusted according to your needs.
 
@@ -94,10 +94,13 @@ Once the configuration is complete, the following collections become available i
 | Username                       | Enter the email address you use to log into the web interface. The API token serves as your password for authentication. | True |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 | Use system proxy settings      | Whether to use XSOAR system proxy settings to connect to the API. | False |
-| Colletions to fetch            | Select the collections you want to fetch incidents from. Read more about collections [here](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details). | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Used as a fixed reliability for reputation commands unless overridden by **Ignore Source Reliability override**. | True |
+| Ignore Source Reliability override | If enabled, ignore the instance **Source Reliability** setting and use the integration’s computed reliability per indicator for reputation commands. | False |
+| Colletions to fetch            | Select the collections you want to fetch incidents from. Read more about collections [here](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors). | False |
 | Incidents first fetch          | Specify the date range for initial data fetch (default: "3 days"). | False |
 | Number of requests per collection | Number of API requests per collection in each fetch iteration (default: 3). If you face some runtime errors, lower the value. | False |
 | Limit (items per request) | Number of items requested per API page. This limit applies to all collections in the instance. The limit determines how many records are fetched in a single API request. For example, if "Number of requests per collection" is 2 and limit is 500, the integration will make 2 requests per collection, each requesting up to 500 records, resulting in up to 1000 records per collection per fetch cycle. We recommend following the [official API Limitations documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FStarting%20Guide%2FAPI%20Limitations%2FAPI%20Limitations) for collection-specific limit recommendations. Best practice: create separate integration instances for different collections or groups of collections with similar optimal limit values. | False |
+| Enable reputation commands | Multi-select list of reputation commands to enable for this integration instance (supported: ip, domain, file). **Default: none enabled** (fail-safe). Only selected commands perform enrichment and return DBotScore. | False |
 | Include combolist type in data | Filter to include combolist data from the `compromised/account_group` collection. Works only for `compromised/account_group` collection. Filter logic: If only this filter is enabled, only combolist records are collected. If both combolist and unique filters are enabled, both types are collected. If both are disabled, both types are collected by default. | False |
 | Include unique type in data | Filter to include unique data from the `compromised/account_group` collection. Works only for `compromised/account_group` collection. Filter logic: If only this filter is enabled, only unique records are collected. If both combolist and unique filters are enabled, both types are collected. If both are disabled, both types are collected by default. | False |
 | Enable filter "Probable Corporate Access" | Filter to limit data collection to only corporate accounts. Works only for `compromised/account_group` collection. When both unique and combolist filters are not enabled, you can enable this to limit the whole feed to corporate accounts only. Can also be combined with unique or combolist filters if needed. | False |
@@ -109,7 +112,98 @@ Requests to the following collections come with the Hunting Rules parameter by d
 
 ## Additional Resources
 
-For detailed information about collections, their structure, available fields, and recommended date ranges, refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
+For detailed information about collections, their structure, available fields, and recommended date ranges, refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors).
+
+## Reputation Commands (ip / domain / file)
+
+This integration implements the standard Cortex XSOAR reputation commands:
+
+- `ip`
+- `domain`
+- `file`
+
+### Best practice: use a dedicated instance for reputation
+
+We recommend using a **dedicated** integration instance for reputation commands, such as **Group-IB Threat Intelligence (Partner Contribution)**.
+
+### Enabling reputation commands
+
+Reputation commands are **disabled by default** to avoid unexpected auto-enrichment side effects.
+To enable them, configure the integration instance parameter **Enable reputation commands** and select the command types you want to allow (`ip`, `domain`, `file`).
+
+### Source Reliability and override behavior
+
+The integration supports **two reliability modes** for reputation commands:
+
+- **Instance override mode (fixed reliability)**:
+  - Controlled by the instance parameter **Source Reliability**.
+  - When **Ignore Source Reliability override** is **disabled** (unchecked), the integration attaches the configured **Source Reliability** value to **every reputation response**, regardless of indicator-specific findings.
+
+- **Integration-calculated reliability mode (dynamic reliability)**:
+  - Enabled by the instance parameter **Ignore Source Reliability override**.
+  - When **Ignore Source Reliability override** is **enabled** (checked), the integration ignores the instance **Source Reliability** value and calculates reliability per indicator based on the collections that returned matches (see rules below).
+
+### Score (DBotScore) calculation rules
+
+Score and reliability are calculated independently. A finding may affect reliability without affecting score.
+
+#### `file` score rules
+
+- **BAD**: at least one match in `ioc/common`
+- **UNKNOWN (NONE)**: no matches
+
+Note: For `file` reputation, the integration evaluates **only** the `ioc/common` collection for score.
+
+#### `domain` score rules
+
+The integration uses a **3-year recency window** and the following date fields:
+
+- `ioc/common.dateLastSeen`
+- `hi/open_threats.detected`
+- `attacks/deface.date`
+
+Rules (evaluated top-to-bottom):
+
+- **BAD**: `ioc/common` match with `dateLastSeen` within the last 3 years
+- **SUSPICIOUS**: `hi/open_threats` or `attacks/deface` match with a date within the last 3 years
+- **SUSPICIOUS**: `ioc/common` has records but `dateLastSeen` is missing or older than 3 years
+- **UNKNOWN (NONE)**: no findings (no matches in `ioc/common`, `hi/open_threats`, `attacks/deface`)
+
+#### `ip` score rules
+
+The integration maps the numeric Group-IB `riskScore` (0..100) to DBotScore:
+
+- **GOOD**: 0..49
+- **SUSPICIOUS**: 50..84
+- **BAD**: 85..100
+- **UNKNOWN (NONE)**: score is missing or out of range
+
+### Reliability calculation rules (only when Ignore Source Reliability override is enabled)
+
+When the integration-calculated reliability mode is enabled, reliability is computed as follows:
+
+#### `file` reliability rules
+
+- **A - Completely reliable**: at least one match in `ioc/common`
+- **None**: no matches
+
+#### `domain` and `ip` reliability rules
+
+Reliability is derived from which collections returned matches:
+
+- **A - Completely reliable**:
+  - any match in `apt/threat` or `apt/threat_actor` (nation-state intelligence), or
+  - any match in `ioc/common`
+
+- **B - Usually reliable**:
+  - any match in `attacks/deface`, or
+  - any match in `hi/open_threats`
+
+Final selection logic (deterministic):
+
+- If there is at least one **A - Completely reliable** source → reliability is **A - Completely reliable**
+- Else if there is at least one **B - Usually reliable** source → reliability is **B - Usually reliable**
+- Else → reliability is **None**
 
 ## Commands
 

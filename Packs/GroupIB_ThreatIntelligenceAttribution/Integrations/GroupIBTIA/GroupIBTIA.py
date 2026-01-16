@@ -9,7 +9,7 @@ from CommonServerUserPython import *
 from json import dumps as json_dumps
 from datetime import datetime
 
-from dateparser import parse as dateparser_parse
+from dateparser import parse as dateparser_parse  # type: ignore[import-untyped]
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import TIPoller
@@ -19,7 +19,7 @@ import re
 from enum import Enum
 from itertools import chain
 from collections.abc import Iterable
-from typing import cast
+from typing import Any, TypeAlias, cast
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -428,7 +428,10 @@ COMMON_SCORE_MAP = {
     "bad": Common.DBotScore.BAD,
 }
 
-COMMON_REABILITY_MAP = {
+# XSOAR expects reliability as a string value (see CommonServerPython.DBOTScoreReliability.* constants).
+Reliability: TypeAlias = str
+
+COMMON_REABILITY_MAP: dict[str, Reliability] = {
     "a": DBotScoreReliability.A,
     "a+": DBotScoreReliability.A_PLUS,
     "b": DBotScoreReliability.B,
@@ -1674,6 +1677,17 @@ class CommonHelpers:
         return all_empty
 
     @staticmethod
+    def safe_json_one_line(obj: Any) -> str:
+        """
+        Serialize an object to a single-line JSON string for safe War Room/context rendering.
+        Falls back to `str(obj)` if JSON serialization fails.
+        """
+        try:
+            return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), default=str)
+        except Exception:
+            return str(obj)
+
+    @staticmethod
     def date_parse(date: str, arg_name: str) -> str:
         date_from_parsed = dateparser_parse(date)
         if date_from_parsed is None:
@@ -1847,11 +1861,20 @@ class IndicatorsHelper:
 
     @staticmethod
     def dbot_from_score(score: Any) -> int:
+        """
+        Convert numeric Group-IB riskScore (0..100) into XSOAR DBotScore.
+
+        Mapping:
+        - None / out of range -> NONE (Unknown)
+        - 0..49 -> GOOD
+        - 50..84 -> SUSPICIOUS
+        - 85..100 -> BAD
+        """
         if score is None:
             return Common.DBotScore.NONE
-        if 0 <= score <= 39:
+        if 0 <= score <= 49:
             return Common.DBotScore.GOOD
-        if 40 <= score <= 84:
+        if 50 <= score <= 84:
             return Common.DBotScore.SUSPICIOUS
         if 85 <= score <= 100:
             return Common.DBotScore.BAD
@@ -1904,7 +1927,7 @@ class IndicatorsHelper:
         return data
 
     @staticmethod
-    def parse_source_reliability(value: str | None) -> DBotScoreReliability | None:
+    def parse_source_reliability(value: str | None) -> Reliability | None:
         """
         Parse Source Reliability parameter (e.g. 'A - Completely reliable') into DBotScoreReliability.
         Returns None if missing or unrecognized.
@@ -2637,7 +2660,7 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
 
 class ReputationCommandProcessor:
 
-    ALLOWED_PATHS = {
+    ALLOWED_PATHS: dict[str, list[str]] = {
         "file": ["ioc/common"],
         "domain": [
             "apt/threat",
@@ -2655,14 +2678,14 @@ class ReputationCommandProcessor:
             "ioc/common",
         ],
     }
-    SENSITIVE_TO_DATES_COLLECTIONS = {
+    SENSITIVE_TO_DATES_COLLECTIONS: dict[str, list[str]] = {
         "domain": [
             "attacks/deface",
             "hi/open_threats",
             "ioc/common",
         ],
     }
-    DATES_MAPPING = {
+    DATES_MAPPING: dict[str, dict[str, dict[str, str]]] = {
         "domain": {
             "attacks/deface": {
                 "date": "date",
@@ -2675,27 +2698,26 @@ class ReputationCommandProcessor:
     }
     RECENT_WINDOW = timedelta(days=365 * 3)
     DATE_FORMATS = ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ")
-    # Reliability class per indicator type & collection
-    CLASS_BY_COLLECTION = {
+    RELIABILITY_BY_COLLECTION: dict[str, dict[str, Reliability]] = {
         "file": {
-            "ioc/common": "A2",  # other IOC common (for files always A)
+            "ioc/common": DBotScoreReliability.A,
         },
         "domain": {
-            "apt/threat": "A1",  # nation state
-            "apt/threat_actor": "A1",  # nation state
-            "ioc/common": "A2",  # other IOC common
-            "attacks/deface": "B1",  # defaces
-            "hi/open_threats": "B2",  # open threats
+            "apt/threat": DBotScoreReliability.A,
+            "apt/threat_actor": DBotScoreReliability.A,
+            "ioc/common": DBotScoreReliability.A,
+            "attacks/deface": DBotScoreReliability.B,
+            "hi/open_threats": DBotScoreReliability.B,
         },
         "ip": {
-            "apt/threat": "A1",  # nation state
-            "apt/threat_actor": "A1",  # nation state
-            "ioc/common": "A2",  # other IOC common
-            "attacks/deface": "B1",  # defaces
-            "hi/open_threats": "B2",  # open threats
+            "apt/threat": DBotScoreReliability.A,
+            "apt/threat_actor": DBotScoreReliability.A,
+            "ioc/common": DBotScoreReliability.A,
+            "attacks/deface": DBotScoreReliability.B,
+            "hi/open_threats": DBotScoreReliability.B,
         },
     }
-    RULES = [
+    RULES: list[dict[str, Any]] = [
         # IOC common last 3 years -> BAD
         {"any_recent": [("ioc/common", "dateLastSeen")], "score": Common.DBotScore.BAD},
         # open threats / defaces last 3 years -> SUSPICIOUS
@@ -2727,7 +2749,7 @@ class ReputationCommandProcessor:
         self,
         client: Client,
         args: dict,
-        integration_reliability: DBotScoreReliability | None = None,
+        integration_reliability: Reliability | None = None,
     ) -> None:
         self.client = client
         self.args = args
@@ -2754,8 +2776,9 @@ class ReputationCommandProcessor:
     ):
         data_per_collections = {}
         search_data = self._get_search_data(indicator_value)
-        for path, count in search_data:
-            if path in self.ALLOWED_PATHS.get(indicator_name):
+        allowed_paths = self.ALLOWED_PATHS.get(indicator_name, [])
+        for path, _count in search_data:
+            if path in allowed_paths:
                 portions_data = IndicatorsHelper.collect_portions_for_indicator(
                     indicator_name=indicator_name,
                     indicator_value=indicator_value,
@@ -2768,7 +2791,7 @@ class ReputationCommandProcessor:
                 )
                 data_per_collections.update({path: portions_data})
 
-            if indicator_name in ("ip"):
+            if indicator_name == "ip":
                 ip_data = IndicatorsHelper.build_ip_enrichment(
                     poller=self.client.poller,
                     indicator_value=indicator_value,
@@ -2826,13 +2849,13 @@ class ReputationCommandProcessor:
             score = None
 
             for rule in self.RULES:
-                if rule.get("any_recent"):
-                    if any(
-                        self._any_recent(indicator_data.get(coll), key, now)
-                        for coll, key in rule["any_recent"]
-                    ):
-                        score = rule["score"]
-                        break
+                any_recent = rule.get("any_recent")
+                if any_recent and any(
+                    self._any_recent(indicator_data.get(coll), key, now)
+                    for coll, key in any_recent
+                ):
+                    score = rule["score"]
+                    break
 
                 if rule.get("ioc_stale_or_no_date"):
                     coll, key = rule["ioc_stale_or_no_date"]
@@ -2857,7 +2880,8 @@ class ReputationCommandProcessor:
                 score = Common.DBotScore.NONE
 
         elif indicator_name == "ip":
-            # 0-39 -> GOOD, 40-84 -> SUSPICIOUS, 85-100 -> BAD, None -> NONE
+            # riskScore mapping to DBotScore:
+            # 0-49 -> GOOD, 50-84 -> SUSPICIOUS, 85-100 -> BAD, None/out-of-range -> NONE
             scoring = indicator_data.get("scoring", {}).get("score")
             score = IndicatorsHelper.dbot_from_score(scoring)
 
@@ -2866,17 +2890,26 @@ class ReputationCommandProcessor:
 
         return score
 
-    def _reliability_from_classes(
-        self, classes: list[str | None]
-    ) -> DBotScoreReliability:
-        """Pick best reliability: any A* wins, else any B*"""
-        if any(cls and cls.startswith("A") for cls in classes):
+    @staticmethod
+    def _pick_best_reliability(reliabilities: list[Reliability]) -> Reliability | None:
+        """
+        Pick the most trusted reliability deterministically.
+
+        Current policy:
+        - Prefer A over B
+        - Otherwise None
+        """
+        # Use a set to avoid order-dependence and make membership checks explicit.
+        rset = set(reliabilities)
+        if DBotScoreReliability.A in rset:
             return DBotScoreReliability.A
-        if any(cls and cls.startswith("B") for cls in classes):
+        if DBotScoreReliability.B in rset:
             return DBotScoreReliability.B
         return None
 
-    def _get_reliability(self, indicator_name, indicator_data):
+    def _get_reliability(
+        self, indicator_name: str, indicator_data: dict[str, Any]
+    ) -> Reliability | None:
         if self.integration_reliability:
             return self.integration_reliability
         if indicator_name == "file":
@@ -2885,27 +2918,39 @@ class ReputationCommandProcessor:
                 DBotScoreReliability.A if indicator_data.get("ioc/common") else None
             )
         elif indicator_name == "domain":
-            # nation state - A - Completely reliable : 'a':DBotScoreReliability.A
-            # other IOC common - A - Completely reliable : 'a':DBotScoreReliability.A
-            # defaces - B - Usually reliable : 'b':DBotScoreReliability.B
-            # open threats - B - Usually reliable : 'b':DBotScoreReliability.B
-            classes = [
-                self.CLASS_BY_COLLECTION.get(indicator_name, {}).get(coll)
+            # Summary:
+            # - A: any match in apt/* or ioc/common
+            # - B: any match in attacks/deface or hi/open_threats
+            #
+            # Detailed mapping:
+            # - nation state (apt/threat, apt/threat_actor) -> A - Completely reliable
+            # - other IOC common (ioc/common) -> A - Completely reliable
+            # - defaces (attacks/deface) -> B - Usually reliable
+            # - open threats (hi/open_threats) -> B - Usually reliable
+            matched_reliabilities = [
+                self.RELIABILITY_BY_COLLECTION.get(indicator_name, {}).get(coll)
                 for coll in self.ALLOWED_PATHS.get(indicator_name, [])
                 if indicator_data.get(coll)
             ]
-            reliability = self._reliability_from_classes(classes)
+            reliability = self._pick_best_reliability([r for r in matched_reliabilities if r])
         elif indicator_name == "ip":
-            # nation state - A - Completely reliable : 'a':DBotScoreReliability.A
-            # other IOC common - A - Completely reliable : 'a':DBotScoreReliability.A
-            # defaces - B - Usually reliable : 'b':DBotScoreReliability.B
-            # open threats - B - Usually reliable : 'b':DBotScoreReliability.B
-            classes = [
-                self.CLASS_BY_COLLECTION.get(indicator_name, {}).get(coll)
+            # Summary:
+            # - A: any match in apt/* or ioc/common
+            # - B: any match in attacks/deface or hi/open_threats
+            #
+            # Detailed mapping:
+            # - nation state (apt/threat, apt/threat_actor) -> A - Completely reliable
+            # - other IOC common (ioc/common) -> A - Completely reliable
+            # - defaces (attacks/deface) -> B - Usually reliable
+            # - open threats (hi/open_threats) -> B - Usually reliable
+            matched_reliabilities = [
+                self.RELIABILITY_BY_COLLECTION.get(indicator_name, {}).get(coll)
                 for coll in self.ALLOWED_PATHS.get(indicator_name, [])
                 if indicator_data.get(coll)
             ]
-            reliability = self._reliability_from_classes(classes)
+            reliability = self._pick_best_reliability([r for r in matched_reliabilities if r])
+        else:
+            reliability = None
         return reliability
 
     def _normalize_graph_ip(self, graph_ip_info: Any) -> dict[str, Any]:
@@ -3066,7 +3111,7 @@ class ReputationCommands:
     def file(
         client: Client,
         args: dict,
-        integration_reliability: DBotScoreReliability | None = None,
+        integration_reliability: Reliability | None = None,
     ) -> CommandResults:
         return ReputationCommandProcessor(client, args, integration_reliability).run(
             indicator_name="file", indicator_type=DBotScoreType.FILE
@@ -3076,7 +3121,7 @@ class ReputationCommands:
     def domain(
         client: Client,
         args: dict,
-        integration_reliability: DBotScoreReliability | None = None,
+        integration_reliability: Reliability | None = None,
     ) -> CommandResults:
         return ReputationCommandProcessor(client, args, integration_reliability).run(
             indicator_name="domain", indicator_type=DBotScoreType.DOMAIN
@@ -3086,10 +3131,43 @@ class ReputationCommands:
     def ip(
         client: Client,
         args: dict,
-        integration_reliability: DBotScoreReliability | None = None,
+        integration_reliability: Reliability | None = None,
     ) -> CommandResults:
         return ReputationCommandProcessor(client, args, integration_reliability).run(
             indicator_name="ip", indicator_type=DBotScoreType.IP
+        )
+
+
+class ReputationCommandPolicy:
+    _SUPPORTED_REPUTATION_COMMANDS: frozenset[str] = frozenset({"ip", "domain", "file"})
+
+    def __init__(self, enabled_commands: set[str]) -> None:
+        self._enabled_commands = enabled_commands
+
+    @classmethod
+    def from_params(cls, params: dict) -> "ReputationCommandPolicy":
+        """
+        Policy precedence:
+        - Allow-list only: only explicitly enabled commands can run.
+        - Fail-safe default: if the param is missing or empty -> no reputation commands run.
+        """
+
+        raw_enabled = params.get("enabled_reputation_commands") or []
+        enabled = {str(x).strip().lower() for x in argToList(raw_enabled) if str(x).strip()}
+        enabled &= set(cls._SUPPORTED_REPUTATION_COMMANDS)
+        return cls(enabled_commands=enabled)
+
+    def is_enabled(self, command: str) -> bool:
+        return command in self._enabled_commands
+
+    @staticmethod
+    def build_not_enabled_result(command: str) -> CommandResults:
+        return CommandResults(
+            readable_output=(
+                f"Reputation command '{command}' is not enabled in the integration instance settings. "
+                "No enrichment was performed."
+            ),
+            raw_response={"command": command, "enabled": False},
         )
 
 
@@ -3108,6 +3186,7 @@ def main():
         hunting_rules = params.get("hunting_rules", 0)
         verify_certificate = not params.get("insecure", False)
         endpoint = None
+        result: Any = None
 
         incident_collections = params.get("incident_collections", [])
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
@@ -3129,6 +3208,7 @@ def main():
             if disable_reliability_override
             else IndicatorsHelper.parse_source_reliability(integration_reliability_param)
         )
+        reputation_policy = ReputationCommandPolicy.from_params(params)
 
         args = demisto.args()
         raw_command = demisto.command()
@@ -3266,7 +3346,10 @@ def main():
                 endpoint = info_comands[command]
                 result = get_info_by_id_command(endpoint)(client, args)
             elif command in reputation_commands:
-                result = reputation_commands[command](client, args, integration_reliability)  # type: ignore
+                if not reputation_policy.is_enabled(command):
+                    result = ReputationCommandPolicy.build_not_enabled_result(command)
+                else:
+                    result = reputation_commands[command](client, args, integration_reliability)  # type: ignore
             else:
                 result = other_commands[command](client, args)  # type: ignore
             return_results(result)
