@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *
 
 from DelineaSS import Client, AuthenticationModel, \
     secret_password_get_command, secret_username_get_command, \
@@ -143,3 +144,142 @@ def test_commands(command, args, http_response, context, mocker):
     results = outputs.to_context()
 
     assert results.get("EntryContext") == context
+
+
+def test_authenticate_async_secret_server(mocker):
+    from DelineaSS import AuthenticationService, AuthenticationModel
+
+    mocker.patch(
+        "DelineaSS.requests.get",
+        return_value=mocker.Mock(text='{"healthy": true}', json=lambda: {"healthy": True})
+    )
+
+    model = AuthenticationModel(server_url="https://ss.example.com")
+    service = AuthenticationService()
+
+    result = service.authenticate_async(model)
+
+    assert result.platform_login is False
+
+
+def test_authenticate_async_platform(mocker):
+    from DelineaSS import AuthenticationService, AuthenticationModel, PlatformLogin
+
+    mocker.patch(
+        "DelineaSS.requests.get",
+        side_effect=[
+            mocker.Mock(text="", json=lambda: {}),  # SS check fails
+            mocker.Mock(text="Healthy")  # Platform check succeeds
+        ]
+    )
+
+    mocker.patch.object(
+        PlatformLogin,
+        "platform_authentication",
+        return_value=AuthenticationModel(platform_login=True, token="token")
+    )
+
+    model = AuthenticationModel(server_url="https://pf.example.com")
+    result = AuthenticationService().authenticate_async(model)
+
+    assert result.platform_login is True
+
+
+def test_platform_login_token_failure(mocker):
+    from DelineaSS import PlatformLogin, AuthenticationModel
+
+    mocker.patch(
+        "DelineaSS.requests.post",
+        return_value=mocker.Mock(status_code=401, text="Unauthorized")
+    )
+
+    auth = AuthenticationModel(server_url="https://pf.example.com")
+    result = PlatformLogin().platform_authentication(auth)
+
+    assert result.error == "Unauthorized"
+
+
+def test_client_platform_authentication(mocker):
+    from DelineaSS import Client, AuthenticationModel
+
+    model = AuthenticationModel(
+        platform_login=True,
+        token="TOKEN",
+        vault_url="https://vault.example.com"
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=model)
+
+    client = Client(
+        server_url="https://pf.example.com",
+        username="u",
+        password="p",
+        proxy=False,
+        verify=False
+    )
+
+    assert client._base_url == "https://vault.example.com"
+    assert client._headers["Authorization"] == "Bearer TOKEN"
+
+
+def test_user_create_on_platform_raises(mocker):
+    from DelineaSS import Client
+
+    mock_auth = mocker.Mock(
+        platform_login=True,
+        token="t",
+        vault_url="url",
+        error=None
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=mock_auth)
+
+    client = Client("url", "u", "p", False, False)
+
+    with pytest.raises(DemistoException):
+        client.userCreate(Name="test")
+
+
+def test_platform_user_create_on_secret_server_raises(mocker):
+    from DelineaSS import Client
+
+    mocker.patch("DelineaSS.is_platform_or_ss",
+                 return_value=mocker.Mock(platform_login=False))
+
+    mocker.patch.object(Client, "_generate_token", return_value="token")
+
+    client = Client("url", "u", "p", False, False)
+
+    with pytest.raises(DemistoException):
+        client.platform_user_create(Name="test")
+
+
+def test_get_credentials(mocker):
+    from DelineaSS import get_credentials
+
+    mock_client = mocker.Mock()
+    mock_client.getSecret.return_value = {
+        "id": 1,
+        "items": [
+            {"fieldName": "Username", "itemValue": "admin"},
+            {"fieldName": "Password", "itemValue": "pass"}
+        ]
+    }
+
+    creds = get_credentials(mock_client, "1")
+
+    assert creds["user"] == "admin"
+    assert creds["password"] == "pass"
+
+
+def test_fetch_credentials_empty(mocker):
+    from DelineaSS import fetch_credentials_command
+
+    mocker.patch("DelineaSS.demisto.args", return_value={})
+    mocker.patch("DelineaSS.demisto.credentials")
+
+    client = mocker.Mock()
+
+    result = fetch_credentials_command(client, "")
+
+    assert result.outputs == []
