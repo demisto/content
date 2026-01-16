@@ -1,15 +1,17 @@
 {
-    "name": "1Password",
+    "name": "OnePassword",
     "description": "1Password is a password manager used for storing and managing your account credentials, financial information, documents, and other sensitive data. It provides secure password generation, quick form filling, and cross-device synchronization. It also offers features like secure password sharing and monitoring for compromised accounts.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
@@ -20,6 +22,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

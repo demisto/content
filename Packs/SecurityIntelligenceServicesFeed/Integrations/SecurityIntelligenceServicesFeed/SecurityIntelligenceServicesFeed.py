@@ -347,9 +347,7 @@ def prepare_date_string_for_custom_fields(date_string: str) -> str:
     return ""
 
 
-def indicator_field_mapping(
-    feed_type: str, indicator: dict[str, Any], tags: list[str], tlp_color: str | None
-) -> dict[str, Any]:
+def indicator_field_mapping(feed_type: str, indicator: dict[str, Any], tags: list[str], tlp_color: str | None) -> dict[str, Any]:
     """
     Maps the indicator fields.
 

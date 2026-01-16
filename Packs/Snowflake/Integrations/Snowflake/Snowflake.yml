@@ -1,5 +1,6 @@
 category: Database
-sectionOrder:
+provider: Snowflake
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -149,7 +150,7 @@ script:
     description: Makes a DML change in the database.
     execution: true
     name: snowflake-update
-  dockerimage: demisto/snowflake:1.0.0.2108833
+  dockerimage: demisto/snowflake:1.0.0.3563487
   isfetch: true
   script: '-'
   type: python

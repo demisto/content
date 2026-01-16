@@ -638,5 +638,6 @@ view: |-
     }
   }
 fromversion: 6.9.0
+toversion: 7.99.99
 tests:
 - No tests (auto formatted)

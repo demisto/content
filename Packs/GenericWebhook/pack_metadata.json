@@ -1,8 +1,8 @@
 {
     "name": "Generic Webhook",
-    "description": "The Generic Webhook integration is used to create incidents on event triggers.",
+    "description": "Simplify data ingestion without an API. Connect to diverse services and create incidents from webhooks with a quick, flexible setup.",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

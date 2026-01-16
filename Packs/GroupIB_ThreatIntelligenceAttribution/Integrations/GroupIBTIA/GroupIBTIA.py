@@ -16,6 +16,9 @@ from cyberintegrations import TIPoller
 from traceback import format_exc
 import re
 from enum import Enum
+from itertools import chain
+from collections.abc import Iterable
+from typing import cast
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -38,7 +41,7 @@ INDICATORS_TYPES = {
                 "asn": "asn",
                 "country_name": "geocountry",
                 "region": "geolocation",
-            }
+            },
         },
     },
     "compromised/bank_card_group": {
@@ -54,7 +57,7 @@ INDICATORS_TYPES = {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
                 "cnc_ipv4_region": "geolocation",
-            }
+            },
         },
     },
     "compromised/mule": {
@@ -70,7 +73,7 @@ INDICATORS_TYPES = {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
                 "cnc_ipv4_region": "geolocation",
-            }
+            },
         },
     },
     "compromised/card": {
@@ -86,7 +89,7 @@ INDICATORS_TYPES = {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
                 "cnc_ipv4_region": "geolocation",
-            }
+            },
         },
     },
     "osi/vulnerability": {
@@ -95,8 +98,7 @@ INDICATORS_TYPES = {
         },
         "markdowns": {
             "software_mixed": (
-                "| Software Name | Software Type | Software Version |\n"
-                "| ------------- | ------------- | ---------------- |\n"
+                "| Software Name | Software Type | Software Version |\n| ------------- | ------------- | ---------------- |\n"
             )
         },
         "add_fields_types": {
@@ -115,10 +117,7 @@ INDICATORS_TYPES = {
             "contributors_emails": "Email",
             "hash": "GIB Hash",
         },
-        "add_fields_types": {
-            "contributors_emails": {},
-            "hash": {}
-        },
+        "add_fields_types": {"contributors_emails": {}, "hash": {}},
     },
     "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {"emails": {}}},
     "attacks/phishing_group": {
@@ -144,7 +143,7 @@ INDICATORS_TYPES = {
                 "target_ip_asn": "asn",
                 "target_ip_country_name": "geocountry",
                 "target_ip_region": "geolocation",
-            }
+            },
         },
     },
     "attacks/ddos": {
@@ -156,7 +155,7 @@ INDICATORS_TYPES = {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
                 "cnc_ipv4_region": "geolocation",
-            }
+            },
         },
     },
     "malware/cnc": {
@@ -171,7 +170,7 @@ INDICATORS_TYPES = {
                 "ipv4_asn": "asn",
                 "country_name": "geocountry",
                 "ipv4_region": "geolocation",
-            }
+            },
         },
     },
     "suspicious_ip/socks_proxy": {
@@ -247,7 +246,7 @@ INDICATORS_TYPES = {
                 "hashes_sha1": "sha1",
                 "hashes_sha256": "sha256",
                 "size": "size",
-            }
+            },
         },
     },
     "apt/threat": {
@@ -267,7 +266,7 @@ INDICATORS_TYPES = {
                 "hashes_sha1": "sha1",
                 "hashes_sha256": "sha256",
                 "size": "size",
-            }
+            },
         },
     },
 }
@@ -301,7 +300,7 @@ INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/account_group": "dateFirstSeen",
     "compromised/breached": "uploadTime",
     "compromised/mule": ["dateAdd", "dateIncident"],
-    "compromised/bank_card_group": "dateFirstCompromised",
+    "compromised/bank_card_group": ["dateFirstCompromised", "dateFirstSeen"],
     "osi/git_repository": "dateDetected",
     "osi/public_leak": "created",
     "osi/vulnerability": "datePublished",
@@ -327,6 +326,7 @@ COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED = [
     "suspicious_ip/open_proxy",
     "suspicious_ip/socks_proxy",
     "osi/public_leak",
+    "attacks/phishing_group",
 ]
 
 SET_WITH_ALL_DATE_FIELDS = {
@@ -408,6 +408,8 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
+COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = ["osi/public_leak", "attacks/phishing_group"]
+
 
 class NumberedSeverity(Enum):
     LOW = 1
@@ -483,6 +485,7 @@ MAPPING = {
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
         },
+        "source_type": "sourceType",  # Not displayed in the incident, but used in the code
     },
     "compromised/bank_card_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "cardInfo.number",
@@ -1402,10 +1405,8 @@ class Client(BaseClient):
 
     limit = 100
 
-    def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None):
-        super().__init__(
-            base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth
-        )
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None, limit: int = 100):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
         self._auth: tuple[str, str]
         self.poller = TIPoller(
@@ -1413,12 +1414,13 @@ class Client(BaseClient):
             api_key=self._auth[1],
             api_url=base_url,
         )
+        self.limit = int(limit)
         self.poller.set_product(
             product_type="SOAR",
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.0.0",
+            integration_version="2.1.2",
         )
 
     @staticmethod
@@ -1436,11 +1438,21 @@ class Client(BaseClient):
                     f"please use a format such as: 2020-01-01 or January 1 2020 or 3 days. The format given is: {date_from}"
                 )
             date_from = date_from.strftime("%Y-%m-%d")  # type: ignore
+        demisto.debug(
+            "[handle_first_time_fetch] Computed initial parameters: "
+            f"last_fetch_exists={bool(last_fetch)}, date_from={date_from}"
+        )
 
         return last_fetch, date_from  # type: ignore
 
     def create_poll_generator(
-        self, collection_name: str, hunting_rules: int, **kwargs
+        self,
+        collection_name: str,
+        hunting_rules: int,
+        enable_probable_corporate_access: bool,
+        unique: bool,
+        combolist: bool,
+        **kwargs,
     ):
         """
         Interface to work with different types of indicators.
@@ -1461,6 +1473,11 @@ class Client(BaseClient):
                 starting_date_from = date_from
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
+            demisto.debug(
+                "[create_poll_generator] Using search generator for compromised/breached: "
+                f"last_fetch={last_fetch}, date_from={date_from}, date_to={date_to}, "
+                f"starting_date_from={starting_date_from}, starting_date_to={starting_date_to}"
+            )
 
             return self.poller.create_search_generator(
                 collection_name=collection_name,
@@ -1477,15 +1494,49 @@ class Client(BaseClient):
         else:
             if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
                 hunting_rules = 1
+            sequpdate_for_generator = last_fetch
+            date_from_for_generator = date_from
+            if not last_fetch and date_from:
+                try:
+                    demisto.debug(
+                        "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
+                        f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
+                    )
+                    seq_map = self.poller.get_seq_update_dict(
+                        date=date_from,
+                        collection_name=collection_name,
+                        apply_hunting_rules=hunting_rules,
+                    )
+                    resolved_seq = seq_map.get(collection_name)
+                    if resolved_seq:
+                        sequpdate_for_generator = resolved_seq
+                        date_from_for_generator = None
+                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
+                    else:
+                        demisto.debug(
+                            "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
+                        )
+                except Exception as e:
+                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
+
+            demisto.debug(
+                "[create_poll_generator] Using update generator: "
+                f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
+                f"limit={self.limit}, hunting_rules={hunting_rules}"
+            )
+
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
-                    date_from=date_from,
-                    sequpdate=last_fetch,
+                    date_from=date_from_for_generator,
+                    sequpdate=sequpdate_for_generator,
                     limit=self.limit,
                     apply_hunting_rules=hunting_rules,
+                    probable_corporate_access=int(enable_probable_corporate_access),
+                    unique=int(unique),
+                    combolist=int(combolist),
                 ),
-                last_fetch,
+                sequpdate_for_generator,
             )
 
     def search_proxy_function(self, query: str) -> list[dict[str, Any]]:
@@ -1500,35 +1551,25 @@ class Client(BaseClient):
 
 class CommonHelpers:
     @staticmethod
-    def transform_dict(
-        input_dict: dict[str, list[str | list[Any]] | str | None]
-    ) -> list[dict[str, Any]]:
+    def transform_dict(input_dict: dict[str, list[str | list[Any]] | str | None]) -> list[dict[str, Any]]:
         if not input_dict:
             return [{}]
 
         normalized_dict = {
-            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()  # type: ignore
+            k: v if isinstance(v, list) else [v]  # type: ignore
+            for k, v in input_dict.items()
         }
 
-        max_length = max(
-            (len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1
-        )
+        max_length = max((len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1)
 
         result = []
         for i in range(max_length):
-            result.append(
-                {
-                    k: (v[i] if i < len(v) else (v[0] if v else None))
-                    for k, v in normalized_dict.items()
-                }
-            )
+            result.append({k: (v[i] if i < len(v) else (v[0] if v else None)) for k, v in normalized_dict.items()})
 
         return result
 
     @staticmethod
-    def remove_underscore_and_lowercase_keys(
-        dict_list: list[dict[str, Any]] | list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+    def remove_underscore_and_lowercase_keys(dict_list: list[dict[str, Any]] | list[dict[str, Any]]) -> list[dict[str, Any]]:
         updated_dicts = []
 
         for d in dict_list:
@@ -1542,15 +1583,9 @@ class CommonHelpers:
         return updated_dicts
 
     @staticmethod
-    def replace_empty_values(
-        data: dict[str, Any] | list[dict[str, Any]]
-    ) -> dict[str, Any] | list[dict[str, Any]]:
-
+    def replace_empty_values(data: dict[str, Any] | list[dict[str, Any]]) -> dict[str, Any] | list[dict[str, Any]]:
         if isinstance(data, dict):
-            return {
-                key: CommonHelpers.replace_empty_values(value)
-                for key, value in data.items()
-            }
+            return {key: CommonHelpers.replace_empty_values(value) for key, value in data.items()}
 
         elif isinstance(data, list):
             if not data:
@@ -1589,8 +1624,7 @@ class CommonHelpers:
         date_from_parsed = dateparser_parse(date)
         if date_from_parsed is None:
             raise DemistoException(
-                f"Inappropriate {arg_name} format, "
-                "please use something like this: 2020-01-01 or January 1 2020"
+                f"Inappropriate {arg_name} format, please use something like this: 2020-01-01 or January 1 2020"
             )
         date_from_parsed = date_from_parsed.strftime(DATE_FORMAT)
         return date_from_parsed
@@ -1618,29 +1652,21 @@ class CommonHelpers:
 
     @staticmethod
     def custom_generate_portal_link(collection_name: str, incident: dict):
-        if (
-            collection_name
-            in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED
-        ):
+        if collection_name in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED:
             # generating just for compromised/breached
-            incident["portalLink"] = PORTAL_LINKS.get(
-                "compromised/breached", ""
-            ) + str(incident["emails"][0])
+            incident["portalLink"] = PORTAL_LINKS.get("compromised/breached", "") + str(incident["emails"][0])
 
         return incident
 
     @staticmethod
     def validate_collections(collection_name):
-
         if collection_name in DEPRECATED_COLLECTIONS:
-            raise Exception(
-                f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
+            raise Exception(f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
         if collection_name in REMOVED_COLLECTIONS:
             raise Exception(f"The {collection_name} collection is not valid")
 
 
 class IndicatorsHelper:
-
     @staticmethod
     def check_empty_list(add_fields: dict) -> bool:
         dict_len = len(add_fields)
@@ -1652,9 +1678,7 @@ class IndicatorsHelper:
         return dict_len == empty_found_count
 
     @staticmethod
-    def parse_to_outputs(
-        value: str | None | list, indicator_type: str, fields: dict
-    ) -> Any:
+    def parse_to_outputs(value: str | None | list, indicator_type: str, fields: dict) -> Any:
         def calculate_dbot_score(type_):
             severity = fields.get("evaluation", {}).get("severity")
             if severity == "green":
@@ -1674,9 +1698,7 @@ class IndicatorsHelper:
             )
 
         indicator: Any = None
-        if (
-            (value is not None and len(value) > 0) or len(fields) > 0
-        ) and IndicatorsHelper.check_empty_list(fields) is False:
+        if ((value is not None and len(value) > 0) or len(fields) > 0) and IndicatorsHelper.check_empty_list(fields) is False:
             if indicator_type == "IP":
                 indicator = Common.IP(
                     ip=value,
@@ -1701,9 +1723,7 @@ class IndicatorsHelper:
                     dbot_score=calculate_dbot_score(DBotScoreType.FILE),
                 )
             elif indicator_type == "URL":
-                indicator = Common.URL(
-                    url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL)
-                )
+                indicator = Common.URL(url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL))
             elif indicator_type == "CVE":
                 indicator = Common.CVE(
                     id=value,
@@ -1726,14 +1746,10 @@ class IndicatorsHelper:
         indicators = []
         if isinstance(feed, dict) and feed.get("indicators", None) is not None:
             indicator_types: dict = INDICATORS_TYPES.get(collection_name, {}).get("types", {})  # type: ignore
-            add_fields_types: dict = INDICATORS_TYPES.get(collection_name, {}).get(
-                "add_fields_types", {}
-            )  # type: ignore
+            add_fields_types: dict = INDICATORS_TYPES.get(collection_name, {}).get("add_fields_types", {})  # type: ignore
             if len(add_fields_types.keys()) > 0:
                 fedd_indicators: dict = feed["indicators"]
-                fedd_indicators.update(
-                    {"severity": feed.get("evaluation", {}).get("severity")}
-                )
+                fedd_indicators.update({"severity": feed.get("evaluation", {}).get("severity")})
 
             for indicator_type_name, indicator_type in indicator_types.items():
                 add_fields = {}
@@ -1742,25 +1758,15 @@ class IndicatorsHelper:
                     for (
                         additional_field_name,
                         additional_field_type,
-                    ) in add_fields_types.get(
-                        indicator_type_name
-                    ).items():  # type: ignore
-                        additional_field_value = fedd_indicators.get(
-                            additional_field_name
-                        )
+                    ) in add_fields_types.get(indicator_type_name).items():  # type: ignore
+                        additional_field_value = fedd_indicators.get(additional_field_name)
                         if additional_field_value is not None:
-                            add_fields.update(
-                                {additional_field_type: additional_field_value}
-                            )
+                            add_fields.update({additional_field_type: additional_field_value})
 
-                output = IndicatorsHelper.parse_to_outputs(
-                    indicator_value, indicator_type, add_fields
-                )
+                output = IndicatorsHelper.parse_to_outputs(indicator_value, indicator_type, add_fields)
                 if output:
                     if len(add_fields) > 0:
-                        add_fields.update(
-                            {"severity": feed.get("evaluation", {}).get("severity")}
-                        )
+                        add_fields.update({"severity": feed.get("evaluation", {}).get("severity")})
                     results = [
                         CommandResults(
                             readable_output=tableToMarkdown(
@@ -1799,9 +1805,9 @@ class IncidentBuilder:
         return severity_map.get(severity, 0)
 
     def get_incident_created_time(self) -> str:
-        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
-            self.collection_name, "-"
-        )
+        last_exception = None
+        incident_id = self.incident.get("id", None)
+        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(self.collection_name, "-")
 
         if isinstance(occured_date_field, str):
             occured_date_field = [occured_date_field]
@@ -1811,19 +1817,28 @@ class IncidentBuilder:
 
         for variant in occured_date_field:
             try:
-                incident_occured_date = dateparser_parse(
-                    date_string=self.incident.get(variant, "")
-                )
+                date_value = self.incident.get(variant, "")
+
+                if date_value is None:
+                    continue
+                if not isinstance(date_value, str):
+                    date_value = str(date_value)
+                if not date_value.strip():
+                    continue
+                incident_occured_date = dateparser_parse(date_string=date_value)
+
                 assert incident_occured_date is not None, (
                     f"{self.incident} incident_occured_date cannot be None, "
                     f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
+                    f"{self.collection_name} {incident_id}"
                 )
                 return incident_occured_date.strftime(DATE_FORMAT)
             except AssertionError as e:
                 last_exception = e
 
         raise AssertionError(
-            f"None of the date fields {occured_date_field} returned a valid date. Last error: {last_exception}"
+            f"None of the date fields {occured_date_field} returned a valid date."
+            f"Last error: {last_exception} {self.collection_name} {incident_id}"
         )
 
     def get_incident_name(self) -> str:
@@ -1877,13 +1892,9 @@ class IncidentBuilder:
             for type_, sub_dict in field_data.items():
                 for sub_type, sub_list in sub_dict.items():
                     for value in sub_list:
-                        new_matches.append(
-                            {"type": type_, "sub_type": sub_type, "value": value}
-                        )
+                        new_matches.append({"type": type_, "sub_type": sub_type, "value": value})
 
-            transformed_and_replaced_empty_values_data = (
-                CommonHelpers.replace_empty_values(new_matches)
-            )
+            transformed_and_replaced_empty_values_data = CommonHelpers.replace_empty_values(new_matches)
             clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                 transformed_and_replaced_empty_values_data  # type: ignore
             )
@@ -1899,25 +1910,12 @@ class IncidentBuilder:
                 else:
                     field_data = self.incident.get(field, {})
 
-                    if (
-                        field_data
-                        and CommonHelpers.all_lists_empty(field_data) is False
-                    ):
-                        transformed_data = CommonHelpers.transform_dict(
-                            input_dict=field_data
-                        )
-                        if (
-                            self.collection_name == "osi/git_repository"
-                            and field == "files"
-                        ):
+                    if field_data and CommonHelpers.all_lists_empty(field_data) is False:
+                        transformed_data = CommonHelpers.transform_dict(input_dict=field_data)
+                        if self.collection_name == "osi/git_repository" and field == "files":
+                            transformed_data = CommonHelpers.transform_list_to_str(transformed_data)
 
-                            transformed_data = CommonHelpers.transform_list_to_str(
-                                transformed_data
-                            )
-
-                        transformed_and_replaced_empty_values_data = (
-                            CommonHelpers.replace_empty_values(transformed_data)
-                        )
+                        transformed_and_replaced_empty_values_data = CommonHelpers.replace_empty_values(transformed_data)
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                             transformed_and_replaced_empty_values_data  # type: ignore
                         )
@@ -1941,9 +1939,7 @@ class IncidentBuilder:
         self.set_custom_severity()
         self.check_dates()
         self.transform_fields_to_grid_table()
-        self.incident = CommonHelpers.remove_html_tags(
-            self.incident, self.collection_name
-        )
+        self.incident = CommonHelpers.remove_html_tags(self.incident, self.collection_name)
         data = {
             "name": self.incident["name"],
             "occurred": self.get_incident_created_time(),
@@ -1954,7 +1950,6 @@ class IncidentBuilder:
 
 
 class BuilderCommandResponses:
-
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
         self.collection_name = collection_name
@@ -1967,9 +1962,7 @@ class BuilderCommandResponses:
             if key not in ("evaluation", "indicators") and isinstance(value, dict):
                 additional_data = CommonHelpers.transform_dict(value)
                 for index, item in enumerate(additional_data):
-                    table = self.get_human_readable_feed(
-                        table=item, name=f"{key} table {index}"
-                    )
+                    table = self.get_human_readable_feed(table=item, name=f"{key} table {index}")
                     additional_tables.append(
                         CommandResults(
                             readable_output=table,
@@ -1992,39 +1985,32 @@ class BuilderCommandResponses:
                 self.collection_name = "hi/" + self.collection_name
 
         cleaned_feed = {}
-        if (
-            self.collection_name
-            in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED
-        ):
-            if self.collection_name == "osi/public_leak":
+        if self.collection_name in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED:
+            if self.collection_name in COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER:
                 query = f"id:{id_}"
             else:
                 query = id_
-            portions = self.client.poller.create_update_generator(
-                collection_name=self.collection_name, query=query
-            )
+            portions = self.client.poller.create_update_generator(collection_name=self.collection_name, query=query)
             for portion in portions:
-                parsed_portion = portion.parse_portion(
-                    keys=MAPPING.get(self.collection_name, {})
-                )
+                parsed_portion = portion.parse_portion(keys=MAPPING.get(self.collection_name, {}))
                 cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
 
         else:
             result = self.client.poller.search_feed_by_id(self.collection_name, id_)
-            parsed_portion = result.parse_portion(
-                keys=MAPPING.get(self.collection_name, {})
-            )
+            mapping = MAPPING.get(self.collection_name, {})
+            # This was done because the response when receiving a single record can
+            # differentiate your json from getting the whole list
+            if self.collection_name == "compromised/breached":
+                mapping["emailDomains"] = "emails"
+
+            parsed_portion = result.parse_portion(keys=mapping)
             cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
 
         return cleaned_feed  # type: ignore
 
-    def get_indicators(
-        self, feed: dict[Any, Any]
-    ) -> tuple[list[CommandResults] | list, dict[Any, Any]]:
+    def get_indicators(self, feed: dict[Any, Any]) -> tuple[list[CommandResults] | list, dict[Any, Any]]:
         indicators = []
-        indicators = IndicatorsHelper.find_iocs_in_feed(
-            feed=feed, collection_name=self.collection_name
-        )
+        indicators = IndicatorsHelper.find_iocs_in_feed(feed=feed, collection_name=self.collection_name)
 
         return indicators, feed
 
@@ -2034,10 +2020,13 @@ class BuilderCommandResponses:
     ):
         dont_need_transformations = ["compromised/breached"]
 
-        main_table_data, additional_tables = feed, (
-            []
-            if self.collection_name in dont_need_transformations
-            else self.transform_additional_fields_to_markdown_tables(feed)
+        main_table_data, additional_tables = (
+            feed,
+            (
+                []
+                if self.collection_name in dont_need_transformations
+                else self.transform_additional_fields_to_markdown_tables(feed)
+            ),
         )
 
         return main_table_data, additional_tables
@@ -2055,9 +2044,7 @@ class BuilderCommandResponses:
         indicators, feed = self.get_indicators(feed=feed)
         main_table_data, additional_tables = self.get_table_data(feed=feed)
         feed_id = feed.get("id")
-        readable_output = self.get_human_readable_feed(
-            table=feed, name=f"Feed from {self.collection_name} with ID {feed_id}"
-        )
+        readable_output = self.get_human_readable_feed(table=feed, name=f"Feed from {self.collection_name} with ID {feed_id}")
         return feed, main_table_data, additional_tables, indicators, readable_output
 
 
@@ -2092,6 +2079,9 @@ def fetch_incidents_command(
     incident_collections: list[str],
     max_requests: int,
     hunting_rules: int,
+    combolist: bool = False,
+    unique: bool = False,
+    enable_probable_corporate_access: bool = False,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -2105,12 +2095,20 @@ def fetch_incidents_command(
 
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
-    incidents = []
+    demisto.debug(
+        "[fetch-incidents] Starting fetch with params: "
+        f"collections={incident_collections}, max_requests={max_requests}, "
+        f"hunting_rules={hunting_rules}, combolist={combolist}, unique={unique}, "
+        f"enable_probable_corporate_access={enable_probable_corporate_access}, "
+        f"first_fetch_time={first_fetch_time}"
+    )
+    incidents: list[dict] = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}")
         requests_count = 0
         sequpdate = 0
         portions, last_fetch = client.create_poll_generator(
@@ -2118,34 +2116,57 @@ def fetch_incidents_command(
             hunting_rules=hunting_rules,
             last_fetch=last_fetch,
             first_fetch_time=first_fetch_time,
+            enable_probable_corporate_access=enable_probable_corporate_access,
+            combolist=combolist,
+            unique=unique,
         )
 
         mapping = MAPPING.get(collection_name, {})
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} generator created: {portions}")
         for portion in portions:
             sequpdate = portion.sequpdate
-            new_parsed_json = portion.bulk_parse_portion(
-                keys_list=[mapping], as_json=False
+            demisto.debug(
+                f"[fetch-incidents] Portion received: collection={collection_name}, seqUpdate={sequpdate}, "
+                f"portion_size={portion.portion_size}, count={portion.count}"
             )
-            if isinstance(new_parsed_json, list):
-                for i in new_parsed_json:
-                    for incident in i:
-                        constructed_incident = IncidentBuilder(
-                            collection_name=collection_name,
-                            incident=incident,
-                            mapping=mapping,
-                        ).build_incident()
-                        incidents.append(constructed_incident)
+            new_parsed_json = portion.bulk_parse_portion(keys_list=[mapping], as_json=False)
+            if not isinstance(new_parsed_json, list):
+                raise Exception("new_parsed_json in portion should be a list")
+
+            if new_parsed_json and isinstance(new_parsed_json[0], list):
+                iterable: Iterable[dict] = cast(Iterable[dict], chain.from_iterable(new_parsed_json))
             else:
-                raise Exception("new_parsed_json in portion should not be a string")
+                iterable = cast(Iterable[dict], new_parsed_json)
+
+            before_count = len(incidents)
+            incidents.extend(
+                IncidentBuilder(
+                    collection_name=collection_name,
+                    incident=incident,
+                    mapping=mapping,
+                ).build_incident()
+                for incident in iterable
+            )
+            added = len(incidents) - before_count
+            demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
 
             requests_count += 1
-            if requests_count > max_requests:
+            if requests_count >= max_requests:
                 break
 
         if collection_name == "compromised/breached":
             next_run["last_fetch"][collection_name] = last_fetch
+        else:
+            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
+            effective_last_fetch = last_fetch
+            if isinstance(sequpdate, int) and sequpdate > 0:
+                if isinstance(last_fetch, int) and last_fetch > 0:
+                    effective_last_fetch = max(last_fetch, sequpdate)
+                else:
+                    effective_last_fetch = sequpdate
 
-        next_run["last_fetch"][collection_name] = sequpdate
+            next_run["last_fetch"][collection_name] = effective_last_fetch
+            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}")
 
     return next_run, incidents
 
@@ -2178,9 +2199,7 @@ def get_info_by_id_command(collection_name: str):
     Decorator around actual commands, that returns command depends on `collection_name`.
     """
 
-    def get_info_by_id_for_collection(
-        client: Client, args: dict
-    ) -> list[CommandResults]:
+    def get_info_by_id_for_collection(client: Client, args: dict) -> list[CommandResults]:
         """
         This function returns additional information to context and War Room.
 
@@ -2189,17 +2208,13 @@ def get_info_by_id_command(collection_name: str):
         """
         results = []
         CommonHelpers.validate_collections(collection_name)
-        feed, main_table_data, additional_tables, indicators, readable_output = (
-            BuilderCommandResponses(
-                client=client, collection_name=collection_name, args=args
-            ).build_feed()
-        )
+        feed, main_table_data, additional_tables, indicators, readable_output = BuilderCommandResponses(
+            client=client, collection_name=collection_name, args=args
+        ).build_feed()
 
         results.append(
             CommandResults(
-                outputs_prefix="GIBTIA.{}".format(
-                    PREFIXES.get(collection_name, "").replace(" ", "")
-                ),
+                outputs_prefix="GIBTIA.{}".format(PREFIXES.get(collection_name, "").replace(" ", "")),
                 outputs_key_field="id",
                 outputs=feed,
                 readable_output=readable_output,
@@ -2245,6 +2260,7 @@ def global_search_command(client: Client, args: dict) -> CommandResults:
         )
     else:
         results = CommandResults(
+            outputs_prefix="GIBTIA.search.global",
             raw_response=raw_response,
             ignore_auto_extract=True,
             outputs=[],
@@ -2261,16 +2277,8 @@ def local_search_command(client: Client, args: dict):
     )
     collection_name = str(args.get("collection_name"))
     CommonHelpers.validate_collections(collection_name)
-    date_from_parsed = (
-        CommonHelpers.date_parse(date=date_from, arg_name="date_from")
-        if date_from is not None
-        else date_from
-    )
-    date_to_parsed = (
-        CommonHelpers.date_parse(date=date_to, arg_name="date_to")
-        if date_to is not None
-        else date_to
-    )
+    date_from_parsed = CommonHelpers.date_parse(date=date_from, arg_name="date_from") if date_from is not None else date_from
+    date_to_parsed = CommonHelpers.date_parse(date=date_to, arg_name="date_to") if date_to is not None else date_to
 
     portions = client.poller.create_search_generator(
         collection_name=collection_name,
@@ -2293,9 +2301,7 @@ def local_search_command(client: Client, args: dict):
         outputs_prefix="GIBTIA.search.local",
         outputs_key_field="id",
         outputs=result_list,
-        readable_output=tableToMarkdown(
-            "Search results", t=result_list, headers=["id", "additional_info"]
-        ),
+        readable_output=tableToMarkdown("Search results", t=result_list, headers=["id", "additional_info"]),
         ignore_auto_extract=True,
     )
     return results
@@ -2321,9 +2327,22 @@ def main():
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
 
+        combolist = params.get("combolist", False)
+        unique = params.get("unique", False)
+        enable_probable_corporate_access = params.get("enable_probable_corporate_access", False)
+        limit_param = params.get("limit", 100)
+        limit = int(limit_param)
+
         args = demisto.args()
         command = demisto.command()
-        LOG(f"Command being called is {command}")
+        demisto.debug(f"Command being called is {command}")
+        demisto.debug(
+            "[main] Parsed params: "
+            f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
+            f"hunting_rules={hunting_rules}, first_fetch={incidents_first_fetch}, max_fetch={requests_count}, "
+            f"collections={incident_collections}, combolist={combolist}, unique={unique}, "
+            f"enable_probable_corporate_access={enable_probable_corporate_access}, limit={limit}"
+        )
 
         client = Client(
             base_url=base_url,
@@ -2331,8 +2350,9 @@ def main():
             auth=(username, password),
             proxy=proxy,
             headers={"Accept": "*/*"},
+            limit=limit,
         )
-        demisto.info("client getted")
+        demisto.info("Client created successfully")
 
         deprecated_comands = [
             "gibtia-get-compromised-card-info",
@@ -2345,15 +2365,11 @@ def main():
 
         if hunting_rules is True:
             hunting_rules = 1
-            list_hunting_rules_collections = (
-                client.poller.get_hunting_rules_collections()
-            )
+            list_hunting_rules_collections = client.poller.get_hunting_rules_collections()
 
             for collection in incident_collections:
                 if collection not in list_hunting_rules_collections:
-                    raise Exception(
-                        f"Collection {collection} Does't support hunting rules"
-                    )
+                    raise Exception(f"Collection {collection} Does't support hunting rules")
 
         info_comands = {
             "gibtia-get-compromised-account-info": "compromised/account_group",
@@ -2391,15 +2407,20 @@ def main():
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
+            last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents_command(
                 client=client,
-                last_run=demisto.getLastRun(),
+                last_run=last_run,
                 first_fetch_time=incidents_first_fetch,
                 incident_collections=incident_collections,
                 max_requests=requests_count,
                 hunting_rules=hunting_rules,
+                combolist=combolist,
+                unique=unique,
+                enable_probable_corporate_access=enable_probable_corporate_access,
             )
-            demisto.info(f"{str(incidents)}")
+            demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
+            demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:

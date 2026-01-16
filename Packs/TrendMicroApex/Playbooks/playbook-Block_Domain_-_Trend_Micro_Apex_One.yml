@@ -101,8 +101,7 @@ tasks:
       id: 1ba41c15-db4f-4493-82f4-61beb7dbac33
       version: -1
       name: Block Domain
-      description: Add suspicious file SHA-1, IP address, domain, or URL objects to
-        the User-Defined Suspicious Object list.
+      description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
       script: '|||trendmicro-apex-udso-add'
       type: regular
       iscommand: true

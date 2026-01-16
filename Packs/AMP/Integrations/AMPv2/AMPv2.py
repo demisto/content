@@ -605,11 +605,19 @@ class Client(BaseClient):
             }
         )
         demisto.debug(f"Sending request: {params}")
-        return self._http_request(
-            method="GET",
-            url_suffix="/events",
-            params=params,
-        )
+        try:
+            res = self._http_request(
+                method="GET",
+                url_suffix="/events",
+                params=params,
+            )
+        except DemistoException as e:
+            if e.res.status_code == 429:
+                res = {}
+                demisto.debug("Rate limit reached.")
+            else:
+                raise e
+        return res
 
     def event_type_list_request(self) -> dict[str, Any]:
         """
@@ -1138,6 +1146,18 @@ class Client(BaseClient):
             params=params,
         )
 
+    def license_info_get_request(self) -> dict[str, Any]:
+        """
+        Get license information about the tenant such as number of connectors registered, tier level, licensed seats count etc.
+
+        Returns:
+            Dict[str, Any]: Licensing information about the tenant.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/license_summaries",
+        )
+
 
 """ COMMAND FUNCTIONS """  # pylint: disable=pointless-string-statement
 
@@ -1205,7 +1225,8 @@ def fetch_incidents(
     while True:
         demisto.debug(f"looping on page #{counter}")
         response = client.event_list_request(start_date=last_fetch, event_types=event_types, limit=500, offset=offset)
-
+        if not response:
+            break
         demisto.debug(f"Received {len(response['data'])}. Adding.")
 
         items = items + response["data"]
@@ -2866,6 +2887,62 @@ def version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
+def license_info_get_command(client: Client, args: dict[str, Any]) -> CommandResults:  # pylint: disable=unused-argument
+    """
+    Get license information about the tenant such as number of connectors registered, tier level, licensed seats count etc.
+
+    Args:
+        client (Client): Cisco AMP client to run desired requests
+
+    Returns:
+        CommandResults: Current version of the API.
+    """
+    raw_response = client.license_info_get_request()
+    license_information = raw_response.get("data", {})
+
+    connector_info = [
+        {
+            "Number of connectors registered": license_information.get("number_of_connectors_registered"),
+            "Number of connectors seen in the last 30 days": license_information.get(
+                "number_of_connectors_seen_in_the_last_30_days"
+            ),
+        }
+    ]
+
+    license_summaries = license_information.get("license_summaries", [])
+    license_summary = [
+        {
+            "Licensed seats count": license.get("licensed_seats_count"),
+            "Start date": license.get("start_date"),
+            "End date": license.get("end_date"),
+            "Tier": license.get("tier"),
+        }
+        for license in license_summaries
+    ]
+
+    connector_info_table = tableToMarkdown(
+        "Connector Information",
+        connector_info,
+        headers=["Number of connectors registered", "Number of connectors seen in the last 30 days"],
+        removeNull=True,
+    )
+
+    license_summary_table = tableToMarkdown(
+        "License Summary",
+        license_summary,
+        headers=["Licensed seats count", "Start date", "End date", "Tier"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CiscoAMP.LicenseInformation",
+        outputs_key_field="license_information",
+        outputs=license_information,
+        readable_output=connector_info_table + license_summary_table,
+        raw_response=raw_response,
+    )
+
+
 def vulnerability_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about vulnerabilities within computers.
@@ -2979,7 +3056,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResult
         for endpoint_ip in endpoint_ips:
             response = client.computer_list_request(internal_ip=endpoint_ip)
 
-        responses.append(response)
+            responses.append(response)
 
     else:
         responses.append(client.computer_list_request(hostnames=endpoint_hostnames))
@@ -3626,6 +3703,7 @@ def main() -> None:
         "cisco-amp-app-trajectory-query-list": app_trajectory_query_list_command,
         "cisco-amp-version-get": version_get_command,
         "cisco-amp-vulnerability-list": vulnerability_list_command,
+        "cisco-amp-license-get": license_info_get_command,
         "endpoint": endpoint_command,
         "file": file_command,
     }

@@ -1,0 +1,52 @@
+{
+    "id": "Dataminr Pulse Threat Actor Indicator",
+    "version": -1,
+    "modified": "2025-09-25T15:36:08.266518205+05:30",
+    "shouldCommit": false,
+    "regex": "Threat Actor: \\[[^|,\\{\\}\\[\\]]+\\]",
+    "details": "Dataminr Pulse Threat Actor Indicator",
+    "prevDetails": "Dataminr Pulse Threat Actor Indicator",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "countrycode": {
+            "complex": {
+                "root": "DataminrPulseThreatActorIndicator",
+                "filters": [],
+                "accessor": "countryOfOrigin",
+                "transformers": []
+            }
+        },
+        "dataminrpulsealiases": {
+            "complex": {
+                "root": "DataminrPulseThreatActorIndicator",
+                "filters": [],
+                "accessor": "aliases",
+                "transformers": []
+            }
+        },
+        "dataminrpulsethreatactordescription": {
+            "complex": {
+                "root": "DataminrPulseThreatActorIndicator",
+                "filters": [],
+                "accessor": "summary",
+                "transformers": []
+            }
+        },
+        "dataminrpulsethreatactorttps": {
+            "complex": {
+                "root": "DataminrPulseThreatActorIndicator",
+                "filters": [],
+                "accessor": "ttps",
+                "transformers": []
+            }
+        }
+    },
+    "expiration": 0,
+    "layout": "Dataminr Pulse Threat Actor Indicator",
+    "fromVersion": "6.10.0"
+}

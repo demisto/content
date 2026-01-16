@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c7e4d7f4-8e29-4ad8-8b48-1532ec261fe8
+    taskid: 5916ecf1-2079-46c1-8769-50887748d32f
     type: start
     task:
-      id: c7e4d7f4-8e29-4ad8-8b48-1532ec261fe8
+      id: 5916ecf1-2079-46c1-8769-50887748d32f
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: b10694e0-0f72-49a8-8d1a-981f081c21ed
+    taskid: 3ca6a71b-f4ae-485e-8996-82d3d9323e56
     type: regular
     task:
-      id: b10694e0-0f72-49a8-8d1a-981f081c21ed
+      id: 3ca6a71b-f4ae-485e-8996-82d3d9323e56
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 190
+          "y": 210
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 5b9b8efe-184d-4703-80d9-580016afd3dd
+    taskid: 445e0de4-45c3-46a3-bdc5-559cc26d3622
     type: regular
     task:
-      id: 5b9b8efe-184d-4703-80d9-580016afd3dd
+      id: 445e0de4-45c3-46a3-bdc5-559cc26d3622
       version: -1
       name: cs-fx-submit-uploaded-file
       script: CrowdStrike Falcon X|||cs-fx-submit-uploaded-file
@@ -93,10 +93,12 @@ tasks:
         simple: "false"
       environment_id:
         simple: '160: Windows 10'
+      execution-timeout:
+        simple: "660"
       extended_data:
         simple: "false"
       polling:
-        simple: "false"
+        simple: "true"
       sha256:
         simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
       submit_name:
@@ -105,12 +107,14 @@ tasks:
         simple: "2020-08-10"
       system_time:
         simple: "12:34"
+      interval_in_seconds:
+        simple: "60"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 350
+          "y": 380
         }
       }
     note: false
@@ -123,10 +127,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 62e80b9b-82ac-4715-8904-12acae744f51
+    taskid: d7258594-ce58-4a04-8411-b0c57914d34d
     type: condition
     task:
-      id: 62e80b9b-82ac-4715-8904-12acae744f51
+      id: d7258594-ce58-4a04-8411-b0c57914d34d
       version: -1
       name: Verify Outputs
       type: condition
@@ -134,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -168,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 500
+          "y": 550
         }
       }
     note: false
@@ -181,10 +185,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: bbfe2c8b-1a56-482e-8be8-dc42a7b25fa2
+    taskid: c297c0e6-e202-443b-8065-fc6ec83b20b3
     type: regular
     task:
-      id: bbfe2c8b-1a56-482e-8be8-dc42a7b25fa2
+      id: c297c0e6-e202-443b-8065-fc6ec83b20b3
       version: -1
       name: cs-fx-get-full-report
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
@@ -198,13 +202,13 @@ tasks:
       extended_data:
         simple: "false"
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_4a3266d4788a4277ae89d1d7b0bf11d7
+        simple: ${SubmittedID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 830
+          "y": 1060
         }
       }
     note: false
@@ -217,10 +221,10 @@ tasks:
     continueonerrortype: ""
   "7":
     id: "7"
-    taskid: b381266b-3dc1-4785-8410-898da38c9433
+    taskid: a587f6df-53d0-4cf8-8726-9244949fbfe3
     type: condition
     task:
-      id: b381266b-3dc1-4785-8410-898da38c9433
+      id: a587f6df-53d0-4cf8-8726-9244949fbfe3
       version: -1
       name: Verify Outputs
       type: condition
@@ -228,7 +232,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -364,7 +368,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 950
+          "y": 1230
         }
       }
     note: false
@@ -377,10 +381,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: 76e9e190-dbe6-4ed3-8a12-ef8b0a07109b
+    taskid: cd09835f-b282-4f2b-89a2-0f4892c698c3
     type: regular
     task:
-      id: 76e9e190-dbe6-4ed3-8a12-ef8b0a07109b
+      id: cd09835f-b282-4f2b-89a2-0f4892c698c3
       version: -1
       name: cs-fx-get-report-summary
       script: CrowdStrike Falcon X|||cs-fx-get-report-summary
@@ -392,13 +396,13 @@ tasks:
       - "9"
     scriptarguments:
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_4a3266d4788a4277ae89d1d7b0bf11d7
+        simple: ${SubmittedID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1230
+          "y": 1740
         }
       }
     note: false
@@ -411,10 +415,10 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 986dc69f-fb14-46ba-8e40-ba27edab1fe4
+    taskid: 0c6f3852-5fe7-405d-8178-84742d82f25d
     type: condition
     task:
-      id: 986dc69f-fb14-46ba-8e40-ba27edab1fe4
+      id: 0c6f3852-5fe7-405d-8178-84742d82f25d
       version: -1
       name: Verify Outputs
       type: condition
@@ -502,8 +506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 1340
+          "x": 50,
+          "y": 1910
         }
       }
     note: false
@@ -516,10 +520,10 @@ tasks:
     continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 0902e574-df2d-416e-80e7-06409a33fc59
+    taskid: 70f507c0-f7fa-43a5-8ca8-eeb058f68883
     type: regular
     task:
-      id: 0902e574-df2d-416e-80e7-06409a33fc59
+      id: 70f507c0-f7fa-43a5-8ca8-eeb058f68883
       version: -1
       name: cs-fx-get-analysis-status
       script: CrowdStrike Falcon X|||cs-fx-get-analysis-status
@@ -531,13 +535,13 @@ tasks:
       - "11"
     scriptarguments:
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_4a3266d4788a4277ae89d1d7b0bf11d7
+        simple: ${SubmittedID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1610
+          "y": 2250
         }
       }
     note: false
@@ -550,10 +554,10 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 9eb3ba4b-1669-477d-8c3c-25195b31f810
+    taskid: c5570f41-f3da-4e5a-8058-61ef5ca87dd4
     type: condition
     task:
-      id: 9eb3ba4b-1669-477d-8c3c-25195b31f810
+      id: c5570f41-f3da-4e5a-8058-61ef5ca87dd4
       version: -1
       name: Verify Outputs
       type: condition
@@ -595,7 +599,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1730
+          "y": 2420
         }
       }
     note: false
@@ -608,10 +612,10 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 469be051-34c6-4f9e-89f5-339de3d71b7d
+    taskid: ced67beb-d768-4a7d-83b2-1b78b2df9dc7
     type: regular
     task:
-      id: 469be051-34c6-4f9e-89f5-339de3d71b7d
+      id: ced67beb-d768-4a7d-83b2-1b78b2df9dc7
       version: -1
       name: cs-fx-check-quota
       script: CrowdStrike Falcon X|||cs-fx-check-quota
@@ -626,7 +630,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1970
+          "y": 2760
         }
       }
     note: false
@@ -639,10 +643,10 @@ tasks:
     continueonerrortype: ""
   "13":
     id: "13"
-    taskid: c6df8308-4b23-4305-882a-d3be8bda0a46
+    taskid: d80f6bd1-bcf1-4191-88e4-d634ce259ad2
     type: condition
     task:
-      id: c6df8308-4b23-4305-882a-d3be8bda0a46
+      id: d80f6bd1-bcf1-4191-88e4-d634ce259ad2
       version: -1
       name: Verify Outputs
       type: condition
@@ -676,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2090
+          "y": 2930
         }
       }
     note: false
@@ -689,10 +693,10 @@ tasks:
     continueonerrortype: ""
   "14":
     id: "14"
-    taskid: 066a9297-8ab2-41fc-8198-a5b01dddb3b0
+    taskid: 82ac81eb-eb3c-4949-8355-d2c3e1815233
     type: regular
     task:
-      id: 066a9297-8ab2-41fc-8198-a5b01dddb3b0
+      id: 82ac81eb-eb3c-4949-8355-d2c3e1815233
       version: -1
       name: cs-fx-find-reports
       script: CrowdStrike Falcon X|||cs-fx-find-reports
@@ -714,7 +718,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2355
+          "y": 3270
         }
       }
     note: false
@@ -727,10 +731,10 @@ tasks:
     continueonerrortype: ""
   "15":
     id: "15"
-    taskid: cd7136e9-ea00-4a14-80c0-1943cd49c3d5
+    taskid: 22ae0ca3-4455-4fd4-8304-7084286e89e9
     type: condition
     task:
-      id: cd7136e9-ea00-4a14-80c0-1943cd49c3d5
+      id: 22ae0ca3-4455-4fd4-8304-7084286e89e9
       version: -1
       name: Verify Outputs
       type: condition
@@ -767,7 +771,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2480
+          "y": 3440
         }
       }
     note: false
@@ -780,10 +784,10 @@ tasks:
     continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 125e1b09-4ba9-4887-8808-9532da8270ff
+    taskid: 09a77772-b0cd-43f0-8094-9949ba20a06f
     type: regular
     task:
-      id: 125e1b09-4ba9-4887-8808-9532da8270ff
+      id: 09a77772-b0cd-43f0-8094-9949ba20a06f
       version: -1
       name: cs-fx-find-submission-id
       script: CrowdStrike Falcon X|||cs-fx-find-submission-id
@@ -803,7 +807,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2780
+          "y": 3780
         }
       }
     note: false
@@ -816,10 +820,10 @@ tasks:
     continueonerrortype: ""
   "17":
     id: "17"
-    taskid: f334dbb2-d328-4959-8505-a4e5806b950f
+    taskid: 4913ff58-3548-47d0-821a-acf04eedc19c
     type: condition
     task:
-      id: f334dbb2-d328-4959-8505-a4e5806b950f
+      id: 4913ff58-3548-47d0-821a-acf04eedc19c
       version: -1
       name: Verify Outputs
       type: condition
@@ -844,7 +848,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2910
+          "y": 3950
         }
       }
     note: false
@@ -857,10 +861,10 @@ tasks:
     continueonerrortype: ""
   "18":
     id: "18"
-    taskid: 63e82917-ba75-4b90-88a3-c248087ec4fe
+    taskid: 949c1692-2dc4-4640-8f82-64e958c59ba6
     type: regular
     task:
-      id: 63e82917-ba75-4b90-88a3-c248087ec4fe
+      id: 949c1692-2dc4-4640-8f82-64e958c59ba6
       version: -1
       name: file
       script: CrowdStrike Falcon X|||file
@@ -878,7 +882,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3210
+          "y": 4290
         }
       }
     note: false
@@ -891,10 +895,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: e2006480-67cc-4e7d-8184-5b5ce832515b
+    taskid: ec2e2e60-ae98-438c-8ba0-c14d0ecf2e7c
     type: condition
     task:
-      id: e2006480-67cc-4e7d-8184-5b5ce832515b
+      id: ec2e2e60-ae98-438c-8ba0-c14d0ecf2e7c
       version: -1
       name: Verify Outputs
       type: condition
@@ -986,7 +990,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3350
+          "y": 4460
         }
       }
     note: false
@@ -999,10 +1003,10 @@ tasks:
     continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 431729bc-39c2-4f00-8025-c570e095a129
+    taskid: 3961de07-5795-448b-8b4d-7247573700ce
     type: regular
     task:
-      id: 431729bc-39c2-4f00-8025-c570e095a129
+      id: 3961de07-5795-448b-8b4d-7247573700ce
       version: -1
       name: cs-fx-submit-url
       script: CrowdStrike Falcon X|||cs-fx-submit-url
@@ -1032,7 +1036,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3700
+          "y": 4800
         }
       }
     note: false
@@ -1045,10 +1049,10 @@ tasks:
     continueonerrortype: ""
   "21":
     id: "21"
-    taskid: ded4d881-9bb0-42f8-834a-3043f18262a2
+    taskid: b4411b22-2818-467e-89fb-cb9b181d8a5e
     type: condition
     task:
-      id: ded4d881-9bb0-42f8-834a-3043f18262a2
+      id: b4411b22-2818-467e-89fb-cb9b181d8a5e
       version: -1
       name: Verify Outputs
       type: condition
@@ -1087,7 +1091,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3840
+          "y": 4970
         }
       }
     note: false
@@ -1100,10 +1104,10 @@ tasks:
     continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 519dbcc7-b054-444f-849b-bb48d002e7d5
+    taskid: 49835eb6-0a8a-42ff-bd15-0c0b20fba722
     type: regular
     task:
-      id: 519dbcc7-b054-444f-849b-bb48d002e7d5
+      id: 49835eb6-0a8a-42ff-bd15-0c0b20fba722
       version: -1
       name: cs-fx-download-ioc
       script: CrowdStrike Falcon X|||cs-fx-download-ioc
@@ -1115,13 +1119,13 @@ tasks:
       - "32"
     scriptarguments:
       id:
-        simple: 82395fd5444851c0208bf7f1d184477cb60c70cc880e5891694842f51c964cbc
+        simple: ${Ioc_report_ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4190
+          "y": 5310
         }
       }
     note: false
@@ -1134,10 +1138,10 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: f7ae0271-2fa7-49fd-817c-09a623fef140
+    taskid: 051e85c0-cc86-4abf-8481-69e4f448dfa8
     type: title
     task:
-      id: f7ae0271-2fa7-49fd-817c-09a623fef140
+      id: 051e85c0-cc86-4abf-8481-69e4f448dfa8
       version: -1
       name: Test Done
       type: title
@@ -1149,7 +1153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4530
+          "y": 5650
         }
       }
     note: false
@@ -1162,28 +1166,30 @@ tasks:
     continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 5f2b7488-5ae3-4b6e-84c0-87ebf35b33a1
+    taskid: 796bb064-f7c8-4ad7-8e39-d0afba5b8c9d
     type: regular
     task:
-      id: 5f2b7488-5ae3-4b6e-84c0-87ebf35b33a1
+      id: 796bb064-f7c8-4ad7-8e39-d0afba5b8c9d
       version: -1
       name: DeleteContext
-      script: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: DeleteContext
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 670
+          "y": 890
         }
       }
     note: false
@@ -1196,28 +1202,30 @@ tasks:
     continueonerrortype: ""
   "25":
     id: "25"
-    taskid: 372eef56-86c1-4042-8ca7-5aa22c0b8a34
+    taskid: f9dd824d-7acf-48bb-8cb6-cb3e5231c2d8
     type: regular
     task:
-      id: 372eef56-86c1-4042-8ca7-5aa22c0b8a34
+      id: f9dd824d-7acf-48bb-8cb6-cb3e5231c2d8
       version: -1
       name: DeleteContext
-      script: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: DeleteContext
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1120
+          "y": 1570
         }
       }
     note: false
@@ -1230,10 +1238,10 @@ tasks:
     continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 6b942210-7947-4eb5-8b77-f6e613186f7a
+    taskid: 95f8b4f5-138f-46ff-8626-634562218338
     type: regular
     task:
-      id: 6b942210-7947-4eb5-8b77-f6e613186f7a
+      id: 95f8b4f5-138f-46ff-8626-634562218338
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1246,12 +1254,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1855
+          "y": 2590
         }
       }
     note: false
@@ -1264,10 +1274,10 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 38fe7e81-806a-4be9-8ba2-d18a57ce6f42
+    taskid: f1116775-fc2e-4f54-80aa-7aef18b8f5de
     type: regular
     task:
-      id: 38fe7e81-806a-4be9-8ba2-d18a57ce6f42
+      id: f1116775-fc2e-4f54-80aa-7aef18b8f5de
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1280,12 +1290,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2230
+          "y": 3100
         }
       }
     note: false
@@ -1298,10 +1310,10 @@ tasks:
     continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 4a4e0669-7376-4cc3-8248-f2c7503c25ce
+    taskid: 8f06036f-fcbb-4f7e-8a39-8d4cc1cfbe17
     type: regular
     task:
-      id: 4a4e0669-7376-4cc3-8248-f2c7503c25ce
+      id: 8f06036f-fcbb-4f7e-8a39-8d4cc1cfbe17
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1314,12 +1326,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2650
+          "y": 3610
         }
       }
     note: false
@@ -1332,10 +1346,10 @@ tasks:
     continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 289dcfdf-35ee-49f6-802b-ceb38df9ffe0
+    taskid: ed932d1f-51e4-43e7-856f-9df353027236
     type: regular
     task:
-      id: 289dcfdf-35ee-49f6-802b-ceb38df9ffe0
+      id: ed932d1f-51e4-43e7-856f-9df353027236
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1348,12 +1362,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3080
+          "y": 4120
         }
       }
     note: false
@@ -1366,10 +1382,10 @@ tasks:
     continueonerrortype: ""
   "30":
     id: "30"
-    taskid: bf342b6c-62fd-460d-85b2-d03b6635d9a1
+    taskid: 1725eaab-c09c-4af8-81eb-ab50197bb0f2
     type: regular
     task:
-      id: bf342b6c-62fd-460d-85b2-d03b6635d9a1
+      id: 1725eaab-c09c-4af8-81eb-ab50197bb0f2
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1382,12 +1398,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1455
+          "y": 2080
         }
       }
     note: false
@@ -1400,10 +1418,10 @@ tasks:
     continueonerrortype: ""
   "31":
     id: "31"
-    taskid: eeb0237c-2e9c-4244-86fe-63665b784558
+    taskid: 2ed5cde1-c979-4cb7-854c-8564f710f919
     type: regular
     task:
-      id: eeb0237c-2e9c-4244-86fe-63665b784558
+      id: 2ed5cde1-c979-4cb7-854c-8564f710f919
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1416,12 +1434,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3570
+          "y": 4630
         }
       }
     note: false
@@ -1434,10 +1454,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 4dc97988-d296-459e-83e7-f8de334a96ae
+    taskid: 64b44fbe-c8ad-4dd6-882e-06d748227a43
     type: condition
     task:
-      id: 4dc97988-d296-459e-83e7-f8de334a96ae
+      id: 64b44fbe-c8ad-4dd6-882e-06d748227a43
       version: -1
       name: Verify Outputs
       type: condition
@@ -1471,7 +1491,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4340
+          "y": 5480
         }
       }
     note: false
@@ -1484,10 +1504,10 @@ tasks:
     continueonerrortype: ""
   "33":
     id: "33"
-    taskid: 50a20ab0-f080-4a07-8c1c-f8b4de707b29
+    taskid: 60bb7c33-5cad-4fcd-8280-40c8968af1f3
     type: regular
     task:
-      id: 50a20ab0-f080-4a07-8c1c-f8b4de707b29
+      id: 60bb7c33-5cad-4fcd-8280-40c8968af1f3
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1500,12 +1520,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: SubmittedID,Ioc_report_ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4050
+          "y": 5140
         }
       }
     note: false
@@ -1516,17 +1538,90 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+  "34":
+    id: "34"
+    taskid: acb87956-0709-4c41-b741-5d16865d85f3
+    type: regular
+    task:
+      id: acb87956-0709-4c41-b741-5d16865d85f3
+      version: -1
+      name: Save submitted_id to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: SubmittedID
+      value:
+        simple: ${csfalconx.resource.submitted_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a993049d-b939-4366-bc1e-f048caeacce4
+    type: regular
+    task:
+      id: a993049d-b939-4366-bc1e-f048caeacce4
+      version: -1
+      name: Save ioc_report_broad_json_artifact_id to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: Ioc_report_ID
+      value:
+        simple: ${csfalconx.resource.ioc_report_broad_json_artifact_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "11_26_yes": 0.85,
-      "13_27_yes": 0.82,
-      "7_25_yes": 0.9
+      "13_27_yes": 0.82
     },
     "paper": {
       "dimensions": {
-        "height": 4545,
-        "width": 390,
+        "height": 5660,
+        "width": 380,
         "x": 50,
         "y": 50
       }

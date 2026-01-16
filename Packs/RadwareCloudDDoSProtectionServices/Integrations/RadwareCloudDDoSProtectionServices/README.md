@@ -3,7 +3,6 @@ This integration was integrated and tested with version 25.3.1 of Radware Cloud 
 
 ## Configure Radware Cloud DDoS Protection Services in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |

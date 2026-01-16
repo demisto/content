@@ -4,6 +4,7 @@ commonfields:
 name: Tufin
 display: Tufin
 category: Network Security
+provider: Turn River Capital
 description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack.
 configuration:
 - display: SecureTrack IP or FQDN
@@ -280,7 +281,7 @@ script:
       description: Connection comment.
       type: string
     description: Get SecureApp application connections.
-  dockerimage: demisto/netutils:1.0.0.3073344
+  dockerimage: demisto/netutils:1.0.0.3562043
   subtype: python3
 fromversion: 5.0.0
 tests:

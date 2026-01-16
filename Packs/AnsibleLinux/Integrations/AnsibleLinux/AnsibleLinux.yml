@@ -1,4 +1,5 @@
 category: IT Services
+provider: IBM
 commonfields:
   id: AnsibleLinux
   version: -1
@@ -186,16 +187,16 @@ script:
       description: Whether this module managed the directory of the authorized key file.
       type: boolean
     - contextPath: Linux.AuthorizedKey.path
-      description: Alternate path to the authorized_keys file
+      description: Alternate path to the authorized_keys file.
       type: string
     - contextPath: Linux.AuthorizedKey.state
-      description: Whether the given key (with the given key_options) should or should not be in the file
+      description: Whether the given key (with the given key_options) should or should not be in the file.
       type: string
     - contextPath: Linux.AuthorizedKey.unique
-      description: Whether the key is unique
+      description: Whether the key is unique.
       type: boolean
     - contextPath: Linux.AuthorizedKey.user
-      description: The username on the remote host whose authorized_keys file will be modified
+      description: The username on the remote host whose authorized_keys file will be modified.
       type: string
     - contextPath: Linux.AuthorizedKey.validate_certs
       description: This only applies if using a https url as the source of the keys. If set to `no`, the SSL certificates will not be validated.
@@ -208,7 +209,7 @@ script:
     - description: Specifies the path to the file to be managed.
       name: path
       required: true
-    - description: Desired capability to set (with operator and flags, if state is `present`) or remove (if state is `absent`)
+    - description: Desired capability to set (with operator and flags, if state is `present`) or remove (if state is `absent`).
       name: capability
       required: true
     - auto: PREDEFINED
@@ -249,19 +250,19 @@ script:
       - 'Yes'
       - 'No'
     - defaultValue: '*'
-      description: Minute when the job should run ( 0-59, *, */2, etc )
+      description: Minute when the job should run ( 0-59, *, */2, etc ).
       name: minute
     - defaultValue: '*'
-      description: Hour when the job should run ( 0-23, *, */2, etc )
+      description: Hour when the job should run ( 0-23, *, */2, etc ).
       name: hour
     - defaultValue: '*'
-      description: Day of the month the job should run ( 1-31, *, */2, etc )
+      description: Day of the month the job should run ( 1-31, *, */2, etc ).
       name: day
     - defaultValue: '*'
-      description: Month of the year the job should run ( 1-12, *, */2, etc )
+      description: Month of the year the job should run ( 1-12, *, */2, etc ).
       name: month
     - defaultValue: '*'
-      description: Day of the week that the job should run ( 0-6 for Sunday-Saturday, *, etc )
+      description: Day of the week that the job should run ( 0-6 for Sunday-Saturday, *, etc ).
       name: weekday
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -359,7 +360,7 @@ script:
     name: linux-dconf
     outputs:
     - contextPath: Linux.Dconf.value
-      description: value associated with the requested key
+      description: value associated with the requested key.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -403,7 +404,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      description: 'Filesystem type to be created. reiserfs support was added in 2.2. lvm support was added in 2.5. since 2.5, `dev` can be an image file. vfat support was added in 2.5 ocfs2 support was added in 2.6 f2fs support was added in 2.7 swap support was added in 2.8'
+      description: 'Filesystem type to be created. reiserfs support was added in 2.2. lvm support was added in 2.5. since 2.5, `dev` can be an image file. vfat support was added in 2.5 ocfs2 support was added in 2.6 f2fs support was added in 2.7 swap support was added in 2.8.'
       name: fstype
       predefined:
       - btrfs
@@ -497,10 +498,10 @@ script:
       isArray: true
       name: host
       required: true
-    - description: A GConf preference key is an element in the GConf repository that corresponds to an application preference. See man gconftool-2(1)
+    - description: A GConf preference key is an element in the GConf repository that corresponds to an application preference. See man gconftool-2(1).
       name: key
       required: true
-    - description: Preference keys typically have simple values such as strings, integers, or lists of strings and integers. This is ignored if the state is "get". See man gconftool-2(1)
+    - description: Preference keys typically have simple values such as strings, integers, or lists of strings and integers. This is ignored if the state is "get". See man gconftool-2(1).
       name: value
     - auto: PREDEFINED
       description: The type of value being set. This is ignored if the state is "get".
@@ -518,22 +519,22 @@ script:
       - get
       - present
       required: true
-    - description: Specify a configuration source to use rather than the default path. See man gconftool-2(1)
+    - description: Specify a configuration source to use rather than the default path. See man gconftool-2(1).
       name: config_source
     - defaultValue: 'no'
-      description: Access the config database directly, bypassing server.  If direct is specified then the config_source must be specified as well. See man gconftool-2(1)
+      description: Access the config database directly, bypassing server.  If direct is specified then the config_source must be specified as well. See man gconftool-2(1).
       name: direct
     description: "Edit GNOME Configurations\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html"
     name: linux-gconftool2
     outputs:
     - contextPath: Linux.Gconftool2.key
-      description: The key specified in the module parameters
+      description: The key specified in the module parameters.
       type: string
     - contextPath: Linux.Gconftool2.value_type
-      description: The type of the value that was changed
+      description: The type of the value that was changed.
       type: string
     - contextPath: Linux.Gconftool2.value
-      description: The value of the preference key after executing the module
+      description: The value of the preference key after executing the module.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -602,7 +603,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Name of the host
+    - description: Name of the host.
       name: name
       required: true
     - auto: PREDEFINED
@@ -628,15 +629,15 @@ script:
       name: host
       required: true
     - defaultValue: /etc/network/interfaces
-      description: Path to the interfaces file
+      description: Path to the interfaces file.
       name: dest
-    - description: Name of the interface, required for value changes or option remove
+    - description: Name of the interface, required for value changes or option remove.
       name: iface
-    - description: Address family of the interface, useful if same interface name is used for both inet and inet6
+    - description: Address family of the interface, useful if same interface name is used for both inet and inet6.
       name: address_family
-    - description: Name of the option, required for value changes or option remove
+    - description: Name of the option, required for value changes or option remove.
       name: option
-    - description: If `option` is not presented for the `interface` and `state` is `present` option will be added. If `option` already exists and is not `pre-up`, `up`, `post-up` or `down`, it's value will be updated. `pre-up`, `up`, `post-up` and `down` options can't be updated, only adding new options, removing existing ones or cleaning the whole option set are supported
+    - description: If `option` is not presented for the `interface` and `state` is `present` option will be added. If `option` already exists and is not `pre-up`, `up`, `post-up` or `down`, it's value will be updated. `pre-up`, `up`, `post-up` and `down` options can't be updated, only adding new options, removing existing ones or cleaning the whole option set are supported.
       name: value
     - defaultValue: 'no'
       description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
@@ -676,10 +677,10 @@ script:
     name: linux-interfaces-file
     outputs:
     - contextPath: Linux.InterfacesFile.dest
-      description: destination file/path
+      description: destination file/path.
       type: string
     - contextPath: Linux.InterfacesFile.ifaces
-      description: interfaces dictionary
+      description: interfaces dictionary.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -793,7 +794,7 @@ script:
       name: set_dscp_mark_class
     - description: This specifies a comment that will be added to the rule.
       name: comment
-    - description: '`ctstate` is a list of the connection states to match in the conntrack module. Possible states are `INVALID`, `NEW`, `ESTABLISHED`, `RELATED`, `UNTRACKED`, `SNAT`, `DNAT`'
+    - description: '`ctstate` is a list of the connection states to match in the conntrack module. Possible states are `INVALID`, `NEW`, `ESTABLISHED`, `RELATED`, `UNTRACKED`, `SNAT`, `DNAT`.'
       isArray: true
       name: ctstate
     - description: Specifies the source IP range to match in the iprange module.
@@ -808,9 +809,9 @@ script:
       name: uid_owner
     - description: Specifies the GID or group to use in match by owner rule.
       name: gid_owner
-    - description: 'Specifies the error packet type to return while rejecting. It implies "jump: REJECT"'
+    - description: 'Specifies the error packet type to return while rejecting. It implies "jump: REJECT".'
       name: reject_with
-    - description: This allows specification of the ICMP type, which can be a numeric ICMP type, type/code pair, or one of the ICMP type names shown by the command 'iptables -p icmp -h'
+    - description: This allows specification of the ICMP type, which can be a numeric ICMP type, type/code pair, or one of the ICMP type names shown by the command 'iptables -p icmp -h'.
       name: icmp_type
     - description: 'Flushes the specified table and chain of all rules. If no chain is specified then the entire table is purged. Ignores all other parameters.'
       name: flush
@@ -913,10 +914,10 @@ script:
       description: Output from stdout of keytool/openssl command after execution of given command or an error.
       type: string
     - contextPath: Linux.JavaKeystore.rc
-      description: keytool/openssl command execution return value
+      description: keytool/openssl command execution return value.
       type: number
     - contextPath: Linux.JavaKeystore.cmd
-      description: Executed command to get action done
+      description: Executed command to get action done.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -946,13 +947,13 @@ script:
     - description: 'The host to add or remove (must match a host specified in key). It will be converted to lowercase so that ssh-keygen can find it. Must match with <hostname> or <ip> present in key attribute.'
       name: name
       required: true
-    - description: 'The SSH public host key, as a string (required if state=present, optional when state=absent, in which case all keys for the host are removed). The key must be in the right format for ssh (see sshd(8), section "SSH_KNOWN_HOSTS FILE FORMAT"). Specifically, the key should not match the format that is found in an SSH pubkey file, but should rather have the hostname prepended to a line that includes the pubkey, the same way that it would appear in the known_hosts file. The value prepended to the line must also match the value of the name parameter. Should be of format `<hostname[,IP]> ssh-rsa <pubkey>`'
+    - description: 'The SSH public host key, as a string (required if state=present, optional when state=absent, in which case all keys for the host are removed). The key must be in the right format for ssh (see sshd(8), section "SSH_KNOWN_HOSTS FILE FORMAT"). Specifically, the key should not match the format that is found in an SSH pubkey file, but should rather have the hostname prepended to a line that includes the pubkey, the same way that it would appear in the known_hosts file. The value prepended to the line must also match the value of the name parameter. Should be of format `<hostname[,IP]> ssh-rsa <pubkey>`.'
       name: key
     - defaultValue: (homedir)+/.ssh/known_hosts
-      description: The known_hosts file to edit
+      description: The known_hosts file to edit.
       name: path
     - defaultValue: 'no'
-      description: Hash the hostname in the known_hosts file
+      description: Hash the hostname in the known_hosts file.
       name: hash_host
     - auto: PREDEFINED
       defaultValue: present
@@ -973,7 +974,7 @@ script:
     name: linux-listen-ports-facts
     outputs:
     - contextPath: Linux.ListenPortsFacts.facts
-      description: Dictionary containing details of TCP and UDP ports with listening servers
+      description: Dictionary containing details of TCP and UDP ports with listening servers.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1102,7 +1103,7 @@ script:
       name: domain
       required: true
     - auto: PREDEFINED
-      description: Limit type, see `man 5 limits.conf` for an explanation
+      description: Limit type, see `man 5 limits.conf` for an explanation.
       name: limit_type
       predefined:
       - hard
@@ -1110,7 +1111,7 @@ script:
       - '-'
       required: true
     - auto: PREDEFINED
-      description: The limit to be set
+      description: The limit to be set.
       name: limit_item
       predefined:
       - core
@@ -1326,7 +1327,7 @@ script:
     name: linux-parted
     outputs:
     - contextPath: Linux.Parted.partition_info
-      description: Current partition information
+      description: Current partition information.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1340,7 +1341,7 @@ script:
     name: linux-pids
     outputs:
     - contextPath: Linux.Pids.pids
-      description: Process IDs of the given process
+      description: Process IDs of the given process.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1354,7 +1355,7 @@ script:
     name: linux-ping
     outputs:
     - contextPath: Linux.Ping.ping
-      description: value provided with the data parameter
+      description: value provided with the data parameter.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1367,22 +1368,22 @@ script:
     name: linux-python-requirements-info
     outputs:
     - contextPath: Linux.PythonRequirementsInfo.python
-      description: path to python version used
+      description: path to python version used.
       type: string
     - contextPath: Linux.PythonRequirementsInfo.python_version
-      description: version of python
+      description: version of python.
       type: string
     - contextPath: Linux.PythonRequirementsInfo.python_system_path
-      description: List of paths python is looking for modules in
+      description: List of paths python is looking for modules in.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.valid
-      description: A dictionary of dependencies that matched their desired versions. If no version was specified, then `desired` will be null
+      description: A dictionary of dependencies that matched their desired versions. If no version was specified, then `desired` will be null.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.mismatched
-      description: A dictionary of dependencies that did not satisfy the desired version
+      description: A dictionary of dependencies that did not satisfy the desired version.
       type: unknown
     - contextPath: Linux.PythonRequirementsInfo.not_found
-      description: A list of packages that could not be imported at all, and are not installed
+      description: A list of packages that could not be imported at all, and are not installed.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1413,7 +1414,7 @@ script:
     name: linux-reboot
     outputs:
     - contextPath: Linux.Reboot.rebooted
-      description: true if the machine was rebooted
+      description: true if the machine was rebooted.
       type: boolean
     - contextPath: Linux.Reboot.elapsed
       description: The number of seconds that elapsed waiting for the system to be rebooted.
@@ -1429,7 +1430,7 @@ script:
     - defaultValue: 'no'
       description: Set to `yes` if the boolean setting should survive a reboot.
       name: persistent
-    - description: Desired boolean value
+    - description: Desired boolean value.
       name: state
       required: true
     - auto: PREDEFINED
@@ -1559,10 +1560,10 @@ script:
       isArray: true
       name: host
       required: true
-    - description: a Linux user
+    - description: a Linux user.
       name: login
       required: true
-    - description: SELinux user name
+    - description: SELinux user name.
       name: seuser
       required: true
     - defaultValue: s0
@@ -1585,7 +1586,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: Run independent of selinux runtime state
+      description: Run independent of selinux runtime state.
       name: ignore_selinux_state
       predefined:
       - 'Yes'
@@ -1628,7 +1629,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: Run independent of selinux runtime state
+      description: Run independent of selinux runtime state.
       name: ignore_selinux_state
       predefined:
       - 'Yes'
@@ -1678,7 +1679,7 @@ script:
     name: linux-service-facts
     outputs:
     - contextPath: Linux.ServiceFacts.facts
-      description: Facts to add to facts about the services on the system
+      description: Facts to add to facts about the services on the system.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1727,7 +1728,7 @@ script:
       description: Specifies the absolute path to `sysctl.conf`, if not `/etc/sysctl.conf`.
       name: sysctl_file
     - defaultValue: 'no'
-      description: Verify token value with the sysctl command and set with -w if necessary
+      description: Verify token value with the sysctl command and set with -w if necessary.
       name: sysctl_set
     description: "Manage entries in sysctl.conf.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html"
     name: linux-sysctl
@@ -1747,7 +1748,7 @@ script:
       - restarted
       - started
       - stopped
-    - description: Whether the service should start on boot. `At least one of state and enabled are required.`
+    - description: 'Whether the service should start on boot. `At least one of state and enabled are required.`'
       name: enabled
     - description: Whether to override existing symlinks.
       name: force
@@ -1792,7 +1793,7 @@ script:
     name: linux-systemd
     outputs:
     - contextPath: Linux.Systemd.status
-      description: A dictionary with the key=value pairs returned from `systemctl show`
+      description: A dictionary with the key=value pairs returned from `systemctl show`.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1810,7 +1811,7 @@ script:
       - stopped
       - restarted
       - reloaded
-    - description: Whether the service should start on boot. `At least one of state and enabled are required.`
+    - description: 'Whether the service should start on boot. `At least one of state and enabled are required.`'
       name: enabled
     - defaultValue: '1'
       description: If the service is being `restarted` or `reloaded` then sleep this many seconds between the stop and start command. This helps to workaround badly behaving services.
@@ -1832,7 +1833,7 @@ script:
     name: linux-sysvinit
     outputs:
     - contextPath: Linux.Sysvinit.results
-      description: results from actions taken
+      description: results from actions taken.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1905,14 +1906,14 @@ script:
       - last-ipv6
       - zero
     - auto: PREDEFINED
-      description: Add firewall rule
+      description: Add firewall rule.
       name: rule
       predefined:
       - allow
       - deny
       - limit
       - reject
-    - description: Log new connections matched to this rule
+    - description: Log new connections matched to this rule.
       name: log
     - defaultValue: any
       description: Source IP address.
@@ -1974,12 +1975,12 @@ script:
       name: seuser
     - description: Optionally sets the user's primary group (takes a group name).
       name: group
-    - description: 'List of groups user will be added to. When set to an empty string `''''`, the user is removed from all groups except the primary group. Before Ansible 2.3, the only input format allowed was a comma separated string. Mutually exclusive with `local`'
+    - description: 'List of groups user will be added to. When set to an empty string `''''`, the user is removed from all groups except the primary group. Before Ansible 2.3, the only input format allowed was a comma separated string. Mutually exclusive with `local`.'
       isArray: true
       name: groups
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If `yes`, add the user to the groups specified in `groups`. If `no`, user will only be added to the groups specified in `groups`, removing them from all other groups. Mutually exclusive with `local`'
+      description: 'If `yes`, add the user to the groups specified in `groups`. If `no`, user will only be added to the groups specified in `groups`, removing them from all other groups. Mutually exclusive with `local`.'
       name: append
       predefined:
       - 'Yes'
@@ -2069,7 +2070,7 @@ script:
       name: password_lock
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Forces the use of "local" command alternatives on platforms that implement it. This is useful in environments that use centralized authentification when you want to manipulate the local users (i.e. it uses `luseradd` instead of `useradd`). This will check `/etc/passwd` for an existing account before invoking commands. If the local account database exists somewhere other than `/etc/passwd`, this setting will not work properly. This requires that the above commands as well as `/etc/passwd` must exist on the target host, otherwise it will be a fatal error. Mutually exclusive with `groups` and `append`'
+      description: 'Forces the use of "local" command alternatives on platforms that implement it. This is useful in environments that use centralized authentification when you want to manipulate the local users (i.e. it uses `luseradd` instead of `useradd`). This will check `/etc/passwd` for an existing account before invoking commands. If the local account database exists somewhere other than `/etc/passwd`, this setting will not work properly. This requires that the above commands as well as `/etc/passwd` must exist on the target host, otherwise it will be a fatal error. Mutually exclusive with `groups` and `append`.'
       name: local
       predefined:
       - 'Yes'
@@ -2084,61 +2085,61 @@ script:
     name: linux-user
     outputs:
     - contextPath: Linux.User.append
-      description: Whether or not to append the user to groups
+      description: Whether or not to append the user to groups.
       type: boolean
     - contextPath: Linux.User.comment
-      description: Comment section from passwd file, usually the user name
+      description: Comment section from passwd file, usually the user name.
       type: string
     - contextPath: Linux.User.create_home
-      description: Whether or not to create the home directory
+      description: Whether or not to create the home directory.
       type: boolean
     - contextPath: Linux.User.force
-      description: Whether or not a user account was forcibly deleted
+      description: Whether or not a user account was forcibly deleted.
       type: boolean
     - contextPath: Linux.User.group
-      description: Primary user group ID
+      description: Primary user group ID.
       type: number
     - contextPath: Linux.User.groups
-      description: List of groups of which the user is a member
+      description: List of groups of which the user is a member.
       type: string
     - contextPath: Linux.User.home
-      description: Path to user's home directory
+      description: Path to user's home directory.
       type: string
     - contextPath: Linux.User.move_home
-      description: Whether or not to move an existing home directory
+      description: Whether or not to move an existing home directory.
       type: boolean
     - contextPath: Linux.User.name
-      description: User account name
+      description: User account name.
       type: string
     - contextPath: Linux.User.password
-      description: Masked value of the password
+      description: Masked value of the password.
       type: string
     - contextPath: Linux.User.remove
-      description: Whether or not to remove the user account
+      description: Whether or not to remove the user account.
       type: boolean
     - contextPath: Linux.User.shell
-      description: User login shell
+      description: User login shell.
       type: string
     - contextPath: Linux.User.ssh_fingerprint
-      description: Fingerprint of generated SSH key
+      description: Fingerprint of generated SSH key.
       type: string
     - contextPath: Linux.User.ssh_key_file
-      description: Path to generated SSH private key file
+      description: Path to generated SSH private key file.
       type: string
     - contextPath: Linux.User.ssh_public_key
-      description: Generated SSH public key file
+      description: Generated SSH public key file.
       type: string
     - contextPath: Linux.User.stderr
-      description: Standard error from running commands
+      description: Standard error from running commands.
       type: string
     - contextPath: Linux.User.stdout
-      description: Standard output from running commands
+      description: Standard output from running commands.
       type: string
     - contextPath: Linux.User.system
-      description: Whether or not the account is a system account
+      description: Whether or not the account is a system account.
       type: boolean
     - contextPath: Linux.User.uid
-      description: User ID of the user account
+      description: User ID of the user account.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2181,39 +2182,39 @@ script:
     name: linux-xfs-quota
     outputs:
     - contextPath: Linux.XfsQuota.bhard
-      description: the current bhard setting in bytes
+      description: the current bhard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.bsoft
-      description: the current bsoft setting in bytes
+      description: the current bsoft setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.ihard
-      description: the current ihard setting in bytes
+      description: the current ihard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.isoft
-      description: the current isoft setting in bytes
+      description: the current isoft setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.rtbhard
-      description: the current rtbhard setting in bytes
+      description: the current rtbhard setting in bytes.
       type: number
     - contextPath: Linux.XfsQuota.rtbsoft
-      description: the current rtbsoft setting in bytes
+      description: the current rtbsoft setting in bytes.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: Path to the file that contains the usernames and passwords
+    - description: Path to the file that contains the usernames and passwords.
       name: path
       required: true
-    - description: User name to add or remove
+    - description: User name to add or remove.
       name: name
       required: true
     - description: 'Password associated with user. Must be specified if user does not exist yet.'
       name: password
     - auto: PREDEFINED
       defaultValue: apr_md5_crypt
-      description: Encryption scheme to be used.  As well as the four choices listed here, you can also use any other hash supported by passlib, such as md5_crypt and sha256_crypt, which are linux passwd hashes.  If you do so the password file will not be compatible with Apache or Nginx
+      description: Encryption scheme to be used.  As well as the four choices listed here, you can also use any other hash supported by passlib, such as md5_crypt and sha256_crypt, which are linux passwd hashes.  If you do so the password file will not be compatible with Apache or Nginx.
       name: crypt_scheme
       predefined:
       - apr_md5_crypt
@@ -2222,13 +2223,13 @@ script:
       - plaintext
     - auto: PREDEFINED
       defaultValue: present
-      description: Whether the user entry should be present or not
+      description: Whether the user entry should be present or not.
       name: state
       predefined:
       - present
       - absent
     - defaultValue: 'yes'
-      description: Used with `state=present`. If specified, the file will be created if it does not already exist. If set to "no", will fail if the file does not exist
+      description: Used with `state=present`. If specified, the file will be created if it does not already exist. If set to "no", will fail if the file does not exist.
       name: create
     - description: 'The permissions the resulting file or directory should have. For those used to `/usr/bin/chmod` remember that modes are actually octal numbers. You must either add a leading zero so that Ansible''s YAML parser knows it is an octal number (like `0644` or `01777`) or quote it (like `''644''` or `''1777''`) so Ansible receives a string and can do its own conversion from string into number. Giving Ansible a number without following one of these rules will end up with a decimal number which will have unexpected results. As of Ansible 1.8, the mode may be specified as a symbolic mode (for example, `u+rwx` or `u=rw,g=r,o=r`).'
       name: mode
@@ -2265,13 +2266,13 @@ script:
     - description: 'The name of the supervisord program or group to manage. The name will be taken as group name when it ends with a colon `:` Group support is only available in Ansible version 1.6 or later.'
       name: name
       required: true
-    - description: The supervisor configuration file path
+    - description: The supervisor configuration file path.
       name: config
-    - description: URL on which supervisord server is listening
+    - description: URL on which supervisord server is listening.
       name: server_url
-    - description: username to use for authentication
+    - description: username to use for authentication.
       name: username
-    - description: password to use for authentication
+    - description: password to use for authentication.
       name: password
     - auto: PREDEFINED
       description: The desired state of program/group.
@@ -2286,7 +2287,7 @@ script:
       required: true
     - description: The signal to send to the program/group, when combined with the 'signalled' state. Required when l(state=signalled).
       name: signal
-    - description: path to supervisorctl executable
+    - description: path to supervisorctl executable.
       name: supervisorctl_path
     description: "Manage the state of a program or group of programs running via supervisord\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html"
     name: linux-supervisorctl
@@ -2367,10 +2368,10 @@ script:
     name: linux-openssh-cert
     outputs:
     - contextPath: Linux.OpensshCert.type
-      description: type of the certificate (host or user)
+      description: type of the certificate (host or user).
       type: string
     - contextPath: Linux.OpensshCert.filename
-      description: path to the certificate
+      description: path to the certificate.
       type: string
     - contextPath: Linux.OpensshCert.info
       description: Information about the certificate. Output of `ssh-keygen -L -f`.
@@ -2401,7 +2402,7 @@ script:
       - ed25519
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: Should the key be regenerated even if it already exists
+      description: Should the key be regenerated even if it already exists.
       name: force
       predefined:
       - 'Yes'
@@ -2439,22 +2440,22 @@ script:
     name: linux-openssh-keypair
     outputs:
     - contextPath: Linux.OpensshKeypair.size
-      description: Size (in bits) of the SSH private key
+      description: Size (in bits) of the SSH private key.
       type: number
     - contextPath: Linux.OpensshKeypair.type
-      description: Algorithm used to generate the SSH private key
+      description: Algorithm used to generate the SSH private key.
       type: string
     - contextPath: Linux.OpensshKeypair.filename
-      description: Path to the generated SSH private key file
+      description: Path to the generated SSH private key file.
       type: string
     - contextPath: Linux.OpensshKeypair.fingerprint
       description: The fingerprint of the key.
       type: string
     - contextPath: Linux.OpensshKeypair.public_key
-      description: The public key of the generated SSH private key
+      description: The public key of the generated SSH private key.
       type: string
     - contextPath: Linux.OpensshKeypair.comment
-      description: The comment of the generated key
+      description: The comment of the generated key.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2496,7 +2497,7 @@ script:
       - mask
       - other
       - user
-    - description: The permissions to apply/remove can be any combination of `r`, `w` and `x` (read, write and execute respectively)
+    - description: The permissions to apply/remove can be any combination of `r`, `w` and `x` (read, write and execute respectively).
       name: permissions
     - description: 'DEPRECATED. The ACL to set or remove. This must always be quoted in the form of `<etype>:<qualifier>:<perms>`. The qualifier may be empty for some types, but the type and perms are always required. `-` can be used as placeholder when you do not care about permissions. This is now superseded by entity, type and permissions fields.'
       name: entry
@@ -2526,7 +2527,7 @@ script:
     name: linux-acl
     outputs:
     - contextPath: Linux.Acl.acl
-      description: Current ACL on provided path (after changes, if any)
+      description: Current ACL on provided path (after changes, if any).
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2924,13 +2925,13 @@ script:
     name: linux-find
     outputs:
     - contextPath: Linux.Find.files
-      description: All matches found with the specified criteria (see stat module for full output of each dictionary)
+      description: All matches found with the specified criteria (see stat module for full output of each dictionary).
       type: unknown
     - contextPath: Linux.Find.matched
-      description: Number of matches
+      description: Number of matches.
       type: number
     - contextPath: Linux.Find.examined
-      description: Number of filesystem objects looked at
+      description: Number of filesystem objects looked at.
       type: number
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3237,7 +3238,7 @@ script:
     name: linux-stat
     outputs:
     - contextPath: Linux.Stat.stat
-      description: dictionary containing all the stat data, some platforms might add additional fields
+      description: dictionary containing all the stat data, some platforms might add additional fields.
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3388,7 +3389,7 @@ script:
     name: linux-tempfile
     outputs:
     - contextPath: Linux.Tempfile.path
-      description: Path to created file or directory
+      description: Path to created file or directory.
       type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3581,7 +3582,7 @@ script:
       description: A dictionary with the original xpath, namespaces and state.
       type: unknown
     - contextPath: Linux.Xml.backup_file
-      description: The name of the backup file that was created
+      description: The name of the backup file that was created.
       type: string
     - contextPath: Linux.Xml.count
       description: The count of xpath matches.
@@ -3631,28 +3632,28 @@ script:
       isArray: true
       name: host
       required: true
-    - description: The name of a bower package to install
+    - description: The name of a bower package to install.
       name: name
     - defaultValue: 'no'
-      description: Install packages from local cache, if the packages were installed before
+      description: Install packages from local cache, if the packages were installed before.
       name: offline
     - defaultValue: 'no'
-      description: Install with --production flag
+      description: Install with --production flag.
       name: production
-    - description: The base path where to install the bower packages
+    - description: The base path where to install the bower packages.
       name: path
       required: true
-    - description: Relative path to bower executable from install path
+    - description: Relative path to bower executable from install path.
       name: relative_execpath
     - auto: PREDEFINED
       defaultValue: present
-      description: The state of the bower package
+      description: The state of the bower package.
       name: state
       predefined:
       - present
       - absent
       - latest
-    - description: The version to be installed
+    - description: The version to be installed.
       name: version
     description: "Manage bower packages with bower\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bower_module.html"
     name: linux-bower
@@ -3662,41 +3663,41 @@ script:
       isArray: true
       name: host
       required: true
-    - description: The path to the bundler executable
+    - description: The path to the bundler executable.
       name: executable
     - auto: PREDEFINED
       defaultValue: present
-      description: The desired state of the Gem bundle. `latest` updates gems to the most recent, acceptable version
+      description: The desired state of the Gem bundle. `latest` updates gems to the most recent, acceptable version.
       name: state
       predefined:
       - present
       - latest
     - defaultValue: temporary working directory
-      description: The directory to execute the bundler commands from. This directory needs to contain a valid Gemfile or .bundle/ directory
+      description: The directory to execute the bundler commands from. This directory needs to contain a valid Gemfile or .bundle/ directory.
       name: chdir
-    - description: A list of Gemfile groups to exclude during operations. This only applies when state is `present`. Bundler considers this a 'remembered' property for the Gemfile and will automatically exclude groups in future operations even if `exclude_groups` is not set
+    - description: A list of Gemfile groups to exclude during operations. This only applies when state is `present`. Bundler considers this a 'remembered' property for the Gemfile and will automatically exclude groups in future operations even if `exclude_groups` is not set.
       name: exclude_groups
     - defaultValue: 'no'
-      description: Only applies if state is `present`. If set removes any gems on the target host that are not in the gemfile
+      description: Only applies if state is `present`. If set removes any gems on the target host that are not in the gemfile.
       name: clean
     - defaultValue: Gemfile in current directory
       description: Only applies if state is `present`. The path to the gemfile to use to install gems.
       name: gemfile
     - defaultValue: 'no'
-      description: If set only installs gems from the cache on the target host
+      description: If set only installs gems from the cache on the target host.
       name: local
     - defaultValue: 'no'
-      description: Only applies if state is `present`. If set it will install gems in ./vendor/bundle instead of the default location. Requires a Gemfile.lock file to have been created prior
+      description: Only applies if state is `present`. If set it will install gems in ./vendor/bundle instead of the default location. Requires a Gemfile.lock file to have been created prior.
       name: deployment_mode
     - defaultValue: 'yes'
-      description: Only applies if state is `present`. Installs gems in the local user's cache or for all users
+      description: Only applies if state is `present`. Installs gems in the local user's cache or for all users.
       name: user_install
     - defaultValue: RubyGems gem paths
-      description: Only applies if state is `present`. Specifies the directory to install the gems into. If `chdir` is set then this path is relative to `chdir`
+      description: Only applies if state is `present`. Specifies the directory to install the gems into. If `chdir` is set then this path is relative to `chdir`.
       name: gem_path
-    - description: Only applies if state is `present`. Specifies the directory to install any gem bins files to. When executed the bin files will run within the context of the Gemfile and fail if any required gem dependencies are not installed. If `chdir` is set then this path is relative to `chdir`
+    - description: Only applies if state is `present`. Specifies the directory to install any gem bins files to. When executed the bin files will run within the context of the Gemfile and fail if any required gem dependencies are not installed. If `chdir` is set then this path is relative to `chdir`.
       name: binstub_directory
-    - description: A space separated string of additional commands that can be applied to the Bundler command. Refer to the Bundler documentation for more information
+    - description: A space separated string of additional commands that can be applied to the Bundler command. Refer to the Bundler documentation for more information.
       name: extra_args
     description: "Manage Ruby Gem dependencies with Bundler\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html"
     name: linux-bundler
@@ -3773,7 +3774,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: Uses APCu to cache found/not-found classes
+      description: Uses APCu to cache found/not-found classes.
       name: apcu_autoloader
       predefined:
       - 'Yes'

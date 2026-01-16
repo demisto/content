@@ -58,6 +58,7 @@ automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integra
 to ensure that API calls are made to the current tenant instead of the master tenant.
 
 #### General Failures
+
 * Make sure the Core REST API integration is configured correctly, and clicking the test button returns success.
 * Make sure you have a connection to Marketplace. You can check that by going to the Marketplace page in the Cortex XSOAR UI and refreshing.
 * Make sure the *packs_data* parameter value is in the correct format:

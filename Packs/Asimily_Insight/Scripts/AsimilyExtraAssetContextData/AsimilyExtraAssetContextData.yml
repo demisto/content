@@ -1,0 +1,19 @@
+commonfields:
+  id: AsimilyExtraAssetContextData
+  version: -1
+name: AsimilyExtraAssetContextData
+script: ''
+type: python
+comment: Script for extracting Asimily device attributes from incident context data.
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.11.4508456
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

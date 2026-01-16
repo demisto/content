@@ -1,0 +1,18 @@
+[
+    {
+        "ruleCompilationError": {
+            "errorText": "parsing: error with token: \"}\"\nunexpected token\nline: 1 \ncolumn: 168-169",
+            "status": {
+                "code": 3,
+                "space": "generic",
+                "message": "parsing: error with token: \"}\"\nunexpected token\nline: 1 \ncolumn: 168-169"
+            },
+            "position": {
+                "startLine": 1,
+                "startColumn": 168,
+                "endLine": 1,
+                "endColumn": 169
+            }
+        }
+    }
+]

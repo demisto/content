@@ -1,0 +1,659 @@
+{
+	"description": "Custom layout for RF Facility Risk Playbook Alert incident type.",
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "rnhx8qgqf8",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 5,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "phase",
+								"height": 22,
+								"id": "af60e290-e2ab-11ec-a31f-b5ecf745ab01",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 14
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 2,
+						"y": 16
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 2,
+						"x": 0,
+						"y": 14
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 10
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 12
+					},
+					{
+						"displayType": "ROW",
+						"h": 8,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-kwsyexkuoz-caseinfoid-162ba683-7820-41ef-af5e-7e2ff037be67",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "rfmarkdown",
+								"height": 52,
+								"id": "79e5925a-112b-4f59-9d79-5c13d90d8b28",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Recorded Future Alert",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-8df903e0-2500-11f0-b487-0b801510fc41",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Files",
+						"query": {
+							"categories": [
+								"attachments"
+							],
+							"lastId": "",
+							"pageSize": 100,
+							"tags": [],
+							"users": []
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-8a890540-2512-11f0-9e40-bd899d314dce",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "9b601610-2512-11f0-9e40-bd899d314dce",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "a7fd26b0-2512-11f0-9e40-bd899d314dce",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "ad4366c0-2512-11f0-9e40-bd899d314dce",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "c01472d0-2512-11f0-9e40-bd899d314dce",
+								"index": 0,
+								"listId": "caseinfoid-8a890540-2512-11f0-9e40-bd899d314dce",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+						"items": [
+							{
+								"args": {},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"id": "92d3df80-3b1b-11f0-b7f4-dd8445ab2e15",
+								"index": 0,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Fetch Alert Images",
+								"scriptId": "RecordedFutureAlerts|||rf-alert-images",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"complex": {
+											"accessor": "alertid",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
+									},
+									"status": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": null,
+								"id": "459ccb18-1de9-44f9-a9b5-45bcbbe33a61",
+								"index": 1,
+								"listId": "caseinfoid-420689e3-0a83-4200-83c7-768902968fb0",
+								"name": "Update Alert Status",
+								"scriptId": "RecordedFutureAlerts|||rf-alert-update",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"complex": {
+											"accessor": "alertid",
+											"filters": [],
+											"root": "incident",
+											"transformers": []
+										}
+									},
+									"comment": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": null,
+								"id": "a8000a6d-dfb5-4c64-ad70-b92ec2c977d7",
+								"index": 2,
+								"name": "Add Note or Comment",
+								"scriptId": "RecordedFutureAlerts|||rf-alert-update",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"text": {
+										"complex": {
+											"accessor": "",
+											"filters": [],
+											"root": "incident",
+											"transformers": [
+												{
+													"args": {},
+													"operator": "uniq"
+												}
+											]
+										},
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": null,
+								"id": "c10ea25f-24d7-42a9-85a8-41f23ae0647e",
+								"index": 3,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Extract All Indicators",
+								"scriptId": "Builtin|||extractIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"collective_insights": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "8cf86450-3b1b-11f0-b7f4-dd8445ab2e15",
+								"index": 0,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Enrich IP Address",
+								"scriptId": "Recorded Future v2|||ip",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {
+									"collective_insights": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"domain": {
+										"simple": "${incident.alertname}"
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": null,
+								"id": "600e55c4-acab-4a45-9d02-6192cd80e924",
+								"index": 1,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Enrich Domain",
+								"scriptId": "Recorded Future v2|||domain",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {
+									"collective_insights": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "90685dc0-3b1b-11f0-b7f4-dd8445ab2e15",
+								"index": 2,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Enrich File Hash",
+								"scriptId": "Recorded Future v2|||file",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {
+									"collective_insights": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "9521ee30-3b1b-11f0-b7f4-dd8445ab2e15",
+								"index": 3,
+								"listId": "rnhx8qgqf8-wjirsnzpxy-caseinfoid-cc7bc024-eb46-44c7-b5ac-031f509e13ab",
+								"name": "Enrich URL",
+								"scriptId": "Recorded Future v2|||url",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Handling",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "rnhx8qgqf8-8a5f9a03-db42-40e4-816c-3835d068aac0",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "War Room Entries",
+						"query": {
+							"categories": [
+								"commandAndResults",
+								"playbookTaskResult",
+								"playbookTaskStartAndDone",
+								"playbookErrors"
+							],
+							"preDefinedFilters": true
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "rnhx8qgqf8-7d07ffa0-3b3f-11f0-bc5c-6d9339861d8a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "alertname",
+								"height": 26,
+								"id": "82b565f0-3b3f-11f0-bc5c-6d9339861d8a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertcategory",
+								"height": 26,
+								"id": "862a6870-3b3f-11f0-bc5c-6d9339861d8a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertid",
+								"height": 26,
+								"id": "8891f290-3b3f-11f0-bc5c-6d9339861d8a",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcepriority",
+								"height": 26,
+								"id": "8f042f80-3b3f-11f0-bc5c-6d9339861d8a",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 26,
+								"id": "92d49870-3b3f-11f0-bc5c-6d9339861d8a",
+								"index": 4,
+								"listId": "rnhx8qgqf8-7d07ffa0-3b3f-11f0-bc5c-6d9339861d8a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "target",
+								"height": 26,
+								"id": "abbe3718-a914-43c5-bc29-b3136e136259",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Recorded Future Alert Overview",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"group": "incident",
+	"id": "RF Facility Risk Playbook Alert Layout",
+	"name": "RF Facility Risk Playbook Alert Layout",
+	"system": false,
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"marketplaces": ["xsoar"]
+}

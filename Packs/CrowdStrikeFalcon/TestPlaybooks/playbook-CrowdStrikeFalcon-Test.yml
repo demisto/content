@@ -2919,6 +2919,8 @@ tasks:
     scriptarguments:
       comment:
         simple: demo comment
+      value:
+        simple: test_${RandomString}
       id:
         complex:
           root: CrowdStrike.MLExclusion
@@ -4183,7 +4185,7 @@ tasks:
             value:
               complex:
                 root: CrowdStrike.IDPEntity
-                accessor: PrimaryDisplayName
+                accessor: Primarydisplayname
                 transformers:
                 - operator: FirstArrayElement
             iscontext: true

@@ -1,0 +1,466 @@
+id: IOC Curated Enrichment - Google Threat Intelligence
+version: -1
+name: IOC Curated Enrichment - Google Threat Intelligence
+description: This playbook provides IOC curated enrichment using Google Threat Intelligence data, including malware families, campaigns, and threat actors, and displays the results in the War Room for investigation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d8738781-c656-47f8-8fd2-6e49cf6ef46f
+    type: start
+    task:
+      id: d8738781-c656-47f8-8fd2-6e49cf6ef46f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e15eaf06-b7a8-4d87-8709-8821675b7925
+    type: regular
+    task:
+      id: e15eaf06-b7a8-4d87-8709-8821675b7925
+      version: -1
+      name: 'Get GTI curated campaigns'
+      description: Retrieves GTI curated campaigns for a given resource.
+      script: '|||gti-curated-campaigns-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extend-context:
+        simple: campaigns_data=data
+      resource:
+        simple: ${inputs.resource}
+      resource_type:
+        simple: ${inputs.resource_type}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fb6c1e43-79a2-415a-8538-2200d11f1db0
+    type: regular
+    task:
+      id: fb6c1e43-79a2-415a-8538-2200d11f1db0
+      version: -1
+      name: Get GTI curated malware families
+      description: Retrieves GTI curated malware families for a given resource.
+      script: '|||gti-curated-malware-families-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      extend-context:
+        simple: malware_data=data
+      resource:
+        simple: ${inputs.resource}
+      resource_type:
+        simple: ${inputs.resource_type}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0a608e77-9d8b-46d0-8949-1cabf49f4153
+    type: regular
+    task:
+      id: 0a608e77-9d8b-46d0-8949-1cabf49f4153
+      version: -1
+      name: Get GTI curated threat actors
+      description: Retrieves GTI curated threat actors for a given resource.
+      script: '|||gti-curated-threat-actors-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      extend-context:
+        simple: threat_actor_data=data
+      resource:
+        simple: ${inputs.resource}
+      resource_type:
+        simple: ${inputs.resource_type}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0c39ad1c-0785-4ded-8fb1-cbff70f0b151
+    type: regular
+    task:
+      id: 0c39ad1c-0785-4ded-8fb1-cbff70f0b151
+      version: -1
+      name: War room Entry for Curated Threat Intelligence data
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      value:
+        simple: |-
+          *******************************************************************
+          IOC Curated Threat Enrichment Data
+          *******************************************************************
+          Resource: ${inputs.resource}
+          Resource Type: ${inputs.resource_type}
+          Malware Families:  ${ioc_malware}
+          Threat Actors: ${ioc_threat_actor}
+          Campaigns:${ioc_campaigns}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 910
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7c930be6-820e-4587-8676-cf3fe5b41e8a
+    type: title
+    task:
+      id: 7c930be6-820e-4587-8676-cf3fe5b41e8a
+      version: -1
+      name: Curated Threat Intelligence Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 345726d5-9424-4952-8c65-7d8a1e549eac
+    type: title
+    task:
+      id: 345726d5-9424-4952-8c65-7d8a1e549eac
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c73292e3-b0ec-42ff-84a0-dd88e07c5a3d
+    type: regular
+    task:
+      id: c73292e3-b0ec-42ff-84a0-dd88e07c5a3d
+      version: -1
+      name: Clear Previous Inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: malware_data,campaigns_data,threat_actor_data,ioc_campaigns,ioc_threat_actor,ioc_malware
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 18bac770-510b-4d88-84a5-d68a38676dd4
+    type: regular
+    task:
+      id: 18bac770-510b-4d88-84a5-d68a38676dd4
+      version: -1
+      name: Extract Curated Campaigns names
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ioc_campaigns
+      value:
+        complex:
+          root: ${campaigns_data.attributes
+          accessor: name}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fe536063-c0d3-4149-8784-d07d44952dc9
+    type: regular
+    task:
+      id: fe536063-c0d3-4149-8784-d07d44952dc9
+      version: -1
+      name: Extract Malware Families names
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ioc_malware
+      value:
+        complex:
+          root: ${malware_data.attributes
+          accessor: name}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 24ac81f5-50cd-40d4-88ef-64e109df3c9c
+    type: regular
+    task:
+      id: 24ac81f5-50cd-40d4-88ef-64e109df3c9c
+      version: -1
+      name: Extract Threat Actors names
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ioc_threat_actor
+      value:
+        complex:
+          root: ${threat_actor_data.attributes
+          accessor: name}
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 1240,
+        "x": 80,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: resource
+  value: {}
+  required: false
+  description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+  playbookInputQuery:
+- key: resource_type
+  value: {}
+  required: false
+  description: The type of the resource (IP, domain, URL, or file hash).
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

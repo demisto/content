@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: IBM
 commonfields:
   id: XFE_v2
   version: -1
@@ -469,7 +470,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

@@ -14,7 +14,8 @@
 		"IAM - Rehire User",
 		"Carbon Black EDR",
 		"Azure Active Directory Identity and Access",
-        "CrowdStrike Falcon OFP Detection"
+        "CrowdStrike Falcon OFP Detection",
+        "CrowdStrike Falcon Third Party Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

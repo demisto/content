@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed the *Collection Name*, *Discovery Service*, *First fetch time* and *Indicator Fetch Limit* parameters, as the indicators ingestion is no longer depends on them."
+}

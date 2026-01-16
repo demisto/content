@@ -1,0 +1,6 @@
+fromversion: 8.5.0
+id: Netmotion_VPN_ModelingRule
+name: Netmotion VPN Modeling Rule
+rules: ''
+schema: ''
+tags: netmotion

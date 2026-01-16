@@ -1,9 +1,13 @@
 commonfields:
   id: BmcITSM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
+provider: BMC Software
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
 - name: url
@@ -12,11 +16,13 @@ configuration:
   defaultvalue: https://localhost:8008
   type: 0
   additionalinfo: "For Example: https://localhost:8008"
+  section: Connect
 - name: credentials
   display: User Name
   required: true
   defaultvalue:
   type: 9
+  section: Connect
   additionalinfo: ""
   displaypassword: Password
 - name: max_fetch
@@ -25,12 +31,14 @@ configuration:
   type: 0
   additionalinfo: Default is 50. Maximum is 200.
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
   required: false
+  section: Collect
 - name: ticket_type
   display: Ticket Type
   defaultvalue: All
@@ -46,6 +54,7 @@ configuration:
   - work order
   - All
   required: false
+  section: Collect
 - name: ticket_status
   display: Ticket Status
   defaultvalue: All
@@ -86,6 +95,7 @@ configuration:
   - Corrected
   - All
   required: false
+  section: Collect
 - name: ticket_impact
   display: Ticket Impact
   defaultvalue: All
@@ -98,6 +108,7 @@ configuration:
   - 4-Minor/Localized
   - All
   required: false
+  section: Collect
 - name: ticket_urgency
   display: Ticket Urgency
   defaultvalue: All
@@ -110,12 +121,14 @@ configuration:
   - 4-Low
   - All
   required: false
+  section: Collect
 - name: query
   display: Fetch by Query
   defaultvalue:
   type: 0
-  additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+  additionalinfo: 'Search query used to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is applied in addition to the existing parameters. See the BMC documentation on [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
   required: false
+  section: Collect
 - additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -128,7 +141,9 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
+  section: Collect
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
@@ -136,7 +151,9 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
+  section: Collect
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
@@ -144,35 +161,41 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
+  section: Collect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.6204436
   commands:
   - name: bmc-itsm-user-list
-    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
     outputs:
     - contextPath: BmcITSM.User.Id
       description: The user ID.
@@ -773,12 +796,8 @@ script:
     arguments:
     - name: first_name
       description: The customer first name the incident ticket is for.
-      required: true
-      defaultValue: ""
     - name: last_name
       description: The customer last name the incident ticket is for.
-      required: true
-      defaultValue: ""
     - name: template_instance_id
       description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command.
       defaultValue: ""
@@ -797,8 +816,6 @@ script:
       - Security Incident
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - 1-Critical
@@ -807,8 +824,6 @@ script:
       - 4-Low
     - name: impact
       description: The ticket impact. Required when the creation is without a template.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
@@ -817,8 +832,6 @@ script:
       - 4-Minor/Localized
     - name: status
       description: Incident status.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - New
@@ -1156,23 +1169,14 @@ script:
     arguments:
     - name: template_id
       description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
-      defaultValue: ""
     - name: summary
-      description: The task ticket summary.
-      required: true
-      defaultValue: ""
+      description: The task ticket summary. Required when the template_id argument is not provided.
     - name: customer_company
       description: The name of the customer company.
-      required: false
-      defaultValue: ""
     - name: details
-      description: The task ticket detailed description.
-      required: true
-      defaultValue: ""
+      description: The task ticket detailed description. Required when the template_id argument is not provided.
     - name: root_ticket_type
-      description: The parent ticket type.
-      required: true
-      defaultValue: ""
+      description: The parent ticket type. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - change request
@@ -1181,9 +1185,7 @@ script:
       - known error
       - work order
     - name: root_request_id
-      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders."
-      required: true
-      defaultValue: ""
+      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders. Required when the template_id argument is not provided."
     - name: root_request_name
       description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed."
       defaultValue: ""
@@ -1195,9 +1197,7 @@ script:
       - Real
       - Simulation
     - name: status
-      description: The task status.
-      required: true
-      defaultValue: ""
+      description: The task status. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Staged
@@ -1220,9 +1220,7 @@ script:
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
     - name: priority
-      description: The task ticket priority.
-      required: true
-      defaultValue: ""
+      description: The task ticket priority. Required when the template_id argument is not provided.
       auto: PREDEFINED
       predefined:
       - Critical
@@ -1230,9 +1228,7 @@ script:
       - Medium
       - Low
     - name: location_company
-      description: The company associated with the task process.
-      required: true
-      defaultValue: ""
+      description: The company associated with the task process. Required when the template_id argument is not provided.
     - name: support_company
       description: The technical support team associated with the company.
       defaultValue: ""

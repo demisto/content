@@ -4,6 +4,7 @@ commonfields:
 name: Cyber Triage
 display: Cyber Triage
 category: Endpoint
+provider: Basis Technology
 description: 'Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. '
 configuration:
 - display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
@@ -73,7 +74,7 @@ script:
       description: The endpoint hostname that Cyber Triage investigated.
       type: string
     description: initiates a cyber triage collection on an endpoint.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No test - no instance
 fromversion: 5.0.0

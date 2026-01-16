@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudinsightid",
+    "version": -1,
+    "modified": "2025-07-14T18:14:07.690936059+05:30",
+    "name": "Infoblox Cloud Insight ID",
+    "ownerOnly": false,
+    "description": "The SOC Insight ID of the Infoblox Cloud SOC Insights.",
+    "cliName": "infobloxcloudinsightid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud SOC Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

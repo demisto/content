@@ -479,10 +479,10 @@
 <p><code>!archer-search-records applicationId=433 maxResults=1</code></p>
 <h5>Raw Output</h5>
 <pre>{
-  "Fields": 
+  "Fields":
   {
     "Incident ID": "225828",
-    "Record": 
+    "Record":
     {
       "Actor, Tactics \u0026 Techniques": null,
       "Affected Facility": null,

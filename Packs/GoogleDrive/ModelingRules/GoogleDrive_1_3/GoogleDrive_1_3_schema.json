@@ -1,17 +1,17 @@
 {
     "google_workspace_drive_raw": {
         "events": {
-          "type": "string",
-          "is_array": false
+            "type": "string",
+            "is_array": false
         },
         "ipAddress": {
-          "type": "string",
-          "is_array": false
+            "type": "string",
+            "is_array": false
         },
         "_product": {
             "type": "string",
             "is_array": false
-          },
+        },
         "_vendor": {
             "type": "string",
             "is_array": false
@@ -21,6 +21,10 @@
             "is_array": false
         },
         "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
             "type": "string",
             "is_array": false
         }

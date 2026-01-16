@@ -1,4 +1,5 @@
 import demistomock as demisto
+import pytest
 
 
 def test_main__error(mocker):
@@ -48,3 +49,14 @@ def test_main__match(mocker):
     main()
     assert results_mock.call_count == 1
     assert results_mock.call_args[0][0] == ["test"]
+
+
+def test_get_regex_matches(mocker):
+    from RegexGroups import get_regex_matches
+
+    args = {"value": "dev", "regex": "prod", "groups": "0"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    try:
+        get_regex_matches(args)
+    except ValueError:
+        pytest.fail("Should ignore groups if no matches.")

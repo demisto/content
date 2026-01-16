@@ -9,7 +9,6 @@ Gets the Cortex XSOAR Log Bundle to the War Room.
 | Script Type | javascript |
 | Tags | DemistoAPI |
 
-
 ## Dependencies
 
 ---

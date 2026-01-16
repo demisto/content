@@ -8,7 +8,7 @@
             "internalMapping": {
                 "Details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "Wiz Cloud Account": {
                     "complex": null,
@@ -24,7 +24,7 @@
                 },
                 "Wiz Details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "Wiz Issue Due Date": {
                     "complex": null,
@@ -73,11 +73,11 @@
                 },
                 "Wiz Project Owners": {
                     "complex": null,
-                    "simple": "issue.projects.projectOwners"
+                    "simple": "issue.projects.projectOwners.name"
                 },
                 "Wiz Project Security Champions": {
                     "complex": null,
-                    "simple": "issue.projects.securityChampions"
+                    "simple": "issue.projects.securityChampions.name"
                 },
                 "Wiz Resource Cloud ID": {
                     "complex": null,
@@ -226,7 +226,7 @@
                 },
                 "Wiz Issue Resolution Recommendation": {
                     "complex": null,
-                    "simple": "control.resolutionRecommendation"
+                    "simple": "sourceRule.resolutionRecommendation"
                 }
             }
         },
@@ -235,7 +235,7 @@
             "internalMapping": {
                 "Description": {
                     "complex": {
-                        "accessor": "control.description",
+                        "accessor": "sourceRule.description",
                         "filters": [],
                         "root": "raw_json",
                         "transformers": []
@@ -244,11 +244,11 @@
                 },
                 "details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "name": {
                     "complex": null,
-                    "simple": "control.name"
+                    "simple": "sourceRule.name"
                 },
                 "occurred": {
                     "complex": {
@@ -261,7 +261,7 @@
                 },
                 "severity": {
                     "complex": null,
-                    "simple": "control.severity"
+                    "simple": "severity"
                 }
             }
         }

@@ -24,7 +24,7 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | query | The query for the Incidents that you want to export. \(e.g. status:closed -category:job\). You can and should generate the query from the Incidents search screen. |
-| fetchdays | Number of days you want to fetch back for \(default is 7\).  Needs to be a number. |
+| fetchdays | The number of days back to fetch incidents. This argument acts as the primary time filter and is always applied, even when using the query argument. The command first filters for all incidents created in the last fetchdays and then applies the query argument to that subset of incidents. **Warning**: If the query argument contains a created: time range (for example, **created:>=now-90d**), you must set *fetchdays* to a value equal to or larger than that range. If *fetchdays* is smaller that the window in the query, the results will be truncated. \(default is 7\).  Must be a number. |
 | columns | Comma separated list of columns \(fields\) for the CSV.  \(Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed\) |
 
 ## Outputs

@@ -173,6 +173,9 @@ def main(command: str, demisto_params: dict):
             events = get_events.run()
 
             if command == "fetch-events" or argToBoolean(demisto_params.get("should_push_events")):
+                # Add _time field to each event before sending to XSIAM
+                for event in events:
+                    event["_time"] = event.get("timestamp")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
                 if events:

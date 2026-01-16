@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Francisco Partners
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -72,7 +73,7 @@ script:
       required: true
     description: Gets security events from Forcepoint DLP.
     name: forcepoint-dlp-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.6391686
   isfetchevents: true
   runonce: false
   script: ''

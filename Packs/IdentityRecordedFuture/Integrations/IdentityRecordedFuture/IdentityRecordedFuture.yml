@@ -4,6 +4,7 @@ commonfields:
 name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
+provider: Mastercard
 defaultmapperin: Recorded Future Identity - Incoming Mapper
 description: Fetch & triage | Search & Lookup | Access Recorded Future Identity data and Playbook Alerts.
 configuration:
@@ -103,7 +104,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.111039
+  dockerimage: demisto/python3:3.12.8.3296088
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.

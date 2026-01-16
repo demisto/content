@@ -74,6 +74,7 @@ This is a default playbook for parsing and enrichment of Prisma Cloud Compute au
 The playbook has the following sections:
 
 Enrichment:
+
 * Image details
 * Similar container events
 * Owner details
@@ -83,6 +84,7 @@ Enrichment:
 * Defender logs
 
 Remediation:
+
 * Block Indicators - Generic v3
 * Cloud Response - Generic
 * Manual Remediation
@@ -178,6 +180,7 @@ This is a default playbook for parsing and enrichment of Prisma Cloud Compute au
 The playbook has the following sections:
 
 Enrichment:
+
 * Image details
 * Similar container events
 * Owner details
@@ -187,6 +190,7 @@ Enrichment:
 * Defender logs
 
 Remediation:
+
 * Block Indicators - Generic v3
 * Cloud Response - Generic
 * Manual Remediation

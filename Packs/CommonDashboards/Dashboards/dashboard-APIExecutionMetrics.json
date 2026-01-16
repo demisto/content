@@ -590,5 +590,8 @@
     ],
     "fromVersion": "6.8.0",
     "description": "",
-    "isPredefined": true
+    "isPredefined": true,
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -21,3 +21,9 @@ sentinelone-remove-hash-from-blocklist os_type=windows sha1=3395856ce81f2b7382de
 sentinelone-fetch-file agent_id=AGENT_ID file_path="C:\Test\Path\To\File.txt" password=PossiblyInfected0987&*()
 sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()
 sentinelone-run-remote-script account_ids="1591657396603946696" output_destination="None" task_description="a test" script_id="1442557135692589769" output_directory="file" agent_ids="1609164191942354900"
+sentinelone-threat-download-from-cloud threat_id=13629333470822878
+sentinelone-run-powerquery query="dataSource.name = \"Microsoft O365\" | columns dataSource.name, dataSource.vendor| limit 10" singularity_xdr_api_key=yourApiKey singularity_xdr_url=https://<xdrURL>
+sentinelone-endpoint-fetch-logs agent_ids=1609164191942354900 agents_logs=true customer_facing_logs=false platform_logs=false
+sentinelone-threat-analysis threat_id=134264860000354262
+sentinelone-create-bulk-ioc account_ids=2123522726049615473 entry_id=33@9bd41b3f-a0f4-472f-83bf-69161007c588
+sentinelone-abort-endpoint-scan agent_ids=1609164191942354900

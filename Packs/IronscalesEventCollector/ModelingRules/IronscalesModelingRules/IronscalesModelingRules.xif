@@ -15,6 +15,9 @@ alter
 	xdm.source.user.username = name,
 	xdm.source.user.upn = email,
 	xdm.email.subject = subject,
-	xdm.network.http.http_header.value = to_json_string(arraymap(headers -> [], json_extract_scalar("@element","$.value"))),
+	xdm.email.data = to_string(original_email_body),
+	xdm.network.http.http_header.value = to_string(headers),
 	xdm.network.http.url = to_json_string(arraymap(links -> [], json_extract_scalar("@element","$.url"))),
-	xdm.email.attachment.filename = to_json_string(arraymap(attachments -> [], json_extract_scalar("@element","$.file_name")));
+	xdm.email.attachment.filename = to_json_string(arraymap(attachments -> [], json_extract_scalar("@element","$.file_name"))),
+	xdm.email.attachment.size = to_integer(arraystring(arraymap(attachments -> [], json_extract_scalar("@element","$.file_size")), "")),
+	xdm.email.attachment.md5 = to_json_string(arraymap(attachments -> [], json_extract_scalar("@element","$.md5")));

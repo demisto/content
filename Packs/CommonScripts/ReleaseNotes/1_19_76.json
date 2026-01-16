@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Moved get-user-data to AggregatedScripts pack."
+}

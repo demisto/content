@@ -1,0 +1,11 @@
+[file:incidentfield-Duo_Message_2.json]
+ignore=IF113
+
+[file:incidentfield-Duo_Message.json]
+ignore=IF113
+
+[file:incidentfield-Duo_Status_2.json]
+ignore=IF113
+
+[file:incidentfield-Duo_Status.json]
+ignore=IF113

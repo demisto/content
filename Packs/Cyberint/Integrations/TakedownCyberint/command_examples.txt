@@ -1,0 +1,2 @@
+!cyberint-retrieve-takedowns customer_id=Cyberint
+!cyberint-takedown-url customer=Cyberint reason=Description url=https://dummy-url-for-takedown.com

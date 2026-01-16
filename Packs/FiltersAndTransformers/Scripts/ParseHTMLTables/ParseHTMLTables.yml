@@ -35,6 +35,7 @@ args:
   description: The default table line to consider as a header if no headers are in the table.
   defaultValue: none
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/bs4-py3:1.0.0.117152
 runas: DBotWeakRole

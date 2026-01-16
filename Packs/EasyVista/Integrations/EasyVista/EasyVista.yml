@@ -4,6 +4,7 @@ commonfields:
 name: EasyVista
 display: EasyVista
 category: IT Services
+provider: EasyVista
 description: EasyVista Service Manager manages the entire process of designing, managing and delivering IT services.
 configuration:
 - display: Server URL
@@ -134,7 +135,7 @@ script:
       description: Request ID
       type: string
     description: This method allows a list of incidents / requests (service, change, investment) to be obtained.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No tests
 fromversion: 5.0.0

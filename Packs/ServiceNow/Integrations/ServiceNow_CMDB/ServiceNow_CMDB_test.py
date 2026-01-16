@@ -140,3 +140,60 @@ def test_delete_relation_command(mocker):
     mocker.patch.object(ServiceNowClient, "http_request", return_value=DELETE_RELATION_RESPONSE)
     result = delete_relation_command(client, args={"class": "test_class", "sys_id": "record_id", "relation_sys_id": "rel_id"})
     assert result[1] == EXPECTED_DELETE_RELATION
+
+
+def test_client_jwt_param_usage(mocker):
+    """
+    Given:
+    - JWT params provided to the ServiceNow CMDB Client
+    When:
+    - Initializing the Client with jwt_params
+    Then:
+    - ServiceNowClient is instantiated with the same jwt_params
+    - The jwt attribute is set on the inner ServiceNowClient
+    """
+    jwt_params = {
+        "private_key": "-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----",
+        "kid": "test_kid",
+        "sub": "test_sub",
+        "aud": "test_aud",
+        "iss": "test_iss",
+    }
+    mocker.patch("ServiceNowApiModule.jwt.encode", return_value="jwt_token_stub")
+    client = Client(
+        credentials={"identifier": "user", "password": "pw"},
+        use_oauth=True,
+        client_id="client_id",
+        client_secret="client_secret",
+        url="https://example.com",
+        verify=True,
+        proxy=False,
+        jwt_params=jwt_params,
+    )
+    assert hasattr(client.snow_client, "jwt")
+    assert client.snow_client.jwt == "jwt_token_stub"
+
+
+def test_client_empty_jwt_param_usage(mocker):
+    """
+    Given:
+    - no JWT params provided to the ServiceNow CMDB Client
+    When:
+    - Initializing the Client
+    Then:
+    - ServiceNowClient is instantiated with the same jwt_params
+    - The jwt attribute is set to None on the inner ServiceNowClient
+    """
+    jwt_params = {}
+    client = Client(
+        credentials={"identifier": "user", "password": "pw"},
+        use_oauth=True,
+        client_id="client_id",
+        client_secret="client_secret",
+        url="https://example.com",
+        verify=True,
+        proxy=False,
+        jwt_params=jwt_params,
+    )
+    assert hasattr(client.snow_client, "jwt")
+    assert client.snow_client.jwt is None

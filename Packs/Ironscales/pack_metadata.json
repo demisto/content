@@ -2,7 +2,7 @@
     "name": "Ironscales",
     "description": "IRONSCALES is a self-learning email security platform, automatically responding to malicious emails.",
     "support": "partner",
-    "currentVersion": "1.1.15",
+    "currentVersion": "1.1.17",
     "author": "Ironscales",
     "url": "",
     "email": "support@ironscales.com",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

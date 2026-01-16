@@ -4,6 +4,7 @@ commonfields:
 name: SafewalkManagement
 display: Safewalk Management
 category: Authentication & Identity Management
+provider: InWebo Group
 description: Safewalk server integration.
 configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -1051,7 +1052,7 @@ script:
     - name: new-group-name
       description: New user group.
     description: Update user group.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

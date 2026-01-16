@@ -5,6 +5,7 @@ fromversion: 5.0.0
 name: CTIX
 display: Cyware Threat Intelligence eXchange
 category: Data Enrichment & Threat Intelligence
+provider: ThreatConnect
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 configuration:
 - display: Endpoint URL
@@ -784,7 +785,7 @@ script:
     - contextPath: CTIX.Intel.status
       description: Status code returned from the api.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   subtype: python3
 tests:
 - No tests

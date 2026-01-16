@@ -12,11 +12,12 @@ Get the project from Asana
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list). | Required | 
+| project_id | id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### asana-create-task
 
 ***
@@ -30,12 +31,13 @@ creates a task in the given project
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list). | Required | 
-| name | name of the task to create. | Required | 
+| project_id | id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list). | Required |
+| name | name of the task to create. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### asana-get-all-projects
 
 ***

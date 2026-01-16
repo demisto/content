@@ -616,7 +616,7 @@ def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
     directory_name = args["directory_name"]
     directory_path = args.get("directory_path")
 
-    if not validate_characters(directory_name, '"\/:|<>*?'):
+    if not validate_characters(directory_name, r'"\/:|<>*?'):
         raise Exception("The specified directory name is invalid.")
 
     client.create_directory_request(share_name, directory_name, directory_path)

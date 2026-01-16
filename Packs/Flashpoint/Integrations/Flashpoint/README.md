@@ -2,6 +2,7 @@ Deprecated. Use Flashpoint Ignite instead.
 This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator
+
 Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [Indicator extraction (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [Indicator extraction (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) or [Indicator extraction (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-extraction) for more detail).
 
 ## Configure Flashpoint on Cortex XSOAR
@@ -25,57 +26,61 @@ Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentia
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IOC event in the Flashpoint database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to check. | Optional | 
-
+| ip | The IP address to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| IP.Address | string | The IP address. | 
-| IP.Malicious.Description | string | The description of the malicious indicator. | 
-| IP.Malicious.Vendor | string | The vendor used to calculate the severity of the IP address. | 
-| Flashpoint.IP.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.IP.Event.Address | string | The IP address of the indicator. | 
-| Flashpoint.IP.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.IP.Event.Category | string | The category of the indicator. | 
-| Flashpoint.IP.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.IP.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.IP.Event.Type | string | The indicator type. | 
-| Flashpoint.IP.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.IP.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| IP.Address | string | The IP address. |
+| IP.Malicious.Description | string | The description of the malicious indicator. |
+| IP.Malicious.Vendor | string | The vendor used to calculate the severity of the IP address. |
+| Flashpoint.IP.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.IP.Event.Address | string | The IP address of the indicator. |
+| Flashpoint.IP.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.IP.Event.Category | string | The category of the indicator. |
+| Flashpoint.IP.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.IP.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.IP.Event.Type | string | The indicator type. |
+| Flashpoint.IP.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.IP.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```
 !ip ip="210.122.7.129"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -134,52 +139,54 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=210.122.7.129
 
 ### domain
+
 ***
 Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious if there's at least one IOC event in Flashpoint database matching the Domain indicator.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain name to check. | Optional | 
-
+| domain | The domain name to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| Flashpoint.Domain.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.Domain.Event.Domain | string | The domain of the indicator. | 
-| Flashpoint.Domain.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.Domain.Event.Category | string | The category of the indicator. | 
-| Flashpoint.Domain.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.Domain.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.Domain.Event.Type | string | The indicator type. | 
-| Flashpoint.Domain.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.Domain.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| Domain.Malicious.Description | string | The description of the malicious indicator. | 
-| Domain.Malicious.Vendor | string | Vendor of malicious indicator. | 
-| Domain.Name | string | Name of domain. | 
-| Domain.Relationships.EntityA | string | The source of the relationship. | 
-| Domain.Relationships.EntityB | string | The destination of the relationship. | 
-| Domain.Relationships.Relationship | string | The name of the relationship. | 
-| Domain.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Flashpoint.Domain.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.Domain.Event.Domain | string | The domain of the indicator. |
+| Flashpoint.Domain.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.Domain.Event.Category | string | The category of the indicator. |
+| Flashpoint.Domain.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.Domain.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.Domain.Event.Type | string | The indicator type. |
+| Flashpoint.Domain.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.Domain.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| Domain.Malicious.Description | string | The description of the malicious indicator. |
+| Domain.Malicious.Vendor | string | Vendor of malicious indicator. |
+| Domain.Name | string | Name of domain. |
+| Domain.Relationships.EntityA | string | The source of the relationship. |
+| Domain.Relationships.EntityB | string | The destination of the relationship. |
+| Domain.Relationships.Relationship | string | The name of the relationship. |
+| Domain.Relationships.EntityAType | string | The type of the source of the relationship. |
+| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```
 !domain domain="subaat.com"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -257,44 +264,46 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=subaat<span></span>.com
 
 ### filename
+
 ***
 Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious if there's at least one IOC event in Flashpoint database matching the Filename indicator.
-
 
 #### Base Command
 
 `filename`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filename | The file name to check. | Optional | 
-
+| filename | The file name to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| Flashpoint.Filename.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.Filename.Event.Filename | string | Filename of the indicator | 
-| Flashpoint.Filename.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.Filename.Event.Category | string | The category of the indicator. | 
-| Flashpoint.Filename.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.Filename.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.Filename.Event.Type | string | The indicator type. | 
-| Flashpoint.Filename.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.Filename.Event.Comment | string | The comment that was provided when the indicator was observed. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Flashpoint.Filename.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.Filename.Event.Filename | string | Filename of the indicator |
+| Flashpoint.Filename.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.Filename.Event.Category | string | The category of the indicator. |
+| Flashpoint.Filename.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.Filename.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.Filename.Event.Type | string | The indicator type. |
+| Flashpoint.Filename.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.Filename.Event.Comment | string | The comment that was provided when the indicator was observed. |
 
 #### Command Example
+
 ```
 !filename filename=".locked"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -362,50 +371,54 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=.locked
 
 ### url
+
 ***
 Lookup the "URL" type indicator details. The reputation of Url is considered Malicious if there's at least one IOC event in Flashpoint database matching the Url indicator.
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The url to check. | Optional | 
+| url | The url to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| Flashpoint.Url.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.Url.Event.Url | string | Url of the indicator | 
-| Flashpoint.Url.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.Url.Event.Category | string | The category of the indicator. | 
-| Flashpoint.Url.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.Url.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.Url.Event.Type | string | The indicator type. | 
-| Flashpoint.Url.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.Url.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| URL.Malicious.Description | string | The description of the malicious indicator. | 
-| URL.Malicious.Vendor | string | Vendor of malicious url. | 
-| URL.Data | string | The URL | 
-| URL.Relationships.EntityA | string | The source of the relationship. | 
-| URL.Relationships.EntityB | string | The destination of the relationship. | 
-| URL.Relationships.Relationship | string | The name of the relationship. | 
-| URL.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| URL.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Flashpoint.Url.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.Url.Event.Url | string | Url of the indicator |
+| Flashpoint.Url.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.Url.Event.Category | string | The category of the indicator. |
+| Flashpoint.Url.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.Url.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.Url.Event.Type | string | The indicator type. |
+| Flashpoint.Url.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.Url.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| URL.Malicious.Description | string | The description of the malicious indicator. |
+| URL.Malicious.Vendor | string | Vendor of malicious url. |
+| URL.Data | string | The URL |
+| URL.Relationships.EntityA | string | The source of the relationship. |
+| URL.Relationships.EntityB | string | The destination of the relationship. |
+| URL.Relationships.Relationship | string | The name of the relationship. |
+| URL.Relationships.EntityAType | string | The type of the source of the relationship. |
+| URL.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```
 !url url="92.63.197.153/krabaldento.exe"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -469,54 +482,58 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=url&ioc_value=92.63.197.153/krabaldento.exe
 
 ### file
+
 ***
 Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A list of hashes of the file to query. Supports MD5, SHA1 and SHA256. | Optional | 
+| file | A list of hashes of the file to query. Supports MD5, SHA1 and SHA256. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| Flashpoint.File.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.File.Event.MD5 | string | MD5 file hash of the indicator | 
-| Flashpoint.File.Event.SHA1 | string | SHA1 file hash of the indicator | 
-| Flashpoint.File.Event.SHA256 | string | SHA256 file hash of the indicator | 
-| Flashpoint.File.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.File.Event.Category | string | The category of the indicator. | 
-| Flashpoint.File.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.File.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.File.Event.Type | string | The indicator type. | 
-| Flashpoint.File.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.File.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| File.Malicious.Description | string | The description of the malicious indicator. | 
-| File.Malicious.Vendor | string | Vendor of malicious file. | 
-| File.MD5 | string | MD5 type file. | 
-| File.SHA1 | string | SHA1 type file. | 
-| File.SHA256 | string | SHA256 type file. | 
-| File.Relationships.EntityA | string | The source of the relationship. | 
-| File.Relationships.EntityB | string | The destination of the relationship. | 
-| File.Relationships.Relationship | string | The name of the relationship. | 
-| File.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| File.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Flashpoint.File.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.File.Event.MD5 | string | MD5 file hash of the indicator |
+| Flashpoint.File.Event.SHA1 | string | SHA1 file hash of the indicator |
+| Flashpoint.File.Event.SHA256 | string | SHA256 file hash of the indicator |
+| Flashpoint.File.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.File.Event.Category | string | The category of the indicator. |
+| Flashpoint.File.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.File.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.File.Event.Type | string | The indicator type. |
+| Flashpoint.File.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.File.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| File.Malicious.Description | string | The description of the malicious indicator. |
+| File.Malicious.Vendor | string | Vendor of malicious file. |
+| File.MD5 | string | MD5 type file. |
+| File.SHA1 | string | SHA1 type file. |
+| File.SHA256 | string | SHA256 type file. |
+| File.Relationships.EntityA | string | The source of the relationship. |
+| File.Relationships.EntityB | string | The destination of the relationship. |
+| File.Relationships.Relationship | string | The name of the relationship. |
+| File.Relationships.EntityAType | string | The type of the source of the relationship. |
+| File.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```
 !file file="ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -631,44 +648,48 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512&ioc_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
 
 ### email
+
 ***
 Lookup the "Email" type indicator details. The reputation of Email is considered Malicious if there's at least one IOC event in Flashpoint database matching the Email indicator.
 
 #### Base Command
 
 `email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email to check. | Optional | 
+| email | The email to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| Flashpoint.Email.Event.Href | string | A list of reference links of the indicator. | 
-| Flashpoint.Email.Event.EventDetails | string | The event details in which the indicator was observed. | 
-| Flashpoint.Email.Event.Category | string | The category of the indicator. | 
-| Flashpoint.Email.Event.Fpid | string | The Flashpoint ID of the indicator. | 
-| Flashpoint.Email.Event.Timestamp | string | The time and date that the indicator was observed. | 
-| Flashpoint.Email.Event.Type | string | The indicator type. | 
-| Flashpoint.Email.Event.Uuid | string | The UUID of the indicator. | 
-| Flashpoint.Email.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| Account.Email.Malicious.Description | string | The description of the malicious indicator. | 
-| Account.Email.Malicious.Vendor | string | Vendor of Malicious email. | 
-| Account.Email.Name | string | Name of indicator. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Flashpoint.Email.Event.Href | string | A list of reference links of the indicator. |
+| Flashpoint.Email.Event.EventDetails | string | The event details in which the indicator was observed. |
+| Flashpoint.Email.Event.Category | string | The category of the indicator. |
+| Flashpoint.Email.Event.Fpid | string | The Flashpoint ID of the indicator. |
+| Flashpoint.Email.Event.Timestamp | string | The time and date that the indicator was observed. |
+| Flashpoint.Email.Event.Type | string | The indicator type. |
+| Flashpoint.Email.Event.Uuid | string | The UUID of the indicator. |
+| Flashpoint.Email.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| Account.Email.Malicious.Description | string | The description of the malicious indicator. |
+| Account.Email.Malicious.Vendor | string | Vendor of Malicious email. |
+| Account.Email.Name | string | Name of indicator. |
 
 #### Command Example
+
 ```
 !email email="qicifomuejijika@o2.pl"
 ```
 
 #### Context Example
+
 ```
 {
     "Account.Email": {
@@ -735,30 +756,34 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src-display-name%2Cemail-subject&ioc_value=qicifomuejijika%40o2<span></span>.pl
 
 ### flashpoint-search-intelligence-reports
+
 ***
 Search for the Intelligence Reports using a keyword
 
 #### Base Command
 
 `flashpoint-search-intelligence-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_search | Search report using keyword or text. | Required | 
+| report_search | Search report using keyword or text. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Report | unknown | List of reports based on specified search query or keyword | 
+| Flashpoint.Report | unknown | List of reports based on specified search query or keyword |
 
 #### Command Example
+
 ```
 !flashpoint-search-intelligence-reports report_search="isis"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": [
@@ -817,22 +842,22 @@ Search for the Intelligence Reports using a keyword
 
 Top 5 reports:
 
-1.  ISIS Media Rebuilds Following Sweeping Suspensions
+1. ISIS Media Rebuilds Following Sweeping Suspensions
     Summary: Despite Telegram?s aggressive and sustained targeting of
     jihadists on its platform, ISIS?s official media and supportive groups
     are beginning to rebuild on Telegram.
 
-2.  Telegram Targets ISIS Propaganda in Largest Platform Purge
+2. Telegram Targets ISIS Propaganda in Largest Platform Purge
     Summary: Between November 22 and 24, 2019, Telegram removed more than
     7,000 jihadist channnels and bots from its platform?in the largest purge
     of ISIS propaganda in Telegram?s history. The takedown drastically
     impacted ISIS propaganda dissemination, knocking out critical channels
     and groups, many of which had operated uninterrupted for years.
 
-3.  Global Spotlight - Iran: Key Developments ThisWeek
+3. Global Spotlight - Iran: Key Developments ThisWeek
     Summary: N/A
 
-4.  Dropbox Account Disseminates Far-Right Extremist Content
+4. Dropbox Account Disseminates Far-Right Extremist Content
     Summary: Flashpoint analysts have identified a Dropbox account called
     ?NS Library? belonging to a far-right extremist containing over 200
     white supremacist publications and guides?including neo-Nazi literature
@@ -840,7 +865,7 @@ Top 5 reports:
     survival guides, attackers? manifestos, and workout manuals, among other
     content.
 
-5.  ISIS Activity Continues Unabated Following al-Baghdadi’s Death
+5. ISIS Activity Continues Unabated Following al-Baghdadi’s Death
     Summary: On October 26, 2019, ISIS?s former leader Abu Bakr al-Baghdadi
     killed himself in the midst of a US military operation. Less than a week
     later, ISIS confirmed al-Baghdadi?s death, and announced that Abu
@@ -849,36 +874,40 @@ Top 5 reports:
     https:/<span></span>/fp.tools/home/search/reports?query=isis
 
 ### flashpoint-get-single-intelligence-report
+
 ***
 Get single report details using the report id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-single-intelligence-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The report id of the report for which the details are to be fetched. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation. | Required | 
+| report_id | The report id of the report for which the details are to be fetched. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Report.NotifiedAt | string | Notify date of report. | 
-| Flashpoint.Report.PlatformUrl | string | Platform url of report. It helps to redirect flashpoint platform. | 
-| Flashpoint.Report.PostedAt | number | posted date of report. | 
-| Flashpoint.Report.Summary | string | Summary of report. | 
-| Flashpoint.Report.Title | string | Title of the report. | 
-| Flashpoint.Report.UpdatedAt | string | Last updated date of report. | 
-| Flashpoint.Report.ReportId | string | Unique id of the report. | 
+| Flashpoint.Report.NotifiedAt | string | Notify date of report. |
+| Flashpoint.Report.PlatformUrl | string | Platform url of report. It helps to redirect flashpoint platform. |
+| Flashpoint.Report.PostedAt | number | posted date of report. |
+| Flashpoint.Report.Summary | string | Summary of report. |
+| Flashpoint.Report.Title | string | Title of the report. |
+| Flashpoint.Report.UpdatedAt | string | Last updated date of report. |
+| Flashpoint.Report.ReportId | string | Unique id of the report. |
 
 #### Command Example
+
 ```
 !flashpoint-get-single-intelligence-report report_id="e-QdYuuwRwCntzRljzn9-A"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": {
@@ -897,37 +926,41 @@ Get single report details using the report id. The report id can be known from o
 
 ##### Flashpoint Intelligence Report details
 
-##### Below are the details found:
+##### Below are the details found
 
 | **Title** | **Date Published (UTC)** | **Summary** | **Tags** |
 | --- | --- | --- | --- |
 | ISIS Supporters Warn of the Risks Associated with Exif Data | Sep 23, 2019 20:27 | On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured. | Intelligence Report, Law Enforcement & Military, Physical Threats, Jihadist, Propaganda, Terrorism, Global |
 
 ### flashpoint-get-related-reports
+
 ***
 Get related reports for a particular report using the report-id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-related-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The report-id of the report of which the related reports are to be fetched. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation. | Required | 
+| report_id | The report-id of the report of which the related reports are to be fetched. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Report | unknown | Display list of related report based on report fpid. | 
+| Flashpoint.Report | unknown | Display list of related report based on report fpid. |
 
 #### Command Example
+
 ```
 !flashpoint-get-related-reports report_id="tiPqg51OQpOTsoFyTaYa_w"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Report": [
@@ -982,11 +1015,11 @@ Get related reports for a particular report using the report-id. The report id c
 
 #### Human Readable Output
 
-##### Flashpoint Intelligence related reports:
+##### Flashpoint Intelligence related reports
 
 Top 5 related reports:
 
-1.  Neo-Nazi Telegram Channel Incites Violence, Spreads Extremist Content
+1. Neo-Nazi Telegram Channel Incites Violence, Spreads Extremist Content
     Summary: In August 2019, militant white supremacist channel ?Stack the
     Bodies to God? appeared on Telegram, inciting violence and providing a
     large quantity of informational resources?including extremist
@@ -994,7 +1027,7 @@ Top 5 related reports:
     tactics, instructions for making homemade explosives, weapons, and
     ricin, and internet security tips.
 
-2.  Atomwaffen Division Resumes Recruitment Activity
+2. Atomwaffen Division Resumes Recruitment Activity
     Summary: On September 30, 2019, the admin of ?The_Bowlcast? Telegram
     channel promoted the launch of the militant, white supremacist group
     ?Atomwaffen Division?s? (AWD) latest website and new video dubbed
@@ -1002,18 +1035,18 @@ Top 5 related reports:
     accomplish its goals?alluding to the need for new financing and
     recruitment.
 
-3.  “Vorherrschaft Division” (VSD): A Nascent Militant White Supremacy Group
+3. “Vorherrschaft Division” (VSD): A Nascent Militant White Supremacy Group
     Summary: On June 14, 2019, a militant white supremacy group called
     ?Vorherrschaft Division? (VSD) announced its creation in its Telegram
     channel “Vorherrschaft division propaganda posting.”
 
-4.  “Boogaloo”: Accelerationists’ Latest Call to Action
+4. “Boogaloo”: Accelerationists’ Latest Call to Action
     Summary: The term ?boogaloo? (also known as ?the boogaloo? and ?big
     igloo?) is the latest term used by accelerationists?advocates of
     hastening the collapse of society through violence?to describe an armed
     revolution against society to rebuild a white-ethno state.
 
-5.  Far-Right Prepares for “Meme War 2020”
+5. Far-Right Prepares for “Meme War 2020”
     Summary: Members of the far-right community are preparing for what they
     call ?meme war 2020??content spread via social media focused on
     left-leaning targets?in the lead up to the 2020 U.S. presidential
@@ -1021,36 +1054,40 @@ Top 5 related reports:
     https:/<span></span>/fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa_w#detail
 
 ### flashpoint-get-single-event
+
 ***
 Retrieves the details of a single event using event UUID or FPID. To retrieve the event id, run the get-events command and see the value under the Flashpoint.Event.EventId context path. or indicator reputation command response or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-single-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | The UUID or FPID that identifies a particular event. The event id can be fetched from output context path (Flashpoint.Event.EventId) get-events command or indicator reputation command response or some other investigation. | Required | 
+| event_id | The UUID or FPID that identifies a particular event. The event id can be fetched from output context path (Flashpoint.Event.EventId) get-events command or indicator reputation command response or some other investigation. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Event.ObservedTime | string | The date that the event was triggered. | 
-| Flashpoint.Event.EventCreatorEmail | string | The email address of the event creator. | 
-| Flashpoint.Event.Href | string | The display event reference. | 
-| Flashpoint.Event.MalwareDescription | string | The description of the malware. | 
-| Flashpoint.Event.Tags | unknown | The display event tags. | 
-| Flashpoint.Event.EventId | string | The display event ID \(event fpid\). | 
-| Flashpoint.Event.Name | string | The name of the event. | 
+| Flashpoint.Event.ObservedTime | string | The date that the event was triggered. |
+| Flashpoint.Event.EventCreatorEmail | string | The email address of the event creator. |
+| Flashpoint.Event.Href | string | The display event reference. |
+| Flashpoint.Event.MalwareDescription | string | The description of the malware. |
+| Flashpoint.Event.Tags | unknown | The display event tags. |
+| Flashpoint.Event.EventId | string | The display event ID \(event fpid\). |
+| Flashpoint.Event.Name | string | The name of the event. |
 
 #### Command Example
+
 ```
 !flashpoint-get-single-event event_id=Hu2SoTWJWteLrH9mR94JbQ
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Event": {
@@ -1069,41 +1106,44 @@ Retrieves the details of a single event using event UUID or FPID. To retrieve th
 
 ##### Flashpoint Event details
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Observed time (UTC)** | **Name** | **Tags** | **Malware Description** |
 | --- | --- | --- | --- |
 | Jun 18, 2019 22:08 | CryptingService_4c0d570ecdf23529c91b8decf27107db5c5e9430_2019-06-17T03:01:03.000Z | source:CryptingService2 | <p>\"Quasar\" is a publicly available, open-source remote access trojan (RAT) for Microsoft Windows operating systems written in the C# programming language. Quasar is authored by GitHub user "MaxXor" and publicly hosted as a GitHub repository. The functionality of the Quasar malware includes remote file management on the infected machine, registry alterations, recording the actions of the victim, and establishing remote desktop connections.</p> |
 
 ### flashpoint-get-events
+
 ***
 Searches for events within the specified time-period, the report fpid, or attack IDs.
 
 #### Base Command
 
 `flashpoint-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_period | The time period for the search. | Optional | 
-| report_fpid | The report fpid. To retrieve the report fpid, run the related-reports command. | Optional | 
-| limit | Specify the limit on the no. of record. Default is 10. | Optional | 
-| attack_ids | A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Flashpoint platform by filtering events by attack IDs. | Optional | 
-
+| time_period | The time period for the search. | Optional |
+| report_fpid | The report fpid. To retrieve the report fpid, run the related-reports command. | Optional |
+| limit | Specify the limit on the no. of record. Default is 10. | Optional |
+| attack_ids | A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Flashpoint platform by filtering events by attack IDs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Event | unknown | A list of multiple events. | 
+| Flashpoint.Event | unknown | A list of multiple events. |
 
 #### Command Example
+
 ```
 !flashpoint-get-events limit=20
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Event": [
@@ -1295,7 +1335,7 @@ Searches for events within the specified time-period, the report fpid, or attack
 
 ##### Flashpoint Events
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Observed time (UTC)** | **Name** | **Tags** | **Malware Description** |
 | --- | --- | --- | --- |
@@ -1324,33 +1364,37 @@ All events and details (fp-tools):
 https:/<span></span>/fp.tools/home/search/iocs
 
 ### flashpoint-common-lookup
+
 ***
 Lookup any type of indicator
 
 #### Base Command
 
 `flashpoint-common-lookup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator type, for example, domain, ip, email, url, and so on. | Optional | 
+| indicator | The indicator type, for example, domain, ip, email, url, and so on. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
 
 #### Command Example
+
 ```
 !flashpoint-common-lookup indicator="mondns.myftp.biz"
 ```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -1375,18 +1419,19 @@ Reputation: Malicious
 | Oct 11, 2019 15:30 | ModiRAT | misp-galaxy:mitre-enterprise-attack-attack-pattern=“Deobfuscate/Decode Files or Information - T1140”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“System Owner/User Discovery - T1033”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“System Information Discovery - T1082”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Screen Capture - T1113”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Custom Command and Control Protocol - T1094”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Data Encoding - T1132”, misp-galaxy:mitre-enterprise-attack-attack-pattern=“Uncommonly Used Port - T1065”, malware:ModiRAT, type:RAT, os:Windows, report:FQmMHh1rR_WuGd_PNVv-bQ |
 
 ### flashpoint-get-forum-details
+
 ***
 Retrieves forum details using the forum ID. To retrieve the forum ID run the flashpoint-search-forum-posts command and see the value under the following context paths, Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id.
 
 #### Base Command
 
 `flashpoint-get-forum-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| forum_id | Specify forum id of the forum for which the details are to be fetched. The forum id can be known from context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id) of flashpoint-search-forum-posts command or some other investigation. | Required | 
-
+| forum_id | Specify forum id of the forum for which the details are to be fetched. The forum id can be known from context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id) of flashpoint-search-forum-posts command or some other investigation. | Required |
 
 #### <a id="Context_Output_1411"></a>Context Output
 
@@ -1400,11 +1445,13 @@ Retrieves forum details using the forum ID. To retrieve the forum ID run the fla
 | Flashpoint.Forum.ForumId | string | The forum’s unique ID. |
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-details forum_id=ifY5BsXeXQqdTx3fafZbIg
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum": {
@@ -1452,41 +1499,44 @@ Retrieves forum details using the forum ID. To retrieve the forum ID run the fla
 
 ##### Flashpoint Forum details
 
-##### Below are the details found:
+##### Below are the details found
 
 | **Name** | **Hostname** | **Tags** |
 | --- | --- | --- |
 | 0hack | bbs<span></span>.0hack<span></span>.com | Chinese, Cyber Threat, Hacking, Language |
 
 ### flashpoint-get-forum-room-details
+
 ***
 Retrieves forum room details using the room ID. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
 
 #### Base Command
 
 `flashpoint-get-forum-room-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| room_id | The room ID for which to retrieve room information in a forum. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path. | Required | 
+| room_id | The room ID for which to retrieve room information in a forum. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Forum.Room.Forum | unknown | Forum details, including forum name, hostname, platform url, stats, tags, and so on. | 
-| Flashpoint.Forum.Room.Title | string | The room title. You can use the same title in the forum search command. | 
-| Flashpoint.Forum.Room.Url | string | The forum room URL. | 
-| Flashpoint.Forum.Room.RoomId | string | The forum room ID. | 
-
+| Flashpoint.Forum.Room.Forum | unknown | Forum details, including forum name, hostname, platform url, stats, tags, and so on. |
+| Flashpoint.Forum.Room.Title | string | The room title. You can use the same title in the forum search command. |
+| Flashpoint.Forum.Room.Url | string | The forum room URL. |
+| Flashpoint.Forum.Room.RoomId | string | The forum room ID. |
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-room-details room_id="dBoQqur5XmGGYLxSrc8C9A"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Room": {
@@ -1547,41 +1597,45 @@ Retrieves forum room details using the room ID. To retrieve the room ID run the 
 
 ##### Flashpoint Room details
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Forum Name** | **Title** | **URL** |
 | --- | --- | --- |
 | Crdpro | Bank Carding | forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66 |
 
 ### flashpoint-get-forum-user-details
+
 ***
 Retrieves user details using the user-id. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
 
 #### Base Command
 
 `flashpoint-get-forum-user-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID used to retrieve a user's information. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path. | Required | 
+| user_id | The user ID used to retrieve a user's information. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Forum.User.Forum | unknown | Forum details, including id, hostname, description, stats, tags, and so on. | 
-| Flashpoint.Forum.User.Name | string | The name of the user. | 
-| Flashpoint.Forum.User.PlatformUrl | string | The platform URL of the user which is redirected to Flashpoint platform. | 
-| Flashpoint.Forum.User.Url | string | The URL of user. | 
-| Flashpoint.Forum.User.UserId | string | The unique ID of the forum user. | 
+| Flashpoint.Forum.User.Forum | unknown | Forum details, including id, hostname, description, stats, tags, and so on. |
+| Flashpoint.Forum.User.Name | string | The name of the user. |
+| Flashpoint.Forum.User.PlatformUrl | string | The platform URL of the user which is redirected to Flashpoint platform. |
+| Flashpoint.Forum.User.Url | string | The URL of user. |
+| Flashpoint.Forum.User.UserId | string | The unique ID of the forum user. |
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-user-details user_id="P3au_EzEX4-uctmRfdUYeA"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.User": {
@@ -1643,44 +1697,47 @@ Retrieves user details using the user-id. To retrieve the user ID, run the flash
 
 ##### Flashpoint User details
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Forum Name** | **Name** | **URL** |
 | --- | --- | --- |
 | Crdpro | IllWillPub | http:/<span></span>/www<span></span>.crdpro.su/member<span></span>.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678 |
 
 ### flashpoint-get-forum-post-details
+
 ***
 Retrieves post details using the post-id. To retrieve the post ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.PostId context path. command or some other investigation.
 
 #### Base Command
 
 `flashpoint-get-forum-post-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| post_id | The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path. | Required | 
+| post_id | The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Forum.Post.Forum | unknown | Forum details of the post, including id, hostname, stats, description, tags, and so on. | 
-| Flashpoint.Forum.Post.Room | unknown | Room details of the post, including room title, id, url, platform url, and so on. | 
-| Flashpoint.Forum.Post.User | unknown | User details of the post, including user id, name, url, platform url, and so on. | 
-| Flashpoint.Forum.Post.PlatformUrl | string | Using platform URL user can redirect to Flashpoint platform. | 
-| Flashpoint.Forum.Post.PublishedAt | unknown | The date that the post was published. | 
-| Flashpoint.Forum.Post.Url | unknown | The display URL of the post. | 
-| Flashpoint.Forum.Post.PostId | string | The forum post ID. | 
-
+| Flashpoint.Forum.Post.Forum | unknown | Forum details of the post, including id, hostname, stats, description, tags, and so on. |
+| Flashpoint.Forum.Post.Room | unknown | Room details of the post, including room title, id, url, platform url, and so on. |
+| Flashpoint.Forum.Post.User | unknown | User details of the post, including user id, name, url, platform url, and so on. |
+| Flashpoint.Forum.Post.PlatformUrl | string | Using platform URL user can redirect to Flashpoint platform. |
+| Flashpoint.Forum.Post.PublishedAt | unknown | The date that the post was published. |
+| Flashpoint.Forum.Post.Url | unknown | The display URL of the post. |
+| Flashpoint.Forum.Post.PostId | string | The forum post ID. |
 
 #### Command Example
+
 ```
 !flashpoint-get-forum-post-details post_id=PDo1xGiKXDebHGc8fZme6g
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Post": {
@@ -1753,37 +1810,41 @@ Retrieves post details using the post-id. To retrieve the post ID, run the flash
 
 ##### Flashpoint Post details
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Published at** | **Forum Name** | **Room Title** | **Author Name** | **Thread Title** | **URL** | **Platform url** |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2019-12-10T01:17:00+00:00 | Ord-UA | Форум | Дубовик | ДСНС на чолі з Бочковським і К…. | 2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580 | https:/<span></span>/fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g |
 
 ### flashpoint-search-forum-sites
+
 ***
 Searches forum sites using a keyword. it will search in site content like name, title, descripion etc.
 
 #### Base Command
 
 `flashpoint-search-forum-sites`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_search | The site keyword or text for which to search. This keyword is used for search information in forum sites. This keyword or text is known by Flashpoint users. | Required | 
+| site_search | The site keyword or text for which to search. This keyword is used for search information in forum sites. This keyword or text is known by Flashpoint users. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Forum.Site | unknown | A list of forum site details based on the search keyword. | 
+| Flashpoint.Forum.Site | unknown | A list of forum site details based on the search keyword. |
 
 #### Command Example
+
 ```
 !flashpoint-search-forum-sites site_search="0hack"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Site": [
@@ -1802,39 +1863,41 @@ Searches forum sites using a keyword. it will search in site content like name, 
 
 Top 10 sites:
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Name** | **Hostname** | **Description** |
 | --- | --- | --- |
 | 0hack | bbs<span></span>.0hack<span></span>.com | 0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389<span></span>.com. |
 
 ### flashpoint-search-forum-posts
+
 ***
 Search forum posts using a keyword
 
 #### Base Command
 
 `flashpoint-search-forum-posts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| post_search | The post keyword or text which is used for search information in forum posts, and is known by Flashpoint users. | Required | 
-
+| post_search | The post keyword or text which is used for search information in forum posts, and is known by Flashpoint users. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Forum.Post | unknown | A list of forum posts based on the search keyword. | 
-
+| Flashpoint.Forum.Post | unknown | A list of forum posts based on the search keyword. |
 
 #### Command Example
+
 ```
 !flashpoint-search-forum-posts post_search="The Courtyard Café"
 ```
 
 #### Context Example
+
 ```
 {
     "Flashpoint.Forum.Post": [
@@ -2478,7 +2541,7 @@ Search forum posts using a keyword
 
 Top 10 posts:
 
-##### Below are the detail found:
+##### Below are the detail found
 
 | **Forum Name** | **Thread Title** | **Room Title** | **Author Name** | **Platform URL** |
 | --- | --- | --- | --- | --- |
@@ -2495,82 +2558,83 @@ Top 10 posts:
 
 Follow this [link](https://fp.tools/home/search/forums?query=The%20Courtyard%20Caf%C3%A9) to forum post-search on Flashpoint platform.
 
-
 ### flashpoint-alert-list
+
 ***
 Retrieves an alert or a list of alerts based on the filter values provided in the command arguments. Yields the alerts from Flashpoint collected sources and the alerts from data exposure.
 
 #### Base Command
 
 `flashpoint-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters the alerts based on the earliest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| until | Filters the alerts based on the latest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| scroll_id | Retrieves the next batch of alerts (scroll_id retrieved in previous alerts response). | Optional | 
-| size | Number of alerts to retrieve in the response. (Maximum allowed size is 100). Default is 50. | Optional | 
-
+| since | Filters the alerts based on the earliest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| until | Filters the alerts based on the latest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| scroll_id | Retrieves the next batch of alerts (scroll_id retrieved in previous alerts response). | Optional |
+| size | Number of alerts to retrieve in the response. (Maximum allowed size is 100). Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.Alerts.alert_id | String | The ID of the alert. | 
-| Flashpoint.Alerts.fpid | String | The ID of the resource that triggered the alert. | 
-| Flashpoint.Alerts.keyword.keyword_id | String | The ID of the keyword. | 
-| Flashpoint.Alerts.keyword.keyword_text | String | The value of the keyword. | 
-| Flashpoint.Alerts.highlights | Unknown | Snippets of the resource with the keywords highlighted. | 
-| Flashpoint.Alerts.basetypes | Unknown | The data types of the resource. | 
-| Flashpoint.Alerts.ts | Number | The timestamp of when the alert was created. | 
-| Flashpoint.Alerts.tags.archived | Boolean | Whether the alert was archived or not. | 
-| Flashpoint.Alerts.tags.flagged | Boolean | Whether the alert was starred or not. | 
-| Flashpoint.Alerts.source.basetypes | Unknown | The data types of the resource. | 
-| Flashpoint.Alerts.source.body.text/plain | String | The body of the alert in text/plain format. | 
-| Flashpoint.Alerts.source.container.basetypes | Unknown | The data types for the thread or channel in which the content was posted. | 
-| Flashpoint.Alerts.source.container.container.title | String | The title of the container. | 
-| Flashpoint.Alerts.source.container.container.name | String | The name of the container. | 
-| Flashpoint.Alerts.source.container.fpid | String | The ID of the thread or channel in which the content was posted. | 
-| Flashpoint.Alerts.source.container.title | String | The title of the thread or channel in which the content was posted. | 
-| Flashpoint.Alerts.source.created_at.date-time | Date | When the content was originally posted by its author. | 
-| Flashpoint.Alerts.source.created_at.raw | String | When the content was originally posted by its author, as raw format. | 
-| Flashpoint.Alerts.source.created_at.timestamp | Number | When the content was originally posted by its author, as a timestamp. | 
-| Flashpoint.Alerts.source.first_observed_at.date-time | Date | The first time this piece of data was observed by Flashpoint. | 
-| Flashpoint.Alerts.source.first_observed_at.raw | String | The first time this piece of data was observed by Flashpoint, as raw format. | 
-| Flashpoint.Alerts.source.first_observed_at.timestamp | Number | The first time this piece of data was observed by Flashpoint, as a timestamp. | 
-| Flashpoint.Alerts.source.fpid | String | The ID of the resource. | 
-| Flashpoint.Alerts.source.last_observed_at.date-time | Date | The last time this piece of data was observed by Flashpoint. | 
-| Flashpoint.Alerts.source.last_observed_at.raw | String | The last time this piece of data was observed by Flashpoint, as raw format. | 
-| Flashpoint.Alerts.source.last_observed_at.timestamp | Number | The last time this piece of data was observed by Flashpoint, as a timestamp. | 
-| Flashpoint.Alerts.source.native_id | String | The ID used by the original site for the resource. | 
-| Flashpoint.Alerts.source.parent_message._schema | String | The schema of the parent of this resource. | 
-| Flashpoint.Alerts.source.parent_message.basetypes | Unknown | The data types of the parent of this resource. | 
-| Flashpoint.Alerts.source.parent_message.fpid | String | The ID of the parent of this resource. | 
-| Flashpoint.Alerts.source.parent_message.native_id | String | The ID used by the original site for the parent of this resource. | 
-| Flashpoint.Alerts.source.parent_message.type | String | The type of the parent of this resource. | 
-| Flashpoint.Alerts.source.site.title | String | The original site or platform where the resource was published. | 
-| Flashpoint.Alerts.source.site_actor.names.aliases | Unknown | The alias of the user who created the message, authored the blog post, or posted a product for sale. | 
-| Flashpoint.Alerts.source.site_actor.names.handle | String | The handle of the user who created the message, authored the blog post, or posted a product for sale. | 
-| Flashpoint.Alerts.source.sort_date | Date | Sort date of the alert. | 
-| Flashpoint.Alerts.source.title | String | The title of the alert. | 
+| Flashpoint.Alerts.alert_id | String | The ID of the alert. |
+| Flashpoint.Alerts.fpid | String | The ID of the resource that triggered the alert. |
+| Flashpoint.Alerts.keyword.keyword_id | String | The ID of the keyword. |
+| Flashpoint.Alerts.keyword.keyword_text | String | The value of the keyword. |
+| Flashpoint.Alerts.highlights | Unknown | Snippets of the resource with the keywords highlighted. |
+| Flashpoint.Alerts.basetypes | Unknown | The data types of the resource. |
+| Flashpoint.Alerts.ts | Number | The timestamp of when the alert was created. |
+| Flashpoint.Alerts.tags.archived | Boolean | Whether the alert was archived or not. |
+| Flashpoint.Alerts.tags.flagged | Boolean | Whether the alert was starred or not. |
+| Flashpoint.Alerts.source.basetypes | Unknown | The data types of the resource. |
+| Flashpoint.Alerts.source.body.text/plain | String | The body of the alert in text/plain format. |
+| Flashpoint.Alerts.source.container.basetypes | Unknown | The data types for the thread or channel in which the content was posted. |
+| Flashpoint.Alerts.source.container.container.title | String | The title of the container. |
+| Flashpoint.Alerts.source.container.container.name | String | The name of the container. |
+| Flashpoint.Alerts.source.container.fpid | String | The ID of the thread or channel in which the content was posted. |
+| Flashpoint.Alerts.source.container.title | String | The title of the thread or channel in which the content was posted. |
+| Flashpoint.Alerts.source.created_at.date-time | Date | When the content was originally posted by its author. |
+| Flashpoint.Alerts.source.created_at.raw | String | When the content was originally posted by its author, as raw format. |
+| Flashpoint.Alerts.source.created_at.timestamp | Number | When the content was originally posted by its author, as a timestamp. |
+| Flashpoint.Alerts.source.first_observed_at.date-time | Date | The first time this piece of data was observed by Flashpoint. |
+| Flashpoint.Alerts.source.first_observed_at.raw | String | The first time this piece of data was observed by Flashpoint, as raw format. |
+| Flashpoint.Alerts.source.first_observed_at.timestamp | Number | The first time this piece of data was observed by Flashpoint, as a timestamp. |
+| Flashpoint.Alerts.source.fpid | String | The ID of the resource. |
+| Flashpoint.Alerts.source.last_observed_at.date-time | Date | The last time this piece of data was observed by Flashpoint. |
+| Flashpoint.Alerts.source.last_observed_at.raw | String | The last time this piece of data was observed by Flashpoint, as raw format. |
+| Flashpoint.Alerts.source.last_observed_at.timestamp | Number | The last time this piece of data was observed by Flashpoint, as a timestamp. |
+| Flashpoint.Alerts.source.native_id | String | The ID used by the original site for the resource. |
+| Flashpoint.Alerts.source.parent_message._schema | String | The schema of the parent of this resource. |
+| Flashpoint.Alerts.source.parent_message.basetypes | Unknown | The data types of the parent of this resource. |
+| Flashpoint.Alerts.source.parent_message.fpid | String | The ID of the parent of this resource. |
+| Flashpoint.Alerts.source.parent_message.native_id | String | The ID used by the original site for the parent of this resource. |
+| Flashpoint.Alerts.source.parent_message.type | String | The type of the parent of this resource. |
+| Flashpoint.Alerts.source.site.title | String | The original site or platform where the resource was published. |
+| Flashpoint.Alerts.source.site_actor.names.aliases | Unknown | The alias of the user who created the message, authored the blog post, or posted a product for sale. |
+| Flashpoint.Alerts.source.site_actor.names.handle | String | The handle of the user who created the message, authored the blog post, or posted a product for sale. |
+| Flashpoint.Alerts.source.sort_date | Date | Sort date of the alert. |
+| Flashpoint.Alerts.source.title | String | The title of the alert. |
 | Flashpoint.Alerts.source.file | String | File name for the matched alert. |
 | Flashpoint.Alerts.source.owner | String | Author of the repo. |
 | Flashpoint.Alerts.source.repo | String | Repository name. |
 | Flashpoint.Alerts.source.snippet | String | Small blob of code/text that matched the keyword. |
 | Flashpoint.Alerts.source.source | String | Code repository platform. |
 | Flashpoint.Alerts.source.url | String | Link to the alerted source. |
-| Flashpoint.PageToken.Alert.scroll_id | String | The scroll_id for the next page. | 
-| Flashpoint.PageToken.Alert.size | String | The size for the next page. | 
-| Flashpoint.PageToken.Alert.since | String | The since date for the next page. | 
-| Flashpoint.PageToken.Alert.until | String | The until date for the next page. | 
-| Flashpoint.PageToken.Alert.name | String | The command name. | 
-
+| Flashpoint.PageToken.Alert.scroll_id | String | The scroll_id for the next page. |
+| Flashpoint.PageToken.Alert.size | String | The size for the next page. |
+| Flashpoint.PageToken.Alert.since | String | The since date for the next page. |
+| Flashpoint.PageToken.Alert.until | String | The until date for the next page. |
+| Flashpoint.PageToken.Alert.name | String | The command name. |
 
 #### Command Example
+
 ``` !flashpoint-alert-list ```
 
 #### Context Example
+
 ```json
 {
     "Flashpoint": {
@@ -2714,13 +2778,15 @@ Retrieves an alert or a list of alerts based on the filter values provided in th
 
 #### Human Readable Output
 
-##### Alerts from Flashpoint collected sources.
+##### Alerts from Flashpoint collected sources
+
 |**FPID**|**Keyword Text**|**Site Title**|**Created Date (UTC)**|**Last Observed Date (UTC)**|
 | --- | --- | --- | --- | --- |
 | dummy_fpid1 | "user manager" | pastebin.com | July 6, 2021  14:44 | July 6, 2021  16:43 |
 | dummy_fpid2 | "user manager" | pastebin.com | July 6, 2021  10:35 | July 6, 2021  15:55 |
 
-##### Alerts with data exposures.
+##### Alerts with data exposures
+
 |**FPID**|**Keyword Text**|**File**|**Owner**|**Repo**|**Source**|
 | --- | --- | --- | --- | --- | --- |
 | dummy_fpid1 | "onelogin" | dummy_file1 | onelogin | dummy_repo1 | github |
@@ -2733,74 +2799,77 @@ size = 1<br>
 until = 2021-06-16T02:45:00Z
 
 ### flashpoint-compromised-credentials-list
+
 ***
 Retrieves the compromised credentials based on the filter values provided in the command arguments.
-
 
 #### Base Command
 
 `flashpoint-compromised-credentials-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| end_date | Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| filter_date | Filters the compromised credential's breach data by either created or first observed date.<br/>Note: Requires the argument value for at least 'start_date' and 'end_date'. Possible values are: created_at, first_observed_at. | Optional | 
-| page_size | The maximum number of result objects to return per page. Note: The maximum value is 1,000. Default is 50. | Optional | 
-| page_number | Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000. Default is 1. | Optional | 
-| sort_date | Sort the compromised credential's breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized. Possible values are: created_at, first_observed_at. | Optional | 
-| sort_order | Specify the order to sort the data in. Note: Requires sort_date along with the given argument. Possible values are: asc, desc. | Optional | 
-| is_fresh | Whether to fetch the fresh compromised credentials or not. Possible values are: true, false. Possible values are: true, false. | Optional | 
+| start_date | Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| end_date | Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| filter_date | Filters the compromised credential's breach data by either created or first observed date.<br/>Note: Requires the argument value for at least 'start_date' and 'end_date'. Possible values are: created_at, first_observed_at. | Optional |
+| page_size | The maximum number of result objects to return per page. Note: The maximum value is 1,000. Default is 50. | Optional |
+| page_number | Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000. Default is 1. | Optional |
+| sort_date | Sort the compromised credential's breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized. Possible values are: created_at, first_observed_at. | Optional |
+| sort_order | Specify the order to sort the data in. Note: Requires sort_date along with the given argument. Possible values are: asc, desc. | Optional |
+| is_fresh | Whether to fetch the fresh compromised credentials or not. Possible values are: true, false. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Flashpoint.CompromisedCredential._id | String | ID of the IoC. | 
-| Flashpoint.CompromisedCredential._source.affected_domain | String | Affected domain of the IoC. | 
-| Flashpoint.CompromisedCredential._source.basetypes | Unknown | The array contains the underlying type of the credentials object, in this case  \["credential-sighting"\]. | 
-| Flashpoint.CompromisedCredential._source.body.raw | String | This is the raw content captured from the breach Flashpoint discovered. | 
-| Flashpoint.CompromisedCredential._source.breach._header | String | This is the breach header object. | 
-| Flashpoint.CompromisedCredential._source.breach.basetypes | Unknown | Array containing underlying base type of breach object, i.e. \["breach"\]. | 
-| Flashpoint.CompromisedCredential._source.breach.breach_type | String | Constant for future use. | 
-| Flashpoint.CompromisedCredential._source.breach.created_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Flashpoint.CompromisedCredential._source.breach.created_at.timestamp | Number | UNIX timestamp. | 
-| Flashpoint.CompromisedCredential._source.breach.first_observed_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Flashpoint.CompromisedCredential._source.breach.first_observed_at.timestamp | Number | UNIX timestamp. | 
-| Flashpoint.CompromisedCredential._source.breach.fpid | String | Flashpoint ID of the breach. | 
-| Flashpoint.CompromisedCredential._source.breach.source | String | Data source of breach \(i.e. Analyst Research, CredentialStealer, etc.\). | 
-| Flashpoint.CompromisedCredential._source.breach.source_type | String | Type of source of the breach. | 
-| Flashpoint.CompromisedCredential._source.breach.title | String | Title of breach. | 
-| Flashpoint.CompromisedCredential._source.breach.victim | String | Victim of the breach. | 
-| Flashpoint.CompromisedCredential._source.credential_record_fpid | String | This is the Flashpoint ID of the associated record object. This is used to retrieve sightings for a credential. | 
-| Flashpoint.CompromisedCredential._source.customer_id | String | Customer ID of the IoC. | 
-| Flashpoint.CompromisedCredential._source.domain | String | This is the domain object extracted off of the email address. | 
-| Flashpoint.CompromisedCredential._source.email | String | The email address for the compromised credential. | 
-| Flashpoint.CompromisedCredential._source.extraction_id | String | Extraction ID of the IoC. | 
-| Flashpoint.CompromisedCredential._source.extraction_record_id | String | Extraction record ID of the IoC. | 
-| Flashpoint.CompromisedCredential._source.fpid | String | The Flashpoint ID of this credentials object. | 
-| Flashpoint.CompromisedCredential._source.header_.indexed_at | String | Timestamp for when this document was indexed into the Flashpoint database. | 
-| Flashpoint.CompromisedCredential._source.header_.pipeline_duration | String | Pipeline duration header information of the IoC. | 
-| Flashpoint.CompromisedCredential._source.is_fresh | Boolean | This will be "true" if the credential has not been seen before, and it hasn't been marked "not fresh" by an analyst. \(Historical breaches are not "fresh".\). | 
-| Flashpoint.CompromisedCredential._source.last_observed_at.date-time | Date | If exists, time object for when the credential was previously observed. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Flashpoint.CompromisedCredential._source.last_observed_at.timestamp | Number | UNIX timestamp. | 
-| Flashpoint.CompromisedCredential._source.password | String | The password for the credential \(in plain text, if possible\). | 
-| Flashpoint.CompromisedCredential._source.password_complexity.has_lowercase | Boolean | Boolean true/false if lowercase letters are present. | 
-| Flashpoint.CompromisedCredential._source.password_complexity.has_number | Boolean | Boolean true/false if numbers are present. | 
-| Flashpoint.CompromisedCredential._source.password_complexity.has_symbol | Boolean | Boolean true/false if symbols are present. | 
-| Flashpoint.CompromisedCredential._source.password_complexity.has_uppercase | Boolean | Boolean true/false if uppercase letters are present. | 
-| Flashpoint.CompromisedCredential._source.password_complexity.length | Number | Integer value that represents number of characters in password. | 
-| Flashpoint.CompromisedCredential._source.password_complexity.probable_hash_algorithms | Unknown | List of possible hash algorithms suspected based on textpattern of the password \(May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.\) | 
-| Flashpoint.CompromisedCredential._source.times_seen | Number | Integer representing the number of times the credential has been seen at Flashpoint. | 
-| Flashpoint.CompromisedCredential._type | String | Type of the IoC. | 
-| Flashpoint.CompromisedCredential.matched_queries | Unknown | Matching queries of the IoC. | 
-| Flashpoint.CompromisedCredential.sort | Unknown | Sort value of the IoC. | 
+| Flashpoint.CompromisedCredential._id | String | ID of the IoC. |
+| Flashpoint.CompromisedCredential._source.affected_domain | String | Affected domain of the IoC. |
+| Flashpoint.CompromisedCredential._source.basetypes | Unknown | The array contains the underlying type of the credentials object, in this case  \["credential-sighting"\]. |
+| Flashpoint.CompromisedCredential._source.body.raw | String | This is the raw content captured from the breach Flashpoint discovered. |
+| Flashpoint.CompromisedCredential._source.breach._header | String | This is the breach header object. |
+| Flashpoint.CompromisedCredential._source.breach.basetypes | Unknown | Array containing underlying base type of breach object, i.e. \["breach"\]. |
+| Flashpoint.CompromisedCredential._source.breach.breach_type | String | Constant for future use. |
+| Flashpoint.CompromisedCredential._source.breach.created_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. |
+| Flashpoint.CompromisedCredential._source.breach.created_at.timestamp | Number | UNIX timestamp. |
+| Flashpoint.CompromisedCredential._source.breach.first_observed_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. |
+| Flashpoint.CompromisedCredential._source.breach.first_observed_at.timestamp | Number | UNIX timestamp. |
+| Flashpoint.CompromisedCredential._source.breach.fpid | String | Flashpoint ID of the breach. |
+| Flashpoint.CompromisedCredential._source.breach.source | String | Data source of breach \(i.e. Analyst Research, CredentialStealer, etc.\). |
+| Flashpoint.CompromisedCredential._source.breach.source_type | String | Type of source of the breach. |
+| Flashpoint.CompromisedCredential._source.breach.title | String | Title of breach. |
+| Flashpoint.CompromisedCredential._source.breach.victim | String | Victim of the breach. |
+| Flashpoint.CompromisedCredential._source.credential_record_fpid | String | This is the Flashpoint ID of the associated record object. This is used to retrieve sightings for a credential. |
+| Flashpoint.CompromisedCredential._source.customer_id | String | Customer ID of the IoC. |
+| Flashpoint.CompromisedCredential._source.domain | String | This is the domain object extracted off of the email address. |
+| Flashpoint.CompromisedCredential._source.email | String | The email address for the compromised credential. |
+| Flashpoint.CompromisedCredential._source.extraction_id | String | Extraction ID of the IoC. |
+| Flashpoint.CompromisedCredential._source.extraction_record_id | String | Extraction record ID of the IoC. |
+| Flashpoint.CompromisedCredential._source.fpid | String | The Flashpoint ID of this credentials object. |
+| Flashpoint.CompromisedCredential._source.header_.indexed_at | String | Timestamp for when this document was indexed into the Flashpoint database. |
+| Flashpoint.CompromisedCredential._source.header_.pipeline_duration | String | Pipeline duration header information of the IoC. |
+| Flashpoint.CompromisedCredential._source.is_fresh | Boolean | This will be "true" if the credential has not been seen before, and it hasn't been marked "not fresh" by an analyst. \(Historical breaches are not "fresh".\). |
+| Flashpoint.CompromisedCredential._source.last_observed_at.date-time | Date | If exists, time object for when the credential was previously observed. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. |
+| Flashpoint.CompromisedCredential._source.last_observed_at.timestamp | Number | UNIX timestamp. |
+| Flashpoint.CompromisedCredential._source.password | String | The password for the credential \(in plain text, if possible\). |
+| Flashpoint.CompromisedCredential._source.password_complexity.has_lowercase | Boolean | Boolean true/false if lowercase letters are present. |
+| Flashpoint.CompromisedCredential._source.password_complexity.has_number | Boolean | Boolean true/false if numbers are present. |
+| Flashpoint.CompromisedCredential._source.password_complexity.has_symbol | Boolean | Boolean true/false if symbols are present. |
+| Flashpoint.CompromisedCredential._source.password_complexity.has_uppercase | Boolean | Boolean true/false if uppercase letters are present. |
+| Flashpoint.CompromisedCredential._source.password_complexity.length | Number | Integer value that represents number of characters in password. |
+| Flashpoint.CompromisedCredential._source.password_complexity.probable_hash_algorithms | Unknown | List of possible hash algorithms suspected based on textpattern of the password \(May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.\) |
+| Flashpoint.CompromisedCredential._source.times_seen | Number | Integer representing the number of times the credential has been seen at Flashpoint. |
+| Flashpoint.CompromisedCredential._type | String | Type of the IoC. |
+| Flashpoint.CompromisedCredential.matched_queries | Unknown | Matching queries of the IoC. |
+| Flashpoint.CompromisedCredential.sort | Unknown | Sort value of the IoC. |
 
 #### Command Example
+
 ``` !flashpoint-compromised-credentials-list ```
 
 #### Context Example
+
 ```json
 {
     "Flashpoint": {
@@ -2947,8 +3016,8 @@ Retrieves the compromised credentials based on the filter values provided in the
 #### Total number of records found: 1302
 
 ### Compromised Credential(s)
+
 | **FPID** | **Email** | **Breach Source** | **Breach Source Type** | **Password** | **Created Date (UTC)** | **First Observed Date (UTC)** |
 | --- | --- | --- | --- | --- | --- | --- |
 | dummy_fpid1 | dummy_email1 | Analyst Research| Analyst Research | dummy_password1 | Jan 26, 2021  12:00 | Jan 27, 2021  18:50 |
 | dummy_fpid2 | dummy_email2 | https://www.virustotal.com/gui/file/0e59531d9ebf1d695cb41c1afd443c22bfaef56dafa636c2cf157deb19b679fe/details | VirusTotal | dummy_password2 | Jun 6, 2021  20:47 | Jun 6, 2021  20:47 |
-

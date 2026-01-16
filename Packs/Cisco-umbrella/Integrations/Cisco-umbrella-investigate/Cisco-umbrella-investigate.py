@@ -969,7 +969,7 @@ def get_domain_risk_score_command(
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score")) or 0),
+                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score"))),
                 reliability=client.reliability,
             ),
         ),
@@ -1311,7 +1311,7 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
+                score=calculate_domain_dbot_score(secure_rank=arg_to_number(secure_rank)),
                 reliability=client.reliability,
             ),
         ),
@@ -1688,14 +1688,14 @@ def domain_command(
             domain,
         )
         security_data = security_res
-        secure_rank = security_data.get("securerank2")
+        risk_score = risk_score_data.get("risk_score")
         dbot_score = Common.DBotScore(
             integration_name=INDICATOR_VENDOR,
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
-            score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
+            score=calculate_domain_dbot_score(risk_score=arg_to_number(risk_score)),
             reliability=client.reliability,
-            malicious_description="Malicious domain found with risk score -1",
+            malicious_description=f"Malicious domain found with risk score {risk_score}",
         )
         outputs = {
             "Name": domain,
@@ -1804,14 +1804,30 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
         return "ok"
     except DemistoException as err:
         demisto.debug(str(err))
-        return f"Error: {get_request_error_message(err.res.json())}"
+        return f"Error: {get_request_error_message(err)}"
 
 
 # HELPER COMMANDS
 
 
-def get_request_error_message(error_data: dict[str, Any]) -> str:
-    return error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
+def get_request_error_message(err) -> str:
+    if not hasattr(err, "res") or err.res is None:
+        demisto.debug("The error does not have a response object")
+        return str(err)
+
+    if hasattr(err.res, "json"):
+        demisto.debug("The error type is: JSON with error dict")
+        try:
+            error_dict = err.res.json()
+            return error_dict.get("errorMessage") or error_dict.get("message") or str(json.dumps(error_dict))
+        except (ValueError, json.JSONDecodeError):
+            demisto.debug("Failed to parse JSON response, falling back to text")
+
+    if hasattr(err.res, "text"):
+        demisto.debug("The error type is: Text response")
+        return f"HTTP {err.res.status_code}: {err.res.text or err.res.reason}"
+
+    return str(err)
 
 
 def parse_domain_history(data: list[dict[str, Any]]):
@@ -1828,7 +1844,7 @@ def calculate_domain_dbot_score(
 
     Args:
         status (int | None): The status of the domain.
-        risk_score (int | None, optional): The secure rankof the domain. Defaults to None.
+        secure_rank (int | None, optional): The secure rank of the domain. Defaults to None.
         risk_score (int | None, optional): The risk score of the domain. Defaults to None.
 
     Raises:
@@ -1851,13 +1867,7 @@ def calculate_domain_dbot_score(
 
                 secure_rank = (risk_score - 50) * -2
 
-            threshold = demisto.args().get("threshold", MALICIOUS_THRESHOLD)
-            malicious_threshold = arg_to_number(threshold)
-
-            if threshold is None or malicious_threshold is None:
-                raise RuntimeError(f"Cannot convert {threshold=} to number")
-
-            if secure_rank < malicious_threshold:
+            if secure_rank <= MALICIOUS_THRESHOLD:
                 return Common.DBotScore.BAD
 
             if secure_rank < SUSPICIOUS_THRESHOLD:
@@ -1884,6 +1894,19 @@ def verify_threshold(suspicious_threshold: int, malicious_threshold: int):
         )
 
 
+def get_threshold_value(params, type):
+    if type == "suspicious":
+        threshold_parm = arg_to_number(params.get("suspicious_threshold"))
+        return threshold_parm if threshold_parm is not None else DEFAULT_SUSPICIOUS_THRESHOLD
+
+    elif type == "malicious":
+        threshold_parm = arg_to_number(params.get("dboscore_threshold"))
+        return threshold_parm if threshold_parm is not None else DEFAULT_MALICIOUS_THRESHOLD
+
+    else:
+        raise DemistoException("Invalid threshold type")
+
+
 def main() -> None:
     set_integration_context({})
 
@@ -1892,8 +1915,8 @@ def main() -> None:
 
     global SUSPICIOUS_THRESHOLD
     global MALICIOUS_THRESHOLD
-    SUSPICIOUS_THRESHOLD = arg_to_number(params.get("suspicious_threshold", 0)) or DEFAULT_SUSPICIOUS_THRESHOLD
-    MALICIOUS_THRESHOLD = arg_to_number(params.get("dboscore_threshold", -90)) or -DEFAULT_MALICIOUS_THRESHOLD
+    SUSPICIOUS_THRESHOLD = get_threshold_value(params, "suspicious")
+    MALICIOUS_THRESHOLD = get_threshold_value(params, "malicious")
 
     base_url = params["baseURL"]
     api_key = dict_safe_get(params, ["apitoken_creds", "identifier"])
@@ -1966,7 +1989,7 @@ def main() -> None:
                 execution_metrics.general_error += 1
             elif err.res.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
                 execution_metrics.quota_error += 1
-            cr = CommandResults(readable_output=get_request_error_message(err.res.json()))
+            cr = CommandResults(readable_output=get_request_error_message(err))
             return_results(append_metrics(execution_metrics, [cr]))
         else:
             return_results(CommandResults(readable_output=str(err)))

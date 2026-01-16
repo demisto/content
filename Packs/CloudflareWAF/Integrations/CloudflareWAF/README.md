@@ -790,7 +790,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!cloudflare-waf-ip-list-delete id="dd7e3f1f5edf4591acb22f20da320b8f" ```
+```!cloudflare-waf-ip-list-delete id="dd7e3f1f5edf4591acb22f20da320b8f"```
 
 #### Human Readable Output
 

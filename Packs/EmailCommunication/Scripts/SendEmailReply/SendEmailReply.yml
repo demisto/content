@@ -53,12 +53,16 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/bs4-py3:1.0.0.117152
+dockerimage: demisto/bs4-py3:1.0.0.5184771
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
+dependson:
+  must:
+  - core-api-post
+  - core-api-download
 tags: []
 scripttarget: 0
 runas: DBotWeakRole

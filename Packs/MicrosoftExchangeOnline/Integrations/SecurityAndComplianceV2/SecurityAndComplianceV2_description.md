@@ -1,75 +1,39 @@
 # O365 - Security And Compliance - Content Search V2
 
-This integration enables you to manage the features that are available in the Security & Compliance Center from XSOAR.
+This integration enables you to manage the features that are available in the Security & Compliance Center from Cortex XSOAR/XSIAM.
 
-For this integration, the UPN/Email is the account you wish to use in order to interface with Security & Compliance. 
-The account may require additional permissions and roles associated with it in order to execute all commands. 
-Please refer to the [documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#authentication) for additional information.
+This integration supports two authentication methods:
 
-Supported authentication methods:
-- OAuth2.0 (For MFA enabled accounts) -
-    1. Fill in the UPN parameter in the integration configuration.
+Depending on the selected authentication method, you may need to create a dedicated application or use a dedicated user account for the integration. Each method requires specific permissions and configuration steps to ensure Security & Compliance commands can be executed successfully.\
+For **detailed instructions** on how to configure each authentication method and properly set up the required parameters, refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#permissions-and-authentication-setup)**.
+
+- **[App-only authentication](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#app-authentication-(app-only))**
+- **[Delegated user authentication](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#delegated-user-authentication)**
+
+Authentication methods configuration:
+- App-only (OAuth2.0) using device code Authentication -
+    1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
     2. Run the ***o365-sc-auth-start*** command and follow the instructions.
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+- Delegated User Authentication -
+    1. Fill in the 'UPN' parameter in the integration configuration. 
+    2. Fill in the 'UPN Password' parameter - the user’s Microsoft 365 password (the regular sign-in password for that UPN).
+    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+    4. The following commands are only available when using the Delegated User Authentication method, as per the [Microsoft Update](https://mc.merill.net/message/MC1131771):
+       - o365-sc-new-search-action
+       - o365-sc-case-hold-policy-create
+       - o365-sc-case-hold-policy-set
+       - o365-sc-case-hold-policy-delete
+       - o365-sc-case-hold-rule-create
+       - o365-sc-case-hold-rule-delete
 
-## Security and Compliance Integration Changes
-
-### Overview
-In response to Microsoft's deprecation of the App ID, the following changes to app registration in Azure are required:
-1. Add the `Exchange.Manage` delegated permissions.
-2. Enable "Allow public client flows" in the authentication section.
-3. Add an app secret to the app registration.
-
-### Step-by-Step Instructions
-
-#### 1. Add Exchange.Manage Delegated Permissions
-
-1. **Navigate to Azure Portal:**
-   Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
-
-2. **Access App Registrations:**
-   In the left-hand navigation pane, select **Azure Active Directory**. Then, under **Manage**, select **App registrations**.
-
-3. **Select Your App:**
-   Find and select the app registration you are working on.
-
-4. **Add Permissions:**
-   - Under **Manage**, select **API permissions**.
-   - Click on **Add a permission**.
-   - Select **APIs my organization uses**.
-   - Type "Office" in the search bar and select **Office 365 Exchange Online**.
-   - Choose **Delegated permissions**.
-   - Search for `Exchange.Manage` and check the corresponding box.
-   - Click on **Add permissions**.
-   - Ensure the permissions are granted for your organization by selecting **Grant admin consent for [Your Organization]** and confirming the action.
-
-#### 2. Enable "Allow Public Client Flows"
-
-1. **Navigate to Authentication Settings:**
-   From your app registration, under **Manage**, select **Authentication**.
-
-2. **Enable Public Client Flows:**
-   - Scroll down to the **Advanced settings** section.
-   - Locate the setting **Allow public client flows** and set it to **Yes**.
-   - Click **Save** at the top to apply the changes.
-
-#### 3. Add an App Secret
-
-1. **Navigate to Certificates & Secrets:**
-   From your app registration, under **Manage**, select **Certificates & secrets**.
-
-2. **Add a Client Secret:**
-   - Click on **New client secret**.
-   - Provide a description for the client secret.
-   - Choose an expiration period that meets your organization's security policy.
-   - Click **Add**.
-   - After the secret is created, copy the value immediately as it will not be displayed again. Store this secret securely, as it will be used in your application to authenticate.
+**Note - If a UPN Password is provided:**  
+- Even if the password is incorrect, the integration will attempt to authenticate using it.
+- In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
 
 
 ### Additional Resources
-- [Azure Active Directory App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+- [Entra ID App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 - [API Permissions in Microsoft Graph](https://docs.microsoft.com/en-us/graph/permissions-reference)
 - [Configure Authentication in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 - [Add a Client Secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
-
-These steps will ensure your app registration is updated correctly to maintain the necessary functionality after Microsoft's deprecation of the App ID. If you have any questions or run into issues, please refer to the provided documentation links or contact your Azure support team.

@@ -1,0 +1,20 @@
+{
+    "input": [
+        {
+            "name": "Threat Actor: [DUMMY_ENTITY]",
+            "type": "threatActor",
+            "aliases": [
+                "DUMMY_ALIAS"
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "Threat Actor: [DUMMY_ENTITY]",
+            "type": "threatActor",
+            "aliases": [
+                "DUMMY_ALIAS"
+            ]
+        }
+    ]
+}

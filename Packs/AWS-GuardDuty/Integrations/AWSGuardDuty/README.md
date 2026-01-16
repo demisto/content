@@ -928,6 +928,7 @@ Fetch incidents command - Findings that are fetched are no longer moved automati
 ### Parameters
 
 The following parameters were added in this version:
+
 * _How many incidents to fetch each time_
 * _First fetch timestamp_
 * _Archive findings After Fetch_

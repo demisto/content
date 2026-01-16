@@ -47,4 +47,4 @@ This playbook does not use any commands.
 
 ---
 
-![Health Check - Log Analysis Read All files](../doc_files/HealthCheck-LogAnalysisReadAllfiles.png)
+![Health Check - Log Analysis Read All files](../doc_files/Health_Check_-_Log_Analysis_Read_All_files.png)

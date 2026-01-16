@@ -1,0 +1,1 @@
+<h4 style="margin:0; padding:0;">Discovered Entities (2)</h4><div style="padding:6px 0;">Example City District</div><div style="padding:6px 0;">Exampleland</div>

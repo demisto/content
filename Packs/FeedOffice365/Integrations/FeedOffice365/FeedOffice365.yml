@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Microsoft
 commonfields:
   id: Office 365 Feed
   version: -1
@@ -171,7 +172,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: '-'
@@ -180,6 +181,6 @@ script:
 tests:
 - Office365_Feed_Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

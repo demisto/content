@@ -1,0 +1,38 @@
+{
+    "name": "Netmotion VPN",
+    "description": "Parsing and modeling rules for Netmotion VPN logs via syslog",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "IT Services",
+        "Cloud Services"
+    ],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [
+        "Network Security",
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "netmotion",
+        "vpn",
+        "netmotion vpn"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "xsiam",
+        "agentix"
+    ]
+}

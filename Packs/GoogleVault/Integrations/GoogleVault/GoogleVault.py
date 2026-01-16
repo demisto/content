@@ -11,7 +11,6 @@ from googleapiclient._auth import authorized_http
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import service_account
-
 from CommonServerUserPython import *
 
 #  @@@@@@@@ GLOBALS @@@@@@@@
@@ -19,7 +18,7 @@ from CommonServerUserPython import *
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/ediscovery", "https://www.googleapis.com/auth/devstorage.full_control"]
 DEMISTO_MATTER = "test_search_phishing"
-
+INTEGRATION_NAME = "GoogleVault"
 ADMIN_EMAIL = demisto.params()["gsuite_credentials"]["identifier"]
 PRIVATE_KEY_CONTENT = demisto.params().get("auth_json_creds", {}).get("password") or demisto.params().get("auth_json")
 USE_SSL = not demisto.params().get("insecure", False)
@@ -511,8 +510,8 @@ def build_key_val_pair(tagDict):
     demisto.info("this is key: ")
     demisto.info(tagDict["@TagValue"])
 
-    key = filter(str.isalnum, str(tagDict["@TagName"]))
-    value = tagDict["@TagValue"].encode("utf-8")
+    key = "".join([char for char in str(tagDict["@TagName"]) if char.isalnum()])
+    value = tagDict["@TagValue"]
     keyValPair = {key: value}
     return keyValPair
 
@@ -1256,9 +1255,10 @@ def get_export_command(export_id, matter_id):
             get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".zip") if export_status == "COMPLETED" else ""
         )
         xml_object_name = (
-            get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".xml") if export_status == "COMPLETED" else ""
+            get_object_mame_by_type(response.get("cloudStorageSink").get("files"), "-metadata.xml")
+            if export_status == "COMPLETED"
+            else ""
         )
-
         title = "You Export details:\n"
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             "Matter ID": matter_id,
@@ -1339,7 +1339,6 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
     try:
         out_file = download_storage_object(object_ID, bucket_name)
         out_file_json = json.loads(xml2json(out_file.getvalue()))
-
         if not out_file_json["Root"]["Batch"].get("Documents"):
             demisto.results("The export given contains 0 documents")
             sys.exit(0)
@@ -1348,12 +1347,12 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
         if type(documents) is dict:
             documents = [documents]
 
+        demisto.debug(f"{INTEGRATION_NAME}: {len(documents)=}")
         if len(documents) > max_results:
             documents = documents[:max_results]
-
+            demisto.debug(f"{INTEGRATION_NAME}: limit results to {len(documents)=}")
         dictList = build_dict_list(documents)
         return dictList
-
     finally:
         if out_file:
             out_file.close()
@@ -1423,28 +1422,31 @@ def get_drive_results_command():
 def get_mail_and_groups_results_command(inquiryType):
     try:
         max_results = int(demisto.getArg("maxResult"))
+        demisto.debug(f"{INTEGRATION_NAME}: {max_results=}")
         view_ID = demisto.getArg("viewID")
         bucket_name = demisto.getArg("bucketName")
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
         if not (output[0].get("From") or output[0].get("To") or output[0].get("Subject")):
             return_error("Error displaying results: Corpus of the invoked command and the supplied ViewID does not match")
-
         markedown_output = [
-            {
-                "From": document.get("From"),
-                "To": document.get("To"),
-                "CC": document.get("CC"),
-                "BCC": document.get("BCC"),
-                "Subject": document.get("Subject"),
-                "DateSent": document.get("DateSent"),
-                "DateReceived": document.get("DateReceived"),
-            }
+            remove_empty_elements(
+                {
+                    "From": document.get("From"),
+                    "To": document.get("To"),
+                    "CC": document.get("CC"),
+                    "BCC": document.get("BCC"),
+                    "Subject": document.get("Subject"),
+                    "DateSent": document.get("DateSent"),
+                    "Account": document.get("Account"),
+                    "DateReceived": document.get("DateReceived"),
+                }
+            )
             for document in output
         ]
 
         title = f"Your {inquiryType} inquiry details\n"
-        headers = ["Subject", "From", "To", "CC", "BCC", "DateSent"]
-        markdown = tableToMarkdown(title, markedown_output, headers)
+        headers = ["Subject", "From", "To", "CC", "BCC", "DateSent", "Account"]
+        markdown = tableToMarkdown(title, markedown_output, headers, removeNull=True)
 
         exportID = str(view_ID).split("/")[1]
         contextOutput = {"ExportID": exportID, "Results": markedown_output}
@@ -1534,5 +1536,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

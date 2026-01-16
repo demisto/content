@@ -8,7 +8,7 @@
             "internalMapping": {
                 "Details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "Wiz Cloud Account": {
                     "complex": null,
@@ -28,7 +28,7 @@
                 },
                 "Wiz Details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "Wiz Issue ID": {
                     "complex": null,
@@ -120,9 +120,9 @@
                 },
                 "Wiz Issue Resolution Recommendation": {
                     "complex": {
-                        "accessor": "resolutionRecommendation",
+                        "accessor": "sourceRule.resolutionRecommendation",
                         "filters": [],
-                        "root": "control",
+                        "root": "sourceRule",
                         "transformers": []
                     },
                     "simple": ""
@@ -134,15 +134,15 @@
             "internalMapping": {
                 "details": {
                     "complex": null,
-                    "simple": "control.description"
+                    "simple": "sourceRule.description"
                 },
                 "name": {
                     "complex": null,
-                    "simple": "control.name"
+                    "simple": "sourceRule.name"
                 },
                 "severity": {
                     "complex": null,
-                    "simple": "control.severity"
+                    "simple": "sourceRule.severity"
                 }
             }
         }

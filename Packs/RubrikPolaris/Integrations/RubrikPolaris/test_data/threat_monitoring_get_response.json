@@ -1,0 +1,138 @@
+{
+    "raw_response": {
+        "data": {
+            "hierarchyObject": {
+                "id": "dummy-id-001",
+                "name": "DUMMY-NAME",
+                "objectType": "Dummy_Object_Type",
+                "slaAssignment": "Dummy_Assignment",
+                "slaPauseStatus": false,
+                "effectiveSlaDomain": {
+                    "id": "dummy-sla-id",
+                    "name": "Dummy_SLA_Domain",
+                    "version": "v0",
+                    "__typename": "Global_Sla_Reply"
+                },
+                "Snapshot_Distribution": {
+                    "id": "dummy-snapshot-id",
+                    "totalCount": 0,
+                    "scheduledCount": 0,
+                    "onDemandCount": 0,
+                    "retrievedCount": 0,
+                    "__typename": "Snapshot_Distribution"
+                },
+                "effectiveRetentionSlaDomain": null,
+                "configuredSlaDomain": {
+                    "id": "dummy-configured-sla-id",
+                    "name": "Dummy_Configured_SLA",
+                    "version": "v0",
+                    "__typename": "Global_Sla_Reply"
+                },
+                "effectiveSlaSourceObject": {
+                    "fid": "dummy-fid-001",
+                    "name": "DUMMY-SOURCE-NAME",
+                    "objectType": "Dummy_Source_Type",
+                    "__typename": "Path_Node"
+                },
+                "logicalPath": [
+                    {
+                        "fid": "dummy-logical-fid-001",
+                        "name": "Dummy_Logical_Name1",
+                        "objectType": "Dummy_Logical_Type1",
+                        "__typename": "Path_Node"
+                    },
+                    {
+                        "fid": "dummy-logical-fid-002",
+                        "name": "Dummy_Logical_Name2",
+                        "objectType": "Dummy_Logical_Type2",
+                        "__typename": "Path_Node"
+                    }
+                ],
+                "physicalPath": [
+                    {
+                        "fid": "dummy-physical-fid-001",
+                        "name": "Dummy_Physical_Name1",
+                        "objectType": "Dummy_Physical_Type1",
+                        "__typename": "Path_Node"
+                    },
+                    {
+                        "fid": "dummy-physical-fid-002",
+                        "name": "Dummy_Physical_Name2",
+                        "objectType": "Dummy_Physical_Type2",
+                        "__typename": "Path_Node"
+                    }
+                ],
+                "numWorkloadDescendants": 0,
+                "allOrgs": [],
+                "securityMetadata": null,
+                "__typename": "Vsphere_Vm"
+            }
+        }
+    },
+    "outputs": {
+        "id": "dummy-id-001",
+        "name": "DUMMY-NAME",
+        "objectType": "Dummy_Object_Type",
+        "slaAssignment": "Dummy_Assignment",
+        "slaPauseStatus": false,
+        "effectiveSlaDomain": {
+            "id": "dummy-sla-id",
+            "name": "Dummy_SLA_Domain",
+            "version": "v0",
+            "__typename": "Global_Sla_Reply"
+        },
+        "Snapshot_Distribution": {
+            "id": "dummy-snapshot-id",
+            "totalCount": 0,
+            "scheduledCount": 0,
+            "onDemandCount": 0,
+            "retrievedCount": 0,
+            "__typename": "Snapshot_Distribution"
+        },
+        "effectiveRetentionSlaDomain": null,
+        "configuredSlaDomain": {
+            "id": "dummy-configured-sla-id",
+            "name": "Dummy_Configured_SLA",
+            "version": "v0",
+            "__typename": "Global_Sla_Reply"
+        },
+        "effectiveSlaSourceObject": {
+            "fid": "dummy-fid-001",
+            "name": "DUMMY-SOURCE-NAME",
+            "objectType": "Dummy_Source_Type",
+            "__typename": "Path_Node"
+        },
+        "logicalPath": [
+            {
+                "fid": "dummy-logical-fid-001",
+                "name": "Dummy_Logical_Name1",
+                "objectType": "Dummy_Logical_Type1",
+                "__typename": "Path_Node"
+            },
+            {
+                "fid": "dummy-logical-fid-002",
+                "name": "Dummy_Logical_Name2",
+                "objectType": "Dummy_Logical_Type2",
+                "__typename": "Path_Node"
+            }
+        ],
+        "physicalPath": [
+            {
+                "fid": "dummy-physical-fid-001",
+                "name": "Dummy_Physical_Name1",
+                "objectType": "Dummy_Physical_Type1",
+                "__typename": "Path_Node"
+            },
+            {
+                "fid": "dummy-physical-fid-002",
+                "name": "Dummy_Physical_Name2",
+                "objectType": "Dummy_Physical_Type2",
+                "__typename": "Path_Node"
+            }
+        ],
+        "numWorkloadDescendants": 0,
+        "allOrgs": [],
+        "securityMetadata": null,
+        "__typename": "Vsphere_Vm"
+    }
+}

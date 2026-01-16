@@ -21,5 +21,5 @@ To perform actions on mailboxes of other users, and to execute searches on the E
 | ----- | ----|
 | Delegate | One-to-one relationship between users. |
 | Impersonation | A single account needs to access multiple mailboxes. |
-| eDiscovery | Search the Exchange server. | 
+| eDiscovery | Search the Exchange server. |
 | Compliance Search | Perform searches across mailboxes and get an estimate of the results. |

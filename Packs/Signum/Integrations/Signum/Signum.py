@@ -175,7 +175,7 @@ def list_domain_users_ec(raw_response, simple_view: bool = True) -> tuple[list, 
     entry_context = []
     human_readable = []
     if raw_response_text := raw_response.text:
-        xml = re.findall("<s:Envelope.*<\/s:Envelope>", raw_response_text)[0]
+        xml = re.findall(r"<s:Envelope.*<\/s:Envelope>", raw_response_text)[0]
         root_xml = ElementTree.fromstring(xml)
         xml_dict = xml_to_dict_recursive(root=root_xml, simple_view=simple_view)
         result = None

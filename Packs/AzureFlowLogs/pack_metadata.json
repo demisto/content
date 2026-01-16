@@ -1,0 +1,28 @@
+{
+    "name": "AzureFlowLogs",
+    "description": "This pack contains data normalization to XDM fields and timestamp ingestion for logs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Services",
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Azure",
+        "Flow",
+        "Logs",
+        "Network Watcher"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

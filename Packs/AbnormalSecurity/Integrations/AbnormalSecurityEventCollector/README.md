@@ -35,3 +35,7 @@ Manual command to fetch events and display them.
 #### Context Output
 
 There is no context output for this command.
+
+## Note
+
+This integration only fetches threats.

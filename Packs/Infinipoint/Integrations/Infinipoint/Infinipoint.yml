@@ -4,6 +4,7 @@ commonfields:
 name: Infinipoint
 display: Infinipoint
 category: Network Security
+provider: Infinipoint
 description: Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
 configuration:
 - display: Access Key
@@ -995,7 +996,7 @@ script:
       description: success.
       type: Number
 
-  dockerimage: demisto/auth-utils:1.0.0.116930
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   isfetch: true
   script: '-'
   subtype: python3

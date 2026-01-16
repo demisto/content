@@ -17,8 +17,9 @@ args:
   description: A comma-separated list of CIDR to validate (IPv4 or IPv6).
 comment: Checks whether a given CIDR prefix is bigger than the defined maximum prefix.
 scripttarget: 0
+isllm: false
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

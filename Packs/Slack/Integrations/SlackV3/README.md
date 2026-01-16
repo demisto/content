@@ -700,11 +700,12 @@ Fetches a conversation's history of messages and events
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                              | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| channel_id        | The channel ID associated with the Slack channel.                                                                                                                                            | Required     |
-| limit             | Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results. | Optional     |
-| conversation_id   | Conversation id.                                                                                                                                                                             | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                              | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| conversation_name | The name of the conversation. For channels, provide the channel name. For direct messages, use the username or display name. Either this or *conversation_id* is required. If both are provided, *conversation_id* takes precedence. | Optional     |
+| conversation_id   | The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.                                        | Optional     |
+| limit             | Set this argument to specify how many results to return.                                                                                                                     | Optional     |
+| from_time         | Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order. | Optional     |
 
 #### Context Output
 

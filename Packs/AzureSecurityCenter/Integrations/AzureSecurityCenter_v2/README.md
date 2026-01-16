@@ -91,12 +91,13 @@ Lists alerts for the subscription according to the specified filters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSecurityCenter.Alert.AlertDisplayName | string | Alert display name |
-| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred |
-| AzureSecurityCenter.Alert.DetectedTimeUtc | date | Time the vendor detected the incident |
-| AzureSecurityCenter.Alert.ReportedSeverity | string | Estimated severity of this alert |
-| AzureSecurityCenter.Alert.State | string | Alert state (Active, Dismissed, etc.) |
-| AzureSecurityCenter.Alert.ID | string | Alert ID |
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
+| AzureSecurityCenter.Alert.Description | string | Description of the suspicious activity that was detected. |
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of this alert. |
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). |
+| AzureSecurityCenter.Alert.ID | string | The alert ID. |
 
 ##### Command Example
 
@@ -108,7 +109,6 @@ Lists alerts for the subscription according to the specified filters.
 {
     "AzureSecurityCenter.Alert": [
         {
-            "ActionTaken": "Undefined",
             "CompromisedEntity": "alerts",
             "Description": "Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control",
             "DetectedTime": "2019-10-27T00:00:00Z",
@@ -125,9 +125,9 @@ Lists alerts for the subscription according to the specified filters.
 
 ### Azure Security Center - List Alerts
 
-| **DisplayName** | **CompromisedEntity** | **DetectedTime** | **ReportedSeverity** | **State** | **ActionTaken** | **Description** | **ID** |
+| **DisplayName** | **CompromisedEntity** | **DetectedTime** | **ReportedSeverity** | **State** | **Description** | **ID** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traffic from unrecommended IP addresses was detected | alerts | 2019-10-27T00:00:00Z | Information | Active | Undefined | Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control | 2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c |
+| Traffic from unrecommended IP addresses was detected | alerts | 2019-10-27T00:00:00Z | Information | Active | Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control | 2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c |
 
 ### 2. azure-sc-update-atp
 
@@ -570,20 +570,13 @@ Get an alert that is associated a resource group or a subscription.
 | AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
 | AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
 | AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
-| AzureSecurityCenter.Alert.ReportedTime | date | The time the incident was reported to Microsoft.Security, in UTC. |
 | AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. |
-| AzureSecurityCenter.Alert.State | string | The alert state (Active, Dismissed, etc.). |
-| AzureSecurityCenter.Alert.ConfidenceScore | string | Level of confidence for the alert. |
-| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken as a response to the alert (Active, Blocked etc.). |
-| AzureSecurityCenter.Alert.CanBeInvestigated | string | Whether this alert can be investigated using Azure Security Center. |
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). |
 | AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. |
 | AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. |
-| AzureSecurityCenter.Alert.AssociatedResource | string | Azure resource ID of the associated resource. |
 | AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. |
-| AzureSecurityCenter.Alert.InstanceID | string | Instance ID of the alert. |
 | AzureSecurityCenter.Alert.ID | string | The alert ID. |
-| AzureSecurityCenter.Alert.SubscriptionID | string | Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to. |
-| AzureSecurityCenter.Alert.Description | string | Description and explanation of the incident. |
+| AzureSecurityCenter.Alert.Description | string | Description of the incident and what it means. |
 | AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. |
 | AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. |
 

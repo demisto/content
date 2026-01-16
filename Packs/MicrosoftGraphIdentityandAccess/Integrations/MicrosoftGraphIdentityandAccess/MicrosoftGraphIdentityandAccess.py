@@ -1,13 +1,17 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+demisto.debug("pack name = Microsoft Graph Identity and Access, pack version = 1.2.60")
 """
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
 
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+
 from MicrosoftApiModule import *  # noqa: E402
 
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -20,7 +24,10 @@ REQUIRED_PERMISSIONS = (
     "RoleManagement.ReadWrite.Directory",
     "Policy.ReadWrite.ConditionalAccess",
     "Policy.Read.All",
+    "Application.Read.All",
 )
+
+SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
 
 class Client:  # pragma: no cover
@@ -290,6 +297,20 @@ class Client:  # pragma: no cover
             odata_query += odata
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}")["value"]
 
+    def get_user_signin_event(self, signin_id: str) -> dict:
+        """Retrieve a specific Microsoft Entra user sign-in event
+
+        Args:
+            signin_id: Unique ID representing the sign-in event.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/signin-get?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request("GET", f"v1.0/auditLogs/signIns/{signin_id}")
+
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
         Args:
@@ -343,6 +364,374 @@ class Client:  # pragma: no cover
         self.ms_client.http_request(
             "DELETE", f"v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref", return_empty_response=True
         )
+
+    def list_conditional_access_policies(self, policy_id: str, filter_query: Optional[str] = None) -> list:
+        """
+        Retrieve Conditional Access policies, or a specific one by ID.
+
+        Args:
+            policy_id (str): The ID of the policy to retrieve. If not provided, lists all.
+            filter_query (str, optional): An OData filter query to apply when listing policies
+                                            (only relevant when policy_id is not provided).
+
+        Returns:
+            list: A list containing the retrieved policy or policies.
+                - If policy_id is provided, returns a list with a single policy.
+                - If policy_id is not provided, returns a list of all policies.
+                - If no policies are found, returns an empty list.
+
+        Raises:
+            DemistoException: If an error occurs during the API request.
+        """
+        if policy_id:
+            url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
+        else:
+            url_suffix = "v1.0/identity/conditionalAccess/policies"
+            if filter_query:
+                url_suffix += f"?$filter={filter_query}"
+
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix, resp_type="json")
+        # if a single policy is returned (dict), make it a list to standardize the structure
+        if not res:
+            return []
+        if not policy_id:
+            return res.get("value") or []
+        else:
+            return [res]
+
+    def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
+        """
+        Delete specific Conditional Access policy by ID.
+
+        Args:
+            policy_id (str, required): The ID of the policy to delete.
+
+        Returns:
+            CommandResults: Success message or error information.
+        """
+        url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
+        res = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
+
+        if res.status_code != 204:
+            demisto.error(
+                f"Failed to delete Conditional Access policy {policy_id}. Status code: {res.status_code},"
+                f" Response: {res.text}"
+            )
+            raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n{str(res)}")
+
+        demisto.info(f"Conditional Access policy {policy_id} was successfully deleted.")
+        return CommandResults(readable_output=f"Conditional Access policy {policy_id} was successfully deleted.")
+
+    def create_conditional_access_policy(self, policy: Dict[str, Any]) -> CommandResults:
+        """
+        Sends a request to create a new Conditional Access policy in Microsoft Graph API.
+
+        Args:
+            policy (str | dict): The policy definition as a JSON string or dictionary.
+
+        Returns:
+            CommandResults: Results containing the created policy (context) and
+            success message or error information.
+        """
+        res = self.ms_client.http_request(
+            method="POST",
+            url_suffix="v1.0/identity/conditionalAccess/policies",
+            json_data=policy,
+        )
+
+        policy_id = res.get("id")
+        if not policy_id:
+            demisto.error(f"Error creating Conditional Access policy:\n{str(res)}")
+            raise DemistoException(f"Error creating Conditional Access policy:\n{str(res)}")
+
+        demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n{str(res)}")
+
+        return CommandResults(
+            outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
+            outputs=res,
+            readable_output=f"Conditional Access policy {policy_id} was successfully created.",
+            raw_response=res,
+        )
+
+    def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
+        """
+        Updates a Conditional Access policy using its ID and the provided policy data.
+
+        Args:
+            policy_id (str): The ID of the policy to update.
+            policy (dict | str): The policy data to update with. Can be a dictionary or a JSON string.
+
+        Returns:
+            CommandResults: Object containing the operation outcome.
+        """
+        res = self.ms_client.http_request(
+            method="PATCH",
+            url_suffix=f"v1.0/identity/conditionalAccess/policies/{policy_id}",
+            json_data=policy,
+            resp_type="response",
+        )
+
+        if res.status_code != 204:
+            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
+            raise DemistoException(
+                f"Conditional Access policy {policy_id} could not be updated:\n{res}",
+            )
+
+        demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
+
+        return CommandResults(
+            readable_output=f"Conditional Access policy {policy_id} was successfully updated.",
+        )
+
+
+""" UTILITIES"""
+
+
+def build_policy(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds a Conditional Access policy object from the provided arguments.
+
+    Args:
+        args (dict): Command arguments containing policy details.
+            policy_name (str): Display name for the policy.
+            state (str): State of the policy (enabled, disabled, etc.).
+            sign_in_risk_levels (str): Risk levels for sign-in.
+            user_risk_levels (str): Risk levels for users.
+            client_app_types (str): List of client application types.
+            include_applications (str, optional): Applications to include.
+            exclude_applications (str, optional): Applications to exclude.
+            include_user_actions (str, optional): User actions to include.
+            include_users (str, optional): Users to include.
+            exclude_users (str, optional): Users to exclude.
+            include_roles (str, optional): Roles to include.
+            exclude_roles (str, optional): Roles to exclude.
+            include_groups (str, optional): Groups to include.
+            exclude_groups (str, optional): Groups to exclude.
+            include_platforms (str, optional): Platforms to include.
+            exclude_platforms (str, optional): Platforms to exclude.
+            include_locations (str, optional): Locations to include.
+            exclude_locations (str, optional): Locations to exclude.
+            grant_control_operator (str, optional): Operator for grant controls, default is AND.
+            grant_control_enforcement (str, optional): Enforcement controls, default is mfa.
+
+    Returns:
+        dict: A structured policy object ready to be used in creating a Conditional Access policy.
+
+    """
+
+    policy = {
+        "displayName": args.get("policy_name"),
+        "state": args.get("state"),
+        "conditions": {
+            "clientAppTypes": argToList(args.get("client_app_types")),
+            "applications": {
+                "includeApplications": argToList(args.get("include_applications")),
+                "excludeApplications": argToList(args.get("exclude_applications")),
+                "includeUserActions": argToList(args.get("include_user_actions")),
+            },
+            "users": {
+                "includeUsers": argToList(args.get("include_users")),
+                "excludeUsers": argToList(args.get("exclude_users")),
+                "includeRoles": argToList(args.get("include_roles")),
+                "excludeRoles": argToList(args.get("exclude_roles")),
+                "includeGroups": argToList(args.get("include_groups")),
+                "excludeGroups": argToList(args.get("exclude_groups")),
+            },
+            "platforms": {
+                "includePlatforms": argToList(args.get("include_platforms")),
+                "excludePlatforms": argToList(args.get("exclude_platforms")),
+            },
+            "locations": {
+                "includeLocations": argToList(args.get("include_locations")),
+                "excludeLocations": argToList(args.get("exclude_locations")),
+            },
+            "signInRiskLevels": argToList(args.get("sign_in_risk_levels")),
+            "userRiskLevels": argToList(args.get("user_risk_levels")),
+        },
+        "grantControls": {
+            "operator": args.get("grant_control_operator"),
+            "builtInControls": argToList(args.get("grant_control_enforcement")),
+        },
+    }
+
+    return policy
+
+
+def deep_get(root: dict[str, Any], path: list[str]) -> Any | None:
+    """
+    Return the value at a nested path in a dictionary.
+
+    Args:
+        root (dict[str, Any]): The root dictionary to traverse.
+        path (list[str]): The path to follow, with each element being a key in the dictionary.
+
+    Returns:
+        Any | None: The value at the specified path, or None if any key in the path doesn't exist.
+    """
+    try:
+        demisto.debug(f"Getting value from path {path} in dictionary")
+        acc = root
+
+        for i, key in enumerate(path):
+            demisto.debug(f"Accessing key '{key}' ({i+1}/{len(path)})")
+            acc = acc[key]
+
+        demisto.debug(f"Successfully retrieved value from path {path}")
+        return acc
+
+    except (KeyError, TypeError) as e:
+        demisto.info(f"Failed to get value from path {path}: {str(e)}")
+        return None
+
+
+def deep_set(root: dict[str, Any], path: list[str], value: Any) -> None:
+    """
+    Set a value at a nested path in a dictionary.
+
+    Args:
+        root (dict[str, Any]): The root dictionary to modify.
+        path (list[str]): The path to follow, with each element being a key in the dictionary.
+        value (Any): The value to set at the specified path.
+
+    Note:
+        This function creates any missing dictionaries along the path.
+
+    Example:
+        For a path like ['a', 'b', 'c'] and a value 42, if 'a' or 'b' don't exist,
+        they will be created as empty dictionaries using setdefault:
+
+        root = {}
+        deep_set(root, ['a', 'b', 'c'], 42)
+        # Results in: {'a': {'b': {'c': 42}}}
+
+        The setdefault method returns the value for a key if it exists,
+        otherwise it sets the key to a default value and returns that value.
+    """
+    for key in path[:-1]:
+        root = root.setdefault(key, {})
+    root[path[-1]] = value
+
+
+def resolve_merge_value(
+    field: str,
+    existing: List[str],
+    new: List[str],
+    messages: List[str],
+) -> List[str]:
+    """
+    Merge two lists of values based on field-specific rules.
+
+    Args:
+        field (str): The field name whose values are being merged.
+        existing (List[str]): The existing list of values.
+        new (List[str]): The new list of values to merge with existing.
+        messages (List[str]): A list to collect messages about merge decisions.
+
+    Returns:
+        List[str]: The merged list of values based on specific rules:
+            1. For 'signInRiskLevels', performs a direct set union
+            2. If existing list only contains 'None' values, returns the new list
+            3. If existing list contains special values like 'All', keeps existing
+            4. If new list only contains special values, returns the new list
+            5. Otherwise, performs a set union of both lists
+    """
+    specials = {"All", "all", "AllTrusted"}
+    none_values = {"None", "none"}
+
+    demisto.debug(f"resolve_merge_value: Merging '{field}' values. Existing: {existing}, New: {new}")
+
+    # Sign-in risk levels are a straight set-union because this filed can contain combination of
+    # "none" and other values like "low", "medium", "high" (i.e: signInRiskLevels = "none", "low")
+    if field == "signInRiskLevels":
+        result = list(set(existing) | set(new))
+        demisto.debug(f"resolve_merge_value: Field '{field}' is a sign-in risk level. Merged result: {result}")
+        return result
+
+    # Existing == ['None'] → take the new list
+    if set(existing).issubset(none_values):
+        demisto.debug(f"resolve_merge_value: Existing values for '{field}' are 'None'. Using new values: {new}")
+        return new
+
+    # Existing is a blocking special value → keep it, warn once
+    if existing and existing[0] in specials:
+        message = (
+            f"Field '{field}' kept as '{existing[0]}' (special value cannot be merged).\n"
+            f"To update this field, use update_action='override'."
+        )
+        messages.append(message)
+        demisto.debug(f"resolve_merge_value: {message}")
+        return existing
+
+    # Incoming list is itself only a special value → take it
+    if set(new).issubset(specials):
+        demisto.debug(f"resolve_merge_value: New values for '{field}' contain only special values: {new}. Using new values.")
+        return new
+
+    # Otherwise, normal union
+    result = list(set(existing) | set(new))
+    demisto.debug(f"resolve_merge_value: Performed normal union for '{field}'. Merged result: {result}")
+    return result
+
+
+def merge_policy_section(
+    base_existing: Dict[str, Any],
+    new: Dict[str, Any],
+    messages: List[str],
+) -> None:
+    """
+    Merges new policy section values into an existing policy structure.
+
+    This function walks through the new policy dictionary and merges list values with
+    existing ones according to specific rules defined in resolve_merge_value().
+
+    Args:
+        base_existing (Dict[str, Any]): The existing policy configuration to merge into.
+        new (Dict[str, Any]): The new policy configuration with values to merge.
+        messages (List[str]): A list to collect messages about merge decisions.
+
+    Returns:
+        None: The function modifies the 'new' dictionary in place.
+    """
+
+    def walk(node_new: Dict[str, Any], path: List[str]) -> None:
+        for key, val in node_new.items():
+            current_path_to_key = path + [key]
+            demisto.debug(f"Processing key {key} at path {'/'.join(current_path_to_key)}")
+
+            # ── dive deeper
+            if isinstance(val, dict):
+                demisto.debug(f"Found dictionary at {'/'.join(current_path_to_key)}, diving deeper")
+                walk(val, current_path_to_key)
+                continue
+
+            # ── override non-list leaves
+            if not isinstance(val, list):
+                demisto.debug("setting to the new policy value.")
+                messages.append(f"Field `{'/'.join(current_path_to_key)}` is not a list - overriding the value.")
+                continue
+
+            existing_val = deep_get(base_existing, current_path_to_key)
+            demisto.debug(f"Existing value at {'/'.join(current_path_to_key)}: {existing_val}")
+
+            if isinstance(existing_val, list):
+                merged = resolve_merge_value(key, existing_val, val, messages)
+                demisto.debug(f"Merged result for {'/'.join(current_path_to_key)}: {merged}")
+                deep_set(new, current_path_to_key, merged)
+
+            else:
+                # no existing list (or wrong type) → leave new value as-is
+                if existing_val is None:
+                    messages.append(f"Field `{'/'.join(current_path_to_key)}` was empty - new list left untouched.")
+                    demisto.debug(f"No existing value at {'/'.join(current_path_to_key)}, new value is {val}")
+                else:
+                    demisto.debug(f"Existing value at {'/'.join(current_path_to_key)} is not a list, new list left untouched.")
+                    messages.append(
+                        f"Field `{'/'.join(current_path_to_key)}` exists but is not a list - new list left untouched."
+                    )
+
+    demisto.debug("merge_policy_section: Starting policy merge process")
+    walk(new, [])
+    demisto.debug("merge_policy_section: Completed policy merge process")
 
 
 """ COMMAND FUNCTIONS """
@@ -777,20 +1166,192 @@ def date_str_to_azure_format(date_str: str) -> str:
     return date_str
 
 
-def detection_to_incident(detection: dict, detection_date: str) -> dict:
+def detection_to_incident(detection: dict, detection_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
     detection_id: str = detection.get("id", "")
+    sign_in_risk_mapping = {
+        "riskyIPAddress": {
+            "alertDescription": (
+                "Sign-in by user {userId} from an IP address identified "
+                "as an anonymous proxy IP address by Microsoft Defender for Cloud Apps."
+            ),
+        },
+        "generic": {
+            "alertDescription": (
+                "One of the Microsoft Entra ID Protection premium detections was triggered for user {userId}. "
+                "Since premium detections are only visible to Microsoft Entra ID P2 customers, "
+                "they are labeled as Additional risk detected for users without Microsoft Entra ID P2 licenses."
+            ),
+        },
+        "adminConfirmedUserCompromised": {
+            "alertDescription": (
+                "An admin selected Confirm user compromised " "in Microsoft Entra ID Protection UI or API for user {userId}. "
+            ),
+        },
+        "anomalousToken": {
+            "alertDescription": (
+                "Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime "
+                "or a token played from an unfamiliar location, for user {userId}. This detection covers 'Session Tokens' "
+                "and 'Refresh Tokens.' If the location, application, IP address, User Agent, or other characteristics "
+                "are unexpected for the user, the administrator should consider "
+                "this risk as an indicator of potential token replay."
+            ),
+        },
+        "anonymizedIPAddress": {
+            "alertDescription": (
+                "Suspicious sign-in from an anonymous IP address "
+                "(for example, Tor browser or anonymous VPN) detected for user {userId}."
+            ),
+        },
+        "unlikelyTravel": {
+            "alertDescription": (
+                "Sign-ins originating from two geographically distant locations, where at least "
+                "one of the locations might also be atypical for the user, given past behavior based on {userId} user history."
+            ),
+        },
+        "mcasImpossibleTravel": {
+            "alertDescription": (
+                "Sign-in originating from geographically distant locations within a time period shorter "
+                "than the time it takes to travel from the first location to the second detected for user {userId}."
+            ),
+        },
+        "maliciousIPAddress": {
+            "alertDescription": (
+                "Sign-in from an IP address flagged as malicious based on high failure rates "
+                "because of invalid credentials received from the IP address or other IP reputation sources for user {userId}."
+            ),
+        },
+        "mcasFinSuspiciousFileAccess": {
+            "alertDescription": (
+                "User {userId} accessed an uncommon large number of files, and/or files containing "
+                "sensitive information, from Microsoft SharePoint Online or Microsoft OneDrive."
+            ),
+        },
+        "investigationsThreatIntelligence": {
+            "alertDescription": (
+                "User {userId} activity is unusual for the user or consistent with known attack patterns. "
+                "This detection is based on Microsoft's internal and external threat intelligence sources."
+            ),
+        },
+        "newCountry": {
+            "alertDescription": "Sign-in from an unusual country for user {userId} based on past activity locations.",
+        },
+        "passwordSpray": {
+            "alertDescription": (
+                "Multiple sign-in attempts detected across accounts, targeting user {userId}. "
+                "The risk detection is triggered when an account's password is valid and has an attempted sign in."
+            ),
+        },
+        "suspiciousBrowser": {
+            "alertDescription": (
+                "Sign-in detected from a browser associated with anomalous behavior based on "
+                "suspicious sign-in activity across multiple tenants from different countries/regions "
+                "in the same browser for user {userId}."
+            ),
+        },
+        "suspiciousInboxForwarding": {
+            "alertDescription": (
+                "Suspicious rules that delete or move messages or folders are set on {userId} user's inbox. "
+                "This detection might indicate: a user's account is compromised, messages are being intentionally hidden, "
+                "and the mailbox is being used to distribute spam or malware in your organization."
+            ),
+        },
+        "mcasSuspiciousInboxManipulationRules": {
+            "alertDescription": (
+                "Suspicious mailbox rule that delete or move messages or folders are set on user {userId} "
+                "mailbox. This detection might indicate: a user's account is compromised, messages are being intentionally "
+                "hidden, and the mailbox is being used to distribute spam or malware in your organization."
+            ),
+        },
+        "tokenIssuerAnomaly": {
+            "alertDescription": (
+                "Sign-in detected  for user {userId} with indications that the SAML token issuer "
+                "for the associated SAML token is potentially compromised. "
+                "The claims included in the token are unusual or match known attacker patterns."
+            ),
+        },
+        "unfamiliarFeatures": {
+            "alertDescription": (
+                "Sign-in using features (IP, ASN, location, device, and/or browser) not previously seen "
+                "for user {userId} based on past sign-in history. Unfamiliar sign-in properties can be detected on both "
+                "interactive and non-interactive sign-ins. When this detection is detected on non-interactive sign-ins, "
+                "it deserves increased scrutiny due to the risk of token replay attacks."
+            ),
+        },
+        "nationStateIP": {
+            "alertDescription": (
+                "Sign-in detected from an IP address consistent with known IP addresses associated "
+                "with nation state actors or cyber crime groups, "
+                "based on data from the Microsoft Threat Intelligence Center (MSTIC), for user {userId}."
+            ),
+        },
+        "anomalousUserActivity": {
+            "alertDescription": (
+                "Anomalous privileged user {userId} activity regarding user baseline. The detection "
+                "is triggered against the privileged user account making the change or the object that was changed."
+            ),
+        },
+        "attackerinTheMiddle": {
+            "alertDescription": (
+                "Sign-in from a malicious reverse proxy associated with known Adversary in the Middle activity "
+                "detected for user {userId}. Thoughtful investigation is required when this detection is triggered "
+                "to ensure the risk is cleared, which might require secure password reset and revocation of existing sessions."
+            ),
+        },
+        "leakedCredentials": {
+            "alertDescription": "Credentials for user {userId} found in known data breaches.",
+        },
+        "attemptedPrtAccess": {
+            "alertDescription": (
+                "Possible attempt to access Primary Refresh Token (PRT) on {userId} device.  A PRT is a "
+                "JSON Web Token (JWT) issued to Microsoft first-party token brokers to enable single sign-on (SSO) "
+                "across the applications used on those devices. This detection is high risk and prompt remediation "
+                "of these users is recommended. It appears infrequently in most organizations due to its low volume."
+            ),
+        },
+        "suspiciousAPITraffic": {
+            "alertDescription": (
+                "Abnormal GraphAPI traffic or directory enumeration detected for user {userId}. Suspicious "
+                "API traffic might suggest that a user is compromised and conducting reconnaissance in the environment."
+            ),
+        },
+        "suspiciousSendingPatterns": {
+            "alertDescription": (
+                "Suspicious email patterns detected by Microsoft Defender for Office 365 (MDO) " "in email sent by user {userId}."
+            ),
+        },
+        "userReportedSuspiciousActivity": {
+            "alertDescription": (
+                "User {userId} denied a multi factor authentication (MFA) prompt " "and reported it as suspicious activity."
+            ),
+        },
+    }
+
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
+    detection_upn: str = detection.get("userPrincipalName", "")
+
+    risk = sign_in_risk_mapping.get(detection_type, {})
+
+    if severity_override:
+        incident_severity = SEVERITY_MAP.get(overridden_issue_severity, 2)
+    else:
+        detection_severity: str = detection.get("riskLevel", "")
+        incident_severity = SEVERITY_MAP.get(detection_severity, 2)
+
     incident = {
         "name": f"Azure AD: {detection_id} {detection_type} {detection_detail}",
+        "severity": incident_severity,
         "occurred": f"{detection_date}Z",
         "rawJSON": json.dumps(detection),
     }
+
+    incident["details"] = risk.get("alertDescription", "").replace("{userId}", detection_upn)
+
     return incident
 
 
 def detections_to_incidents(
-    detections: List[Dict[str, str]], last_fetch_datetime: str
+    detections: List[Dict[str, str]], last_fetch_datetime: str, severity_override: bool, overridden_issue_severity: str
 ) -> tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
@@ -801,7 +1362,9 @@ def detections_to_incidents(
     for detection in detections:
         detection_datetime = detection.get("detectedDateTime", "")
         detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
-        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
+        incident = detection_to_incident(
+            detection, detection_datetime_in_azure_format, severity_override, overridden_issue_severity
+        )
         incidents.append(incident)
 
         if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
@@ -812,20 +1375,66 @@ def detections_to_incidents(
     return incidents, latest_incident_time
 
 
-def risky_user_to_incident(riskyuser: dict, riskyuser_date: str) -> dict:
+def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
     riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
+
+    if severity_override:
+        incident_severity = SEVERITY_MAP.get(overridden_issue_severity, 2)
+    else:
+        incident_severity = SEVERITY_MAP.get(riskyuser_risk_level, 2)
+
+    if riskyuser_risk_level == "remediated":
+        incident_details = (
+            f"User {riskyuser_upn} remediated. Risk might have been self-remediated by user through MFA "
+            "or secure password change, or manually remediated by an administrator. Caution is required "
+            "before dismissing this alert when risk detail is userPassedMFADrivenByRiskBasedPolicy "
+            "as AiTM attacks on an MFA-enabled account trigger this alert."
+        )
+
+    elif riskyuser_risk_level == "dismissed":
+        incident_details = (
+            f"User {riskyuser_upn} risk has been dismissed because the user's account has been considered safe. "
+            "In some cases, Microsoft Entra ID Protection can also automatically dismiss a user's risk state when "
+            "both the risk detection and the corresponding risky sign-in are identified by ID Protection as no longer "
+            "posing a security threat. This automatic intervention can happen if the user provides a second factor, "
+            "such as multifactor authentication (MFA) or if the real-time and offline assessment determines that the sign-in "
+            "is no longer risky"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and riskyuser_risk_level == "high":
+        incident_details = (
+            f"High-risk of {riskyuser_upn} Entra ID account compromise. "
+            "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+            "and known attack patterns factor into the confidence level of the risk detection"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and (riskyuser_risk_level == "medium" or riskyuser_risk_level == "low"):
+        incident_details = (
+            f"One or more {riskyuser_risk_level}-severity anomalies were detected "
+            f"by Microsoft on {riskyuser_upn} Entra ID account. "
+            "Sign-in patterns, behaviors, and other signals factor into the confidence level of the risk detection."
+        )
+
+    else:
+        incident_details = (
+            f"Risk detected by Microsoft for {riskyuser_upn} Entra ID account. Risk level is {riskyuser_risk_state}."
+        )
+
     incident = {
         "name": f"Azure User at Risk: {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
+        "details": incident_details,
+        "severity": incident_severity,
         "occurred": f"{riskyuser_date}Z",
         "rawJSON": json.dumps(riskyuser),
     }
-
     return incident
 
 
-def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:
+def risky_users_to_incidents(
+    riskyusers: List[Dict[str, str]], last_fetch_datetime: str, severity_override: bool, overridden_issue_severity: str
+) -> tuple[List[Dict[str, str]], str]:
     """
     Given the risky users retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -836,7 +1445,9 @@ def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_dateti
     for riskyuser in riskyusers:
         riskyuser_datetime = riskyuser.get("riskLastUpdatedDateTime", "")
         riskyuser_datetime_in_azure_format = date_str_to_azure_format(riskyuser_datetime)
-        incident = risky_user_to_incident(riskyuser, riskyuser_datetime_in_azure_format)
+        incident = risky_user_to_incident(
+            riskyuser, riskyuser_datetime_in_azure_format, severity_override, overridden_issue_severity
+        )
         incidents.append(incident)
 
         if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
@@ -872,12 +1483,25 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     limit = params.get("max_fetch", "50")
     filter_expression = query_filter
 
+    severity_override = params.get("override_issue_severity", False)
+    issue_severity = params.get("issue_severity", "medium")
+
     if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
         riskyusers: list = client.list_risky_users(limit, None, filter_expression)  # type: ignore
-        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = risky_users_to_incidents(
+            riskyusers,
+            last_fetch_datetime=last_fetch,
+            severity_override=severity_override,  # type: ignore
+            overridden_issue_severity=issue_severity,
+        )
     else:
         detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
-        incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = detections_to_incidents(
+            detections,
+            last_fetch_datetime=last_fetch,
+            severity_override=severity_override,  # type: ignore
+            overridden_issue_severity=issue_severity,
+        )
 
     demisto.debug(f"Fetched {len(incidents)} incidents")
 
@@ -887,6 +1511,231 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     }
 
     return incidents, last_run
+
+
+def list_conditional_access_policies_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of Conditional Access policies or a specific one by ID.
+
+    Args:
+        client (Client): Microsoft Graph client.
+        args (dict): Command arguments. Supports optional 'policy_id'.
+
+    Returns:
+        CommandResults: Results to return to Cortex XSOAR.
+    """
+    policy_id = args.get("policy_id", "")
+    filter_query = args.get("filter")
+    limit = args.get("limit")
+    all_results = argToBoolean(args.get("all_results", True))
+
+    if policy_id and filter_query:
+        raise DemistoException("Cannot provide both policy_id and filter_query at the same time.\nPlease choose one.")
+
+    policies: list[dict[str, Any]] = client.list_conditional_access_policies(policy_id, filter_query)
+
+    if len(policies) == 0:
+        demisto.info("no conditional policies were found")
+        return CommandResults(readable_output="No Conditional Access policies were found.")
+
+    elif limit:
+        max_items = int(limit)
+    elif all_results:
+        max_items = len(policies)
+    else:
+        max_items = min(len(policies), 50)  # Default limit
+
+    policies_to_process = policies[:max_items]
+
+    context = []
+    readable_policies = []
+
+    for policy in policies_to_process:
+        context.append(policy)
+        readable_policy = {
+            "ID": policy.get("id"),
+            "DisplayName": policy.get("displayName"),
+            "CreatedDateTime": policy.get("createdDateTime"),
+            "State": policy.get("state"),
+            "GrantControls": policy.get("GrantControls"),
+            "Platforms": policy.get("platforms"),
+            "Locations": policy.get("locations"),
+            "Devices": policy.get("devices"),
+            "IncludeUsers": policy.get("conditions", {}).get("users", {}).get("includeUsers", []),
+            "ExcludeUsers": policy.get("conditions", {}).get("users", {}).get("excludeUsers", []),
+        }
+        readable_policy = remove_empty_elements(readable_policy)
+        readable_policies.append(readable_policy)
+
+    return CommandResults(
+        outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
+        outputs_key_field="ID",
+        outputs=context,
+        readable_output=tableToMarkdown("Conditional Access Policies", readable_policies),
+        raw_response=policies,
+    )
+
+
+def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes a Conditional Access policy by its ID.
+
+    Required Permissions:
+        Policy.Read.All (Delegated or Application)
+        Policy.ReadWrite.ConditionalAccess (Delegated or Application)
+
+    Args:
+        client (Client): Microsoft Graph client.
+        args (dict): Command arguments.
+            policy_id (str): The ID of the Conditional Access policy to delete.
+
+    Returns:
+        CommandResults: Results to return to Cortex XSOAR.
+    """
+    policy_id = args.get("policy_id", "")
+    return client.delete_conditional_access_policy(policy_id)
+
+
+def create_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates a Conditional Access policy.
+
+    Args:
+        client (Client): Microsoft Graph client.
+        args (dict): Command arguments containing policy details.
+
+    Returns:
+        CommandResults: In case of success created policy data for Context and
+                        and success message for the user, otherwise error message
+    """
+
+    policy = args.get("policy", {})
+    # in case user send json policy
+    try:
+        if isinstance(policy, str):
+            policy = json.loads(policy)
+
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"The provided policy string is not a valid JSON.\nError: {e}")
+
+    if not policy:
+        required_fields = ["policy_name", "state", "sign_in_risk_levels", "user_risk_levels", "client_app_types"]
+        missing_fields = [field for field in required_fields if not args.get(field)]
+
+        if missing_fields:
+            missing_list = ", ".join(missing_fields)
+            demisto.debug(f"Missing required field(s): {missing_list}.")
+            raise DemistoException(f"Missing required field(s): {missing_list}.")
+
+        policy = build_policy(args)
+
+    policy = cast(Dict[str, Any], remove_empty_elements(policy))
+
+    return client.create_conditional_access_policy(policy)
+
+
+def update_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update an existing Conditional Access policy using either full override or append logic.
+
+    Args:
+        client (Client): An authenticated Microsoft Graph API client.
+        args (Dict[str, Any]): Command arguments including:
+            - policy_id (str): ID of the policy to update.
+            - policy (str or dict, optional): A complete policy in JSON format (used if provided).
+            - update_action (str, optional): 'override' (default) or 'append'.
+            - Other individual fields like include_users, state, etc., depending on mode.
+
+    Returns:
+        CommandResults: A result object indicating success or failure, along with messages.
+    """
+
+    policy_id = args.get("policy_id", "")
+    update_action = args.get("update_action", "append")
+    messages: list[str] = []
+
+    policy = args.get("policy")
+
+    if policy:
+        try:
+            policy = json.loads(policy)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"The provided policy string is not a valid JSON. {str(e)}")
+
+        return client.update_conditional_access_policy(policy_id, policy)
+
+    new_policy = build_policy(args)
+
+    new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
+
+    if update_action == "append":
+        existing_policy = client.list_conditional_access_policies(policy_id)
+
+        if not existing_policy:
+            demisto.info(f"No existing policy found with ID: {policy_id}")
+            raise DemistoException(f"No existing policy found with ID: {policy_id}")
+
+        merge_policy_section(existing_policy[0], new_policy, messages)
+        new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
+
+    result = client.update_conditional_access_policy(policy_id, new_policy)
+
+    if messages and result.readable_output and not result.readable_output.startswith("Error"):
+        result.readable_output += "\n\nNote:\n" + "\n".join(messages)
+
+    return result
+
+
+def get_user_signin_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a specific Microsoft Entra ID user sign-in event
+
+    Args:
+        client (Client): An authenticated Microsoft Graph API client.
+        args (Dict[str, Any]): Command arguments including:
+            - id: Unique ID representing the sign-in event.
+
+    Returns:
+        CommandResults: A result object with the details of the requested user sign-in event.
+    """
+
+    signin_id = args.get("id", "")
+
+    context = []
+    readable_signin_events = []
+
+    if signin_event := client.get_user_signin_event(signin_id):
+        context.append(signin_event)
+
+        # Extract relevant items from the raw Graph API object to display them in war room
+        readable_signin_event = {
+            "id": signin_event.get("id"),
+            "correlationId": signin_event.get("correlationId"),
+            "appDisplayName": signin_event.get("appDisplayName"),
+            "resourceDisplayName": signin_event.get("resourceDisplayName"),
+            "status": signin_event.get("status"),
+            "ipAddress": signin_event.get("ipAddress"),
+            "conditionalAccessStatus": signin_event.get("conditionalAccessStatus"),
+            "appliedConditionalAccessPolicies": signin_event.get("appliedConditionalAccessPolicies"),
+            "deviceDetail": signin_event.get("deviceDetail"),
+            "clientAppUsed": signin_event.get("clientAppUsed"),
+            "userDisplayName": signin_event.get("userDisplayName"),
+            "userPrincipalName": signin_event.get("userPrincipalName"),
+        }
+        readable_signin_events.append(readable_signin_event)
+
+        return CommandResults(
+            "MSGraphIdentity.AuditLog.signIns",
+            "id",
+            outputs=context,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                "Microsoft Entra ID user sign-in event :",
+                readable_signin_events,
+            ),
+        )
+    else:
+        return CommandResults(readable_output=f"Could not retrieve sign-in data for request_id {signin_id}")
 
 
 def main():  # pragma: no cover
@@ -953,6 +1802,16 @@ def main():  # pragma: no cover
             return_results(azure_ad_identity_protection_confirm_compromised_command(client, args))
         elif command == "msgraph-identity-protection-risky-user-dismiss":
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, args))
+        elif command == "msgraph-identity-ca-policies-list":
+            return_results(list_conditional_access_policies_command(client, args))
+        elif command == "msgraph-identity-ca-policy-delete":
+            return_results(delete_conditional_access_policy_command(client, args))
+        elif command == "msgraph-identity-ca-policy-create":
+            return_results(create_conditional_access_policy_command(client, args))
+        elif command == "msgraph-identity-ca-policy-update":
+            return_results(update_conditional_access_policy_command(client, args))
+        elif command == "msgraph-identity-audit-signin-event-get":
+            return_results(get_user_signin_event_command(client, args))
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(client, params)
             demisto.incidents(incidents)

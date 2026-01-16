@@ -1,0 +1,62 @@
+[
+    {
+        "name": "ACME Root CA",
+        "expiration_date": "May  9 16:35:16 2026 GMT",
+        "subject": "/CN=acme-root-ca.acme.com",
+        "device": "panorama.test",
+        "location": "Panorama",
+        "expiration_status": "Valid",
+        "cert_type": "Pushed",
+        "devices_using_certificate": [
+            "111111111111111"
+        ]
+    },
+    {
+        "name": "Decrypt Certificate",
+        "expiration_date": "May  9 16:36:13 2026 GMT",
+        "subject": "/CN=decrypt.acme.com",
+        "device": "panorama.test",
+        "location": "Panorama",
+        "expiration_status": "Valid",
+        "cert_type": "Pushed",
+        "devices_using_certificate": [
+            "111111111111111"
+        ]
+    },
+    {
+        "name": "test-cert",
+        "expiration_date": "May  9 19:24:08 2026 GMT",
+        "subject": "CN = testcert.example.com",
+        "device": "111111111111111",
+        "location": "Firewall",
+        "expiration_status": "Valid",
+        "cert_type": "Local"
+    },
+    {
+        "name": "FW-Cert-for-panorama",
+        "expiration_date": "Jun  6 23:20:20 2026 GMT",
+        "subject": "CN = Test cert on firewall for panorama",
+        "device": "111111111111111",
+        "location": "Firewall",
+        "expiration_status": "Valid",
+        "cert_type": "Local"
+    },
+    {
+        "name": "FW-Client-Cert",
+        "expiration_date": "Jun  6 23:23:21 2026 GMT",
+        "subject": "CN = Test client cert on firewall",
+        "device": "111111111111111",
+        "location": "Firewall",
+        "expiration_status": "Valid",
+        "cert_type": "Local"
+    },
+    {
+        "name": "TLSv1.3_Default",
+        "expiration_date": "Apr 29 17:59:43 2035 GMT",
+        "subject": "TESTLAB000000001",
+        "device": "1.1.1.1",
+        "location": "Panorama",
+        "expiration_status": "Valid",
+        "cert_type": "Predefined"
+    }
+]

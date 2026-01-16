@@ -23,7 +23,7 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "columns": [
         {
@@ -84,5 +84,12 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "Aliases": [
+        {
+            "cliName": "bmcitsmassignee",
+            "type": "grid",
+            "name": "Bmc Assignee"
+        }
+    ]
 }

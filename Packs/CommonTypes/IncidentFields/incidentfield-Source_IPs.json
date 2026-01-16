@@ -8,7 +8,8 @@
     "Malware",
     "Microsoft Defender For Endpoint",
     "Skyhigh Security Alert",
-    "Skyhigh Security Threat"
+    "Skyhigh Security Threat",
+    "CrowdStrike Falcon NGSIEM Detection"
   ],
   "breachScript": "",
   "caseInsensitive": true,

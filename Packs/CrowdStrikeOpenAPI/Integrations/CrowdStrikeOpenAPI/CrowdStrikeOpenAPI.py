@@ -2617,8 +2617,7 @@ class Client:
 
     def perform_group_action_request(self, action_name, msa_entityactionrequestv2_action__meters, msa_entityactionrequestv2_ids):
         params = assign_params(action_name=action_name)
-        data = assign_params(action__meters=msa_entityactionrequestv2_action__meters, ids=msa_entityactionrequestv2_ids)
-
+        data = assign_params(action_parameters=msa_entityactionrequestv2_action__meters, ids=msa_entityactionrequestv2_ids)
         headers = self.cs_client._headers
 
         response = self.cs_client.http_request(

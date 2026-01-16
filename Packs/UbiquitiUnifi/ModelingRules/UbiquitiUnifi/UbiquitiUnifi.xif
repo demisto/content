@@ -1,0 +1,34 @@
+[RULE: UBIQUITI_GENERAL_FIELDS]
+alter 
+    src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",src ,null),
+    src_ipv6 = if(src ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",src ,null),
+    dst_ipv4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",dst ,null),
+    dst_ipv6 = if(dst ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",dst ,null),
+    unifi_client_ipv4 = if(UNIFIclientIp ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",UNIFIclientIp ,null),
+    unifi_client_ipv6 = if(UNIFIclientIp ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",UNIFIclientIp  ,null);
+[MODEL: dataset = ubiquiti_unifi_raw]
+filter UNIFIcategory = "Monitoring" or UNIFIcategory = "Security" or UNIFIcategory = "System" or UNIFIcategory = "Internet" or UNIFIcategory = "Power"
+| call UBIQUITI_GENERAL_FIELDS 
+| alter 
+    xdm.target.port = to_integer(dpt),
+    xdm.source.port = to_integer(spt),
+    xdm.source.ipv4 = coalesce(src_ipv4,unifi_client_ipv4),
+    xdm.source.ipv6 = coalesce(src_ipv6,unifi_client_ipv6),
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.intermediate.ipv4 = UNIFIdeviceIp,
+    xdm.alert.description = msg,
+    xdm.target.host.hostname = UNIFIhost,
+    xdm.alert.severity = UNIFIrisk,
+    xdm.alert.category = UNIFIcategory,
+    xdm.alert.subcategory = UNIFIsubCategory,
+    xdm.target.host.mac_addresses = arraycreate(UNIFIdeviceMac),
+    xdm.network.session_id = UNIFIipsSessionId,
+    xdm.alert.original_threat_name = UNIFIipsSignature,
+    xdm.observer.name = UNIFIdeviceName,
+    xdm.observer.version = UNIFIdeviceVersion,
+    xdm.source.vlan = to_integer(UNIFInetworkVlan),
+    xdm.auth.auth_method = UNIFIauthMethod,
+    xdm.alert.name = cefName,
+    xdm.source.user.username = UNIFIadmin,
+    xdm.source.host.mac_addresses = arraycreate(UNIFIclientMac);

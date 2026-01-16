@@ -1,6 +1,7 @@
 category: Network Security
+provider: Thoma Bravo
 fromversion: 6.6.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -205,7 +206,7 @@ script:
     - contextPath: Darktrace.AIAnalyst.groupCategory
       description: Group category.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

@@ -8,7 +8,7 @@ EVENTS_OUTPUT = '{"events":[{"id":"1","created_time":"2025-03-24T11:13:24.915+00
 class Event:
     """Representation of an event from the event stream."""
 
-    def __init__(self, id=None, event='message', data='', retry=None):
+    def __init__(self, id=None, event="message", data="", retry=None):
         self.id = id
         self.event = event
         self.data = data
@@ -20,9 +20,9 @@ def client(mocker):
     from LookoutMobileEndpointSecurity import Client
 
     event_type_query = "THREAT"
-    app_key = 'app_key'
-    server_url = 'https://www.test.com/'
-    mocker.patch.object(Client, "_http_request", json={'access_token': 'access_token', 'expires_at': 0})
+    app_key = "app_key"
+    server_url = "https://www.test.com/"
+    mocker.patch.object(Client, "_http_request", json={"access_token": "access_token", "expires_at": 0})
     return Client(
         base_url=server_url,
         verify=False,
@@ -35,9 +35,10 @@ def client(mocker):
 @pytest.fixture(autouse=True)
 def sse_client(mocker):
     from LookoutMobileEndpointSecurity import SSEClient
-    event = Event('2', 'event', EVENTS_OUTPUT)
+
+    event = Event("2", "event", EVENTS_OUTPUT)
     mocker.patch.object(SSEClient, "events", return_value=[event])
-    return SSEClient(R'https://www.test.com/')
+    return SSEClient(R"https://www.test.com/")
 
 
 def test_create_response_object(client, mocker, requests_mock):
@@ -46,10 +47,10 @@ def test_create_response_object(client, mocker, requests_mock):
     When: Running create_response_object.
     Then: The response was build correctly.
     """
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'token_expiration': 0})
-    requests_mock.get('https://www.test.com/mra/stream/v2/events?type=THREAT&id=', status_code='200', json={})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"token_expiration": 0})
+    requests_mock.get("https://www.test.com/mra/stream/v2/events?type=THREAT&id=", status_code="200", json={})
     response = create_response_object(client=client)
-    assert response.status_code == '200'
+    assert response.status_code == "200"
 
 
 def test_stream_events(sse_client, mocker, requests_mock):
@@ -58,9 +59,9 @@ def test_stream_events(sse_client, mocker, requests_mock):
     When: Running stream_events.
     Then: The setIntegrationContext was called with the correct last_event_id.
     """
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'token_expiration': 0})
-    context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={'token_expiration': 0})
-    mocker.patch('LookoutMobileEndpointSecurity.send_events_to_xsiam', return_value=None)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"token_expiration": 0})
+    context = mocker.patch.object(demisto, "setIntegrationContext", return_value={"token_expiration": 0})
+    mocker.patch("LookoutMobileEndpointSecurity.send_events_to_xsiam", return_value=None)
     stream_events(sse_client, 0)
 
-    assert context.call_args[0][0] == {'token_expiration': 0, 'last_event_id': '2'}
+    assert context.call_args[0][0] == {"token_expiration": 0, "last_event_id": "2"}

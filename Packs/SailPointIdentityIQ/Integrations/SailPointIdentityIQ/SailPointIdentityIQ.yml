@@ -1,5 +1,6 @@
 category: Identity and Access Management
-sectionOrder:
+provider: SailPoint Technologies
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -468,7 +469,7 @@ script:
     - contextPath: IdentityIQ.Alert.application
       description: List of applications that are related to this alert.
       type: String
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   script: ''
   subtype: python3

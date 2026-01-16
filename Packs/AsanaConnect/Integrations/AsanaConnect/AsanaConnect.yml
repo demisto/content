@@ -4,6 +4,7 @@ commonfields:
 name: AsanaConnect
 display: AsanaConnect
 category: Case Management
+provider: Asana
 description: This Integration uses Asana PATs to connect to projects tied to the Asana account.
 configuration:
 - display: Access Token
@@ -18,16 +19,16 @@ script:
     arguments:
     - name: project_id
       required: true
-      description: id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list)
+      description: id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list).
     description: Get the project from Asana
   - name: asana-create-task
     arguments:
     - name: project_id
       required: true
-      description: id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list)
+      description: id of the project in asana. id can be found in the asana project url. (e.g. https://app.asana.com/0/XXXXXXXXXXX/list).
     - name: name
       required: true
-      description: name of the task to create
+      description: name of the task to create.
     description: creates a task in the given project
   - name: asana-get-all-projects
     arguments: []

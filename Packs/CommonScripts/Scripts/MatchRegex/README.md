@@ -2,6 +2,7 @@ Deprecated. Use the *MatchRegexV2* script instead.
 Extracts regex data from a given text. The script supports groups and looping.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +10,8 @@ Extracts regex data from a given text. The script supports groups and looping.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +23,7 @@ Extracts regex data from a given text. The script supports groups and looping.
 | flags | The regex flags to match. The default is "-gim". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

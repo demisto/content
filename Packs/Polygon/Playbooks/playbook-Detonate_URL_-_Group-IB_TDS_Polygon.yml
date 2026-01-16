@@ -289,8 +289,7 @@ tasks:
       id: 466aa1ae-b36c-4232-86f0-89cf7d19a2d3
       version: -1
       name: Is THF Polygon integration enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -528,8 +527,7 @@ outputs:
 - contextPath: Polygon.Analysis.Domain
   description: The information about Domain indicators
 - contextPath: Polygon.Analysis.RegistryKey
-  description: The information about registry keys which were modified during the
-    analysis
+  description: The information about registry keys which were modified during the analysis
 - contextPath: Polygon.Analysis.Process
   description: The information about processes started during the analysis
 fromversion: 5.0.0

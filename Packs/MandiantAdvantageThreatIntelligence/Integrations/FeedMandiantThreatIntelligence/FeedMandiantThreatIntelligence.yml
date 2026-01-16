@@ -2,10 +2,11 @@ name: FeedMandiantThreatIntelligence
 display: Mandiant Feed
 description: Fetch indicators from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
+provider: Google
 commonfields:
   id: FeedMandiantThreatIntelligence
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -150,7 +151,7 @@ script:
     - description: The maximum number of indicators to fetch.
       name: limit
     description: Fetch indicators.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4508456
   feed: true
   runonce: false
   script: '-'

@@ -45,7 +45,7 @@ filter provider_name = "Microsoft-Windows-DNSServer" OR provider_name = "Microso
 	xdm.session_context_id = to_string(record_id),
 	xdm.source.process.pid = to_integer(process_pid),
 	xdm.source.process.thread_id = to_integer(process_thread_id),
-	xdm.event.original_event_type = coalesce(event_action, task),
+	xdm.event.original_event_type = coalesce(event_action, to_string(task)),
     xdm.source.user.identifier = json_extract_scalar(user, "$.identifier"),
     xdm.source.user.domain = json_extract_scalar(user, "$.domain"),
     xdm.source.user.username = json_extract_scalar(user, "$.name"),

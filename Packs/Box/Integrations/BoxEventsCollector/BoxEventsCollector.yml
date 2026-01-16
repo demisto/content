@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Box
 commonfields:
   id: BoxEventsCollector
   version: -1
@@ -57,7 +58,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   runonce: false
   script: '-'
   subtype: python3

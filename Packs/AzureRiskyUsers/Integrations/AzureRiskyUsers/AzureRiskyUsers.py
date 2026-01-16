@@ -1,4 +1,4 @@
-from typing import Any
+from collections.abc import Callable
 from urllib.parse import parse_qs, urlparse
 
 import demistomock as demisto  # noqa: F401
@@ -103,6 +103,17 @@ class Client:
         else:  # Device Code Flow
             return "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
 
+    def upn_to_user_id(self, upn: str) -> str:
+        """Retrieves the user ID of a user by their UPN.
+
+        Args:
+            upn (str): A UPN
+
+        Returns:
+            str: The user ID
+        """
+        return self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
+
     def risky_users_list_request(
         self,
         limit: int = None,
@@ -157,6 +168,44 @@ class Client:
         """
         return self.ms_client.http_request(method="GET", url_suffix=f"identityProtection/riskyUsers/{id}")
 
+    def confirm_compromised_request(self, user_ids: list) -> None:
+        """
+        Confirms user(s) as compromised.
+
+        Args:
+            user_ids (list): List of user IDs to confirm as compromised.
+        Returns:
+            Response (dict): API response from AzureRiskyUsers.
+        """
+        res: requests.Response = self.ms_client.http_request(
+            method="POST",
+            url_suffix="identityProtection/riskyUsers/confirmCompromised",
+            json_data={"userIds": user_ids},
+            resp_type="response",
+        )
+        #  The status code must be 204: https://learn.microsoft.com/en-us/graph/api/riskyuser-confirmcompromised
+        if res.status_code != 204:
+            raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
+
+    def confirm_safe_request(self, user_ids: list) -> None:
+        """
+        Confirms user(s) as safe.
+
+        Args:
+            user_ids (list): List of user IDs to confirm as safe.
+        Returns:
+            Response (dict): API response from AzureRiskyUsers.
+        """
+        res: requests.Response = self.ms_client.http_request(
+            method="POST",
+            url_suffix="identityProtection/riskyUsers/confirmSafe",
+            json_data={"userIds": user_ids},
+            resp_type="response",
+        )
+        #  The status code must be 204: https://learn.microsoft.com/en-us/graph/api/riskyuser-confirmsafe
+        if res.status_code != 204:
+            raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
+
     def risk_detections_list_request(
         self,
         risk_state: str | None,
@@ -209,6 +258,19 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         return self.ms_client.http_request(method="GET", url_suffix=f"/identityProtection/riskDetections/{id}")
+
+
+def is_upn(user_id_or_upn: str) -> bool:
+    """Checks if the given string is likely a User Principal Name (UPN).
+
+    Args:
+        user_id_or_upn (str): The string to check, which could be a user ID (GUID)
+                               or a User Principal Name (UPN).
+
+    Returns:
+        bool: True if the string appears to be a UPN, False otherwise.
+    """
+    return "@" in user_id_or_upn
 
 
 def update_query(query: str, filter_name: str, filter_value: str | None, filter_operator: str):
@@ -583,6 +645,56 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
+def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Callable, verdict: str) -> list[CommandResults]:
+    error_outputs = []
+    success_outputs = []
+    context_ouputs = []
+    results: list[CommandResults] = []
+
+    for user in argToList(args["user"]):
+        try:
+            user_id = client.upn_to_user_id(user) if is_upn(user) else user
+            confirm_func(user_ids=[user_id])
+            output = {
+                "UserID": user_id,
+                "UserPrincipalName": user if is_upn(user) else "",
+                "Success": True,
+                "RiskState": f"confirmed{verdict.capitalize()}",
+            }
+            success_outputs.append(output)
+            context_ouputs.append(output)
+        except DemistoException as e:
+            error_outputs.append({"User": user, "Error": str(e)})
+            context_ouputs.append(
+                {
+                    "UserID": user if not is_upn(user) else "",
+                    "UserPrincipalName": user if is_upn(user) else "",
+                    "Success": False,
+                    "RiskState": "",
+                }
+            )
+
+    if success_outputs:
+        results.append(
+            CommandResults(readable_output=tableToMarkdown(f"Successfully confirmed users as {verdict}.", success_outputs))
+        )
+
+    if error_outputs:
+        results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(f"Unable to confirm users as {verdict}.", error_outputs),
+                entry_type=EntryType.ERROR,
+                content_format=EntryFormat.MARKDOWN,
+            )
+        )
+
+    results[0].outputs_prefix = "AzureRiskyUsers.Remediation"
+    results[0].outputs_key_field = "UserID"
+    results[0].outputs = context_ouputs
+
+    return results
+
+
 def test_module(client: Client):
     """Tests API connectivity and authentication'
     The test module is not functional for Device Code flow authentication, it raises the suitable exception instead.
@@ -622,7 +734,7 @@ def test_connection(client: Client) -> str:
     return "Success!"
 
 
-def main():
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
@@ -670,6 +782,10 @@ def main():
             return_results(risk_detections_list_command(client, args))
         elif command == "azure-risky-users-risk-detection-get":
             return_results(risk_detection_get_command(client, args))
+        elif command == "azure-risky-users-confirm-compromise":
+            return_results(risky_users_confirm(client, args, client.confirm_compromised_request, "compromised"))
+        elif command == "azure-risky-users-confirm-safe":
+            return_results(risky_users_confirm(client, args, client.confirm_safe_request, "safe"))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

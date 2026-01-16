@@ -3,16 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS IAM User Access Investigation - Remediation
-description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key\
-  \ is used suspiciously to access the cloud environment. \nThe following alerts are\
-  \ supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration\
-  \ testing tool activity\n- Suspicious API call from a Tor exit node\n This is a\
-  \ beta playbook, which lets you implement and test pre-release software. Although\
-  \ AWS is supported, we are working towards multi-cloud support. As the playbook\
-  \ is beta, it might contain bugs. Updates to the playbook during the beta phase\
-  \ might include non-backward compatible features. We encourage your feedback on\
-  \ the quality and usability of the content to help us identify and fix issues,\
-  \ so we can continually improve the content.\n"
+description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage your feedback on the quality and usability of the content to help us identify and fix issues, so we can continually improve the content.\n"
 deprecated: true
 starttaskid: "0"
 tasks:
@@ -55,9 +46,7 @@ tasks:
       id: a8aef032-bec2-424e-8bfc-bc21ca561c73
       version: -1
       name: Set compromised IAM access key as inactive
-      description: Changes the status of the specified access key from Active to Inactive,
-        or vice versa. This operation can be used to disable a user's key as part
-        of a key rotation workflow.
+      description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's key as part of a key rotation workflow.
       script: '|||aws-iam-update-access-key'
       type: regular
       iscommand: true
@@ -111,8 +100,7 @@ tasks:
       id: 30e0980e-0afa-4f55-8975-5ed40cdf922a
       version: -1
       name: Delete user login profile to AWS console
-      description: Deletes the password for the specified IAM user, which terminates
-        the user's ability to access AWS services through the AWS Management Console.
+      description: Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
       script: '|||aws-iam-delete-login-profile'
       type: regular
       iscommand: true
@@ -220,10 +208,7 @@ tasks:
       id: 5a2c2e61-0d88-498f-8dad-13e34ec2fdf9
       version: -1
       name: Check for AWS user login profile
-      description: "Check the user AWS login profile configuration.\nIf a login profile\
-        \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
-        \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
-        \ under the security credentials tab."
+      description: "Check the user AWS login profile configuration.\nIf a login profile is configured, it needs to be deleted. \n\nThe user login profile configuration can be found under https://console.aws.amazon.com/iam/home#/users/[username] under the security credentials tab."
       type: condition
       iscommand: false
       brand: ""
@@ -473,8 +458,7 @@ tasks:
       id: 5443f14c-a792-4c17-80f0-fcaa0fd5318e
       version: -1
       name: AWS IAM - Get user profile
-      description: Retrieves the user login profile information for AWS management
-        console.
+      description: Retrieves the user login profile information for AWS management console.
       script: '|||aws-iam-get-user-login-profile'
       type: regular
       iscommand: true
@@ -702,3 +686,9 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

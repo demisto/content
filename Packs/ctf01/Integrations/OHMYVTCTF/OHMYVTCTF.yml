@@ -4,6 +4,7 @@ commonfields:
 name: OHMYVT_CTF
 display: OHMYVT_CTF
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: Fetch incidents
@@ -27,7 +28,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
   isfetch: true

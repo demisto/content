@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 47ae3032-0e5e-4a56-8625-78c26c88169d
+    taskid: 489b0cbc-5c03-45c7-89a2-b2c3a2ce131a
     type: start
     task:
-      id: 47ae3032-0e5e-4a56-8625-78c26c88169d
+      id: 489b0cbc-5c03-45c7-89a2-b2c3a2ce131a
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5e3d36b2-24c9-4ee1-8e5a-b29eb2eadb21
+    taskid: 098f43c5-0f79-4a99-8a98-5305aa10ebfa
     type: title
     task:
-      id: 5e3d36b2-24c9-4ee1-8e5a-b29eb2eadb21
+      id: 098f43c5-0f79-4a99-8a98-5305aa10ebfa
       version: -1
       name: Done
       type: title
@@ -62,10 +62,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ff22102e-f8d3-452a-8617-13d1cd2772c6
+    taskid: cdb2246e-878c-4597-82ed-9c51b4034507
     type: regular
     task:
-      id: ff22102e-f8d3-452a-8617-13d1cd2772c6
+      id: cdb2246e-878c-4597-82ed-9c51b4034507
       version: -1
       name: Integration is not enabled.
       description: Prints text to war room (Markdown supported)
@@ -96,12 +96,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: eb7806a0-9264-4576-839f-7c15216ceeed
+    taskid: 48734242-6448-4591-9b54-92936338870a
     type: condition
     task:
-      id: eb7806a0-9264-4576-839f-7c15216ceeed
+      id: 48734242-6448-4591-9b54-92936338870a
       version: -1
-      name: Is Dataminr Pulse integration enabled?
+      name: Is Dataminr Pulse or Dataminr Pulse ReGenAI integration enabled?
       description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
@@ -125,6 +125,14 @@ tasks:
               right:
                 value:
                   simple: Dataminr Pulse
+            - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Dataminr Pulse ReGenAI
           - - operator: isEqualString
               left:
                 value:
@@ -150,10 +158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 91ece7a1-4c44-4ba6-8ae7-b8a342b962cb
+    taskid: e5468062-df80-4c3a-8b01-0cb595e940ba
     type: regular
     task:
-      id: 91ece7a1-4c44-4ba6-8ae7-b8a342b962cb
+      id: e5468062-df80-4c3a-8b01-0cb595e940ba
       version: -1
       name: Extract indicators.
       description: commands.local.cmd.extract.indicators
@@ -186,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: abf5fcac-d4b7-4076-8bda-7b9bf3353d7f
+    taskid: 319cb8fc-029c-4a4b-82ab-92790097a81c
     type: regular
     task:
-      id: abf5fcac-d4b7-4076-8bda-7b9bf3353d7f
+      id: 319cb8fc-029c-4a4b-82ab-92790097a81c
       version: -1
       name: Get alerts from Dataminr Pulse API for indicator list.
       description: Retrieves the alerts as per the provided watchlists or query.
@@ -241,10 +249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: edb6750a-ec9e-46ec-82bc-3ebb5f1bd289
+    taskid: 78db2b35-7e65-4aa4-88cb-f867ace0466f
     type: regular
     task:
-      id: edb6750a-ec9e-46ec-82bc-3ebb5f1bd289
+      id: 78db2b35-7e65-4aa4-88cb-f867ace0466f
       version: -1
       name: Transform extracted indicators to list.
       description: Script used to transform result received from the extractIndicators (Builtin) script from the dictionary of indicators to a list of indicators.
@@ -276,10 +284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 9d6260dc-c1fe-406e-8382-578a6982b695
+    taskid: 06f56fca-0dd6-4f2b-80c8-f152ca3d064e
     type: condition
     task:
-      id: 9d6260dc-c1fe-406e-8382-578a6982b695
+      id: 06f56fca-0dd6-4f2b-80c8-f152ca3d064e
       version: -1
       name: Do extracted indicators exist?
       description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
@@ -322,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c02d678a-91f3-4908-8cf5-dda1f4ba769d
+    taskid: 7624227d-baf1-45e7-8ccb-a2f5328d43ce
     type: regular
     task:
-      id: c02d678a-91f3-4908-8cf5-dda1f4ba769d
+      id: 7624227d-baf1-45e7-8ccb-a2f5328d43ce
       version: -1
       name: Indicators not found.
       description: Prints text to war room (Markdown supported)
@@ -356,10 +364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 70ab8698-7042-4c09-80c9-f7f2f4a589e3
+    taskid: 07faac1f-0bd3-455b-8558-b628c778b4f8
     type: regular
     task:
-      id: 70ab8698-7042-4c09-80c9-f7f2f4a589e3
+      id: 07faac1f-0bd3-455b-8558-b628c778b4f8
       version: -1
       name: Delete context for ExtractedIndicatorsForDataminrPulse key.
       description: |-

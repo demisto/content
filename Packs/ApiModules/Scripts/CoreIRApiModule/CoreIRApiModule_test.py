@@ -90,7 +90,7 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 """ TESTS FUNCTIONS """
 
 
-# Note this test will fail when run locally (in pycharm/vscode)
+# Note this test will fail When: run locally (in pycharm/vscode)
 # as it assumes the machine (docker image) has UTC timezone set
 
 
@@ -116,9 +116,9 @@ def test_retrieve_all_endpoints(mocker):
     """
     Given:
     - endpoints is populated with the first round.
-    When
+    When:
         - Retrieve_all_endpoints is called.
-    Then
+    Then:
         - Retrieve all endpoints.
     """
     from CoreIRApiModule import retrieve_all_endpoints
@@ -159,9 +159,9 @@ def test_retrieve_all_endpoints(mocker):
 
 def test_get_endpoints_command(mocker):
     """
-    When
+    When:
         - Retrieve_all_endpoints is called.
-    Then
+    Then:
         - Retrieve all endpoints.
     """
     from CoreIRApiModule import get_endpoints_command
@@ -181,9 +181,9 @@ def test_convert_to_hr_timestamps():
     """
     Given
         - Endpoints results.
-    When
+    When:
         - convert_to_hr_timestamps is called.
-    Then
+    Then:
         - Convert to an hr date.
     """
     from CoreIRApiModule import convert_timestamps_to_datestring
@@ -255,7 +255,7 @@ def test_endpoint_command(requests_mock):
             {
                 "ID": "1111",
                 "Hostname": "ip-3.3.3.3",
-                "IPAddress": "3.3.3.3",
+                "IPAddress": ["3.3.3.3"],
                 "OS": "Linux",
                 "Vendor": "CoreApiModule",
                 "Status": "Online",
@@ -386,9 +386,9 @@ def test_download_distribution(requests_mock):
     Given:
         - Core client
         - Distribution ID and package type
-    When
+    When:
         - Running xdr-download-distribution command
-    Then
+    Then:
         - Verify filename
         - Verify readable output is as expected
     """
@@ -505,9 +505,9 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
     """
     Given:
         - List of files' hashes to put in blocklist
-    When
+    When:
         - A user desires to mark more than one file
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -533,9 +533,9 @@ def test_blocklist_files_command_with_single_file(requests_mock):
     """
     Given:
         - List of a file hashes to put in blocklist.
-    When
+    When:
         - A user desires to blocklist one file.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -560,9 +560,9 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     """
     Given:
         - ￿List of files' hashes to put in blocklist without passing the comment argument.
-    When
+    When:
         - A user desires to blocklist files without adding a comment.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -587,9 +587,9 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     """
     Given:
         - ￿List of files' hashes to put in allowlist
-    When
+    When:
         - A user desires to mark more than one file
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -614,9 +614,9 @@ def test_allowlist_files_command_with_single_file(requests_mock):
     """
     Given:
         - List of a file hashes to put in allowlist.
-    When
+    When:
         - A user desires to allowlist one file.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -641,9 +641,9 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     """
     Given:
         - List of files' hashes to put in allowlist without passing the comment argument.
-    When
+    When:
         - A user desires to allowlist files without adding a comment.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
 
@@ -668,9 +668,9 @@ def test_quarantine_files_command(requests_mock):
     """
     Given:
         - List of files' hashes to put in quarantine
-    When
+    When:
         - A user desires to quarantine files.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, quarantine_files_command
@@ -692,9 +692,9 @@ def test_get_quarantine_status_command(requests_mock):
     """
     Given:
         - Endpoint_id, file_path, file_hash
-    When
+    When:
         - A user desires to check a file's quarantine status.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, get_quarantine_status_command
@@ -717,9 +717,9 @@ def test_restore_file_command(requests_mock):
     """
     Given:
         - file_hash
-    When
+    When:
         - A user desires to restore a file.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, restore_file_command
@@ -739,9 +739,9 @@ def test_endpoint_scan_command(requests_mock):
     Given:
     -   endpoint_id_list, dist_name, gte_first_seen, gte_last_seen, lte_first_seen, lte_last_seen, ip_list,
     group_name, platform, alias, isolate, hostname
-    When
+    When:
         - A user desires to scan endpoint.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_command
@@ -761,9 +761,9 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     """
     Given:
     -  the filter all as true.
-    When
+    When:
         - A user desires to scan all endpoints.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_command
@@ -783,9 +783,9 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
     """
     Given:
     -  No filters.
-    When
+    When:
         - A user desires to scan all endpoints but without the correct argumetns.
-    Then
+    Then:
         - raise a descriptive error.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_command
@@ -807,9 +807,9 @@ def test_endpoint_scan_abort_command_scan_all_endpoints_no_filters_error(request
     """
     Given:
     -  No filters.
-    When
+    When:
         - A user desires to abort scan on all endpoints but without the correct arguments.
-    Then
+    Then:
         - raise a descriptive error.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
@@ -832,9 +832,9 @@ def test_endpoint_scan_abort_command(requests_mock):
     Given:
     -   endpoint_id_list, dist_name, gte_first_seen, gte_last_seen, lte_first_seen, lte_last_seen, ip_list,
     group_name, platform, alias, isolate, hostname
-    When
+    When:
         - A user desires to abort scan endpoint.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
@@ -854,9 +854,9 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     """
     Given:
     -  the filter all as true.
-    When
+    When:
         - A user desires to abort scan for all endpoints.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
@@ -877,9 +877,9 @@ def test_get_update_args_unassgning_user(mocker):
     Given:
         -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
         - the incident status - set to 1 == Active
-    When
+    When:
         - running get_update_args
-    Then
+    Then:
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
     from CommonServerPython import UpdateRemoteSystemArgs
@@ -898,9 +898,9 @@ def test_handle_outgoing_issue_closure_close_reason(mocker):
     Given:
         -  a dict indicating changed fields (delta)
         - the incident status - set to set to 2 == Closed
-    When
+    When:
         - running handle_outgoing_issue_closure
-    Then
+    Then:
         - Closing the issue with the resolved_security_testing status
     """
     from CommonServerPython import UpdateRemoteSystemArgs
@@ -931,9 +931,9 @@ def test_get_update_args_close_incident():
         -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
         - the incident status - set to 2 == Closed
         - the current status of the remote incident are 'new'
-    When
+    When:
         - running get_update_args
-    Then
+    Then:
         - update_args status has the correct status (resolved_other)
         - the resolve_comment is the same as the closeNotes
     """
@@ -957,9 +957,9 @@ def test_get_update_args_owner_sync(mocker):
     Given:
         -  a dict indicating changed fields (delta) with a change in owner
         - the incident status - set to 2 == Close
-    When
+    When:
         - running get_update_args
-    Then
+    Then:
         - update_args assigned_user_mail has the correct associated mail
     """
     from CommonServerPython import UpdateRemoteSystemArgs
@@ -1043,9 +1043,9 @@ def test_retrieve_files_command(requests_mock):
     Given:
         - endpoint_ids
         - windows_file_paths
-    When
+    When:
         - A user desires to retrieve a file.
-    Then
+    Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
     from CommonServerPython import string_to_table_header, tableToMarkdown
@@ -1071,9 +1071,9 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     Given:
         - endpoint_ids
         - generic_file_path
-    When
+    When:
         - A user desires to retrieve a file.
-    Then
+    Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
     from CommonServerPython import string_to_table_header, tableToMarkdown
@@ -1102,10 +1102,10 @@ def test_retrieve_files_command_using_general_file_path_without_valid_endpint(re
     Given:
         - endpoint_ids
         - generic_file_path
-    When
+    When:
         - A user desires to retrieve a file.
         - The endpoint is invalid
-    Then
+    Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
     from CoreIRApiModule import CoreClient, retrieve_files_command
@@ -1125,9 +1125,9 @@ def test_retrieve_file_details_command(requests_mock):
     """
     Given:
         - action_id
-    When
+    When:
         - Requesting to view the file retrieved by the Retrieve File request according to the action ID.
-    Then
+    Then:
         - Assert the returned markdown, file result are as expected.
     """
     from CoreIRApiModule import CoreClient, retrieve_file_details_command
@@ -1301,9 +1301,9 @@ def test_sort_by_key__only_main_key():
         -  a list of dicts to sort where main key is entered for all elements
         -  the main key to sort by
         -  the fallback key to sort by
-    When
+    When:
         - running sort_by_key
-    Then
+    Then:
         - resulting list is sorted by main key only.
     """
     from CoreIRApiModule import sort_by_key
@@ -1331,11 +1331,11 @@ def test_sort_by_key__main_key_and_fallback_key():
         -  a list of dicts to sort where some elements have main key and some don't but they have fallback key
         -  the main key to sort by
         -  the fallback key to sort by
-    When
+    When:
         - running sort_by_key
-    Then
+    Then:
         - resulting list is sorted by main key on elements with the main key and
-          then sorted by fallback key for elements who dont have it
+          Then: sorted by fallback key for elements who dont have it
     """
     from CoreIRApiModule import sort_by_key
 
@@ -1362,9 +1362,9 @@ def test_sort_by_key__only_fallback_key():
         -  a list of dicts to sort where main key is not entered for all elements and fallback key is.
         -  the main key to sort by
         -  the fallback key to sort by
-    When
+    When:
         - running sort_by_key
-    Then
+    Then:
         - resulting list is sorted by fallback key only.
     """
     from CoreIRApiModule import sort_by_key
@@ -1393,11 +1393,11 @@ def test_sort_by_key__main_key_and_fallback_key_and_additional():
            and some dont have either
         -  the main key to sort by
         -  the fallback key to sort by
-    When
+    When:
         - running sort_by_key
-    Then
+    Then:
         - resulting list is sorted by main key for elements with main key,
-          then by fallback key for those with fallback key and then the rest of the elements that dont have either key.
+          Then: by fallback key for those with fallback key and Then: the rest of the elements that dont have either key.
     """
     from CoreIRApiModule import sort_by_key
 
@@ -1422,10 +1422,10 @@ def test_create_account_context_with_data():
     """
     Given:
         - get_endpoints command
-    When
+    When:
         - creating the account context from the response succeeds - which means there exists both domain
           and user in the response.
-    Then
+    Then:
         - verify the context is created successfully.
     """
     from CoreIRApiModule import create_account_context
@@ -1443,9 +1443,9 @@ def test_create_account_context_no_domain():
     """
     Given:
         - get_endpoints command
-    When
+    When:
         -  the endpoint is missing a domain - which means an account context can't be created.
-    Then
+    Then:
         - verify the account context is an empty list and the method is finished with no errors.
     """
     from CoreIRApiModule import create_account_context
@@ -1461,9 +1461,9 @@ def test_create_account_context_user_is_none():
     """
     Given:
         - get_endpoints command
-    When
+    When:
         -  the user value is None - which means an account context can't be created.
-    Then
+    Then:
         - verify the account context is an empty list and the method is finished with no errors.
     """
     from CoreIRApiModule import create_account_context
@@ -1482,9 +1482,9 @@ def test_run_script_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, script UID, script parameters and incident ID
-    When
+    When:
         - Running run-script command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1525,9 +1525,9 @@ def test_run_script_command_empty_params(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, script UID, empty params and incident ID
-    When
+    When:
         - Running run-script command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1568,9 +1568,9 @@ def test_run_snippet_code_script_command_no_incident_id(requests_mock):
     Given:
         - Core client
         - Endpoint IDs and snippet code
-    When
+    When:
         - Running run-snippet-code-script command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1605,9 +1605,9 @@ def test_run_snippet_code_script_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs snippet code and incident ID
-    When
+    When:
         - Running run-snippet-code-script command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1644,9 +1644,9 @@ def test_get_script_execution_status_command(requests_mock):
     Given:
         - Core client
         - Action ID
-    When
+    When:
         - Running get-script-execution-status command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1671,9 +1671,9 @@ def test_get_script_execution_results_command(requests_mock):
     Given:
         - Core client
         - Action ID
-    When
+    When:
         - Running get-script-execution-results command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1698,9 +1698,9 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     Given:
         - Core client
         - Action ID and endpoint ID
-    When
+    When:
         - Running get-script-execution-files command
-    Then
+    Then:
         - Verify file name is extracted
         - Verify output ZIP file contains text file
     """
@@ -1722,8 +1722,9 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files", json={"reply": {"DATA": zip_link}})
     requests_mock.get(
         f"{Core_URL}/public_api/v1/download/example-link",
-        content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00"
-        b"\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
         b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
         b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00",
         headers={"Content-Disposition": f"attachment; filename={zip_filename}"},
@@ -1764,9 +1765,9 @@ def test_run_script_execute_commands_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, shell commands and incident ID
-    When
+    When:
         - Running run-script-execute-commands command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1805,9 +1806,9 @@ def test_run_script_delete_file_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, file path and incident ID
-    When
+    When:
         - Running run-script-delete-file command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1846,9 +1847,9 @@ def test_run_script_delete_multiple_files_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, files paths and incident ID
-    When
+    When:
         - Running run-script-delete-file command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1896,9 +1897,9 @@ def test_run_script_file_exists_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, file path and incident ID
-    When
+    When:
         - Running run-script-file-exists command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1937,9 +1938,9 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, files paths and incident ID
-    When
+    When:
         - Running run-script-file-exists command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -1987,9 +1988,9 @@ def test_run_script_kill_process_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, process name and incident ID
-    When
+    When:
         - Running run-script-kill-process command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -2028,9 +2029,9 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     Given:
         - Core client
         - Endpoint IDs, multiple processes names and incident ID
-    When
+    When:
         - Running run-script-kill-process command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -2096,13 +2097,13 @@ def test_get_endpoint_properties(endpoint, expected_status, expected_ip):
     """
     Given:
         - Endpoint data
-    When
+    When:
         - Case a: The status of the endpoint is 'Connected' with a capital C and ip is 1.1.1.1.
-        - Case b: When no status is not given and ip is 1.1.1.1.
+        - Case b: When: no status is not given and ip is 1.1.1.1.
         - Case c: The status of the endpoint is offline and ip is 1.1.1.1.
         - Case d: The status of the endpoint is 'Connected' with a capital C ip is empty but public_ip is 1.1.1.1.
         - Case d: The status of the endpoint is 'Connected' with a capital C and both ip and public_ip are empty.
-    Then
+    Then:
         - Case a: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
         - Case b: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
         - Case c: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
@@ -2120,9 +2121,9 @@ def test_remove_blocklist_files_command(requests_mock):
     """
     Given:
         - List of files' hashes to remove from blocklist.
-    When
+    When:
         - A user desires to remove blocklist files.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, remove_blocklist_files_command
@@ -2146,9 +2147,9 @@ def test_blocklist_files_command_with_detailed_response(requests_mock):
     """
     Given:
         - List of files' hashes to add in blocklist with detailed_response.
-    When
+    When:
         - A user desires to blocklist files with detailed_response.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, blocklist_files_command
@@ -2171,9 +2172,9 @@ def test_remove_allowlist_files_command(requests_mock):
     """
     Given:
         - List of files' hashes to remove from allowlist.
-    When
+    When:
         - A user desires to remove allowlist files.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, remove_allowlist_files_command
@@ -2197,9 +2198,9 @@ def test_allowlist_files_command_with_detailed_response(requests_mock):
     """
     Given:
         - List of files' hashes to add in allowlist with detailed_response.
-    When
+    When:
         - A user desires to allowlist files with detailed_response.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, allowlist_files_command
@@ -2222,9 +2223,9 @@ def test_decode_dict_values():
     """
     Given:
         - a dict to decode
-    When
+    When:
         - Running decode_dict_values command
-    Then
+    Then:
         - Verify expected output
     """
     from CoreIRApiModule import decode_dict_values
@@ -2248,9 +2249,9 @@ def test_filter_vendor_fields():
     """
     Given:
         - An alert dict to filter
-    When
+    When:
         - Running test_filter_vendor_fields command
-    Then
+    Then:
         - Verify that the vendor fields were filtered properly
     """
     from CoreIRApiModule import filter_vendor_fields
@@ -2283,9 +2284,9 @@ def test_filter_general_fields():
     """
     Given:
         - An alert dict
-    When
+    When:
         - Running filter_general_fields command
-    Then
+    Then:
         - Verify expected output
     """
     from CoreIRApiModule import filter_general_fields
@@ -2324,9 +2325,9 @@ def test_filter_general_fields_with_stateful_raw_data():
     """
     Given:
         - An alert dict with stateful_raw_data section
-    When
+    When:
         - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
-    Then
+    Then:
         - Verify expected output
     """
     from CoreIRApiModule import filter_general_fields
@@ -2401,9 +2402,9 @@ def test_filter_general_fields_no_event(mocker):
     """
     Given:
         - An alert dict with no event
-    When
+    When:
         - Running filter_general_fields command
-    Then
+    Then:
         - Verify a warning is printed and the program exits
     """
     from CoreIRApiModule import filter_general_fields
@@ -2426,9 +2427,9 @@ def test_add_exclusion_command(requests_mock):
     """
     Given:
         - FilterObject and name to add to exclision.
-    When
+    When:
         - A user desires to add exclusion.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, add_exclusion_command
@@ -2452,9 +2453,9 @@ def test_delete_exclusion_command(requests_mock):
     """
     Given:
         - alert_exclusion_id of the exclusion to delete.
-    When
+    When:
         - A user desires to delete exclusion.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, delete_exclusion_command
@@ -2471,9 +2472,9 @@ def test_get_exclusion_command(requests_mock):
     """
     Given:
         - FilterObject and name to get by exclisions.
-    When
+    When:
         - A user desires to get exclusions.
-    Then
+    Then:
         - returns markdown, context data and raw response.
     """
     from CoreIRApiModule import CoreClient, get_exclusion_command
@@ -2491,9 +2492,9 @@ def test_get_original_alerts_command__with_filter(requests_mock):
     Given:
         - Core client
         - Alert IDs
-    When
+    When:
         - Running get_original_alerts_command command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -2518,9 +2519,9 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     Given:
         - Core client
         - Alert IDs
-    When
+    When:
         - Running get_original_alerts_command command
-    Then
+    Then:
         - Verify expected output length
         - Ensure request body sent as expected
     """
@@ -2578,9 +2579,9 @@ def test_get_dynamic_analysis(requests_mock):
     Given:
         - Core client
         - Alert IDs
-    When
+    When:
         - Running get_dynamic_analysis_command command
-    Then
+    Then:
         - Verify expected output
         - Ensure request body sent as expected
     """
@@ -2644,9 +2645,9 @@ class TestGetAlertByFilter:
         Given:
             - Core client
             - timeframe, start_time, end_time
-        When
+        When:
             - Running get_alerts_by_filter command
-        Then
+        Then:
             - Verify expected output
             - Ensure request filter sent as expected
         """
@@ -2675,9 +2676,9 @@ class TestGetAlertByFilter:
         Given:
             - Core client
             - Alert with action status of SCANNED
-        When
+        When:
             - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
-        Then
+        Then:
             - Verify the alert in the output contains alert_action_status and alert_action_status_readable
             - Ensure request filter contains the alert_action_status as SCANNED
         """
@@ -2702,9 +2703,9 @@ class TestGetAlertByFilter:
         Given:
             - Core client
             - alert_source
-        When
+        When:
             - Running get_alerts_by_filter command
-        Then
+        Then:
             - Verify expected output
             - Ensure request filter sent as expected (connected with OR operator)
         """
@@ -2732,9 +2733,9 @@ class TestGetAlertByFilter:
             - Core client
             - alert_source
             - user_name
-        When
+        When:
             - Running get_alerts_by_filter command
-        Then
+        Then:
             - Verify expected output
             - Ensure request filter sent as expected (connected with AND operator)
         """
@@ -2761,9 +2762,9 @@ class TestGetAlertByFilter:
             - Core client
             - custom_filter (filters are connected with AND operator)
             - timeframe
-        When
+        When:
             - Running get_alerts_by_filter command
-        Then
+        Then:
             - Verify expected output
             - Ensure request filter sent as expected (connected with AND operator)
         """
@@ -2803,9 +2804,9 @@ class TestGetAlertByFilter:
             - Core client
             - custom_filter (filters are connected with OR operator)
             - timeframe
-        When
+        When:
             - Running get_alerts_by_filter command
-        Then
+        Then:
             - Verify expected output
             - Ensure request filter sent as expected (connected with AND operator)
         """
@@ -2885,10 +2886,10 @@ class TestPollingCommands:
             xdr-script-run command arguments including polling true where each time a different amount of response
             is returned.
 
-        When -
+        When: -
             Running the xdr-script-run
 
-        Then
+        Then:
             - Make sure the readable output is returned to war-room only once indicating on polling.
             - Make sure the correct context output is returned once the command finished polling
             - Make sure context output is returned only at the end of polling.
@@ -3048,9 +3049,9 @@ def test_endpoint_alias_change_command__no_filters(mocker):
     """
     Given:
     - command withot endpoint filters
-    when:
+    When:
     - executing the endpoint-alias-change command
-    then:
+    Then:
     - make sure the correct error message wil raise.
     """
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1/", headers={})
@@ -3094,9 +3095,9 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     """
     Given:
     - XDR API error.
-    when:
+    When:
     - executing the isolate-endpoint-command and quarantine-files-command command
-    then:
+    Then:
     - make sure the correct error message wil raise.
     """
 
@@ -3280,7 +3281,7 @@ def test_list_user_groups_command(mocker):
         args (dict): A dictionary containing optional `group_names` argument.
 
     Returns:
-        None
+        None.
 
     Raises:
         AssertionError: If the expected output doesn't match the actual output.
@@ -3324,7 +3325,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
         data (dict): A dictionary containing a sample user group data.
 
     Returns:
-        None
+        None.
 
     Raises:
         AssertionError: If the parsing of user groups data fails.
@@ -3345,14 +3346,14 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
 )
 def test_list_user_groups_command_raise_exception(mocker, test_data: dict[str, str], excepted_error: str):
     """
-    Tests that the 'list_user_groups_command' function raises an exception when the 'list_user_groups' method of
+    Tests that the 'list_user_groups_command' function raises an exception When: the 'list_user_groups' method of
     the 'CoreClient' class raises a 'DemistoException'.
 
     Args:
         mocker: The pytest mocker object.
 
     Raises:
-        Exception: If the 'list_user_groups_command' function does not raise an exception when expected.
+        Exception: If the 'list_user_groups_command' function does not raise an exception When: expected.
 
     Returns:
         None.
@@ -3860,7 +3861,7 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                 "resolved_other",
             ],
         ),
-        # Expecting default mapping to be used when no mapping provided.
+        # Expecting default mapping to be used When: no mapping provided.
         (
             "",
             [
@@ -3872,7 +3873,7 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                 "resolved_other",
             ],
         ),
-        # Expecting default mapping to be used when improper mapping is provided.
+        # Expecting default mapping to be used When: improper mapping is provided.
         (
             "Duplicate=RANDOM1, Other=Random2",
             [
@@ -3895,7 +3896,7 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                 "resolved_other",
             ],
         ),
-        # Expecting default mapping to be used when improper mapping *format* is provided.
+        # Expecting default mapping to be used When: improper mapping *format* is provided.
         (
             "Duplicate=Other False Positive=Other",
             [
@@ -3907,7 +3908,7 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                 "resolved_other",
             ],
         ),
-        # Expecting default mapping to be used for when improper key-value pair *format* is provided.
+        # Expecting default mapping to be used for When: improper key-value pair *format* is provided.
         (
             "Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
             [
@@ -3936,9 +3937,9 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     Given:
         - A custom XSOAR->XDR close-reason mapping
         - Expected resolved XDR status according to the custom mapping.
-    When
+    When:
         - Handling outgoing issue closure (handle_outgoing_issue_closure(...) executed).
-    Then
+    Then:
         - The resolved XDR statuses match the expected statuses for all possible XSOAR close-reasons.
     """
     from CommonServerPython import UpdateRemoteSystemArgs
@@ -3953,7 +3954,7 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         remote_args = UpdateRemoteSystemArgs(
             {"delta": {"closeReason": close_reason}, "status": 2, "inc_status": 2, "data": {"status": "other"}}
         )
-        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr When: improper mapping is provided).
         with capfd.disabled():
             handle_outgoing_issue_closure(remote_args)
 
@@ -4127,10 +4128,10 @@ def test_run_polling_command_values_raise_error(mocker):
     Given -
         - run_polling_command arguments.
 
-    When -
+    When: -
         - Running the run_polling_command
 
-    Then
+    Then:
         - Make sure that an error is raised with the correct output.
     """
     from unittest.mock import Mock
@@ -4240,11 +4241,11 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
         - Test case 12: raises Exception with host command, where the error is related to a missing host
         (based on the provided id).
 
-    When -
+    When: -
         - The function `list_risky_users_or_host_command` is called with either a "user" or "host" command, and it encounters
           the provided exception instance. The function attempts to handle the exception and generate a warning if needed.
 
-    Then -
+    Then: -
         - The function should either trigger a warning or not trigger a warning, based on the type of exception and the expected
         result.
           The function's output should match the expected result:
@@ -4263,3 +4264,109 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
                 mock_return_warning.assert_called_once_with(expected_result, exit=True)
             else:
                 mock_return_warning.assert_not_called()
+
+
+def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
+    """
+    Given:
+        - Core client
+        - Valid JSON custom_filter with agent_id
+    When:
+        - Running get_alerts_by_filter command
+    Then:
+        - Verify the JSON is parsed correctly without any fixes applied
+    """
+    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
+
+    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+
+    # Valid JSON with agent_id
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_alerts_by_filter_command(client, args)
+    assert response.outputs[0].get("internal_id", {}) == 33333
+
+
+def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
+    """
+    Given:
+        - Core client
+        - Malformed JSON custom_filter with agent_id containing array-like string values
+    When:
+        - Running get_alerts_by_filter command
+    Then:
+        - Verify the malformed JSON is automatically fixed and parsed correctly
+    """
+    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
+
+    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+
+    # Malformed JSON with agent_id - array values as string with unescaped quotes
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_alerts_by_filter_command(client, args)
+    assert response.outputs[0].get("internal_id", {}) == 33333
+
+
+def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
+    """
+    Given:
+        - An endpoint with status DISCONNECTED
+        - suppress_disconnected_endpoint_error is True
+    When:
+        - Calling isolate_endpoint_command
+    Then:
+        - The client.isolate_endpoint method is called (no error is raised)
+        - A warning message is returned
+    """
+    from CoreIRApiModule import isolate_endpoint_command
+
+    # Mock the get_endpoint API to return a disconnected endpoint
+    mocker.patch.object(
+        test_client,
+        "_http_request",
+        side_effect=[
+            {"reply": {"endpoints": [{"endpoint_id": "1111", "endpoint_status": "DISCONNECTED"}]}},
+            {"reply": {"action_id": "fake_action_id"}},  # mock for isolate_endpoint
+        ],
+    )
+    mocker.patch.object(test_client, "isolate_endpoint", return_value={"action_id": "fake_action_id"})
+
+    args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": True}
+    result = isolate_endpoint_command(test_client, args)
+    assert result.readable_output == "Warning: isolation action is pending for the following disconnected endpoint: 1111."
+
+
+def test_create_filter_from_args():
+    """
+    Test case to verify the filter creation logic based on input arguments
+    """
+    from CoreIRApiModule import create_filter_from_args
+
+    # Default test case with valid inputs
+    args = {"alert_id": "test_1, test_2, test_3", "not_status": "In Progress, New"}
+    query = create_filter_from_args(args)
+    expected_result = {
+        "AND": [
+            {
+                "OR": [
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_1"},
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_2"},
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_3"},
+                ]
+            },
+            {
+                "AND": [
+                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION"},
+                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_010_NEW"},
+                ]
+            },
+        ]
+    }
+    assert expected_result == query

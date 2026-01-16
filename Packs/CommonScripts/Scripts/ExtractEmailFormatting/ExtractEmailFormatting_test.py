@@ -40,6 +40,7 @@ def test_check_tld(address, valid):
         ("<test@test.com>", "test@test.com"),
         ("test", ""),
         ("co/ed/trn/update?a=b&email=user@test6.net", "user@test6.net"),
+        ("https://example.com/?marketing.comunicacion@example.com=ABA=123&a=456/", "marketing.comunicacion@example.com"),
     ],
 )  # noqa: E124
 def test_extract_email(input, output):
@@ -51,6 +52,7 @@ def test_extract_email(input, output):
     [  # noqa: E501 disable-secrets-detection # no processing needed
         ("co/ed/trn/update?a=b&email=user@test6.net", "user@test6.net"),
         ("co/ed/trn/update?", ""),
+        ("marketing.comunicacion@example.com=ABA=123", "marketing.comunicacion@example.com"),
     ],
 )  # noqa: E124
 def test_extract_email_from_url_query(input, output):

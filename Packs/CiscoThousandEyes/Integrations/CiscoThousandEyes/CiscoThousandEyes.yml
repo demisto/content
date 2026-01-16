@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Cisco Systems
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -68,7 +69,7 @@ script:
     description: Gets events from Cisco ThousandEyes.
     execution: false
     name: cisco-thousandeyes-get-events
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'

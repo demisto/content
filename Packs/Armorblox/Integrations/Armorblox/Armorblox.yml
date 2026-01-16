@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Cisco Systems
+sectionorder:
 - Connect
 - Collect
 commonfields:

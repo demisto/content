@@ -6,15 +6,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 457f4153-f6c0-4efd-88d4-24c9a9d4f5cb
+    taskid: 84a442d7-4093-43a4-8a82-0ef796ad54b7
     type: start
     task:
-      id: 457f4153-f6c0-4efd-88d4-24c9a9d4f5cb
+      id: 84a442d7-4093-43a4-8a82-0ef796ad54b7
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a98e43f1-a9fa-4791-8e1c-e286c7da2dc2
+    taskid: 181b8cf9-ad89-44d2-825d-4ec958c4f17c
     type: regular
     task:
-      id: a98e43f1-a9fa-4791-8e1c-e286c7da2dc2
+      id: 181b8cf9-ad89-44d2-825d-4ec958c4f17c
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -70,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 663feae5-07db-4b01-8e68-5dca20d9bf6f
+    taskid: 9bc394b7-1fdf-4a71-8e18-0687228d962d
     type: regular
     task:
-      id: 663feae5-07db-4b01-8e68-5dca20d9bf6f
+      id: 9bc394b7-1fdf-4a71-8e18-0687228d962d
       version: -1
       name: zimperium-users-search
       script: Zimperium v2|||zimperium-users-search
@@ -101,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 69e2fa23-41dc-453b-842a-04e182383eff
+    taskid: 2b143a2b-e2b6-47c6-8176-8a7875a5c40b
     type: condition
     task:
-      id: 69e2fa23-41dc-453b-842a-04e182383eff
+      id: 2b143a2b-e2b6-47c6-8176-8a7875a5c40b
       version: -1
       name: Verify Outputs
       type: condition
@@ -151,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1e146e86-5e8e-45c8-8b35-c0278d874fc7
+    taskid: 06f79c74-3c7d-4f31-8e70-ff1db27299bc
     type: regular
     task:
-      id: 1e146e86-5e8e-45c8-8b35-c0278d874fc7
+      id: 06f79c74-3c7d-4f31-8e70-ff1db27299bc
       version: -1
       name: zimperium-devices-search
       script: Zimperium v2|||zimperium-devices-search
@@ -182,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 471b6487-bdaf-48d4-8a64-9b977a796c2f
+    taskid: a685dcba-4dfe-48a7-8692-9d8ad3c143b8
     type: condition
     task:
-      id: 471b6487-bdaf-48d4-8a64-9b977a796c2f
+      id: a685dcba-4dfe-48a7-8692-9d8ad3c143b8
       version: -1
       name: Verify Outputs
       type: condition
@@ -342,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f25cd2cd-8ccd-4c6d-8dd9-af23278c6ab9
+    taskid: 3fc83727-a7d5-431c-84f7-565acf5557b1
     type: regular
     task:
-      id: f25cd2cd-8ccd-4c6d-8dd9-af23278c6ab9
+      id: 3fc83727-a7d5-431c-84f7-565acf5557b1
       version: -1
       name: zimperium-report-get
       script: Zimperium v2|||zimperium-report-get
@@ -376,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 08edb239-ec05-4775-8774-517e9a2c37aa
+    taskid: 2e15a50c-1708-40bb-84ed-9f835d931480
     type: condition
     task:
-      id: 08edb239-ec05-4775-8774-517e9a2c37aa
+      id: 2e15a50c-1708-40bb-84ed-9f835d931480
       version: -1
       name: Verify Outputs
       type: condition
@@ -387,7 +386,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -459,181 +458,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: baf0f2a1-06b1-4623-8c01-0a554deaae27
-    type: regular
-    task:
-      id: baf0f2a1-06b1-4623-8c01-0a554deaae27
-      version: -1
-      name: zimperium-threat-search
-      script: Zimperium v2|||zimperium-threat-search
-      type: regular
-      iscommand: true
-      brand: Zimperium v2
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      after:
-        simple: 5 years
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: ca209823-e9be-4906-8f6a-5b76f4297476
-    type: condition
-    task:
-      id: ca209823-e9be-4906-8f6a-5b76f4297476
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.model
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.os.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.os.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.os.version
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.device.zdeviceId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.deviceId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.eventProcessedTimestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.eventReceivedTimestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.groupId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.lastModified
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.os
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.severityName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.teamId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.teamName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.timestampInfo
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.Threat.zappId
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d5423038-e282-4cd9-8d7d-7a7425d4d199
+    taskid: 4ef6872c-e56e-4a32-8869-4e46d9544b0c
     type: regular
     task:
-      id: d5423038-e282-4cd9-8d7d-7a7425d4d199
+      id: 4ef6872c-e56e-4a32-8869-4e46d9544b0c
       version: -1
       name: zimperium-app-version-list
       script: Zimperium v2|||zimperium-app-version-list
@@ -661,10 +491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ad96149a-fb9f-43a2-86c3-71d846e5781e
+    taskid: 8543857b-51e6-4bde-82ce-d0fe1bbd7de0
     type: condition
     task:
-      id: ad96149a-fb9f-43a2-86c3-71d846e5781e
+      id: 8543857b-51e6-4bde-82ce-d0fe1bbd7de0
       version: -1
       name: Verify Outputs
       type: condition
@@ -672,7 +502,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -807,153 +637,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 68112887-ab7a-408a-8a74-e245dd055d1f
-    type: regular
-    task:
-      id: 68112887-ab7a-408a-8a74-e245dd055d1f
-      version: -1
-      name: zimperium-get-devices-by-cve
-      script: Zimperium v2|||zimperium-get-devices-by-cve
-      type: regular
-      iscommand: true
-      brand: Zimperium v2
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      cve_id:
-        simple: CVE-2021-1886
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 88f1b7cf-cb9d-4f3f-80b8-f1dd2938942c
-    type: condition
-    task:
-      id: 88f1b7cf-cb9d-4f3f-80b8-f1dd2938942c
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.cveId
-            iscontext: true
-          right:
-            value: { }
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.maxOsPatchDate
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.maxOsVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.osVersionId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.patchDate
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.policyCompliant
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.version
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.os.versionUpgradeable
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.teamId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Zimperium.DeviceByCVE.zdeviceId
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7b7d44d8-58b2-43d2-82e9-4e4050263897
+    taskid: 9ecf1a4a-a98c-452e-85aa-38d6e6a4c194
     type: regular
     task:
-      id: 7b7d44d8-58b2-43d2-82e9-4e4050263897
+      id: 9ecf1a4a-a98c-452e-85aa-38d6e6a4c194
       version: -1
       name: zimperium-devices-os-version
       script: Zimperium v2|||zimperium-devices-os-version
@@ -984,10 +673,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ff6ae29e-7852-4ad3-8bcc-06705ed70f82
+    taskid: b9c72a39-06a1-4e8b-81a3-9ba4e87b3f30
     type: condition
     task:
-      id: ff6ae29e-7852-4ad3-8bcc-06705ed70f82
+      id: b9c72a39-06a1-4e8b-81a3-9ba4e87b3f30
       version: -1
       name: Verify Outputs
       type: condition
@@ -1082,10 +771,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 88483e05-7bf3-4f2e-83fb-77cd0d71780b
+    taskid: 9c4d1c7c-dc67-4232-8595-c954fb44171a
     type: regular
     task:
-      id: 88483e05-7bf3-4f2e-83fb-77cd0d71780b
+      id: 9c4d1c7c-dc67-4232-8595-c954fb44171a
       version: -1
       name: zimperium-get-cves-by-device
       script: Zimperium v2|||zimperium-get-cves-by-device
@@ -1116,10 +805,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9c79aea8-311b-4b5b-8801-bbcca0542fe0
+    taskid: 27b5850e-a999-4518-8619-26496dd84be2
     type: condition
     task:
-      id: 9c79aea8-311b-4b5b-8801-bbcca0542fe0
+      id: 27b5850e-a999-4518-8619-26496dd84be2
       version: -1
       name: Verify Outputs
       type: condition
@@ -1176,10 +865,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c6f270b0-7136-4e90-84eb-7fcc73c60962
+    taskid: c3bf25e1-5e1d-42bd-87d7-4fbcbf1ebb09
     type: regular
     task:
-      id: c6f270b0-7136-4e90-84eb-7fcc73c60962
+      id: c3bf25e1-5e1d-42bd-87d7-4fbcbf1ebb09
       version: -1
       name: zimperium-policy-group-list
       script: Zimperium v2|||zimperium-policy-group-list
@@ -1207,10 +896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7ad9b157-cfd3-4115-8baf-dc45a3ef4578
+    taskid: 343ddc38-7197-487f-8871-d08c08d1edbd
     type: condition
     task:
-      id: 7ad9b157-cfd3-4115-8baf-dc45a3ef4578
+      id: 343ddc38-7197-487f-8871-d08c08d1edbd
       version: -1
       name: Verify Outputs
       type: condition
@@ -1287,10 +976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: a4f15272-ffa1-42a4-827a-c986f0c3dd75
+    taskid: b6fc66a2-227d-4d6d-8047-1e1693fbe370
     type: regular
     task:
-      id: a4f15272-ffa1-42a4-827a-c986f0c3dd75
+      id: b6fc66a2-227d-4d6d-8047-1e1693fbe370
       version: -1
       name: zimperium-policy-privacy-get
       script: Zimperium v2|||zimperium-policy-privacy-get
@@ -1321,10 +1010,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 30af2219-c67e-4011-8637-6e39756c7f47
+    taskid: 99e0dd45-7ce8-4270-8062-5df6b33838d5
     type: condition
     task:
-      id: 30af2219-c67e-4011-8637-6e39756c7f47
+      id: 99e0dd45-7ce8-4270-8062-5df6b33838d5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1396,10 +1085,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a61cb52c-4f10-49c3-8720-ea861ecf80a5
+    taskid: 485c1ae0-da9f-4d9f-86bd-8915c9281075
     type: regular
     task:
-      id: a61cb52c-4f10-49c3-8720-ea861ecf80a5
+      id: 485c1ae0-da9f-4d9f-86bd-8915c9281075
       version: -1
       name: zimperium-policy-threat-get
       script: Zimperium v2|||zimperium-policy-threat-get
@@ -1430,10 +1119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0152988f-3503-4294-810f-1e1dfca94ff6
+    taskid: 675e492b-f9d6-4eb6-8644-a688c83acf5f
     type: condition
     task:
-      id: 0152988f-3503-4294-810f-1e1dfca94ff6
+      id: 675e492b-f9d6-4eb6-8644-a688c83acf5f
       version: -1
       name: Verify Outputs
       type: condition
@@ -1543,10 +1232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 248b53e3-0949-4025-841e-ae82f7ba98c9
+    taskid: 615db973-a3b2-429d-82d2-95380359326d
     type: regular
     task:
-      id: 248b53e3-0949-4025-841e-ae82f7ba98c9
+      id: 615db973-a3b2-429d-82d2-95380359326d
       version: -1
       name: zimperium-policy-phishing-get
       script: Zimperium v2|||zimperium-policy-phishing-get
@@ -1577,10 +1266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8001ffb0-245f-4c9d-88c0-926174dc4dfa
+    taskid: efaea65d-526f-4ee9-8dec-5222e531fdae
     type: condition
     task:
-      id: 8001ffb0-245f-4c9d-88c0-926174dc4dfa
+      id: efaea65d-526f-4ee9-8dec-5222e531fdae
       version: -1
       name: Verify Outputs
       type: condition
@@ -1697,10 +1386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: e877a95a-cb95-4eba-8622-cf152258d549
+    taskid: 35962b42-26ca-49fd-8eb4-0c4ce6a4747f
     type: regular
     task:
-      id: e877a95a-cb95-4eba-8622-cf152258d549
+      id: 35962b42-26ca-49fd-8eb4-0c4ce6a4747f
       version: -1
       name: zimperium-policy-app-settings-get
       script: Zimperium v2|||zimperium-policy-app-settings-get
@@ -1731,10 +1420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 4aee2e3b-7863-432b-8841-aa67604b1b06
+    taskid: bb730724-8080-4072-8684-ef0572d4962b
     type: condition
     task:
-      id: 4aee2e3b-7863-432b-8841-aa67604b1b06
+      id: bb730724-8080-4072-8684-ef0572d4962b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1894,10 +1583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: bffd2e0b-bcd3-43c2-8433-f4a7cded9b90
+    taskid: 44d96ade-0ef1-460e-865c-91e35da210ff
     type: regular
     task:
-      id: bffd2e0b-bcd3-43c2-8433-f4a7cded9b90
+      id: 44d96ade-0ef1-460e-865c-91e35da210ff
       version: -1
       name: zimperium-policy-device-inactivity-list
       script: Zimperium v2|||zimperium-policy-device-inactivity-list
@@ -1925,10 +1614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 6e07657e-8019-4da3-81de-d9bec3b27207
+    taskid: 50ca66b8-2c5f-4221-8b7a-02b47240c5c1
     type: condition
     task:
-      id: 6e07657e-8019-4da3-81de-d9bec3b27207
+      id: 50ca66b8-2c5f-4221-8b7a-02b47240c5c1
       version: -1
       name: Verify Outputs
       type: condition
@@ -1973,10 +1662,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 65e78e11-024a-4ef8-8087-8a807ec82cbf
+    taskid: 2cbfc080-9709-47a3-8698-392f6bfafdc9
     type: regular
     task:
-      id: 65e78e11-024a-4ef8-8087-8a807ec82cbf
+      id: 2cbfc080-9709-47a3-8698-392f6bfafdc9
       version: -1
       name: zimperium-policy-device-inactivity-get
       script: Zimperium v2|||zimperium-policy-device-inactivity-get
@@ -2007,10 +1696,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 470ca445-9f90-4bb9-867f-dd50b06e4013
+    taskid: d03bfa85-f36f-4f6d-87d1-9c05f0ee6f4e
     type: condition
     task:
-      id: 470ca445-9f90-4bb9-867f-dd50b06e4013
+      id: d03bfa85-f36f-4f6d-87d1-9c05f0ee6f4e
       version: -1
       name: Verify Outputs
       type: condition
@@ -2135,16 +1824,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: bc4dbb53-7d3d-4c03-8431-1d363b803deb
+    taskid: 24381174-8272-44b5-8274-97ab9884d7f7
     type: title
     task:
-      id: bc4dbb53-7d3d-4c03-8431-1d363b803deb
+      id: 24381174-8272-44b5-8274-97ab9884d7f7
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2163,10 +1851,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: a9e0bbbf-6044-4cef-81da-5059e9263547
+    taskid: 5a32e49b-4c51-45e3-8cc5-7dd2b11ede46
     type: regular
     task:
-      id: a9e0bbbf-6044-4cef-81da-5059e9263547
+      id: 5a32e49b-4c51-45e3-8cc5-7dd2b11ede46
       version: -1
       name: zimperium-vulnerability-get
       description: Gets the vulnerabilities.
@@ -2195,10 +1883,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 55fa5a7d-7f99-46fd-827f-259fb6188c80
+    taskid: 6b062d4f-774f-4d9a-8b4e-5e2b89cb53db
     type: condition
     task:
-      id: 55fa5a7d-7f99-46fd-827f-259fb6188c80
+      id: 6b062d4f-774f-4d9a-8b4e-5e2b89cb53db
       version: -1
       name: Verify Outputs
       type: condition
@@ -2283,7 +1971,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 5980,
         "width": 380,
         "x": 50,
         "y": 50

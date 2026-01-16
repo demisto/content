@@ -14,14 +14,14 @@ Follow these steps for a self-deployed configuration:
 
 #### Get client ID and tenant ID values 
 
-1. In the Azure portal, select Azure Active Directory.
+1. In the Azure portal, select Entra ID.
 2. From App registrations in Azure AD, select your application.
 3. Copy the Directory (tenant) ID and enter it in the Tenant ID parameter.
 4. Copy the Application ID and store it in the Client ID parameter.
    
 #### Get client secret value
 
-1. In the Azure portal, select Azure Active Directory.
+1. In the Azure portal, select Entra ID.
 2. From App registrations in Azure AD, select your application.
 3. Select Certificates & secrets.
 4. Select Client secrets -> New client secret.

@@ -9,8 +9,11 @@ This integration was integrated and tested with version 3 of SailPoint API.
 | Client ID <br /> In order to generate the Client ID and Client Secret, follow this [link](https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token).  | True |
 | Client Secret | True |
 | Max number of events per fetch | False |
+| Minutes to look back when fetching | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
+
+Note: The `Minutes to look back when fetching` parameter is recommended when missing events due to API indexing delay. It should be increased with caution, since in cases of dense events within a minute, increasing the lookback for several minutes can affect performance.
 
 Note: After generating client credentials, it is required to allow the following scopes: sp, search, read.
 

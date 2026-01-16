@@ -708,6 +708,33 @@ def executeCommand(command, args):
 
     return ""
 
+def executeCommandBatch(commands_list):
+    """(Script only)
+    Execute list of commands in the following format {"command_name":args}
+    Example:
+    [{"get-endpoint-data":{"endpoint_hostname":"example"}},
+    {"get-user-data":{"user_email":"example@gmail.com"}}]
+    Args:
+      commands_list (list[dict[str,any]]): list of dicts each represent a command.
+
+    Returns:
+      list[Union[dict, list]]: list of the Command execution response wrapped in Demisto entry object.
+
+    """
+    results = []
+    commands = {
+        "getIncidents": exampleIncidents,
+        "getContext": exampleContext,
+        "getUsers": exampleUsers,
+    }
+    for command_dict in commands_list:
+        for command in command_dict:
+            if commands.get(command):
+                results.append(commands.get(command))
+    if results:
+        return results
+    return ""
+
 
 def getParam(param):
     """(Integration only)
@@ -1339,3 +1366,21 @@ def isTimeSensitive():
     So for default the function return False.
     """
     return False
+
+
+
+
+def _platformAPICall(path=None, method=None, params=None, data=None, timeout=None):
+    """
+    Special platform API call to interact with the platform's backend services. Only available to OOB content.
+    Args:
+        path: path to append to the base url
+        method: HTTP method to use (GET, POST, PUT, DELETE, etc.)
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}`
+        data: POST data as a dict.
+        timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted
+        *Note if data is empty then a GET request is performed instead of a POST.
+    Returns:
+        dict: The response of the api call
+    """
+    return {}

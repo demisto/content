@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Oracle
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -84,7 +85,7 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.3265913
+  dockerimage: demisto/oci:1.0.0.3561939
   isfetchevents: true
   script: '-'
   subtype: python3

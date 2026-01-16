@@ -1,5 +1,6 @@
 category: Authentication & Identity Management
-sectionOrder:
+provider: Trend Micro
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -579,7 +580,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

@@ -4,6 +4,7 @@ commonfields:
 name: ReversingLabs Ransomware and Related Tools Feed
 display: ReversingLabs Ransomware and Related Tools Feed
 category: Data Enrichment & Threat Intelligence
+provider: ReversingLabs
 description: A timely and curated threat intel list containing recent indicators extracted from ransomware and the tools used to deploy ransomware which are suitable for threat hunting or deployment to security controls.
 configuration:
 - defaultvalue: 'true'
@@ -122,7 +123,7 @@ script:
       defaultValue: 1
       description: Defines how many hours back in time should the indicators be fetched from. Value should be between 1 and 4. Recommended value is 1.
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   subtype: python3
 fromversion: 6.0.0

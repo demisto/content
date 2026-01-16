@@ -51,6 +51,11 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Operational and strategic intelligence through crowdsourcing of OSINT sources digging into threat campaigns and threat actors.
 - Advanced faceted/elastic searches over the {file, domain, IP, URL} corpus to identify IoCs that match certain criteria, e.g. list all MS Office documents that when opened launch a powershell script and end up exhibiting network communication.
 - Download any file in the Google Threat Intelligence corpus and reroute it to other analysis systems you own.
+- Analysis and listing of Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
+- Enable outgoing mirroring for DTM Alerts, maintaining synchronized alert status and tags with XSOAR.
+- Enable outgoing mirroring for ASM Issues, maintaining synchronized status, tags, and notes with XSOAR.
+- Fetch DTM Alerts using filter parameters supported by the Google Threat Intelligence API.
+- Fetch ASM Issues into XSOAR as incidents for centralized incident management.
 
 **Popular tasks**
 
@@ -65,6 +70,9 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Cover blindspots in your EDR by feeding it lists of highly relevant and undetected threats identified through the use of YARA in Google Threat Intelligence.
 - Derive scores based on malicious observations and relationships for IPs transacting with your business.
 - Assign a severity score to issues identified in a vulnerability scan of your networks.
+- Enrich Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
+- Ingest DTM Alerts into XSOAR as incidents with supported outgoing mirroring of status and tags.
+- Ingest ASM Issues into XSOAR as incidents with supported outgoing mirroring of status, tags, and notes.
 
 **Additional information**
 

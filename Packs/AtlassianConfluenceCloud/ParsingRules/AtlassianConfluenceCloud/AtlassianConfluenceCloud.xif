@@ -1,0 +1,12 @@
+[INGEST:vendor="atlassian", product="confluence", target_dataset="atlassian_confluence_raw", no_hit = keep]
+filter to_string(changedvalues) ~= "^\[[\s\S]+\]$"
+| alter
+    tmp_changed_values_name = arraymap(to_string(changedvalues) -> [], replex("@element" -> name, "\s+|\/", "_")),
+    tmp_values_old = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> oldValue), "|"),
+    tmp_values_new = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> newValue), "|")
+| alter
+    tmp_obj_struct = arraystring(arraymap(tmp_changed_values_name, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    parsed_fields_changed_values_old = regexcapture(tmp_values_old, tmp_obj_struct),
+    parsed_fields_changed_values_new = regexcapture(tmp_values_new, tmp_obj_struct)
+| fields -tmp*;

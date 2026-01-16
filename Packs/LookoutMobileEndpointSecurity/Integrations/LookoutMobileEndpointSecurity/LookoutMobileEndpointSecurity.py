@@ -9,15 +9,15 @@ from sseclient import SSEClient
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'lookout_mobile'
-PRODUCT = 'endpoint_security'
-BASE_URL = 'https://api.lookout.com/'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "lookout_mobile"
+PRODUCT = "endpoint_security"
+BASE_URL = "https://api.lookout.com/"
 FETCH_SLEEP = 10
 FETCH_INTERVAL_IN_SECONDS = 60
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -37,41 +37,39 @@ class Client(BaseClient):
 
     def refresh_token_request(self) -> dict:
         """Request a new access token"""
-        data = {'grant_type': 'client_credentials'}
-        headers = {'Authorization': f'Bearer {self.app_key}'}
-        response = self._http_request(method="POST", data=data, url_suffix='oauth2/token', headers=headers)
+        data = {"grant_type": "client_credentials"}
+        headers = {"Authorization": f"Bearer {self.app_key}"}
+        response = self._http_request(method="POST", data=data, url_suffix="oauth2/token", headers=headers)
         return response
 
     def refresh_token(self) -> str:
-        """Refreshes the token and updated the integration context
-        """
+        """Refreshes the token and updated the integration context"""
         response = self.refresh_token_request()
 
-        access_token = response.get('access_token', '')
-        token_expiration = response.get('expires_at', 0)
+        access_token = response.get("access_token", "")
+        token_expiration = response.get("expires_at", 0)
 
-        set_the_context('access_token', access_token)
-        set_the_context('token_expiration', token_expiration)
+        set_the_context("access_token", access_token)
+        set_the_context("token_expiration", token_expiration)
 
         demisto.debug("Updated integration context with new token")
         return access_token
 
     def get_token(self) -> str:
-        """Returns the token, or refreshes it if the time of it was exceeded
-        """
+        """Returns the token, or refreshes it if the time of it was exceeded"""
         integration_context = demisto.getIntegrationContext()
         time_now = int(time.time() * 1000)
 
-        if integration_context.get('token_expiration', 0) <= time_now:
+        if integration_context.get("token_expiration", 0) <= time_now:
             demisto.debug("Refreshing token")
             return self.refresh_token()
 
-        return integration_context.get('access_token', '')
+        return integration_context.get("access_token", "")
 
 
 def set_the_context(key: str, val):
     """Adds a key-value pair to the integration context dictionary.
-        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
+    If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
     cnx = demisto.getIntegrationContext()
     cnx[key] = val
@@ -91,20 +89,18 @@ def stream_events(sse_client: SSEClient, fetch_interval: int):
     events_data = {}
 
     fetch_start_time = datetime.now().astimezone(timezone.utc)
-    demisto.debug(f'Starting to fetch events at {fetch_start_time}')
+    demisto.debug(f"Starting to fetch events at {fetch_start_time}")
     for raw_event in sse_client.events():  # this method waits for new server events
-
         events_data = json.loads(raw_event.data)
 
         if events_data:
             demisto.debug(f"Got {len(events_data.get('events', {}))} events from API")
-            for event in events_data.get('events', {}):
-
+            for event in events_data.get("events", {}):
                 event["_time"] = event.get("created_time")
                 event["SOURCE_LOG_TYPE"] = event.get("type")
 
                 events.append(event)
-                event_ids.add(event.get('id'))
+                event_ids.add(event.get("id"))
 
         if is_interval_passed(fetch_start_time, fetch_interval) and events:
             handle_fetched_events(events, event_ids, str(raw_event.id))
@@ -125,13 +121,13 @@ def handle_fetched_events(events: list, event_ids: set, latest_server_event_id: 
     try:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         demisto.debug("Sent events to XSIAM successfully")
-        set_the_context('last_event_id', latest_server_event_id)
+        set_the_context("last_event_id", latest_server_event_id)
         demisto.debug(f"Updated context with {latest_server_event_id=}")
     except DemistoException as e:
         demisto.error(f"Failed to send events to XSIAM. Error: {str(e)}")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:  # pragma: no cover
@@ -151,10 +147,9 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 
 def get_last_event_id() -> str:
-    """Gets the start last event id from the context if exists.
-    """
+    """Gets the start last event id from the context if exists."""
     integration_context = demisto.getIntegrationContext()
-    return integration_context.get('last_event_id', '')
+    return integration_context.get("last_event_id", "")
 
 
 def get_url_for_stream(base_url: str, event_type_query: str, last_event_id: str) -> str:
@@ -164,8 +159,8 @@ def get_url_for_stream(base_url: str, event_type_query: str, last_event_id: str)
         event_type_query (str): The event type query
         last_event_id (str): The id of the last event
     """
-    url_for_stream = base_url + 'mra/stream/v2/events'
-    url_for_stream += f'?type={event_type_query}&id={last_event_id}'
+    url_for_stream = base_url + "mra/stream/v2/events"
+    url_for_stream += f"?type={event_type_query}&id={last_event_id}"
     return url_for_stream
 
 
@@ -181,7 +176,7 @@ def create_response_object(client: Client) -> Response:
     token_for_stream = client.get_token()
     demisto.debug("Got token")
 
-    headers = {'Accept': 'text/event-stream', 'Authorization': f'Bearer {token_for_stream}'}
+    headers = {"Accept": "text/event-stream", "Authorization": f"Bearer {token_for_stream}"}
     response = requests.get(stream_url, headers=headers, stream=True, verify=client._verify)
     return response
 
@@ -196,7 +191,7 @@ def perform_long_running_loop(client: Client, fetch_interval: int):
     """
     response = create_response_object(client)
     sse_client = SSEClient(response)  # type: ignore
-    demisto.debug(f'Connected successfully with {response=}')
+    demisto.debug(f"Connected successfully with {response=}")
 
     stream_events(sse_client, fetch_interval)
 
@@ -214,7 +209,7 @@ def long_running_execution_command(client: Client, fetch_interval: int):
             perform_long_running_loop(client, fetch_interval)
 
         except Exception as e:
-            demisto.updateModuleHealth(f'Got the following error while trying to stream events: {str(e)}')
+            demisto.updateModuleHealth(f"Got the following error while trying to stream events: {str(e)}")
         time.sleep(FETCH_SLEEP)  # sleep for a bit to not throttle the CPU
 
 
@@ -226,27 +221,27 @@ def test_module(client) -> str:  # pragma: no cover
     try:
         client.refresh_token()
     except Exception as e:
-        if 'invalid_client' in str(e):
-            raise DemistoException('The application key is not valid, make sure to use the correct one.')
+        if "invalid_client" in str(e):
+            raise DemistoException("The application key is not valid, make sure to use the correct one.")
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-    server_url = params.get('server_url', BASE_URL)
+    server_url = params.get("server_url", BASE_URL)
     app_key = params.get("app_key", {}).get("password", "")
     proxy = argToBoolean(params.get("proxy", False))
     verify = not argToBoolean(params.get("insecure", False))
-    event_types = argToList(params.get('event_types', []))
+    event_types = argToList(params.get("event_types", []))
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
 
-    if 'All' in event_types:
-        event_type_query = ''
+    if "All" in event_types:
+        event_type_query = ""
     else:
-        event_type_query = ','.join(event_type.upper() for event_type in event_types)
+        event_type_query = ",".join(event_type.upper() for event_type in event_types)
     client = Client(base_url=server_url, verify=verify, proxy=proxy, event_type_query=event_type_query, app_key=app_key)
 
     try:
@@ -257,7 +252,7 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error:\n{str(e)}')
+        return_error(f"Failed to execute {command} command. Error:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

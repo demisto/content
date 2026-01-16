@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Google
+sectionorder:
 - Connect
 - Collect
 fromversion: 5.0.0
@@ -156,8 +157,8 @@ script:
       description: "Whether to filter emails that contain attachments."
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       defaultValue: "false"
       required: false
     - name: before

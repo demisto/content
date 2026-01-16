@@ -5,7 +5,7 @@ Symantec Data Loss Prevention let's you discover, monitor and protect your sensi
 This integration is now deprecated. Please use the <b>Symantec DLP v2</b> integration instead.
 </p>
 <p>
-This integration was integrated and tested with Symantec DLP version 15.5. The integration uses the SOAP-based Incident Reporting and Update API. 
+This integration was integrated and tested with Symantec DLP version 15.5. The integration uses the SOAP-based Incident Reporting and Update API.
 </p>
 <p>
 <b>Important Note:</b> Symantec DLP 15.7 introduced a new RESTful API, which this integration does not support. If you want to use the new REST API, please file a feature request that we can track. For more information about the Symantec DLP REST API see the <a href="https://community.broadcom.com/symantecenterprise/communities/community-home/librarydocuments/viewdocument?DocumentKey=f6319a99-6c61-4d58-8554-f8cbdd380e4d&CommunityKey=65cf8c43-bb97-4e96-ae0b-0db8ba1b4d07&tab=librarydocuments">Synantec documentation</>.
@@ -518,7 +518,6 @@ The value "none" is default.</td>
   <code>symantec-dlp-update-incident</code>
 </p>
 
-
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -750,7 +749,7 @@ incident, might include binary files.</p>
         'Name': 'CCN.txt',
         'TypeID': 'ATTACHMENT_TEXT',
         'Content': '4386280016300125',
-        'LongID': 69065 
+        'LongID': 69065
     ],
     'LongID': 2222
 }
@@ -860,7 +859,6 @@ There are no context output for this command.
 <p>
   <code>symantec-dlp-incident-violations</code>
 </p>
-
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1040,7 +1038,7 @@ There are no context output for this command.
 <p><strong>Note</strong>: you may need to add to the curl command the "-k" option if the certificate is not trusted.</p>
 <p>If the authentication fails you will receive a response similar to:</p>
 <pre>
-HTTP/1.1 200 
+HTTP/1.1 200
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0

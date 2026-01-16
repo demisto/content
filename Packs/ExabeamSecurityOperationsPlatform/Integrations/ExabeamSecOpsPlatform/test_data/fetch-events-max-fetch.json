@@ -1,0 +1,43 @@
+{
+    "mock_responses": [
+        {
+            "rows": [
+                {
+                    "caseId": "A",
+                    "stage": "NEW",
+                    "caseCreationTimestamp": 1743728988934673
+                },
+                {
+                    "caseId": "B",
+                    "stage": "CLOSED",
+                    "caseCreationTimestamp": 1743728991877035
+                },
+                {
+                    "caseId": "C",
+                    "stage": "IN PROGRESS",
+                    "caseCreationTimestamp": 1747706110552706
+                }
+            ]
+        }
+    ],
+    "prev_last_fetched_ids": [],
+    "max_fetch": 2,
+    "expected_events": [
+        {
+            "caseId": "A",
+            "stage": "NEW",
+            "caseCreationTimestamp": 1743728988934673,
+            "_time": "2025-04-04T01:09:48Z"
+        },
+        {
+            "caseId": "B",
+            "stage": "CLOSED",
+            "caseCreationTimestamp": 1743728991877035,
+            "_time": "2025-04-04T01:09:51Z"
+        }
+    ],
+    "expected_new_start_time": "2025-04-04T01:09:51Z",
+    "expected_new_last_fetched_ids": [
+        "B"
+    ]
+}

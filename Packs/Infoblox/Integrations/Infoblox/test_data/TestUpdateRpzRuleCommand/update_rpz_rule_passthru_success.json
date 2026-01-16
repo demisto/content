@@ -1,0 +1,13 @@
+{
+    "result": {
+        "_ref": "record:rpz:cname/1234:test.test.com/default",
+        "name": "test.test.com",
+        "rp_zone": "test.com",
+        "comment": "Updated passthru rule",
+        "canonical": "test.test.com",
+        "disable": false,
+        "view": "default",
+        "zone": "test.com",
+        "type": "record:rpz:cname"
+    }
+}

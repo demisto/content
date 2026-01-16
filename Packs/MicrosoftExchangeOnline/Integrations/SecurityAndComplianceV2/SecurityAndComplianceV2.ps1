@@ -280,12 +280,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
-    [string]$app_secret
     [string]$tenant_id
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
                             [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
-                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -296,7 +295,6 @@ class OAuth2DeviceCodeClient {
         $this.insecure = $insecure
         $this.proxy = $proxy
         $this.application_id = $application_id
-        $this.app_secret = $app_secret
         $this.tenant_id = $tenant_id
         <#
             .DESCRIPTION
@@ -346,10 +344,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret, $tenant_id)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $tenant_id)
 
         return $client
         <#
@@ -591,11 +589,14 @@ class SecurityAndComplianceClient {
     [string]$access_token
     [string]$upn
     [string]$tenant_id
+    [string]$upn_password
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
+    [bool]$using_delegated
 
-    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$upn_password, [bool]$using_delegated ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         $this.access_token = $access_token
 
@@ -606,6 +607,14 @@ class SecurityAndComplianceClient {
         } else {
             $this.tenant_id = $null
         }
+
+        if ($upn_password) {
+            $this.upn_password = $upn_password
+        } else {
+            $this.upn_password = $null
+        }
+
+        $this.using_delegated = $using_delegated
 
         if ($connection_uri) {
             $this.connection_uri = $connection_uri
@@ -624,15 +633,33 @@ class SecurityAndComplianceClient {
         }
     }
 
-    CreateDelegatedSession([string]$CommandName){
-        $cmd_params = @{
-            "UserPrincipalName" = $this.upn
-            "Organization" = $this.organization
-            "AccessToken" = $this.access_token
-            "ConnectionUri" = $this.connection_uri
-            "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+    VerifyRequiredDelegatedSession(){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
         }
-        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+    }
+
+    CreateDelegatedSession([string]$CommandName)
+    {
+        if ($this.using_delegated -eq $true)
+        {
+            # Use UPN and password (interactive delegated auth)
+            $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
+            $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
+
+            Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        }
+        else {
+            # Use access token (app-only / token-based auth)
+            $cmd_params = @{
+                "UserPrincipalName" = $this.upn
+                "Organization" = $this.organization
+                "AccessToken" = $this.access_token
+                "ConnectionUri" = $this.connection_uri
+                "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+            }
+            Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        }
     }
 
     DisconnectSession(){
@@ -640,8 +667,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion, [string]$error_action = $null) {
+                        
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -655,6 +682,9 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
+        }
+        if ($error_action) {
+            $cmd_params.ErrorAction = $error_action
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -915,6 +945,7 @@ class SecurityAndComplianceClient {
                               [string]$share_point_archive_format, [string]$format,
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
+        $this.VerifyRequiredDelegatedSession()
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
@@ -929,32 +960,8 @@ class SecurityAndComplianceClient {
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
-        } elseif ($action -eq "Export") {
-            $cmd_params.Export = $true
-            $cmd_params.Confirm = $false
-            if ($share_point_archive_format) {
-                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
-            }
-            if ($format) {
-                $cmd_params.Format = $format
-            }
-            if ($include_sharepoint_document_versions -eq "true") {
-                $cmd_params.IncludeSharePointDocumentVersions = $true
-            }
-            if ($notify_email) {
-                $cmd_params.NotifyEmail = $notify_email
-            }
-            if ($notify_email_cc) {
-                $cmd_params.NotifyEmailCC = $notify_email_cc
-            }
-            if ($scenario) {
-                $cmd_params.Scenario = $scenario
-            }
-            if ($scope) {
-                $cmd_params.Scope = $scope
-            }
         } else {
-            throw "New action must include valid action - Preview/Purge/Export"
+            throw "New action must include valid action - Preview/Purge"
         }
         $response = New-ComplianceSearchAction @cmd_params
 
@@ -970,7 +977,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
+            Search action type - Preview (Showing results) / Purge (Delete found emails)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -978,7 +985,6 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
-            $client.NewSearchAction("search-name", "Export")
          #>
 
             .OUTPUTS
@@ -1037,29 +1043,43 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction(
+        [string]$search_action_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearchAction")
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_action_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
         # Execute command
-        $response = Get-ComplianceSearchAction -Identity $search_action_name
-
+        $response = Get-ComplianceSearchAction @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
         return $response
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
-
+    
             .PARAMETER search_action_name
             The name of the compliance search action.
-
+            .PARAMETER error_action
+            Optional. PowerShell error action preference (e.g., "Stop").
+    
             .EXAMPLE
-            $client.GetSearchAction("search-name")
-
+            $client.GetSearchAction("search-name", "Stop")
+    
             .OUTPUTS
             psobject - Raw response.
-
+    
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
@@ -1187,6 +1207,9 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
+
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldPolicy")
         $cmd_params = @{
@@ -1299,6 +1322,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
         # Execute command
@@ -1334,6 +1359,8 @@ class SecurityAndComplianceClient {
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
+        $this.VerifyRequiredDelegatedSession()
+
         $this.CreateDelegatedSession("Set-CaseHoldPolicy")
       $cmd_params = @{}
   
@@ -1353,6 +1380,8 @@ class SecurityAndComplianceClient {
 
 
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldRule")
         $cmd_params = @{
@@ -1438,6 +1467,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldRule")
         # Execute command
@@ -1473,10 +1504,22 @@ class SecurityAndComplianceClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand () {
-    $raw_response = $null
-    $human_readable = "The test module does not work for MFA auth. Use the command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization and !$script:COMMAND_PREFIX-auth-test to instead."
+function TestModuleCommand ([SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
+
     $entry_context = $null
+    if ($using_delegated -eq $false){
+        $human_readable = "To test your connection, if you are using app-only authentication use the command !$script:COMMAND_PREFIX-auth-start and follow the instructions. If you are using UPN and password authentication, run the command !$script:COMMAND_PREFIX-auth-test to verify the connection."
+        $raw_response = $null
+    } else {
+        $human_readable = "Test Ok!"
+        $raw_response = $true
+        try {
+            $cs_client.CreateDelegatedSession("Start-ComplianceSearch")
+        }
+        finally {
+            $cs_client.DisconnectSession()
+        }
+    }
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -1504,8 +1547,14 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     return $human_readable, $entry_context, $raw_response
 }
 
-function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    $raw_response = $oclient.RefreshTokenRequest()
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
+
+    if ($using_delegated -eq $false){
+        $raw_response = $oclient.RefreshTokenRequest()
+    } else {
+        $raw_response = $null
+    }
+
     $human_readable = "**Test ok!**"
     $entry_context = @{}
     try {
@@ -1528,9 +1577,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Raw response 
+        $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1693,7 +1742,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response
     }
-
+    
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1723,7 +1772,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1847,6 +1896,7 @@ function CaseHoldRuleCreateCommand([SecurityAndComplianceClient]$client, [hashta
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
 }
+
 function CaseHoldRuleListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     $identity = $kwargs.identity
     $policy = $kwargs.policy
@@ -1889,13 +1939,241 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+<#
+.SYNOPSIS
+    Generates a short SHA-256 hash of the input string.
+
+.DESCRIPTION
+    Computes a SHA-256 hash for the input string and returns the first N characters.
+
+.PARAMETER inputString
+    The input string to hash.
+
+.PARAMETER length
+    The number of characters to return from the hash. Default is 12.
+
+.EXAMPLE
+    GetShortHash "example" 8
+#>
+function GetShortHash($inputString, $length = 12) {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha256.ComputeHash($bytes)
+    $hashString = -join ($hashBytes | ForEach-Object { $_.ToString("x2") })
+    return $hashString.Substring(0, $length)
+}
+
+<#
+.SYNOPSIS
+Generate a search name based on internetMessageId and exchange locations, with optional override.
+
+.DESCRIPTION
+Creates a unique search name by cleaning the internetMessageId and appending a short hash of exchange locations unless the overrideName is provided or locations include "All".
+
+.PARAMETER internetMessageId
+The Internet Message ID string to base the search name on.
+
+.PARAMETER exchangeLocation
+An array of exchange locations used to create a hash suffix.
+
+.PARAMETER overrideName
+Optional. If provided, this name will be returned directly without modification.
+
+.EXAMPLE
+MakeSearchName "<1234@example.com>", @("user@example.com", "archive@example.com")
+
+#>
+function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation, [string]$overrideName = $null) {
+    if ($overrideName) { return $overrideName }
+    $baseName = $internetMessageId -replace '[<>]', ''
+    if ($exchangeLocation -notcontains "All") {
+        $hash = GetShortHash ($exchangeLocation -join ",")
+        return "${baseName}:${hash}"
+    }
+    return $baseName
+}
+
+<#
+.SYNOPSIS
+Handles the search status and performs actions based on its state.
+
+.DESCRIPTION
+Checks the search status ($search.Status) and takes appropriate actions:
+- Starts the search if not started.
+- Returns status if the search is starting.
+- If completed, checks for results and manages purge actions.
+- Handles different statuses of the purge action.
+
+.PARAMETER client
+The client object performing search and purge operations.
+
+.PARAMETER search_name
+The name of the search.
+
+.PARAMETER search
+The current search object.
+
+.PARAMETER entry_context
+The context data to update.
+
+.PARAMETER polling_args
+Arguments for polling operations.
+
+.PARAMETER polling_first_run
+Flag indicating if this is the first polling run.
+
+.EXAMPLE
+HandleSearchStatus $client $search_name $search $entry_context $polling_args $true
+#>
+function HandleSearchStatus([object]$client, [string]$search_name, [object]$search, [hashtable]$entry_context, [hashtable]$polling_args, [bool]$polling_first_run) {
+    switch ($search.Status) {
+        "NotStarted" {
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
+        }
+        "Starting" {
+            if ($polling_first_run) {
+                return "$script:INTEGRATION_NAME - Search is already starting from a previous run.", $entry_context, $search, $null
+            }
+            return "", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            $demisto.debug("Search completed, items: $($search.Items)")
+            if ($search.Items -eq 0) {
+                return $polling_first_run ? "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry." : "$script:INTEGRATION_NAME - No emails found.", $entry_context, $search
+            }
+
+            $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
+            if (-not $action) {
+                $demisto.debug("Purge action missing, creating new")
+                $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $null, $null, $null, $null, $null, $null, $null)
+                return "$script:INTEGRATION_NAME - Search completed. Purge action created.", $entry_context, $action, $polling_args
+            }
+
+            $demisto.debug("Purge action status: $($action.Status)")
+            switch ($action.Status) {
+                "InProgress" {
+                    if ($polling_first_run) {
+                        return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action, $null
+                    }
+                    return "", $entry_context, $action, $polling_args
+                }
+                "Starting" {
+                    if ($polling_first_run) {
+                        return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action, $null
+                    }
+                    return "", $entry_context, $action, $polling_args
+                }
+                "Completed"  { return $polling_first_run ? "$script:INTEGRATION_NAME - Deletion already completed. Run again with force=true to retry." : "$script:INTEGRATION_NAME - Deletion completed.", $entry_context, $action }
+                default      { throw "Unhandled purge action status: $($action.Status)" }
+            }
+        }
+        default { throw "Unhandled search status: $($search.Status)" }
+    }
+}
+
+<#
+.SYNOPSIS
+Performs an email search and delete operation by internetMessageId.
+
+.DESCRIPTION
+Creates a new search or uses an existing one based on internetMessageId and exchange location, starts the search, and manages the search status.
+If `force` is true, creates a new unique search even if one exists.
+Uses `HandleSearchStatus` to handle the search state.
+
+.PARAMETER client
+Client object to perform search operations.
+
+.PARAMETER kwargs
+Command arguments including internetMessageId, exchange_location, force, and more.
+
+.EXAMPLE
+SearchAndDeleteEmailCommand $client @{ internet_message_id = "<1234@example.com>"; exchange_location = @("Research Department"); force = $true }
+#>
+function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
+    $demisto.debug("Received kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+    $description = "Search And Delete Email"
+    $entry_context = @{}
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $polling_first_run = ConvertTo-Boolean $kwargs.polling_first_run
+    $force = ConvertTo-Boolean $kwargs.force
+    $internet_message_id = $kwargs.internet_message_id
+    $kql = "internetMessageId:`"$internet_message_id`""
+    $polling_args = $kwargs
+    $search_name = MakeSearchName $internet_message_id $exchange_location $kwargs.search_name
+    $polling_args.search_name = $search_name
+    $demisto.debug("search_name: $search_name")
+
+    if ($polling_first_run) {
+        $polling_args.polling_first_run = $false
+        $demisto.debug("First run: create search. KQL: $kql")
+        $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "SilentlyContinue")
+        if ($search) { # $search is set only when the search didn’t exist and was just created.
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search created & started.", $entry_context, $search, $polling_args
+        }
+
+        $demisto.debug("Search already exists")
+        if ($force) {
+            $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
+            $search_name = "$search_name-$random_suffix"
+            $polling_args.search_name = $search_name
+            $demisto.debug("Force is true - creating new search with name: $search_name")
+            $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
+            if ($search) {
+                $client.StartSearch($search_name)
+                return "$script:INTEGRATION_NAME - Forced search created & started.", $entry_context, $search, $polling_args
+            } else {
+                throw "Failed to create forced search with name: $search_name"
+                }
+        }
+    }
+    $search = $client.GetSearch($search_name)
+    $status = $search.Status
+    $demisto.debug("GetSearch status: $status")
+    return HandleSearchStatus $client $search_name $search $entry_context $polling_args $polling_first_run
+}
+
+<#
+.SYNOPSIS
+Handles OAuth2 authentication commands for the Security and Compliance integration.
+
+.DESCRIPTION
+Executes the appropriate OAuth2 authentication flow based on the provided command.§
+
+.PARAMETER command
+The authentication command to execute. Supported values:
+- "$script:COMMAND_PREFIX-auth-start"
+- "$script:COMMAND_PREFIX-auth-complete"
+
+.PARAMETER using_delegated
+Boolean flag indicating whether interactive delegated authentication is enabled
+(i.e., using UPN and password).
+
+.PARAMETER oauth2_client
+The OAuth2 client object used to perform authentication operations.
+
+.EXAMPLE
+Handle-OAuth2AuthCommand "$script:COMMAND_PREFIX-auth-start" $false $oauth2_client
+#>
+function Handle-OAuth2AuthCommand($command, [bool]$using_delegated, [OAuth2DeviceCodeClient]$oauth2_client) {
+    if ($using_delegated) {
+        throw "When using UPN and password for authentication, you don't need to run this command. Please run $script:COMMAND_PREFIX-auth-test to verify that the authentication is successful."
+    }
+
+    switch ($command) {
+        "$script:COMMAND_PREFIX-auth-start"   { return StartAuthCommand $oauth2_client }
+        "$script:COMMAND_PREFIX-auth-complete" { return CompleteAuthCommand $oauth2_client }
+    }
+}
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $upn_password = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
     $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
     $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
@@ -1906,30 +2184,38 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
+        $using_delegated = -not [string]::IsNullOrWhiteSpace($upn_password)
+
+        $Demisto.Debug("Security and Compliance being using_delegated is $using_delegated")
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
-            $app_id, $app_secret, $tenant_id)
+            $app_id, $tenant_id)
+
 
         # Executing oauth2 commands
         switch ($command) {
             "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
             "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
         }
 
         # Refreshing tokens if expired
-        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+        if (($command -ne "$script:COMMAND_PREFIX-auth-start") -and (-not $using_delegated))
         {
             $oauth2_client.RefreshTokenIfExpired()
         }
+
 
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $tenant_id,
+            $upn_password,
+            $using_delegated,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
@@ -1937,10 +2223,10 @@ function Main {
         # Executing command
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-auth-test" {
-                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
+                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-new-search" {
                 ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
@@ -2005,13 +2291,30 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-email-security-search-and-delete-email-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
+            }
         }
 
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
+        if ($polling_args) {
+            ReturnPollingOutputs `
+                -ReadableOutput $human_readable `
+                -Outputs $entry_context `
+                -RawResponse $raw_response `
+                -CommandName $command `
+                -PollingArgs $polling_args `
+                -RemoveSelfRefs $true `
+                -NextRun "30" `
+                -Timeout "3600" | Out-Null
+        }
+        else {
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        }
         if ($file_entry) {
             $Demisto.results($file_entry)
         }

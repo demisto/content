@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Continuously Process Survey Responses
 
 ### Integrations
-* Azure Active Directory Users
+* Entra ID Users
 
 ### Scripts
 * Set

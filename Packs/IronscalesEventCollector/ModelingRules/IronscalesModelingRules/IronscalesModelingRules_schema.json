@@ -51,6 +51,10 @@
         "headers": {
             "type": "string",
             "is_array": false
+        },
+        "original_email_body": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

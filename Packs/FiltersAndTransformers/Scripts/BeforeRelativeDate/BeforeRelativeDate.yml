@@ -1,0 +1,27 @@
+args:
+- description: Date value to check - Can be any time format. ex. "2020-01-01T00:00:00".
+  name: left
+  required: true
+- description: Relative time ex. "6 months ago".
+  name: right
+  required: true
+comment: Checks the given datetime has occured before the provided relative time.
+commonfields:
+  id: BeforeRelativeDate
+  version: -1
+enabled: true
+name: BeforeRelativeDate
+script: '-'
+subtype: python3
+tags:
+- date
+- filter
+- Condition
+timeout: '0'
+isllm: false
+type: python
+dockerimage: demisto/python3:3.12.11.4819260
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (unit test)

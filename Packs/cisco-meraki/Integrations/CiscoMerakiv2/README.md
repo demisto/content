@@ -2829,6 +2829,7 @@ The following sections list the changes in this version.
 ### Commands
 
 The following commands were removed in this version:
+
 - ***meraki-fetch-organizations*** - this command was replaced by ***meraki-organization-list***.
 - ***meraki-get-organization-license-state*** - this command was replaced by ***meraki-organization-license-state-list***.
 - ***meraki-fetch-organization-inventory*** - this command was replaced by ***meraki-organization-inventory-list***.

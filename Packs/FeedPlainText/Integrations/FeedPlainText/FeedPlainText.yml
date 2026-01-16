@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 commonfields:
   id: Plain Text Feed
   version: -1
@@ -40,9 +41,6 @@ configuration:
   - Email
   - URL
   - File
-  - File MD5
-  - File SHA256
-  - File SHA1
   - Account
   - CVE
   - Host
@@ -220,7 +218,7 @@ script:
       name: indicator_type
     description: Gets indicators from the feed.
     name: plaintext-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.3205634
+  dockerimage: demisto/py3-tools:1.0.0.6127057
   feed: true
   runonce: false
   script: '-'
@@ -229,6 +227,6 @@ script:
 tests:
 - PlainText Feed - Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

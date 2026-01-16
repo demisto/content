@@ -2,10 +2,20 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
 
 ## Configure AnythingLLM in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| AnythingLLM URL (e.g., http://&lt;url to AnythingLLM&gt;:3001) | True |
-| AnythingLLM API Key | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AnythingLLM URL (e.g., http://&lt;url to local AnythingLLM&gt;:3001) or https://&lt;Anything LLM cloud url&gt; |  | True |
+| AnythingLLM API Key |  | True |
+| Cloudflare Access Client Id |  | False |
+| Cloudflare Access Client Secret |  | False |
+| AIRS API URL | Leave blank if AIRS is not being used | False |
+| AIRS API Key | Leave blank if AIRS is not being used | False |
+| Sync Scan LLM Prompts with AIRS | Have AIRS scan all LLM prompts and throw exeception if BLOCK is returned | False |
+| Sync Scan LLM Response with AIRS | Have AIRS scan all LLM responses and throw exeception if BLOCK is returned | False |
+| AIRS Profile Name for Scan Requests | The profile must be created in the AIRS console | False |
+| AIRS Application Name for Scan Requests | Provide an application name to identify XSOAR scan requests in AIRS | False |
+| AIR User for Scan Requests | Provide a user name to include in XSOAR scan requests in AIRS | False |
+| Anything LLM Model in use | Provide the LLM model being used for scan requests in AIRS | False |
 
 ## Commands
 
@@ -15,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### anyllm-document-upload-file
 
 ***
-Uploads an XSOAR file entry to the custom-documents folder
+Uploads an XSOAR file entry to the custom-documents folder.
 
 #### Base Command
 
@@ -458,3 +468,42 @@ Delete a thread in a workspace
 #### Context Output
 
 There is no context output for this command.
+
+### anyllm-scan-request
+
+***
+Perform an AI security scan of a request with AIRS
+
+#### Base Command
+
+`anyllm-scan-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | AIRS profile name to use in scanning. | Required |
+| app_name | AIRS application name - metadata. | Optional |
+| app_user | AIRS application user name - metadata. | Optional |
+| ai_model | LLM model in use - metadata. | Optional |
+| user_ip | User IP - metadata. | Optional |
+| prompt | LLM prompt to scan. | Optional |
+| response | LLM response to scan. | Optional |
+| code_prompt | LLM prompt with code to scan. | Optional |
+| code_response | LLM response with code to scan. | Optional |
+| context | LLM context for grounding. | Optional |
+
+#### Context Output
+
+The context data returned from a scan request is:
+
+| **Key** | **Value** |
+| --- | --- |
+| action | block or allow |
+| category | malicious etc |
+| profile_id | ID of the AIRS profile used |
+| profile_name | Name of the AIRS profile used |
+| prompt_detected | Details of a prompt detection - dictionary |
+| response_detected | Details of a response detection - dictionary |
+| scan_id | Scan ID |
+| tr_id | TR  ID |

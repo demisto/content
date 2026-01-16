@@ -1,4 +1,5 @@
 category: Network Security
+provider: STG
 sectionorder:
   - Connect
   - Collect
@@ -281,7 +282,7 @@ script:
       required: true
     description: Adds new content to an existing policy dictionary.
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

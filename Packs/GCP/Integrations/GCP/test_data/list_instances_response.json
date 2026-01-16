@@ -1,0 +1,676 @@
+{
+  "kind": "compute#instanceList",
+  "id": "projects/test-project/zones/us-central1-a/instances",
+  "items": [
+    {
+      "kind": "compute#instance",
+      "id": "123456789",
+      "creationTimestamp": "2023-01-01T10:00:00.000-07:00",
+      "name": "test-instance-1",
+      "description": "Test instance 1",
+      "tags": {
+        "items": [
+          "string"
+        ],
+        "fingerprint": "string"
+      },
+      "machineType": "projects/test-project/zones/us-central1-a/machineTypes/n1-standard-1",
+      "status": "RUNNING",
+      "statusMessage": "string",
+      "zone": "projects/test-project/zones/us-central1-a",
+      "canIpForward": "boolean",
+      "networkInterfaces": [
+        {
+          "kind": "string",
+          "network": "string",
+          "subnetwork": "string",
+          "networkIP": "string",
+          "ipv6Address": "string",
+          "internalIpv6PrefixLength": "integer",
+          "name": "string",
+          "accessConfigs": [
+            {
+              "kind": "string",
+              "type": "enum",
+              "name": "string",
+              "natIP": "string",
+              "externalIpv6": "string",
+              "externalIpv6PrefixLength": "integer",
+              "setPublicPtr": "boolean",
+              "publicPtrDomainName": "string",
+              "networkTier": "enum",
+              "securityPolicy": "string"
+            }
+          ],
+          "ipv6AccessConfigs": [
+            {
+              "kind": "string",
+              "type": "enum",
+              "name": "string",
+              "natIP": "string",
+              "externalIpv6": "string",
+              "externalIpv6PrefixLength": "integer",
+              "setPublicPtr": "boolean",
+              "publicPtrDomainName": "string",
+              "networkTier": "enum",
+              "securityPolicy": "string"
+            }
+          ],
+          "aliasIpRanges": [
+            {
+              "ipCidrRange": "string",
+              "subnetworkRangeName": "string"
+            }
+          ],
+          "fingerprint": "string",
+          "stackType": "enum",
+          "ipv6AccessType": "enum",
+          "queueCount": "integer",
+          "nicType": "enum",
+          "networkAttachment": "string"
+        }
+      ],
+      "disks": [
+        {
+          "kind": "string",
+          "type": "enum",
+          "mode": "enum",
+          "savedState": "enum",
+          "source": "string",
+          "deviceName": "string",
+          "index": "integer",
+          "boot": "boolean",
+          "initializeParams": {
+            "diskName": "string",
+            "sourceImage": "string",
+            "diskSizeGb": "string",
+            "diskType": "string",
+            "sourceImageEncryptionKey": {
+              "sha256": "string",
+              "kmsKeyServiceAccount": "string",
+
+
+              "rawKey": "string",
+              "rsaEncryptedKey": "string",
+              "kmsKeyName": "string"
+
+            },
+            "labels": {
+              "string": "string"
+            },
+            "sourceSnapshot": "string",
+            "sourceSnapshotEncryptionKey": {
+              "sha256": "string",
+              "kmsKeyServiceAccount": "string",
+
+
+              "rawKey": "string",
+              "rsaEncryptedKey": "string",
+              "kmsKeyName": "string"
+
+            },
+            "description": "string",
+            "replicaZones": [
+              "string"
+            ],
+            "resourcePolicies": [
+              "string"
+            ],
+            "onUpdateAction": "enum",
+            "provisionedIops": "string",
+            "licenses": [
+              "string"
+            ],
+            "architecture": "enum",
+            "resourceManagerTags": {
+              "string": "string"
+            },
+            "provisionedThroughput": "string",
+            "enableConfidentialCompute": "boolean",
+            "storagePool": "string"
+          },
+          "autoDelete": "boolean",
+          "licenses": [
+            "string"
+          ],
+          "interface": "enum",
+          "guestOsFeatures": [
+            {
+              "type": "enum"
+            }
+          ],
+          "diskEncryptionKey": {
+            "rawKey": "string",
+            "rsaEncryptedKey": "string",
+            "kmsKeyName": "string",
+            "sha256": "string",
+            "kmsKeyServiceAccount": "string"
+          },
+          "diskSizeGb": "string",
+          "shieldedInstanceInitialState": {
+            "pk": {
+              "content": "string",
+              "fileType": "enum"
+            },
+            "keks": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ],
+            "dbs": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ],
+            "dbxs": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ]
+          },
+          "forceAttach": "boolean",
+          "architecture": "enum"
+        }
+      ],
+      "metadata": {
+        "kind": "string",
+        "fingerprint": "string",
+        "items": [
+          {
+            "key": "string",
+            "value": "string"
+          }
+        ]
+      },
+      "serviceAccounts": [
+        {
+          "email": "string",
+          "scopes": [
+            "string"
+          ]
+        }
+      ],
+      "selfLink": "string",
+      "scheduling": {
+        "onHostMaintenance": "enum",
+        "automaticRestart": "boolean",
+        "preemptible": "boolean",
+        "nodeAffinities": [
+          {
+            "key": "string",
+            "operator": "enum",
+            "values": [
+              "string"
+            ]
+          }
+        ],
+        "minNodeCpus": "integer",
+        "locationHint": "string",
+        "availabilityDomain": "integer",
+        "provisioningModel": "enum",
+        "instanceTerminationAction": "enum",
+        "hostErrorTimeoutSeconds": "integer",
+        "localSsdRecoveryTimeout": {
+          "seconds": "string",
+          "nanos": "integer"
+        },
+
+        "maxRunDuration": {
+          "seconds": "string",
+          "nanos": "integer"
+        },
+        "terminationTime": "string",
+
+        "onInstanceStopAction": {
+          "discardLocalSsd": "boolean"
+        }
+      },
+      "cpuPlatform": "string",
+      "labels": {
+        "string": "string"
+      },
+      "params": {
+        "resourceManagerTags": {
+          "string": "string"
+        }
+      },
+      "labelFingerprint": "string",
+      "instanceEncryptionKey": {
+        "sha256": "string",
+        "kmsKeyServiceAccount": "string",
+
+
+        "rawKey": "string",
+        "rsaEncryptedKey": "string",
+        "kmsKeyName": "string"
+
+      },
+      "minCpuPlatform": "string",
+      "guestAccelerators": [
+        {
+          "acceleratorType": "string",
+          "acceleratorCount": "integer"
+        }
+      ],
+      "startRestricted": "boolean",
+      "deletionProtection": "boolean",
+      "resourcePolicies": [
+        "string"
+      ],
+      "sourceMachineImage": "string",
+      "reservationAffinity": {
+        "consumeReservationType": "enum",
+        "key": "string",
+        "values": [
+          "string"
+        ]
+      },
+      "hostname": "string",
+      "displayDevice": {
+        "enableDisplay": "boolean"
+      },
+      "shieldedInstanceConfig": {
+        "enableSecureBoot": "boolean",
+        "enableVtpm": "boolean",
+        "enableIntegrityMonitoring": "boolean"
+      },
+      "shieldedInstanceIntegrityPolicy": {
+          "updateAutoLearnPolicy": "boolean"
+      },
+      "sourceMachineImageEncryptionKey": {
+        "sha256": "string",
+        "kmsKeyServiceAccount": "string",
+        "rawKey": "string",
+        "rsaEncryptedKey": "string",
+        "kmsKeyName": "string"
+      },
+      "confidentialInstanceConfig": {
+        "enableConfidentialCompute": "boolean",
+        "confidentialInstanceType": "enum"
+      },
+      "fingerprint": "string",
+      "privateIpv6GoogleAccess": "enum",
+      "advancedMachineFeatures": {
+        "enableNestedVirtualization": "boolean",
+        "threadsPerCore": "integer",
+        "visibleCoreCount": "integer",
+        "enableUefiNetworking": "boolean",
+        "performanceMonitoringUnit": "enum",
+        "turboMode": "string"
+      },
+      "lastStartTimestamp": "string",
+      "lastStopTimestamp": "string",
+      "lastSuspendedTimestamp": "string",
+      "satisfiesPzs": "boolean",
+      "satisfiesPzi": "boolean",
+      "resourceStatus": {
+        "scheduling": {
+          "availabilityDomain": "integer"
+        },
+        "upcomingMaintenance": {
+          "type": "enum",
+          "canReschedule": "boolean",
+          "windowStartTime": "string",
+          "windowEndTime": "string",
+          "latestWindowStartTime": "string",
+          "maintenanceStatus": "enum"
+        },
+        "physicalHost": "string",
+        "physicalHostTopology": {
+          "cluster": "string",
+          "block": "string",
+          "subblock": "string",
+          "host": "string"
+        }
+      },
+      "networkPerformanceConfig": {
+        "totalEgressBandwidthTier": "enum"
+      },
+      "keyRevocationActionType": "enum"
+    },
+      {
+      "kind": "compute#instance",
+      "id": "987654321",
+      "creationTimestamp": "2023-01-01T10:00:00.000-07:00",
+      "name": "test-instance-2",
+      "description": "Test instance 1",
+      "tags": {
+        "items": [
+          "string"
+        ],
+        "fingerprint": "string"
+      },
+      "machineType": "projects/test-project/zones/us-central1-a/machineTypes/n1-standard-1",
+      "status": "STOPPED",
+      "statusMessage": "string",
+      "zone": "projects/test-project/zones/us-central1-a",
+      "canIpForward": "boolean",
+      "networkInterfaces": [
+        {
+          "kind": "string",
+          "network": "string",
+          "subnetwork": "string",
+          "networkIP": "string",
+          "ipv6Address": "string",
+          "internalIpv6PrefixLength": "integer",
+          "name": "string",
+          "accessConfigs": [
+            {
+              "kind": "string",
+              "type": "enum",
+              "name": "string",
+              "natIP": "string",
+              "externalIpv6": "string",
+              "externalIpv6PrefixLength": "integer",
+              "setPublicPtr": "boolean",
+              "publicPtrDomainName": "string",
+              "networkTier": "enum",
+              "securityPolicy": "string"
+            }
+          ],
+          "ipv6AccessConfigs": [
+            {
+              "kind": "string",
+              "type": "enum",
+              "name": "string",
+              "natIP": "string",
+              "externalIpv6": "string",
+              "externalIpv6PrefixLength": "integer",
+              "setPublicPtr": "boolean",
+              "publicPtrDomainName": "string",
+              "networkTier": "enum",
+              "securityPolicy": "string"
+            }
+          ],
+          "aliasIpRanges": [
+            {
+              "ipCidrRange": "string",
+              "subnetworkRangeName": "string"
+            }
+          ],
+          "fingerprint": "string",
+          "stackType": "enum",
+          "ipv6AccessType": "enum",
+          "queueCount": "integer",
+          "nicType": "enum",
+          "networkAttachment": "string"
+        }
+      ],
+      "disks": [
+        {
+          "kind": "string",
+          "type": "enum",
+          "mode": "enum",
+          "savedState": "enum",
+          "source": "string",
+          "deviceName": "string",
+          "index": "integer",
+          "boot": "boolean",
+          "initializeParams": {
+            "diskName": "string",
+            "sourceImage": "string",
+            "diskSizeGb": "string",
+            "diskType": "string",
+            "sourceImageEncryptionKey": {
+              "sha256": "string",
+              "kmsKeyServiceAccount": "string",
+
+
+              "rawKey": "string",
+              "rsaEncryptedKey": "string",
+              "kmsKeyName": "string"
+
+            },
+            "labels": {
+              "string": "string"
+            },
+            "sourceSnapshot": "string",
+            "sourceSnapshotEncryptionKey": {
+              "sha256": "string",
+              "kmsKeyServiceAccount": "string",
+
+
+              "rawKey": "string",
+              "rsaEncryptedKey": "string",
+              "kmsKeyName": "string"
+
+            },
+            "description": "string",
+            "replicaZones": [
+              "string"
+            ],
+            "resourcePolicies": [
+              "string"
+            ],
+            "onUpdateAction": "enum",
+            "provisionedIops": "string",
+            "licenses": [
+              "string"
+            ],
+            "architecture": "enum",
+            "resourceManagerTags": {
+              "string": "string"
+            },
+            "provisionedThroughput": "string",
+            "enableConfidentialCompute": "boolean",
+            "storagePool": "string"
+          },
+          "autoDelete": "boolean",
+          "licenses": [
+            "string"
+          ],
+          "interface": "enum",
+          "guestOsFeatures": [
+            {
+              "type": "enum"
+            }
+          ],
+          "diskEncryptionKey": {
+            "rawKey": "string",
+            "rsaEncryptedKey": "string",
+            "kmsKeyName": "string",
+            "sha256": "string",
+            "kmsKeyServiceAccount": "string"
+          },
+          "diskSizeGb": "string",
+          "shieldedInstanceInitialState": {
+            "pk": {
+              "content": "string",
+              "fileType": "enum"
+            },
+            "keks": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ],
+            "dbs": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ],
+            "dbxs": [
+              {
+                "content": "string",
+                "fileType": "enum"
+              }
+            ]
+          },
+          "forceAttach": "boolean",
+          "architecture": "enum"
+        }
+      ],
+      "metadata": {
+        "kind": "string",
+        "fingerprint": "string",
+        "items": [
+          {
+            "key": "string",
+            "value": "string"
+          }
+        ]
+      },
+      "serviceAccounts": [
+        {
+          "email": "string",
+          "scopes": [
+            "string"
+          ]
+        }
+      ],
+      "selfLink": "string",
+      "scheduling": {
+        "onHostMaintenance": "enum",
+        "automaticRestart": "boolean",
+        "preemptible": "boolean",
+        "nodeAffinities": [
+          {
+            "key": "string",
+            "operator": "enum",
+            "values": [
+              "string"
+            ]
+          }
+        ],
+        "minNodeCpus": "integer",
+        "locationHint": "string",
+        "availabilityDomain": "integer",
+        "provisioningModel": "enum",
+        "instanceTerminationAction": "enum",
+        "hostErrorTimeoutSeconds": "integer",
+        "localSsdRecoveryTimeout": {
+          "seconds": "string",
+          "nanos": "integer"
+        },
+
+        "maxRunDuration": {
+          "seconds": "string",
+          "nanos": "integer"
+        },
+        "terminationTime": "string",
+
+        "onInstanceStopAction": {
+          "discardLocalSsd": "boolean"
+        }
+      },
+      "cpuPlatform": "string",
+      "labels": {
+        "string": "string"
+      },
+      "params": {
+        "resourceManagerTags": {
+          "string": "string"
+        }
+      },
+      "labelFingerprint": "string",
+      "instanceEncryptionKey": {
+        "sha256": "string",
+        "kmsKeyServiceAccount": "string",
+
+
+        "rawKey": "string",
+        "rsaEncryptedKey": "string",
+        "kmsKeyName": "string"
+
+      },
+      "minCpuPlatform": "string",
+      "guestAccelerators": [
+        {
+          "acceleratorType": "string",
+          "acceleratorCount": "integer"
+        }
+      ],
+      "startRestricted": "boolean",
+      "deletionProtection": "boolean",
+      "resourcePolicies": [
+        "string"
+      ],
+      "sourceMachineImage": "string",
+      "reservationAffinity": {
+        "consumeReservationType": "enum",
+        "key": "string",
+        "values": [
+          "string"
+        ]
+      },
+      "hostname": "string",
+      "displayDevice": {
+        "enableDisplay": "boolean"
+      },
+      "shieldedInstanceConfig": {
+        "enableSecureBoot": "boolean",
+        "enableVtpm": "boolean",
+        "enableIntegrityMonitoring": "boolean"
+      },
+      "shieldedInstanceIntegrityPolicy": {
+          "updateAutoLearnPolicy": "boolean"
+      },
+      "sourceMachineImageEncryptionKey": {
+        "sha256": "string",
+        "kmsKeyServiceAccount": "string",
+        "rawKey": "string",
+        "rsaEncryptedKey": "string",
+        "kmsKeyName": "string"
+      },
+      "confidentialInstanceConfig": {
+        "enableConfidentialCompute": "boolean",
+        "confidentialInstanceType": "enum"
+      },
+      "fingerprint": "string",
+      "privateIpv6GoogleAccess": "enum",
+      "advancedMachineFeatures": {
+        "enableNestedVirtualization": "boolean",
+        "threadsPerCore": "integer",
+        "visibleCoreCount": "integer",
+        "enableUefiNetworking": "boolean",
+        "performanceMonitoringUnit": "enum",
+        "turboMode": "string"
+      },
+      "lastStartTimestamp": "string",
+      "lastStopTimestamp": "string",
+      "lastSuspendedTimestamp": "string",
+      "satisfiesPzs": "boolean",
+      "satisfiesPzi": "boolean",
+      "resourceStatus": {
+        "scheduling": {
+          "availabilityDomain": "integer"
+        },
+        "upcomingMaintenance": {
+          "type": "enum",
+          "canReschedule": "boolean",
+          "windowStartTime": "string",
+          "windowEndTime": "string",
+          "latestWindowStartTime": "string",
+          "maintenanceStatus": "enum"
+        },
+        "physicalHost": "string",
+        "physicalHostTopology": {
+          "cluster": "string",
+          "block": "string",
+          "subblock": "string",
+          "host": "string"
+        }
+      },
+      "networkPerformanceConfig": {
+        "totalEgressBandwidthTier": "enum"
+      },
+      "keyRevocationActionType": "enum"
+    }
+  ],
+  "nextPageToken": "string",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instances",
+  "warning": {
+    "code": "enum",
+    "message": "string",
+    "data": [
+      {
+        "key": "string",
+        "value": "string"
+      }
+    ]
+  }
+}

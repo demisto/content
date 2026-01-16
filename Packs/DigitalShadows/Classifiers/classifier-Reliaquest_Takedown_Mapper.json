@@ -1,0 +1,118 @@
+{
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"id": "Reliaquest Takedown Mapper",
+	"mapping": {
+		"Reliaquest Takedown Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"DS Takedown Attachments": {
+					"simple": "attachments"
+				},
+				"DS Takedown Comments": {
+					"simple": "comments"
+				},
+				"DS Takedown Targets": {
+					"simple": "targets"
+				},
+				"Domain Name": {
+					"simple": "brand.name"
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"Source Create time": {
+					"simple": "created"
+				},
+				"Source Created By": {
+					"simple": "brand.created"
+				},
+				"Source Id": {
+					"simple": "id"
+				},
+				"Source Status": {
+					"simple": "status"
+				},
+				"Source Updated by": {
+					"simple": "brand.updated"
+				},
+				"dbotMirrorDirection": {
+					"simple": "dbotMirrorDirection"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"dbotMirrorLastSync": {
+					"simple": "updated"
+				},
+				"name": {
+					"simple": "brand.name"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"DS Takedown Attachments": {
+					"simple": "attachments"
+				},
+				"DS Takedown Comments": {
+					"simple": "comments"
+				},
+				"DS Takedown Targets": {
+					"simple": "targets"
+				},
+				"Domain Name": {
+					"simple": "brand.domain-name"
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"Source Create time": {
+					"simple": "created"
+				},
+				"Source Created By": {
+					"simple": "brand.created"
+				},
+				"Source Id": {
+					"simple": "id"
+				},
+				"Source Status": {
+					"simple": "status"
+				},
+				"Source Updated by": {
+					"simple": "brand.updated"
+				},
+				"dbotMirrorDirection": {
+					"simple": "dbotMirrorDirection"
+				},
+				"dbotMirrorId": {
+					"simple": "dbotMirrorId"
+				},
+				"dbotMirrorInstance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"dbotMirrorLastSync": {
+					"simple": "updated"
+				},
+				"name": {
+					"simple": "brand.name"
+				}
+			}
+		}
+	},
+	"name": "Reliaquest Takedown Mapper",
+	"type": "mapping-incoming",
+	"fromVersion": "6.9.0",
+	"version": -1
+}

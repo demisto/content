@@ -19,7 +19,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | templates_type | The type of the templates data. |
 | template_name | The name of a template to choose it from 'templates'. |
 | templates | A list of templates to choose from for building an entry. |
-| base_time | The base time for the relative time provided to earliest_time or latest_time \(The default is the first available value from the following: alert.occurred, incident.occurred, alert.created, incident.created, now\). |
+| base_time | The base time for the relative time provided to earliest_time or latest_time \(The default is the first available value from the following: issue.occurred, alert.occurred, incident.occurred, issue.created, alert.created, incident.created, now\). |
 | round_time | The value \(in seconds\) used to round down the base time \(Default = 0\). If two parameters are provided in a list, they will be applied to the base time for `earliest_time` and `latest_time`, respectively. |
 | earliest_time | The earliest time at which the time range of the query starts \(Default = 24 hours ago\). |
 | latest_time | The latest time at which the time range of the query ends \(Default = now\). |
@@ -31,6 +31,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
 | query_timeout_duration | The maximum duration (in seconds) allowed for an XQL query to complete after it has started \(Default = 60\). |
 | context_data | The custom context data is merged with the current context data for use. |
+| output_recordset | Set to true to return the recordset in the outputs context; otherwise, set to false. |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
 ### Query Execution Timeout and Retry Limits
@@ -46,6 +47,10 @@ Once the query starts running, it may take some time to return results. During t
 | --- | --- | --- |
 | XQLDSHelper.QueryParams | The query parameters. | unknown |
 | XQLDSHelper.QueryHash | The hash value of the query parameters. | string |
+| XQLDSHelper.RequestURL | The URL path, including query parameters, used to search datasets in the XQL builder. | string |
+| XQLDSHelper.ResultURL | The URL path used to get the results of an executed query in the XQL builder. | string |
+| XQLDSHelper.ExecutionID | The unique execution ID for the request query. | string |
+| XQLDSHelper.RecordSet | The record set retrieved by the XQL query. | unknown |
 | XQLDSHelper.Entry | The entry data for the general dynamic section. | unknown |
 
 ## Structure of the templates
@@ -100,6 +105,14 @@ The summary of the template structure in the templates is provided below.
           "paths": <target paths>
         }
       },
+      "issue": {
+        "filters": <filter paths>,
+        "default": <default values>,
+        "remove-null": {
+          "entries-only": <ctrl flag>,
+          "paths": <target paths>
+        }
+      },
       "incident": {
         "filters": <filter paths>,
         "default": <default values>,
@@ -120,7 +133,14 @@ The summary of the template structure in the templates is provided below.
         "latest_time": "<latest time>",
         "round_time": <round time>
       },
-      "conditions": <conditions>
+      "conditions": <conditions>,
+      "locking": {
+        "module": "<locking module>",
+        "name": "<name of lock>",
+        "info": "<info for lock>",
+        "timeout": <timeout>,
+        "using": "<instance name>"
+      }
     },
     "entry": {
       "type": "<widget type>",
@@ -153,6 +173,10 @@ The summary of the template structure in the templates is provided below.
 | .config.alert.default | [Optional] Default parameters to use when not present in the alert. | Dict |
 | .config.alert.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
 | .config.alert.remove-null.paths | [Optional] A list of node paths to remove dictionary entries or values from the alert before applying default parameters. | List |
+| .config.issue.filters | [Optional] A list of node paths to extract from the issue for use. `issue.` prefix is not required. The filters are applied before the default parameters are applied. | List |
+| .config.issue.default | [Optional] Default parameters to use when not present in the issue. | Dict |
+| .config.issue.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
+| .config.issue.remove-null.paths | [Optional] A list of node paths to remove dictionary entries or values from the issue before applying default parameters. | List |
 | .config.incident.filters | [Optional] A list of node paths to extract from the incident for use. `incident.` prefix is not required. The filters are applied before the default parameters are applied. | List |
 | .config.incident.default | [Optional] Default parameters to use when not present in the incident. | Dict |
 | .config.incident.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
@@ -189,6 +213,11 @@ Below is a sample of the `config` node.
       "username": "Administrator"
     }
   },
+  "issue": {
+    "default": {
+      "username": "Administrator"
+    }
+  },
   "incident": {
     "default": {
       "username": "Administrator"
@@ -197,7 +226,7 @@ Below is a sample of the `config` node.
 }
 ```
 
-`.filters`, `.remove-null`, and `.default` settings under `content`, `alert`, and `incident` can help minimize the data used for Variable Substitution and provide default values.
+`.filters`, `.remove-null`, and `.default` settings under `content`, `alert`, `issue`, and `incident` can help minimize the data used for Variable Substitution and provide default values.
 Using Variable Substitution to pass the entire data to variables like `${.=val.username}` is time-consuming. By using these settings to minimize the data and define default values, you can reduce the need to pass the entire data, thereby improving processing performance.
 
 ### Node: query
@@ -214,6 +243,11 @@ Using Variable Substitution to pass the entire data to variables like `${.=val.u
 | .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
 | .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
 | .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. | Any |
+| .query.locking.module | [Optional] The locking module to use. Must be either `core-lock` or `demisto-lock` \(Default = core-lock\). | String |
+| .query.locking.name | [Optional] The lock name passed as the `name` parameter to the `core-lock-get` command. | String |
+| .query.locking.info | [Optional] Additional information provided for the lock instance via the `info` parameter of the `core-lock-get` command. | String |
+| .query.locking.timeout | [Optional] The timeout value (in seconds) passed to the `timeout` parameter of the `core-lock-get` command. | String or Number |
+| .query.locking.using | [Optional] The name of the Core Lock integration instance to execute the `core-lock-get` and `core-lock-release`. | String |
 
 This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
@@ -1417,7 +1451,7 @@ By default, a variable is enclosed by `${` and `}`, and those symbols can be cha
 e.g.
 
 ```
-| filter action_remote_ip = "${alert.remoteip}"
+| filter action_remote_ip = "${issue.remoteip}"
 ```
 
 The syntax supports the [DT expression](https://xsoar.pan.dev/docs/integrations/dt), allowing you to make template text more flexible and customizable.
@@ -1425,7 +1459,7 @@ The syntax supports the [DT expression](https://xsoar.pan.dev/docs/integrations/
 e.g.
 
 ```
-| filter action_remote_ip = "${alert.remoteip=>val ? val[0] : "255.255.255.255"}"
+| filter action_remote_ip = "${issue.remoteip=>val ? val[0] : "255.255.255.255"}"
 ```
 
 Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
@@ -1433,28 +1467,32 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 - ${&lt;context-path&gt;}
 - ${lists.&lt;list-name&gt;}
 - ${alert.&lt;alert-field&gt;}
+- ${issue.&lt;issue-field&gt;}
 - ${incident.&lt;incident-field&gt;}
 
 In addition, it supports extended variables that start with `.`.
 <!-- markdownlint-disable MD005 -->
+
 - ${.recordset}
-  - It refers to the record set retrieved by the XQL query.- ${.query.string}
-   * It refers to the query string used in the XQL query.
+  - It refers to the record set retrieved by the XQL query.
 
- - ${.query.timeframe.from}
-   * It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
+- ${.query.string}
+  - It refers to the query string used in the XQL query.
 
- - ${.query.timeframe.to}
-   * It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
+- ${.query.timeframe.from}
+  - It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
 
- - ${.query.execution_id}
-   * It refers to the unique execution ID for the request query.
+- ${.query.timeframe.to}
+  - It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
 
- - ${.query.request_url}
-   * It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+- ${.query.execution_id}
+  - It refers to the unique execution ID for the request query.
 
- - ${.query.result_url}
-   * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
+- ${.query.request_url}
+  - It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+
+- ${.query.result_url}
+  - It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
 <!-- markdownlint-enable MD005 -->
 
@@ -1485,6 +1523,21 @@ dataset = panw_ngfw_traffic_raw
 | comp approx_top(app, 10) as apps by _time
 | limit 240 // to allow retrieving up to 10 apps x 24 hours of records, as the default limit is 100.
 ```
+
+## Locking Queries
+
+In Cortex XSIAM and Cortex XDR, the number of concurrent XQL query executions via the REST API is limited to four.
+Submitting more queries than this may lead to errors.
+The script XQLDSHelper supports retry logic and can wait until execution becomes possible, but by holding onto an execution slot it might impact other playbooks running queries in parallel.
+To prevent this, exclusive locking is supported via the Core Lock or Demisto Lock mechanism.
+When `.query.locking` is enabled, XQLDSHelper acquires a lock during query execution and releases it afterward.
+This ensures that multiple queries do not run concurrently and allows coordinated execution alongside other playbooks.
+
+## Backward Compatibility for Cortex XSIAM 2.x
+
+Due to naming policy updates, `alert` fields in Cortex XSIAM 2.x have been changed to `issue` fields in the Cortex Unified Platform.
+Correspondingly, the namespace has also been updated from `alert` to `issue`.
+For backward compatibility, the XQLDSHelper still allows you to reference `issue` fields using the `alert` namespace, as well as the new `issue` namespace.
 
 ## Sample Content Bundle
 

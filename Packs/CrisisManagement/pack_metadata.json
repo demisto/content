@@ -2,7 +2,7 @@
     "name": "Crisis Management",
     "description": "This Content Pack helps you automate data collection and crisis event communications such as monitoring remote employee health and safety well being.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,7 +17,9 @@
     ],
     "created": "2020-05-06T08:54:47Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "crisis"
+    ],
     "dependencies": {
         "CommonTypes": {
             "mandatory": true,
@@ -53,6 +55,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

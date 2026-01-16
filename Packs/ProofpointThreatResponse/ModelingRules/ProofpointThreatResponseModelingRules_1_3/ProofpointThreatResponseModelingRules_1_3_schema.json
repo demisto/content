@@ -1,20 +1,24 @@
 {
-  "proofpoint_threat_response_raw": {
-    "id": {
-      "type": "int",
-      "is_array": false
-    },
-    "event": {
-      "type": "string",
-      "is_array": false
-    },
-    "hosts": {
-      "type": "string",
-      "is_array": false
-    },
-    "incident_field_values": {
-      "type": "string",
-      "is_array": false
+    "proofpoint_threat_response_raw": {
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "event": {
+            "type": "string",
+            "is_array": false
+        },
+        "hosts": {
+            "type": "string",
+            "is_array": false
+        },
+        "incident_field_values": {
+            "type": "string",
+            "is_array": false
+        },
+        "updated_at": {
+            "type": "datetime",
+            "is_array": false
+        }
     }
-  }
 }

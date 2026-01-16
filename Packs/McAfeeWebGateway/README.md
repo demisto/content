@@ -42,7 +42,7 @@ You need to configure Web Gateway to forward Syslog messages.
    This modification prevents the syslog daemon from sending data to the var/log/messages partition on the disk of the Web
 Gateway appliance system.
    3. You can now direct the data to the intended destination:
-      * To send data to a syslog server under TCP, insert - `daemon.info @<IP>:<Port>`
+      * To send data to a syslog server under TCP, insert - `daemon.info @@<IP>:<Port>`
       * To send data to a syslog server under the UDP protocol, insert - `daemon.info @<IP>:514`
 
 * Pay Attention: Timestamp ingestion is currently available for the **time_stamp** field in **%d/%h/%Y %H:%M:%S %z** (e.g. 11/Oct/2023:04:50:18 -0500) format.
@@ -53,7 +53,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Cortex Xpanse
+* Cortex Xpanse
 
 ### Scripts
 

@@ -66,10 +66,33 @@ def datetime_to_timestamp_format(dt: datetime, timestamp_format: str) -> str:
     return dt.strftime(timestamp_format)
 
 
+def is_milliseconds(dt: str) -> bool:
+    return len(dt) > 10
+
+
+def is_microseconds(dt: str) -> bool:
+    return len(dt) >= 16
+
+
+def convert_epoch_to_timestamp(dt: str) -> datetime:
+    dt_float = float(dt)
+    if "." in dt:
+        # The function `fromtimestamp` knows to handle more than 6 digits of precision.
+        demisto.debug(f"converting {dt} to timestamp format from float: {dt_float}")
+        return datetime.fromtimestamp(dt_float)
+    if is_microseconds(dt):
+        demisto.debug(f"converting {dt} epoch microseconds to timestamp")
+        return datetime.fromtimestamp(dt_float / 1_000_000)
+    if is_milliseconds(dt):
+        demisto.debug(f"converting {dt} epoch milliseconds to timestamp")
+        return datetime.fromtimestamp(dt_float / 1_000)
+    return datetime.fromtimestamp(dt_float)
+
+
 def timestamp_format_to_datetime(dt: str, timestamp_format: str) -> datetime:
     demisto.debug(f"converting {dt} using format:{timestamp_format}")
     if timestamp_format == "epoch":
-        return datetime.fromtimestamp(float(dt))
+        return convert_epoch_to_timestamp(dt)
     return datetime.strptime(dt, timestamp_format)
 
 
@@ -150,7 +173,7 @@ def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_confi
     timestamp: str | None = dict_safe_get(event, timestamp_field_config.timestamp_field_name)  # noqa
     if timestamp is None:
         raise DemistoException(f"Timestamp field: {timestamp_field_config.timestamp_field_name} not found in event")
-    timestamp_str: str = iso8601_to_datetime_str(timestamp)
+    timestamp_str: str = iso8601_to_datetime_str(str(timestamp))
     # Convert the timestamp to the desired format.
     return timestamp_format_to_datetime(timestamp_str, timestamp_field_config.timestamp_format)
 

@@ -1,0 +1,186 @@
+commonfields:
+  id: SearchIndicatorRelationshipsAgentix
+  version: -1
+name: SearchIndicatorRelationshipsAgentix
+comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
+isInternal: true
+script: '-'
+type: python
+args:
+- defaultValue: 'false'
+  description: The status of the relationships to return. Default is false.
+  name: revoked
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- name: verbose
+  defaultValue: "false"
+  description: >
+    Return detailed relationship attributes when true.
+    When false, returns basic fields: name, Entity A/B values and types, relationship type.
+- defaultValue: '20'
+  description: The number of results to return. Default is 20.
+  name: limit
+- description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  auto: PREDEFINED
+  name: relationships
+  predefined:
+  - applied
+  - attachment-of
+  - attaches
+  - attribute-of
+  - attributed-by
+  - attributed-to
+  - authored-by
+  - beacons-to
+  - bundled-in
+  - bundles
+  - communicated-with
+  - communicated-by
+  - communicates-with
+  - compromises
+  - contains
+  - controls
+  - created-by
+  - creates
+  - delivered-by
+  - delivers
+  - downloads
+  - downloads-from
+  - dropped-by
+  - drops
+  - duplicate-of
+  - embedded-in
+  - embeds
+  - executed
+  - executed-by
+  - exfiltrates-to
+  - exploits
+  - has
+  - hosted-on
+  - hosts
+  - impersonates
+  - indicated-by
+  - indicator-of
+  - injected-from
+  - injects-into
+  - investigates
+  - is-also
+  - located-at
+  - mitigated-by
+  - mitigates
+  - originated-from
+  - owned-by
+  - owns
+  - part-of
+  - related-to
+  - remediates
+  - resolved-by
+  - resolved-from
+  - resolves-to
+  - seen-on
+  - sent
+  - sent-by
+  - sent-from
+  - sent-to
+  - similar-to
+  - sub-domain-of
+  - supra-domain-of
+  - subtechnique-of
+  - parent-technique-of
+  - targeted-by
+  - targets
+  - Types
+  - uploaded-to
+  - used-by
+  - used-on
+  - uses
+  - variant-of
+  - detects
+  - detected-by
+- description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities
+- auto: PREDEFINED
+  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities_types
+  predefined:
+  - IP
+  - Domain
+  - URL
+  - CVE
+  - DomainGlob
+  - Email
+  - FILE
+  - Host
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - accountRep
+  - CIDR
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Intrusion Set
+  - Campaign
+  - Course of Action
+  - Infrastructure.
+outputs:
+- contextPath: Relationships.EntityA
+  description: The source of the relationship.
+  type: String
+- contextPath: Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: Relationships.Reverse
+  description: The name of the reverse relationship.
+  type: string
+- contextPath: Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: Relationships.ID
+  description: The ID of the relationship.
+  type: string
+- contextPath: Relationships.Reliability
+  description: The reliability of the relationship.
+  type: string
+- contextPath: Relationships.Brand
+  description: The brand of the relationship.
+  type: string
+- contextPath: Relationships.Revoked
+  description: True if the relationship is revoked.
+  type: string
+- contextPath: Relationships.FirstSeenBySource
+  description: The first time seen by the source of the relationship.
+  type: string
+- contextPath: Relationships.LastSeenBySource
+  description: The last time seen by the source of the relationship.
+  type: string
+- contextPath: Relationships.Description
+  description: The description of the relationship.
+  type: string
+- contextPath: Relationships.Type
+  description: The type of the relationship.
+  type: string
+system: false
+timeout: '0'
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

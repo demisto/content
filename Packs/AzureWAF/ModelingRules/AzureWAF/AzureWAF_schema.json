@@ -49,7 +49,7 @@
             "is_array": false
         },
         "httpstatus": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "originalrequesturiwithargs": {
@@ -57,11 +57,11 @@
             "is_array": false
         },
         "receivedbytes": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "sentbytes": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "sslcipher": {

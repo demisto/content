@@ -46,7 +46,7 @@ There is no context output for this command.
 ### reco-update-incident-timeline
 
 ***
-Add a comment to an incident in Reco
+Update incident timelines
 
 #### Base Command
 
@@ -58,6 +58,26 @@ Add a comment to an incident in Reco
 | --- | --- | --- |
 | comment | Comment to add to the incident. | Required |
 | incident_id | Incident ID to add the comment to. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### reco-add-comment-to-alert
+
+***
+Add a comment to an alert in Reco
+
+#### Base Command
+
+`reco-add-comment-to-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | Comment to add to the incident. | Required |
+| alert_id | Alert ID to add the comment to. | Required |
 
 #### Context Output
 
@@ -454,14 +474,14 @@ Get all assets from Reco by id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Reco.SensitiveAssets.file_name | String | The name of the asset | 
-| Reco.SensitiveAssets.file_owner | String | The owner of the asset | 
-| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name | 
-| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users | 
-| Reco.SensitiveAssets.visibility | String | Visibility of the asset | 
-| Reco.SensitiveAssets.location | String | The path of the asset | 
-| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
-| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
+| Reco.SensitiveAssets.file_name | String | The name of the asset |
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset |
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name |
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users |
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset |
+| Reco.SensitiveAssets.location | String | The path of the asset |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset |
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset |
 
 ### reco-get-alert-ai-summary
 
@@ -483,3 +503,84 @@ Get alert AI summary
 | **Path**                   | **Type** | **Description**   |
 |----------------------------| --- |-------------------|
 | Reco.AlertSummary.markdown         | String | The alert summary |
+
+### reco-get-apps
+
+***
+Get app discovery data from Reco. Fetches all available apps using pagination.
+
+#### Base Command
+
+`reco-get-apps`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| before | Before date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format). | Optional |
+| after | After date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format). | Optional |
+| limit | Page size for pagination (default 1000). The command fetches all available apps across all pages. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Apps.app_name | String | The name of the application |
+| Reco.Apps.app_id | String | The unique identifier of the application |
+| Reco.Apps.category | String | The category of the application |
+| Reco.Apps.risk_score | Number | The risk score of the application |
+| Reco.Apps.users_count | Number | The number of users with access to the application |
+| Reco.Apps.data_access | String | The data access level of the application |
+| Reco.Apps.updated_at | Date | The last update timestamp of the application |
+| Reco.Apps.created_at | Date | The creation timestamp of the application |
+| Reco.Apps.status | String | The status of the application |
+
+### reco-set-app-authorization-status
+
+***
+Set authorization status for an application in Reco.
+
+#### Base Command
+
+`reco-set-app-authorization-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app_id | Application ID to update authorization status for. | Required |
+| authorization_status | Authorization status to set for the application. Possible values are: AUTH_STATUS_UNSPECIFIED, AUTH_STATUS_TO_REVIEW, AUTH_STATUS_SANCTIONED, AUTH_STATUS_UNSANCTIONED, AUTH_STATUS_ACCEPTED_RISK, AUTH_STATUS_EVALUATING, AUTH_STATUS_UNDER_INVESTIGATION, AUTH_STATUS_INVESTIGATED, AUTH_STATUS_CLOUD_INVENTORY, AUTH_STATUS_SYSTEM_SANCTIONED. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.AppAuthorization.app_id | String | The application ID that was updated |
+| Reco.AppAuthorization.authorization_status | String | The authorization status that was set |
+| Reco.AppAuthorization.updated | Boolean | Whether the update was successful |
+| Reco.AppAuthorization.rows_affected | Number | Number of rows affected by the update operation |
+
+#### Command example
+
+```
+!reco-set-app-authorization-status app_id="microsoft.com" authorization_status="AUTH_STATUS_SANCTIONED"
+```
+
+#### Context Example
+
+```json
+{
+    "Reco": {
+        "AppAuthorization": {
+            "app_id": "microsoft.com",
+            "authorization_status": "AUTH_STATUS_SANCTIONED",
+            "updated": true,
+            "rows_affected": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>App microsoft.com authorization status updated successfully to AUTH_STATUS_SANCTIONED

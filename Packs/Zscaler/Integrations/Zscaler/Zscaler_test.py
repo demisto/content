@@ -731,7 +731,7 @@ def test_edit_ip_destination_group(mocker):
 
     run_command_test(
         command_func=Zscaler.edit_ip_destination_group,
-        args={"ip_group_id": 2000359, "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2"},
+        args={"ip_group_id": "2000359", "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2"},
         response_path="test_data/responses/" + "edit_ip_destination_group.json",
         expected_result_path="test_data/results/" + "edit_ip_destination_group.json",
         mocker=mocker,
@@ -800,6 +800,7 @@ def test_return_error_is_called_on_error(mocker, requests_mock):
     import sys
     import importlib
     import Zscaler as original_zscaler
+
     Zscaler = importlib.reload(original_zscaler)
     mock_id = "mock_id"
     mocker.patch.object(Zscaler, "get_integration_context", return_value={Zscaler.SESSION_ID_KEY: mock_id})
@@ -808,4 +809,4 @@ def test_return_error_is_called_on_error(mocker, requests_mock):
     mocker.patch.object(sys, "exit")
     Zscaler.main()
     error_results = demisto.results.call_args_list[0][0]
-    assert "Exceeded the rate limit or quota" in  error_results[0].get("Contents")
+    assert "Exceeded the rate limit or quota" in error_results[0].get("Contents")

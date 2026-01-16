@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:

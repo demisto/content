@@ -288,15 +288,12 @@ inputs:
 - key: route_name
   value: {}
   required: true
-  description: Enter a name to identify the static route (up to 31 characters). The
-    name is case-sensitive and must be unique. Use only letters, numbers, spaces,
-    hyphens, and underscores.
+  description: Enter a name to identify the static route (up to 31 characters). The name is case-sensitive and must be unique. Use only letters, numbers, spaces, hyphens, and underscores.
 - key: AutoCommit
   value:
     simple: "No"
   required: false
-  description: This input established whether to auto-commit the configuration to
-    PAN-OS. Specify Yes/No.
+  description: This input established whether to auto-commit the configuration to PAN-OS. Specify Yes/No.
 outputs: []
 tests:
 - No test
@@ -305,3 +302,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

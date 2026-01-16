@@ -1,5 +1,6 @@
 category: Forensics & Malware Analysis
-sectionOrder:
+provider: Palo Alto Networks
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -44,7 +45,7 @@ defaultEnabled: true
 script:
   commands:
   - arguments:
-    - description: SHA256 hash to check
+    - description: SHA256 hash to check.
       name: sha256
       required: true
     description: Retrieves results for a file hash using WildFire.
@@ -53,7 +54,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

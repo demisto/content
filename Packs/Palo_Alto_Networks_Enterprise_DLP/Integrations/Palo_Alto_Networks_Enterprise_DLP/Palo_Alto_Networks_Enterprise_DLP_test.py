@@ -13,6 +13,8 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     parse_incident_details,
     slack_bot_message_command,
     update_incident_command,
+    create_incident,
+    arg_to_datetime,
 )
 
 DLP_URL = "https://api.dlp.paloaltonetworks.com/v1"
@@ -210,11 +212,15 @@ def test_fetch_notifications(requests_mock, mocker):
     assert incident_mock.call_args[0][0] == []
 
 
-def test_refresh_token(requests_mock, mocker):
+@pytest.mark.parametrize(
+    "error_code",
+    [(401), (403)],
+)
+def test_refresh_token(requests_mock, mocker, error_code):
     with pytest.raises(Exception):
         report_id = 12345
         headers1 = {"Authorization": "Bearer 123", "Content-Type": "application/json"}
-        requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=403)
+        requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=error_code)
 
         requests_mock.post(f"{DLP_URL}/public/oauth/refreshToken", json={"access_token": "abc"})
         credentials = (
@@ -278,7 +284,11 @@ def test_refresh_token_with_client_credentials(requests_mock):
     assert client.access_token == "abc"
 
 
-def test_handle_403(requests_mock, mocker):
+@pytest.mark.parametrize(
+    "error_code",
+    [(401), (403)],
+)
+def test_handle_4xx_errors(requests_mock, mocker, error_code):
     credentials = {
         "credential": "test credentials",
         "credentials": {
@@ -301,13 +311,13 @@ def test_handle_403(requests_mock, mocker):
     requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, credentials, False, None)
     response_mock = mocker.MagicMock()
-    type(response_mock).status_code = mocker.PropertyMock(return_value=403)
-    client._handle_403_errors(response_mock)
+    response_mock.status_code = error_code  # mocker.PropertyMock(return_value=error_code)
+    client._handle_4xx_errors(response_mock)
     assert client.access_token == "abc"
 
     client = Client(DLP_URL, CREDENTIALS, False, None)
     tokens_mocker = mocker.patch.object(client, "_refresh_token")
-    client._handle_403_errors(response_mock)
+    client._handle_4xx_errors(response_mock)
     tokens_mocker.assert_called_with()
 
 
@@ -356,3 +366,39 @@ def test_query_sleep_time(requests_mock):
     client = Client(DLP_URL, CREDENTIALS, False, None)
     time = client.query_for_sleep_time()
     assert time == 10
+
+
+def test_create_incident():
+    """
+    Given:
+        - A DLP notification containing an incident.
+    When:
+        - Calling `create_incident`.
+    Then:
+        - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
+        - Ensure the incident is created with the correct field values.
+    """
+    # Inputs
+    notification = {"incident": INCIDENT_JSON, "previous_notifications": []}
+    region = "us"
+
+    # Prepare
+    parsed_details = parse_incident_details(INCIDENT_JSON["incidentDetails"])
+    occurred_time = arg_to_datetime(INCIDENT_JSON["createdAt"]).isoformat()
+    user_id = parsed_details["headers"][0]["attribute_value"]  # Take `attribute_value` where `attribute_name` = "username"
+    raw_data = {
+        **INCIDENT_JSON,
+        "userId": user_id,
+        "incidentDetails": parsed_details,
+        "region": region,
+        "previousNotification": None,
+    }
+
+    # Assert
+    assert create_incident(notification, region=region) == {
+        "name": f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}",
+        "type": "Data Loss Prevention",
+        "occurred": occurred_time,
+        "rawJSON": json.dumps(raw_data),
+        "details": json.dumps(raw_data),
+    }

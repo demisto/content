@@ -1,15 +1,15 @@
 id: Domain extraction test
 version: -1
 name: Domain extraction test
-description: Test extraction flow of domain indicator in XSOAR
+description: Test extraction flow of domain indicator in XSOAR.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1380b27-e019-49bc-8aae-8bf8570e50c9
+    taskid: 61751c7d-6c99-4d67-8038-16ea6b0c8cb2
     type: start
     task:
-      id: c1380b27-e019-49bc-8aae-8bf8570e50c9
+      id: 61751c7d-6c99-4d67-8038-16ea6b0c8cb2
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6418521e-4b72-4f8e-85f2-2cea269e66cb
+    taskid: 458c69cf-c327-49aa-8d7d-613c28c5e377
     type: regular
     task:
-      id: 6418521e-4b72-4f8e-85f2-2cea269e66cb
+      id: 458c69cf-c327-49aa-8d7d-613c28c5e377
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 195
         }
       }
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3204f3dc-398a-49f5-8dda-99d8b8bd3de5
+    taskid: ab69bf83-5804-4107-81ff-44012a5307fe
     type: title
     task:
-      id: 3204f3dc-398a-49f5-8dda-99d8b8bd3de5
+      id: ab69bf83-5804-4107-81ff-44012a5307fe
       version: -1
       name: Domain
       type: title
@@ -89,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 370
         }
       }
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 808e5d0f-e4f7-4613-80e0-44a281d88de6
+    taskid: fea9e154-6525-4e42-abee-41f00e3760cd
     type: regular
     task:
-      id: 808e5d0f-e4f7-4613-80e0-44a281d88de6
+      id: fea9e154-6525-4e42-abee-41f00e3760cd
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -120,13 +120,13 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\""
+        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\",\n\"sub_domain.domain.com\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 515
         }
       }
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 0b944dcb-d179-4ed2-8699-052237417f6f
+    taskid: a3ed7cd9-9a89-447d-8eb0-100b98ea1cee
     type: regular
     task:
-      id: 0b944dcb-d179-4ed2-8699-052237417f6f
+      id: a3ed7cd9-9a89-447d-8eb0-100b98ea1cee
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -159,6 +159,7 @@ tasks:
       - "81"
       - "80"
       - "25"
+      - "85"
     scriptarguments:
       execution-timeout:
         simple: "30"
@@ -170,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 690
         }
       }
@@ -183,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 3cbb2bbc-9d51-43f8-8bcb-dd26826fb951
+    taskid: 08c2ef18-8ffe-42c7-8ed1-6b5c2c59bb52
     type: condition
     task:
-      id: 3cbb2bbc-9d51-43f8-8bcb-dd26826fb951
+      id: 08c2ef18-8ffe-42c7-8ed1-6b5c2c59bb52
       version: -1
       name: check auto extract - 見.香港
       type: condition
@@ -224,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 511c713a-9852-4916-8234-354c09a1d647
+    taskid: f643571e-b1fe-411e-9317-776e71d0f5d6
     type: regular
     task:
-      id: 511c713a-9852-4916-8234-354c09a1d647
+      id: f643571e-b1fe-411e-9317-776e71d0f5d6
       version: -1
       name: Set invalid domains
       description: Sets a value into the context with the given context key
@@ -242,13 +243,13 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"test.notexist\", \n\"test[.com\""
+        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\",\n\"example.ps1\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 1040
         }
       }
@@ -261,10 +262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ec66e848-fe7c-453d-8784-0d4740a7368f
+    taskid: 6069ec7b-0a4e-4fe1-8dae-2767d1a01a3b
     type: regular
     task:
-      id: ec66e848-fe7c-453d-8784-0d4740a7368f
+      id: 6069ec7b-0a4e-4fe1-8dae-2767d1a01a3b
       version: -1
       name: Print invalid domains
       description: Prints text to war room (Markdown supported)
@@ -276,6 +277,9 @@ tasks:
       '#none#':
       - "84"
       - "83"
+      - "86"
+      - "87"
+      - "88"
     scriptarguments:
       value:
         simple: ${invalid_domains}
@@ -285,7 +289,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 1215
         }
       }
@@ -298,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 086a81ca-0d63-4684-8b54-d05bd4f99f40
+    taskid: 153624c4-7737-4eea-8262-ffbfe3a2e65f
     type: condition
     task:
-      id: 086a81ca-0d63-4684-8b54-d05bd4f99f40
+      id: 153624c4-7737-4eea-8262-ffbfe3a2e65f
       version: -1
       name: check auto extract - none.zip
       type: condition
@@ -339,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: acec90ce-9367-43fd-86fe-9af543c40fa1
+    taskid: 90a22a23-2422-43b6-8c70-bbb0343cdd5b
     type: regular
     task:
-      id: acec90ce-9367-43fd-86fe-9af543c40fa1
+      id: 90a22a23-2422-43b6-8c70-bbb0343cdd5b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -358,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 1565
         }
       }
@@ -371,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: b90a47a4-4614-4548-870a-71a1a6865d43
+    taskid: 48ba6de9-2d40-454d-8968-9c6eb26f4268
     type: condition
     task:
-      id: b90a47a4-4614-4548-870a-71a1a6865d43
+      id: 48ba6de9-2d40-454d-8968-9c6eb26f4268
       version: -1
       name: check auto extract - ötest.com
       type: condition
@@ -412,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 992549a0-1722-44bd-8092-eb7ae1aa2450
+    taskid: ab5e6e0a-172a-4ca3-88c8-24e12f7460c8
     type: condition
     task:
-      id: 992549a0-1722-44bd-8092-eb7ae1aa2450
+      id: ab5e6e0a-172a-4ca3-88c8-24e12f7460c8
       version: -1
       name: check auto extract - defang.com
       type: condition
@@ -453,10 +457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: f66a49fd-494b-4ad4-83e5-8c08de3bf4e6
+    taskid: f0be7b59-ad20-42d3-81d4-fd874a7fe74d
     type: condition
     task:
-      id: f66a49fd-494b-4ad4-83e5-8c08de3bf4e6
+      id: f0be7b59-ad20-42d3-81d4-fd874a7fe74d
       version: -1
       name: check auto extract - www.test.com
       type: condition
@@ -494,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 5b51e207-4f37-4049-8a33-e7ca11f06b4a
+    taskid: eacbaa96-3bc0-4513-80a4-4a3ab8f54140
     type: condition
     task:
-      id: 5b51e207-4f37-4049-8a33-e7ca11f06b4a
+      id: eacbaa96-3bc0-4513-80a4-4a3ab8f54140
       version: -1
       name: check auto extract - test.com
       type: condition
@@ -535,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 34f766e8-dc90-48da-801a-5017a14d6ffb
+    taskid: 8eb6921e-43a2-4741-8183-dbdb83c224c6
     type: condition
     task:
-      id: 34f766e8-dc90-48da-801a-5017a14d6ffb
+      id: 8eb6921e-43a2-4741-8183-dbdb83c224c6
       version: -1
       name: check auto extract - www.xn--t1e2s3t4.com
       type: condition
@@ -576,10 +580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 3e232c8e-00c5-435f-8c67-32c3b7748b77
+    taskid: 34606cac-0c4a-46c7-8c4e-8e776a371b9c
     type: condition
     task:
-      id: 3e232c8e-00c5-435f-8c67-32c3b7748b77
+      id: 34606cac-0c4a-46c7-8c4e-8e776a371b9c
       version: -1
       name: non extraction - test[.com
       type: condition
@@ -604,7 +608,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 695,
           "y": 1390
         }
       }
@@ -617,10 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 1b4cf1c5-633e-496e-8fcf-5e576d72e0fd
+    taskid: 15d88906-5933-4328-88cc-91a3403bb9de
     type: condition
     task:
-      id: 1b4cf1c5-633e-496e-8fcf-5e576d72e0fd
+      id: 15d88906-5933-4328-88cc-91a3403bb9de
       version: -1
       name: non extraction - test.notexist
       type: condition
@@ -645,7 +649,171 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: b5d0bea5-8551-4086-b63f-d5780e1156bc
+    type: condition
+    task:
+      id: b5d0bea5-8551-4086-b63f-d5780e1156bc
+      version: -1
+      name: check auto extract - sub_domain.domain.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: sub_domain.domain.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: b0e07394-5253-43cf-a678-ab68a9676303
+    type: condition
+    task:
+      id: b0e07394-5253-43cf-a678-ab68a9676303
+      version: -1
+      name: non extraction - bad_domain.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: bad_domain.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 1555,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: dd18176b-6915-4661-808b-748d3cf3483f
+    type: condition
+    task:
+      id: dd18176b-6915-4661-808b-748d3cf3483f
+      version: -1
+      name: non extraction - www.walla.co.il`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.walla.co.il`
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: abad1835-c3fc-443a-8c31-f93ad090cc60
+    type: condition
+    task:
+      id: abad1835-c3fc-443a-8c31-f93ad090cc60
+      version: -1
+      name: non extraction - example.ps1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: example.ps1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2415,
           "y": 1390
         }
       }
@@ -662,7 +830,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 2960,
+        "width": 3390,
         "x": 50,
         "y": 50
       }

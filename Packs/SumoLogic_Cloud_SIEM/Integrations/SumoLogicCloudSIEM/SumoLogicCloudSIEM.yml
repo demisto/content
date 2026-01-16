@@ -4,6 +4,7 @@ commonfields:
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
+provider: Francisco Partners
 description: Freeing the analyst with autonomous decisions.
 configuration:
 - display: Sumo Logic API Endpoint
@@ -859,7 +860,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

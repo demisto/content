@@ -1,0 +1,106 @@
+<response status="success">
+	<result>
+		<rule-hit-count>
+			<vsys>
+				<entry name="vsys1">
+					<rule-base>
+						<entry name="security">
+							<rules>
+								<entry name="Rule 6">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1750869914</rule-creation-timestamp>
+									<rule-modification-timestamp>1750869914</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 7">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1750872146</rule-creation-timestamp>
+									<rule-modification-timestamp>1750872146</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 8">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1750872146</rule-creation-timestamp>
+									<rule-modification-timestamp>1750872146</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 1">
+									<latest>yes</latest>
+									<hit-count>24</hit-count>
+									<last-hit-timestamp>1750872135</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>1745953063</first-hit-timestamp>
+									<rule-creation-timestamp>1745952837</rule-creation-timestamp>
+									<rule-modification-timestamp>1745952837</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 2">
+									<latest>yes</latest>
+									<hit-count>6</hit-count>
+									<last-hit-timestamp>1750869985</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>1750869985</first-hit-timestamp>
+									<rule-creation-timestamp>1750869663</rule-creation-timestamp>
+									<rule-modification-timestamp>1750870106</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 3">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1750869663</rule-creation-timestamp>
+									<rule-modification-timestamp>1750869663</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 4">
+									<latest>yes</latest>
+									<hit-count>31</hit-count>
+									<last-hit-timestamp>1750959538</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>1750869939</first-hit-timestamp>
+									<rule-creation-timestamp>1750869663</rule-creation-timestamp>
+									<rule-modification-timestamp>1750869663</rule-modification-timestamp>
+								</entry>
+								<entry name="Rule 5">
+									<latest>yes</latest>
+									<hit-count>19135</hit-count>
+									<last-hit-timestamp>1750960124</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>1745953421</first-hit-timestamp>
+									<rule-creation-timestamp>1745952597</rule-creation-timestamp>
+									<rule-modification-timestamp>1745952597</rule-modification-timestamp>
+								</entry>
+								<entry name="intrazone-default">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1745946201</rule-creation-timestamp>
+									<rule-modification-timestamp>1745946201</rule-modification-timestamp>
+								</entry>
+								<entry name="interzone-default">
+									<latest>yes</latest>
+									<hit-count>0</hit-count>
+									<last-hit-timestamp>0</last-hit-timestamp>
+									<last-reset-timestamp>0</last-reset-timestamp>
+									<first-hit-timestamp>0</first-hit-timestamp>
+									<rule-creation-timestamp>1745946201</rule-creation-timestamp>
+									<rule-modification-timestamp>1745946201</rule-modification-timestamp>
+								</entry>
+							</rules>
+						</entry>
+					</rule-base>
+				</entry>
+			</vsys>
+		</rule-hit-count>
+	</result>
+</response>

@@ -1,0 +1,211 @@
+id: Email Collection by Enriched Domain - Google Threat Intelligence
+version: -1
+name: Email Collection by Enriched Domain - Google Threat Intelligence
+description: This playbook accepts a domain as input, filters the email list to identify addresses containing the specified domain, and outputs the extracted email addresses for further processing.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 768bd54c-bf8b-49cd-8748-90a5524119bb
+    type: start
+    task:
+      id: 768bd54c-bf8b-49cd-8748-90a5524119bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 84922c19-f3bf-4c0b-8a1c-6406e133a3f1
+    type: regular
+    task:
+      id: 84922c19-f3bf-4c0b-8a1c-6406e133a3f1
+      version: -1
+      name: Get the extracted emails using the domain input value
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: email_output_list
+      value:
+        complex:
+          root: email_input_list
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: email_input_list
+                iscontext: true
+              right:
+                value:
+                  simple: domain_value
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: dd0d4d05-a6d9-4a90-855b-40f4b67e7bc1
+    type: title
+    task:
+      id: dd0d4d05-a6d9-4a90-855b-40f4b67e7bc1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 413f81db-c600-4cc7-8fd1-9bd28d53f91d
+    type: regular
+    task:
+      id: 413f81db-c600-4cc7-8fd1-9bd28d53f91d
+      version: -1
+      name: Set the input domain value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: domain_value
+      value:
+        simple: '@${inputs.domain}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6d1f9a6d-06fb-4635-83ca-76ea8b4f3621
+    type: regular
+    task:
+      id: 6d1f9a6d-06fb-4635-83ca-76ea8b4f3621
+      version: -1
+      name: Clear Previous input
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: domain_value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 380,
+        "x": 450,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: domain
+  value: {}
+  required: false
+  description: Provide the enriched domain using the domain reputation command.
+  playbookInputQuery:
+outputs:
+- contextPath: email_output_list
+  description: Extracted email output list from the provided domain.
+  type: string
+tests:
+- GoogleThreatIntelligence-test
+fromversion: 6.10.0

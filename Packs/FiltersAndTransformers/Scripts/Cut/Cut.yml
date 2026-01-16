@@ -29,6 +29,7 @@ args:
   description: 'Comma separated field numbers (e.g.: 1,5,7).'
   isArray: true
 scripttarget: 0
+isllm: false
 runas: DBotWeakRole
 tests:
 - CutTransformerTest

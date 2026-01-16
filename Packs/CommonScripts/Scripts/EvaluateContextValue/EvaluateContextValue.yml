@@ -1,0 +1,48 @@
+commonfields:
+  id: EvaluateContextValue
+  version: -1
+name: EvaluateContextValue
+script: ''
+type: python
+tags:
+- evaluation
+- polling
+comment: The script is for use with GenericPolling, which checks the completion condition. It uses a DT to retrieve a value from the context data and evaluates it using another DT.
+enabled: true
+args:
+- name: id
+  required: true
+  description: The ID to identify the output value.
+- name: dt_encoding
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - url
+  - base64
+  description: The encoding scheme for the value_dt and eval_dt parameters. This can be useful for those parameters that contain special characters and require complex escaping.
+  defaultValue: raw
+- name: value_dt
+  required: true
+  description: The DT expression for retrieving a value from the context data.
+- name: eval_dt
+  description: The DT expression for retrieving data for the evaluation from the value.
+- name: eval_key
+  description: The key name that is associated with the value before it's passed to eval_dt. If this parameter is provided, eval_dt receives a key-value pair (the key name and the value for the evaluation) in a dictionary.
+- name: playbook_id
+  description: The sub-playbook ID to get its local context from the context data.
+outputs:
+- contextPath: EvaluateContextValue.id
+  description: The ID given to the argument parameters.
+  type: string
+- contextPath: EvaluateContextValue.ok
+  description: The result of the evaluation by 'eval_dt'.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.11.4819260
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

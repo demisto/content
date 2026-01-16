@@ -382,17 +382,17 @@ tasks:
         complex:
           root: inputs.URL
           filters:
-            - - operator: notIn
-                left:
-                  value:
-                    simple: inputs.URL
-                  iscontext: true
-                right:
-                  value:
-                    simple: PrismaSase.CustomURLCategory.list
-                  iscontext: true
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.URL
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaSase.CustomURLCategory.list
+                iscontext: true
           transformers:
-            - operator: uniq
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -742,3 +742,8 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

@@ -2,7 +2,7 @@
     "name": "SplunkScripts",
     "description": "Splunk helper scripts.",
     "support": "community",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.4",
     "author": "Farrukh Ahmed",
     "url": "",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

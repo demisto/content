@@ -14,7 +14,9 @@ BUILD_VERSION = "1247804"
 # To use apiCall, the machine must have a version greater than 8.7.0-1247804,
 # and is_using_engine()=False.
 IS_CORE_AVAILABLE = (
-    is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION) and not is_using_engine()
+    (is_xsiam() or is_platform())
+    and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION)
+    and not is_using_engine()
 )
 
 
@@ -141,6 +143,8 @@ class CoreClient(BaseClient):
         except Exception as e:
             if "reached max allowed amount of parallel running queries" in str(e).lower():
                 return "FAILURE"
+            if "autonomous playbook slot reservation not enabled or missing" in str(e).lower():
+                return "UNSUPPORTED"
             raise e
 
     def get_xql_query_results(self, data: dict) -> dict:
@@ -469,6 +473,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
 
     if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f"{query} \n| limit {DEFAULT_LIMIT!s}"
+
     data: Dict[str, Any] = {
         "request_data": {
             "query": query,
@@ -721,6 +726,8 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         )
         return command_results
 
+    if execution_id == "UNSUPPORTED":
+        return CommandResults(readable_output="Autonomous playbook slot reservation not enabled or missing")
     if not execution_id:
         raise DemistoException("Failed to start query\n")
     demisto.debug(f"Succeeded to start query with {execution_id=}.")

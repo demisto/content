@@ -4,6 +4,7 @@ commonfields:
 name: ThreatZone
 display: ThreatZone
 category: Forensics & Malware Analysis
+provider: MCT
 description: ThreatZone malware analysis sandboxing.
 configuration:
   - display: Server URL (e.g. https://app.threat.zone)
@@ -322,7 +323,7 @@ script:
         - contextPath: ThreatZone.Limits.Daily_Submission_Limit
           description: The remaining/total daily submission limits of the current plan.
           type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
 fromversion: 6.9.0

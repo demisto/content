@@ -869,7 +869,6 @@ def main():
     params = demisto.params()
 
     demisto.debug(f"Command being called is {command}")
-    demisto.debug(f"Params being passed is {params}")
 
     args: Dict[str, Any] = demisto.args()
 

@@ -1,15 +1,15 @@
 QSS integration helps you to fetch Cases from Q-SCMP and add new cases automatically through XSOAR.
-This integration was integrated and tested with version 3.6 of Q-SCMP. Please contact your platform administrtor to enable Cortex XSOAR integration. 
+This integration was integrated and tested with version 3.6 of Q-SCMP. Please contact your platform administrtor to enable Cortex XSOAR integration.
 
 ### Configure QSS on Cortex XSOAR
 
 ### Prerequisites
 
-1. Please contact your Q-SCMP platform administrtor to obtain Cortex **API Key**. 
-2. Please contact your Q-SCMP platform administrtor to obtain Cortex **Server URL**. 
-
+1. Please contact your Q-SCMP platform administrtor to obtain Cortex **API Key**.
+2. Please contact your Q-SCMP platform administrtor to obtain Cortex **Server URL**.
 
 ### Configure Q-SCMP on Cortex XSOAR
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **QSS**.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -58,4 +58,3 @@ This integration was integrated and tested with version 3.6 of Q-SCMP. Please co
 17. Case Custom Attributes
 18. Case Assets
 19. Case IOCs
-

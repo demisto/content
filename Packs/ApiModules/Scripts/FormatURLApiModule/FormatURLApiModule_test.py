@@ -201,6 +201,7 @@ FORMAT_PATH = [
     ('https://test.com/Test\\"', "https://test.com/Test"),  # disable-secrets-detection
     ("https://www.test.com/a\\", "https://www.test.com/a"),  # disable-secrets-detection
     ("https://aaa.aaa/test", "https://aaa.aaa/test"),  # disable-secrets-detection
+    ("https://abc.ly/test',", "https://abc.ly/test"),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -220,6 +221,14 @@ FORMAT_QUERY = [
         "https://test.dev?email=some@email.addres",  # disable-secrets-detection
         "https://test.dev?email=some@email.addres",
     ),  # disable-secrets-detection
+    (
+        "https://test.dev?email=some@email.addres/",  # disable-secrets-detection
+        "https://test.dev?email=some@email.addres/",
+    ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test?a=b',",
+        "https://abc.ly/test?a=b",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -234,12 +243,37 @@ FORMAT_FRAGMENT = [
         "https://test.dev#fragment",  # disable-secrets-detection
         "https://test.dev#fragment",
     ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test#a',",
+        "https://abc.ly/test#a",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_REFANG = [
     ("hxxps://www[.]cortex-xsoar[.]com", "https://www.cortex-xsoar.com"),  # disable-secrets-detection
     ("https[:]//www.test.com/foo", "https://www.test.com/foo"),  # disable-secrets-detection
     ("https[:]//www[.]test[.]com/foo", "https://www.test.com/foo"),  # disable-secrets-detection
+]
+
+FORMAT_HTML_ENTITIES = [
+    (
+        "https://example.com?4&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
+        "https://example.com?4&r=737NBh0Q9Alr9/",
+    ),  # disable-secrets-detection
+    # Multiple &amp; entities
+    (
+        "https://test.com?a=1&amp;amp;b=2&amp;c=3",  # disable-secrets-detection
+        "https://test.com?a=1&b=2&c=3",
+    ),  # disable-secrets-detection
+    (
+        "https://test.com?quote=&quot;hello&quot;",  # disable-secrets-detection
+        'https://test.com?quote="hello"',
+    ),  # disable-secrets-detection
+    # URL without entities should remain unchanged
+    (
+        "https://test.com?a=1&b=2",  # disable-secrets-detection
+        "https://test.com?a=1&b=2",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_NON_ASCII = [
@@ -265,6 +299,9 @@ FORMAT_HEX = [
     ("foo.bar/baz%26bar", "foo.bar/baz&bar"),  # disable-secrets-detection
     ("https://foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
     ("https%3A//foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
+    ("https://foo.com/?key=foo%26bar%2F%2Fwww.foo.com", "https://foo.com/?key=foo&bar//www.foo.com"),  # disable-secrets-detection
+    ("http://foo.r.us.me/L0/http:%2F%2Fwww.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
+    ("http:%2F%2ffoo.r.us.me/L0/http:www.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
 ]
 
 FAILS = [
@@ -344,6 +381,10 @@ FAILS = [
         "test.test/test",  # disable-secrets-detection
         pytest.raises(URLError),
     ),  # invalid tld
+    (
+        "test:",  # disable-secrets-detection
+        pytest.raises(URLError),
+    ),  # invalid input
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT + TRENDMICRO_REDIRECT
@@ -360,6 +401,7 @@ FORMAT_TESTS = (
     + FORMAT_NON_ASCII
     + FORMAT_PUNYCODE
     + FORMAT_HEX
+    + FORMAT_HTML_ENTITIES
 )
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_TESTS
@@ -487,6 +529,40 @@ class TestFormatURL:
         - Ensure formatted URL is returned.
         """
         assert URLFormatter(url_).__str__() == expected
+
+    @pytest.mark.parametrize(
+        "part, inside_brackets, expected_part, expected_brackets",
+        [
+            ("example.com',", 1, "example.com", 0),  # Remove last 2 chars (m and ') when ending with comma
+            ("test.com'", 1, "test.com", 0),  # Remove single quote only
+            ('site.com"', 1, "site.com", 0),  # Remove double quotes only
+            ("normal.com", 1, "normal.com", 1),  # No trailing chars to remove
+            ("example.com',", 0, "example.com',", 0),  # single quote and comma in the end and inside_brackets is 0, no change
+            ("example.com'", 0, "example.com'", 0),  # single quote in the end and inside_brackets is 0, no change
+            ('example.com"', 0, 'example.com"', 0),  # double quotes in the end and inside_brackets is 0, no change
+            ("site.com.", 1, "site.com.", 1),  # Period not in removal list
+            ("", 1, "", 1),  # Empty string
+            ("https://test.com/abc?q=(123)'", 1, "https://test.com/abc?q=(123)", 0),  # should not remove inside_brackets
+        ],
+    )
+    def test_remove_trailing_bracket_and_redundant_characters_from_part(
+        self, part, inside_brackets, expected_part, expected_brackets
+    ):
+        """
+        Given:
+        - A URL part string and inside_brackets counter.
+
+        When:
+        - Executing remove_trailing_bracket_and_redundant_characters_from_part function.
+
+        Then:
+        - Ensure trailing brackets and redundant characters are removed correctly and inside_brackets is decremented.
+        """
+        from FormatURLApiModule import remove_trailing_bracket_and_redundant_characters_from_part
+
+        result_part, result_brackets = remove_trailing_bracket_and_redundant_characters_from_part(part, inside_brackets)
+        assert result_part == expected_part
+        assert result_brackets == expected_brackets
 
     def test_url_class(self):
         url = URLType("https://www.test.com")

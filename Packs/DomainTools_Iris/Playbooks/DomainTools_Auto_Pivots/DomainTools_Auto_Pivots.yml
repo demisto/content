@@ -1797,12 +1797,6 @@ inputs:
   required: false
   description: the max ssl subject pivot count threshold
   playbookInputQuery:
-- key: dt_max_name_server_domain_count
-  value:
-    simple: "200"
-  required: false
-  description: the max name server domain pivot count threshold
-  playbookInputQuery:
 - key: dt_max_mx_host_count
   value:
     simple: "200"
@@ -1828,9 +1822,9 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: HighRiskPivotedDomains.Name
-  description: The domain name
+  description: The domain name.
 - contextPath: HighRiskPivotedDomains.OverallRiskScore
-  description: The overall risk score of the domain
+  description: The overall risk score of the domain.
 - contextPath: DomainTools.Pivots.PivotedDomains.Name
   description: The DomainTools Domain Name.
   type: String

@@ -1,0 +1,69 @@
+{
+    "ACC_ALERT_COUNT": 10,
+    "ALERT_CATEGORIES": [
+        "malware",
+        "phishing"
+    ],
+    "ASSIGNED_USER": "john.doe@example.com",
+    "ASSIGNED_USER_PRETTY": "John Doe",
+    "CALCULATED_SCORE": 85,
+    "CASE_GROUPING_STATUS": "GROUP_STATUS_ACTIVE",
+    "CASE_ID": 12345,
+    "CASE_STARRED": true,
+    "CREATION_TIME": "2023-01-01T00:00:00Z",
+    "CRITICAL_SEVERITY_ALERTS": 2,
+    "CURRENT_TAGS": [
+        {
+            "tag_name": "current_tag1"
+        },
+        {
+            "tag_name": "current_tag2"
+        }
+    ],
+    "DESCRIPTION": "Test Description",
+    "EXTENDED_FIELDS": {
+        "custom_field1": "value1"
+    },
+    "HIGH_SEVERITY_ALERTS": 3,
+    "HOSTS": [
+        "host1",
+        "host2"
+    ],
+    "INCIDENT_DOMAIN": "test.domain.com",
+    "INCIDENT_SOURCES": [
+        "source1",
+        "source2"
+    ],
+    "LAST_UPDATE_TIME": "2023-01-02T00:00:00Z",
+    "LOW_SEVERITY_ALERTS": 2,
+    "MANUAL_SCORE": 88,
+    "MEDIUM_SEVERITY_ALERTS": 3,
+    "MITRE_TACTICS": [
+        "TA0001",
+        "TA0002"
+    ],
+    "MITRE_TECHNIQUES": [
+        "T1001",
+        "T1002"
+    ],
+    "NAME": "Test Case",
+    "ORIGINAL_TAGS": [
+        {
+            "tag_name": "original_tag1"
+        },
+        {
+            "tag_name": "original_tag2"
+        }
+    ],
+    "RESOLVED_COMMENT": "Issue resolved successfully",
+    "RESOLVED_TIMESTAMP": "2023-01-03T00:00:00Z",
+    "SCORE": 90,
+    "SCORTEX": 92,
+    "SEVERITY": "CASE_SEVERITY_HIGH",
+    "STATUS": "CASE_STATUS_OPEN",
+    "USERS": [
+        "user1",
+        "user2"
+    ],
+    "WF_HITS": 5
+}

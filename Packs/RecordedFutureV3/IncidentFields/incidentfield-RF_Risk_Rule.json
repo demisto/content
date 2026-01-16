@@ -1,0 +1,62 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"RF Vulnerability Playbook Alert"
+	],
+	"caseInsensitive": true,
+	"cliName": "rfriskrule",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Rule",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "rule",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Description",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "description",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"editForm": true,
+	"group": 0,
+	"hidden": false,
+	"id": "incident_rfriskrule",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "RF Risk Rule",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

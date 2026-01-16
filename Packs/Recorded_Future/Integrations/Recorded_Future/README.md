@@ -1696,20 +1696,20 @@
 <pre>{
     "URL": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 70"
-        }, 
-        "Data": "https://www.obfuscated.com", 
+        },
+        "Data": "https://www.obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2019-02-02T00:00:00.000Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2019-02-02T00:00:00.000Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-02T23:59:59.000Z"
         }
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "https://www.obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "https://www.obfuscated.com",
+        "Score": 3,
         "Type": "url"
     }
 }
@@ -2204,30 +2204,30 @@
 <div class="cl-preview-section">
 <pre>{
     "Domain": {
-        "Name": "www.google.com", 
+        "Name": "www.google.com",
         "RecordedFuture": {
             "RelatedEntities": {
                 "Malware": [
                     {
-                        "Count": 5150, 
-                        "ID": "KeKudK", 
+                        "Count": 5150,
+                        "ID": "KeKudK",
                         "Name": "Mydoom"
-                    }, 
+                    },
                     {
-                        "Count": 1757, 
-                        "ID": "J21f9C", 
+                        "Count": 1757,
+                        "ID": "J21f9C",
                         "Name": "Zeus"
-                    }, 
+                    },
                     {
-                        "Count": 1230, 
-                        "ID": "eKnXx", 
+                        "Count": 1230,
+                        "ID": "eKnXx",
                         "Name": "FakeAV"
-                    }, 
+                    },
                     {
-                        "Count": 877, 
-                        "ID": "Kj0AOY", 
+                        "Count": 877,
+                        "ID": "Kj0AOY",
                         "Name": "Adload"
-                    }, 
+                    },
                     {
                         "Count": 839,  ...
 </pre>
@@ -2410,20 +2410,20 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9",
+        "Score": 3,
         "Type": "file"
-    }, 
+    },
     "File": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 65"
-        }, 
-        "SHA256": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9", 
+        },
+        "SHA256": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9",
         "RecordedFuture": {
-            "FirstSeen": "2018-09-12T05:39:01.057Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2018-09-12T05:39:01.057Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-01T06:39:01.306Z"
         }
     }
@@ -2583,20 +2583,20 @@
 <pre>{
     "IP": {
         "RecordedFuture": {
-            "FirstSeen": "2012-12-26T11:01:01.939Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2012-12-26T11:01:01.939Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-03T17:37:08.283Z"
-        }, 
+        },
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 74"
-        }, 
+        },
         "Address": "1.2.0.1"
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "1.2.0.1", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "1.2.0.1",
+        "Score": 3,
         "Type": "ip"
     }
 }
@@ -2745,20 +2745,20 @@
 <pre>{
     "URL": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 65"
-        }, 
-        "Data": "obfuscated.com", 
+        },
+        "Data": "obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2019-02-03T00:00:00.000Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2019-02-03T00:00:00.000Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-03T23:59:59.000Z"
         }
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "https://obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "https://obfuscated.com",
+        "Score": 3,
         "Type": "url"
     }
 }
@@ -2906,20 +2906,20 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "obfuscated.com",
+        "Score": 3,
         "Type": "domain"
-    }, 
+    },
     "Domain": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 94"
-        }, 
-        "Name": "obfuscated.com", 
+        },
+        "Name": "obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2016-09-16T21:06:34.240Z", 
-            "Criticality": "Very Malicious", 
+            "FirstSeen": "2016-09-16T21:06:34.240Z",
+            "Criticality": "Very Malicious",
             "LastSeen": "2019-02-03T16:09:03.653Z"
         }
     }
@@ -3048,10 +3048,10 @@
 <div class="cl-preview-section">
 <pre>{
     "CVE": {
-        "ID": "CVE-2017-0147", 
+        "ID": "CVE-2017-0147",
         "RecordedFuture": {
-            "FirstSeen": "2017-03-14T16:59:26.413Z", 
-            "Criticality": "Very Critical", 
+            "FirstSeen": "2017-03-14T16:59:26.413Z",
+            "Criticality": "Very Critical",
             "LastSeen": "2019-02-03T17:19:59.183Z"
         }
     }
@@ -3163,11 +3163,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "domain_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72047@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "domain_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72047@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 2803398
     }
 }
@@ -3278,11 +3278,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "url_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72055@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "url_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72055@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 2990
     }
 }
@@ -3393,11 +3393,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "ip_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72063@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "UTF-8 Unicode text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "ip_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72063@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "UTF-8 Unicode text, with very long lines\n",
         "Size": 254932
     }
 }
@@ -3508,11 +3508,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "cve_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72073@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "UTF-8 Unicode text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "cve_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72073@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "UTF-8 Unicode text, with very long lines\n",
         "Size": 3611
     }
 }
@@ -3623,11 +3623,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "hash_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72081@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "hash_list.csv",
+        "Extension": "csv",
+        "EntryID": "72081@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 8995
     }
 }
@@ -3713,63 +3713,63 @@
         "RiskRule": {
             "Domain": [
                 {
-                    "Count": 1263174, 
-                    "Description": "Linked to Cyber Attack", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1263174,
+                    "Description": "Linked to Cyber Attack",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToCyberAttack"
-                }, 
+                },
                 {
-                    "Count": 118450670, 
-                    "Description": "Linked to Malware", 
-                    "Criticality": "Suspicious", 
+                    "Count": 118450670,
+                    "Description": "Linked to Malware",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToMalware"
-                }, 
+                },
                 {
-                    "Count": 1542009, 
-                    "Description": "Linked to Attack Vector", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1542009,
+                    "Description": "Linked to Attack Vector",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVector"
-                }, 
+                },
                 {
-                    "Count": 342012, 
-                    "Description": "Linked to Vulnerability", 
-                    "Criticality": "Suspicious", 
+                    "Count": 342012,
+                    "Description": "Linked to Vulnerability",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVuln"
-                }, 
+                },
                 {
-                    "Count": 2615, 
-                    "Description": "Malware SSL Certificate Fingerprint", 
-                    "Criticality": "Malicious", 
+                    "Count": 2615,
+                    "Description": "Malware SSL Certificate Fingerprint",
+                    "Criticality": "Malicious",
                     "Name": "malwareSsl"
-                }, 
+                },
                 {
-                    "Count": 171016408, 
-                    "Description": "Positive Malware Verdict", 
-                    "Criticality": "Malicious", 
+                    "Count": 171016408,
+                    "Description": "Positive Malware Verdict",
+                    "Criticality": "Malicious",
                     "Name": "positiveMalwareVerdict"
-                }, 
+                },
                 {
-                    "Count": 48382, 
-                    "Description": "Threat Researcher", 
-                    "Criticality": "Unusual", 
+                    "Count": 48382,
+                    "Description": "Threat Researcher",
+                    "Criticality": "Unusual",
                     "Name": "threatResearcher"
-                }, 
+                },
                 {
-                    "Count": 2136, 
-                    "Description": "Reported by Insikt Group", 
-                    "Criticality": "Unusual", 
+                    "Count": 2136,
+                    "Description": "Reported by Insikt Group",
+                    "Criticality": "Unusual",
                     "Name": "analystNote"
-                }, 
+                },
                 {
-                    "Count": 5, 
-                    "Description": "Trending in Recorded Future Analyst Community", 
-                    "Criticality": "Unusual", 
+                    "Count": 5,
+                    "Description": "Trending in Recorded Future Analyst Community",
+                    "Criticality": "Unusual",
                     "Name": "rfTrending"
-                }, 
+                },
                 {
-                    "Count": 1018, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 1018,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -3858,63 +3858,63 @@
         "RiskRule": {
             "Hash": [
                 {
-                    "Count": 1263174, 
-                    "Description": "Linked to Cyber Attack", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1263174,
+                    "Description": "Linked to Cyber Attack",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToCyberAttack"
-                }, 
+                },
                 {
-                    "Count": 118449991, 
-                    "Description": "Linked to Malware", 
-                    "Criticality": "Suspicious", 
+                    "Count": 118449991,
+                    "Description": "Linked to Malware",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToMalware"
-                }, 
+                },
                 {
-                    "Count": 1542002, 
-                    "Description": "Linked to Attack Vector", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1542002,
+                    "Description": "Linked to Attack Vector",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVector"
-                }, 
+                },
                 {
-                    "Count": 342012, 
-                    "Description": "Linked to Vulnerability", 
-                    "Criticality": "Suspicious", 
+                    "Count": 342012,
+                    "Description": "Linked to Vulnerability",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVuln"
-                }, 
+                },
                 {
-                    "Count": 2615, 
-                    "Description": "Malware SSL Certificate Fingerprint", 
-                    "Criticality": "Malicious", 
+                    "Count": 2615,
+                    "Description": "Malware SSL Certificate Fingerprint",
+                    "Criticality": "Malicious",
                     "Name": "malwareSsl"
-                }, 
+                },
                 {
-                    "Count": 171015323, 
-                    "Description": "Positive Malware Verdict", 
-                    "Criticality": "Malicious", 
+                    "Count": 171015323,
+                    "Description": "Positive Malware Verdict",
+                    "Criticality": "Malicious",
                     "Name": "positiveMalwareVerdict"
-                }, 
+                },
                 {
-                    "Count": 48382, 
-                    "Description": "Threat Researcher", 
-                    "Criticality": "Unusual", 
+                    "Count": 48382,
+                    "Description": "Threat Researcher",
+                    "Criticality": "Unusual",
                     "Name": "threatResearcher"
-                }, 
+                },
                 {
-                    "Count": 2136, 
-                    "Description": "Reported by Insikt Group", 
-                    "Criticality": "Unusual", 
+                    "Count": 2136,
+                    "Description": "Reported by Insikt Group",
+                    "Criticality": "Unusual",
                     "Name": "analystNote"
-                }, 
+                },
                 {
-                    "Count": 5, 
-                    "Description": "Trending in Recorded Future Analyst Community", 
-                    "Criticality": "Unusual", 
+                    "Count": 5,
+                    "Description": "Trending in Recorded Future Analyst Community",
+                    "Criticality": "Unusual",
                     "Name": "rfTrending"
-                }, 
+                },
                 {
-                    "Count": 1018, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 1018,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -4003,27 +4003,27 @@
         "RiskRule": {
             "IP": [
                 {
-                    "Count": 1187, 
-                    "Description": "Recently Defaced Site", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1187,
+                    "Description": "Recently Defaced Site",
+                    "Criticality": "Suspicious",
                     "Name": "recentlyDefaced"
-                }, 
+                },
                 {
-                    "Count": 233465, 
-                    "Description": "Historically Reported by DHS AIS", 
-                    "Criticality": "Unusual", 
+                    "Count": 233465,
+                    "Description": "Historically Reported by DHS AIS",
+                    "Criticality": "Unusual",
                     "Name": "dhsAis"
-                }, 
+                },
                 {
-                    "Count": 76, 
-                    "Description": "Recently Reported by DHS AIS", 
-                    "Criticality": "Suspicious", 
+                    "Count": 76,
+                    "Description": "Recently Reported by DHS AIS",
+                    "Criticality": "Suspicious",
                     "Name": "recentDhsAis"
-                }, 
+                },
                 {
-                    "Count": 65391, 
-                    "Description": "Historical Botnet Traffic", 
-                    "Criticality": "Unusual", 
+                    "Count": 65391,
+                    "Description": "Historical Botnet Traffic",
+                    "Criticality": "Unusual",
                     "Name": "botnet"
                 },  ...
 </pre>
@@ -4108,45 +4108,45 @@
         "RiskRule": {
             "URL": [
                 {
-                    "Count": 151947, 
-                    "Description": "Historically Reported as a Defanged URL", 
-                    "Criticality": "Suspicious", 
+                    "Count": 151947,
+                    "Description": "Historically Reported as a Defanged URL",
+                    "Criticality": "Suspicious",
                     "Name": "defangedURL"
-                }, 
+                },
                 {
-                    "Count": 2389, 
-                    "Description": "Recently Reported as a Defanged URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2389,
+                    "Description": "Recently Reported as a Defanged URL",
+                    "Criticality": "Malicious",
                     "Name": "recentDefangedURL"
-                }, 
+                },
                 {
-                    "Count": 2242, 
-                    "Description": "Compromised URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2242,
+                    "Description": "Compromised URL",
+                    "Criticality": "Malicious",
                     "Name": "compromisedUrl"
-                }, 
+                },
                 {
-                    "Count": 2259, 
-                    "Description": "Active Phishing URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2259,
+                    "Description": "Active Phishing URL",
+                    "Criticality": "Malicious",
                     "Name": "phishingUrl"
-                }, 
+                },
                 {
-                    "Count": 88, 
-                    "Description": "C&amp;C URL", 
-                    "Criticality": "Very Malicious", 
+                    "Count": 88,
+                    "Description": "C&amp;C URL",
+                    "Criticality": "Very Malicious",
                     "Name": "cncUrl"
-                }, 
+                },
                 {
-                    "Count": 9, 
-                    "Description": "Ransomware Distribution URL", 
-                    "Criticality": "Very Malicious", 
+                    "Count": 9,
+                    "Description": "Ransomware Distribution URL",
+                    "Criticality": "Very Malicious",
                     "Name": "ransomwareDistribution"
-                }, 
+                },
                 {
-                    "Count": 176069, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 176069,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -4235,27 +4235,27 @@
         "RiskRule": {
             "Vulnerability": [
                 {
-                    "Count": 1, 
-                    "Description": "Cyber Exploit Signal: Critical", 
-                    "Criticality": "Critical", 
+                    "Count": 1,
+                    "Description": "Cyber Exploit Signal: Critical",
+                    "Criticality": "Critical",
                     "Name": "cyberSignalCritical"
-                }, 
+                },
                 {
-                    "Count": 4, 
-                    "Description": "Cyber Exploit Signal: Important", 
-                    "Criticality": "High", 
+                    "Count": 4,
+                    "Description": "Cyber Exploit Signal: Important",
+                    "Criticality": "High",
                     "Name": "cyberSignalHigh"
-                }, 
+                },
                 {
-                    "Count": 105, 
-                    "Description": "Cyber Exploit Signal: Medium", 
-                    "Criticality": "Medium", 
+                    "Count": 105,
+                    "Description": "Cyber Exploit Signal: Medium",
+                    "Criticality": "Medium",
                     "Name": "cyberSignalMedium"
-                }, 
+                },
                 {
-                    "Count": 22203, 
-                    "Description": "Linked to Historical Cyber Exploit", 
-                    "Criticality": "Low", 
+                    "Count": 22203,
+                    "Description": "Linked to Historical Cyber Exploit",
+                    "Criticality": "Low",
                     "Name": "linkedToCyberExploit"
                 },  ...
 </pre>
@@ -4355,11 +4355,11 @@
     "RecordedFuture": {
         "AlertRule": [
             {
-                "ID": "Y8wa3G", 
+                "ID": "Y8wa3G",
                 "Name": "Global Trends, Trending Vulnerabilities"
-            }, 
+            },
             {
-                "ID": "Y8wa3F", 
+                "ID": "Y8wa3F",
                 "Name": "Global Trends, Trending Attackers"
             }
         ]
@@ -4520,57 +4520,57 @@
     "RecordedFuture": {
         "Alert": [
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 10 documents", 
-                "Triggered": "2019-02-04T10:06:28.619Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 10 documents",
+                "Triggered": "2019-02-04T10:06:28.619Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_7dPz"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 6 documents", 
-                "Triggered": "2019-02-04T06:06:59.791Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 6 documents",
+                "Triggered": "2019-02-04T06:06:59.791Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_zJEj"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 1 document", 
-                "Triggered": "2019-02-04T02:05:50.210Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 1 document",
+                "Triggered": "2019-02-04T02:05:50.210Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_s-Pu"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 12 documents", 
-                "Triggered": "2019-02-03T22:05:45.377Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 12 documents",
+                "Triggered": "2019-02-03T22:05:45.377Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_lnjO"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 11 documents", 
-                "Triggered": "2019-02-03T18:05:36.142Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 11 documents",
+                "Triggered": "2019-02-03T18:05:36.142Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_esMY"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 8 documents", 
-                "Triggered": "2019-02-03T14:05:21.965Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 8 documents",
+                "Triggered": "2019-02-03T14:05:21.965Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_X-vd"
             }
         ]

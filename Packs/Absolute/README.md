@@ -49,6 +49,7 @@ Note: If you close this dialog box before downloading or copying the secret key,
 - The secret key is comparable to a password. Keep it secure, and do not share it with anyone.
 
 ### Supported Event Types
+
 - [SIEM Events API](https://api.absolute.com/api-doc/doc.html%20target=%22_blank#tag/SIEM-Event-Reporting).
 
 ### Absolute Event Collector

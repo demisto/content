@@ -4,6 +4,7 @@ commonfields:
 name: Kali Dog Security CertStream
 display: Kali Dog Security CertStream
 category: Data Enrichment & Threat Intelligence
+provider: Cali Dog Security
 description: Hunts for homograph-attacks by monitoring newly created X.509 certificates using CertStream by Kali Dog Security.
 configuration:
 - display: Server URL
@@ -45,7 +46,7 @@ configuration:
 script:
   script: ""
   type: python
-  dockerimage: demisto/netutils:1.0.0.3073344
+  dockerimage: demisto/netutils:1.0.0.3562043
   longRunning: true
   subtype: python3
 marketplaces:

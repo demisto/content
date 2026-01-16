@@ -6,11 +6,14 @@ This integration was integrated and tested with version 2024.6.2 of Bitwarden Pa
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g., https://example.bitwarden.com) | True |
+| Self-hosted Bitwarden Instance | False |
 | Client ID | True |
 | Client Secret | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Maximum number of events per fetch | False |
+
+**Note:** Enable the "Self-hosted Bitwarden Instance" parameter if you are using a self-hosted Bitwarden server. For self-hosted instances, the authentication endpoint will be constructed from your Server URL (e.g., `https://your-domain.com/identity/connect/token`). For cloud-hosted instances (default), the integration uses Bitwarden's cloud authentication endpoints.
 
 ## Commands
 

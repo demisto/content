@@ -1,17 +1,19 @@
-Use the Azure Active Directory Identity And Access integration to manage roles and members.
+Use the Entra ID Identity And Access (formerly Azure Active Directory Identity And Access) integration to manage roles and members.
 
-## Configure Azure Active Directory Identity and Access in Cortex
+## Configure Entra ID Identity and Access in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Application ID | False |
-| Private Key | False |
-| Certificate Thumbprint | False |
-| Use Azure Managed Identities | False |
-| Azure Managed Identities Client ID | False |
-| Azure AD endpoint | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter** | **Required** | **Default value** |
+| --- | --- | --- |
+| Application ID | False | |
+| Private Key | False | |
+| Certificate Thumbprint | False | |
+| Use Azure Managed Identities | False | |
+| Azure Managed Identities Client ID | False | |
+| Azure AD endpoint | False | |
+| Trust any certificate (not secure) | False | |
+| Use system proxy settings | False | |
+| Override Microsoft Entra ID Protection risk level | True |True |
+| Issue severity | False | medium |
 
 ## Required Permissions
 
@@ -22,6 +24,8 @@ To use this integration, the following permissions are required on the Azure app
 - `RoleManagement.ReadWrite.Directory`
 - `Policy.ReadWrite.ConditionalAccess`
 - `Policy.Read.All`
+- `Application.Read.All`
+- `AuditLog.Read.All`
 
 ## Commands
 
@@ -490,7 +494,7 @@ Retrieves the properties of a collection of riskDetection objects.
 
 #### Required Permissions
 
-`IdentityRiskEvent.Read.All`
+`IdentityRiskyUser.Read.All`
 
 #### Base Command
 
@@ -656,3 +660,623 @@ There is no context output for this command.
 #### Human Readable Output
 
 >✅ Dismissed successfully.
+>
+### msgraph-identity-ca-policy-create
+
+***
+Creates a Conditional Access policy.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-create`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. <br/>. | Optional |
+| policy_name | The name of the Conditional Access policy to be created. Required if policy argument not present. | Optional |
+| state | The state of the policy.<br/>Required if policy argument not present.<br/>. Possible values are: enabled, disabled. | Optional |
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.<br/>Required if policy argument not present.<br/>. | Optional |
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`.<br/>Required if policy argument not present.<br/>. | Optional |
+| client_app_types | List of types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>Required if policy argument not present.<br/>. | Optional |
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional |
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional |
+| include_user_actions | List of user actions to be included in the policy.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional |
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional |
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional |
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional |
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional |
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional |
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional |
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional |
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional |
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional |
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional |
+| grant_control_operator | The operator for grant control.<br/>Default value is 'AND'. Possible values are: AND, OR. Default is AND. | Optional |
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Default value is 'mfa'<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. Default is mfa. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. |
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. |
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. |
+
+#### Command example
+
+```!msgraph-identity-ca-policy-create policy_name="test" state=disabled client_app_types="all" include_users="All" include_applications="none" include_platforms="iOS" grant_control_enforcement="block" grant_control_operator="AND" sign_in_risk_levels="low" user_risk_levels="low"```
+
+#### Context Example
+
+```json
+{
+    "MSGraphIdentity": {
+        "ConditionalAccessPolicy": {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies/$entity",
+            "conditions": {
+                "applications": {
+                    "applicationFilter": null,
+                    "excludeApplications": [],
+                    "includeApplications": [
+                        "None"
+                    ],
+                    "includeAuthenticationContextClassReferences": [],
+                    "includeUserActions": []
+                },
+                "authenticationFlows": null,
+                "clientAppTypes": [
+                    "all"
+                ],
+                "clientApplications": null,
+                "devices": null,
+                "insiderRiskLevels": null,
+                "locations": null,
+                "platforms": {
+                    "excludePlatforms": [],
+                    "includePlatforms": [
+                        "iOS"
+                    ]
+                },
+                "servicePrincipalRiskLevels": [],
+                "signInRiskLevels": [
+                    "low"
+                ],
+                "userRiskLevels": [
+                    "low"
+                ],
+                "users": {
+                    "excludeGroups": [],
+                    "excludeGuestsOrExternalUsers": null,
+                    "excludeRoles": [],
+                    "excludeUsers": [],
+                    "includeGroups": [],
+                    "includeGuestsOrExternalUsers": null,
+                    "includeRoles": [],
+                    "includeUsers": [
+                        "All"
+                    ]
+                }
+            },
+            "createdDateTime": "2025-05-15T14:11:02.0356168Z",
+            "displayName": "test",
+            "grantControls": {
+                "authenticationStrength": null,
+                "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('0a31b9ab-be62-4f1b-b4a7-523940eb9f54')/grantControls/authenticationStrength/$entity",
+                "builtInControls": [
+                    "block"
+                ],
+                "customAuthenticationFactors": [],
+                "operator": "OR",
+                "termsOfUse": []
+            },
+            "id": "0a31b9ab-be62-4f1b-b4a7-523940eb9f54",
+            "modifiedDateTime": null,
+            "sessionControls": null,
+            "state": "disabled",
+            "templateId": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Conditional Access policy 0a31b9ab-be62-4f1b-b4a7-523940eb9f54 was successfully created.
+
+### msgraph-identity-ca-policy-update
+
+***
+Updates a Conditional Access policy. By default, the command attempts to **append** values to existing list-based fields (e.g., `include_users`, `include_groups`, etc.). If a field does not support appending (i.e., it's not a list), the command **overrides** the existing value with the new one.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-update`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to update. | Required |
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, etc. must be included.<br/>. | Optional |
+| policy_name | The name of the Conditional Access policy to be created. | Optional |
+| state | The state of the policy.<br/>. Possible values are: enabled, disabled. | Optional |
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.<br/>. | Optional |
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`.<br/>. | Optional |
+| client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional |
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional |
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional |
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional |
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional |
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional |
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional |
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional |
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional |
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional |
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional |
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional |
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional |
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional |
+| grant_control_operator | The operator for grant control.<br/>. Possible values are: AND, OR. | Optional |
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional |
+| update_action | Defines how to update fields in the policy.<br/>- `override` (default): Replaces existing values.<br/>- `append`: Adds new values to existing ones without removing them.<br/>. Possible values are: override, append. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!msgraph-identity-ca-policy-update policy_id="58c3a52b-190f-4be3-a19c-a4d03f8ce684" state="disabled"```
+
+#### Human Readable Output
+
+>Conditional Access policy 58c3a52b-190f-4be3-a19c-a4d03f8ce684 was successfully updated.
+>
+>Note:
+>Field `state` is not a list - overriding the value.
+
+### msgraph-identity-ca-policies-list
+
+***
+Retrieve one or all Conditional Access policies from Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-identity-ca-policies-list`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Optional. The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned. | Optional |
+| filter | Optional. The OData filter query to retrieve specific Conditional Access policies. | Optional |
+| limit | Optional. The maximum number of Conditional Access policies to return. Applicable only when all_results is set to false. | Optional |
+| all_results | Optional. Whether to retrieve all results without applying the 'limit'. Default value is true. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. |
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. |
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. |
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). |
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. |
+
+#### Command example
+
+```!msgraph-identity-ca-policies-list limit=2 all_results=false```
+
+#### Context Example
+
+```json
+{
+    "MSGraphIdentity": {
+        "ConditionalAccessPolicy": [
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "Office365"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "d629c370-61c9-4851-8f3d-80ea6c07655f"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-02-12T11:58:25.6358652Z",
+                "displayName": "block office test policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('24d40f2e-1998-4bf1-96ff-db841b6d51e6')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "24d40f2e-1998-4bf1-96ff-db841b6d51e6",
+                "modifiedDateTime": "2025-02-13T06:51:23.575868Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "All"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "high"
+                    ],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "66b0b57b-25c5-4ef3-9d4f-b7bdea0e8794"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-02-12T22:01:32.2461656Z",
+                "displayName": "Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('f1b54946-07ee-4c43-a78a-3f33ee248495')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "f1b54946-07ee-4c43-a78a-3f33ee248495",
+                "modifiedDateTime": "2025-05-14T20:18:55.0820676Z",
+                "sessionControls": {
+                    "applicationEnforcedRestrictions": null,
+                    "cloudAppSecurity": null,
+                    "disableResilienceDefaults": null,
+                    "persistentBrowser": null,
+                    "signInFrequency": {
+                        "authenticationType": "primaryAndSecondaryAuthentication",
+                        "frequencyInterval": "everyTime",
+                        "isEnabled": true,
+                        "type": null,
+                        "value": null
+                    }
+                },
+                "state": "enabled",
+                "templateId": "4200930c-0da2-4e33-ca01-000000000007"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Conditional Access Policies
+>
+>|CreatedDateTime|DisplayName|ID|IncludeUsers|State|
+>|---|---|---|---|---|
+>| 2025-02-12T11:58:25.6358652Z | block office test policy | 24d40f2e-1998-4bf1-96ff-db841b6d51e6 | d629c370-61c9-4851-8f3d-80ea6c07655f | disabled |
+>| 2025-02-12T22:01:32.2461656Z | Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins | f1b54946-07ee-4c43-a78a-3f33ee248495 |  | enabled |
+
+### msgraph-identity-ca-policy-delete
+
+***
+Delete specific Conditional Access policy by ID.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-delete`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"```
+
+#### Human Readable Output
+>
+>Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
+
+### msgraph-identity-audit-signin-event-get
+
+***
+Retrieve Microsoft Entra ID sign-in event.
+
+#### Base Command
+
+`msgraph-identity-audit-signin-event-get`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:AuditLog.Read.All`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Required. Unique ID representing the sign-in event. | Required |
+
+#### Context Output
+
+| **Context Path**                                             | **Type**   | **Description**                                             |
+|--------------------------------------------------------------|------------|-------------------------------------------------------------|
+| MSGraphIdentity.AuditLog.signIns.appDisplayName             | string     | App name displayed in the Microsoft Entra admin center.                                                                                                                                                                            |
+| MSGraphIdentity.AuditLog.signIns.appId                      | string     | Unique GUID that represents the app ID in the Microsoft Entra ID.                                                                                                                                                                  |
+| MSGraphIdentity.AuditLog.signIns.appliedConditionalAccessPolicies | array      | List of conditional access policies that the corresponding sign-in activity triggers.                                                                                                                                              |
+| MSGraphIdentity.AuditLog.signIns.clientAppUsed              | string     | Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients.          |
+| MSGraphIdentity.AuditLog.signIns.conditionalAccessStatus    | string     | Reports status of activated conditional access policy. Possible values are success, failure, notApplied, and unknownFutureValue.                                                                                                  |
+| MSGraphIdentity.AuditLog.signIns.correlationId              | string     | The request ID sent from the client when the sign-in is initiated. Used to troubleshoot sign-in activity.                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.createdDateTime            | string     | Date and time (UTC) the sign-in was initiated.                                                                                                                                                                                     |
+| MSGraphIdentity.AuditLog.signIns.deviceDetail               | object     | Device information from where the sign-in occurred; includes device ID, operating system, and browser.                                                                                                                             |
+| MSGraphIdentity.AuditLog.signIns.id                         | string     | Unique ID representing the sign-in activity.                                                                                                                                                                                       |
+| MSGraphIdentity.AuditLog.signIns.ipAddress                  | string     | IP address of the client used to sign in.                                                                                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.isInteractive              | boolean    | Indicates whether a sign-in is interactive.                                                                                                                                                                                        |
+| MSGraphIdentity.AuditLog.signIns.location                   | object     | Provides the city, state, and country code where the sign-in originated.                                                                                                                                                           |
+| MSGraphIdentity.AuditLog.signIns.resourceDisplayName        | string     | Name of the resource the user signed into.                                                                                                                                                                                         |
+| MSGraphIdentity.AuditLog.signIns.riskDetail                 | array      | The reason behind a specific state of a risky user, sign-in, or a risk event. The value none means that Microsoft Entra risk detection did not flag the user or the sign-in as a risky event so far.                               |
+| MSGraphIdentity.AuditLog.signIns.riskEventTypes_v2          | array      | The list of risk event types associated with the sign-in.                                                                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.riskLevelAggregated        | string     | Aggregated risk level. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.                                                                                                                |
+| MSGraphIdentity.AuditLog.signIns.riskLevelDuringSignIn      | string     | Risk level during sign-in. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.                                                                                                            |
+| MSGraphIdentity.AuditLog.signIns.riskState                  | string     | Reports status of the risky user, sign-in, or a risk event.                                                                                                                                                                        |
+| MSGraphIdentity.AuditLog.signIns.status                     | object     | Sign-in status. Includes the error code and description of the error (if a sign-in failure occurs).                                                                                                                                |
+| MSGraphIdentity.AuditLog.signIns.userDisplayName            | string     | Display name of the user that initiated the sign-in.                                                                                                                                                                               |
+| MSGraphIdentity.AuditLog.signIns.userId                     | string     | ID of the user that initiated the sign-in.                                                                                                                                                                                         |
+| MSGraphIdentity.AuditLog.signIns.userPrincipalName          | string     | User principal name of the user that initiated the sign-in. This value is always in lowercase.                                                                                                                                     |
+
+#### Command example
+
+```!msgraph-identity-audit-signin-event-get id="ed015f68-15ad-4375-9cad-16ec81880100"```
+
+#### Context Example
+
+```json
+{
+  "MSGraphIdentity": {
+    "AuditLog": {
+      "signIns": {
+        "riskDetail": "none",
+        "userDisplayName": "TestUser",
+        "riskState": "none",
+        "createdDateTime": "2025-11-13T11:52:24Z",
+        "userId": "cfzt37e3-c2cd-4c99-ad40-cf9ac726283u",
+        "deviceDetail": {
+          "browser": "Firefox Mobile 144.0",
+          "deviceId": "",
+          "displayName": "",
+          "isCompliant": false,
+          "isManaged": false,
+          "operatingSystem": "Android",
+          "trustType": null
+        },
+        "resourceId": "00000002-0000-0ff1-ce00-000000000000",
+        "appDisplayName": "One Outlook Web",
+        "ipAddress": "AAA.XXX.YYY.ZZZ",
+        "riskEventTypes_v2": null,
+        "userPrincipalName": "testUser@testdomain.onmicrosoft.com",
+        "riskEventTypes": null,
+        "status": {
+          "additionalDetails": null,
+          "errorCode": 0,
+          "failureReason": "Other."
+        },
+        "clientAppUsed": "Browser",
+        "location": {
+          "city": "Cape Town",
+          "countryOrRegion": "ZA",
+          "geoCoordinates": {
+            "altitude": null,
+            "latitude": -33.9249,
+            "longitude": 18.4241
+          },
+          "state": "Western Cape"
+        },
+        "isInteractive": true,
+        "riskLevelDuringSignIn": "low",
+        "riskLevelAggregated": "none",
+        "id": "26e93953-93c2-4922-b752-78cf3e180300",
+        "conditionalAccessStatus": "success",
+        "appId": "9199bf20-a13f-4107-85dc-02114787ef48",
+        "appliedConditionalAccessPolicies": null,
+        "correlationId": "8799925d-08ac-cf4d-368f-8a24549aaf98",
+        "resourceDisplayName": "Office 365 Exchange Online"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+| appDisplayName  | appliedConditionalAccessPolicies | clientAppUsed | conditionalAccessStatus | correlationId  | deviceDetail     | id   | ipAddress     | resourceDisplayName     | status    | userDisplayName | userPrincipalName   |
+|-----------------|----------------------------------|---------------|-------------------------|----------------|------------------|------|---------------|-------------------------|-----------|-----------------|---------------------|
+| One Outlook Web |                                  | Browser       | success                 | 8799925d-08ac-cf4d-368f-8a24549aaf98  | deviceId:<br>displayName:<br>operatingSystem: Android<br>browser: Firefox Mobile 144.0<br>isCompliant: false<br>isManaged: false<br>trustType: null | 26e93953-93c2-4922-b752-78cf3e180300     | AAA.XXX.YYY.ZZZ  | Office 365 Exchange Online  | errorCode: 0<br>failureReason: Other.<br>additionalDetails: null           | TestUser        | testUser@testdomain.onmicrosoft.com |
+
+## Additional Information
+
+### Configure Microsoft Entra ID Protection alert fetching
+
+Microsoft Entra ID Protection risk detections can be automatically fetched and ingested as Cortex XSOAR/XSIAM issues. Microsoft Entra ID P2 licenses are required to be able to retrieve the full detail of Microsoft Entra ID Protection alerts. Detection is **generic** for all alerts in tenants with Microsoft Entra ID Free or Microsoft Entra ID P1 licenses, but the details aren't available without a Microsoft Entra ID P2 license.
+
+The following alerts are fetched from Microsoft Entra ID Protection:
+
+| Risk Category         | Alert Name                                               | Alert Description                                                                 | Required License         |
+|----------------------|----------------------------------------------------------|-----------------------------------------------------------------------------------|-------------------------|
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Risky IP address        | Sign-in by user {userId} from an IP address identified as an anonymous proxy IP address by Microsoft Defender for Cloud Apps.                    | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In/User Risk    | Microsoft Entra ID sign-in risk: Additional risk detected  | One of the Microsoft Entra ID Protection premium detections was triggered for user {userId}. Since premium detections are only visible to Microsoft Entra ID P2 customers, they are labeled as Additional risk detected for users without Microsoft Entra ID P2 licenses.                | Microsoft Entra ID Free or Microsoft Entra ID P1    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Admin confirmed user compromised  | An admin selected Confirm user compromised in Microsoft Entra ID Protection UI or API for user {userId}.                | Microsoft Entra ID Free or Microsoft Entra ID P1    |
+| Sign-In/User Risk    | Microsoft Entra ID sign-in risk: Anomalous token  | Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime or a token played from an unfamiliar location, for user {userId}. This detection covers "Session Tokens" and "Refresh Tokens." If the location, application, IP address, User Agent, or other characteristics are unexpected for the user, the administrator should consider this risk as an indicator of potential token replay.                       | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Anonymous IP address   | Suspicious sign-in from an anonymous IP address (for example, Tor browser or anonymous VPN) detected for user {userId}.      | Microsoft Entra ID Free or Microsoft Entra ID P1    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Atypical travel | Sign-ins originating from two geographically distant locations, where at least one of the locations might also be atypical for the user, given past behavior based on {userId} user history.               |  Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Impossible travel  | Sign-in originating from geographically distant locations within a time period shorter than the time it takes to travel from the first location to the second detected for user {userId}.  | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Malicious IP address    | Sign-in from an IP address flagged as malicious based on high failure rates because of invalid credentials received from the IP address or other IP reputation sources for user {userId}.                | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Mass access to sensitive files  | User {userId} accessed an uncommon large number of files, and/or files containing sensitive informations, from Microsoft SharePoint Online or Microsoft OneDrive.  | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In/User Risk    | Microsoft Entra ID sign-in risk: Microsoft Entra threat intelligence  | User {userId} activity is unusual for the user or consistent with known attack patterns. This detection is based on Microsoft's internal and external threat intelligence sources.                | Microsoft Entra ID Free or Microsoft Entra ID P1    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: New country     | Sign-in from an unusual country for user {userId} based on past activity locations.              | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Password spray   | Multiple sign-in attempts detected across accounts, targeting user {userId}. The risk detection is triggered when an account's password is valid and has an attempted sign in.  | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Suspicious browser| Sign-in detected from a browser associated with anomalous behavior based on suspicious sign-in activity across multiple tenants from different countries/regions in the same browser for user {userId}.  | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Suspicious inbox forwarding| Suspicious rules that delete or move messages or folders are set on {userId} user's inbox. This detection might indicate: a user's account is compromised, messages are being intentionally hidden, and the mailbox is being used to distribute spam or malware in your organization.                | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Suspicious inbox manipulation rules  | Suspicious mailbox rule that delete or move messages or folders are set on user {userId} mailbox. This detection might indicate: a user's account is compromised, messages are being intentionally hidden, and the mailbox is being used to distribute spam or malware in your organization.           | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Token issuer anomaly    | Sign-in detected  for user {userId} with indications that the SAML token issuer for the associated SAML token is potentially compromised. The claims included in the token are unusual or match known attacker patterns.                 | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Unfamiliar sign-in properties| Sign-in using features (IP, ASN, location, device, and/or browser) not previously seen for user {userId} based on past sign-in history. Unfamiliar sign-in properties can be detected on both interactive and non-interactive sign-ins. When this detection is detected on non-interactive sign-ins, it deserves increased scrutiny due to the risk of token replay attacks.                | Microsoft Entra ID P2    |
+| Sign-In Risk         | Microsoft Entra ID sign-in risk: Verified threat actor IP | Sign-in detected from an IP address consistent with known IP addresses associated with nation state actors or cyber crime groups, based on data from the Microsoft Threat Intelligence Center (MSTIC), for user {userId} | Microsoft Entra ID P2    |
+| User Risk            | Microsoft Entra ID sign-in risk: Anomalous user activity | Anomalous privileged user {userId} activity regarding user baseline. The detection is triggered against the privileged user account making the change or the object that was changed.                      | Microsoft Entra ID P2    |
+| User Risk         | Microsoft Entra ID sign-in risk: Attacker in the Middle  | Sign-in from a malicious reverse proxy associated with known Adversary in the Middle activity detected for user {userId}. Thoughtful investigation is required when this detection is triggered to ensure the risk is cleared, which might require secure password reset and revocation of existing sessions.  | Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| User Risk            | Microsoft Entra ID sign-in risk: Leaked credentials | Credentials for user {userId} found in known data breaches.                   | Microsoft Entra ID Free or Microsoft Entra ID P1    |
+| User Risk         | Microsoft Entra ID sign-in risk: Possible attempt to access Primary Refresh Token (PRT)  | Possible attempt to access Primary Refresh Token (PRT) on {userId} device.  A PRT is a JSON Web Token (JWT) issued to Microsoft first-party token brokers to enable single sign-on (SSO) across the applications used on those devices. This detection is high risk and prompt remediation of these users is recommended. It appears infrequently in most organizations due to its low volume.  | Microsoft Defender for Endpoint (MDE) + Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| User Risk            | Microsoft Entra ID sign-in risk: Suspicious API traffic  | Abnormal GraphAPI traffic or directory enumeration detected for user {userId}. Suspicious API traffic might suggest that a user is compromised and conducting reconnaissance in the environment.                                 | Microsoft Entra ID P2    |
+| User Risk         | Microsoft Entra ID sign-in risk: Suspicious Sending Patterns| Suspicious email patterns detected by Microsoft Defender for Office 365 (MDO) in email sent by user {userId}.                  |Microsoft Defender for Office 365 (MDO) + Microsoft Entra ID P2 and a standalone license for Microsoft Defender for Cloud Apps    |
+| User Risk            | Microsoft Entra ID user risk: User reported suspicious activity | User {userId} denied a multi factor authentication (MFA) prompt and reported it as suspicious activity.                        | Microsoft Entra ID P2   |
+
+### Microsoft Entra ID Protection issues severity
+
+Microsoft Entra ID Protection categorizes risk into three tiers: **low**, **medium**, and **high**. Risk levels are calculated by Microsoft machine learning algorithms and represent how confident Microsoft is that one or more of the user's credentials are known by an unauthorized entity.
+
+A risk detection with risk level of:
+
+- **High** signifies that Microsoft is highly confident that the account is compromised. Signals such as threat intelligence and known attack patterns factor into the confidence level of the risk detection.
+- **Medium** indicates that one or more moderate-severity anomalies were detected, but there's less confidence that the account is compromised. Sign-in patterns, behaviors, and other signals factor into the confidence level of the risk detection.
+- **Low** signifies that anomalies are present in the sign-in or a user's credential, but we're less confident the account hasn't been compromised. Sign-in patterns before and during the sign-in are used to determine if there's a pattern or if the sign-in is an anomaly.
+
+Risk detections can fire at more than one risk level, depending on the confidence level. For example, Unfamiliar sign-in properties might fire at high, medium, or low based on the level of familiarity with the sign-in properties.
+
+By default, issues created in Cortex XSOAR/XSIAM uses the risk level of the Microsoft Entra ID Protection alert as issue severity. This default behavior can be overridden by setting **Override Microsoft Entra ID Protection risk level** and **Issue severity** parameters.

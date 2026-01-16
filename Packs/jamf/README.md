@@ -42,6 +42,7 @@ While creating (or editing) a webhook, please set:
 4. **Webhook Event** as the webhook event you wish to collect.
 
 ## What does this pack do?
+
 * Run remote commands on a computer or mobile device, such as erase, lock/lost_mode.
 * Get various details about devices and users, such as names, IDs, services, applications, hardware, etc.
 * Get a list of computers details based on applications.

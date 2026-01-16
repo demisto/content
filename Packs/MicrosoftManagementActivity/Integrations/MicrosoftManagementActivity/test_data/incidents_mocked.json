@@ -1,0 +1,33 @@
+[
+    {
+    "Id": "EVENT_001",
+    "CreationTime": "2025-12-05T04:00:00",
+    "Operation": "UserLoggedIn",
+    "UserId": "admin@example.com"
+  },
+  {
+    "Id": "EVENT_002",
+    "CreationTime": "2025-12-05T04:10:00",
+    "Operation": "FileAccessed",
+    "UserId": "user1@example.com"
+  },
+  {
+    "Id": "EVENT_003",
+    "CreationTime": "2025-12-05T04:10:00",
+    "Operation": "FileDownloaded",
+    "UserId": "user1@example.com"
+  },
+  {
+    "Id": "EVENT_004",
+    "CreationTime": "2025-12-05T04:15:00",
+    "Operation": "UserCreated",
+    "UserId": "admin@example.com"
+  },
+  {
+    "Id": "EVENT_004",
+    "CreationTime": "2025-12-05T04:15:00",
+    "Operation": "UserCreated",
+    "UserId": "admin@example.com",
+    "Note": "This is an internal duplicate of the previous record"
+  }
+]

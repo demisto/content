@@ -1,0 +1,142 @@
+{
+    "id": "dummy_0000",
+    "monitor_id": "dummy_monitor_id_000",
+    "doc": {
+        "__id": "dummy_doc_id",
+        "__type": "message",
+        "body": "this is dummay body message",
+        "channel": {
+            "channel_id": "-1001596019399",
+            "channel_info": {
+                "description": "Google ADS Team"
+            },
+            "channel_url": "https://example.com/googleadsenseteam",
+            "invite_url": "https://example.com/googleadsenseteam",
+            "messenger": {
+                "id": "gmail",
+                "name": "Gmail"
+            },
+            "name": "googleadsenseteam"
+        },
+        "ingested": "dummydate_0000",
+        "message_id": "dummy_message_id_0000",
+        "messenger": {
+            "id": "gmail",
+            "name": "Gmail"
+        },
+        "sender": {
+            "identity": {
+                "first_name": "Officer",
+                "last_name": "Pnc",
+                "name": "Officer Pnc"
+            },
+            "google": {
+                "name": "google",
+                "user_id": 8353632129
+            }
+        },
+        "source": "vanellope",
+        "timestamp": "2025-08-19T14:26:37Z"
+    },
+    "labels": [
+        {
+            "id": "dummy_label_id_0000",
+            "classifier": "classifier-content",
+            "version": "2-0-0",
+            "label": "prose",
+            "confidence": 100,
+            "element_path": "body"
+        },
+        {
+            "id": "dummy_label_id_0001",
+            "classifier": "classifier-language",
+            "version": "1-0-0",
+            "label": "en",
+            "confidence": 67,
+            "element_path": "body"
+        }
+    ],
+    "topics": [
+        {
+            "id": "dummy_topic_id_0002",
+            "type": "identity_name",
+            "value": "Officer Pnc",
+            "extractor": "dtm-ma",
+            "extractor_version": "1.0.650",
+            "entity_locations": [
+                {
+                    "element_path": "sender.identity.name",
+                    "offsets": [
+                        0,
+                        11
+                    ]
+                }
+            ]
+        }
+    ],
+    "topic_matches": [
+        {
+            "topic_id": "dummy_0010",
+            "value": "googleadsenseteam",
+            "term": "google",
+            "offsets": [
+                0,
+                17
+            ]
+        },
+        {
+            "topic_id": "doc_type:message",
+            "value": "message"
+        }
+    ],
+    "doc_matches": [
+        {
+            "match_path": "body",
+            "locations": [
+                {
+                    "offsets": [
+                        23,
+                        27
+                    ],
+                    "value": "root"
+                },
+                {
+                    "offsets": [
+                        28,
+                        34
+                    ],
+                    "value": "access"
+                }
+            ]
+        }
+    ],
+    "created_at": "2025-08-19T14:30:45.97Z",
+    "updated_at": "2025-08-19T14:34:52.148Z",
+    "labels_url": "https://exmaple.com/v4/dtm/docs/message/dummy0011/labels",
+    "topics_url": "https://example.com/v4/dtm/docs/message/dummy0011/topics",
+    "doc_url": "https://example.com/v4/dtm/docs/message/dummy0011",
+    "status": "closed",
+    "alert_type": "Message",
+    "alert_summary": "wts whm cpanel Root access Warranty",
+    "title": "Found topic \"google\" posted by actor \"google\" on channel \"googleadsenseteam\"",
+    "email_sent_at": "",
+    "indicator_mscore": 0,
+    "severity": "low",
+    "confidence": 0.20239817591320391,
+    "aggregated_under_id": "dummy_0012",
+    "has_analysis": false,
+    "ai_doc_summary": "This message suggests the potential sale of unauthorized root access to Indonesian government website.",
+    "similarity_score": 1,
+    "severity_reasoning": {
+        "rule": ""
+    },
+    "confidence_reasoning": {
+        "version": "",
+        "response_count": 0,
+        "malicious_count": 0,
+        "benign_count": 0
+    },
+    "ignore": false,
+    "tags":["test"],
+    "monitor_version": 1
+}

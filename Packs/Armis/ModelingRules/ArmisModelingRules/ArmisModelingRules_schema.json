@@ -51,6 +51,10 @@
         "type": {
             "type": "string",
             "is_array": false
+        },
+        "time": {
+            "type": "datetime",
+            "is_array": false
         }
     },
     "armis_security_activities_raw": {

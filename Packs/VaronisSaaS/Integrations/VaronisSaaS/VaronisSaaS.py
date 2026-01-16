@@ -9,6 +9,44 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
+MAX_USERS_TO_SEARCH = 5
+MAX_DAYS_BACK = 180
+THREAT_MODEL_ENUM_ID = 5821
+ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3}
+ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2, "informational": 3}
+CLOSE_REASONS = {
+    "none": 0,
+    "other": 1,
+    "benign activity": 2,
+    "true positive": 3,
+    "environment misconfiguration": 4,
+    "alert recently customized": 5,
+    "inaccurate alert logic": 6,
+    "authorized activity": 7,
+}
+INCIDENT_FIELDS = [
+    "ID",
+    "Category",
+    "Name",
+    "Status",
+    "severity",
+    "IPThreatTypes",
+    "CloseReason",
+    "CloseNotes",
+    "NumOfAlertedEvents",
+    "ContainsFlaggedData",
+    "ContainMaliciousExternalIP",
+    "ContainsSensitiveData",
+    "Locations",
+    "Devices",
+    "Users",
+]
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Outgoing": "Out",
+}
+
+
 class AlertAttributes:
     Alert_ID = "Alert.ID"
     Alert_Rule_Name = "Alert.Rule.Name"
@@ -147,33 +185,6 @@ class BaseMapper:
                 obj[col] = val
             result.append(obj)
         return result
-
-
-MAX_DAYS_BACK = 180
-THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3, "action required": 4, "auto-resolved": 5}
-ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2}
-INCIDENT_FIELDS = [
-    "ID",
-    "Category",
-    "Name",
-    "Status",
-    "severity",
-    "IPThreatTypes",
-    "CloseReason",
-    "CloseNotes",
-    "NumOfAlertedEvents",
-    "ContainsFlaggedData",
-    "ContainMaliciousExternalIP",
-    "ContainsSensitiveData",
-    "Locations",
-    "Devices",
-    "Users",
-]
-MIRROR_DIRECTION_MAPPING = {
-    "None": None,
-    "Outgoing": "Out",
-}
 
 
 class Client(BaseClient):
@@ -1306,43 +1317,29 @@ class ThreatModelObjectMapper(BaseMapper):
 """
 
 
-""" CONSTANTS """
-
-MAX_USERS_TO_SEARCH = 5
-MAX_DAYS_BACK = 180
-THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3, "action required": 4, "auto-resolved": 5}
-ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2}
-CLOSE_REASONS = {
-    "none": 0,
-    "other": 1,
-    "benign activity": 2,
-    "true positive": 3,
-    "environment misconfiguration": 4,
-    "alert recently customized": 5,
-    "inaccurate alert logic": 6,
-    "authorized activity": 7,
-}
-
-
-def convert_to_demisto_severity(severity: Optional[str]) -> int:
+def convert_to_demisto_severity(severity: Optional[str]) -> float:
     """Maps Varonis severity to Cortex XSOAR severity
 
-    Converts the Varonis alert severity level ('Low', 'Medium',
-    'High') to Cortex XSOAR incident severity (1 to 4)
+    Converts the Varonis alert severity level ('Informational', 'Low', 'Medium',
+    'High') to Cortex XSOAR incident severity (0.5 to 4)
     for mapping.
 
     :type severity: ``str``
     :param severity: severity as returned from the Varonis API (str)
 
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
+    :return: Cortex XSOAR Severity value (may be fractional for INFO)
+    :rtype: ``float``
     """
 
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {"Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
+    return {
+        "Informational": IncidentSeverity.INFO,
+        "Low": IncidentSeverity.LOW,
+        "Medium": IncidentSeverity.MEDIUM,
+        "High": IncidentSeverity.HIGH,
+    }[severity]
 
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
@@ -1357,16 +1354,19 @@ def get_included_severitires(severity: Optional[str]) -> list[str]:
     if not severity:
         return []
 
-    severities = list(ALERT_SEVERITIES.keys()).copy()
+    # Normalize and validate severity
+    sev_key = severity.lower()
+    if sev_key not in ALERT_SEVERITIES:
+        return []
 
-    if severity.lower() == "medium":
-        severities.remove("low")
+    # ALERT_SEVERITIES maps severity -> numeric priority (lower number == higher severity)
+    # We want to return severities that are equal or higher than the requested severity.
+    requested_priority = ALERT_SEVERITIES[sev_key]
 
-    if severity.lower() == "high":
-        severities.remove("low")
-        severities.remove("medium")
-
-    return severities
+    # Sort severities by priority (high -> medium -> low -> informational) and include those
+    # whose priority is <= requested_priority (i.e., equal or higher severity).
+    sorted_severities = sorted(ALERT_SEVERITIES.items(), key=lambda kv: kv[1])
+    return [name for name, pr in sorted_severities if pr <= requested_priority]
 
 
 def try_convert(item, converter, error=None):
@@ -1681,7 +1681,7 @@ def fetch_incidents_command(
 
     :type alert_status: ``Optional[str]``
     :param alert_status: status of the alert to search for.
-        Options are 'New', 'Under investigation', 'Action Required', 'Auto-Resolved' or 'Closed'
+        Options are 'New', 'Under investigation' or 'Closed'
 
     :type threat_model: ``Optional[str]``
     :param threat_model: Comma-separated list of threat model names of alerts to fetch
@@ -1723,6 +1723,13 @@ def fetch_incidents_command(
         statuses.append(alert_status)
 
     severities = get_included_severitires(severity)
+
+    if last_fetched_ingest_time is None:
+        raise ValueError("last_fetched_ingest_time cannot be None")
+
+    max_window = timedelta(days=7)
+    if ingest_time_to - last_fetched_ingest_time > max_window:
+        last_fetched_ingest_time = ingest_time_to - max_window
 
     alerts = client.varonis_get_alerts(
         threat_model_names=threat_model_names,
@@ -2083,7 +2090,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     ) or parsed_args.inc_status == IncidentStatus.ACTIVE:
         demisto.debug(f"Update remote incident {alert_id}")
         note = "Status changed from XSOAR"
-        status = parsed_args.data.get("Status", "action required").lower()
+        status = parsed_args.data.get("Status", "under investigation").lower()
         status_id = ALERT_STATUSES.get(status)
 
         close_reason_id = CLOSE_REASONS["none"]

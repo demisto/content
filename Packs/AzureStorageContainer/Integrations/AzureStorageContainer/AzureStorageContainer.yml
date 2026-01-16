@@ -1,4 +1,5 @@
 category: IT Services
+provider: Microsoft
 commonfields:
   id: Azure Storage Container
   version: -1
@@ -331,7 +332,7 @@ script:
       name: account_key
     description: create SAS token for container.
     name: azure-storage-container-sas-create
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

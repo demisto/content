@@ -5,6 +5,7 @@ fromversion: 6.0.0
 name: XSOAR Mirroring
 display: XSOAR Mirroring
 category: Utilities
+provider: Palo Alto Networks
 description: Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
 configuration:
 - display: Incident type
@@ -156,7 +157,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   subtype: python3
   ismappable: true

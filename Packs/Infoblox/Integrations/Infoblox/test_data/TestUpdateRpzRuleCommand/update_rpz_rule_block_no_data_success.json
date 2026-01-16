@@ -1,0 +1,13 @@
+{
+    "result": {
+        "_ref": "record:rpz:cname/1234:malicious.test.com/default",
+        "name": "malicious.test.com",
+        "rp_zone": "test.com",
+        "comment": "Block malicious domain",
+        "canonical": "*",
+        "disable": false,
+        "view": "default",
+        "zone": "test.com",
+        "type": "record:rpz:cname"
+    }
+}

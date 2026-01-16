@@ -12,7 +12,7 @@ Important note: resetting the integration cache removes all data about teams, ch
 
 For more information about registering a calling bot see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions).
 
-#### Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+#### Authorize Cortex XSOAR for Entra ID Users (Self deployed Azure App)
 
 There are two different authentication methods for [self-deployed configuration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#configuring-the-instance-with-the-chosen-authentication-flow): 
 - [Client Credentials flow](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#client-credentials-flow)

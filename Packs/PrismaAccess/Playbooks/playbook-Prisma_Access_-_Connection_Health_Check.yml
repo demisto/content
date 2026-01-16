@@ -1,12 +1,7 @@
 id: Prisma Access - Connection Health Check
 version: -1
 name: Prisma Access - Connection Health Check
-description: Use the Prisma Access integration to run SSH CLI commands and query the
-  connection states for all tunnels. If any tunnels are down - the playbook escalates
-  to a manual task for remediation and provides recommendations on next steps in the
-  task description. The playbook can be run as a job, or triggered from an incoming
-  event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake)
-  to validate that the issue still exists.
+description: Use the Prisma Access integration to run SSH CLI commands and query the connection states for all tunnels. If any tunnels are down - the playbook escalates to a manual task for remediation and provides recommendations on next steps in the task description. The playbook can be run as a job, or triggered from an incoming event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake) to validate that the issue still exists.
 starttaskid: "0"
 tasks:
   "0":
@@ -354,3 +349,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

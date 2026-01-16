@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Google
 commonfields:
   id: Google Vision AI
   version: -1
@@ -22,7 +23,7 @@ configuration:
   type: 8
 
   required: false
-description: Image processing with Google Vision API
+description: Image processing with Google Vision API.
 display: Google Vision AI
 name: Google Vision AI
 script:
@@ -44,7 +45,7 @@ script:
     - contextPath: GoogleVisionAPI.Logo.Score
       description: The certainty score provided by the Google Vision API.
       type: Unknown
-  dockerimage: demisto/google-vision-api:1.0.0.2032298
+  dockerimage: demisto/google-vision-api:1.0.0.3471651
   runonce: false
   script: '-'
   type: python

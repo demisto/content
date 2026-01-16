@@ -1,0 +1,86 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"RF Domain Abuse Playbook Alert"
+	],
+	"caseInsensitive": true,
+	"cliName": "rfdnsrecords",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Record Type",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "recordtype",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Risk Score",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "riskscore",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Criticality",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "criticality",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Entity",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "entity",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"editForm": true,
+	"group": 0,
+	"hidden": false,
+	"id": "incident_rfdnsrecords",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "RF DNS Records",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -1,6 +1,6 @@
 Signum password expiry notification.
-## Configure Signum in Cortex
 
+## Configure Signum in Cortex
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -9,7 +9,6 @@ Signum password expiry notification.
 | Password | True |
 | verify certificate | False |
 | Use system proxy | False |
-
 
 ## Commands
 
@@ -20,6 +19,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 List domain users by domain ID.
+
 #### Base Command
 
 `signum-list-domain-users`
@@ -28,11 +28,11 @@ List domain users by domain ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_id | Identification of the domain for which to list the users.  Default is 1. | Required | 
-| simple_view | If "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary key name. Possible values are: True, False. Default is True. | Optional | 
+| domain_id | Identification of the domain for which to list the users.  Default is 1. | Required |
+| simple_view | If "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary key name. Possible values are: True, False. Default is True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Signum.ListDomainUsers | unknown | The result of the signum-list-domain-users command. | 
+| Signum.ListDomainUsers | unknown | The result of the signum-list-domain-users command. |

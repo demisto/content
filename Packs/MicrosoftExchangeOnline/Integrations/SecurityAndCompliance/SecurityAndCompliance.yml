@@ -1,4 +1,5 @@
 category: Email
+provider: Microsoft
 commonfields:
   id: SecurityAndCompliance
   version: -1
@@ -819,3 +820,6 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr

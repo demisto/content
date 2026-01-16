@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1 of SymantecICDM.
 
 ## Configure Symantec Endpoint Security (ICDM) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -37,18 +36,18 @@ Get file reputation for given SHA256.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | List of files. | Optional | 
+| file | List of files. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| File.SHA256 | String | The SHA256 hash of the file. |
 
 ### ip
 
@@ -63,18 +62,18 @@ Get ip reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Optional | 
+| ip | List of IPs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| IP.Address | String | IP address. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| IP.Address | String | IP address. |
 
 ### url
 
@@ -89,18 +88,18 @@ Get reputation for given url.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | List of URLs. | Optional | 
+| url | List of URLs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| URL.Data | String | The URL. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| URL.Data | String | The URL. |
 
 ### domain
 
@@ -115,18 +114,18 @@ Get reputation for given domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | List of domains. | Optional | 
+| domain | List of domains. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| Domain.Name | String | The domain name. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Domain.Name | String | The domain name. |
 
 ### symantec-protection-file
 
@@ -141,16 +140,16 @@ Get information whether a given file has been blocked by any Symantec technologi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Comma-separated list of file Sha256 hashes. | Optional | 
+| file | Comma-separated list of file Sha256 hashes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.File.file | String | input file sha256. | 
-| Symantec.Protection.File.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.File.state.firstDefsetVersion | String | The first definition version with protection. | 
-| Symantec.Protection.File.state.threatName | String | The name of the threat the file is detected as. | 
+| Symantec.Protection.File.file | String | input file sha256. |
+| Symantec.Protection.File.state.technology | String | Symantec technology providing protection. |
+| Symantec.Protection.File.state.firstDefsetVersion | String | The first definition version with protection. |
+| Symantec.Protection.File.state.threatName | String | The name of the threat the file is detected as. |
 
 ### symantec-protection-network
 
@@ -165,16 +164,16 @@ Get  information whether given domain or ip has been blocked by any Symantec tec
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| network | Comma-separated list of domains or IPs. | Optional | 
+| network | Comma-separated list of domains or IPs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.Network.network | String | input domain or ip. | 
-| Symantec.Protection.Network.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.Network.state.firstDefsetVersion | String | The first definition version with protections. | 
-| Symantec.Protection.Network.state.threatName | String | The name of the threat the domain or is detected as. | 
+| Symantec.Protection.Network.network | String | input domain or ip. |
+| Symantec.Protection.Network.state.technology | String | Symantec technology providing protection. |
+| Symantec.Protection.Network.state.firstDefsetVersion | String | The first definition version with protections. |
+| Symantec.Protection.Network.state.threatName | String | The name of the threat the domain or is detected as. |
 
 ### symantec-protection-cve
 
@@ -189,13 +188,13 @@ Get returns information whether a given CVE has been blocked by any Symantec tec
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | Comma-separated list of CVEs. | Optional | 
+| cve | Comma-separated list of CVEs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Symantec.Protection.CVE.cve | String | input CVE. | 
-| Symantec.Protection.CVE.state.technology | String | Symantec technology providing protection. | 
-| Symantec.Protection.CVE.state.firstDefsetVersion | String | The first definition version with protections. | 
-| Symantec.Protection.CVE.state.threatName | String | The name of the threat the domain or is detected as. | 
+| Symantec.Protection.CVE.cve | String | input CVE. |
+| Symantec.Protection.CVE.state.technology | String | Symantec technology providing protection. |
+| Symantec.Protection.CVE.state.firstDefsetVersion | String | The first definition version with protections. |
+| Symantec.Protection.CVE.state.threatName | String | The name of the threat the domain or is detected as. |

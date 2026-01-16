@@ -1225,7 +1225,7 @@ ID|Name|Type|
 ### zscaler-delete-ip-destination-groups
 
 ***
-Deletes the IP destination groups for the specified group ID.
+Deletes the IP destination group associated with the specified group ID.
 
 #### Base Command
 

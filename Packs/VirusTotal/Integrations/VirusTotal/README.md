@@ -1,6 +1,6 @@
 Analyze suspicious hashes, URLs, domains, and IP addresses.
-## Configure VirusTotal in Cortex
 
+## Configure VirusTotal in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,157 +22,156 @@ Analyze suspicious hashes, URLs, domains, and IP addresses.
 | File Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### file
+
 ***
 Checks the file reputation of the specified hash.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
-| long | Whether to return full response for scans. Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for the API rate limit. Default is "0". Default is 0. | Optional | 
-
+| file | A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256. | Required |
+| long | Whether to return full response for scans. Default is "false". Possible values are: true, false. Default is false. | Optional |
+| threshold | If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for the API rate limit. Default is "0". Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | unknown | Bad MD5 hash. | 
-| File.SHA1 | unknown | Bad SHA1 hash. | 
+| File.MD5 | unknown | Bad MD5 hash. |
+| File.SHA1 | unknown | Bad SHA1 hash. |
 | File.SHA256 | unknown | Bad SHA256 hash. |
-| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
-| File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
-| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| File.VirusTotal.Scans.Source | unknown | Vendor used to scan the hash. | 
-| File.VirusTotal.Scans.Detected | unknown | Scan detection for this hash \(True or False\). | 
-| File.VirusTotal.Scans.Result | unknown | Scan result for this hash, for example, signature. | 
-| File.VirusTotal.ScanID | string | Scan ID for this hash. | 
-| File.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. | 
-| File.DetectionEngines | number | Total number of engines that checked the indicator. | 
-| File.VirusTotal.vtLink | string | Virus Total permanent link. | 
-
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. |
+| File.Malicious.Detections | unknown | For malicious files, the total number of detections. |
+| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| File.VirusTotal.Scans.Source | unknown | Vendor used to scan the hash. |
+| File.VirusTotal.Scans.Detected | unknown | Scan detection for this hash \(True or False\). |
+| File.VirusTotal.Scans.Result | unknown | Scan result for this hash, for example, signature. |
+| File.VirusTotal.ScanID | string | Scan ID for this hash. |
+| File.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. |
+| File.DetectionEngines | number | Total number of engines that checked the indicator. |
+| File.VirusTotal.vtLink | string | Virus Total permanent link. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### ip
+
 ***
 Checks the reputation of an IP address.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required | 
-| long | Whether to return a full response for detected URLs. Default is "false". Possible values are: "true" and "false". | Optional | 
-| threshold | If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used. | Optional | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display in the long format. Default is "10". | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". | Optional | 
-| retries | Number of retries for the API rate limit. Default is "0". | Optional | 
-| fullResponse | Whether to return all results, which can be thousands. We recommend that you don't return full results in playbooks. Possible values are: "true" and "false". Default is "false". | Optional | 
-
+| ip | IP address to check. | Required |
+| long | Whether to return a full response for detected URLs. Default is "false". Possible values are: "true" and "false". | Optional |
+| threshold | If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used. | Optional |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display in the long format. Default is "10". | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". | Optional |
+| retries | Number of retries for the API rate limit. Default is "0". | Optional |
+| fullResponse | Whether to return all results, which can be thousands. We recommend that you don't return full results in playbooks. Possible values are: "true" and "false". Default is "false". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | unknown | Bad IP address. |
-| IP.ASN | unknown | Bad IP ASN. | 
-| IP.Geo.Country | unknown | Bad IP country. | 
-| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. | 
-| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| IP.VirusTotal.DownloadedHashes | unknown | Latest files that were detected by at least one antivirus solution, and were downloaded by VirusTotal from the IP address. | 
-| IP.VirusTotal.UnAVDetectedDownloadedHashes | unknown | Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address. | 
-| IP.VirusTotal.DetectedURLs | unknown | Latest URLs hosted in this IP address that were detected by at least one URL scanner. | 
-| IP.VirusTotal.CommunicatingHashes | unknown | Latest detected files that communicate with this IP address. | 
-| IP.VirusTotal.UnAVDetectedCommunicatingHashes | unknown | Latest undetected files that communicate with this IP address. | 
-| IP.VirusTotal.Resolutions.hostname | unknown | Domains that resolved to the specified IP address. | 
-| IP.VirusTotal.ReferrerHashes | unknown | Latest detected files that embed this IP address in their strings. | 
-| IP.VirusTotal.UnAVDetectedReferrerHashes | unknown | Latest undetected files that embed this IP address in their strings. | 
-| IP.VirusTotal.Resolutions.last_resolved | unknown | Last resolution times of the domains that resolved to the specified IP address. | 
-
+| IP.ASN | unknown | Bad IP ASN. |
+| IP.Geo.Country | unknown | Bad IP country. |
+| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. |
+| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| IP.VirusTotal.DownloadedHashes | unknown | Latest files that were detected by at least one antivirus solution, and were downloaded by VirusTotal from the IP address. |
+| IP.VirusTotal.UnAVDetectedDownloadedHashes | unknown | Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address. |
+| IP.VirusTotal.DetectedURLs | unknown | Latest URLs hosted in this IP address that were detected by at least one URL scanner. |
+| IP.VirusTotal.CommunicatingHashes | unknown | Latest detected files that communicate with this IP address. |
+| IP.VirusTotal.UnAVDetectedCommunicatingHashes | unknown | Latest undetected files that communicate with this IP address. |
+| IP.VirusTotal.Resolutions.hostname | unknown | Domains that resolved to the specified IP address. |
+| IP.VirusTotal.ReferrerHashes | unknown | Latest detected files that embed this IP address in their strings. |
+| IP.VirusTotal.UnAVDetectedReferrerHashes | unknown | Latest undetected files that embed this IP address in their strings. |
+| IP.VirusTotal.Resolutions.last_resolved | unknown | Last resolution times of the domains that resolved to the specified IP address. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### url
+
 ***
 Checks the reputation of a URL.
-
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to check. This command will not work properly on URLs containing commas. | Required | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". | Optional | 
-| long | Whether to return the full response for the detected URLs. Possible values are: "true" and "false". Default is "false". | Optional | 
-| threshold | If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".  | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".  | Optional | 
-| retries | Number of retries for the API rate limit. Default is "0".  | Optional | 
-
+| url | A comma-separated list of URLs to check. This command will not work properly on URLs containing commas. | Required |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". | Optional |
+| long | Whether to return the full response for the detected URLs. Possible values are: "true" and "false". Default is "false". | Optional |
+| threshold | If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional |
+| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".  | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".  | Optional |
+| retries | Number of retries for the API rate limit. Default is "0".  | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | URL.Data | unknown | Bad URLs found. |
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
-| URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| URL.VirusTotal.Scans.Source | unknown | Vendor that scanned this URL. | 
-| URL.VirusTotal.Scans.Detected | unknown | Scan detection for this URL \(True or False\). | 
-| URL.VirusTotal.Scans.Result | unknown | Scan result for this URL, for example, signature. | 
-| URL.DetectionEngines | number | Total number of engines that checked the indicator. | 
-| URL.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. | 
-| url.VirusTotal.ScanID | string | Scan ID for this URL. | 
-| File.VirusTotal.vtLink | string | Virus Total permanent link. | 
-
+| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| URL.VirusTotal.Scans.Source | unknown | Vendor that scanned this URL. |
+| URL.VirusTotal.Scans.Detected | unknown | Scan detection for this URL \(True or False\). |
+| URL.VirusTotal.Scans.Result | unknown | Scan result for this URL, for example, signature. |
+| URL.DetectionEngines | number | Total number of engines that checked the indicator. |
+| URL.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. |
+| url.VirusTotal.ScanID | string | Scan ID for this URL. |
+| File.VirusTotal.vtLink | string | Virus Total permanent link. |
 
 #### Command Example
+
 ```!url url=https://example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -197,62 +196,63 @@ Checks the reputation of a URL.
 #### Human Readable Output
 
 >## VirusTotal URL Reputation for: https://example.com
->Last scan date: *2021-04-13 12:06:32*
+>
+>Last scan date: _2021-04-13 12:06:32_
 >Total scans: **87**
 >Positive scans: **2**
 >VT Link: [https://example.com](https://www.virustotal.com/gui/url/0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7/detection/u-0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592)
 
-
 ### domain
+
 ***
 Checks the reputation of a domain.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain name to check. | Required | 
-| long | Whether to return the full response for detected URLs. Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
-| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: true, false. Default is false. | Optional | 
-
+| domain | Domain name to check. | Required |
+| long | Whether to return the full response for detected URLs. Default is "false". Possible values are: true, false. Default is false. | Optional |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional |
+| threshold | If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional |
+| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | unknown | Bad domain found. |
-| Domain.Malicious.Vendor | unknown | For malicious domains, the vendor that made the decision. | 
-| Domain.Malicious.Description | unknown | For malicious domains, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| Domain.VirusTotal.DownloadedHashes | unknown | Hashes of files that were downloaded from this domain. | 
-| Domain.VirusTotal.CommunicatingHashes | unknown | Hashes of files that communicated with this domain in a sandbox. | 
-| Domain.VirusTotal.Resolutions.ip_address | unknown | IP addresses that resolved to this domain. | 
-| Domain.VirusTotal.Whois | unknown | Whois report. | 
-| Domain.VirusTotal.Subdomains | unknown | Subdomains. | 
-| Domain.VirusTotal.UnAVDetectedDownloadedHashes | unknown | Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address. | 
-| Domain.VirusTotal.DetectedURLs | unknown | Latest URLs hosted in this domain address that were detected by at least one URL scanner. | 
-| Domain.VirusTotal.ReferrerHashes | unknown | Latest detected files that embed this domain address in their strings. | 
-| Domain.VirusTotal.UnAVDetectedReferrerHashes | unknown | Latest undetected files that embed this domain address in their strings. | 
-| Domain.VirusTotal.UnAVDetectedCommunicatingHashes | unknown | Latest undetected files that communicated with this domain in a sandbox. | 
-| Domain.VirusTotal.Resolutions.last_resolved | unknown | Last resolution times of the IP addresses that resolve to this domain. | 
-
+| Domain.Malicious.Vendor | unknown | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | unknown | For malicious domains, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Domain.VirusTotal.DownloadedHashes | unknown | Hashes of files that were downloaded from this domain. |
+| Domain.VirusTotal.CommunicatingHashes | unknown | Hashes of files that communicated with this domain in a sandbox. |
+| Domain.VirusTotal.Resolutions.ip_address | unknown | IP addresses that resolved to this domain. |
+| Domain.VirusTotal.Whois | unknown | Whois report. |
+| Domain.VirusTotal.Subdomains | unknown | Subdomains. |
+| Domain.VirusTotal.UnAVDetectedDownloadedHashes | unknown | Latest files that were not detected by any antivirus solution, and were downloaded by VirusTotal from the specified IP address. |
+| Domain.VirusTotal.DetectedURLs | unknown | Latest URLs hosted in this domain address that were detected by at least one URL scanner. |
+| Domain.VirusTotal.ReferrerHashes | unknown | Latest detected files that embed this domain address in their strings. |
+| Domain.VirusTotal.UnAVDetectedReferrerHashes | unknown | Latest undetected files that embed this domain address in their strings. |
+| Domain.VirusTotal.UnAVDetectedCommunicatingHashes | unknown | Latest undetected files that communicated with this domain in a sandbox. |
+| Domain.VirusTotal.Resolutions.last_resolved | unknown | Last resolution times of the IP addresses that resolve to this domain. |
 
 #### Command Example
+
 ```!domain domain=example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1775,7 +1775,9 @@ Checks the reputation of a domain.
 #### Human Readable Output
 
 >## VirusTotal Domain Reputation for: example.com
->#### Domain categories: *undefined*
+>
+>#### Domain categories: _undefined_
+>
 >VT Link: [example.com](https://www.virustotal.com/en/search?query=example.com)
 >Detected URL count: **100**
 >Detected downloaded sample count: **0**
@@ -1785,7 +1787,9 @@ Checks the reputation of a domain.
 >Detected referrer sample count: **100**
 >Undetected referrer sample count: **100**
 >Resolutions count: **4**
+>
 >### Whois Lookup
+>
 >**Creation Date**: 1995-08-14T04:00:00Z
 >**DNSSEC**: signedDelegation
 >**Domain Name**: EXAMPLE.COM
@@ -1806,95 +1810,91 @@ Checks the reputation of a domain.
 >**organisation**: Internet Assigned Numbers Authority
 >**source**: IANA
 
-
 ### file-scan
+
 ***
 Submits a file for scanning.
-
 
 #### Base Command
 
 `file-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryID | The file entry ID to submit. | Required | 
-| uploadURL | Private API extension. Special upload URL for files larger than 32 MB. | Optional | 
-
+| entryID | The file entry ID to submit. | Required |
+| uploadURL | Private API extension. Special upload URL for files larger than 32 MB. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| vtScanID | unknown | Scan IDs of the submitted files. | 
-| vtLink | string | Virus Total permanent link. | 
-
+| vtScanID | unknown | Scan IDs of the submitted files. |
+| vtLink | string | Virus Total permanent link. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### file-rescan
+
 ***
 Re-scans an already submitted file. This avoids having to upload the file again.
-
 
 #### Base Command
 
 `file-rescan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Hash of the file to re-scan. Supports MD5, SHA1, and SHA256. | Required | 
-
+| file | Hash of the file to re-scan. Supports MD5, SHA1, and SHA256. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| vtScanID | unknown | Scan IDs of the submitted files. | 
-| vtLink | string | Virus Total permanent link. | 
-
+| vtScanID | unknown | Scan IDs of the submitted files. |
+| vtLink | string | Virus Total permanent link. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### url-scan
+
 ***
 Scans a specified URL.
-
 
 #### Base Command
 
 `url-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to scan. | Required | 
-
+| url | The URL to scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| vtScanID | unknown | Scan IDs of the submitted URLs. | 
-| vtLink | string | Virus Total permanent link. | 
-
+| vtScanID | unknown | Scan IDs of the submitted URLs. |
+| vtLink | string | Virus Total permanent link. |
 
 #### Command Example
+
 ```!url-scan url=https://example.com using=vt```
 
 #### Context Example
+
 ```json
 {
     "vtLink": [
@@ -1909,32 +1909,33 @@ Scans a specified URL.
 #### Human Readable Output
 
 >## VirusTotal URL scan for: [https://example.com/](https://www.virustotal.com/gui/url/0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7/detection/u-0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592)
+>
 >Scan ID: **0f115db062b7c0dd030b16878c99dea5c354b49dc37b38eb8846179c7783e9d7-1618315592**
 >Scan Date: **2021-04-13 12:16:00**
 >
 
-
 ### vt-comments-add
+
 ***
 Adds comments to files and URLs.
-
 
 #### Base Command
 
 `vt-comments-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting. | Required | 
-| comment | The actual review, which you can tag by using the "#" twitter-like syntax, for example, #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam). | Required | 
-
+| resource | The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting. | Required |
+| comment | The actual review, which you can tag by using the "#" twitter-like syntax, for example, #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam). | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-comments-add resource=paloaltonetworks.com resource_type=domain comment="this is a comment" using=vt```
 
 #### Human Readable Output
@@ -1942,55 +1943,53 @@ There is no context output for this command.
 >Invalid resource
 
 ### vt-file-scan-upload-url
+
 ***
 Private API. Get a special URL for files larger than 32 MB.
-
 
 #### Base Command
 
 `vt-file-scan-upload-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| vtUploadURL | unknown | The special upload URL for large files. | 
-
+| vtUploadURL | unknown | The special upload URL for large files. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### vt-comments-get
+
 ***
 Private API. Retrieves comments for a given resource.
-
 
 #### Base Command
 
 `vt-comments-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving comments. | Required | 
-| before | Datetime token in the format YYYYMMDDHHMISS. You can use this for paging. | Optional | 
-
+| resource | The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving comments. | Required |
+| before | Datetime token in the format YYYYMMDDHHMISS. You can use this for paging. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-comments-get resource=https://paloaltonetworks.com using=vt```
 
 #### Human Readable Output
-

@@ -4,46 +4,58 @@ commonfields:
 name: Duo Event Collector
 display: Duo Event Collector
 category: Analytics & SIEM
+provider: Cisco Systems
 description: Collects Auth and Audit events for Duo using the API.
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Server Host
   name: host
   type: 0
   required: true
+  section: Connect
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   type: 0
   required: true
   defaultvalue: 1 day
+  section: Collect
 - display: Integration key
   name: integration_key
   type: 0
   required: true
+  section: Connect
 - displaypassword: Secret key
   name: secret_key
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
 - display: XSIAM request limit
   name: limit
   type: 0
   defaultvalue: 1000
   required: true
+  section: Collect
 - display: Request retries
   name: retries
   type: 0
   defaultvalue: 5
   required: false
+  section: Collect
 - additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
   display: APIs to use
   name: logs_type_array
   type: 0
   defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - section: Collect
   advanced: true
   display: End of the fetch window
@@ -85,7 +97,7 @@ script:
       required: false
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.6383083
   isfetchevents: true
   subtype: python3
 marketplaces:

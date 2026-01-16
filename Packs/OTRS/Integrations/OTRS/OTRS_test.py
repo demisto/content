@@ -198,5 +198,6 @@ def test_calculate_age():
         - The correct age is returned.
     """
     from OTRS import calculate_age
+
     result = calculate_age(6000)
     assert result == "1 h 40 m"

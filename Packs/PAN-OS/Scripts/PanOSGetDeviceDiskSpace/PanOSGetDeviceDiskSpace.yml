@@ -1,0 +1,66 @@
+args:
+- description: The serial number of the device to get disk space info from. Required on Panorama instances.
+  name: target
+- description: The instance name of the PAN-OS Integration to use. Specify only one instance.
+  name: panos_instance_name
+- auto: PREDEFINED
+  description: The units to represent disk space.
+  name: disk_space_units
+  defaultValue: G
+  predefined:
+  - T
+  - G
+  - M
+  - K
+comment: Fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
+commonfields:
+  id: 'PAN-OS-GetDeviceDiskSpace'
+  version: -1
+dependson:
+  must:
+  - '|||pan-os'
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+engineinfo: {}
+name: PAN-OS-GetDeviceDiskSpace
+outputs:
+- contextPath: PANOS.DiskSpace.hostid
+  description: Serial number of the device.
+  type: string
+- contextPath: PANOS.DiskSpace.FileSystems.FileSystem
+  description: The device file system.
+  type: string
+- contextPath: PANOS.DiskSpace.FileSystems.Size
+  description: The size of the file system.
+  type: number
+- contextPath: PANOS.DiskSpace.FileSystems.Used
+  description: The amount of used space on the file system.
+  type: number
+- contextPath: PANOS.DiskSpace.FileSystems.Avail
+  description: The amount of free space on the file system.
+  type: number
+- contextPath: PANOS.DiskSpace.FileSystems.Used%
+  description: The percentage of total size used.
+  type: string
+- contextPath: PANOS.DiskSpace.FileSystems.MountedOn
+  description: The path where the file system is mounted.
+  type: string
+- contextPath: PANOS.DiskSpace.FileSystems.Units
+  description: The unit used to represent disk space values.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform

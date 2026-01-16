@@ -284,132 +284,137 @@
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
-				"details": {
-					"complex": {
-						"accessor": "[4].description",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": [
-							{
-								"args": {
-									"limit": {
-										"isContext": false
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"simple": "Medium"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"simple": "Low"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"simple": "High"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "0.5"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"simple": "Informational"
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "0"
-										}
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"simple": "UnSpecified"
-										}
-									}
-								},
-								"operator": "replace"
-							}
-						]
-					}
-				}
-			}
-		}
-	},
-	"name": "Microsoft 365 Defender - Incoming Mapper",
-	"type": "mapping-incoming",
-	"version": -1,
+                "details": {
+                    "complex": {
+                        "accessor": "[4].description",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Medium"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "High"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0.5"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Informational"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "UnSpecified"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Microsoft 365 Defender - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
     "supportedModules": [
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

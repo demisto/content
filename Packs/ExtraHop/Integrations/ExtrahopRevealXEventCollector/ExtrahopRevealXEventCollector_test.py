@@ -22,7 +22,7 @@ def client():
         client_id=MOCK_CLIENT_ID,
         client_secret=MOCK_CLIENT_SECRET,
         use_proxy=False,
-        ok_codes=OK_CODES
+        ok_codes=OK_CODES,
     )
 
 
@@ -33,13 +33,13 @@ def test_update_time_values_detections():
     Then: Ensure the events are added the new time fields
     """
     from ExtrahopRevealXEventCollector import update_time_values_detections
+
     raw_detections = util_load_json("test_data/detections-dummy.json")
     update_time_values_detections(raw_detections)
 
     for detection in raw_detections:
         assert "_TIME" in detection
         assert "_ENTRY_STATUS" in detection
-
 
 
 def test_fetch_events_update_last_run(client, mocker):
@@ -49,6 +49,7 @@ def test_fetch_events_update_last_run(client, mocker):
     Then: Make sure that the last run object was updated as expected
     """
     from ExtrahopRevealXEventCollector import fetch_events
+
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -66,6 +67,7 @@ def test_fetch_events_already_fetched(client, mocker):
     Then: Ensure the function does not return any events
     """
     from ExtrahopRevealXEventCollector import fetch_events
+
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -85,6 +87,7 @@ def test_fetch_events_reaching_limit(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
+
     raw_detections = util_load_json("test_data/detections-dummy.json")[:-2]
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -101,6 +104,7 @@ def test_fetch_events_more_than_exist(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
+
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
 
@@ -117,6 +121,7 @@ def test_fetch_events_same_mod_time(client, mocker):
     Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
     """
     from ExtrahopRevealXEventCollector import fetch_events
+
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mod_time_all = 1000
     for d in raw_detections:

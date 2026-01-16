@@ -1,8 +1,9 @@
 category: Case Management
+provider: Broadcom
 commonfields:
   id: Symantec MSS
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -95,7 +96,7 @@ script:
       name: max
     description: Get a list of incidents.
     name: symantec-mss-incidents-list
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   runonce: false
   script: '-'

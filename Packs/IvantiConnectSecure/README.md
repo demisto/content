@@ -1,4 +1,3 @@
-
 # Ivanti Connect Secure
 
 <~XSIAM>
@@ -21,7 +20,9 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
          | :---               | :---
          | `Server name/IP`   | Enter the [Cortex XSIAM Broker VM](#broker-vm) server's IP address or FQDN.
          | `Type`             | Select **UDP**.
-         | `Filter`           | Select **Standard** (the default).
+         | `Filter`           | Select **WELF**.
+
+**Note:** While the pack supports both "WELF" and "Default RAW" log formats, it is recommended to use WELF format.
 
 5. Click **Save Changes** for saving the configuration.
   
@@ -45,7 +46,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

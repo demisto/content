@@ -1,0 +1,12 @@
+{
+    "atlassian_jira_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "created": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

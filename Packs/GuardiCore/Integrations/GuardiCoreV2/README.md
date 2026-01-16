@@ -1,24 +1,25 @@
-GuardiCoreV2 Integration allows to get information about incidents and endpoints (aseets) via the guardicore api.
+The GuardiCore v2 integration provides access to incident and endpoint (asset) information via the GuardiCore API.
 This integration was integrated and tested with version 3.0.0 of the GuardiCore API.
 
 ## Configure GuardiCore v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Server URL | For example: `https://example.com/api/v3.0/` | True |
-| Username for API |  | True |
-| Password for API |  | True |
-| Source | Fetch incidents - Guardicore Source Incident Value | False |
-| Desctination | Fetch incidents - Guardicore Desctination Incident Value | False |
-| Tag |  | False |
-| Incident Type | Fetch incidents - Guardicore Incident Type Value | False |
-| Incident Severity | Fetch incidents - Guardicore Incident Severity Value | False |
-| Maximum alerts to fetch | Fetch incidents - limit on incidents to fetch | False |
-| First fetch time | Fetch incidents - First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| Server URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Fetch incidents |  | False |
+| Source | GuardiCore source incident \(e.g., Environment:\*, App:\*, Role:\*\). | False |
+| Destination | GuardiCore destination incident \(e.g., Environment:\*, App:\*, Role:\*\). | False |
+| Tag | GuardiCore tag incident \(e.g., Reputation, Internal, Blocked Traffic\). | False |
+| Incident Type | GuardiCore incident types. | False |
+| Incident Severity | GuardiCore incident severity | False |
+| Maximum incidents to fetch | Limit on incidents to fetch | False |
+| First fetch time | Fetch incidents - First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\) | False |
+| Global timeout to all requests |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
-| Fetch incidents |  | False |
 
 ## Commands
 

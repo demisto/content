@@ -417,11 +417,13 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
 
     """
     assert connection is not None
+    demisto.debug(f"searching using {search_filter=} {search_base=}")
     success = connection.search(
         search_base=search_base, search_filter=search_filter, attributes=attributes, size_limit=size_limit, time_limit=time_limit
     )
 
     if not success:
+        demisto.info("Search failed")
         raise Exception("Search failed")
     return connection.entries
 
@@ -479,6 +481,10 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
 
 def user_dn(sam_account_name, search_base):
+    if "\\" in sam_account_name:
+        domain_throw_out, sam_account_name = sam_account_name.split("\\", 1)
+        demisto.info(f"chopping off domain {domain_throw_out} and using {sam_account_name=}")
+
     search_filter = f"(&(objectClass=user)(sAMAccountName={sam_account_name}))"
     entries = search(search_filter, search_base)
     if not entries:
@@ -569,7 +575,7 @@ def search_users(default_base_dn, page_size):
     # will preform a custom search to find users by a specific (one) attribute specified by the user
 
     args = demisto.args()
-
+    params = demisto.params()
     attributes: list[str] = []
     custom_attributes: list[str] = []
 
@@ -583,8 +589,8 @@ def search_users(default_base_dn, page_size):
         page_size = arg_to_number(args["page-size"])
         limit = page_size
 
-    # default query - list all users
-    query = "(&(objectClass=User)(objectCategory=person))"
+    # getting default query from parameter - list all users
+    query = params.get("default_base_query", "(&(objectClass=User)(objectCategory=person))")
     # query by user DN
     if args.get("dn"):
         dn = escape_filter_chars(args["dn"])

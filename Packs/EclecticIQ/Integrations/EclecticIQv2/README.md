@@ -1,9 +1,9 @@
 ### EclecticIQ Platform v2
+
 Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.
 This integration was integrated and tested with version of EclecticIQ Platform v2
 
 ## Configure EclecticIQ Platform v2 in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -12,36 +12,42 @@ This integration was integrated and tested with version of EclecticIQ Platform v
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### EclecticIQ_lookup_observables
+
 ***
 Lookup observables from EclecticIQ Intelligence Center Platform
-
 
 #### Base Command
 
 `EclecticIQ_lookup_observables`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Type of the value to lookup observables from . Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha256, hash-sha1, hash-sha512. | Required | 
-| value | Value to search the related observables from EclecticIQ Intelligence Center Platform. | Required | 
+| type | Type of the value to lookup observables from . Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha256, hash-sha1, hash-sha512. | Required |
+| value | Value to search the related observables from EclecticIQ Intelligence Center Platform. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| EclecticIQ.Observables.type | string | EclecticIQ  Observables type | 
-| EclecticIQ.Entity.confidence | string | EclecticIQ Entity confidence | 
-| EclecticIQ.Entity.observables | string | EclecticIQ Entity related observables | 
-| EclecticIQ.Entity.threat_start_time | date | EclecticIQ Threat start time | 
-| EclecticIQ.Entity.title | string | EclecticIQ Entity Title | 
+| EclecticIQ.Observables.type | string | EclecticIQ  Observables type |
+| EclecticIQ.Entity.confidence | string | EclecticIQ Entity confidence |
+| EclecticIQ.Entity.observables | string | EclecticIQ Entity related observables |
+| EclecticIQ.Entity.threat_start_time | date | EclecticIQ Threat start time |
+| EclecticIQ.Entity.title | string | EclecticIQ Entity Title |
 
 #### Command Example
+
 ```!EclecticIQ_lookup_observables type="ipv4" value="001.001.001.001"```
+
 #### Context Example
+
 ```json
 {
     "EclecticIQ":{
@@ -87,45 +93,51 @@ Lookup observables from EclecticIQ Intelligence Center Platform
     }
  }
 ```
+
 ##### Human Readable Output
-#### EclecticIQ observable reputation - 001.001.001.001 
-|confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
+
+#### EclecticIQ observable reputation - 001.001.001.001
+
+|confidence |description| observables| source_name| tags |threat_start_time|title|
 |:--------     |:-------     |------|------|---------|--------|------|
-|`low`	|creationofsighting|	{'type': 'ipv4', 'value': '001.001.001.001, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
+|`low` |creationofsighting| {'type': 'ipv4', 'value': '001.001.001.001, 'classification': 'low'}|   |   | 2022-08-25T04:50:56+00:00|sighting|
 
 ### EclecticIQ_create_sighting
+
 ***
-create sighting in the EclecticIQ Intelligence Center Platform 
+create sighting in the EclecticIQ Intelligence Center Platform
 
 #### Base Command
 
 `EclecticIQ_create_sighting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value |  value for the sighting. | Required | 
-| description | description about the sighting. | Required | 
-| title |  Title for the sighting. | Required | 
-| tags |  Tag for the sighting. | Required | 
-| type | type for the sighting. Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha256, hash-sha1, hash-sha512. | Required | 
-| confidence_level | severity level of the sighting. Possible values are: low, medium, high, unknown. | Required | 
-
+| value |  value for the sighting. | Required |
+| description | description about the sighting. | Required |
+| title |  Title for the sighting. | Required |
+| tags |  Tag for the sighting. | Required |
+| type | type for the sighting. Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha256, hash-sha1, hash-sha512. | Required |
+| confidence_level | severity level of the sighting. Possible values are: low, medium, high, unknown. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sighting.Data.data.type | string | Sighting Type | 
-| Sighting.Data.data.tags | string | Sighting Tags | 
-| Sighting.Data.data.title | string | Sighting Title | 
-| Sighting.Data.data.description | string | Sighting Description | 
-| Sighting.Data.data.timestamp | string | Sighting timestamp | 
+| Sighting.Data.data.type | string | Sighting Type |
+| Sighting.Data.data.tags | string | Sighting Tags |
+| Sighting.Data.data.title | string | Sighting Title |
+| Sighting.Data.data.description | string | Sighting Description |
+| Sighting.Data.data.timestamp | string | Sighting timestamp |
 
 #### Command Example
+
 ```!EclecticIQ_create_sighting  type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"```
 
 #### Context Example
+
 ```json
 {
    "Sighting":{
@@ -169,44 +181,51 @@ create sighting in the EclecticIQ Intelligence Center Platform
    }
 }
 ```
+
 ##### Human Readable Output
+
 #### !sighting created for- 001.001.001.001
-|confidence	|description|
+
+|confidence |description|
 | :--------     | :-------     |
-|`Type`	|ipv4  |
+|`Type` |ipv4  |
 |`confidence_level`| low|
 |`description`| sighting creation|
-|`tags`|	Alert|
-|`title`|	sighting|
-|`value`|	001.001.001.001|
+|`tags`| Alert|
+|`title`| sighting|
+|`value`| 001.001.001.001|
 
 ### EclecticIQ_create_observable
+
 ***
-create observable in the EclecticIQ Intelligence Center Platform 
+create observable in the EclecticIQ Intelligence Center Platform
 
 #### Base Command
 
 `EclecticIQ_create_observable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Type of the observable. Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha1, hash-sha256, hash-sha512. | Required | 
-| value | value of the type of observable. | Required | 
-| maliciousness | severity level of the type. Possible values are: unknown, safe, low, medium, high. | Required | 
-
+| type | Type of the observable. Possible values are: ipv4, ipv6, domain, uri, email, hash-md5, hash-sha1, hash-sha256, hash-sha512. | Required |
+| value | value of the type of observable. | Required |
+| maliciousness | severity level of the type. Possible values are: unknown, safe, low, medium, high. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Observables.Data.data.type | string | Observable Type | 
-| Observables.Data.data.value | string | Observable Value | 
-| Observables.Data.data.maliciousness | string | Observable maliciousness | 
+| Observables.Data.data.type | string | Observable Type |
+| Observables.Data.data.value | string | Observable Value |
+| Observables.Data.data.maliciousness | string | Observable maliciousness |
 
 #### Command Example
+
 ```!EclecticIQ_create_observable  type="ipv4" value="001.001.001.001" maliciousness="high"```
+
 #### Context Example
+
 ```json
 {
    "Observables":{
@@ -233,10 +252,13 @@ create observable in the EclecticIQ Intelligence Center Platform
    }
 }
 ```
+
 ##### Human Readable Output
-#### Observables created successfully…!!
-|confidence	|description|
+
+#### Observables created successfully…
+
+|confidence |description|
 | :--------     | :-------     |
-|`maliciousness`	|low|
-|`type`|	ipv4|
-|`value`|	001.001.001.001|
+|`maliciousness` |low|
+|`type`| ipv4|
+|`value`| 001.001.001.001|

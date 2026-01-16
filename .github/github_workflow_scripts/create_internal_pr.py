@@ -6,18 +6,38 @@ import urllib3
 from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
-
-from utils import (
-    get_env_var,
-    timestamped_print,
-    get_doc_reviewer,
-    get_content_roles
-)
+import re
+from utils import get_env_var, timestamped_print, get_doc_reviewer, get_content_roles
 from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
+
+
+def replace_related_with_fixes_in_pr_body(body: str) -> str:
+    """
+    Replace any 'related:' or 'relates:' keywords in the PR body with 'fixes:',
+    so that internal PR opened will be correctly connected to the relevant jira ticket.
+    Keeps the original text after the colon.
+    If none are found, appends 'fixes: ' at the end of the PR body.
+
+    Args:
+        body (str): The PR body text.
+
+    Returns:
+        str: The updated PR body.
+    """
+    # Match "related:" or "relates:" followed by optional space, and capture the rest
+    pattern = r"(relates?:\s?)(.*)"
+    replacement = r"fixes: \2"
+
+    if re.search(pattern, body, re.IGNORECASE):
+        edited_body = re.sub(pattern, replacement, body, flags=re.IGNORECASE)
+    else:
+        edited_body = body + "\n\nfixes: link to the issue"
+
+    return edited_body
 
 
 def main():
@@ -37,29 +57,32 @@ def main():
     - EVENT_PAYLOAD: json data from the pull_request event
     """
     t = Terminal()
-    payload_str = get_env_var('EVENT_PAYLOAD')
+    payload_str = get_env_var("EVENT_PAYLOAD")
     if not payload_str:
-        raise ValueError('EVENT_PAYLOAD env variable not set or empty')
+        raise ValueError("EVENT_PAYLOAD env variable not set or empty")
     payload = json.loads(payload_str)
-    print(f'{t.cyan}Creation of Internal PR started{t.normal}')
+    print(f"{t.cyan}Creation of Internal PR started{t.normal}")
 
-    org_name = 'demisto'
-    repo_name = 'content'
-    gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
-    content_repo = gh.get_repo(f'{org_name}/{repo_name}')
-    pr_number = payload.get('pull_request', {}).get('number')
+    org_name = "demisto"
+    repo_name = "content"
+    gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
+    content_repo = gh.get_repo(f"{org_name}/{repo_name}")
+    pr_number = payload.get("pull_request", {}).get("number")
     merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
-    body = f'## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n'
+    body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
     title = merged_pr.title
-    if '## Contributor' not in merged_pr.body:
+    if "## Contributor" not in merged_pr.body:
         merged_pr_author = merged_pr.user.login
-        body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
+        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
     body += merged_pr.body
-    base_branch = 'master'
+
+    body = replace_related_with_fixes_in_pr_body(body)
+
+    base_branch = "master"
     head_branch = merged_pr.base.ref
     pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
-    print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
+    print(f"{t.cyan}Internal PR Created - {pr.html_url}{t.normal}")
 
     # labels should already contain the contribution label from the external PR.
     # We want to replace the 'External PR' with 'Internal PR' label
@@ -75,7 +98,7 @@ def main():
     # request reviews from the same people as in the merged PR
     new_pr_reviewers = [merged_by] if merged_by else reviewers_logins
     pr.create_review_request(reviewers=new_pr_reviewers)
-    print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
+    print(f"{t.cyan}Requested review from {new_pr_reviewers}{t.normal}")
 
     # Set PR assignees
     assignees = [assignee.login for assignee in merged_pr.assignees]
@@ -83,7 +106,6 @@ def main():
     # Un-assign the tech writer (cause the docs reviewed has already been done on the external PR)
     content_roles = get_content_roles()
     if content_roles:
-
         try:
             doc_reviewer = get_doc_reviewer(content_roles)
 
@@ -99,7 +121,7 @@ def main():
         print("Unable to get content roles. Skipping tech writer unassignment...")
 
     pr.add_to_assignees(*assignees)
-    print(f'{t.cyan}Assigned users {assignees}{t.normal}')
+    print(f"{t.cyan}Assigned users {assignees}{t.normal}")
 
     # remove branch protections
     print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')

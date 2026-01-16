@@ -70,21 +70,23 @@ Another authentication option is to create and register a GitHub app under your 
 2. Search for GitHub.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                                                    | **Required** |
-    | --- | --- |
-    | Server URL, the REST API URL as describe in [github REST API documentation](https://docs.github.com/en/enterprise-server@3.0/rest/guides/getting-started-with-the-rest-api) | True|
-    | Fetch incidents                                                                                                  | False |
-    | Select an Issue or Pull requests to Fetch                                                                        | False |
-    | API Token, use the personal token created above                                                                                                        | False |
-    | Credentials, use the credentials object created above                                                                                                     | False |
-    | Username of the repository owner or the ogranization name, for example: github.com/repos/{_owner_}/{repo}/issues | False |
-    | The name of the requested repository                                                                             | False |
-    | First fetch interval (in days)                                                                                   | False |
-    | Use system proxy settings                                                                                        | False |
-    | Trust any certificate (not secure)                                                                               | False |
-    | Incident type                                                                                                    | False |
-    | GitHub app integration ID                                                                                        | False |
-    | GitHub app installation ID                                                                                       | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  | False |
+| Select an Issue or Pull requests to Fetch |  | False |
+| Server URL | The REST API URL | False |
+| API Token |  | False |
+| Credentials |  | False |
+| Password |  | False |
+| Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues |  | False |
+| The name of the requested repository |  | False |
+| First fetch interval (in days) |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| GitHub app integration ID |  | False |
+| GitHub app installation ID |  | False |
+| Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -3078,3 +3080,28 @@ Returns a list of GitHub workflows on a given repository.
 >|created_at|display_title|event|head_branch|head_sha|html_url|id|name|path|run_number|status|updated_at|url|workflow_id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2023-07-04T08:36:31Z | Private repo nightly build | workflow_dispatch | master | 123456abcdef | https:<span>//</span>github.com/demisto/content-private/actions/runs/123456 | 123456 | Private repo nightly build | .github/workflows/nightly.yml | 1178 | in_progress | 2023-07-04T08:36:41Z | https:<span>//</span>api.github.com/repos/demisto/content-private/actions/runs/123456 | 1212121 |
+>
+### GitHub-delete-file
+
+***
+Delete a file on a Github branch.
+
+#### Base Command
+
+`GitHub-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path_to_file | The full path to the file in the repository (e.g., path/to/file.txt). | Required |
+| branch_name | The branch to delete the file from (e.g., main or master). | Required |
+| commit_message | The commit message for the file deletion. Default is Deleted file via Cortex XSOAR. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.File.path | string | The path of the deleted file. |
+| GitHub.File.sha | string | The SHA of the commit that deleted the file. |
+| GitHub.File.deleted | boolean | True if the file was deleted. |
