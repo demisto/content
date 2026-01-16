@@ -438,14 +438,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "severity": {
                     "simple": "systemSeverity"
                 },
@@ -507,6 +499,14 @@
                         "root": "title",
                         "transformers": []
                     }
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -540,14 +540,6 @@
                 "GIB Severity": {
                     "complex": {
                         "accessor": "severity",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
                         "filters": [],
                         "root": "evaluation",
                         "transformers": []
@@ -602,6 +594,14 @@
                 },
                 "GIB Related Indicators Data": {
                     "simple": "indicators"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -647,14 +647,6 @@
                         "transformers": []
                     }
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "severity": {
                     "complex": {
                         "filters": [],
@@ -694,6 +686,14 @@
                 },
                 "GIB Source": {
                     "simple": "sourceType"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -806,14 +806,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -828,6 +820,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -879,14 +879,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -922,6 +914,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1003,14 +1003,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1022,6 +1014,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1070,6 +1070,12 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                },
                 "GIB TLP": {
                     "complex": {
                         "accessor": "tlp",
@@ -1077,12 +1083,6 @@
                         "root": "evaluation",
                         "transformers": []
                     }
-                },
-                "GIB Source": {
-                    "simple": "sourceType"
-                },
-                "severity": {
-                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1158,14 +1158,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1174,6 +1166,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1246,14 +1246,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1265,6 +1257,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1322,6 +1322,12 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                },
                 "GIB TLP": {
                     "complex": {
                         "accessor": "tlp",
@@ -1329,12 +1335,6 @@
                         "root": "evaluation",
                         "transformers": []
                     }
-                },
-                "GIB Source": {
-                    "simple": "sourceType"
-                },
-                "severity": {
-                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1395,14 +1395,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1420,6 +1412,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1639,14 +1639,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1664,6 +1656,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1819,14 +1819,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -1835,6 +1827,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1883,6 +1883,12 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                },
                 "GIB TLP": {
                     "complex": {
                         "accessor": "tlp",
@@ -1890,12 +1896,6 @@
                         "root": "evaluation",
                         "transformers": []
                     }
-                },
-                "GIB Source": {
-                    "simple": "sourceType"
-                },
-                "severity": {
-                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1935,6 +1935,12 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                },
                 "GIB TLP": {
                     "complex": {
                         "accessor": "tlp",
@@ -1942,12 +1948,6 @@
                         "root": "evaluation",
                         "transformers": []
                     }
-                },
-                "GIB Source": {
-                    "simple": "sourceType"
-                },
-                "severity": {
-                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1984,14 +1984,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Socks Proxy Source": {
                     "simple": "source"
                 },
@@ -2000,6 +1992,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -2033,6 +2033,12 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                },
                 "GIB TLP": {
                     "complex": {
                         "accessor": "tlp",
@@ -2040,12 +2046,6 @@
                         "root": "evaluation",
                         "transformers": []
                     }
-                },
-                "GIB Source": {
-                    "simple": "sourceType"
-                },
-                "severity": {
-                    "simple": "systemSeverity"
                 }
             }
         },
@@ -2079,14 +2079,6 @@
                 "GIB Severity": {
                     "simple": "evaluation.severity"
                 },
-                "GIB TLP": {
-                    "complex": {
-                        "accessor": "tlp",
-                        "filters": [],
-                        "root": "evaluation",
-                        "transformers": []
-                    }
-                },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
@@ -2098,6 +2090,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },

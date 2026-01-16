@@ -28,8 +28,11 @@ configuration:
   required: false
   type: 8
   section: Connect
-- name: integration_reliability
-  display: Source Reliability
+- display: Source Reliability
+  name: integration_reliability
+  required: true
+  type: 15
+  section: Connect
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   options:
@@ -40,38 +43,37 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-  section: Connect
-- name: disable_integration_reliability_override
+- additionalinfo: If true, ignore the instance Source Reliability setting and use the integration’s computed reliability per indicator.
   display: Ignore Source Reliability override
-  additionalinfo: If true, ignore the instance Source Reliability setting and use the integration’s computed reliability per indicator.
-  defaultvalue: "false"
+  section: Connect
+  name: disable_integration_reliability_override
   required: false
   type: 8
-  section: Connect
-- name: enabled_reputation_commands
-  display: Enable reputation commands
-  additionalinfo: |-
+  defaultvalue: "false"
+- additionalinfo: |-
     Select which reputation commands should be enabled for this integration instance.
     Default is none enabled. Only the selected commands will perform enrichment and return DBotScore.
+  section: Connect
+  display: Enable reputation commands
+  name: enabled_reputation_commands
   required: false
   type: 16
   options:
   - ip
   - domain
   - file
-  section: Connect
-- display: Fetch incidents
+- section: Collect
+  display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-  section: Collect
-- additionalinfo: Type(s) of incidents to fetch from the third party API.
-  display: Collections to fetch
-  section: Collect
-  hidden: false
+- display: Collections to fetch
   name: incident_collections
+  section: Collect
+  required: false
+  type: 16
+  additionalinfo: Type(s) of incidents to fetch from the third party API.
+  hidden: false
   options:
   - compromised/account_group
   - compromised/bank_card_group
@@ -95,29 +97,27 @@ configuration:
   - hi/threat_actor
   - apt/threat_actor
   - apt/threat
-  required: false
-  type: 16
-- additionalinfo: Date to start fetching incidents from.
-  defaultvalue: 3 days
-  section: Collect
-  display: Incidents first fetch
-  hidden: false
+- display: Incidents first fetch
   name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: "false"
   section: Collect
-  display: Exclude All with Combolist type
-  name: exclude_combolist
+  defaultvalue: "3 days"
+  type: 0
   required: false
-  type: 8
-  additionalinfo: This parameter has been deprecated.
-- display: Include combolist type in data
-  name: combolist
+  additionalinfo: Date to start fetching incidents from.
+  hidden: false
+- display: Exclude All with Combolist type
+  name: exclude_combolist
   section: Collect
   required: false
   type: 8
   defaultvalue: "false"
+  additionalinfo: This parameter has been deprecated.
+- display: Include combolist type in data
+  name: combolist
+  section: Collect
+  defaultvalue: "false"
+  type: 8
+  required: false
   additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains combolist data. If you enable “Include unique type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Include unique type in data
   name: unique
@@ -1003,14 +1003,14 @@ script:
       name: id
     description: Command performs Group IB event lookup in suspicious_ip/vpn collection by provided ID.
     name: gibtia-get-suspicious-ip-vpn-info
-  - name: gibti-ip-scoring
-    description: Returns Group-IB scoring for IPs (numeric and DBotScore).
+  - description: Returns Group-IB scoring for IPs (numeric and DBotScore).
+    name: gibti-ip-scoring
     arguments:
     - name: ip
+      description: 'List of IPs to score.'
       required: true
       default: true
       isArray: true
-      description: List of IPs to score.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator value.
@@ -1030,19 +1030,18 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  - description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
+  - arguments:
+    - description: 'GIB event id.e.g.: 192.168.0.1.'
+      name: id
+    description: Command performs Group IB event lookup in suspicious_ip/scanner collection by provided ID.
     name: gibtia-get-suspicious-ip-scanner-info
-    arguments:
-    - name: id
-      description: 'GIB event id.e.g.: 192.168.0.1.'
   - arguments:
     - description: 'GIB event id.e.g.: 653654fb986b47a31c73d92f4a20a273acd2f779.'
       name: id
     description: Command performs Group IB event lookup in malware/malware collection by provided ID.
     name: gibtia-get-malware-malware-info
   - arguments:
-    - description: |-
-        GIB event id.
+    - description: GIB event id.
       name: id
       required: true
     description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
@@ -1976,7 +1975,7 @@ script:
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibti-get-phishing-group-info
-  dockerimage: demisto/vendors-sdk:1.0.0.5505539
+  dockerimage: demisto/vendors-sdk:1.0.0.6383083
   feed: false
   isfetch: true
   longRunning: false

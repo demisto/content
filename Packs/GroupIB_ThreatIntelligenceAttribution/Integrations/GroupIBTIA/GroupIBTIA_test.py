@@ -307,7 +307,7 @@ def test_global_search_command(mocker, single_session_fixture):
     test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
-    assert result.outputs_prefix == "GIBTIA.search.global"
+    assert result.outputs_prefix == "GIBTI.search.global"
     assert result.outputs_key_field == "query"
 
 
@@ -322,7 +322,7 @@ def test_get_available_collections(mocker, single_session_fixture):
       - The get_available_collections_command() function is invoked with the client instance.
 
     Then:
-      - Verifies that the outputs_prefix is correctly set to "GIBTIA.OtherInfo", indicating that
+      - Verifies that the outputs_prefix is correctly set to "GIBTI.OtherInfo", indicating that
         the response data is categorized as general information.
       - Checks that the outputs_key_field is "collections", matching the expected key for collections data.
       - Ensures that the "collections" field in the output contains a list of collection names, as expected.
@@ -333,7 +333,7 @@ def test_get_available_collections(mocker, single_session_fixture):
     mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
-    assert result.outputs_prefix == "GIBTIA.OtherInfo"
+    assert result.outputs_prefix == "GIBTI.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs["collections"], list)
 
@@ -343,6 +343,7 @@ def mock_client():
     """Fixture to create a mock client."""
     client = MagicMock()
     client.poller.create_search_generator.return_value = []
+    client.poller.create_update_generator.return_value = []
     return client
 
 
@@ -369,7 +370,7 @@ def test_local_search_command_no_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
     assert result.outputs == []
     assert "Search results" in result.readable_output
@@ -381,7 +382,7 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     When: The local_search_command function is executed.
     Then: The function should return a formatted list of search results.
     """
-    mock_client.poller.create_search_generator.return_value = [
+    mock_client.poller.create_update_generator.return_value = [
         MagicMock(
             parse_portion=lambda keys, as_json: [
                 {"id": "123", "name": "Test Result"},
@@ -395,7 +396,7 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
     outputs = cast(list[dict[str, Any]], result.outputs)
     assert len(outputs) == 2
@@ -699,7 +700,7 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
     # Verify effective_last_fetch is max(last_fetch, sequpdate)
     assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
     effective_last_fetch = next_run["last_fetch"][collection_name]
-    assert effective_last_fetch == max(
+    assert int(str(effective_last_fetch)) == max(
         last_fetch_value, sequpdate_value
     ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 

@@ -1562,17 +1562,13 @@ class Client(BaseClient):
                     if resolved_seq:
                         sequpdate_for_generator = resolved_seq
                         date_from_for_generator = None
-                        demisto.debug(
-                            f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from"
-                        )
+                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
                     else:
                         demisto.debug(
                             "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
                         )
                 except Exception as e:
-                    demisto.debug(
-                        f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from"
-                    )
+                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
 
             demisto.debug(
                 "[create_poll_generator] Using update generator: "
@@ -1605,7 +1601,6 @@ class Client(BaseClient):
 
 
 class CommonHelpers:
-
     @staticmethod
     def transform_dict(input_dict: dict[str, list[str | list[Any]] | str | None]) -> list[dict[str, Any]]:
         if not input_dict:
@@ -1721,18 +1716,14 @@ class CommonHelpers:
     def custom_generate_portal_link(collection_name: str, incident: dict):
         if collection_name in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED:
             # generating just for compromised/breached
-            incident["portalLink"] = PORTAL_LINKS.get("compromised/breached", "") + str(
-                incident["emails"][0]
-            )
+            incident["portalLink"] = PORTAL_LINKS.get("compromised/breached", "") + str(incident["emails"][0])
 
         return incident
 
     @staticmethod
     def validate_collections(collection_name):
         if collection_name in DEPRECATED_COLLECTIONS:
-            raise Exception(
-                f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}"
-            )
+            raise Exception(f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
         if collection_name in REMOVED_COLLECTIONS:
             raise Exception(f"The {collection_name} collection is not valid")
 
@@ -1769,10 +1760,7 @@ class IndicatorsHelper:
             )
 
         indicator: Any = None
-        if (
-            (value is not None or len(fields) > 0)
-            and IndicatorsHelper.check_empty_list(fields) is False
-        ):
+        if (value is not None or len(fields) > 0) and IndicatorsHelper.check_empty_list(fields) is False:
             if indicator_type == "IP":
                 indicator = Common.IP(
                     ip=value,
@@ -1889,9 +1877,7 @@ class IndicatorsHelper:
         sensitive_collections: list[str] | None,
     ) -> list:
         """Collect parsed portions for a given path."""
-        portions = poller.create_update_generator(
-            collection_name=path, query=indicator_value
-        )
+        portions = poller.create_update_generator(collection_name=path, query=indicator_value)
         portions_data = []
         use_dates = path in (sensitive_collections or [])
         for portion in portions:
@@ -1962,17 +1948,13 @@ class IncidentBuilder:
     def get_incident_created_time(self) -> str:
         last_exception = None
         incident_id = self.incident.get("id", None)
-        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
-            self.collection_name, "-"
-        )
+        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(self.collection_name, "-")
 
         if isinstance(occured_date_field, str):
             occured_date_field = [occured_date_field]
 
         if not isinstance(occured_date_field, list):
-            raise DemistoException(
-                f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}"
-            )
+            raise DemistoException(f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}")
 
         for variant in occured_date_field:
             try:
@@ -2021,9 +2003,7 @@ class IncidentBuilder:
         }
         severity = self.incident.get("evaluation", {}).get("severity")
         if severity:
-            self.incident["evaluation"]["severity"] = severity_map.get(
-                severity, "Unknown"
-            )
+            self.incident["evaluation"]["severity"] = severity_map.get(severity, "Unknown")
 
     @staticmethod
     def date_conversion(date: str):
@@ -2053,13 +2033,9 @@ class IncidentBuilder:
             for type_, sub_dict in field_data.items():
                 for sub_type, sub_list in sub_dict.items():
                     for value in sub_list:
-                        new_matches.append(
-                            {"type": type_, "sub_type": sub_type, "value": value}
-                        )
+                        new_matches.append({"type": type_, "sub_type": sub_type, "value": value})
 
-            transformed_and_replaced_empty_values_data = (
-                CommonHelpers.replace_empty_values(new_matches)
-            )
+            transformed_and_replaced_empty_values_data = CommonHelpers.replace_empty_values(new_matches)
             clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                 transformed_and_replaced_empty_values_data  # type: ignore
             )
@@ -2075,24 +2051,12 @@ class IncidentBuilder:
                 else:
                     field_data = self.incident.get(field, {})
 
-                    if (
-                        field_data
-                        and CommonHelpers.all_lists_empty(field_data) is False
-                    ):
-                        transformed_data = CommonHelpers.transform_dict(
-                            input_dict=field_data
-                        )
-                        if (
-                            self.collection_name == "osi/git_repository"
-                            and field == "files"
-                        ):
-                            transformed_data = CommonHelpers.transform_list_to_str(
-                                transformed_data
-                            )
+                    if field_data and CommonHelpers.all_lists_empty(field_data) is False:
+                        transformed_data = CommonHelpers.transform_dict(input_dict=field_data)
+                        if self.collection_name == "osi/git_repository" and field == "files":
+                            transformed_data = CommonHelpers.transform_list_to_str(transformed_data)
 
-                        transformed_and_replaced_empty_values_data = (
-                            CommonHelpers.replace_empty_values(transformed_data)
-                        )
+                        transformed_and_replaced_empty_values_data = CommonHelpers.replace_empty_values(transformed_data)
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                             transformed_and_replaced_empty_values_data  # type: ignore
                         )
@@ -2102,9 +2066,7 @@ class IncidentBuilder:
                         self.incident[field] = None
 
     def build_incident(self) -> dict:
-        self.incident = CommonHelpers.custom_generate_portal_link(
-            collection_name=self.collection_name, incident=self.incident
-        )
+        self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
         self.incident.update(
@@ -2118,9 +2080,7 @@ class IncidentBuilder:
         self.set_custom_severity()
         self.check_dates()
         self.transform_fields_to_grid_table()
-        self.incident = CommonHelpers.remove_html_tags(
-            self.incident, self.collection_name
-        )
+        self.incident = CommonHelpers.remove_html_tags(self.incident, self.collection_name)
         data = {
             "name": self.incident["name"],
             "occurred": self.get_incident_created_time(),
@@ -2132,6 +2092,7 @@ class IncidentBuilder:
 
 class BuilderCommandResponses:
     dont_need_transformations = ["compromised/breached"]
+
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
         self.collection_name = collection_name
@@ -2160,21 +2121,14 @@ class BuilderCommandResponses:
     def get_feed(self) -> dict:
         id_ = str(self.args.get("id"))
         cleaned_feed = {}
-        if (
-            self.collection_name
-            in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED
-        ):
+        if self.collection_name in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED:
             if self.collection_name in COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER:
                 query = f"id:{id_}"
             else:
                 query = id_
-            portions = self.client.poller.create_update_generator(
-                collection_name=self.collection_name, query=query
-            )
+            portions = self.client.poller.create_update_generator(collection_name=self.collection_name, query=query)
             for portion in portions:
-                parsed_portion = portion.parse_portion(
-                    keys=MAPPING.get(self.collection_name, {})
-                )
+                parsed_portion = portion.parse_portion(keys=MAPPING.get(self.collection_name, {}))
                 cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
 
         else:
@@ -2190,13 +2144,9 @@ class BuilderCommandResponses:
 
         return cleaned_feed  # type: ignore
 
-    def get_indicators(
-        self, feed: dict[Any, Any]
-    ) -> tuple[list[CommandResults] | list, dict[Any, Any]]:
+    def get_indicators(self, feed: dict[Any, Any]) -> tuple[list[CommandResults] | list, dict[Any, Any]]:
         indicators = []
-        indicators = IndicatorsHelper.find_iocs_in_feed(
-            feed=feed, collection_name=self.collection_name
-        )
+        indicators = IndicatorsHelper.find_iocs_in_feed(feed=feed, collection_name=self.collection_name)
 
         return indicators, feed
 
@@ -2223,15 +2173,11 @@ class BuilderCommandResponses:
 
     def build_feed(self):
         feed = self.get_feed()
-        feed = CommonHelpers.custom_generate_portal_link(
-            collection_name=self.collection_name, incident=feed
-        )
+        feed = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=feed)
         indicators, feed = self.get_indicators(feed=feed)
         main_table_data, additional_tables = self.get_table_data(feed=feed)
         feed_id = feed.get("id")
-        readable_output = self.get_human_readable_feed(
-            table=feed, name=f"Feed from {self.collection_name} with ID {feed_id}"
-        )
+        readable_output = self.get_human_readable_feed(table=feed, name=f"Feed from {self.collection_name} with ID {feed_id}")
         return feed, main_table_data, additional_tables, indicators, readable_output
 
 
@@ -2321,9 +2267,7 @@ def fetch_incidents_command(
                 last_fetch_raw = embedded.get(collection_name)
             else:
                 last_fetch_raw = last_run.get(collection_name)
-        demisto.debug(
-            f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch_raw}"
-        )
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch_raw}")
         requests_count = 0
         sequpdate = 0
 
@@ -2333,9 +2277,7 @@ def fetch_incidents_command(
         else:
             last_fetch_int = _parse_seq_update(last_fetch_raw)
             last_fetch_for_generator = (
-                _serialize_seq_update(last_fetch_int)
-                if isinstance(last_fetch_int, int) and last_fetch_int > 0
-                else None
+                _serialize_seq_update(last_fetch_int) if isinstance(last_fetch_int, int) and last_fetch_int > 0 else None
             )
 
         portions, generator_cursor_raw = client.create_poll_generator(
@@ -2349,9 +2291,7 @@ def fetch_incidents_command(
         )
 
         mapping = MAPPING.get(collection_name, {})
-        demisto.debug(
-            f"[fetch-incidents] Collection={collection_name} generator created: {portions}"
-        )
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} generator created: {portions}")
 
         generator_cursor_int = _parse_seq_update(generator_cursor_raw)
         max_seen_seq_update: int | None = None
@@ -2362,9 +2302,7 @@ def fetch_incidents_command(
                 f"[fetch-incidents] Portion received: collection={collection_name}, seqUpdate={sequpdate}, "
                 f"portion_size={portion.portion_size}, count={portion.count}"
             )
-            new_parsed_json = portion.bulk_parse_portion(
-                keys_list=[mapping], as_json=False
-            )
+            new_parsed_json = portion.bulk_parse_portion(keys_list=[mapping], as_json=False)
             if not isinstance(new_parsed_json, list):
                 raise Exception("new_parsed_json in portion should be a list")
 
@@ -2381,15 +2319,11 @@ def fetch_incidents_command(
                 break
 
             if new_parsed_json and isinstance(new_parsed_json[0], list):
-                iterable: Iterable[dict] = cast(
-                    Iterable[dict], chain.from_iterable(new_parsed_json)
-                )
+                iterable: Iterable[dict] = cast(Iterable[dict], chain.from_iterable(new_parsed_json))
             else:
                 iterable = cast(Iterable[dict], new_parsed_json)
 
-            iterable = [
-                item for item in iterable if isinstance(item, dict) and item.get("id")
-            ]
+            iterable = [item for item in iterable if isinstance(item, dict) and item.get("id")]
             if not iterable:
                 demisto.debug(
                     f"[fetch-incidents] Portion contains no incidents with ids; skipping addition. "
@@ -2407,15 +2341,11 @@ def fetch_incidents_command(
                 for incident in iterable
             )
             added = len(incidents) - before_count
-            demisto.debug(
-                f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}"
-            )
+            demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
 
             if isinstance(portion_seq_int, int) and portion_seq_int > 0:
                 max_seen_seq_update = (
-                    portion_seq_int
-                    if max_seen_seq_update is None
-                    else max(max_seen_seq_update, portion_seq_int)
+                    portion_seq_int if max_seen_seq_update is None else max(max_seen_seq_update, portion_seq_int)
                 )
 
             requests_count += 1
@@ -2425,9 +2355,7 @@ def fetch_incidents_command(
         if collection_name == "compromised/breached":
             next_run["last_fetch"][collection_name] = generator_cursor_raw
         else:
-            demisto.debug(
-                f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}"
-            )
+            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
             effective_last_fetch_int: int | None = None
             if isinstance(max_seen_seq_update, int) and max_seen_seq_update > 0:
                 effective_last_fetch_int = max_seen_seq_update
@@ -2436,8 +2364,7 @@ def fetch_incidents_command(
 
             next_run["last_fetch"][collection_name] = (
                 _serialize_seq_update(effective_last_fetch_int)
-                if isinstance(effective_last_fetch_int, int)
-                and effective_last_fetch_int > 0
+                if isinstance(effective_last_fetch_int, int) and effective_last_fetch_int > 0
                 else None
             )
             demisto.debug(
@@ -2476,9 +2403,7 @@ def get_info_by_id_command(collection_name: str):
     Decorator around actual commands, that returns command depends on `collection_name`.
     """
 
-    def get_info_by_id_for_collection(
-        client: Client, args: dict
-    ) -> list[CommandResults]:
+    def get_info_by_id_for_collection(client: Client, args: dict) -> list[CommandResults]:
         """
         This function returns additional information to context and War Room.
 
@@ -2487,17 +2412,13 @@ def get_info_by_id_command(collection_name: str):
         """
         results = []
         CommonHelpers.validate_collections(collection_name)
-        feed, main_table_data, additional_tables, indicators, readable_output = (
-            BuilderCommandResponses(
-                client=client, collection_name=collection_name, args=args
-            ).build_feed()
-        )
+        feed, main_table_data, additional_tables, indicators, readable_output = BuilderCommandResponses(
+            client=client, collection_name=collection_name, args=args
+        ).build_feed()
 
         results.append(
             CommandResults(
-                outputs_prefix="GIBTI.{}".format(
-                    PREFIXES.get(collection_name, "").replace(" ", "")
-                ),
+                outputs_prefix="GIBTI.{}".format(PREFIXES.get(collection_name, "").replace(" ", "")),
                 outputs_key_field="id",
                 outputs=feed,
                 readable_output=readable_output,
@@ -2553,7 +2474,6 @@ def global_search_command(client: Client, args: dict) -> CommandResults:
 
 
 def local_search_command(client: Client, args: dict) -> CommandResults:
-
     def _parse_optional_int(value: Any, arg_name: str) -> int | None:
         if value is None:
             return None
@@ -2566,12 +2486,8 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
             try:
                 return int(stripped)
             except ValueError as e:
-                raise DemistoException(
-                    f"Invalid '{arg_name}' value: expected int, got {value!r}"
-                ) from e
-        raise DemistoException(
-            f"Invalid '{arg_name}' type: expected int/str, got {type(value).__name__}"
-        )
+                raise DemistoException(f"Invalid '{arg_name}' value: expected int, got {value!r}") from e
+        raise DemistoException(f"Invalid '{arg_name}' type: expected int/str, got {type(value).__name__}")
 
     query = args.get("query")
     date_from = args.get("date_from")
@@ -2592,16 +2508,8 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
         f"include_raw_feed={include_raw_feed}"
     )
 
-    date_from_parsed = (
-        CommonHelpers.date_parse(date=str(date_from), arg_name="date_from")
-        if date_from is not None
-        else None
-    )
-    date_to_parsed = (
-        CommonHelpers.date_parse(date=str(date_to), arg_name="date_to")
-        if date_to is not None
-        else None
-    )
+    date_from_parsed = CommonHelpers.date_parse(date=str(date_from), arg_name="date_from") if date_from is not None else None
+    date_to_parsed = CommonHelpers.date_parse(date=str(date_to), arg_name="date_to") if date_to is not None else None
 
     if collection_name == "compromised/breached":
         portions = client.poller.create_search_generator(
@@ -2658,7 +2566,6 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
 
 
 class ReputationCommandProcessor:
-
     ALLOWED_PATHS: dict[str, list[str]] = {
         "file": ["ioc/common"],
         "domain": [
@@ -2761,18 +2668,14 @@ class ReputationCommandProcessor:
                 return str(value)
         raise DemistoException(f"Argument '{indicator_name}' is required.")
 
-    def _filter_allowed_paths(
-        self, indicator_name: str, exclude: list[str]
-    ) -> list[str]:
+    def _filter_allowed_paths(self, indicator_name: str, exclude: list[str]) -> list[str]:
         base_paths = self.ALLOWED_PATHS.get(indicator_name, [])
         if not exclude:
             return base_paths
         exclude_set = set(exclude)
         return [p for p in base_paths if p not in exclude_set]
 
-    def _get_indicator_data(
-        self, indicator_name: str, indicator_value: str, search_data
-    ):
+    def _get_indicator_data(self, indicator_name: str, indicator_value: str, search_data):
         data_per_collections = {}
         search_data = self._get_search_data(indicator_value)
         allowed_paths = self.ALLOWED_PATHS.get(indicator_name, [])
@@ -2784,9 +2687,7 @@ class ReputationCommandProcessor:
                     path=path,
                     poller=self.client.poller,
                     dates_mapping=self.DATES_MAPPING.get(indicator_name),
-                    sensitive_collections=self.SENSITIVE_TO_DATES_COLLECTIONS.get(
-                        indicator_name, []
-                    ),
+                    sensitive_collections=self.SENSITIVE_TO_DATES_COLLECTIONS.get(indicator_name, []),
                 )
                 data_per_collections.update({path: portions_data})
 
@@ -2831,11 +2732,7 @@ class ReputationCommandProcessor:
     def _get_score(self, indicator_name, indicator_data):
         if indicator_name == "file":
             # if at least one element is found in ioc/common -> BAD, otherwise NONE
-            score = (
-                Common.DBotScore.BAD
-                if indicator_data.get("ioc/common")
-                else Common.DBotScore.NONE
-            )
+            score = Common.DBotScore.BAD if indicator_data.get("ioc/common") else Common.DBotScore.NONE
 
         elif indicator_name == "domain":
             # Rules:
@@ -2848,28 +2745,19 @@ class ReputationCommandProcessor:
 
             for rule in self.RULES:
                 any_recent = rule.get("any_recent")
-                if any_recent and any(
-                    self._any_recent(indicator_data.get(coll), key, now)
-                    for coll, key in any_recent
-                ):
+                if any_recent and any(self._any_recent(indicator_data.get(coll), key, now) for coll, key in any_recent):
                     score = rule["score"]
                     break
 
                 if rule.get("ioc_stale_or_no_date"):
                     coll, key = rule["ioc_stale_or_no_date"]
                     items = indicator_data.get(coll) or []
-                    if items and (
-                        not self._any_present(items, key)
-                        or not self._any_recent(items, key, now)
-                    ):
+                    if items and (not self._any_present(items, key) or not self._any_recent(items, key, now)):
                         score = rule["score"]
                         break
 
                 if rule.get("no_findings"):
-                    has_any = any(
-                        indicator_data.get(c)
-                        for c in ("attacks/deface", "hi/open_threats", "ioc/common")
-                    )
+                    has_any = any(indicator_data.get(c) for c in ("attacks/deface", "hi/open_threats", "ioc/common"))
                     if not has_any:
                         score = rule["score"]
                         break
@@ -2905,16 +2793,12 @@ class ReputationCommandProcessor:
             return DBotScoreReliability.B
         return None
 
-    def _get_reliability(
-        self, indicator_name: str, indicator_data: dict[str, Any]
-    ) -> Reliability | None:
+    def _get_reliability(self, indicator_name: str, indicator_data: dict[str, Any]) -> Reliability | None:
         if self.integration_reliability:
             return self.integration_reliability
         if indicator_name == "file":
             # if found in ioc/common, always A - Completely reliable : ‘a’:DBotScoreReliability.A
-            reliability = (
-                DBotScoreReliability.A if indicator_data.get("ioc/common") else None
-            )
+            reliability = DBotScoreReliability.A if indicator_data.get("ioc/common") else None
         elif indicator_name == "domain":
             # Summary:
             # - A: any match in apt/* or ioc/common
@@ -2962,16 +2846,13 @@ class ReputationCommandProcessor:
             return {}
         return graph_ip_info
 
-    def _build_ip_enrichment_kwargs(
-        self, graph_ip_info: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _build_ip_enrichment_kwargs(self, graph_ip_info: dict[str, Any]) -> dict[str, Any]:
         """Build kwargs for Common.IP from graph_ip whois data."""
         return {
             "asn": graph_ip_info.get("asn"),
             "as_owner": graph_ip_info.get("isp"),
             "geo_country": graph_ip_info.get("country"),
-            "geo_description": graph_ip_info.get("descr")
-            or graph_ip_info.get("netname"),
+            "geo_description": graph_ip_info.get("descr") or graph_ip_info.get("netname"),
             "registrar_abuse_phone": graph_ip_info.get("phone"),
             "organization_name": graph_ip_info.get("netname"),
             "description": graph_ip_info.get("descr") or graph_ip_info.get("netname"),
@@ -2987,9 +2868,7 @@ class ReputationCommandProcessor:
     ) -> str:
         table_data = {
             "Indicator": indicator_value,
-            "Score": {v: k for k, v in COMMON_SCORE_MAP.items()}.get(
-                score_value, score_value
-            ),
+            "Score": {v: k for k, v in COMMON_SCORE_MAP.items()}.get(score_value, score_value),
         }
         if reliability is not None:
             table_data["Reliability"] = reliability
@@ -3011,9 +2890,7 @@ class ReputationCommandProcessor:
         arg_keys = arg_keys or ["value", indicator_name]
         indicator_value = self._extract_indicator(indicator_name, arg_keys)
         search_data = self._get_search_data(indicator_value=indicator_value)
-        indicator_data = self._get_indicator_data(
-            indicator_name, indicator_value, search_data
-        )
+        indicator_data = self._get_indicator_data(indicator_name, indicator_value, search_data)
         score = self._get_score(indicator_name, indicator_data)
         reliability = self._get_reliability(indicator_name, indicator_data)
         graph_ip_info = indicator_data.get("graph_ip") or {}
@@ -3034,9 +2911,7 @@ class ReputationCommandProcessor:
                 **self._build_ip_enrichment_kwargs(graph_ip_info),
             )
         elif indicator_name == "domain":
-            indicator_obj = Common.Domain(
-                domain=indicator_value, dbot_score=d_bot_score
-            )
+            indicator_obj = Common.Domain(domain=indicator_value, dbot_score=d_bot_score)
         elif indicator_name == "file":
             # hash type is not specified; pass as md5 for DBot correlation
             indicator_obj = Common.File(md5=indicator_value, dbot_score=d_bot_score)
@@ -3104,7 +2979,6 @@ def gibti_ip_scoring_command(client: Client, args: dict) -> CommandResults:
 
 
 class ReputationCommands:
-
     @staticmethod
     def file(
         client: Client,
@@ -3192,19 +3066,13 @@ def main():
 
         combolist = params.get("combolist", False)
         unique = params.get("unique", False)
-        enable_probable_corporate_access = params.get(
-            "enable_probable_corporate_access", False
-        )
+        enable_probable_corporate_access = params.get("enable_probable_corporate_access", False)
         limit_param = params.get("limit", 100)
         limit = int(limit_param)
         integration_reliability_param = params.get("integration_reliability")
-        disable_reliability_override = params.get(
-            "disable_integration_reliability_override", False
-        )
+        disable_reliability_override = params.get("disable_integration_reliability_override", False)
         integration_reliability = (
-            None
-            if disable_reliability_override
-            else IndicatorsHelper.parse_source_reliability(integration_reliability_param)
+            None if disable_reliability_override else IndicatorsHelper.parse_source_reliability(integration_reliability_param)
         )
         reputation_policy = ReputationCommandPolicy.from_params(params)
 
@@ -3265,15 +3133,11 @@ def main():
             raise Exception(f"{command} deprecated")
 
         if hunting_rules is True:
-            list_hunting_rules_collections = (
-                client.poller.get_hunting_rules_collections()
-            )
+            list_hunting_rules_collections = client.poller.get_hunting_rules_collections()
 
             for collection in incident_collections:
                 if collection not in list_hunting_rules_collections:
-                    raise Exception(
-                        f"Collection {collection} Does't support hunting rules"
-                    )
+                    raise Exception(f"Collection {collection} Does't support hunting rules")
             hunting_rules = 1
 
         info_comands = {
@@ -3332,9 +3196,7 @@ def main():
                 unique=unique,
                 enable_probable_corporate_access=enable_probable_corporate_access,
             )
-            demisto.debug(
-                f"[fetch-incidents] Incidents created this run: count={len(incidents)}"
-            )
+            demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
             demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

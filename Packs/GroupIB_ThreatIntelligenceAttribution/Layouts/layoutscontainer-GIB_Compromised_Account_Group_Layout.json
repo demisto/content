@@ -1,5 +1,4 @@
 {
-    "cacheVersn": 0,
     "close": {
         "sections": [
             {
@@ -32,12 +31,8 @@
             }
         ]
     },
-    "definitionId": "",
     "description": "Layout for GIB Compromised Account Group",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -1652,24 +1647,10 @@
             }
         ]
     },
-    "fromServerVersion": "6.10.0",
     "group": "incident",
     "id": "GIB Compromised Account Group Layout",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "2.3.2",
-    "locked": false,
-    "mobile": null,
     "name": "GIB Compromised Account Group Layout",
-    "packID": "GroupIB_ThreatIntelligenceAttribution",
-    "packName": "Group-IB Threat Intelligence",
-    "packPropagationLabels": [
-        "all"
-    ],
-    "propagationLabels": [],
-    "quickView": null,
-    "quickViewV2": null,
     "system": true,
-    "toServerVersion": "99.99.99",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
