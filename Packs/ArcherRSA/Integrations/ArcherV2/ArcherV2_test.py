@@ -584,6 +584,11 @@ class TestArcherV2:
             pytest.param('{"Device Name":"Laptop\\t#406"}', "Laptop\t#406", id="Tab"),
             pytest.param('{"Device Name":"I \\u2764 Tech"}', "I \u2764 Tech", id="Unicode"),
             pytest.param('{"Device Name":"Generic Tablet 2025"}', "Generic Tablet 2025", id="No special characters"),
+            pytest.param(r'{"Device Name":"Path: \\user\\123"}', r"Path: \user\123", id="Invalid unicode escape - user path"),
+            pytest.param(
+                r'{"Device Name":"C:\\users\\file.txt"}', r"C:\users\file.txt", id="Invalid unicode escape - Windows path"
+            ),
+            pytest.param(r'{"Device Name":"Two:\\\\."}', r"Two:\\.", id="XSUP-59455 - Backslash before period"),
         ],
     )
     def test_generate_field_contents(self, json_fields_values: str, expected_value: str):

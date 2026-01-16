@@ -776,6 +776,10 @@ def results_to_incidents_datetime(response, last_fetch):
                         inc["labels"] = incident_label_maker(hit.get("_source"))
 
                     incidents.append(inc)
+                else:
+                    demisto.debug(
+                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                    )
 
     return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 
@@ -843,6 +847,9 @@ def get_time_range(
     if TIME_METHOD == "Simple-Date":
         range_dict["format"] = ES_DEFAULT_DATETIME_FORMAT
 
+    if utc_offset := re.search(r"([+-]\d{2}:\d{2})$", time_range_start):
+        range_dict["time_zone"] = utc_offset.group(1)
+
     demisto.debug(f"Time range dictionary created: {range_dict}")
     return {"range": {time_field: range_dict}}
 
@@ -896,7 +903,7 @@ def fetch_incidents(proxies):
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
     else:
-        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)

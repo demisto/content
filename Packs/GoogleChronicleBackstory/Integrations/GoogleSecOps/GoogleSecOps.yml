@@ -12,10 +12,25 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: API URL Format
+  additionalinfo: "Select the API URL format to use for API requests. Default value is '<chronicle>.<REGION>.<rep.googleapis.com>'."
+  name: url_format
+  required: false
+  type: 15
+  options:
+  - "<REGION>-<chronicle.googleapis.com>"
+  - "<chronicle>.<REGION>.<rep.googleapis.com>"
+  section: Connect
 - display: Google SecOps Project Instance ID
   additionalinfo: "Provide the Project Instance ID of the Google SecOps.\n\nNote: User can retrieve the Customer ID(Project Instance ID) in the Profile section of the Google SecOps page."
   name: secops_project_instance_id
   required: true
+  type: 0
+  section: Connect
+- display: Google SecOps Project Number
+  additionalinfo: "Provide the Project Number of the Google SecOps.\n\nNote: User can retrieve the Project Number in the Profile section of the Google SecOps page. If Project Number is not provided, then Project ID(from Service Account JSON) will be used."
+  name: secops_project_number
+  required: false
   type: 0
   section: Connect
 - additionalinfo: Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
@@ -5715,7 +5730,7 @@ script:
     - description: UDM search query.
       name: query
       required: true
-    description: "Lists the events for the specified UDM Search query.\nNote: The underlying API has the rate limit of 120 queries per hour."
+    description: "Lists the events for the specified UDM Search query.\nNote: For more information about rate limits, see [Google service limits](https://cloud.google.com/chronicle/docs/reference/service-limits#:~:text=udmSearch-,360%20QPH,-Search%20API#:~:text=udmSearch-,360%20QPH,-Search%20API)."
     name: gcb-udm-search
     outputs:
     - contextPath: GoogleChronicleBackstory.Events.eventType
@@ -7339,7 +7354,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
+      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time and end_time arguments.
       name: preset_time_range
       predefined:
       - Last 1 day
@@ -7348,6 +7363,8 @@ script:
       - Last 30 days
     - description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       name: start_time
+    - description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2025-11-01T15:00:00Z) or relative time. If not supplied, the default is the current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2025-11-01T00:00:00Z, 2025-11-01, 2 days, 5 hours, 01 Nov 2025, 01 Nov 2025 04:45:33, 15 Oct.'
+      name: end_time
     - defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1 and 10000.
       name: page_size
@@ -8944,7 +8961,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.4892936
+  dockerimage: demisto/googleapi-python3:1.0.0.5476125
   isfetch: true
   runonce: false
   script: ''

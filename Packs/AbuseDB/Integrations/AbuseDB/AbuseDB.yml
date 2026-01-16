@@ -27,7 +27,7 @@ configuration:
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   options:
@@ -339,7 +339,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

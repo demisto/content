@@ -761,6 +761,46 @@ def test_get_time_range(time_method, last_fetch, time_range_start, time_range_en
     assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
 
 
+@pytest.mark.parametrize(
+    "time_method, time_range_start, expected_time_zone",
+    [
+        ("Simple-Date", "2024-01-15T10:30:00+02:00", "+02:00"),
+        ("Simple-Date", "2024-01-15T10:30:00-05:00", "-05:00"),
+        ("Simple-Date", "2024-01-15T10:30:00+03:30", "+03:30"),
+        ("Simple-Date", "2024-01-15T10:30:00-11:00", "-11:00"),
+        ("Timestamp-Seconds", "2024-01-15T10:30:00+02:00", "+02:00"),
+        ("Timestamp-Milliseconds", "2024-01-15T10:30:00-05:00", "-05:00"),
+        ("Simple-Date", "2024-01-15T10:30:00Z", None),
+        ("Simple-Date", "2024-01-15T10:30:00", None),
+    ],
+)
+def test_get_time_range_with_utc_offset(time_method, time_range_start, expected_time_zone):
+    """
+    Test that UTC offset is correctly extracted from time_range_start and added to range_dict.
+
+    Given:
+        - A time_range_start with various UTC offset formats (+HH:MM or -HH:MM)
+        - Different time methods (Simple-Date, Timestamp-Seconds, Timestamp-Milliseconds)
+
+    When:
+        - Calling get_time_range with the time_range_start parameter
+
+    Then:
+        - The UTC offset should be extracted and added to range_dict as 'time_zone'
+        - If no UTC offset is present (Z or no offset), time_zone should not be in range_dict
+    """
+    Elasticsearch_v2.TIME_METHOD = time_method
+    from Elasticsearch_v2 import get_time_range
+
+    result = get_time_range(last_fetch=None, time_range_start=time_range_start, time_range_end=None, time_field="time_field")
+
+    if expected_time_zone:
+        assert "time_zone" in result["range"]["time_field"]
+        assert result["range"]["time_field"]["time_zone"] == expected_time_zone
+    else:
+        assert "time_zone" not in result["range"]["time_field"]
+
+
 def test_build_eql_body():
     from Elasticsearch_v2 import build_eql_body
 
