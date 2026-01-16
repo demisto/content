@@ -416,4 +416,4 @@ def test_domain_command_disabled(mocker):
     contents = results_sent_to_demisto.get("Contents")
 
     assert "Enrichment skipped" in contents
-    assert "To force execution for this specific command, add the argument: bypass_auto_enrich_settings=true" in contents
+    assert "To force execution for this specific command, add the argument: bypass_auto_enrich=true" in contents
