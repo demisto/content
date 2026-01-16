@@ -50,7 +50,43 @@ tasks:
       brand: SupernaZeroTrust
     nexttasks:
       '#none#':
+      - "3"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8f2d4c3a-1b5e-4f9c-8d7e-2a3b4c5d6e7f
+    type: regular
+    task:
+      id: 8f2d4c3a-1b5e-4f9c-8d7e-2a3b4c5d6e7f
+      version: -1
+      name: Display Snapshot Result
+      description: Display the result of the snapshot operation to the user
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "2"
+    scriptarguments:
+      value:
+        simple: Status=${SupernaZeroTrust.Snapshot.Status}, Message=${SupernaZeroTrust.Snapshot.Message}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -115,4 +151,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
-quiet: true
+quiet: false

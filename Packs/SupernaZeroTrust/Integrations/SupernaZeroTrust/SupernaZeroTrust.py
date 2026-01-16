@@ -48,12 +48,33 @@ def test_module(client: Client) -> str:
 
 
 def snapshot_cmd(client: Client) -> CommandResults:
-    res = client.snapshot_critical_paths()
-    return CommandResults(
-        outputs_prefix="SupernaZeroTrust.Snapshot",
-        outputs={"Result": res},
-        raw_response=res,
-    )
+    try:
+        res = client.snapshot_critical_paths()
+        return CommandResults(
+            outputs_prefix="SupernaZeroTrust.Snapshot",
+            outputs={
+                "Status": "Success",
+                "Message": "Snapshot created successfully",
+                "Result": res
+            },
+            readable_output="✅ Snapshot created successfully",
+            raw_response=res,
+        )
+    except DemistoException as e:
+        # Check if it's a 429 error (rate limit / recent snapshot exists)
+        if "429" in str(e) or "Too Many Requests" in str(e):
+            return CommandResults(
+                outputs_prefix="SupernaZeroTrust.Snapshot",
+                outputs={
+                    "Status": "AlreadyExists",
+                    "Message": "Snapshot already created within the last hour. Please wait before creating another snapshot."
+                },
+                readable_output="⚠️ Snapshot already created within the last hour. Please wait before creating another snapshot.",
+                raw_response={"error": str(e)},
+            )
+        else:
+            # Re-raise other errors
+            raise
 
 
 def lockout_cmd(client: Client, args: Dict[str, Any]) -> CommandResults:
