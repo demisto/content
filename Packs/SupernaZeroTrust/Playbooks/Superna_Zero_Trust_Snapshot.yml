@@ -1,0 +1,118 @@
+id: 561513b5-7126-4ae7-8801-dc093df556b9
+version: -1
+name: Superna Zero Trust Snapshot
+description: Create a snapshot of Superna critical paths for ransomware rapid recovery
+fromversion: 6.10.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05b0f317-59b9-4035-8748-d77009b8018d
+    type: start
+    task:
+      id: 05b0f317-59b9-4035-8748-d77009b8018d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b704f7dd-6819-4110-8c9e-bfc553da9914
+    type: regular
+    task:
+      id: b704f7dd-6819-4110-8c9e-bfc553da9914
+      version: -1
+      name: Superna Zero Trust Snapshot Critical Paths
+      description: Create a snapshot of Superna critical paths for ransomware rapid recovery
+      script: SupernaZeroTrust|||superna-zt-snapshot-critical-paths
+      type: regular
+      iscommand: true
+      brand: SupernaZeroTrust
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 71ec020f-5769-4a95-8032-2e8a372bd92a
+    type: title
+    task:
+      id: 71ec020f-5769-4a95-8032-2e8a372bd92a
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: username
+  value:
+    simple: ${incident.username}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+quiet: true
