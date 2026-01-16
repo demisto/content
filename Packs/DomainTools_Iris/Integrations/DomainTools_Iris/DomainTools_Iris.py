@@ -851,11 +851,19 @@ def format_guided_pivot_link(link_type, item, domain=None):
     query = item.get("value", "")
     count = item.get("count", 0)
 
+    if isinstance(count, str) and "[" in count and "](" in count:
+        return count
+
     if domain:
         link_type = "domain"
         query = domain
 
-    if 1 < int(count) < GUIDED_PIVOT_THRESHOLD:
+    try:
+        numeric_count = int(count)
+    except (ValueError, TypeError):
+        return count
+
+    if 1 < numeric_count < GUIDED_PIVOT_THRESHOLD:
         return f'[{count}]({IRIS_LINK}?q={link_type}:"{urllib.parse.quote(str(query), safe="")}")'
 
     return count
@@ -905,8 +913,8 @@ def format_investigate_output(result):
         "SSL Certificate": format_ssl_info(result.get("ssl_info", {})),
         "Redirects To": format_single_value(None, result.get("redirect", {}), domain),
         "Redirect Domain": format_single_value("rdd", result.get("redirect_domain", {})),
-        "Website Title": format_single_value(None, result.get("website_title", {}), domain),
-        "First Seen": format_single_value(None, result.get("first_seen", {}), domain),
+        "Website Title": format_single_value("title", result.get("website_title", {}), None),
+        "First Seen": format_single_value("current_lifecycle_first_seen", result.get("first_seen", {}), None),
         "Server Type": format_single_value("server_type", result.get("server_type", {})),
         "Popularity": result.get("popularity_rank"),
     }
@@ -1204,20 +1212,48 @@ def create_history_table(data, headers):
     return table
 
 
+def get_domaintools_domain_enrichment_command() -> dict[str, Callable]:
+    domain_enrichmenth_method = demisto.params().get("domain_enrichmenth_method") or "Iris Investigate"
+    domain_enrich_function_mapping = {
+        "iris enrich": {"cmd": domain_enrich, "formatter": format_enrich_output},
+        "iris investigate": {"cmd": domain_investigate, "formatter": format_investigate_output},
+    }
+
+    try:
+        dt_domain_func = domain_enrich_function_mapping[domain_enrichmenth_method.lower()]
+    except Exception:
+        dt_domain_func = domain_enrich_function_mapping["iris investigate"]
+
+    return dt_domain_func
+
+
 """ COMMANDS """
 
 
 def domain_command():
     """
-    Command to do a total profile of a domain using iris_investigate API endpoint.
+    Command to do a total profile of a domain using iris_investigate/iris_enrich API endpoint.
     e.g. !domain domain=domaintools.com
     """
     domain = demisto.args()["domain"]
-    domain_result_type = demisto.params().get("domain_result_type") or "Iris"
+    bypass_auto_enrich = argToBoolean(demisto.args()["bypass_auto_enrich"])
     domain_list = domain.split(",")
+
+    domain_result_type = demisto.params().get("domain_result_type") or "Iris"
+    domain_auto_enrich = demisto.params().get("domain_auto_enrich") or "Disabled"
 
     command_results_list: list[CommandResults] = []
 
+    dt_enrichment_command = get_domaintools_domain_enrichment_command()
+
+    if domain_auto_enrich.lower() == "disabled" and not bypass_auto_enrich:
+        return_warning(
+            "Enrichment skipped: The 'Domain Auto-Enrich on Ingestion' setting is disabled for this instance.\n\n"
+            "To force execution for this specific command, add the argument: bypass_auto_enrich=true",
+            exit=True,
+        )
+
+    logging.info(f"domain_result_type: {domain_result_type}")
     human_readable_output = ""
     if domain_result_type.lower() == "verdict":
         # get the risk score using DT risk endpoint
@@ -1242,13 +1278,18 @@ def domain_command():
         include_context = argToBoolean(demisto.args().get("include_context", True))
         domain_chunks = chunks(domain_list, 100)
         for chunk in domain_chunks:
-            response = domain_investigate(",".join(chunk))
-            missing_domains = response.get("missing_domains")
-            for result in response.get("results", []):
-                human_readable_output, indicators = format_investigate_output(result)
+            string_chunk = ",".join(chunk)
+            response = dt_enrichment_command["cmd"](string_chunk)
+
+            missing_domains = response.get("missing_domains", [])
+            results = response.get("results", [])
+
+            for result in results:
+                human_readable_output, indicators = dt_enrichment_command["formatter"](result)
 
                 if len(missing_domains) > 0:
                     human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
+                    missing_domains = []
 
                 domain_indicator = indicators.get("domain") if include_context else None
                 domaintools_context = indicators.get("domaintools") if include_context else None

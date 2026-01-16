@@ -54,6 +54,26 @@ configuration:
   - Iris
   - Verdict
   section: Collect
+- display: Domain Enrichment Method (DomainTools)
+  name: domain_enrichmenth_method
+  type: 15
+  required: false
+  additionalinfo: "Iris API to be used for domain enrichment. Defaults to Iris Investigate."
+  defaultvalue: Iris Investigate
+  options:
+  - Iris Investigate
+  - Iris Enrich
+  section: Collect
+- display: Domain Auto-Enrich on Ingestion
+  name: domain_auto_enrich
+  type: 15
+  required: false
+  additionalinfo: "Enable real-time enrichment for incoming ingested domain. Note: This may consume Iris API quotas."
+  defaultvalue: Disabled
+  options:
+  - Enabled
+  - Disabled
+  section: Collect
 - defaultvalue: B - Usually reliable
   display: 'Source Reliability'
   name: integrationReliability
@@ -157,6 +177,17 @@ script:
       required: true
       isArray: false
       secret: false
+    - name: bypass_auto_enrich
+      description: Bypasses the Domain Auto-Enrich on Ingestion.
+      default: false
+      required: false
+      isArray: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
     description: Provides data enrichment for domains.
     name: domain
     outputs:
