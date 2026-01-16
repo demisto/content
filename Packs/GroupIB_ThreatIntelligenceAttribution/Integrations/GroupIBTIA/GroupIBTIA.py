@@ -428,7 +428,6 @@ COMMON_SCORE_MAP = {
     "bad": Common.DBotScore.BAD,
 }
 
-# XSOAR expects reliability as a string value (see CommonServerPython.DBOTScoreReliability.* constants).
 Reliability: TypeAlias = str
 
 COMMON_REABILITY_MAP: dict[str, Reliability] = {
@@ -2802,7 +2801,6 @@ class ReputationCommandProcessor:
 
     def _get_search_data(self, indicator_value):
         search = self.client.poller.global_search(indicator_value)
-        # print('search', search, type(search))
         finding = []
         for found in search:
             apiPath = found.get("apiPath")
