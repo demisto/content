@@ -23,7 +23,7 @@ configuration:
   type: 0
   section: Connect
 description: This integration allows you to activate and deactivate CyberArk EPM risk plans for specific endpoints.
-display: CyberArk EPM SOC Response
+display: CyberArk EPM SOC Response (Beta)
 name: CyberArkEPMSOCResponse
 script:
   commands:
@@ -71,3 +71,4 @@ marketplaces:
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+beta: true
