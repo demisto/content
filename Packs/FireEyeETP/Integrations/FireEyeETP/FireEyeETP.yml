@@ -255,6 +255,75 @@ script:
     description: 'Get summary format information about the alerts.
       Deprecated. Use the fireeye-etp-list-alerts instead.'
     deprecated: true
+  - name: fireeye-etp-list-alerts
+    arguments:
+    - name: alert_id
+    - name: date_from
+      description: Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now").
+    - name: date_to
+      description: Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now").
+    - name: domain
+    - name: domain_group
+    - name: email_header_subject
+    - name: is_read
+    - name: is_retro
+    - name: malwarename
+    - name: malwarestype
+    - name: md5
+    - name: mta_msg_id
+    - name: traffic_type
+      auto: PREDEFINED
+      predefined:
+      - inbound
+      - outbound
+    - name: verdict
+    - name: page
+    - name: page_size
+    - name: limit
+    outputs:
+    - contextPath: FireEyeETP.Alerts.smtp-message.from
+    - contextPath: FireEyeETP.Alerts.smtp-message.ip_address
+    - contextPath: FireEyeETP.Alerts.smtp-message.country
+    - contextPath: FireEyeETP.Alerts.smtp-message.protocol
+    - contextPath: FireEyeETP.Alerts.smtp-message.queue-id
+    - contextPath: FireEyeETP.Alerts.smtp-message.last-malware
+    - contextPath: FireEyeETP.Alerts.smtp-message.threat_type
+    - contextPath: FireEyeETP.Alerts.smtp-message.threat_type_description
+    - contextPath: FireEyeETP.Alerts.smtp-message.to
+    - contextPath: FireEyeETP.Alerts.email-header.to
+    - contextPath: FireEyeETP.Alerts.email-header.from
+    - contextPath: FireEyeETP.Alerts.email-header.cc
+    - contextPath: FireEyeETP.Alerts.email-header.subject
+    - contextPath: FireEyeETP.Alerts.email-header.message-id
+    - contextPath: FireEyeETP.Alerts.malware.name
+    - contextPath: FireEyeETP.Alerts.malware.stype
+    - contextPath: FireEyeETP.Alerts.sha256
+    - contextPath: FireEyeETP.Alerts.domain
+    - contextPath: FireEyeETP.Alerts.verdict
+    - contextPath: FireEyeETP.Alerts.mta_msg_id
+    - contextPath: FireEyeETP.Alerts.original
+    - contextPath: FireEyeETP.Alerts.report_id
+    - contextPath: FireEyeETP.Alerts.id
+    - contextPath: FireEyeETP.Alerts.md5
+    - contextPath: FireEyeETP.Alerts.object_uuid
+    - contextPath: FireEyeETP.Alerts.traffic_type
+    - contextPath: FireEyeETP.Alerts.alert_date
+    - contextPath: FireEyeETP.Alerts.accepted_time
+    - contextPath: FireEyeETP.Alerts.email_status
+    - contextPath: FireEyeETP.Alerts.custom.riskware_action
+    - contextPath: FireEyeETP.Alerts.custom.riskware_result
+    - contextPath: FireEyeETP.Alerts.custom.is_yara
+    - contextPath: FireEyeETP.Alerts.custom.is_riskware
+    - contextPath: FireEyeETP.Alerts.custom.is_sc_imp
+    - contextPath: FireEyeETP.Alerts.custom.is_custom_block
+    - contextPath: FireEyeETP.Alerts.custom.is_qr
+    - contextPath: FireEyeETP.Alerts.custom.is_other
+    - contextPath: FireEyeETP.Alerts.client_id
+    - contextPath: FireEyeETP.Alerts.domain_id
+    - contextPath: FireEyeETP.Alerts.ack
+    - contextPath: FireEyeETP.Alerts.is_retro
+    - contextPath: FireEyeETP.Alerts.is_read
+    description: 'Get summary format information about the alerts.'
   - name: fireeye-etp-get-alert
     arguments:
     - name: alert_id
@@ -265,8 +334,6 @@ script:
       description: Email read flag.
     - contextPath: FireEyeETP.Alerts.meta.last_modified_on
       description: Last modified timestamp.
-    - contextPath: FireEyeETP.Alerts.meta.legacy_id
-      description: Alert ID as shown in ETP Web Portal.
     - contextPath: FireEyeETP.Alerts.meta.acknowledged
       description: Acknowledged.
     - contextPath: FireEyeETP.Alerts.alert.product
@@ -328,9 +395,10 @@ script:
     - contextPath: FireEyeETP.Alerts.id
       description: The alert unique ID.
     description: 'Detailed information from any particular alert. Alerts more than 90 days old are not available.
-      Deprecated. Use the fireeye-etp-list-alert instead.'
+      Deprecated. Use the fireeye-etp-list-alerts instead.'
     deprecated: true
   - name: fireeye-etp-download-alert-artifact
+    deprecated: true
     arguments:
     - name: alert_id
       required: true
@@ -339,6 +407,14 @@ script:
       a zip file. You can obtain the ID from the Alert Summary response, for example
       "id": "AV7zzRy7kvIwrKcfu0I".
       Deprecated. Use the fireeye-etp-download-alert-case-files instead.'
+  - name: fireeye-etp-download-alert-case-files
+    arguments:
+    - name: alert_id
+      required: true
+      description: The alert ID.
+    description: 'Downloads all case files of the alert specified by the alert ID, in
+      a zip file. You can obtain the ID from the Alert Summary response, for example
+      "id": "AV7zzRy7kvIwrKcfu0I".'
   - name: fireeye-etp-list-yara-rulesets
     arguments:
     - name: policy_uuid

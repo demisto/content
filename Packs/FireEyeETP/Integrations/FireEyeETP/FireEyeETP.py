@@ -31,8 +31,8 @@ CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
 SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
-BASE_PATH = "{}/api/v1".format(PARAMS.get("server"))
-ALERT_BASE_PATH = "{}/api/v2/public/alerts".format(PARAMS.get("server"))
+BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server"))
+BASE_PATH_V2 = "{}/api/v2".format(PARAMS.get("server"))
 
 
 HTTP_HEADERS = {"Content-Type": "application/json"}
@@ -228,8 +228,8 @@ def get_auth_headers():
 
 class Client(BaseClient):
     def get_artifacts(self, alert_id):
-        url = f"/alerts/{alert_id}/downloadzip"
-        response = self._http_request(method="POST", url_suffix=url, resp_type="response")
+        url = f"/public/alerts/{alert_id}/casefile"
+        response = self._http_request(method="GET", url_suffix=url, resp_type="response")
         return response
 
     def get_yara_rulesets(self, policy_uuid):
@@ -425,7 +425,7 @@ def message_context_data(message):
 
 
 def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
-    url = f"{BASE_PATH}/messages/trace"
+    url = f"{BASE_PATH_V1}/messages/trace"
     body = {"attributes": attributes, "type": "MessageAttributes", "size": max_message_size or 20}
     if has_attachments is not None:
         body["hasAttachments"] = has_attachments
@@ -486,7 +486,7 @@ def search_messages_command():
 
 
 def get_message_request(message_id):
-    url = f"{BASE_PATH}/messages/{message_id}"
+    url = f"{BASE_PATH_V1}/messages/{message_id}"
     response = http_request("GET", url)
     if response["meta"]["total"] == 0:
         return {}
@@ -578,17 +578,19 @@ def alert_context_data(alert):
     return context_data
 
 
-def get_alerts_request(size, start_time=None, end_time=None, pagination_token=None):
+def get_alerts_request(size, start_time=None, end_time=None, pagination_token=None, alert_id=None):
     '''
     Fetching alerts from /api/v2/public/alerts/search endpoint
     '''
-    url = f"{ALERT_BASE_PATH}/search"
+    url = f"{BASE_PATH_V2}/public/alerts/search"
     
     body = {"size": size, "sort":{"order": "asc"}}
     if start_time and end_time:
         body["date_range"] = { "from": start_time, "to": end_time}
     if pagination_token:
         body["sort"]["search_after"] = pagination_token
+    if alert_id:
+        body["alert_id"] = [alert_id]
 
     response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
     return response
@@ -697,6 +699,19 @@ def download_alert_artifacts_command(client, args):
     return [CommandResults(readable_output="Download alert artifact completed successfully"), file_entry]
 
 
+def download_alert_case_files(client: Client, args):
+    alert_id = args.get("alert_id")
+
+    response = client.get_artifacts(alert_id)
+    file_entry = fileResult(alert_id + ".zip", data=response.content, file_type=EntryType.FILE)
+
+    # TODO: what does it the standard XSOAR mechanism?
+    # Implement the standard XSOAR mechanism for generating a playground download link.
+    # check the current implementation on playground
+
+    return [CommandResults(readable_output="Download alert artifact completed successfully"), file_entry]
+
+
 def list_yara_rulesets_command(client, args):
     policy_uuid = args.get("policy_uuid")
 
@@ -725,7 +740,7 @@ def download_yara_file_command(client, args):
 
 
 def get_alert_request(alert_id):
-    url = f"{ALERT_BASE_PATH}/{alert_id}" # TODO: i change the url here, check which function calls this function too.
+    url = f"{BASE_PATH_V2}/public/alerts/{alert_id}" # TODO: i change the url here, check which function calls this function too.
     response = http_request("GET", url)
     return response
 
@@ -743,6 +758,94 @@ def quarantine_release_command(client, args):
 
     return command_results
 
+
+# TODO: try to run this command with all of the params, to check it's work as expected.# use one of the existing alerts.
+def get_alert_list():
+    args = demisto.args()
+    alert_id = args.get("alert_id")
+
+    # In case of alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
+    if alert_id:
+        alert_raw = get_alert_request(alert_id)
+        if alert_raw:
+            # create context data # TODO: edit this function from this point, to be matched to the desired new output.
+            alert_context = alert_context_data(alert_raw)
+
+            # create readable data (TODO: Should be HR: in case of the API 1)
+            readable_data = alert_readable_data(alert_context)
+            alert_md_table = tableToMarkdown("Alert Details", readable_data)
+            data = alert_context["alert"]["explanation"]["malware_detected"]["malware"]
+            malware_data = [malware_readable_data(malware) for malware in data]
+            malware_md_table = tableToMarkdown("Malware Details", malware_data)
+
+            entry = {
+                "Type": entryTypes["note"],
+                "Contents": alert_raw,
+                "ContentsFormat": formats["json"],
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": f"## Trellix Email Security - Cloud - Get Alert\n{alert_md_table}\n{malware_md_table}",
+                "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert_context},
+            }
+            demisto.results(entry)
+        # no results
+        else:
+            entry = {
+                "Type": entryTypes["note"],
+                "Contents": {},
+                "ContentsFormat": formats["json"],
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\nno results",
+            }
+            demisto.results(entry)
+        return
+    
+    
+    # alert_id is not provided, calling:  /api/v2/public/alerts/search    
+    if "size" in args:
+        args["size"] = int(args["size"])
+    start_time = args.get("from_last_modified_on")
+    now_utc = datetime.now(timezone.utc).strftime(ISO_FORMAT)
+    
+    # TODO: continue from this point, edit to be matched to the new desired output, and the new api endpoint.
+    # get raw data
+    alerts_raw = get_alerts_request(
+        size=args.get("size"),
+        start_time=start_time,
+        end_time = now_utc,
+        alert_id=args.get("etp_message_id") # TODO: check how the alert_id and the time range work together, is it works?
+    )
+
+    # create context data
+    alerts_context = [alert_context_data(alert) for alert in alerts_raw]
+
+    # create readable data (TODO: should be HR: in case of the API 2)
+    alerts_readable_data = [alert_readable_data_summery(alert) for alert in alerts_context]
+    alerts_summery_headers = [
+        "Alert ID",
+        "Alert Timestamp",
+        "Email Accepted",
+        "From",
+        "Recipients",
+        "Subject",
+        "MD5",
+        "URL/Attachment",
+        "Email Status",
+        "Threat Intel",
+    ]
+    md_table = tableToMarkdown(
+        "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
+    )
+    entry = {
+        "Type": entryTypes["note"],
+        "Contents": alerts_raw,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md_table,
+        "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alerts_context},
+    }
+    demisto.results(entry)
+
+        
 
 def get_alert_command():
     # get raw data
@@ -870,33 +973,44 @@ def main():
         validate_authentication_params()
         headers = get_auth_headers()
 
-        client = Client(base_url=BASE_PATH, verify=verify_certificate, headers=headers, proxy=proxy)
+        command = demisto.command()
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             get_alerts_request(size=1)
             # request was succesful
             demisto.results("ok")
-        if demisto.command() == "fetch-incidents":
+        elif command == "fetch-incidents":
             fetch_incidents()
-        if demisto.command() == "fireeye-etp-search-messages":
+        elif command == "fireeye-etp-search-messages":
             search_messages_command()
-        if demisto.command() == "fireeye-etp-get-message":
+        elif command == "fireeye-etp-get-message":
             get_message_command()
-        if demisto.command() == "fireeye-etp-get-alerts":
+        elif command == "fireeye-etp-get-alerts":
             get_alerts_command()
-        if demisto.command() == "fireeye-etp-get-alert":
+        elif command == "fireeye-etp-get-alert":
             get_alert_command()
-        if demisto.command() == "fireeye-etp-download-alert-artifact":
+        elif command == "fireeye-etp-list-alerts":
+            get_alert_list()
+        elif command == "fireeye-etp-download-alert-artifact":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_alert_artifacts_command(client, args))
-        if demisto.command() == "fireeye-etp-list-yara-rulesets":
+        elif command == "fireeye-etp-download-alert-case-files":
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            return_results(download_alert_case_files(client, args))
+        elif command == "fireeye-etp-list-yara-rulesets":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(list_yara_rulesets_command(client, args))
-        if demisto.command() == "fireeye-etp-download-yara-file":
+        elif command == "fireeye-etp-download-yara-file":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_yara_file_command(client, args))
-        if demisto.command() == "fireeye-etp-upload-yara-file":
+        elif command == "fireeye-etp-upload-yara-file":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(upload_yara_file_command(client, args))
-        if demisto.command() == "fireeye-etp-get-events-data":
+        elif command == "fireeye-etp-get-events-data":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(get_events_data_command(client, args))
-        if demisto.command() == "fireeye-etp-quarantine-release":
+        elif command == "fireeye-etp-quarantine-release":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(quarantine_release_command(client, args))
     except ValueError as e:
         LOG(e)
