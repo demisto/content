@@ -7603,7 +7603,7 @@ script:
     - name: network_border_group
       description: The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
       required: false
-
+# empty commit
   isfetch: false
   runonce: false
   script: '-'
