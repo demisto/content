@@ -2,8 +2,6 @@
 
 Fetch and manage security incidents from SOCRadar's Incident API v4 with advanced filtering, multi-status selection, and comprehensive incident enrichment.
 
-![SOCRadar Logo](https://raw.githubusercontent.com/demisto/content/master/Packs/SOCRadar/doc_files/socradar-logo.png)
-
 ## Overview
 
 SOCRadar is a digital risk protection platform that provides extended threat intelligence and brand protection capabilities. This integration enables XSOAR to ingest security incidents from SOCRadar's Incident API v4, including:
