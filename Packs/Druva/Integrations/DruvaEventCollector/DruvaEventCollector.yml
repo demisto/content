@@ -56,7 +56,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: A string received in a previous run, marking the point in time from which we want to fetch.
+    - description: A string received in a previous run, marking the point in time from which we want to fetch. For InSync events, this is a tracker. For Cybersecurity events, this is a pageToken.
       name: tracker
       required: false
     - auto: PREDEFINED
