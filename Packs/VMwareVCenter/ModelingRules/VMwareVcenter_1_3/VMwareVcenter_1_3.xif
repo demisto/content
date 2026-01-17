@@ -4,7 +4,7 @@ alter
 	xdm.event.type = "Login"
 | alter 
 	is_sso_login = if(_raw_log ~= "vmware.sso.Login"),
-	is_session = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent", "vim.event.UserLogoutSessionEvent"));
+	is_session = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent"));
 
 [RULE: vmware_vcenter_login_format_session_event]
 alter
@@ -75,7 +75,8 @@ alter
                  description ~= "^\S+\s+cloned", arrayindex(regextract(description, "^([^\s]+)\s+cloned"), 0),
                  description ~= "^Template\s+", arrayindex(regextract(description, "^Template\s+([^\s]+)"), 0)),
     target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0),
-                         description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+]+)"), 0)),
+                         description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+|,]+)"), 0)),
+                         
     target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
                          description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0))
 | alter
@@ -104,13 +105,13 @@ alter
     source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5)
 | alter
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6),
-    target_hostname = coalesce(arrayindex(regextract(description, "on ([^\s]+) in"), 0),
-        					   arrayindex(regextract(description, "from ([^\s]+) was initiated"), 0)),
+    target_hypervisor_hostname = arrayindex(regextract(description, "on ([^\s]+) in"), 0),
+    target_hostname = arrayindex(regextract(description, "from ([^\s]+) was initiated"), 0),
     datastore_name = coalesce(arrayindex(regextract(description, "Created VMFS datastore ([^\s]+)"), 0),
         					  arrayindex(regextract(description, "Discovered datastore ([^\s]+) on"), 0),
      					      arrayindex(regextract(description, "\[([^\]]+)\]"), 0)),
     datastore_uuid = arrayindex(regextract(description, "\((ds:\/\/[^\)]+)\)"), 0),
-    file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0), 
+    file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0),
     initiator_str = arrayindex(regextract(description, "initiated from '([^\']+)"), 0),
     outcome_str = arrayindex(regextract(description, "completed with status ([^\s]+)"), 0),
     action = arrayindex(regextract(description, "with status '([^\']+)"), 0)
@@ -134,8 +135,9 @@ alter
     xdm.target.virtualization.data_center.name = target_hostname,
     xdm.target.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.uuid = datastore_uuid,
+    xdm.target.host.hostname = target_hypervisor_hostname,
     xdm.target.file.path = file_path,
-    xdm.target.file.filename = if(file_path != null, arrayindex(regextract(file_path, "\/([^\$]+)"), 0));
+    xdm.target.file.filename = arrayindex(split(file_path , "/"), 1);
 
 [RULE: vmware_vcenter_vm_operation_format]
 alter
@@ -143,7 +145,7 @@ alter
     source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
 | alter
-    vm_name = if(description ~= "Guest OS", arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0),
+    vm_name = if(description ~= "Guest OS", arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0), 
                  description ~= "Virtual machine ", arrayindex(regextract(description, "Virtual machine ([^\s]+)"), 0),
                  description ~= " cloned to", arrayindex(regextract(description, "([^\s]+) cloned to"), 0),
                  description ~= "Created virtual machine ", arrayindex(regextract(description, "Created virtual machine ([^\s]+) on"), 0),
@@ -224,6 +226,7 @@ alter
     xdm.event.type = "Host Events",
     xdm.event.description = syslog_msg,
     xdm.event.original_event_type = event_type_name,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
     xdm.event.outcome_reason = description,
     xdm.event.outcome = if(description contains "Fail" or description contains "not responding", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
@@ -272,24 +275,19 @@ alter
     xdm.event.type = if(syscall_id in (59,322), "Command Execution", 
                         syscall_id in (2,3,85,22,257,292,0,1,17,18,19,20,295,296,82,87,263,264,79,83,84,86,88,89,217,258,260,266,4,5,6,9,11,21,76,90,91,92,93,133), "File/Datastore Event"),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.event.operation_sub_type = coalesce(to_string(syscall_id), event_name_clean),
     xdm.alert.name = event_name_clean,
     xdm.alert.description = parsed_fields -> msg,
-    xdm.event.operation_sub_type = coalesce(to_string(syscall_id), event_name_clean),
     xdm.session_context_id = parsed_fields -> ses,
     xdm.event.outcome = if(success = "yes" or res = "1", XDM_CONST.OUTCOME_SUCCESS,
                            success = "no" or res = "0", XDM_CONST.OUTCOME_FAILED,
                            XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = parsed_fields -> exit,
-    xdm.source.user.identifier = uid,
-    xdm.source.user.username = parsed_fields -> subj,
-    xdm.source.process.pid = to_number(pid),
-    xdm.source.process.parent_id = ppid,
-    xdm.source.process.executable.path = parsed_fields -> exe,
-    xdm.source.process.command_line = if(event_name_clean = "EXECVE", concat(parsed_fields -> a0, " ", coalesce(parsed_fields -> a1, "")),
-                                         parsed_fields -> proctitle),
-
-    xdm.target.file.path = if(event_name_clean = "PATH", parsed_fields -> name,
-                              parsed_fields -> key);
+    xdm.target.user.identifier = uid,
+    xdm.target.process.parent_id = ppid,
+    xdm.target.process.executable.path = parsed_fields -> exe,
+    xdm.target.process.pid = to_number(pid),
+    xdm.target.process.command_line = parsed_fields -> comm;
 
 [RULE: vmware_vcenter_common_fields]
 alter
