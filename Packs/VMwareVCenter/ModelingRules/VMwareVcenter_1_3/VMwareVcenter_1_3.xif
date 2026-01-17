@@ -1,4 +1,6 @@
-
+// Virtualization Story Login format classification rule
+// Event type = 3
+// // Returns the login format: SSO or Session
 [RULE: vmware_vcenter_login_format]
 alter
 	xdm.event.type = "Login"
@@ -6,6 +8,8 @@ alter
 	is_sso_login = if(_raw_log ~= "vmware.sso.Login"),
 	is_session = if(event_type_name in ("vim.event.BadUsernameSessionEvent", "vim.event.UserLoginSessionEvent"));
 
+// Virtualization Story Login Session fomrat field mapping
+// Event type = 3
 [RULE: vmware_vcenter_login_format_session_event]
 alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
@@ -35,7 +39,8 @@ alter
 	xdm.source.user_agent = user_agent,
     xdm.target.virtualization.vm.hostname = target_hostname;
 
-
+// Virtualization Story Login SSO fomrat field mapping
+// Event type = 3
 [RULE: vmware_vcenter_login_format_sso_login]
 alter
     event_type_name = arrayindex(regextract(syslog_msg, "type\":\"([^\"]+)"), 0),
@@ -59,6 +64,8 @@ alter
 	xdm.auth.auth_method = auth_method,
 	xdm.network.http.response_code = if(response_code = "200", XDM_CONST.HTTP_RSP_CODE_OK, response_code = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, response_code = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, response_code = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, response_code = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, response_code = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, response_code = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, response_code = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, response_code = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, response_code = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, response_code = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, response_code = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, response_code = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, response_code = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, response_code = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, response_code = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, response_code = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, response_code = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, response_code = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, response_code = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, response_code = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, response_code = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, response_code = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, response_code = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, response_code = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, response_code = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, response_code = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, response_code = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, response_code = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, response_code = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, response_code = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, response_code = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, response_code = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, response_code = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, response_code = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, response_code = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, response_code = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, response_code = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, response_code = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, response_code = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, response_code = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, response_code = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, response_code = "410", XDM_CONST.HTTP_RSP_CODE_GONE, response_code = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, response_code = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, response_code = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, response_code = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, response_code = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, response_code = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, response_code = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, response_code = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, response_code = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, response_code = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, response_code = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, response_code = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, response_code = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, response_code = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, response_code = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, response_code = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, response_code = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, response_code);
 
+// Virtualization Story Account Operations fomrat field mapping
+// Event type = 7
 [RULE: vmware_vcenter_account_operations_format]
 alter
     process_id = arrayindex(regextract(_raw_log, "^\S+\s+\S+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0),
@@ -67,18 +74,12 @@ alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
     source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5)
 | alter
-    vm_name = if(description ~= " for ", arrayindex(regextract(description, " for ([^\s]+)"), 0),
-                 description ~= "^Creating", arrayindex(regextract(description, "Creating ([^\s]+)"), 0),
-                 description ~= "^([^\s]+)\s+on", arrayindex(regextract(description, "^([^\s]+)\s+on"), 0),
-                 description ~= "^Reconfigured ", arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0),
-                 description ~= "^Created virtual machine ", arrayindex(regextract(description, "Created virtual machine ([^\s]+)"), 0),
-                 description ~= "^\S+\s+cloned", arrayindex(regextract(description, "^([^\s]+)\s+cloned"), 0),
-                 description ~= "^Template\s+", arrayindex(regextract(description, "^Template\s+([^\s]+)"), 0)),
-    target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0),
-                         description ~= "on", arrayindex(regextract(description, "\s+on\s+([^\s+|,]+)"), 0)),
-                         
-    target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0),
-                         description ~= "Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0))
+    vm_name = if(description ~= "^Permission rule\s+\S+\s+\S+\s+\S+\s+\S+\s+", arrayindex(regextract(description, "^Permission rule\s+\S+\s+\S+\s+\S+\s+\S+\s+([^\s]+)"), 0), // Extract vm_name from raw start with permission rule
+                 description ~= "^Permission\s+\S+\s+\S+\s+\S+\s+\S+\s+", arrayindex(regextract(description, "^Permission\s+\S+\s+\S+\s+\S+\s+\S+\s+([^\s|,|.]+)"), 0)), // Extract vm_name from raw start with permission created or changed
+    target_hostname = if(description ~= "on host", arrayindex(regextract(description, "\s+on host\s+([^\s+|\]]+)"), 0), // Extract target host from raw related to account activity
+                         description ~= "on" and description ~= "^Permission", arrayindex(regextract(description, "\s+on\s+([^\s+|,]+)"), 0)) // Extract target host from raw related to permission activity
+    target_username = if(description ~= "^Account", arrayindex(regextract(description, "^Account ([^\s]+)"), 0), // Extract user from raw related to account activity
+                         description ~= "^Permission", arrayindex(regextract(description, "for ([^\s]+)"), 0)) // Extract user from raw related to permission activity
 | alter
 	xdm.observer.name = syslog_hostname, 
 	xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
@@ -98,6 +99,8 @@ alter
     xdm.target.host.hostname = target_hostname,
     xdm.target.user.username = target_username;
 
+// Virtualization Story File/Datastore Event fomrat field mapping
+// Event type = 8
 [RULE: vmware_vcenter_file_or_datastore_format]
 alter
     description = if(syslog_msg ~= "Deletion of file or directory", arrayindex(regextract(syslog_msg, "\[((?:[^\[\]]|\[[^\[\]]*\])*)\]"), 8),
@@ -109,7 +112,7 @@ alter
     target_hostname = arrayindex(regextract(description, "from ([^\s]+) was initiated"), 0),
     datastore_name = coalesce(arrayindex(regextract(description, "Created VMFS datastore ([^\s]+)"), 0),
         					  arrayindex(regextract(description, "Discovered datastore ([^\s]+) on"), 0),
-     					      arrayindex(regextract(description, "\[([^\]]+)\]"), 0)),
+     					      arrayindex(regextract(description, "\[([^\]]+)\]"), 0)), // Extract datastore name from brackets [%datastore%]
     datastore_uuid = arrayindex(regextract(description, "\((ds:\/\/[^\)]+)\)"), 0),
     file_path = arrayindex(regextract(description, "\]\s+(.*?)\s+from"), 0),
     initiator_str = arrayindex(regextract(description, "initiated from '([^\']+)"), 0),
@@ -139,22 +142,26 @@ alter
     xdm.target.file.path = file_path,
     xdm.target.file.filename = arrayindex(split(file_path , "/"), 1);
 
+// Virtualization Story VM Operations fomrat field mapping
+// Event type = 9
 [RULE: vmware_vcenter_vm_operation_format]
 alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
     source_username = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 5),
     source_hostname = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 6)
 | alter
-    vm_name = if(description ~= "Guest OS", arrayindex(regextract(description, "Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0), 
-                 description ~= "Virtual machine ", arrayindex(regextract(description, "Virtual machine ([^\s]+)"), 0),
-                 description ~= " cloned to", arrayindex(regextract(description, "([^\s]+) cloned to"), 0),
-                 description ~= "Created virtual machine ", arrayindex(regextract(description, "Created virtual machine ([^\s]+) on"), 0),
-                 description ~= "Template ", arrayindex(regextract(description, "Template (.+?)\s"), 0),
-                 description ~= "Removed ", arrayindex(regextract(description, "Removed\s([^\s]+)"), 0),
-                 description ~= "Registered  ", arrayindex(regextract(description, "Registered\s([^\s]+)"), 0),
-                 description ~= "Renamed ", arrayindex(regextract(description, "Renamed\s([^\s]+)"), 0),
-                 description ~= "^([^\s]+)", arrayindex(regextract(description, "^([^\s]+) - "), 0),
-                 description ~= "^([^\s]+) on ", arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)),
+    vm_name = if(description ~= "^Creating", arrayindex(regextract(description, "^Creating ([^\s]+)"), 0), // Extract vm name from raw related to Creating activity
+                 description ~= "^Guest OS", arrayindex(regextract(description, "^Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0), // Extract vm name from raw related to Guest OS activity
+                 description ~= "^Virtual machine ", arrayindex(regextract(description, "^Virtual machine ([^\s]+)"), 0), // Extract vm name from raw start with Virtual Machine 
+                 description ~= " cloned to", arrayindex(regextract(description, "([^\s]+) cloned to"), 0), // Extract vm name from raw related to cloned to activity
+                 description ~= "^Created virtual machine ", arrayindex(regextract(description, "^Created virtual machine ([^\s]+) on"), 0), // Extract vm name from raw related to VM created
+                 description ~= "^Template ", arrayindex(regextract(description, "^Template (.+?)\s"), 0), // Extract vm name from raw start with Template
+                 description ~= "^Removed ", arrayindex(regextract(description, "^Removed\s([^\s]+)"), 0), // Extract vm name from raw start with Removed
+                 description ~= "^Registered ", arrayindex(regextract(description, "^Registered\s([^\s]+)"), 0), // Extract vm name from raw start with Registered
+                 description ~= "^Renamed ", arrayindex(regextract(description, "^Renamed\s([^\s]+)"), 0), // Extract vm name from raw start with Renamed
+                 description ~= "^Reconfigured ", arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0), // Extract vm name from raw start with Reconfigured
+                 description ~= "^\S+\s+\-", arrayindex(regextract(description, "^([^\s]+) - "), 0), //Extract vm name from the start of the string (before " - ")
+                 description ~= "^\S+\s+on", arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)), //Extract vm name from the start of the string (before " on ")
     target_vm_name = arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
     target_hostname = if(description ~= "^Removed", arrayindex(regextract(description, "Removed\s+\S+\s+on\s+([^\s]+)"), 0),
                          arrayindex(regextract(description, " to ([^\s]+),"), 0)),
@@ -163,9 +170,9 @@ alter
                             description ~= "Creating ([^\s]+) on", arrayindex(regextract(description, "Creating ([^\s]+) on"), 0)),
     datastore_name =  if(description ~= "\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\S+\,\s+([^\s]+)\s+in"), 0)),
     target_datastore_name = if(description ~= "\s+to\s+\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\s+to\s+\S+\,\s+([^\s]+)"), 0)),
-    old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)),
-    new_vm_name = if(description ~= "deployed to", arrayindex(regextract(description, "deployed to ([^\s]+)"), 0),
-                     description ~= "from\s\S+\sto\s+\S+\s+in\s", arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0))
+    old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)), // Extract old vm name from event start with Renamed
+    new_vm_name = if(description ~= "deployed to", arrayindex(regextract(description, "deployed to ([^\s]+)"), 0), // Extract new vm name from event start with Template
+                     description ~= "from\s\S+\sto\s+\S+\s+in\s", arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0)) // Extract new vm name from event start with Renamed
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.type = "VM Operations",
@@ -191,7 +198,8 @@ alter
     xdm.source.virtualization.vm.hostname = vm_name,
     xdm.target.virtualization.vm.hostname = target_vm_name;
 
-
+// Virtualization Story vSphere Task Event fomrat field mapping
+// Event type = 10
 [RULE: vmware_vcenter_vsphere_task_format]
 alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
@@ -209,6 +217,8 @@ alter
     xdm.source.virtualization.data_center.name = source_hostname,
     xdm.source.user.username = source_username;
 
+// Virtualization Story Host Events fomrat field mapping
+// Event type = 11
 [RULE: vmware_vcenter_host_event_format]
 alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
@@ -234,6 +244,8 @@ alter
     xdm.source.user.username = source_username,
     xdm.target.host.hostname = target_hostname;    
 
+// Virtualization Story Scheduled Task Event fomrat field mapping
+// Event type = 12
 [RULE: vmware_vcenter_scheduled_task_format]
 alter
     description = arrayindex(regextract(syslog_msg, "\[([^\]]*)\]"), 8),
@@ -259,6 +271,8 @@ alter
     xdm.target.virtualization.vm.hostname = vm_name,
     xdm.target.virtualization.task.name = target_task_name;
 
+// Virtualization Story vcsa-audit fomrat field mapping
+// Event types Command Execution and File/Datastore Event are mapped according to syscall_id extracted from parsed_fields
 [RULE: vmware_vcenter_vcsa_audit_format]
 alter
     event_name_clean = trim(parsed_fields -> type, "["),
@@ -289,6 +303,7 @@ alter
     xdm.target.process.pid = to_number(pid),
     xdm.target.process.command_line = parsed_fields -> comm;
 
+// Virtualization Story general field mapping
 [RULE: vmware_vcenter_common_fields]
 alter
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d?"), 0)),
@@ -300,9 +315,12 @@ alter
     xdm.event.tags = arraycreate("VIRTUALIZATION"),
 	xdm.source.process.identifier = process_id,
 	xdm.source.process.name = process_name,
-    xdm.event.format = if(_raw_log ~= "^<\d+>1\s", "0", // Matches RFC 5424
-                          _raw_log ~= "^<\d+>\s", "1");  // Matches RFC 3164 
+    xdm.event.format = if(_raw_log ~= "^<\d+>1\s", "0",
+                          _raw_log ~= "^<\d+>\s", "1");  
 
+// Virtualization Story classification rule
+// Return: 1. is_virtualization = true or false
+//         2. vCenter Log Format
 [RULE: vmware_vcenter_virtualization_classification]
 alter
     event_type_name = arrayindex(regextract(_raw_log, "\[([\.a-zA-Z]+)\]"), 0)
@@ -325,8 +343,9 @@ alter
                             or is_scheduled_task_event
                             or is_vcsa_audit);
 
+// Modeling Rule
 [MODEL: dataset = "vmware_vcenter_raw"]
-//Virtualization - Format: Login Session
+//Virtualization Story - Format: Login Session
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | call vmware_vcenter_login_format
@@ -334,7 +353,7 @@ call vmware_vcenter_virtualization_classification
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_login_format_session_event;
 
-//Virtualization - Format: Login SSO
+//Virtualization Story - Format: Login SSO
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | call vmware_vcenter_login_format
@@ -342,56 +361,56 @@ call vmware_vcenter_virtualization_classification
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_login_format_sso_login;
 
-//Virtualization - Fomrat: Account Operations
+//Virtualization Story - Fomrat: Account Operations
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_account_operation_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_account_operations_format;
 
-//Virtualization - Fomrat: File \ Datastore
+//Virtualization Story - Fomrat: File \ Datastore
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_file_or_datastore_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_file_or_datastore_format;
 
-//Virtualization - Fomrat: VM Operations
+//Virtualization Story - Fomrat: VM Operations
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_vm_operations_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_vm_operation_format;
 
-//Virtualization - Fomrat: vSphere Task events
+//Virtualization Story - Fomrat: vSphere Task events
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_vsphere_task_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_vsphere_task_format;
 
-//Virtualization - Fomrat: Host Events
+//Virtualization Story - Fomrat: Host Events
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_host_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_host_event_format;
 
-//Virtualization - Fomrat: Scheduled Task
+//Virtualization Story - Fomrat: Scheduled Task
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_scheduled_task_event
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_scheduled_task_format;
 
-//Virtualization - Fomrat: vcsa-audit
+//Virtualization Story - Fomrat: vcsa-audit
 call vmware_vcenter_virtualization_classification
 | filter is_virtualization
 | filter is_vcsa_audit
 | call vmware_vcenter_common_fields
 | call vmware_vcenter_vcsa_audit_format;
 
-/// end Virtualization
+/// End of Virtualization Story Enhancement
 
 // sps (Storage management service) events 
 call vmware_vcenter_virtualization_classification
