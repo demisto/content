@@ -11,25 +11,32 @@ SOCRadar is a leading Extended Threat Intelligence (XTI) platform that provides 
 
 ### Advanced Features
 - **Multi-Status Filtering**: Select multiple statuses simultaneously for flexible queries
-- **Epoch Time Precision**: Second-level accuracy eliminates duplicate incidents
-- **Reverse Pagination**: Fetches newest incidents first for optimal performance
+- **Timestamp-Based Fetching**: Uses last_fetch timestamp to ensure consistent, duplicate-free incident ingestion
 - **Dynamic Content Extraction**: Automatically adapts to different alarm types
 - **Configurable Enrichment**: Control content and entity inclusion for performance
-- **Multi-Tenant Support**: Optional company ID visibility for MSSP environments
+- **Multi-Tenant Support**: Optional company_id parameter in all commands for MSSP environments
 
 ### Incident Management
-- Change status with 11 different status options
+- Change status with multiple status options including OPEN, INVESTIGATING, RESOLVED, PENDING_INFO, LEGAL_REVIEW, VENDOR_ASSESSMENT, FALSE_POSITIVE, DUPLICATE, PROCESSED_INTERNALLY, MITIGATED, and NOT_APPLICABLE
 - Add comments and collaborate on investigations
 - Modify assignees and severity levels
 - Tag incidents for organization
-- Request analyst assistance directly from SOCRadar
 - Mark false positives and resolved items
 
 ## Getting Started
 
-1. Obtain API credentials from SOCRadar platform (Settings → API & Integrations → API Options)
-2. Configure integration instance with your API Key and Company ID
-3. Enable incident fetching and configure filters based on your use case
-4. Create automations using the provided commands for incident response workflows
+1. Obtain API credentials from SOCRadar platform (**Settings → API & Integrations → API Options**)
+2. Copy your **Company API Key** (for Incident API)
+3. Note your **Company ID**
+4. Configure the integration in XSOAR with these credentials
+5. Enable incident fetching and configure filters based on your requirements
 
-For detailed setup instructions, see the integration README.
+## Configuration Tips
+
+- **First Fetch Time**: Set to a reasonable time range like "3 days" or "7 days" for initial setup
+- **Max Incidents Per Fetch**: Default is 200 for optimal performance and stability
+- **Alarm Type Filtering**: Use alarm_type_ids to include specific alarm types or excluded_alarm_type_ids to exclude certain types
+- **Status Filtering**: Filter by OPEN, CLOSED, or ON_HOLD statuses based on your workflow
+- **Multi-Tenant Support**: Use company_id parameter in commands for multi-tenant environments
+
+For detailed configuration and command documentation, see the integration README.
