@@ -1589,7 +1589,7 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
         name="Cortex XDR Asset Schema",
         t=schema,
         headerTransform=string_to_table_header,
-        headers=["field_pretty_name", "field_name", "data_type"],
+        headers=["field_pretty_name", "field_name", "field_type"],
         removeNull=True,
     )
 
@@ -1597,6 +1597,7 @@ def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
         outputs=schema,
+        outputs_key_field="field_name",
         raw_response=schema,
     )
 
@@ -1650,7 +1651,7 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
         try:
             membership_predicate_json = json.loads(membership_predicate_json)
         except ValueError:
-            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+            raise DemistoException("Unable to parse 'membership_predicate_json'. Please use the JSON format.")
 
     update_data = assign_params(
         group_name=group_name,
@@ -1768,7 +1769,7 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
         try:
             membership_predicate_json = json.loads(membership_predicate_json)
         except ValueError:
-            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+            raise DemistoException("Unable to parse 'membership_predicate_json'. Please use the JSON format.")
 
     update_data = assign_params(
         group_name=group_name,

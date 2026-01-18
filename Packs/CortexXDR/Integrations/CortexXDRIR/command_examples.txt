@@ -59,6 +59,6 @@
 !xdr-asset-list limit=4 sort_field="xdm.asset.first_observed" page_size=2 page=1
 !xdr-asset-group-list filter_json="{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.NAME\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Test\"}]}"
 !xdr-asset-group-list sort_field="XDM.ASSET_GROUP.LAST_UPDATE_TIME" page=1 page_size=3
-!xdr-asset-group-create group_name="assetGroupTest group_type=Dynamic membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
+!xdr-asset-group-create group_name="assetGroupTest" group_type=Dynamic membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-update group_id=1 group_type=Dynamic group_description=test group_name="Test" membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.provider\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-delete group_id=1
