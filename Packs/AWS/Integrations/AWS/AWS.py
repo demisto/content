@@ -1211,7 +1211,7 @@ class S3:
             del bucket["Name"]
         readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
         outputs = {
-            "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
+            "AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)": buckets,
             "AWS.S3(true)": {
                 "BucketsOwner": response.get("Owner"),
                 "BucketsNextPageToken": response.get("ContinuationToken"),

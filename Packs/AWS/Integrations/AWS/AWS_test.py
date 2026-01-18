@@ -7390,9 +7390,9 @@ def test_buckets_list_command_success(mocker):
     assert "bucket1" in result.readable_output
     assert "bucket2" in result.readable_output
 
-    buckets_output = result.outputs["AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)"]
+    buckets_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
     assert len(buckets_output) == 2
-    assert buckets_output[0]["Name"] == "bucket1"
+    assert buckets_output[0]["BucketName"] == "bucket1"
     assert buckets_output[0]["CreationDate"] == "2023-10-15T14:30:45"
 
     s3_output = result.outputs["AWS.S3(true)"]
@@ -7676,10 +7676,9 @@ def test_command_run_command_first_execution(mocker):
 
     result = SSM.command_run_command(args, mock_client)
 
-    assert isinstance(result, PollResult)
-    assert result.continue_to_poll is True
-    assert result.args_for_next_run["command_id"] == "cmd-123"
-    assert result.partial_result.outputs["CommandId"] == "cmd-123"
+    assert result.scheduled_command
+    assert result.scheduled_command._args["command_id"] == "cmd-123"
+    assert result.outputs["CommandId"] == "cmd-123"
     mock_client.send_command.assert_called_once()
 
 
@@ -7701,9 +7700,8 @@ def test_command_run_command_polling_not_terminal(mocker):
 
     result = SSM.command_run_command(args, mock_client)
 
-    assert isinstance(result, PollResult)
-    assert result.continue_to_poll is True
-    assert result.response is None
+    assert result.scheduled_command
+    assert result.outputs is None
     mock_client.list_commands.assert_called_once_with(CommandId="cmd-123")
 
 
@@ -7725,7 +7723,7 @@ def test_command_run_command_polling_terminal_success(mocker):
 
     result = SSM.command_run_command(args, mock_client)
 
-    assert isinstance(result, PollResult)
-    assert result.continue_to_poll is False
-    assert "The command cmd-123 status is Success" in result.response.readable_output
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is None
+    assert "The command cmd-123 status is Success" in result.readable_output
     mock_client.list_commands.assert_called_once_with(CommandId="cmd-123")
