@@ -103,18 +103,24 @@ class Client(BaseClient):
         # Determine the endpoint and parameters based on event type
         if event_type == "Cybersecurity events":
             # Cybersecurity events use v3 API with pageToken
-            url_suffix = "/platform/eventmanagement/v3/events?pageSize=500"
+            # Note: When pageToken is provided, no other query parameters are allowed
+            if tracker:
+                encoded_tracker = quote(tracker, safe="!~*'()")
+                demisto.debug(f"after encoding pageToken: {encoded_tracker=}")
+                url_suffix = f"/platform/eventmanagement/v3/events?pageToken={encoded_tracker}"
+            else:
+                url_suffix = "/platform/eventmanagement/v3/events?pageSize=500"
             param_name = "pageToken"
         else:
             # InSync events use v2 API with tracker
             url_suffix = "/insync/eventmanagement/v2/events"
             param_name = "tracker"
-        
-        # Add pagination parameter if provided
-        if tracker:
-            encoded_tracker = quote(tracker, safe="!~*'()")
-            demisto.debug(f"after encoding {param_name}: {encoded_tracker=}")
-            url_suffix += f"&{param_name}={encoded_tracker}" if "?" in url_suffix else f"?{param_name}={encoded_tracker}"
+            
+            # Add tracker parameter if provided
+            if tracker:
+                encoded_tracker = quote(tracker, safe="!~*'()")
+                demisto.debug(f"after encoding {param_name}: {encoded_tracker=}")
+                url_suffix += f"?{param_name}={encoded_tracker}"
 
         try:
             response = self._http_request(
@@ -163,14 +169,14 @@ def test_module(client: Client, event_types: list[str]) -> str:
     return "ok"
 
 
-def get_events(client: Client, tracker: Optional[str] = None, event_type: str) -> tuple[list[dict], str]:
+def get_events(client: Client, event_type: str, tracker: Optional[str] = None) -> tuple[list[dict], str]:
     """
     Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
     There will be no changes to the tracker if no events occur.
     Args:
         client: Druva client to use.
-        tracker: A string received in a previous run, marking the point in time from which we want to fetch.
         event_type: The type of events to fetch ("InSync events" or "Cybersecurity events").
+        tracker: A string received in a previous run, marking the point in time from which we want to fetch.
 
     Returns:
         Druva's events and tracker
@@ -207,7 +213,7 @@ def fetch_events(client: Client, last_run: dict[str, str], max_fetch: int, event
             tracker = last_run.get(f"tracker_{event_type}") or last_run.get("tracker")
             # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
             try:
-                events, new_tracker = get_events(client, tracker, event_type)
+                events, new_tracker = get_events(client, event_type, tracker)
             except Exception as e:
                 if "Invalid tracker" in str(e):
                     demisto.debug(
@@ -242,7 +248,9 @@ def add_time_to_events(events: list[dict]):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(event["timestamp"]) #TODO in the new one its "timeStamp"??
+            # Handle both timestamp formats: "timestamp" (InSync events) and "timeStamp" (Cybersecurity events)
+            timestamp_value = event.get("timestamp") or event.get("timeStamp")
+            create_time = arg_to_datetime(timestamp_value)
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
@@ -278,17 +286,25 @@ def main() -> None:  # pragma: no cover
             event_types_arg = argToList(args.get("event_types")) or ["InSync events"]
             all_events: list[dict] = []
             trackers: dict[str, str] = {}
+            readable_parts: list[str] = []
             
             # Fetch events for each selected event type
             for event_type in event_types_arg:
                 demisto.debug(f"Fetching events for type: {event_type}")
-                events, tracker = get_events(client, args.get("tracker"), event_type)
+                events, tracker = get_events(client, event_type, args.get("tracker"))
                 all_events.extend(events)
                 trackers[f"tracker_{event_type}"] = tracker
+                
+                # Add a separate table for each event type
+                readable_parts.append(tableToMarkdown(f"{event_type} ({len(events)} events):", events))
+                        
+            # Convert trackers dict to list of dicts for table display
+            tracker_list = [{"Event Type": key.replace("tracker_", ""), "Tracker/PageToken": value} for key, value in trackers.items()]
+            readable_parts.append(tableToMarkdown("Next Trackers/PageTokens:", tracker_list))
             
             return_results(
                 CommandResults(
-                    readable_output=tableToMarkdown(f"{VENDOR} Events:", all_events),
+                    readable_output="\n".join(readable_parts),
                     outputs=trackers,
                     outputs_prefix=f"{VENDOR}.tracker",
                     outputs_key_field="tracker",
