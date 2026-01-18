@@ -3866,10 +3866,10 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: A list of API key IDs to retrieve.
+    - description: A comma-separated list of API key IDs to retrieve.
       isArray: true
       name: api_id
-    - description: A list of API key roles to retrieve.
+    - description: A comma-separated list of API key roles to retrieve.
       isArray: true
       name: role
     - description: 'Filters API keys that expire before this date. For example: "in a year". Filters API keys that have an expiration date.'
@@ -3889,7 +3889,7 @@ script:
       description: The expiration date of the API key.
       type: Date
   - arguments:
-    - description: A list of API key IDs to delete.
+    - description: A comma-separated list of API key IDs to delete.
       isArray: true
       name: api_id
       required: true

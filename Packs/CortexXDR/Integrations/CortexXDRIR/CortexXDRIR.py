@@ -1482,7 +1482,12 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
 
     api_keys = client.get_api_keys({"filters": filters})
-    readable_output = tableToMarkdown(name="API Keys", t=api_keys, headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(name="API Keys",
+                                      t=api_keys,
+                                      headers=["id", "roles", "created_by", "creation_time", "expiration", "comment"],
+                                      date_fields=["creation_time", "expiration"],
+                                      removeNull=True,
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
