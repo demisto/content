@@ -130,6 +130,7 @@ VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = "404"
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
+MAX_404_RETRIES = 3  # Maximum number of 404 retries before giving up on current export
 
 
 class Client(BaseClient):
@@ -604,18 +605,43 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+            # Track 404 retries to prevent infinite loop
+            retry_count = assets_last_run.get("assets_404_retry_count", 0) + 1
+            if retry_count >= MAX_404_RETRIES:
+                demisto.error(
+                    f"Assets export failed after {MAX_404_RETRIES} retries due to 404 errors. "
+                    "The export UUID may be expiring before all chunks can be downloaded. "
+                    "Consider increasing the fetch frequency or reducing the data volume. "
+                    "Clearing export state to start fresh on next fetch cycle."
+                )
+                # Clear all assets export state to start fresh on next cycle
+                assets_last_run.pop("assets_export_uuid", None)
+                assets_last_run.pop("assets_available_chunks", None)
+                assets_last_run.pop("assets_404_retry_count", None)
+                return [], assets_last_run
 
-            export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+            demisto.info(
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). "
+                "Generating new export uuid to start new fetch."
+            )
+            fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
+            export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
             # Generate a new snapshot_id when resetting the fetch
             snapshot_id = str(round(time.time() * 1000))
-            assets_last_run.update({"assets_export_uuid": export_uuid, "snapshot_id": snapshot_id, "total_assets": 0})
+            assets_last_run.update({
+                "assets_export_uuid": export_uuid,
+                "snapshot_id": snapshot_id,
+                "total_assets": 0,
+                "assets_404_retry_count": retry_count
+            })
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("assets_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
         assets.extend(result)
         updated_stored_chunks.remove(chunk_id)
+    # Reset retry count on successful chunk download
+    assets_last_run.pop("assets_404_retry_count", None)
 
     # Update cumulative asset count
     total_assets = assets_last_run.get("total_assets", 0) + len(assets)
@@ -648,20 +674,45 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
     for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
         result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+            # Track 404 retries to prevent infinite loop
+            retry_count = assets_last_run.get("vulns_404_retry_count", 0) + 1
+            if retry_count >= MAX_404_RETRIES:
+                demisto.error(
+                    f"Vulnerabilities export failed after {MAX_404_RETRIES} retries due to 404 errors. "
+                    "The export UUID may be expiring before all chunks can be downloaded. "
+                    "Consider increasing the fetch frequency or reducing the data volume. "
+                    "Clearing export state to start fresh on next fetch cycle."
+                )
+                # Clear all vuln export state to start fresh on next cycle
+                assets_last_run.pop("vuln_export_uuid", None)
+                assets_last_run.pop("vulns_available_chunks", None)
+                assets_last_run.pop("vulns_404_retry_count", None)
+                return [], assets_last_run
 
+            demisto.info(
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). "
+                "Generating new export uuid to start new fetch."
+            )
             export_uuid = client.get_vuln_export_uuid(
-                num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
+                num_assets=ASSETS_NUMBER,
+                last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             )
             # Generate a new snapshot_id when resetting the fetch
             snapshot_id = str(round(time.time() * 1000))
-            assets_last_run.update({"vuln_export_uuid": export_uuid, "snapshot_id": snapshot_id, "total_assets": 0})
+            assets_last_run.update({
+                "vuln_export_uuid": export_uuid,
+                "snapshot_id": snapshot_id,
+                "total_assets": 0,
+                "vulns_404_retry_count": retry_count
+            })
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("vulns_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
         vulnerabilities.extend(result)
         updated_stored_chunks.remove(chunk_id)
+    # Reset retry count on successful chunk download
+    assets_last_run.pop("vulns_404_retry_count", None)
     for vuln in vulnerabilities:
         vuln["_time"] = vuln.get("received") or vuln.get("indexed")
     if updated_stored_chunks:
@@ -2006,11 +2057,15 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
-            if assets_last_run_copy.get("assets_export_uuid") or not assets_last_run_copy.get("vuln_export_uuid"):
+            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle (no ongoing exports)
+            if assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks") or not (
+                assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks")
+            ):
                 assets = run_assets_fetch(client, assets_last_run)
-            # Fetch Vulnerabilities
-            if assets_last_run_copy.get("vuln_export_uuid") or not assets_last_run_copy.get("assets_export_uuid"):
+            # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
+            if assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks") or not (
+                assets_last_run.get("assets_export_uuid") or assets_last_run.get("assets_available_chunks")
+            ):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
