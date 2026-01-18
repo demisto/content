@@ -1223,9 +1223,16 @@ def validate_auth_header(headers: dict) -> bool:
     options = {
         "verify_aud": False,
         "verify_exp": True,
-        "verify_signature": False,
+        "verify_signature": True,
     }
-    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+    try:
+        decoded_payload = jwt.decode(jwt_token, public_key, algorithms=["RS256"], options=options)
+    except jwt.InvalidSignatureError:
+        demisto.info("Authorization header validation - JWT signature verification failed")
+        return False
+    except jwt.PyJWTError as e:
+        demisto.info(f"Authorization header validation - JWT validation error: {e}")
+        return False
 
     audience_claim: str = decoded_payload.get("aud", "")
     if audience_claim != BOT_ID:
