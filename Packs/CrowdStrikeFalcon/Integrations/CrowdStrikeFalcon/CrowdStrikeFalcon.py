@@ -1826,21 +1826,22 @@ def get_incidents_entities(incidents_ids: list):
     return response
 
 
+def get_cases_entities(cases_ids: list):
+    ids_json = {"ids": cases_ids}
+    raw_res = http_request("POST", "/cases/entities/cases/v2", data=json.dumps(ids_json))
+    return raw_res["resources"]
+
+
 def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     full_cases = []
 
     for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_cases = get_cases_entities(batch_ids)
 
-        ids_json = {"ids": batch_ids}
-        demisto.debug(f"Getting cases details with batch_ids len {len(batch_ids)}.")
-
-        # Make the API call with the current batch.
-        raw_res = http_request("POST", "/cases/entities/cases/v2", data=json.dumps(ids_json))
-
-        if "resources" in raw_res:
+        if batch_cases:
             # Combine the resources from each response.
-            full_cases.extend(raw_res["resources"])
+            full_cases.extend(batch_cases)
 
     # Return the combined result.
     return full_cases
@@ -2387,7 +2388,6 @@ def update_ngsiem_case_request(id: str, status: str) -> dict:
     demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
     payload = {"fields": {"status": status}, "id": id}
 
-    # Call the hypothetical function
     return http_request("PATCH", "/cases/entities/cases/v2", data=json.dumps(payload))
 
 
@@ -2682,6 +2682,7 @@ def get_remote_incident_data(remote_incident_id: str):
 
 
 def get_remote_ngsiem_case_data(remote_case_id: str):
+    # We remove the prefix IncidentType to make the API call, since the CS API does not recognize our internal prefix
     original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     mirrored_case_list = get_cases_details([original_remote_case_id])
     if not mirrored_case_list:
@@ -3927,6 +3928,10 @@ def fetch_detections_by_product_type(
 
 
 def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
+    """
+    Fetches NGSIEM cases from CrowdStrikeFalcon
+    :param last_run:
+    """
     cases = []
     offset = last_run.get("offset", 0)
     fetch_limit = last_run.get("limit", INCIDENTS_PER_FETCH)
