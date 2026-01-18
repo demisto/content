@@ -7,9 +7,9 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 
 Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
-This integration was integrated and tested with the Xanadu version of ServiceNow.
+This integration was integrated and tested with the Xanadu 2 version of ServiceNow.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM. 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Use cases
 
