@@ -9,7 +9,7 @@ Please refer to ServiceNow documentation for additional information. We especial
 
 This integration was integrated and tested with the Xanadu version of ServiceNow.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM. 
 
 ## Use cases
 
