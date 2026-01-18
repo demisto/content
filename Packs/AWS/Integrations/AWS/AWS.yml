@@ -7459,7 +7459,7 @@ script:
         description: If Prefix was sent with the request, it is included in the response.
         type: string
   - name: aws-ssm-inventory-entries-list
-    description: A list of inventory items returned by the request.
+    description: Returns a list of inventory items.
     arguments:
       - name: account_id
         description: The AWS account ID.

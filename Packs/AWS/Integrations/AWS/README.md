@@ -2472,14 +2472,14 @@ Adds the specified inbound (egress) rules to a security group.
 
 There is no context output for this command.
 
-### aws-ssm-command-run
+### aws-ssm-inventory-entries-list
 
 ***
-Runs commands on one or more managed nodes.
+Returns a list of inventory items.
 
 #### Base Command
 
-`aws-ssm-command-run`
+`aws-ssm-inventory-entries-list`
 
 #### Input
 
@@ -2487,22 +2487,22 @@ Runs commands on one or more managed nodes.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_ids | The IDs of the managed nodes where the command should run. Maximum of 50 IDs. | Optional | 
-| targets | One or more targets separated by ';' (for example, key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;,&lt;value4&gt;). An array of search criteria that targets managed nodes using a Key,Value combination. | Optional | 
-| document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required | 
-| document_version | The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number. If you run commands by using the Command Line Interface (Amazon Web Services CLI), then you must escape the first two options by using a backslash. If you specify a version number, then you don’t need to use the backslash. | Optional | 
-| document_hash | The Sha256 hash created by the system when the document was created. | Optional | 
-| command_timeout | If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000. | Optional | 
-| comment | User-specified information about the command, such as a brief description of what the command should do. | Optional | 
-| parameters | The required and optional parameters specified in the document being run. The template is 'key=&lt;key1&gt;,values=&lt;value&gt;,&lt;value&gt;;key=&lt;key2&gt;,values=&lt;value&gt;,&lt;value&gt;'. | Optional | 
-| output_s3_bucket_name | The name of the S3 bucket where command execution responses should be stored. | Optional | 
-| output_s3_key_prefix | The directory structure within the S3 bucket where the responses should be stored. | Optional | 
-| max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. The default value is 50. | Optional | 
-| max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. The default value is 0. | Optional | 
+| instance_id | The managed node ID for which you want inventory information. | Required | 
+| type_name | The type of inventory item for which you want information. | Required | 
+| limit | Maximum number of buckets to be returned in response. Default is 50. | Optional | 
+| filters | One or more filters separated by ';' (for example, key=&lt;key&gt;,values=&lt;values&gt;,type=&lt;type&gt;;name=&lt;name&gt;,values=&lt;values&gt;,type=&lt;type&gt;). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists. | Optional | 
+| next_token | The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Inventory.TypeName | string | The type of inventory item returned by the request. | 
+| AWS.SSM.Inventory.InstanceId | string | The managed node ID targeted by the request to query inventory information. | 
+| AWS.SSM.Inventory.SchemaVersion | string | The inventory schema version used by the managed nodes. | 
+| AWS.SSM.Inventory.CaptureTime | string | The time that inventory information was collected for the managed nodes. | 
+| AWS.SSM.Inventory.Entries | object | A list of inventory items on the managed nodes. | 
+| AWS.SSM.Inventory.EntriesNextPageToken | object | A list of inventory items on the managed nodes. | 
 
 ### aws-s3-buckets-list
 
@@ -2537,14 +2537,14 @@ Returns a list of all buckets owned by the authenticated sender of the request.
 | AWS.S3.BucketsNextPageToken | string | BucketsNextPageToken is included in the response when there are more buckets that can be listed with pagination. The next ListBuckets request to Amazon S3 can be continued with this BucketsNextPageToken. | 
 | AWS.S3.BucketsPrefix | string | If Prefix was sent with the request, it is included in the response. | 
 
-### aws-ssm-inventory-entries-list
+### aws-ssm-command-run
 
 ***
-A list of inventory items returned by the request.
+Runs commands on one or more managed nodes.
 
 #### Base Command
 
-`aws-ssm-inventory-entries-list`
+`aws-ssm-command-run`
 
 #### Input
 
@@ -2552,54 +2552,19 @@ A list of inventory items returned by the request.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_id | The managed node ID for which you want inventory information. | Required | 
-| type_name | The type of inventory item for which you want information. | Required | 
-| limit | Maximum number of buckets to be returned in response. Default is 50. | Optional | 
-| filters | One or more filters separated by ';' (for example, key=&lt;key&gt;,values=&lt;values&gt;,type=&lt;type&gt;;name=&lt;name&gt;,values=&lt;values&gt;,type=&lt;type&gt;). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists. | Optional | 
-| next_token | The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.SSM.Inventory.TypeName | string | The type of inventory item returned by the request. | 
-| AWS.SSM.Inventory.InstanceId | string | The managed node ID targeted by the request to query inventory information. | 
-| AWS.SSM.Inventory.SchemaVersion | string | The inventory schema version used by the managed nodes. | 
-| AWS.SSM.Inventory.CaptureTime | string | The time that inventory information was collected for the managed nodes. | 
-| AWS.SSM.Inventory.Entries | object | A list of inventory items on the managed nodes. | 
-| AWS.SSM.Inventory.EntriesNextPageToken | object | A list of inventory items on the managed nodes. | 
-
-### aws-ec2-network-interface-attribute-modify
-
-***
-Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
-
-#### Base Command
-
-`aws-ec2-network-interface-attribute-modify`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| network_interface_id | The ID of the network interface. | Required | 
-| ena_srd_enabled | Indicates whether ENA Express is enabled for the network interface. Possible values are: true, false. | Optional | 
-| ena_srd_udp_enabled | Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express. Possible values are: true, false. | Optional | 
-| enable_primary_ipv6 | If you’re modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address. Possible values are: true, false. | Optional | 
-| tcp_established_timeout | Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds. | Optional | 
-| udp_stream_timeout | Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds. | Optional | 
-| udp_timeout | Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds. | Optional | 
-| associate_public_ip_address | Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0). Possible values are: true, false. | Optional | 
-| associated_subnet_ids | A list of comma separated subnet IDs to associate with the network interface. | Optional | 
-| description | A description for the network interface. | Optional | 
-| source_dest_check | Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls. Possible values are: true, false. | Optional | 
-| groups | A comma separated list of security groups ids. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it’s just the default security group in the VPC. | Optional | 
-| default_ena_queue_count | Whether to use the default number of the ENA queues. Possible values are: true, false. | Optional | 
-| ena_queue_count | The number of ENA queues to be created with the instance. | Optional | 
-| attachment_id | The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment. | Optional | 
-| delete_on_termination | Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment. Possible values are: true, false. | Optional | 
+| instance_ids | The IDs of the managed nodes where the command should run. Maximum of 50 IDs. | Optional | 
+| targets | One or more targets separated by ';' (for example, key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;,&lt;value4&gt;). An array of search criteria that targets managed nodes using a Key,Value combination. | Optional | 
+| document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required | 
+| document_version | The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number. If you run commands by using the Command Line Interface (Amazon Web Services CLI), then you must escape the first two options by using a backslash. If you specify a version number, then you don’t need to use the backslash. | Optional | 
+| document_hash | The Sha256 hash created by the system when the document was created. | Optional | 
+| command_timeout | If this time (in seconds) is reached and the command hasn’t already started running, it won’t run. Minimum value of 30. Maximum value of 2592000. | Optional | 
+| comment | User-specified information about the command, such as a brief description of what the command should do. | Optional | 
+| parameters | The required and optional parameters specified in the document being run. The template is 'key=&lt;key1&gt;,values=&lt;value&gt;,&lt;value&gt;;key=&lt;key2&gt;,values=&lt;value&gt;,&lt;value&gt;'. | Optional | 
+| output_s3_bucket_name | The name of the S3 bucket where command execution responses should be stored. | Optional | 
+| output_s3_key_prefix | The directory structure within the S3 bucket where the responses should be stored. | Optional | 
+| max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. The default value is 50. | Optional | 
+| max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. The default value is 0. | Optional | 
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
 #### Context Output
 
