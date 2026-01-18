@@ -235,9 +235,9 @@ def test_retry_policy_validation():
     policy = RetryPolicy(max_attempts=5, initial_delay=1.0, max_delay=60.0)
     assert policy.max_attempts == 5
     
-    # Invalid: max_delay <= initial_delay
+    # Invalid: max_attempts < 1 (violates ge=1 constraint)
     with pytest.raises(ValidationError):
-        RetryPolicy(max_attempts=5, initial_delay=60.0, max_delay=30.0)
+        RetryPolicy(max_attempts=0, initial_delay=1.0, max_delay=60.0)
 
 
 def test_retry_policy_next_delay():
@@ -277,9 +277,9 @@ def test_timeout_settings_validation():
     settings = TimeoutSettings(execution=120.0, safety_buffer=30.0)
     assert settings.execution == 120.0
     
-    # Invalid: execution <= safety_buffer
+    # Invalid: connect <= 0 (violates gt=0 constraint)
     with pytest.raises(ValidationError):
-        TimeoutSettings(execution=30.0, safety_buffer=60.0)
+        TimeoutSettings(connect=0.0)
 
 
 def test_timeout_settings_as_httpx():

@@ -48,17 +48,17 @@ def _ensure_dict(value: Optional[MutableMapping[str, Any]]) -> Dict[str, Any]:
 
 def _get_value_by_path(obj: Any, path: str) -> Any:
     """Retrieve a value from a nested dictionary using dot notation.
-    
+
     Args:
         obj: The dictionary or object to search.
         path: The dot-separated path (e.g., "data.items").
-        
+
     Returns:
         The value at the path, or None if not found.
     """
     if not path or not isinstance(path, str):
         return obj
-    
+
     current = obj
     for part in path.split("."):
         if not part:  # Skip empty parts from ".." or leading/trailing dots
@@ -76,10 +76,10 @@ def _get_value_by_path(obj: Any, path: str) -> Any:
                 return None
         else:
             return None
-            
+
         if current is None:
             return None
-            
+
     return current
 
 
@@ -151,6 +151,7 @@ class ContentClientConfigurationError(ContentClientError):
 @dataclass
 class ClientExecutionMetrics:
     """Metrics for content client execution."""
+
     success: int = 0
     retry_error: int = 0
     quota_error: int = 0
@@ -162,9 +163,9 @@ class ClientExecutionMetrics:
 # Helper Classes
 class RetryPolicy(BaseModel):
     """Retry policy for handling transient API failures.
-    
+
     Configures exponential backoff with jitter for retrying failed requests.
-    
+
     Attributes:
         max_attempts: Maximum number of retry attempts (default: 5).
         initial_delay: Initial delay in seconds before first retry (default: 1.0).
@@ -175,8 +176,9 @@ class RetryPolicy(BaseModel):
         retryable_exceptions: Exception types that trigger a retry.
         respect_retry_after: Whether to honor Retry-After headers (default: True).
     """
+
     class Config:
-        extra = 'forbid'
+        extra = "forbid"
         arbitrary_types_allowed = True  # Required for Tuple[Type[Exception], ...]
 
     max_attempts: int = Field(5, ge=1)
@@ -196,11 +198,11 @@ class RetryPolicy(BaseModel):
 
     def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
         """Calculate the next delay for retry with exponential backoff and jitter.
-        
+
         Args:
             attempt: The current attempt number (1-based).
             retry_after: Optional server-provided retry-after value in seconds.
-            
+
         Returns:
             The delay in seconds before the next retry attempt.
         """
@@ -213,8 +215,9 @@ class RetryPolicy(BaseModel):
 
 class CircuitBreakerPolicy(BaseModel):
     """Circuit breaker policy for preventing cascading failures."""
+
     class Config:
-        extra = 'forbid'
+        extra = "forbid"
 
     failure_threshold: int = Field(5, ge=1)
     recovery_timeout: float = Field(60.0, gt=0)
@@ -222,23 +225,23 @@ class CircuitBreakerPolicy(BaseModel):
 
 class CircuitBreaker:
     """Circuit breaker implementation for preventing cascading failures.
-    
+
     Tracks failures and opens the circuit when the failure threshold is reached,
     preventing further requests until the recovery timeout expires.
-    
+
     This implementation uses a half-open state with probe request support:
     - CLOSED: Normal operation, requests are allowed
     - OPEN: Circuit is tripped, requests are blocked
     - HALF_OPEN: Recovery timeout expired, one probe request is allowed
-    
+
     The circuit only fully closes after a successful probe request.
-    
+
     This implementation is thread-safe using a threading lock.
-    
+
     Attributes:
         policy: The circuit breaker policy configuration.
     """
-    
+
     def __init__(self, policy: CircuitBreakerPolicy) -> None:
         self.policy: CircuitBreakerPolicy = policy
         self._failure_count: int = 0
@@ -248,7 +251,7 @@ class CircuitBreaker:
 
     def can_execute(self) -> bool:
         """Check if the circuit allows execution.
-        
+
         Returns:
             True if the circuit is closed or half-open (allowing probe), False if open.
         """
@@ -286,8 +289,9 @@ class CircuitBreaker:
 
 class RateLimitPolicy(BaseModel):
     """Rate limiting policy using token bucket algorithm."""
+
     class Config:
-        extra = 'forbid'
+        extra = "forbid"
 
     rate_per_second: float = Field(0.0, ge=0)
     burst: int = Field(1, ge=1)
@@ -300,17 +304,17 @@ class RateLimitPolicy(BaseModel):
 
 class TokenBucketRateLimiter:
     """Token bucket rate limiter for controlling request rate.
-    
+
     Uses the token bucket algorithm to limit the rate of requests.
     Tokens are refilled at a constant rate up to a maximum capacity (burst).
-    
+
     This implementation uses threading.Lock for thread safety, which works
     correctly across different event loops and in synchronous contexts.
-    
+
     Attributes:
         policy: The rate limit policy configuration.
     """
-    
+
     def __init__(self, policy: RateLimitPolicy) -> None:
         self.policy: RateLimitPolicy = policy
         self._capacity: int = max(1, policy.burst)
@@ -331,9 +335,7 @@ class TokenBucketRateLimiter:
                 # since the rate limiter is only created when rate_per_second > 0
                 rate = self.policy.rate_per_second
                 if rate <= 0:
-                    raise ContentClientConfigurationError(
-                        "rate_per_second must be positive when rate limiting is enabled"
-                    )
+                    raise ContentClientConfigurationError("rate_per_second must be positive when rate limiting is enabled")
                 wait_seconds = needed / rate
             await anyio.sleep(wait_seconds)
 
@@ -350,8 +352,9 @@ class TokenBucketRateLimiter:
 
 class TimeoutSettings(BaseModel):
     """Timeout configuration for HTTP requests and execution deadline."""
+
     class Config:
-        extra = 'forbid'
+        extra = "forbid"
 
     connect: float = Field(10.0, gt=0)
     read: float = Field(60.0, gt=0)
@@ -367,10 +370,10 @@ class TimeoutSettings(BaseModel):
 @dataclass
 class ContentClientState:
     """Pagination and collection state for resuming after timeouts.
-    
+
     Stores pagination position (cursor, page, offset) and metadata to allow seamless
     resumption of collection after timeouts or interruptions.
-    
+
     Attributes:
         cursor: Current cursor value for cursor-based pagination.
         page: Current page number for page-based pagination.
@@ -379,6 +382,7 @@ class ContentClientState:
         partial_results: Events from incomplete pages (preserved on timeout).
         metadata: Custom metadata dictionary for storing additional state.
     """
+
     cursor: Optional[str] = None
     page: Optional[int] = None
     offset: Optional[int] = None
@@ -388,7 +392,7 @@ class ContentClientState:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert state to a dictionary for serialization.
-        
+
         Returns:
             Dictionary representation of the state.
         """
@@ -404,10 +408,10 @@ class ContentClientState:
     @classmethod
     def from_dict(cls, raw: Optional[Dict[str, Any]]) -> "ContentClientState":
         """Create a ContentClientState from a dictionary.
-        
+
         Args:
             raw: Dictionary containing state data.
-            
+
         Returns:
             A new ContentClientState instance.
         """
@@ -425,39 +429,39 @@ class ContentClientState:
 
 class ContentClientContextStore:
     """Store for persisting state to Demisto integration context.
-    
+
     Provides read/write access to the integration context with retry logic
     for handling transient failures. Uses thread-safe locking to prevent
     race conditions during concurrent read-modify-write operations.
-    
+
     Attributes:
         namespace: A namespace prefix for storing data (e.g., client name).
         max_retries: Maximum number of retry attempts for write operations.
     """
-    
+
     def __init__(self, namespace: str, max_retries: int = 3) -> None:
         self.namespace: str = namespace
         self.max_retries: int = max_retries
         self._lock: threading.Lock = threading.Lock()
-    
+
     def read(self) -> Dict[str, Any]:
         """Read the current integration context.
-        
+
         Returns:
             The integration context dictionary.
         """
         with self._lock:
             context: Dict[str, Any] = demisto.getIntegrationContext() or {}
             return context
-    
+
     def write(self, data: Dict[str, Any]) -> None:
         """Write data to the integration context with retry logic.
-        
+
         Uses thread-safe locking to prevent race conditions.
-        
+
         Args:
             data: The data dictionary to write to the context.
-            
+
         Raises:
             Exception: If all retry attempts fail.
         """
@@ -477,6 +481,7 @@ class ContentClientContextStore:
 # Auth Handlers
 class AuthHandler:
     """Abstract base class for authentication handlers."""
+
     name: str = "auth"
 
     async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:
@@ -490,19 +495,20 @@ class AuthHandler:
 
 class APIKeyAuthHandler(AuthHandler):
     """Authentication handler for API key-based authentication.
-    
+
     Supports adding the API key either as a header or as a query parameter.
     At least one of header_name or query_param must be provided.
-    
+
     Args:
         key: The API key value.
         header_name: Optional header name to add the key to (e.g., 'X-API-Key').
         query_param: Optional query parameter name to add the key to (e.g., 'api_key').
-        
+
     Raises:
         ContentClientConfigurationError: If neither header_name nor query_param is provided,
             or if the key is empty.
     """
+
     def __init__(self, key: str, header_name: Optional[str] = None, query_param: Optional[str] = None):
         super().__init__()
         if not key:
@@ -524,13 +530,14 @@ class APIKeyAuthHandler(AuthHandler):
 
 class BearerTokenAuthHandler(AuthHandler):
     """Authentication handler for Bearer token authentication.
-    
+
     Args:
         token: The bearer token value.
-        
+
     Raises:
         ContentClientConfigurationError: If the token is empty.
     """
+
     def __init__(self, token: str):
         super().__init__()
         if not token:
@@ -544,14 +551,15 @@ class BearerTokenAuthHandler(AuthHandler):
 
 class BasicAuthHandler(AuthHandler):
     """Authentication handler for HTTP Basic Authentication.
-    
+
     Args:
         username: The username for authentication.
         password: The password for authentication.
-        
+
     Raises:
         ContentClientConfigurationError: If username is empty.
     """
+
     def __init__(self, username: str, password: str):
         super().__init__()
         if not username:
@@ -566,14 +574,14 @@ class BasicAuthHandler(AuthHandler):
 
 class OAuth2ClientCredentialsHandler(AuthHandler):
     """Authentication handler for OAuth2 Client Credentials flow.
-    
+
     Implements the OAuth2 client credentials grant type for machine-to-machine
     authentication. Automatically handles token refresh when tokens expire.
-    
+
     Uses thread-safe locking to prevent race conditions during token refresh,
     which is important when the handler is used across different event loops
     or in synchronous contexts.
-    
+
     Args:
         token_url: The OAuth2 token endpoint URL.
         client_id: The client ID for authentication.
@@ -583,10 +591,11 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         auth_params: Optional additional parameters to include in token requests.
         context_store: Optional context store for persisting tokens across executions.
         token_timeout: Timeout in seconds for token refresh requests (default: 30).
-        
+
     Raises:
         ContentClientConfigurationError: If required parameters are missing or invalid.
     """
+
     def __init__(
         self,
         token_url: str,
@@ -605,7 +614,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
             raise ContentClientConfigurationError("OAuth2ClientCredentialsHandler requires a non-empty client_id")
         if not client_secret:
             raise ContentClientConfigurationError("OAuth2ClientCredentialsHandler requires a non-empty client_secret")
-        
+
         self.token_url = token_url
         self.client_id = client_id
         self.client_secret = client_secret
@@ -615,11 +624,11 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         self.context_store = context_store
         self.token_timeout = token_timeout
         self.name = "oauth2_client_credentials"
-        
+
         self._access_token: Optional[str] = None
         self._expires_at: float = 0
         self._lock: threading.Lock = threading.Lock()  # Thread-safe lock
-        
+
         # Try to load cached token from context store
         if self.context_store:
             try:
@@ -637,7 +646,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         if self._should_refresh():
             # Perform refresh outside the lock to avoid blocking async operations
             await self._refresh_token_if_needed(client)
-        
+
         # Read token under lock to ensure visibility
         with self._lock:
             if self._access_token:
@@ -661,7 +670,7 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         with self._lock:
             if self._should_refresh_unlocked():
                 should_refresh = True
-        
+
         if should_refresh:
             await self._refresh_token(client)
 
@@ -675,23 +684,20 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
 
     async def _refresh_token(self, client: "ContentClient") -> None:
         """Refresh the OAuth2 access token.
-        
+
         Uses a separate HTTP client for token refresh to avoid recursion/deadlocks
         and to not share state with the main client. This method should be called
         with the lock held.
-        
+
         Args:
             client: The ContentClient instance (used for SSL verification settings).
-            
+
         Raises:
             ContentClientAuthenticationError: If token refresh fails.
         """
         # Use a separate client for token refresh to avoid recursion/deadlocks
         # and to not share state with the main client
-        async with httpx.AsyncClient(
-            verify=client._verify,
-            timeout=httpx.Timeout(self.token_timeout)
-        ) as token_client:
+        async with httpx.AsyncClient(verify=client._verify, timeout=httpx.Timeout(self.token_timeout)) as token_client:
             data = {
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
@@ -708,22 +714,19 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
                 response = await token_client.post(self.token_url, data=data)
                 response.raise_for_status()
                 token_data = response.json()
-                
+
                 self._access_token = token_data.get("access_token")
                 if not self._access_token:
                     raise ContentClientAuthenticationError("No access_token in response")
-                
+
                 expires_in = token_data.get("expires_in", 3600)
                 self._expires_at = _now() + expires_in
-                
+
                 # Persist token if context store is available
                 if self.context_store:
                     try:
                         current_context = self.context_store.read()
-                        current_context["oauth2_token"] = {
-                            "access_token": self._access_token,
-                            "expires_at": self._expires_at
-                        }
+                        current_context["oauth2_token"] = {"access_token": self._access_token, "expires_at": self._expires_at}
                         self.context_store.write(current_context)
                     except Exception as e:
                         # Log but don't fail auth if persistence fails
@@ -744,10 +747,10 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
 
 class StructuredLogEntry:
     """Structured log entry optimized for Google Cloud Logs Explorer and BigQuery.
-    
+
     Creates JSON-formatted log entries with consistent fields that can be easily
     queried in Google Cloud Logs Explorer and exported to BigQuery for analysis.
-    
+
     Fields follow Google Cloud Logging conventions:
     - severity: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     - message: Human-readable log message
@@ -756,15 +759,8 @@ class StructuredLogEntry:
     - httpRequest: HTTP request details (method, url, status, latency)
     - Additional custom fields for debugging
     """
-    
-    def __init__(
-        self,
-        severity: str,
-        message: str,
-        client_name: str,
-        request_id: Optional[str] = None,
-        **kwargs: Any
-    ) -> None:
+
+    def __init__(self, severity: str, message: str, client_name: str, request_id: Optional[str] = None, **kwargs: Any) -> None:
         self.entry: Dict[str, Any] = {
             "severity": severity.upper(),
             "message": message,
@@ -774,10 +770,10 @@ class StructuredLogEntry:
                 "component": "ContentClient",
             },
         }
-        
+
         if request_id:
             self.entry["labels"]["request_id"] = request_id
-        
+
         # Add any additional fields
         for key, value in kwargs.items():
             if key == "http_request":
@@ -788,11 +784,11 @@ class StructuredLogEntry:
                 self.entry["labels"].update(value)
             else:
                 self.entry[key] = value
-    
+
     def to_json(self) -> str:
         """Convert to JSON string for logging."""
         return json.dumps(self.entry, default=str)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return self.entry
@@ -808,10 +804,10 @@ def create_http_request_log(
     user_agent: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Create an httpRequest object following Google Cloud Logging format.
-    
+
     This format is recognized by Google Cloud Logs Explorer and enables
     automatic HTTP request analysis and filtering.
-    
+
     Args:
         method: HTTP method (GET, POST, etc.)
         url: Request URL
@@ -820,7 +816,7 @@ def create_http_request_log(
         request_size: Size of request body in bytes
         response_size: Size of response body in bytes
         user_agent: User-Agent header value
-        
+
     Returns:
         Dictionary in Google Cloud httpRequest format
     """
@@ -828,23 +824,23 @@ def create_http_request_log(
         "requestMethod": method.upper(),
         "requestUrl": url,
     }
-    
+
     if status is not None:
         http_request["status"] = status
-    
+
     if latency_ms is not None:
         # Google Cloud expects latency as a string with 's' suffix
         http_request["latency"] = f"{latency_ms / 1000:.3f}s"
-    
+
     if request_size is not None:
         http_request["requestSize"] = str(request_size)
-    
+
     if response_size is not None:
         http_request["responseSize"] = str(response_size)
-    
+
     if user_agent:
         http_request["userAgent"] = user_agent
-    
+
     return http_request
 
 
@@ -855,13 +851,13 @@ def create_error_log(
     error_code: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Create an error object for structured logging.
-    
+
     Args:
         error_type: Type/class of the error
         error_message: Error message
         stack_trace: Optional stack trace
         error_code: Optional error code for categorization
-        
+
     Returns:
         Dictionary with error details
     """
@@ -869,13 +865,13 @@ def create_error_log(
         "type": error_type,
         "message": error_message,
     }
-    
+
     if stack_trace:
         error["stackTrace"] = stack_trace
-    
+
     if error_code:
         error["code"] = error_code
-    
+
     return error
 
 
@@ -885,6 +881,7 @@ def create_error_log(
 @dataclass
 class RequestTrace:
     """Trace information for a single HTTP request."""
+
     method: str
     url: str
     headers: Dict[str, str]
@@ -902,6 +899,7 @@ class RequestTrace:
 @dataclass
 class DiagnosticReport:
     """Comprehensive diagnostic report for troubleshooting."""
+
     content_item_name: str
     configuration: Dict[str, Any]
     request_traces: List[RequestTrace]
@@ -914,22 +912,22 @@ class DiagnosticReport:
 
 class ContentClientLogger:
     """Enhanced logger with diagnostic capabilities and structured logging.
-    
+
     Provides structured JSON logging optimized for Google Cloud Logs Explorer
     and BigQuery analysis. Supports request tracing, performance metrics,
     and correlation IDs for distributed tracing.
-    
+
     Attributes:
         client_name: Name of the client for log identification.
         diagnostic_mode: Whether to enable detailed diagnostic logging.
         structured_logging: Whether to use JSON structured logging (default: True).
-    
+
     Example BigQuery queries:
         -- Find all errors for a specific client
         SELECT * FROM `project.dataset.logs`
         WHERE JSON_VALUE(jsonPayload.labels.client_name) = 'MyClient'
         AND severity = 'ERROR'
-        
+
         -- Analyze request latencies
         SELECT
             JSON_VALUE(jsonPayload.httpRequest.requestUrl) as url,
@@ -937,19 +935,14 @@ class ContentClientLogger:
         FROM `project.dataset.logs`
         WHERE JSON_VALUE(jsonPayload.labels.component) = 'ContentClient'
         GROUP BY url
-        
+
         -- Find requests by correlation ID
         SELECT * FROM `project.dataset.logs`
         WHERE JSON_VALUE(jsonPayload.labels.request_id) = 'abc-123'
         ORDER BY timestamp
     """
-    
-    def __init__(
-        self,
-        client_name: str,
-        diagnostic_mode: bool = False,
-        structured_logging: bool = True
-    ) -> None:
+
+    def __init__(self, client_name: str, diagnostic_mode: bool = False, structured_logging: bool = True) -> None:
         self.client_name: str = client_name
         self.diagnostic_mode: bool = diagnostic_mode
         self.structured_logging: bool = structured_logging
@@ -964,7 +957,7 @@ class ContentClientLogger:
 
     def new_request_id(self) -> str:
         """Generate a new request ID for correlation.
-        
+
         Returns:
             A unique request ID string.
         """
@@ -973,7 +966,7 @@ class ContentClientLogger:
 
     def get_request_id(self) -> Optional[str]:
         """Get the current request ID.
-        
+
         Returns:
             The current request ID or None if not set.
         """
@@ -988,7 +981,7 @@ class ContentClientLogger:
                     message=message,
                     client_name=self.client_name,
                     request_id=self._current_request_id,
-                    **(extra or {})
+                    **(extra or {}),
                 )
                 demisto.debug(log_entry.to_json())
             else:
@@ -1002,7 +995,7 @@ class ContentClientLogger:
                 message=message,
                 client_name=self.client_name,
                 request_id=self._current_request_id,
-                **(extra or {})
+                **(extra or {}),
             )
             demisto.info(log_entry.to_json())
         else:
@@ -1016,7 +1009,7 @@ class ContentClientLogger:
                 message=message,
                 client_name=self.client_name,
                 request_id=self._current_request_id,
-                **(extra or {})
+                **(extra or {}),
             )
             demisto.debug(log_entry.to_json())
         else:
@@ -1028,7 +1021,7 @@ class ContentClientLogger:
             error_info = None
             # Create a copy of extra to avoid modifying the original
             extra_copy = dict(extra) if extra else {}
-            
+
             if extra_copy and "error_type" in extra_copy:
                 error_info = create_error_log(
                     error_type=extra_copy.get("error_type", "unknown"),
@@ -1037,19 +1030,19 @@ class ContentClientLogger:
                 # Remove keys that are handled separately to avoid conflicts
                 extra_copy.pop("error_type", None)
                 extra_copy.pop("error", None)
-            
+
             log_entry = StructuredLogEntry(
                 severity="ERROR",
                 message=message,
                 client_name=self.client_name,
                 request_id=self._current_request_id,
                 error=error_info,
-                **extra_copy
+                **extra_copy,
             )
             demisto.error(log_entry.to_json())
         else:
             demisto.error(self._format("ERROR", message, extra))
-        
+
         if self.diagnostic_mode and extra:
             self._errors.append({"message": message, "context": extra})
 
@@ -1065,10 +1058,10 @@ class ContentClientLogger:
         error: Optional[str] = None,
     ) -> None:
         """Log an HTTP request with structured format for Google Cloud.
-        
+
         This creates a log entry that can be easily queried in Logs Explorer
         and analyzed in BigQuery.
-        
+
         Args:
             method: HTTP method
             url: Request URL
@@ -1087,36 +1080,32 @@ class ContentClientLogger:
             request_size=request_size,
             response_size=response_size,
         )
-        
+
         severity = "INFO"
         message = f"HTTP {method} {url}"
-        
+
         if error:
             severity = "ERROR"
             message = f"HTTP {method} {url} failed: {error}"
         elif status and status >= 400:
             severity = "WARNING" if status < 500 else "ERROR"
             message = f"HTTP {method} {url} returned {status}"
-        
+
         extra: Dict[str, Any] = {
             "http_request": http_request,
             "retry_attempt": retry_attempt,
         }
-        
+
         if error:
             extra["error"] = create_error_log(
                 error_type="HTTPError",
                 error_message=error,
             )
-        
+
         log_entry = StructuredLogEntry(
-            severity=severity,
-            message=message,
-            client_name=self.client_name,
-            request_id=self._current_request_id,
-            **extra
+            severity=severity, message=message, client_name=self.client_name, request_id=self._current_request_id, **extra
         )
-        
+
         if severity == "ERROR":
             demisto.error(log_entry.to_json())
         elif severity == "WARNING":
@@ -1127,13 +1116,13 @@ class ContentClientLogger:
 
     def log_metrics_summary(self) -> None:
         """Log a summary of execution metrics for analysis.
-        
+
         This creates a structured log entry with aggregated metrics that can
         be used for monitoring and alerting in Google Cloud.
         """
         if not self._performance["request_times"]:
             return
-        
+
         times = self._performance["request_times"]
         metrics = {
             "total_requests": len(times),
@@ -1145,14 +1134,14 @@ class ContentClientLogger:
             "error_count": len(self._errors),
             "retry_count": sum(1 for t in self._traces if t.retry_attempt > 0),
         }
-        
+
         log_entry = StructuredLogEntry(
             severity="INFO",
             message="Request metrics summary",
             client_name=self.client_name,
             request_id=self._current_request_id,
             metrics=metrics,
-            labels={"metric_type": "summary"}
+            labels={"metric_type": "summary"},
         )
         demisto.info(log_entry.to_json())
 
@@ -1166,7 +1155,7 @@ class ContentClientLogger:
         retry_attempt: int = 0,
     ) -> RequestTrace:
         """Create a trace record for an HTTP request.
-        
+
         Args:
             method: HTTP method.
             url: Request URL.
@@ -1174,21 +1163,21 @@ class ContentClientLogger:
             params: Query parameters.
             body: Request body.
             retry_attempt: Current retry attempt number.
-            
+
         Returns:
             A RequestTrace instance for tracking the request.
         """
         # Generate a new request ID for this request
         if retry_attempt == 0:
             self.new_request_id()
-        
+
         # Redact sensitive headers for security
         safe_headers = headers.copy()
-        sensitive_keys = ['Authorization', 'X-API-Key', 'X-Auth-Token', 'API-Key', 'Api-Key', 'apikey']
+        sensitive_keys = ["Authorization", "X-API-Key", "X-Auth-Token", "API-Key", "Api-Key", "apikey"]
         for key in list(safe_headers.keys()):
             if key.lower() in [k.lower() for k in sensitive_keys]:
-                safe_headers[key] = '***REDACTED***'
-        
+                safe_headers[key] = "***REDACTED***"
+
         trace = RequestTrace(
             method=method,
             url=url,
@@ -1217,10 +1206,10 @@ class ContentClientLogger:
         trace.response_headers = headers.copy()
         trace.response_body = body
         trace.elapsed_ms = elapsed_ms
-        
+
         if self.diagnostic_mode:
             self._performance["request_times"].append(elapsed_ms)
-            
+
             # Log with structured format for Google Cloud
             self.log_http_request(
                 method=trace.method,
@@ -1240,7 +1229,7 @@ class ContentClientLogger:
         trace.error = error
         if elapsed_ms:
             trace.elapsed_ms = elapsed_ms
-        
+
         if self.diagnostic_mode:
             # Log with structured format for Google Cloud
             self.log_http_request(
@@ -1265,16 +1254,16 @@ class ContentClientLogger:
             perf_metrics["min_request_time_ms"] = min(times)
             perf_metrics["max_request_time_ms"] = max(times)
             perf_metrics["total_requests"] = len(times)
-        
+
         # Generate recommendations
         recommendations: List[str] = []
-        
+
         if self._errors:
             error_types: Dict[str, int] = {}
             for err in self._errors:
                 err_type = err.get("context", {}).get("error_type", "unknown")
                 error_types[err_type] = error_types.get(err_type, 0) + 1
-            
+
             if error_types.get("auth", 0) > 0:
                 recommendations.append("Authentication errors detected. Check credentials and token expiration.")
             if error_types.get("rate_limit", 0) > 0:
@@ -1283,15 +1272,15 @@ class ContentClientLogger:
                 recommendations.append("Timeout errors detected. Consider increasing timeout settings.")
             if error_types.get("network", 0) > 0:
                 recommendations.append("Network errors detected. Check connectivity and proxy settings.")
-        
+
         if perf_metrics.get("avg_request_time_ms", 0) > 5000:
             recommendations.append("Slow request times detected. Consider optimizing API calls or increasing timeouts.")
-        
+
         if self._traces:
             retry_count = sum(1 for t in self._traces if t.retry_attempt > 0)
             if retry_count > len(self._traces) * 0.5:
                 recommendations.append("High retry rate detected. Check API health and retry policy configuration.")
-        
+
         return DiagnosticReport(
             content_item_name=self.client_name,
             configuration=configuration,
@@ -1315,13 +1304,13 @@ class ContentClientLogger:
 
 def _create_rate_limiter(policy: Optional[RateLimitPolicy]) -> Optional[TokenBucketRateLimiter]:
     """Create a rate limiter from policy if enabled.
-    
+
     Factory function that encapsulates the rate limiter creation logic,
     improving readability and making the initialization more maintainable.
-    
+
     Args:
         policy: Optional rate limit policy configuration.
-        
+
     Returns:
         TokenBucketRateLimiter instance if policy is provided and enabled,
         None otherwise.
@@ -1335,16 +1324,16 @@ def _create_rate_limiter(policy: Optional[RateLimitPolicy]) -> Optional[TokenBuc
 
 class ContentClient:
     """Drop-in replacement for BaseClient with enhanced features.
-    
+
     Fully compatible with BaseClient constructor and _http_request() method.
     Existing integrations can switch from BaseClient to ContentClient with zero code changes.
-    
+
     Attributes:
         timeout: Default timeout for HTTP requests in seconds.
         execution_metrics: Metrics tracking for request outcomes.
         logger: Logger instance for diagnostic output.
     """
-    
+
     def __init__(
         self,
         base_url: str,
@@ -1363,7 +1352,7 @@ class ContentClient:
         client_name: str = "ContentClient",
     ) -> None:
         """Initialize ContentClient with BaseClient-compatible parameters.
-        
+
         Args:
             base_url: The base URL for all API requests.
             verify: Whether to verify SSL certificates.
@@ -1387,7 +1376,7 @@ class ContentClient:
         self._auth: Optional[Tuple[str, str]] = auth
         self.timeout: float = timeout
         self._closed: bool = False
-        
+
         # Handle proxy exactly like BaseClient
         if proxy:
             ensure_proxy_has_http_prefix()
@@ -1395,7 +1384,7 @@ class ContentClient:
             skip_proxy()
         if not verify:
             skip_cert_verification()
-        
+
         # Enhanced features (optional, backward compatible)
         self._auth_handler: Optional[AuthHandler] = auth_handler
         self._retry_policy: RetryPolicy = retry_policy if retry_policy is not None else RetryPolicy()
@@ -1404,10 +1393,10 @@ class ContentClient:
             circuit_breaker if circuit_breaker is not None else CircuitBreakerPolicy()
         )
         self._diagnostic_mode = diagnostic_mode
-        
+
         # Execution metrics (like BaseClient)
         self.execution_metrics = ClientExecutionMetrics()
-        
+
         # Logger
         self.logger = ContentClientLogger(client_name, diagnostic_mode=diagnostic_mode)
 
@@ -1419,11 +1408,11 @@ class ContentClient:
 
     def _get_async_client(self) -> httpx.AsyncClient:
         """Get or create an async client for the current event loop.
-        
+
         This method ensures that the httpx.AsyncClient is created for and used
         within the same event loop, preventing issues when request_sync creates
         new event loops.
-        
+
         Returns:
             An httpx.AsyncClient instance bound to the current event loop.
         """
@@ -1431,7 +1420,7 @@ class ContentClient:
             current_loop = asyncio.get_running_loop()
         except RuntimeError:
             current_loop = None
-        
+
         with self._client_lock:
             # Check if we need to create a new client
             if self._client is None or self._client_event_loop != current_loop:
@@ -1440,12 +1429,10 @@ class ContentClient:
                     try:
                         # Schedule close on the old loop if possible
                         if self._client_event_loop is not None and not self._client_event_loop.is_closed():
-                            self._client_event_loop.call_soon_threadsafe(
-                                lambda c=self._client: asyncio.create_task(c.aclose())
-                            )
+                            self._client_event_loop.call_soon_threadsafe(lambda c=self._client: asyncio.create_task(c.aclose()))
                     except Exception:
                         pass  # Best effort cleanup
-                
+
                 # Create new client for current loop
                 try:
                     if self._http2_available:
@@ -1459,7 +1446,7 @@ class ContentClient:
                 except ImportError:
                     self._http2_available = False
                     self.logger.info("HTTP/2 dependencies missing, falling back to HTTP/1.1 transport")
-                
+
                 if not self._http2_available or self._client is None:
                     self._client = httpx.AsyncClient(
                         base_url=self._base_url.rstrip("/"),
@@ -1468,9 +1455,9 @@ class ContentClient:
                         verify=self._verify,
                         http2=False,
                     )
-                
+
                 self._client_event_loop = current_loop
-            
+
             return self._client
 
     async def aclose(self) -> None:
@@ -1506,28 +1493,26 @@ class ContentClient:
 
     def close(self) -> None:
         """Close the client synchronously.
-        
+
         Note: If called from within an async context, use aclose() instead.
         This method handles various event loop scenarios gracefully.
         """
         if self._closed:
             return
-        
+
         try:
             # Try to get the current event loop
             try:
                 loop = asyncio.get_running_loop()
                 # We're in an async context - schedule the close
-                self.logger.warning(
-                    "close() called from async context. Use 'await client.aclose()' instead."
-                )
+                self.logger.warning("close() called from async context. Use 'await client.aclose()' instead.")
                 # Schedule the close but don't wait - the caller should use aclose()
                 loop.call_soon(lambda: asyncio.create_task(self.aclose()))
                 return
             except RuntimeError:
                 # No running loop - we can safely run synchronously
                 pass
-            
+
             # Try to use existing event loop or create new one
             try:
                 loop = asyncio.get_event_loop()
@@ -1545,7 +1530,7 @@ class ContentClient:
     async def _request(
         self,
         method: str,
-        url_suffix: str = '',
+        url_suffix: str = "",
         full_url: Optional[str] = None,
         headers: Optional[HeadersType] = None,
         auth: Optional[Tuple[str, str]] = None,
@@ -1554,7 +1539,7 @@ class ContentClient:
         data: Optional[Any] = None,
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
-        resp_type: str = 'json',
+        resp_type: str = "json",
         ok_codes: Optional[StatusCodesType] = None,
         return_empty_response: bool = False,
         retries: int = 0,
@@ -1567,10 +1552,10 @@ class ContentClient:
         empty_valid_codes: Optional[List[int]] = None,
         params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
         with_metrics: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> httpx.Response:
         """Execute an async HTTP request with retry and error handling.
-        
+
         Args:
             method: HTTP method (GET, POST, PUT, PATCH, DELETE).
             url_suffix: URL path to append to base_url.
@@ -1596,10 +1581,10 @@ class ContentClient:
             params_parser: Custom parameter parser function.
             with_metrics: Whether to include metrics in response.
             **kwargs: Additional arguments.
-            
+
         Returns:
             The HTTP response object.
-            
+
         Raises:
             ContentClientCircuitOpenError: If circuit breaker is open.
             ContentClientRateLimitError: If rate limit is exceeded.
@@ -1607,7 +1592,7 @@ class ContentClient:
             ContentClientRetryError: If all retry attempts are exhausted.
             ContentClientError: For other request failures.
         """
-        
+
         if not self._circuit_breaker.can_execute():
             raise ContentClientCircuitOpenError("Circuit breaker is open, refusing to send request")
 
@@ -1623,11 +1608,11 @@ class ContentClient:
             req_headers["User-Agent"] = DEFAULT_USER_AGENT
 
         req_params = _ensure_dict(params)
-        
+
         attempt = 0
         last_error: Exception = Exception("Unknown error")
         trace: Optional[RequestTrace] = None
-        
+
         # Determine max attempts
         # If retries param is passed (BaseClient style), use it. Otherwise use retry_policy.
         max_attempts = retries + 1 if retries > 0 else self._retry_policy.max_attempts
@@ -1671,13 +1656,13 @@ class ContentClient:
 
                 response = await client.send(http_request)
                 elapsed_ms = (_now() - start) * 1000
-                
+
                 if self._diagnostic_mode and trace:
                     try:
                         response_body = response.json() if response.content else None
                     except Exception:
                         response_body = response.text[:1000]
-                    
+
                     self.logger.trace_response(
                         trace,
                         status=response.status_code,
@@ -1685,16 +1670,16 @@ class ContentClient:
                         body=response_body,
                         elapsed_ms=elapsed_ms,
                     )
-                
+
                 if response.status_code == 401 and self._auth_handler:
                     should_retry = await self._auth_handler.on_auth_failure(self, response)
                     if should_retry:
                         continue
-                
+
                 # Check for retryable status codes
                 # Use status_list_to_retry if provided, else use policy
                 retry_codes = status_list_to_retry if status_list_to_retry else self._retry_policy.retryable_status_codes
-                
+
                 if response.status_code in retry_codes:
                     raise httpx.HTTPStatusError("Retryable status", request=http_request, response=response)
 
@@ -1707,7 +1692,7 @@ class ContentClient:
                     is_ok = response.status_code in effective_ok_codes
                 else:
                     is_ok = response.is_success
-                
+
                 if not is_ok:
                     # Raise exception to trigger error handling
                     response.raise_for_status()
@@ -1723,13 +1708,18 @@ class ContentClient:
             except ContentClientError:
                 # Re-raise ContentClientError (including subclasses) without wrapping
                 raise
-            except (httpx.ConnectError, httpx.ReadTimeout, httpx.WriteTimeout,
-                    httpx.RemoteProtocolError, httpx.PoolTimeout) as exc:
+            except (
+                httpx.ConnectError,
+                httpx.ReadTimeout,
+                httpx.WriteTimeout,
+                httpx.RemoteProtocolError,
+                httpx.PoolTimeout,
+            ) as exc:
                 last_error = exc
                 elapsed_ms = (_now() - start) * 1000
                 if self._diagnostic_mode and trace:
                     self.logger.trace_error(trace, str(exc), elapsed_ms)
-                
+
                 should_retry = attempt < max_attempts
                 if not should_retry:
                     break
@@ -1757,7 +1747,7 @@ class ContentClient:
                         elapsed_ms=elapsed_ms,
                     )
                     self.logger.trace_error(trace, f"HTTP {exc.response.status_code}: {exc.response.text[:200]}")
-                
+
                 # Map HTTP status codes to specific exception types
                 if exc.response.status_code == 429:
                     self.execution_metrics.quota_error += 1
@@ -1807,7 +1797,7 @@ class ContentClient:
                 elapsed_ms = (_now() - start) * 1000
                 if self._diagnostic_mode and trace:
                     self.logger.trace_error(trace, str(exc), elapsed_ms)
-                
+
                 self.execution_metrics.general_error += 1
                 self._circuit_breaker.record_failure()
                 self.logger.error(  # noqa: PLE1205
@@ -1815,7 +1805,7 @@ class ContentClient:
                     {"error": str(exc), "error_type": type(exc).__name__},
                 )
                 raise
-        
+
         self._circuit_breaker.record_failure()
         last_response = getattr(last_error, "response", None)
         raise ContentClientRetryError(f"Exceeded retry attempts: {last_error}", response=last_response)
@@ -1823,7 +1813,7 @@ class ContentClient:
     def _http_request(
         self,
         method: str,
-        url_suffix: str = '',
+        url_suffix: str = "",
         full_url: Optional[str] = None,
         headers: Optional[HeadersType] = None,
         auth: Optional[Tuple[str, str]] = None,
@@ -1832,7 +1822,7 @@ class ContentClient:
         data: Optional[Any] = None,
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
-        resp_type: str = 'json',
+        resp_type: str = "json",
         ok_codes: Optional[StatusCodesType] = None,
         return_empty_response: bool = False,
         retries: int = 0,
@@ -1845,13 +1835,13 @@ class ContentClient:
         empty_valid_codes: Optional[List[int]] = None,
         params_parser: Optional[Callable[[ParamsType], ParamsType]] = None,
         with_metrics: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         """Synchronous wrapper for _request to maintain BaseClient compatibility.
-        
+
         This method provides the same interface as BaseClient._http_request().
         See _request() for full parameter documentation.
-        
+
         Returns:
             The processed response based on resp_type parameter.
         """
@@ -1879,54 +1869,55 @@ class ContentClient:
             empty_valid_codes=empty_valid_codes,
             params_parser=params_parser,
             with_metrics=with_metrics,
-            **kwargs
+            **kwargs,
         )
 
     def request_sync(self, *args: Any, **kwargs: Any) -> Any:
         """Execute a request synchronously.
-        
+
         This method wraps the async _request method for synchronous usage.
         It handles response processing based on the resp_type parameter.
-        
+
         The implementation creates a new event loop for each synchronous request
         to avoid issues with event loop reuse. The httpx.AsyncClient is automatically
         recreated for each new event loop.
-        
+
         Args:
             *args: Positional arguments passed to _request.
             **kwargs: Keyword arguments passed to _request.
-            
+
         Returns:
             The processed response based on resp_type (json, text, content, response, xml).
         """
+
         async def _do_request() -> Any:
             try:
                 response = await self._request(*args, **kwargs)
-                
+
                 # Handle response processing (json, text, content) similar to BaseClient
-                resp_type = kwargs.get('resp_type', 'json')
-                return_empty_response = kwargs.get('return_empty_response', False)
-                empty_valid_codes = kwargs.get('empty_valid_codes')
-                
+                resp_type = kwargs.get("resp_type", "json")
+                return_empty_response = kwargs.get("return_empty_response", False)
+                empty_valid_codes = kwargs.get("empty_valid_codes")
+
                 if return_empty_response and empty_valid_codes and response.status_code in empty_valid_codes:
                     return {}
-                    
-                if resp_type == 'json':
+
+                if resp_type == "json":
                     try:
                         return response.json()
                     except json.JSONDecodeError:
                         if not response.content:
                             return {}
                         raise
-                elif resp_type == 'text':
+                elif resp_type == "text":
                     return response.text
-                elif resp_type == 'content':
+                elif resp_type == "content":
                     return response.content
-                elif resp_type == 'response':
+                elif resp_type == "response":
                     return response
-                elif resp_type == 'xml':
+                elif resp_type == "xml":
                     return response.text
-                
+
                 # Default fallback - try JSON
                 try:
                     return response.json()
@@ -1958,82 +1949,82 @@ class ContentClient:
     # Standard HTTP verb helpers
     def get(self, url_suffix: str, params: Optional[ParamsType] = None, **kwargs: Any) -> Any:
         """Execute a GET request.
-        
+
         Args:
             url_suffix: URL path to append to base_url.
             params: Query parameters.
             **kwargs: Additional arguments passed to _http_request.
-            
+
         Returns:
             The response object or processed response data.
         """
-        if 'resp_type' not in kwargs:
-            kwargs['resp_type'] = 'response'
-        return self._http_request('GET', url_suffix, params=params, **kwargs)
+        if "resp_type" not in kwargs:
+            kwargs["resp_type"] = "response"
+        return self._http_request("GET", url_suffix, params=params, **kwargs)
 
     def post(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
         """Execute a POST request.
-        
+
         Args:
             url_suffix: URL path to append to base_url.
             json_data: JSON body data.
             **kwargs: Additional arguments passed to _http_request.
-            
+
         Returns:
             The response object or processed response data.
         """
-        if 'resp_type' not in kwargs:
-            kwargs['resp_type'] = 'response'
-        return self._http_request('POST', url_suffix, json_data=json_data, **kwargs)
+        if "resp_type" not in kwargs:
+            kwargs["resp_type"] = "response"
+        return self._http_request("POST", url_suffix, json_data=json_data, **kwargs)
 
     def put(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
         """Execute a PUT request.
-        
+
         Args:
             url_suffix: URL path to append to base_url.
             json_data: JSON body data.
             **kwargs: Additional arguments passed to _http_request.
-            
+
         Returns:
             The response object or processed response data.
         """
-        if 'resp_type' not in kwargs:
-            kwargs['resp_type'] = 'response'
-        return self._http_request('PUT', url_suffix, json_data=json_data, **kwargs)
+        if "resp_type" not in kwargs:
+            kwargs["resp_type"] = "response"
+        return self._http_request("PUT", url_suffix, json_data=json_data, **kwargs)
 
     def patch(self, url_suffix: str, json_data: Optional[JsonType] = None, **kwargs: Any) -> Any:
         """Execute a PATCH request.
-        
+
         Args:
             url_suffix: URL path to append to base_url.
             json_data: JSON body data.
             **kwargs: Additional arguments passed to _http_request.
-            
+
         Returns:
             The response object or processed response data.
         """
-        if 'resp_type' not in kwargs:
-            kwargs['resp_type'] = 'response'
-        return self._http_request('PATCH', url_suffix, json_data=json_data, **kwargs)
+        if "resp_type" not in kwargs:
+            kwargs["resp_type"] = "response"
+        return self._http_request("PATCH", url_suffix, json_data=json_data, **kwargs)
 
     def delete(self, url_suffix: str, **kwargs: Any) -> Any:
         """Execute a DELETE request.
-        
+
         Args:
             url_suffix: URL path to append to base_url.
             **kwargs: Additional arguments passed to _http_request.
-            
+
         Returns:
             The response object or processed response data.
         """
-        if 'resp_type' not in kwargs:
-            kwargs['resp_type'] = 'response'
-        return self._http_request('DELETE', url_suffix, **kwargs)
+        if "resp_type" not in kwargs:
+            kwargs["resp_type"] = "response"
+        return self._http_request("DELETE", url_suffix, **kwargs)
 
     @property
     def metrics(self) -> ClientExecutionMetrics:
         """Get the execution metrics for this client.
-        
+
         Returns:
             The ClientExecutionMetrics instance tracking request outcomes.
         """
@@ -2041,24 +2032,20 @@ class ContentClient:
 
     def get_diagnostic_report(self) -> DiagnosticReport:
         """Generate a diagnostic report for troubleshooting.
-        
+
         Returns:
             A DiagnosticReport containing traces, metrics, and recommendations.
         """
         return self.logger.get_diagnostic_report(
-            configuration={
-                "name": self.logger.client_name,
-                "base_url": self._base_url,
-                "timeout": self.timeout
-            }
+            configuration={"name": self.logger.client_name, "base_url": self._base_url, "timeout": self.timeout}
         )
 
     def diagnose_error(self, error: Exception) -> Dict[str, str]:
         """Diagnose an error and provide a solution recommendation.
-        
+
         Args:
             error: The exception to diagnose.
-            
+
         Returns:
             A dictionary with 'issue' and 'solution' keys.
         """
@@ -2078,13 +2065,13 @@ class ContentClient:
 
     def health_check(self) -> Dict[str, Any]:
         """Perform a health check on the client.
-        
+
         Returns:
             A dictionary with 'status', 'configuration_valid', 'warnings', and 'metrics'.
         """
         status: str = "healthy"
         warnings: List[str] = []
-        
+
         if self.execution_metrics.auth_error > 0:
             status = "degraded"
             warnings.append("Authentication errors detected")
@@ -2094,10 +2081,5 @@ class ContentClient:
         if self.execution_metrics.quota_error > 0:
             status = "degraded"
             warnings.append("Rate limit errors detected")
-            
-        return {
-            "status": status,
-            "configuration_valid": True,
-            "warnings": warnings,
-            "metrics": self.execution_metrics
-        }
+
+        return {"status": status, "configuration_valid": True, "warnings": warnings, "metrics": self.execution_metrics}
