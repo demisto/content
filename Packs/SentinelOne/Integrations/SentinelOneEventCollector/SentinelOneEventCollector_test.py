@@ -151,3 +151,102 @@ def test_main(mocker):
     assert events.call_args[0][0][0].get("_time") == events.call_args[0][0][0].get("updatedAt")
     assert events.call_args[1].get("vendor") == VENDOR
     assert events.call_args[1].get("product") == PRODUCT
+
+
+def test_add_keys_to_events_with_external_url():
+    """
+    Tests add_keys_to_events function with EXTERNAL_URL field construction.
+
+        Given:
+            - Events from SentinelOne (threats, alerts, and activities).
+            - A base URL for the SentinelOne instance.
+
+        When:
+            - Calling the 'add_keys_to_events' function with base_url parameter.
+
+        Then:
+            - Ensure EXTERNAL_URL field is correctly constructed for each event type:
+              - Threats: {base_url}/incidents/threats/{threat_id}/overview
+              - Alerts: {base_url}/incidents/alerts/{alert_id}/overview
+              - Activities: {base_url}/activity
+
+    """
+    from SentinelOneEventCollector import add_keys_to_events
+
+    base_url = "https://test.sentinelone.net"
+
+    # Test data
+    threat_event = {
+        "threatInfo": {
+            "threatId": "123456",
+            "updatedAt": "2022-12-20T15:51:17.514437Z"
+        }
+    }
+
+    alert_event = {
+        "alertInfo": {
+            "alertId": "789012",
+            "updatedAt": "2022-12-20T13:54:43.027000Z"
+        }
+    }
+
+    activity_event = {
+        "updatedAt": "2022-09-06T20:37:55.912951Z"
+    }
+
+    events = [threat_event, alert_event, activity_event]
+
+    # Call the function
+    add_keys_to_events(events, base_url=base_url)
+
+    # Assertions for Threat
+    assert threat_event.get("eventType") == "Threat"
+    assert threat_event.get("EXTERNAL_URL") == f"{base_url}/incidents/threats/123456/overview"
+    assert threat_event.get("_time") == "2022-12-20T15:51:17.514437Z"
+
+    # Assertions for Alert
+    assert alert_event.get("eventType") == "Alert"
+    assert alert_event.get("EXTERNAL_URL") == f"{base_url}/incidents/alerts/789012/overview"
+    assert alert_event.get("_time") == "2022-12-20T13:54:43.027000Z"
+
+    # Assertions for Activity
+    assert activity_event.get("eventType") == "Activity"
+    assert activity_event.get("EXTERNAL_URL") == f"{base_url}/activity"
+    assert activity_event.get("_time") == "2022-09-06T20:37:55.912951Z"
+
+
+def test_add_keys_to_events_without_base_url():
+    """
+    Tests add_keys_to_events function without base_url parameter.
+
+        Given:
+            - Events from SentinelOne (threats, alerts, and activities).
+            - No base URL provided.
+
+        When:
+            - Calling the 'add_keys_to_events' function without base_url parameter.
+
+        Then:
+            - Ensure EXTERNAL_URL field is NOT added to events.
+            - Ensure other fields (_time, eventType) are still added correctly.
+
+    """
+    from SentinelOneEventCollector import add_keys_to_events
+
+    # Test data
+    threat_event = {
+        "threatInfo": {
+            "threatId": "123456",
+            "updatedAt": "2022-12-20T15:51:17.514437Z"
+        }
+    }
+
+    events = [threat_event]
+
+    # Call the function without base_url
+    add_keys_to_events(events)
+
+    # Assertions
+    assert threat_event.get("eventType") == "Threat"
+    assert threat_event.get("_time") == "2022-12-20T15:51:17.514437Z"
+    assert "EXTERNAL_URL" not in threat_event
