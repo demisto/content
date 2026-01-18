@@ -2803,11 +2803,8 @@ class EC2:
         if association_ids := args.get("association_ids"):
             kwargs["AssociationIds"] = parse_resource_ids(association_ids)
 
-        if max_results := arg_to_number(args.get("limit")):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
+        pagination_kwargs = build_pagination_kwargs(args)
+        kwargs.update(pagination_kwargs)
 
         response = client.describe_iam_instance_profile_associations(**kwargs)
 
@@ -2930,18 +2927,20 @@ class EC2:
         if reserved_instances_ids := args.get("reserved_instances_ids"):
             kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
 
+        print_debug_logs(client, f"Describing reserved instances with parameters: {kwargs}")
         response = client.describe_reserved_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         reserved_instances = response.get("ReservedInstances", [])
+        print_debug_logs(client, f"Reserved Instances: {reserved_instances}")
 
         if not reserved_instances:
             return CommandResults(readable_output="No Reserved Instances were found.")
 
         # Serialize datetime objects
-        response = serialize_response_with_datetime_encoding(response)
+        response = serialize_response_with_datetime_encoding(reserved_instances)
         reserved_instances = response.get("ReservedInstances", [])
 
         # Format output data
