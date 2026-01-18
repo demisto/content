@@ -1003,12 +1003,7 @@ def format_as_events(
     return events
 
 
-async def get_alert_list(
-    client: HelloWorldClient,
-    start_offset: int,
-    severity: HelloWorldSeverity,
-    limit: int,
-) -> list[dict]:
+async def get_alert_list( client: HelloWorldClient, start_offset: int, severity: HelloWorldSeverity, limit: int) -> list[dict]:
     """Fetch audit events from the API in batches and optionally send them to XSIAM.
 
     INTEGRATION DEVELOPER TIP:
@@ -1142,7 +1137,7 @@ def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) ->
     # The validation happens automatically when HelloworldSayHelloArgs is instantiated.
 
     # Call the Client function and get the raw response
-    result = client.say_hello(args.name)
+    result = client.say_hello(name=args.name)
 
     # Create the human readable output.
     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
@@ -1571,6 +1566,9 @@ def main() -> None:  # pragma: no cover
                 # Save next_run for the next time fetch is invoked
                 next_run.set()
                 demisto.debug("[Main] fetch completed")
+            
+            case "fetch-assets":
+                pass
 
             case "helloworld-get-events":
                 # Validate command arguments

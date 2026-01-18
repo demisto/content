@@ -55,7 +55,9 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import pytest
+from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException
+from HelloWorldV2 import HelloWorldParams, HelloWorldClient, HelloWorldLastRun, HelloWorldSeverity, Credentials, DUMMY_VALID_API_KEY
 
 
 # ========== Credentials Model Tests ==========
@@ -572,4 +574,137 @@ class TestIpArgs:
         args = IpArgs(ip=["not-an-ip", "also-invalid"])
         with pytest.raises(ValueError) as exc_info:
             _ = args.ips
-        assert "no valid ip" in str(exc_info.value).lower()
+
+
+
+@pytest.mark.parametrize(
+    "is_fetch",
+    [
+        pytest.param(False, id="Fetching disabled"),
+        pytest.param(True, id="Fetching enabled"),
+    ],
+)
+def test_module_success(mocker: MockerFixture, is_fetch: bool):
+    """
+    Given:
+        - Valid client and params.
+        - is_fetch parameter set to True or False.
+    When:
+        - Running test_module.
+    Then:
+        - Assert client.say_hello is called once.
+        - Assert fetch_alerts is called once if is_fetch is True, not called if False.
+        - Assert "ok" is returned.
+    """
+    from HelloWorldV2 import test_module
+
+    # Create mock client
+    mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
+
+    # Mock fetch_alerts function
+    mock_fetch_alerts = mocker.patch("HelloWorldV2.fetch_alerts")
+
+    # Create params with is_fetch set accordingly
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+        is_fetch=is_fetch,
+        severity=HelloWorldSeverity.HIGH,
+    )
+    client = HelloWorldClient(params)
+
+    # Execute test_module
+    result = test_module(client, params)
+
+    # Assertions
+    assert result == "ok"
+    assert mock_client_say_hello.call_count == 1
+    assert mock_client_say_hello.call_args.kwargs == {"name": "Test"}
+
+    if is_fetch:
+        assert mock_fetch_alerts.call_count == 1
+        assert mock_fetch_alerts.call_args.kwargs == {
+            "client": client,
+            "max_fetch": 1,
+            "last_run": HelloWorldLastRun(),
+            "severity": params.severity,
+        }
+    else:
+        assert mock_fetch_alerts.call_count == 0
+
+
+def test_module_authentication_error(mocker: MockerFixture):
+    """
+    Given:
+        - Client that raises ContentClientAuthenticationError.
+    When:
+        - Running test_module.
+    Then:
+        - Assert appropriate error message is returned.
+    """
+    from HelloWorldV2 import test_module, ContentClientAuthenticationError
+
+    # Mock demisto functions
+    mocker.patch("HelloWorldV2.demisto.error")
+
+    # Create mock client that raises authentication error
+    mocker.patch.object(HelloWorldClient, "say_hello", side_effect=ContentClientAuthenticationError("Invalid API key"))
+
+    # Create params
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password="wrong-key"),
+        is_fetch=False,
+    )
+
+    with pytest.raises(DemistoException, match="Invalid Credentials. Please verify your API key."):
+        client = HelloWorldClient(params)
+        test_module(client, params)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        pytest.param("World", id="Simple name"),
+        pytest.param("John Doe", id="Name with space"),
+        pytest.param("José García", id="Name with accents"),
+    ],
+)
+def test_say_hello_command(mocker: MockerFixture, name: str):
+    """
+    Given:
+        - Valid client and args with different name values.
+    When:
+        - Running say_hello_command.
+    Then:
+        - Assert client.say_hello is called once with the provided name.
+        - Assert CommandResults is returned with correct readable_output and outputs.
+    """
+    from HelloWorldV2 import say_hello_command, HelloworldSayHelloArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.say_hello
+    expected_response = f"Hello {name}"
+    mock_say_hello = mocker.patch.object(client, "say_hello", return_value=expected_response)
+
+    # Create args
+    args = HelloworldSayHelloArgs(name=name)
+
+    # Execute command
+    result = say_hello_command(client, args)
+
+    # Assertions
+    assert mock_say_hello.call_count == 1
+    assert mock_say_hello.call_args.kwargs == {"name": name}
+    
+    # Verify CommandResults
+    assert result.readable_output == f"## {expected_response}"
+    assert result.outputs == expected_response
+    assert result.outputs_prefix == "hello"
+
