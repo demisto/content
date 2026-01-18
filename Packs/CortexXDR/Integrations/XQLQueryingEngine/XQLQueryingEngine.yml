@@ -1595,10 +1595,10 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: A list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
+    - description: A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
-    - description: A list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
+    - description: A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Gets a list of XQL queries from the library.
@@ -1620,22 +1620,22 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: 'A list of XQL query strings. For example: "dataset = xdr_data |limit 1"'
+    - description: 'A comma-separated list of XQL query strings. For example: "dataset = xdr_data |limit 1"'
       isArray: true
       name: xql_query
-    - description: A list of new XQL query names. The XQL query name should be unique.
+    - description: A comma-separated list of new XQL query names. The XQL query name should be unique.
       isArray: true
       name: xql_query_name
-    - description: A list of new XQL query tags.
+    - description: A comma-separated list of new XQL query tags.
       isArray: true
       name: xql_query_tag
     description: Creates or updates XQL queries in the library.
     name: xdr-xql-library-create
   - arguments:
-    - description: A list of XQL query names to delete. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
+    - description: A comma-separated list of XQL query names to delete. If deleting when using this argument, you cannot delete by xql_query_tag in the same call.
       isArray: true
       name: xql_query_name
-    - description: A list of XQL query tags. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
+    - description: A comma-separated list of XQL query tags. If deleting when using this argument, you cannot delete by xql_query_name in the same call.
       isArray: true
       name: xql_query_tag
     description: Deletes XQL queries from the library.

@@ -905,13 +905,33 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
     for query in xql_queries:
         query.pop("query_metadata", None)
 
-    readable_output = tableToMarkdown(name="XQL Queries", t=xql_queries, headerTransform=string_to_table_header)
+    # if extra_data:
+    #     headers = ["id", "name", "query_text", "description",
+    #                "content_global_id", "created_at", "created_by",
+    #                "modified_by", "is_private", "labels",
+    #                "modified_at", "created_by_pretty", "modified_by_pretty"]
+    if not extra_data:
+        # Aligning the context outputs to match the outputs where extra_data is selected
+        for query in xql_queries:
+            query["name"] = query.pop("xql_query_name", None)
+            query["query_text"] = query.pop("xql_query", None)
+            query["labels"] = query.pop("xql_query_tags", None)
+    readable_output = tableToMarkdown(name="XQL Queries",
+                                      t=xql_queries,
+                                      headers=["id", "name", "query_text", "description",
+                   "content_global_id", "created_at", "created_by",
+                   "modified_by", "is_private", "labels",
+                   "modified_at", "created_by_pretty", "modified_by_pretty"],
+                                      removeNull=True,
+                                      date_fields=["created_at", "modified_at"],
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="PaloAltoNetworksXQL.Library",
-        outputs=queries,
-        raw_response=queries,
+        outputs=xql_queries,
+        outputs_key_field="name",
+        raw_response=xql_queries,
     )
 
 
