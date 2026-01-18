@@ -3878,3 +3878,46 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Alerts with IDs 35326 have been updated successfully.
+### xdr-api-key-delete
+
+***
+Deletes the specified API keys.
+
+#### Base Command
+
+`xdr-api-key-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_id | A comma-separated list of API key IDs to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-api-key-list
+
+***
+Gets a list of existing API keys.
+
+#### Base Command
+
+`xdr-api-key-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_id | A comma-separated list of API key IDs to retrieve. | Optional | 
+| role | A comma-separated list of API key roles to retrieve. | Optional | 
+| expires_before | Filters API keys that expire before this date. For example: "in a year". Filters API keys that have an expiration date. | Optional | 
+| expires_after | Filters API keys that expire after this date. For example: "in a year". Filters API keys that have an expiration date. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.APIKeyData.api_key_id | String | The API key ID. | 
+| PaloAltoNetworksXDR.APIKeyData.role | String | The role associated with the API key. | 
+| PaloAltoNetworksXDR.APIKeyData.expiration_date | Date | The expiration date of the API key. | 
