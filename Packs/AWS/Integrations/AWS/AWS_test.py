@@ -6832,7 +6832,6 @@ def test_build_pagination_kwargs_with_custom_max_limit():
     Then: The MaxResults should have the value of the max_limit
     """
     from AWS import build_pagination_kwargs
-
     args = {"limit": 500}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
@@ -6846,9 +6845,12 @@ def test_build_pagination_kwargs_with_custom_parameter_names():
     Then: The returned value should have the custom names as the keys with their matching values.
     """
     from AWS import build_pagination_kwargs
-
     args = {"limit": 25, "next_token": "abc123"}
-    result = build_pagination_kwargs(args, next_token_name="ContinuationToken", limit_name="PageSize")
+    result = build_pagination_kwargs(
+        args,
+        next_token_name="ContinuationToken",
+        limit_name="PageSize"
+    )
     expected = {"ContinuationToken": "abc123", "PageSize": 25}
     assert result == expected
 
@@ -6860,8 +6862,986 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     Then: The MaxResults should have the value of the max_limit and limit.
     """
     from AWS import build_pagination_kwargs
-
     args = {"limit": 100}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
+
+def test_parse_target_field_single_target_single_value():
+    """
+    Test parse_target_field function with a single target and single value.
+    Given: A target string with a single key and single value
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and value
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=value"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["value"]}]
+    assert result == expected
+
+def test_parse_target_field_single_target_multiple_values():
+    """
+    Test parse_target_field function with a single target and multiple values.
+    Given: A target string with a single key and multiple comma-separated values
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and multiple values
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=resourceGroup1,resourceGroup2,resourceGroup3"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["resourceGroup1", "resourceGroup2", "resourceGroup3"]}]
+    assert result == expected
+
+def test_parse_target_field_multiple_targets():
+    """
+    Test parse_target_field function with multiple targets and values.
+    Given: A target string with multiple keys and values separated by semicolon.
+    When: parse_target_field is called with this target string.
+    Then: Should return a list containing dictionaries with correctly mapped keys and values.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name,values=resourcegroups1;key=resource-groups:ResourceTypeFilters,values=ResourceTypeFilters1,ResourceTypeFilters2"
+    result = parse_target_field(target_string)
+    expected = [
+        {"Key": "resource-groups:Name", "Values": ["resourcegroups1"]},
+        {"Key": "resource-groups:ResourceTypeFilters", "Values": ["ResourceTypeFilters1", "ResourceTypeFilters2"]}
+    ]
+    assert result == expected
+
+def test_parse_target_field_none_input():
+    """
+    Test parse_target_field function with None input.
+    Given: A None input
+    When: parse_target_field is called with None
+    Then: Should return an empty list
+    """
+    from AWS import parse_target_field
+    result = parse_target_field(None)
+    expected = []
+    assert result == expected
+
+def test_parse_target_field_empty_string():
+    """
+    Test parse_target_field function with an empty string input.
+    Given: An empty string as an input.
+    When: parse_target_field is called with the empty string.
+    Then: Should return an empty list.
+    """
+    from AWS import parse_target_field
+    result = parse_target_field("")
+    expected = []
+    assert result == expected
+
+def test_parse_target_field_special_characters_in_values():
+    """
+    Test parse_target_field function with special characters in values.
+    Given: A target string with a key and values containing special characters.
+    When: parse_target_field is called with this target string
+    Then: Should return a list containing a dictionary with correctly mapped key and values.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:ResourceTypeFilters,values=server-01.example.com,server-02/path"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["server-01.example.com", "server-02/path"]}]
+    assert result == expected
+
+def test_parse_target_field_max_values_limit(mocker):
+    """
+    Test parse_target_field function with more values than the maximum allowed.
+    Given: A target string with values exceeding the configured maximum limit.
+    When: parse_target_field is called with this target string.
+    Then: Should return a list containing a dictionary with only the first MAX_TARGET_VALUES values.
+    """
+    from AWS import parse_target_field
+    mocker.patch('AWS.MAX_TARGET_VALUES', 3)
+    target_string = "key=resource-groups:Name,values=resourcegroups1,resourcegroups2,resourcegroups3,resourcegroups4,resourcegroups5"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:Name", "Values": ["resourcegroups1", "resourcegroups2", "resourcegroups3"]}]
+    assert result == expected
+
+def test_parse_target_field_invalid_format_missing_key():
+    """
+    Test parse_target_field function with invalid input missing key.
+    Given: A target string without a key.
+    When: parse_target_field is called with this invalid target string.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "values=Production"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_invalid_format_missing_values():
+    """
+    Test parse_target_field function with invalid input missing values.
+    Given: A target string without values specified.
+    When: parse_target_field is called with this invalid target string.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_invalid_format_wrong_separator():
+    """
+    Test parse_target_field with a wrong separator.
+    Given: A target string with incorrect key-value separator.
+    When: parse_target_field is called with an invalid separator.
+    Then: Should raise a ValueError with an appropriate error message.
+    """
+    from AWS import parse_target_field
+    target_string = "key:resource-groups:Name,values:Production"
+    with pytest.raises(ValueError) as exc_info:
+        parse_target_field(target_string)
+    assert "Could not parse target" in str(exc_info.value)
+
+def test_parse_target_field_whitespace_in_values():
+    """
+    Test parse_target_field with an input that has a whitespace.
+    Given: A target string that includes a whitespace.
+    When: parse_target_field is called with a whitespace in the input.
+    Then: Should return a list containing a dictionary with the key and values, preserving the whitespace.
+    """
+    from AWS import parse_target_field
+    target_string = "key=resource-groups:Name,values=My resource group,Another resource group"
+    result = parse_target_field(target_string)
+    expected = [{"Key": "resource-groups:Name", "Values": ["My resource group", "Another resource group"]}]
+    assert result == expected
+
+
+def test_parse_parameters_arg_single_param():
+    """
+    Given: A string with a single parameter in the format 'key=K1,values=V1'.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary with one key 'K1' and a list of values ['V1'].
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1"]}
+
+
+def test_parse_parameters_arg_multiple_params():
+    """
+    Given: A string with multiple parameters separated by semicolons.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary with all keys and their respective value lists.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1;key=K2,values=V2"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1"], "K2": ["V2"]}
+
+
+def test_parse_parameters_arg_multiple_values():
+    """
+    Given: A string where a single key has multiple comma-separated values.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary where the key maps to a list of all values.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1,values=V1,V2,V3"
+    result = parse_parameters_arg(parameters_str)
+    assert result == {"K1": ["V1", "V2", "V3"]}
+
+
+def test_parse_parameters_arg_empty_input():
+    """
+    Given: An empty string.
+    When: parse_parameters_arg is called.
+    Then: It should return an empty dictionary.
+    """
+    from AWS import parse_parameters_arg
+
+    assert parse_parameters_arg("") == {}
+
+
+def test_parse_parameters_arg_malformed_missing_values():
+    """
+    Given: A malformed string missing the ',values=' separator.
+    When: parse_parameters_arg is called.
+    Then: It should raise an IndexError because it expects at least two parts from the split.
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "key=K1"
+    with pytest.raises(ValueError) as exc_info:
+        parse_parameters_arg(parameters_str)
+    assert "Could not parse" in str(exc_info.value)
+
+
+def test_parse_parameters_arg_malformed_missing_key_prefix():
+    """
+    Given: A malformed string missing the 'key=' prefix.
+    When: parse_parameters_arg is called.
+    Then: It should return a dictionary where the key is sliced incorrectly (missing first 4 chars of whatever is there).
+    """
+    from AWS import parse_parameters_arg
+
+    parameters_str = "K1,values=V1"
+    with pytest.raises(ValueError) as exc_info:
+        parse_parameters_arg(parameters_str)
+    assert "Could not parse" in str(exc_info.value)
+
+
+def test_parse_triple_filter_single():
+    """
+    Given: A string with a single triple filter 'key=project,values=P1,type=string'.
+    When: parse_triple_filter is called.
+    Then: It should return a list containing one dictionary with Key, Values, and Type.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [{"Key": "project", "Values": ["P1"], "Type": "string"}]
+
+
+def test_parse_triple_filter_multiple():
+    """
+    Given: A string with multiple triple filters separated by semicolons.
+    When: parse_triple_filter is called.
+    Then: It should return a list of dictionaries for all filters.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,type=string;key=tag:Name,values=V1,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [
+        {"Key": "project", "Values": ["P1"], "Type": "string"},
+        {"Key": "tag:Name", "Values": ["V1"], "Type": "string"},
+    ]
+
+
+def test_parse_triple_filter_multiple_values():
+    """
+    Given: A triple filter where 'values' contains multiple comma-separated items.
+    When: parse_triple_filter is called.
+    Then: It should return a dictionary where 'Values' is a list of all items.
+    """
+    from AWS import parse_triple_filter
+
+    filter_string = "key=project,values=P1,P2,P3,type=string"
+    result = parse_triple_filter(filter_string)
+    assert result == [{"Key": "project", "Values": ["P1", "P2", "P3"], "Type": "string"}]
+
+
+def test_parse_triple_filter_max_filters(mocker):
+    """
+    Given: A string with more than MAX_TRIPLE_FILTER_VALUE (5) filters.
+    When: parse_triple_filter is called.
+    Then: It should only parse the first 5 filters and log a debug message.
+    """
+    from AWS import parse_triple_filter
+
+    mocker.patch("AWS.demisto.debug")
+    filter_string = ";".join([f"key=K{i},values=V{i},type=T{i}" for i in range(10)])
+    result = parse_triple_filter(filter_string)
+    assert len(result) == 5
+    assert result[0]["Key"] == "K0"
+    assert result[4]["Key"] == "K4"
+
+
+def test_parse_triple_filter_empty():
+    """
+    Given: An empty string or None.
+    When: parse_triple_filter is called.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_triple_filter
+
+    assert parse_triple_filter("") == []
+    assert parse_triple_filter(None) == []
+
+
+def test_parse_triple_filter_malformed():
+    """
+    Given: A malformed string (e.g., using 'name=' instead of 'key=' as expected by the regex).
+    When: parse_triple_filter is called.
+    Then: It should raise a ValueError.
+    """
+    from AWS import parse_triple_filter
+
+    # The docstring says 'name=' but the regex uses 'key='
+    filter_string = "name=K1,values=V1,type=T1"
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_triple_filter(filter_string)
+
+
+def test_build_kwargs_network_interface_attribute_minimal():
+    """
+    Given: Minimal arguments (only network_interface_id).
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with default values and the provided ID.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {}
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["NetworkInterfaceId"] == ni_id
+    assert result["EnaSrdSpecification"] is None
+    assert result["AssociatedSubnetIds"] == []
+    assert result["Groups"] == []
+
+
+def test_build_kwargs_network_interface_attribute_basic_fields():
+    """
+    Given: Basic arguments like ena_srd_enabled and description.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with these fields correctly mapped.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "ena_srd_enabled": "true",
+        "description": "test description",
+        "source_dest_check": "false",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["EnaSrdSpecification"] is True
+    assert result["Description"] == {"Value": "test description"}
+    assert result["SourceDestCheck"] == {"Value": False}
+
+
+def test_build_kwargs_network_interface_attribute_attachment_success():
+    """
+    Given: Both attachment_id and delete_on_termination are provided.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with the Attachment block correctly populated.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "attachment_id": "attach-123",
+        "delete_on_termination": "true",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["Attachment"] == {
+        "AttachmentId": "attach-123",
+        "DeleteOnTermination": True,
+    }
+
+
+def test_build_kwargs_network_interface_attribute_connection_trucking_success():
+    """
+    Given: An udp_stream_timeout provided.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should return a dictionary with the ConnectionTrackingSpecification block correctly populated.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "udp_stream_timeout": "1",
+    }
+    ni_id = "eni-12345"
+    result = build_kwargs_network_interface_attribute(args, ni_id)
+
+    assert result["ConnectionTrackingSpecification"] == {
+        "UdpStreamTimeout": 1,
+    }
+
+
+def test_build_kwargs_network_interface_attribute_attachment_failure():
+    """
+    Given: Only attachment_id is provided without delete_on_termination.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should raise a DemistoException.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "attachment_id": "attach-123",
+    }
+    ni_id = "eni-12345"
+    with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
+        build_kwargs_network_interface_attribute(args, ni_id)
+
+
+def test_build_kwargs_network_interface_attribute_attachment_missing_attachment_id():
+    """
+    Given: Only attachment_id is provided without delete_on_termination.
+    When: build_kwargs_network_interface_attribute is called.
+    Then: It should raise a DemistoException.
+    """
+    from AWS import build_kwargs_network_interface_attribute
+
+    args = {
+        "delete_on_termination": "true",
+    }
+    ni_id = "eni-12345"
+    with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
+        build_kwargs_network_interface_attribute(args, ni_id)
+
+
+def test_bucket_create_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: bucket_create_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                              "Location": "eu-cental-1",
+                                              "BucketArn": "arn"}
+    bucket_name = "test-bucket"
+    args = {"bucket_name": bucket_name}
+    expected_output = {"Location": "eu-cental-1","BucketArn": "arn", "BucketName": bucket_name}
+
+    result = S3.bucket_create_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert f"The bucket {bucket_name}, was created successfully" in result.readable_output
+    mock_client.create_bucket.assert_called_once_with(Bucket=bucket_name)
+    assert expected_output == result.outputs
+
+
+def test_bucket_create_command_with_grants(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name with grants.
+    When: bucket_create_command is called with grant arguments.
+    Then: It should return CommandResults with success message and pass grants to the API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "bucket_name": "test-bucket",
+        "grant_full_control": "id=user1",
+        "grant_read": "id=user2"
+    }
+
+    result = S3.bucket_create_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The bucket test-bucket, was created successfully" in result.readable_output
+    mock_client.create_bucket.assert_called_once_with(
+        Bucket="test-bucket",
+        GrantFullControl="id=user1",
+        GrantRead="id=user2"
+    )
+
+
+def test_bucket_create_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-OK status code.
+    When: bucket_create_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"bucket_name": "test-bucket"}
+
+    S3.bucket_create_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_ec2_describe_images_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image description arguments.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with image data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-12345678",
+                "Name": "test-image",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "Description": "Test AMI",
+            }
+        ],
+    }
+
+    args = {"image_ids": "ami-12345678"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ImageId"] == "ami-12345678"
+    assert "AWS EC2 Images" in result.readable_output
+
+
+def test_ec2_describe_images_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_images_command is called with filters.
+    Then: It should pass filters to the API call and return filtered results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-11111111",
+                "Name": "ubuntu-image",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": True,
+            }
+        ],
+    }
+
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "name", "Values": ["ubuntu*"]}])
+
+    args = {"filters": "name=name,values=ubuntu*"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    mock_client.describe_images.assert_called_once()
+
+
+def test_ec2_describe_images_command_no_images_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty images list.
+    When: describe_images_command is called with no matching images.
+    Then: It should return CommandResults with no images message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Images": []}
+
+    args = {"image_ids": "ami-nonexistent"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "No images were found" in result.readable_output
+
+
+def test_ec2_describe_images_command_with_multiple_images(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning multiple images.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with all images in outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-11111111",
+                "Name": "image-1",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+            },
+            {
+                "ImageId": "ami-22222222",
+                "Name": "image-2",
+                "CreationDate": "2023-10-16T14:30:45.000Z",
+                "State": "available",
+                "Public": True,
+            },
+        ],
+    }
+
+    args = {"owners": "self"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ImageId"] == "ami-11111111"
+    assert result.outputs[1]["ImageId"] == "ami-22222222"
+
+
+def test_ec2_create_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image creation arguments.
+    When: create_image_command is called successfully.
+    Then: It should return CommandResults with new image ID and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-new12345",
+    }
+
+    args = {"name": "test-image", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-new12345"
+    assert result.outputs["Name"] == "test-image"
+    assert "AWS EC2 Image Created" in result.readable_output
+
+
+def test_ec2_create_image_command_with_no_reboot(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with no_reboot flag.
+    When: create_image_command is called with no_reboot=true.
+    Then: It should pass NoReboot=True to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-noreboot123",
+    }
+
+    args = {"name": "no-reboot-image", "instance_id": "i-1234567890abcdef0", "no_reboot": "true", "region": "us-west-2"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["NoReboot"] is True
+
+
+def test_ec2_create_image_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with tags.
+    When: create_image_command is called with tag specifications.
+    Then: It should configure tag specifications correctly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-tagged123",
+    }
+
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+
+    args = {
+        "name": "tagged-image",
+        "instance_id": "i-1234567890abcdef0",
+        "tag_specifications": "key=Environment,value=Production",
+        "region": "eu-west-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert "TagSpecifications" in call_args
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "image"
+
+
+def test_ec2_create_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: create_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-image", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.create_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image ID.
+    When: deregister_image_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"image_id": "ami-12345678"}
+
+    result = EC2.deregister_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deregistered AMI: ami-12345678" in result.readable_output
+
+
+def test_ec2_deregister_image_command_missing_image_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and missing image_id argument.
+    When: deregister_image_command is called without image_id.
+    Then: It should raise DemistoException indicating image_id is required.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="image_id parameter is required"):
+        EC2.deregister_image_command(mock_client, args)
+
+
+def test_ec2_deregister_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: deregister_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"image_id": "ami-nonexistent"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image ID.
+    When: deregister_image_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"image_id": "ami-12345678"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_print_debug_logs.assert_called_once_with(mock_client, "Deregistering image: ami-12345678")
+
+
+def test_ec2_copy_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image copy arguments.
+    When: copy_image_command is called successfully.
+    Then: It should return CommandResults with new image ID and copy details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-copied123",
+    }
+
+    args = {
+        "name": "copied-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-copied123"
+    assert result.outputs["SourceImageId"] == "ami-source123"
+    assert result.outputs["SourceRegion"] == "us-west-1"
+    assert "AWS EC2 Image Copy" in result.readable_output
+
+
+def test_ec2_copy_image_command_with_encryption(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image copy arguments with encryption.
+    When: copy_image_command is called with encrypted=true and kms_key_id.
+    Then: It should pass encryption parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-encrypted123",
+    }
+
+    args = {
+        "name": "encrypted-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "encrypted": "true",
+        "kms_key_id": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Encrypted"] is True
+    assert "kms" in call_args["KmsKeyId"]
+
+
+def test_ec2_copy_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: copy_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error and raise SystemExit.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mocker.patch("AWS.demisto.command", return_value="aws-ec2-image-copy")
+    mocker.patch("AWS.demisto.args", return_value={})
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    args = {"name": "test-image", "source_image_id": "ami-source123", "source_region": "us-west-1", "region": "us-east-1"}
+
+    with pytest.raises(SystemExit):
+        EC2.copy_image_command(mock_client, args)
+
+    demisto_results.assert_called_once()
+
+
+def test_ec2_copy_image_command_with_description(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image copy arguments with description.
+    When: copy_image_command is called with description parameter.
+    Then: It should include description in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-described123",
+    }
+
+    args = {
+        "name": "described-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "description": "This is a copied AMI with description",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Description"] == "This is a copied AMI with description"
+
+
+def test_ec2_image_available_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with waiter that completes successfully.
+    When: image_available_waiter_command is called.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"image_ids": "ami-12345678"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available" in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("image_available")
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_image_available_waiter_command_with_custom_waiter_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with custom delay and max attempts.
+    When: image_available_waiter_command is called with waiter configuration.
+    Then: It should pass waiter configuration to the wait call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"image_ids": "ami-12345678", "waiter_delay": "30", "waiter_max_attempts": "20"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 30
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 20
+
+
+def test_ec2_image_available_waiter_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with filters.
+    When: image_available_waiter_command is called with filters.
+    Then: It should pass filters to the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "state", "Values": ["available"]}])
+
+    args = {"filters": "name=state,values=available"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_args
+
+
+def test_ec2_image_available_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError during wait.
+    When: image_available_waiter_command encounters an error.
+    Then: It should call AWSErrorHandler.handle_client_error.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    error_response = {
+        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id '[ami-invalid]' does not exist"},
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+    }
+    client_error = ClientError(error_response, "DescribeImages")
+    mock_waiter.wait.side_effect = client_error
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
+
+    args = {"image_ids": "ami-invalid"}
+
+    EC2.image_available_waiter_command(mock_client, args)
+    mock_error_handler.assert_called_once_with(client_error, None)

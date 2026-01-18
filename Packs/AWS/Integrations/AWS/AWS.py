@@ -19,9 +19,30 @@ DEFAULT_REGION = "us-east-1"
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
+MAX_TARGET_VALUES = 5
+MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
+MAXIMUM_COMMAND_TIMEOUT = 2592000  # Maximum timeout for running commands in ssm (30 days).
+MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
+DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
+TERMINAL_COMMAND_STATUSES = {  # the status for run command command
+    "Success": "The command completed successfully.",
+    "Failed": "The command wasn't successfully on the managed node.",
+    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
+    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Cancelled": "The command was canceled before it was completed.",
+    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
+    "The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
+    "doesn't count against the parent command's max-errors limit, "
+    "but does contribute to whether the parent command status is Success or Failed.",
+    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+}
 
 
 def handle_port_range(args: dict) -> tuple:
@@ -176,7 +197,7 @@ def parse_filter_field(filter_string: str | None):
     You can specify up to 50 filters and up to 200 values per filter in a single request.
     Filter strings can be up to 255 characters in length.
     Args:
-        filter_list: The name and values list
+        filter_string: The name and values list
     Returns:
         A list of dicts with the form {"Name": <key>, "Values": [<value>]}
     """
@@ -202,6 +223,109 @@ def parse_filter_field(filter_string: str | None):
             f' parsing only first {MAX_FILTER_VALUES} values.'
         )
         filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
+
+    return filters
+
+
+def parse_target_field(target_string: str | None):
+    """
+    Parses a list representation of key and values with the form of 'key=<key>,values=<values>.
+    the maximum number of values for a key might be lower than the global maximum of 50.
+    Key minimum length of 1, maximum length of 163.
+
+    Args:
+        target_string (str): The key and values list
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>]}
+    """
+    targets = []
+    list_targets = argToList(target_string, separator=";")
+    regex = re.compile(
+        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for target in list_targets:
+        match_target = regex.match(target)
+        if match_target is None:
+            raise ValueError(
+                f"Could not parse target: {target}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
+            )
+        demisto.debug(
+            f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'
+            f' if larger than {MAX_TARGET_VALUES},'
+            f' parsing only first {MAX_TARGET_VALUES} values.'
+        )
+        targets.append({"Key": match_target.group(1), "Values": match_target.group(2).split(",")[0:MAX_TARGET_VALUES]})
+
+    return targets
+
+
+def parse_parameters_arg(parameters_str: str) -> dict:
+    """
+    Parses a list representation of key and values 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>.
+
+    Args:
+        parameters_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : [ "string", "string"], "key2" : [ "string", "string"]}
+    """
+    parameters = {}
+    list_parameters = argToList(parameters_str, separator=";")
+    regex = re.compile(
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for param in list_parameters:
+        match_param = regex.match(param)
+        if match_param is None:
+            raise ValueError(
+                f"Could not parse the parameter: {param}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
+            )
+        demisto.debug(f'Number of parameter values for filter {match_param.group(1)} is {len(match_param.group(2).split(","))}')
+        parameters[match_param.group(1)] = match_param.group(2).split(",")
+    return parameters
+
+
+def parse_triple_filter(filter_string: str | None):
+    """
+    Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
+    You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
+    Args:
+        filter_string: The name and values list
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_TRIPLE_FILTER_VALUE:
+        list_filters = list_filters[0:MAX_TRIPLE_FILTER_VALUE]
+        demisto.debug(f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters.")
+    regex = re.compile(
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
+        flags=re.I,
+    )
+    for f in list_filters:
+        match_filter = regex.match(f)
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided "
+                "like so: name=<name>,values=<values>,type=<type>;name=<name>,values=<value1>,<value2>,type=<type>..."
+            )
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append(
+            {
+                "Key": match_filter.group(1),
+                "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
+                "Type": match_filter.group(3),
+            }
+        )
 
     return filters
 
@@ -240,6 +364,65 @@ def convert_datetimes_to_iso_safe(data):
     """
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
+
+
+def build_kwargs_network_interface_attribute(args: dict, network_interface_id: str) -> dict:
+    """
+    Build the kwargs for network_interface_attribute_modify_command.
+    Args:
+        args (dict): The command arguments.
+        network_interface_id (str): the network interface id.
+    Returns:
+        A dictionary with the relevant values.
+    """
+    kwargs = {
+        "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
+        "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
+        "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
+        "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
+        "NetworkInterfaceId": network_interface_id,
+        "Groups": argToList(args.get("groups")),
+    }
+
+    tcp_established_timeout = arg_to_number(args.get("tcp_established_timeout"))
+    udp_stream_timeout = arg_to_number(args.get("udp_stream_timeout"))
+    udp_timeout = arg_to_number(args.get("udp_timeout"))
+    if any([tcp_established_timeout, udp_stream_timeout, udp_timeout]):
+        kwargs["ConnectionTrackingSpecification"] = {}
+
+    default_ena_queue_count = arg_to_bool_or_none(args.get("default_ena_queue_count"))
+    ena_queue_count = arg_to_number(args.get("ena_queue_count"))
+    attachment_id = args.get("attachment_id")
+    delete_on_termination = arg_to_bool_or_none(args.get("delete_on_termination"))
+    if any(b is not None for b in [default_ena_queue_count, ena_queue_count, attachment_id, delete_on_termination]):
+        kwargs["Attachment"] = {}
+
+    if (ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))) is not None:
+        kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
+    if tcp_established_timeout:
+        kwargs["ConnectionTrackingSpecification"]["TcpEstablishedTimeout"] = tcp_established_timeout
+    if udp_stream_timeout:
+        kwargs["ConnectionTrackingSpecification"]["UdpStreamTimeout"] = udp_stream_timeout
+    if udp_timeout:
+        kwargs["ConnectionTrackingSpecification"]["UdpTimeout"] = udp_timeout
+    if description := args.get("description"):
+        kwargs["Description"] = {"Value": description}
+    if (source_dest_check := arg_to_bool_or_none(args.get("source_dest_check"))) is not None:
+        kwargs["SourceDestCheck"] = {"Value": source_dest_check}
+    if default_ena_queue_count is not None:
+        kwargs["Attachment"]["DefaultEnaQueueCount"] = default_ena_queue_count
+    if ena_queue_count:
+        kwargs["Attachment"]["EnaQueueCount"] = ena_queue_count
+    if attachment_id:
+        kwargs["Attachment"]["AttachmentId"] = attachment_id
+    if delete_on_termination is not None:
+        kwargs["Attachment"]["DeleteOnTermination"] = delete_on_termination
+
+    if (attachment_id and delete_on_termination is None) or (not attachment_id and delete_on_termination is not None):
+        raise DemistoException(
+            "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well."
+        )
+    return kwargs
 
 
 class AWSErrorHandler:
@@ -411,6 +594,7 @@ class AWSServices(str, Enum):
     ELB = "elb"
     CostExplorer = "ce"
     BUDGETS = "budgets"
+    SSM = "ssm"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -948,6 +1132,92 @@ class S3:
             outputs=response.get("AccessControlPolicy", {}),
             raw_response=response.get("AccessControlPolicy", {}),
         )
+
+    @staticmethod
+    def bucket_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a new S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (dict): A dictionary containing the arguments entered to the command.
+
+        Returns:
+            CommandResults: A success message and information on the newly created bucket.
+        """
+        bucket_name = args.get("bucket_name")
+        location = args.get("location_constraint") or args.get("region", "")
+        kwargs = {
+            "Bucket": bucket_name,
+            "GrantFullControl": args.get("grant_full_control"),
+            "GrantRead": args.get("grant_read"),
+            "GrantReadACP": args.get("grant_read_acp"),
+            "GrantWrite": args.get("grant_write"),
+            "GrantWriteACP": args.get("grant_write_acp"),
+        }
+        # The "us-east-1" is the default value for LocationConstraint, when added to the request the S3 API views that
+        # specific string as an invalid/unsupported value for the constraint.
+        if location != "us-east-1":
+            kwargs["CreateBucketConfiguration"] = {"LocationConstraint": location}
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+
+        response = client.create_bucket(**kwargs)
+        demisto.debug(f"{response=}")
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        output = {
+            'Location': response.get("Location"),
+            'BucketArn': response.get("BucketArn"),
+            'BucketName': bucket_name
+        }
+
+        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully",
+                              outputs=output,
+                              outputs_prefix="AWS.S3.Buckets",
+                              outputs_key_field="BucketName")
+
+    @staticmethod
+    def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of all buckets owned by the authenticated sender of the request.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (dict): A dictionary containing the following arguments: account_id, region, limit, next_page_token, prefix.
+
+        Returns:
+            CommandResults: Containing the list of buckets.
+        """
+        filter_by_region = args.get("filter_by_region")
+        prefix = args.get("prefix")
+        kwargs = {"Prefix": prefix, "BucketRegion": filter_by_region}
+        kwargs.update(
+            build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets")
+        )
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+        response = client.list_buckets(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        buckets = response.get("Buckets")
+        for bucket in buckets:
+            bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
+        readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
+        outputs = {
+            "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
+            "AWS.S3(true)": {
+                "BucketsOwner": response.get("Owner"),
+                "BucketsNextPageToken": response.get("ContinuationToken"),
+                "BucketsPrefix": response.get("Prefix"),
+            },
+        }
+
+        return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
 
 
 class IAM:
@@ -2334,6 +2604,75 @@ class EC2:
         return CommandResults(readable_output="The resources where tagged successfully")
 
     @staticmethod
+    def network_interface_attribute_modify_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the specified network interface attribute.
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): A dictionary of the command arguments.
+
+        Returns:
+            CommandResults: A success message in case the modification was successful.
+        """
+        network_interface_id = args.get("network_interface_id", "")
+        kwargs = build_kwargs_network_interface_attribute(args, network_interface_id)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+        response = client.modify_network_interface_attribute(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully."
+        )
+
+    @staticmethod
+    def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the Regions that are enabled for your account, or all Regions.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): A dictionary containing arguments for creating the tags.
+                  account_id (str): The account id
+                  region_names (str): The names of the regions to retrieve
+                  all_regions (bool): Indicates whether to display all Regions.
+                  filters (str): A filter name and value pair that is used to return a more specific list of results.
+                    name=<name>,values=<values>;name=<name>,values=<values>
+
+        Returns:
+            CommandResults: A list of Regions.
+        """
+        region_names = argToList(args.get("region_names", ""))
+        all_regions = arg_to_bool_or_none(args.get("all_regions"))
+        kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
+        if region_names and all_regions is not None:
+            raise DemistoException("Only one of the arguments 'region_name' and 'all_regions' should be provided.")
+
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+        response = client.describe_regions(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        regions = response.get("Regions")
+        readable_output = tableToMarkdown(
+            f"The regions {region_names} information:",
+            regions,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EC2.Regions",
+            outputs=regions,
+            raw_response=response,
+            outputs_key_field="RegionName",
+        )
+
+    @staticmethod
     def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a new security group in the specified VPC or EC2-Classic.
@@ -2504,6 +2843,7 @@ class EC2:
         else:
             return AWSErrorHandler.handle_response_error(response)
 
+
     @staticmethod
     def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -2518,10 +2858,13 @@ class EC2:
                 - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
                 - include_deprecated (str, optional): Whether to include deprecated AMIs
                 - include_disabled (str, optional): Whether to include disabled AMIs
+                - limit (int, optional): Maximum number of AMIs to return
+                - next_token (str, optional): The token for the next set of AMIs to return.
 
         Returns:
             CommandResults: Results containing AMI information
         """
+
         kwargs = {}
 
         # Add filters if provided
@@ -2547,6 +2890,12 @@ class EC2:
         # Add include_disabled if provided
         if include_disabled := args.get("include_disabled"):
             kwargs["IncludeDisabled"] = argToBoolean(include_disabled)
+
+        if limit := args.get("limit"):
+            kwargs["MaxResults"] = arg_to_number(limit)
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
 
         print_debug_logs(client, f"Describing images with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
@@ -2578,17 +2927,22 @@ class EC2:
             readable_data = remove_empty_elements(readable_data)
             readable_outputs.append(readable_data)
 
+        outputs = {
+            "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
+            "AWS.EC2(true)": {
+                "ImagesNextPageToken": response.get("NextToken"),
+            }
+        }
+
         return CommandResults(
-            outputs_prefix="AWS.EC2.Images",
-            outputs_key_field="ImageId",
-            outputs=images,
+            outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Images",
                 readable_outputs,
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
-            ),
+            ) + f"\nImagesNextPageToken: {response.get('NextToken')}\n",
             raw_response=response,
         )
 
@@ -2686,11 +3040,7 @@ class EC2:
             raise DemistoException("image_id parameter is required")
 
         print_debug_logs(client, f"Deregistering image: {image_id}")
-
-        try:
-            response = client.deregister_image(ImageId=image_id)
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        response = client.deregister_image(ImageId=image_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -2712,7 +3062,7 @@ class EC2:
                 - source_image_id (str): ID of the AMI to copy (required)
                 - source_region (str): Region that contains the AMI to copy (required)
                 - description (str, optional): Description for the new AMI
-                - encrypted (str, optional): Whether destination snapshots should be encrypted
+                - encrypted (boolean, optional): Whether destination snapshots should be encrypted
                 - kms_key_id (str, optional): KMS key ID for encryption
                 - client_token (str, optional): Idempotency token
 
@@ -2720,16 +3070,9 @@ class EC2:
             CommandResults: Results containing the new ImageId and Region
         """
         # Validate required parameters
-        name = args.get("name", "").strip()
-        source_image_id = args.get("source_image_id", "").strip()
-        source_region = args.get("source_region", "").strip()
-
-        if not name:
-            raise DemistoException("name parameter is required")
-        if not source_image_id:
-            raise DemistoException("source_image_id parameter is required")
-        if not source_region:
-            raise DemistoException("source_region parameter is required")
+        name = args.get("name", "")
+        source_image_id = args.get("source_image_id", "")
+        source_region = args.get("source_region", "")
 
         print_debug_logs(client, f"Copying image {source_image_id} from region {source_region}")
 
@@ -2739,27 +3082,18 @@ class EC2:
             "SourceImageId": source_image_id,
             "SourceRegion": source_region,
             "Description": args.get("description"),
-            "Encrypted": argToBoolean(args.get("encrypted")) if args.get("encrypted") else None,
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
             "KmsKeyId": args.get("kms_key_id"),
             "ClientToken": args.get("client_token"),
         }
 
         # Remove None values
         remove_nulls_from_dictionary(kwargs)
+        response = client.copy_image(**kwargs)
 
-        try:
-            response = client.copy_image(**kwargs)
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-
-        # Validate response
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        if "ImageId" not in response:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        # Get region from args
         region = args.get("region", "")
 
         # Prepare outputs
@@ -2789,31 +3123,38 @@ class EC2:
         )
 
     @staticmethod
-    def image_available_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    @polling_function(
+        name="aws-ec2-image-available-waiter",
+        interval=15,
+        timeout=DEFAULT_TIMEOUT,
+        requires_polling_arg=False,  # means it will always be default to poll, poll=true,
+    )
+    def image_available_waiter_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
         """
         Waits until an Amazon Machine Image (AMI) becomes available.
 
-        This command uses AWS EC2's built-in waiter functionality to poll the image state
-        until it reaches the 'available' state. The waiter will check the image status at
-        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
-        (configurable via waiter_max_attempts).
+        This command polls the image state using describe_images API until it reaches
+        the 'available' state. It checks the image status at regular intervals
+        (configurable via interval_in_seconds) up to a maximum timeout
+        (configurable via polling_timeout).
 
         Args:
-            client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
                 - filters (str, optional): One or more filters separated by ';'
                 - image_ids (str, optional): Comma-separated list of image IDs to wait for
                 - owners (str, optional): Comma-separated list of image owners
                 - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
-                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
-                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+                - interval_in_seconds (int, optional): Time in seconds to wait between polling attempts (default: 15)
+                - polling_timeout (int, optional): Maximum timeout in seconds (default: 600)
+            client (BotoClient): The boto3 client for EC2 service
 
         Returns:
-            CommandResults: Results with success message when image becomes available
+            PollResult: Polling result with continue status and command results
 
         Raises:
-            WaiterError: If the waiter times out or encounters an error
+            DemistoException: If image check fails or image enters failed/invalid state
         """
+        demisto.info(f"{args=}")
         kwargs: Dict[str, Any] = {}
 
         # Add optional filters
@@ -2832,28 +3173,71 @@ class EC2:
         if owners := args.get("owners"):
             kwargs["Owners"] = parse_resource_ids(owners)
 
-        # Configure waiter settings
-        waiter_config: Dict[str, int] = {}
-        if waiter_delay := arg_to_number(args.get("waiter_delay")):
-            waiter_config["Delay"] = waiter_delay
-        if waiter_max_attempts := arg_to_number(args.get("waiter_max_attempts")):
-            waiter_config["MaxAttempts"] = waiter_max_attempts
-
-        if waiter_config:
-            kwargs["WaiterConfig"] = waiter_config
-
-        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Polling image availability with parameters: {kwargs}")
 
         try:
-            waiter = client.get_waiter("image_available")
-            waiter.wait(**kwargs)
+            response = client.describe_images(**kwargs)
+            
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            return CommandResults(
-                readable_output="Image is now available."
+            images = response.get("Images", [])
+            if not images:
+                raise DemistoException("No images found matching the specified criteria.")
+
+            all_images_available = True
+            failed_state_images = []
+            pending_state_images = []
+            
+            for image in images:
+                image_id = image.get("ImageId")
+                state = image.get("State")
+
+                if state == "available":
+                    continue
+                elif state in ["failed", "invalid", "deregistered"]:
+                    failed_state_images.append(f"{image_id} ({state})")
+                    break
+                else:
+                    pending_state_images.append(f"{image_id} ({state})")
+                    all_images_available = False
+
+            # If any images failed, stop polling and return error
+            if failed_state_images:
+                error_msg = f"Image(s) entered failed state: {failed_state_images[0]}"
+                return PollResult(
+                    response=CommandResults(readable_output=error_msg),
+                    continue_to_poll=False,
+                )
+
+            if all_images_available:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output="Images are now available.",
+                        outputs_prefix="AWS.EC2.Images",
+                        outputs=images,
+                        outputs_key_field="ImageId",
+                    ),
+                    continue_to_poll=False,
+                )
+
+            # Continue polling - some images are still pending
+            return PollResult(
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+                partial_result=CommandResults(readable_output="Waiting for images to become available"),
             )
+
         except ClientError as e:
             AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+            # Return error result to stop polling
+            return PollResult(
+                response=CommandResults(readable_output=f"Error checking image availability: {str(e)}"),
+                continue_to_poll=False,
+            )
+
 
 class EKS:
     service = AWSServices.EKS
@@ -4299,6 +4683,140 @@ class ACM:
             raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
 
 
+class SSM:
+    service = AWSServices.SSM
+
+    @staticmethod
+    def inventory_entries_list(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns an inventory item, and it's list of entries.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the command arguments.
+
+        Returns:
+            CommandResults: An object containing an inventory item, and it's list of entries.
+        """
+        instance_id = args.get("instance_id")
+        type_name = args.get("type_name")
+        filters = args.get("filters")
+        kwargs = {
+            "InstanceId": instance_id,
+            "TypeName": type_name,
+            "Filters": parse_triple_filter(filters),
+        }
+        kwargs.update(build_pagination_kwargs(args, 1, 50))
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+        response = client.list_inventory_entries(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        if response.get("Entries"):
+            headers = ["Name", "URL", "Summary"]
+            readable_output = tableToMarkdown(
+                f"The inventory entries of item {instance_id} with the type {type_name}",
+                response.get("Entries"),
+                headers,
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.SSM.Inventory",
+                outputs_key_field="InstanceId",
+                outputs=response,
+                readable_output=readable_output,
+                raw_response=response,
+            )
+        else:
+            return CommandResults(readable_output=f"No entries found for the item {instance_id}.")
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-command-run",
+        interval=arg_to_number(
+            demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
+        ),
+        timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
+        requires_polling_arg=False,  # means it will always be default to poll, poll=true,
+    )
+    def command_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult | None:
+        """
+        Runs commands on one or more managed nodes.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the command arguments.
+
+        Returns:
+            CommandResults: An object containing an inventory item, and it's list of entries.
+        """
+        if command_id := args.get("command_id"):
+            demisto.debug(f"There is a {command_id=}. Not the first execution.")
+            response_command_list = client.list_commands(CommandId=command_id)
+            status = response_command_list.get("Commands", [])[0].get("Status")
+            demisto.debug(f"The {status=} of {command_id=}")
+            if status in TERMINAL_COMMAND_STATUSES:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output=f"The command {command_id} status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                    ),
+                    continue_to_poll=False,
+                )
+            #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
+            return PollResult(
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None,
+            )
+
+        demisto.debug("First execution of command-run")
+        kwargs = {
+            "InstanceIds": argToList(args.get("instance_ids")),
+            "DocumentName": args.get("document_name"),
+            "DocumentVersion": args.get("document_version"),
+            "DocumentHash": args.get("document_hash"),
+            "Comment": args.get("comment"),
+            "OutputS3BucketName": args.get("output_s3_bucket_name"),
+            "OutputS3KeyPrefix": args.get("output_s3_key_prefix"),
+            "MaxConcurrency": args.get("max_concurrency"),
+            "MaxErrors": args.get("max_errors"),
+        }
+        if targets := args.get("Targets"):
+            kwargs["Targets"] = parse_target_field(targets)
+        if args.get("document_hash"):
+            kwargs["DocumentHashType"] = "Sha256"
+        if parameters := args.get("parameters"):
+            kwargs["Parameters"] = parse_parameters_arg(parameters)
+        if command_timeout := arg_to_number(args.get("command_timeout")):
+            if MAXIMUM_COMMAND_TIMEOUT < command_timeout < MINIMUM_COMMAND_TIMEOUT:
+                raise DemistoException(
+                    f"Command timeout must be between {MINIMUM_COMMAND_TIMEOUT} and {MAXIMUM_COMMAND_TIMEOUT} seconds."
+                )
+            kwargs["TimeoutSeconds"] = command_timeout
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
+
+        response_command_run = client.send_command(**kwargs)
+
+        command_id = response_command_run.get("Command", {}).get("CommandId", "")
+        demisto.debug(f"The {command_id=} of the current execution.")
+        args["command_id"] = command_id
+        command_response = serialize_response_with_datetime_encoding(response_command_run.get("Command", {}))
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            partial_result=CommandResults(
+                readable_output=f"Command {command_id} was sent successfully.",
+                outputs=command_response,
+                outputs_prefix="AWS.SSM.Command",
+                outputs_key_field="CommandId",
+            ),
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -4325,6 +4843,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-file-download": S3.file_download_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
     "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
+    "aws-s3-bucket-create": S3.bucket_create_command,
+    "aws-s3-buckets-list": S3.buckets_list_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -4393,6 +4913,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
     "aws-ec2-tags-create": EC2.create_tags_command,
+    "aws-ec2-regions-describe": EC2.regions_describe_command,
+    "aws-ec2-network-interface-attribute-modify": EC2.network_interface_attribute_modify_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
@@ -4407,6 +4929,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
+    "aws-ssm-inventory-entries-list": SSM.inventory_entries_list,
+    "aws-ssm-command-run": SSM.command_run_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4424,6 +4948,8 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
     "rds:ModifyDBSnapshotAttribute",
+    "s3:CreateBucket",
+    "s3:ListAllMyBuckets",
     "s3:PutBucketAcl",
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
@@ -4445,6 +4971,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:CreateImage",
     "ec2:DeregisterImage",
     "ec2:CopyImage",
+    "ec2:DescribeRegions",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
@@ -4462,6 +4989,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:StopInstances",
     "ec2:TerminateInstances",
     "ec2:RunInstances",
+    "ec2:ModifyNetworkInterfaceAttribute",
     "eks:UpdateClusterConfig",
     "iam:PassRole",
     "iam:DeleteLoginProfile",
@@ -4490,6 +5018,8 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ssm:SendCommand",
+    "ssm:ListCommands",
 ]
 
 COMMAND_SERVICE_MAP = {
@@ -4671,6 +5201,10 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
     service_client, _ = get_service_client(credentials, params, args, command)
+    # If it is a polling command, the args must be the first argument
+    if args.get("polling_timeout") is not None:
+        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
+        return COMMANDS_MAPPING[command](args, service_client)
     return COMMANDS_MAPPING[command](service_client, args)
 
 
@@ -4694,7 +5228,8 @@ def main():  # pragma: no cover
             return_results(results)
 
         elif command in COMMANDS_MAPPING:
-            return_results(execute_aws_command(command, args, params))
+            result = execute_aws_command(command, args, params)
+            return_results(result)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
