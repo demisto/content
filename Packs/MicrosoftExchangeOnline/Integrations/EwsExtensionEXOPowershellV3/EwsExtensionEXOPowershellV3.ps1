@@ -570,6 +570,7 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
+        $zipErrMsg = "Using this argument requires 'compress_output' argument to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
@@ -583,7 +584,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $null
+                $cmd_params.CompressOutput = $true
             }
             if ($entity_type)
             {
@@ -591,14 +592,20 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $null
+                $cmd_params.ForceConversionToMime = $true
             }
             if ($password)
             {
-                $cmd_params.Password = $password
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
+                $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.ReasonForExport = $reason_for_export
             }
             if ($recipient_address)
@@ -2189,7 +2196,7 @@ function EXOExportQuarantineMessageCommand
 function EXOGetQuarantineMessageCommand {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
 
@@ -2220,22 +2227,26 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = $client.EXOGetQuarantineMessage($params)
-
-    $newResults = @()
-
-    if ($raw_response -is [System.Collections.IEnumerable]) {
-        # If raw_response is a list, process each dictionary
-        foreach ($item in $raw_response) {
-            $newResults += Remove-EmptyItems $item
-        }
-    } elseif ($raw_response -Is [Hashtable]) {
-        # If input is a single dictionary, process it directly
-        $newResults = Remove-EmptyItems $raw_response
+    $client_response = $client.EXOGetQuarantineMessage($params)
+    
+    # Ensure raw_response is always an array, but handle null properly
+    if ($null -eq $client_response) {
+        $raw_response = @()
+    } else {
+        $raw_response = @($client_response)
     }
 
+    # Process all items using foreach and collect results efficiently
+    $newResults = @(foreach ($item in $raw_response) {
+        if ($null -ne $item) {
+            Remove-EmptyItems -inputObject $item
+        }
+    })
+
+    # Ensure $newResults is passed correctly to formatting
     $human_readable = TableToMarkdown $newResults "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
+    
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -2658,7 +2669,6 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
