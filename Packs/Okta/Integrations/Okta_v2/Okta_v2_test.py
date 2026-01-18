@@ -23,6 +23,7 @@ from Okta_v2 import (
     set_password_command,
     update_zone_command,
     verify_push_factor_command,
+    verify_mfa_status_command,
 )
 
 client = Client(base_url="demisto.com", api_token="XXX")
@@ -856,6 +857,28 @@ def test_verify_push_factor_command_polling_args(mocker, args, polling_time, max
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == expected_result
 
 
+def test_verify_push_factor_command_no_polling(mocker):
+    """
+    Given:
+    - Arguments for verify_push_factor_command with polling set to False
+    When:
+    - Running verify_push_factor_command
+    Then:
+    - Ensure that the polling URL is returned in the outputs and poll_verify_push is not called.
+    """
+    args = {"userId": "TestID", "factorId": "FactorID", "polling": "false"}
+    mocker.patch.object(client, "verify_push_factor", return_value=verify_push_factor_response)
+    mock_poll = mocker.patch.object(client, "poll_verify_push")
+
+    readable, outputs, raw_response = verify_push_factor_command(client, args)
+
+    assert (
+        outputs.get("Okta.PollingURL(true)") == "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"
+    )
+    assert "Polling started with url" in readable
+    mock_poll.assert_not_called()
+
+
 @pytest.mark.parametrize(
     "args",
     [({"firstName": "Testush", "lastName": "Test", "email": "test@this.com", "login": "test@this.com", "password": "Aa123456"})],
@@ -1293,3 +1316,26 @@ def test_get_group_id(mocker, group_name, mock_response, expected_id):
 
     group_id = client.get_group_id(group_name)
     assert group_id == expected_id
+
+
+def test_verify_mfa_status_command(mocker):
+    """
+    Given:
+    - polling_url.
+
+    When:
+    - running verify_mfa_status_command.
+
+    Then:
+    - Ensure that the status is returned correctly.
+    """
+    args = {"polling_url": "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"}
+    mock_response = {"id": "TransactionID", "factorResult": "SUCCESS"}
+    mocker.patch.object(client, "get_push_factor_status", return_value=mock_response)
+
+    readable, outputs, raw_response = verify_mfa_status_command(client, args)
+
+    assert "The status of the push factor is SUCCESS" in readable
+    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("factorResult") == "SUCCESS"
+    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("ID") == "TransactionID"
+    assert raw_response == mock_response

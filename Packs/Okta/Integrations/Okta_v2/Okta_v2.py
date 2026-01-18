@@ -238,6 +238,11 @@ class Client(OktaClient):
         response["factorResult"] = "TIMEOUT"
         return response
 
+    def get_push_factor_status(self, polling_url: str):
+        """Get the status of the push factor"""
+        response = self.http_request(method="GET", full_url=polling_url, url_suffix="")
+        return response
+
     def search(self, term, limit, advanced_search):
         uri = "/api/v1/users"
         query_params = assign_params(limit=limit, q=encode_string_results(term), search=encode_string_results(advanced_search))
@@ -728,11 +733,17 @@ def verify_push_factor_command(client, args):
     factor_id = args.get("factorId")
     polling_time = arg_to_number(args.get("polling_time", DEFAULT_POLLING_TIME))
     max_polling_calls = arg_to_number(args.get("max_polling_calls", DEFAULT_MAX_POLLING_CALLS))
+    polling = argToBoolean(args.get("polling", True))
 
     raw_response = client.verify_push_factor(user_id, factor_id)
     poll_link = raw_response.get("_links").get("poll")
     if not poll_link:
         raise Exception("No poll link for the push factor challenge")
+    if not polling:
+        outputs = {"Okta.PollingURL(true)": poll_link.get("href")}
+        readable_output = f"Polling started with url: {poll_link.get('href')}"
+        return (readable_output, outputs, raw_response)
+
     poll_response = client.poll_verify_push(poll_link.get("href"), polling_time, max_polling_calls)
 
     outputs = {
@@ -740,6 +751,19 @@ def verify_push_factor_command(client, args):
         "Okta.Metadata(true)": client.request_metadata,
     }
     readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"
+    return (readable_output, outputs, raw_response)
+
+
+def verify_mfa_status_command(client: Client, args: dict):
+    polling_url = args.get("polling_url", "")
+
+    raw_response = client.get_push_factor_status(polling_url)
+    status = raw_response.get("factorResult")
+    outputs = {
+        "Okta.FactorResult(val.ID && val.ID === obj.ID)": {"ID": raw_response.get("id"), "factorResult": status},
+        "Okta.Metadata(true)": client.request_metadata,
+    }
+    readable_output = f"The status of the push factor is {status}"
     return (readable_output, outputs, raw_response)
 
 
@@ -1210,6 +1234,7 @@ def main():
             "okta-get-groups": get_groups_for_user_command,
             "okta-get-user-factors": get_user_factors_command,
             "okta-verify-push-factor": verify_push_factor_command,
+            "okta-verify-mfa-status": verify_mfa_status_command,
             "okta-search": search_command,
             "okta-get-user": get_user_command,
             "okta-create-user": create_user_command,
