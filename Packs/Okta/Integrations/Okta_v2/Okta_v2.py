@@ -741,7 +741,9 @@ def verify_push_factor_command(client, args):
         raise Exception("No poll link for the push factor challenge")
     if not polling:
         outputs = {"Okta.PollingURL(true)": poll_link.get("href")}
-        readable_output = f"Polling started with url: {poll_link.get('href')}"
+        readable_output = (
+            f"To check the push factor status, use the 'verify_mfa_status_command' command with url: {poll_link.get('href')}"
+        )
         return (readable_output, outputs, raw_response)
 
     poll_response = client.poll_verify_push(poll_link.get("href"), polling_time, max_polling_calls)
