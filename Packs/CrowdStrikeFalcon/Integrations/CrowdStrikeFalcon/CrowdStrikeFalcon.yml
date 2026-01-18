@@ -4212,10 +4212,10 @@ script:
       defaultValue: '600'
     - name: cloud_pup_adware_level_detection
       required: false
-      description: Potentially unwanted programs (PUPs)  Adware detection level.
+      description: Potentially unwanted programs (PUPs) Adware detection level.
     - name: cloud_pup_adware_level_prevention
       required: false
-      description: Potentially unwanted programs (PUPs)	 Adware prevention  level.
+      description: Potentially unwanted programs (PUPs) Adware prevention  level.
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4397,10 +4397,10 @@ script:
       - Monthly
     - name: cloud_pup_adware_level_detection
       required: false
-      description: Potentially unwanted programs (PUPs)  Adware detection level.
+      description: Potentially unwanted programs (PUPs) Adware detection level.
     - name: cloud_pup_adware_level_prevention
       required: false
-      description: Potentially unwanted programs (PUPs)	 Adware prevention  level.
+      description: Potentially unwanted programs (PUPs) Adware prevention  level.
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
