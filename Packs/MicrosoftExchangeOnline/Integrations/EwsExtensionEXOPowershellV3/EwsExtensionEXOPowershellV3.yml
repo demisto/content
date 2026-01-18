@@ -2175,6 +2175,13 @@ script:
       description: Specify whether the output should be compressed.
     - name: entity_type
       description: The type of entity being exported.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+        - 'Email'
+        - 'SharePointOnline'
+        - 'Teams'
+        - 'DataLossPrevention'
     - name: force_conversion_to_mime
       auto: PREDEFINED
       predefined:
@@ -2186,7 +2193,8 @@ script:
     - name: reason_for_export
       description: Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.
     - name: recipient_address
-      description: Email address to send the exported message to.
+      isArray: true
+      description: Filters the results by the recipient's email address.
     outputs:
     - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
       description: Encoding used for the body of the message.
