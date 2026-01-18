@@ -13,11 +13,10 @@ This is the Hello World v2 integration for getting started.
 | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\). | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Fetch incidents | Fetch HelloWorld alerts as incidents in Cortex XSOAR. Supported in Cortex XSOAR only. | False |
-| Incident type | Supported in Cortex XSOAR only. | False |
-| Maximum number of alerts per fetch | Supported in Cortex XSOAR only. | False |
-| Severity of alerts to fetch | Supported in Cortex XSOAR only. | True |
-| Fetch events | Fetch HelloWorld audits as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
-| Maximum number of audits per fetch | Supported in Cortex XSIAM only. | False |
+| Maximum number of incidents per fetch | Default value is 10. Supported in Cortex XSOAR only. | False |
+| Fetch events | Fetch HelloWorld alerts as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
+| Maximum number of events per fetch | Default value is 1000. Supported in Cortex XSIAM only. | False |
+| Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default value is high. | False |
 
 ## Commands
 
@@ -338,7 +337,7 @@ Return IP information and reputation.
 ### helloworld-get-events
 
 ***
-Retrieves audit events from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
+Retrieves alerts from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
 
 #### Base Command
 
@@ -348,8 +347,9 @@ Retrieves audit events from the HelloWorld API. Can optionally push events to XS
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of events to retrieve. Default is 10. | Optional |
-| start_time | The start time for retrieving events, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Default is 1 hour ago. | Optional |
+| severity | The severity by which to filter the alerts. Possible values are: low, medium, high, critical. | Required |
+| offset | The alert ID (offset) from which to start retrieving. Default is 0. | Optional |
+| limit | Maximum number of alerts to retrieve. Default is 10. | Optional |
 | should_push_events | Whether to push events to XSIAM (only works on XSIAM tenants). Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -358,17 +358,17 @@ There is no context output for this command.
 
 #### Command example
 
-```!helloworld-get-events limit=3 start_time="1 hour ago"```
+```!helloworld-get-events severity="low" limit=3```
 
 #### Human Readable Output
 
 >### HelloWorld Events
 >
->| id | timestamp | user | action | resource | status |
->| --- | --- | --- | --- | --- | --- | --- | --- |
->| 1 | 1234567890.0 | user0@test.com | login | resource_0 | failed |
->| 2 | 1234567890.001 | user1@test.com | logout | resource_1 | success |
->| 3 | 1234567890.002 | user2@test.com | create | resource_2 | success |
+>| id | severity | user | action | date | status |
+>| --- | --- | --- | --- | --- | --- |
+>| 1 | low | userB@test.com | Testing | 2023-09-14T11:30:39.882955 | Error |
+>| 2 | low | userA@test.com | Testing | 2023-09-14T11:30:39.883955 | Success |
+>| 3 | low | userB@test.com | Testing | 2023-09-14T11:30:39.884955 | Error |
 
 ### helloworld-job-submit
 

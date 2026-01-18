@@ -36,7 +36,7 @@ can also return a single alert by ID. This is used to create new alerts in
 XSOAR by using the `fetch-incidents` command, which is by default invoked
 every minute.
 
-- Audits: - Returns mocked records that capture user actions within the
+- Audits - Returns mocked records that capture user actions within the
 HelloWorld system.
 
 - IP Reputation - Returns a mock lookup response of the IP address given
@@ -253,10 +253,7 @@ from pydantic import AnyUrl, BaseModel, Field, SecretStr, validator, root_valida
 
 """ CONSTANTS """
 
-class Templates(str, Enum):
-    MOCK_ALERT = '"id": {id}, "name": "XSOAR Test Alert #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
-    MOCK_AUDIT_EVENT = '"id": {id}, "timestamp": {timestamp}, "user": "{user}", "action": "{action}", "resource": "{resource}", "status": "{status}"'
-
+MOCK_ALERT = '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
 
 class PollingDefaults(int, Enum):
     INTERVAL_SECONDS = 30
@@ -270,12 +267,6 @@ class EventsDatasetConfigs(str, Enum):
     TIME_KEY = "_time"
     SOURCE_LOG_TYPE_KEY = "source_log_type"
 
-
-class EventsProducerConsumerConfigs(int, Enum):
-    QUEUE_MAX_SIZE = 1000
-    MAX_CONCURRENT_CONSUMERS = 3
-    PRODUCER_BATCH_SIZE = 50
-    
 
 DUMMY_VALID_API_KEY = "dummy-key"  # to mock API errors
 
@@ -301,31 +292,16 @@ class BaseLastRun(BaseModel):
         """
         demisto.setLastRun(dict(self))
 
-
-class HelloWorldEventsLastRun(BaseLastRun):
-    """State management for fetch-events command.
-    
-    Tracks the progress of event fetching to ensure no events are missed or duplicated
-    between fetch executions.
-    
-    Attributes:
-        audit_start_time (str): The timestamp to start fetching events from in the next run.
-        last_audit_ids (list[int]): List of event IDs from the last fetch to prevent duplicates.
-    """
-    audit_start_time: str = "1 minute ago"
-    last_audit_ids: list[int] = []
-
-
-class HelloWorldIncidentsLastRun(BaseLastRun):
+class HelloWorldLastRun(BaseLastRun):
     """State management for fetch-incidents command.
     
     Tracks the progress of incident fetching to ensure no incidents are missed or duplicated
     between fetch executions.
     
     Attributes:
-        alert_start_id (int): The ID of the last fetched alert to use for offsetting.
+        id_offset (int): The ID of the last fetched alert to use for offsetting.
     """
-    alert_start_id: int = 0
+    id_offset: int = 0
 
 
 class ContentBaseModel(BaseModel):
@@ -444,9 +420,7 @@ class HelloWorldParams(BaseParams):
 
     # Fetch parameters
     is_fetch: bool | None = Field(default=False, alias=("isFetchEvents" if SYSTEM.can_send_events else "isFetch"))
-    incident_type: str | None = Field(default=None, alias="incidentType")
-    max_incidents_fetch: int = 10
-    max_events_fetch: int = 1000
+    max_fetch: int = Field(default=1000 if SYSTEM.can_send_events else 10, alias=("max_events_fetch" if SYSTEM.can_send_events else "max_incidents_fetch"))
     severity: HelloWorldSeverity = HelloWorldSeverity.HIGH
 
     # Advanced parameters
@@ -461,7 +435,7 @@ class HelloWorldParams(BaseParams):
     def clean_url(cls, v):  # noqa: N805
         return v.rstrip("/")
 
-    @validator("max_incidents_fetch", "max_events_fetch", allow_reuse=True)
+    @validator("max_fetch", allow_reuse=True)
     def cap_max_fetch(cls, v: int):  # noqa: N805
         """Cap max_fetch to prevent manage rate of data flow."""
         max_fetch = cast(int, arg_to_number(v))
@@ -484,7 +458,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
 
     alert_id: int | None = None
     limit: int = 10
-    severity: str | None = None
+    severity: HelloWorldSeverity | None = None
 
     @root_validator(allow_reuse=True)
     def check_alert_id_or_severity(cls, values: dict):  # noqa: N805
@@ -513,8 +487,9 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
 class HelloWorldGetEventsArgs(ContentBaseModel):
     """Arguments for helloworld-get-events command."""
 
+    severity: HelloWorldSeverity
+    offset: int = 0
     limit: int = 10
-    start_time: str = "1 hour ago"
     should_push_events: bool = False
 
     @validator("should_push_events", allow_reuse=True)
@@ -524,12 +499,6 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
         if should_push_events and not SYSTEM.can_send_events:
             raise ValueError("[Args validation] 'should_push_events' is not supported on this tenant.")
         return should_push_events
-
-    @property
-    def start_datetime(self) -> datetime:
-        """Convert start_time string to datetime object."""
-        return cast(datetime, arg_to_datetime(self.start_time, arg_name="start_time", required=True))
-
 
 class HelloWorldJobSubmitArgs(ContentBaseModel):
     """Arguments for helloworld-job-submit command."""
@@ -678,22 +647,13 @@ class ExecutionConfig:
         return HelloWorldJobPollArgs(**self._raw_args)
 
     @property
-    def events_last_run(self) -> HelloWorldEventsLastRun:
+    def last_run(self) -> HelloWorldLastRun:
         """Get the last_run state for fetch-events command.
         
         Returns:
-            HelloWorldEventsLastRun: State from the previous fetch-events execution.
+            HelloWorldLastRun: State from the previous fetch-events execution.
         """
-        return HelloWorldEventsLastRun(**self._raw_last_run)
-
-    @property
-    def incidents_last_run(self) -> HelloWorldIncidentsLastRun:
-        """Get the last_run state for fetch-incidents command.
-        
-        Returns:
-            HelloWorldIncidentsLastRun: State from the previous fetch-incidents execution.
-        """
-        return HelloWorldIncidentsLastRun(**self._raw_last_run)
+        return HelloWorldLastRun(**self._raw_last_run)
 
 
 """ CLIENT CLASS """
@@ -736,7 +696,7 @@ class HelloWorldClient(ContentClient):
     This client inherits from `ContentClient` to leverage built-in retry logic,
     rate limit handling, authentication, and thread safety. 
     It adds HelloWorld-specific methods for mock / dummy API responses.
-    For real API calls, see the `specific_api_endpoint_call_example` method.
+    For real API calls, see the `sync_api_call_example` method.
     """
 
     def __init__(self, params: HelloWorldParams):
@@ -755,7 +715,7 @@ class HelloWorldClient(ContentClient):
             diagnostic_mode=is_debug_mode(),
         )
 
-    def specific_api_endpoint_call_example(self, item_id: str | int, params: dict):
+    def sync_api_call_example(self, item_id: str | int, params: dict) -> dict:
         """Example of calling a real specific API endpoint using ContentClient.
 
         Args:
@@ -770,14 +730,32 @@ class HelloWorldClient(ContentClient):
         # - `self.get(endpoint, params)` for GET requests
         # - `self.post(endpoint, json_body)` for POST requests
         # Alternatively, call the legacy "_http_request" method:
-        # - `self._http_request("GET", endpoint=endpoint, params=params)`
+        # - `self._http_request("GET", url_suffix=endpoint, params=params)`
+        return self._http_request("GET", url_suffix=f"/api/endpoint/{item_id}", params=params)
 
-        return self.get(f"/api/endpoint/{item_id}", params=params)
+    async def async_api_call_example(self, item_id: str | int, params: dict) -> dict:
+        """Example of calling a real specific API endpoint using ContentClient.
+
+        Args:
+            item_id (str | int): The ID of the item to retrieve.
+            params (dict): Query parameters for the API request.
+
+        Returns:
+            dict: The API response.
+        """
+        # INTEGRATION DEVELOPER TIP:
+        # For real API calls, use the inherited HTTP verb methods, for example:
+        # - `self.get(endpoint, params)` for GET requests
+        # - `self.post(endpoint, json_body)` for POST requests
+        # Alternatively, call the legacy "_http_request" method:
+        # - `self._http_request("GET", url_suffix=endpoint, params=params)`
+        response = await self._request("GET", url_suffix=f"/api/endpoint/{item_id}", params=params)
+        return response.json()
 
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Get IP reputation (dummy response for demonstration purposes).
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             ip (str): IP address to get the reputation for.
@@ -827,15 +805,15 @@ class HelloWorldClient(ContentClient):
 
         return f"Hello {name}"
 
-    def get_alert_list(self, limit: int, severity: str | None = None, last_id: int = 0) -> list[dict]:
+    async def get_alert_list(self, limit: int, severity: str | None = None, id_offset: int = 0) -> list[dict]:
         """Get a list of alerts (dummy response for demonstration purposes).
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             limit (int): The number of items to generate.
             severity (str | None): The severity value of the items returned.
-            last_id (int): The ID of the last fetched alert for pagination.
+            id_offset (int): The ID of the last fetched alert for pagination.
 
         Returns:
             list[dict]: Dummy data of items as it would be returned from the API.
@@ -847,17 +825,22 @@ class HelloWorldClient(ContentClient):
         # params = assign_params(
         #   limit=limit,
         #   severity=severity,
-        #   query=f"id>{last_id}",
+        #   query=f"id>{id_offset}",
         # )
         # return self.get(endpoint, params=params)
-
+        await asyncio.sleep(1)  # sleep to mimic slow API response
         mock_response: list[dict] = []
-        for i in range(limit):
-            item = Templates.MOCK_ALERT.format(
-                id=last_id + i + 1,
+        for mock_number in range(limit):
+            mock_alert_time = datetime(2023, 9, 14, 11, 30, 39, 882955) + timedelta(milliseconds=id_offset + mock_number)
+            mock_alert_id = id_offset + mock_number + 1
+            is_even = mock_alert_id % 2 == 0
+            item = MOCK_ALERT.format(
+                id=mock_alert_id,
                 severity=severity if severity else "",
-                date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
-                status="Testing",
+                date=mock_alert_time.isoformat(),
+                action="Testing",
+                status="Success" if is_even else "Error",
+                user="userA@test.com" if is_even else "userB@test.com",
             )
             dict_item = json.loads("{" + item + "}")
             mock_response.append(dict_item)
@@ -867,7 +850,7 @@ class HelloWorldClient(ContentClient):
     def get_alert(self, alert_id: int) -> dict:
         """Get a specific alert by ID (dummy response for demonstration purposes).
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             alert_id (int): The alert ID to retrieve.
@@ -891,7 +874,7 @@ class HelloWorldClient(ContentClient):
     def create_note(self, alert_id: int, comment: str) -> dict:
         """Create a new note in an alert.
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             alert_id (int): The alert ID to add a note to.
@@ -911,7 +894,7 @@ class HelloWorldClient(ContentClient):
     def submit_job(self) -> dict[str, str]:
         """Submit a new job to the API.
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Returns:
             dict[str, str]: The summary of the newly created job.
@@ -925,7 +908,7 @@ class HelloWorldClient(ContentClient):
     def get_job_status(self, job_id: str) -> dict[str, str]:
         """Get the status of a job.
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             job_id (str): The job ID to check status for.
@@ -942,7 +925,7 @@ class HelloWorldClient(ContentClient):
     def get_job_result(self, job_id: str) -> dict[str, str]:
         """Get the finished result of a job.
 
-        For real API calls, see the `specific_api_endpoint_call_example` method.
+        For real API calls, see the `sync_api_call_example` method.
 
         Args:
             job_id (str): The job ID to get results for.
@@ -956,95 +939,36 @@ class HelloWorldClient(ContentClient):
         # return self.get(endpoint)
         return {"id": job_id, "msg": "The configuration has successfully been updated."}
 
-    def get_audit_events(self, start_time: str, limit: int, offset: int = 0) -> list[dict[str, Any]]:
-        """Fetch audit events from the API.
-
-        For demonstration purposes, this returns dummy/mock audit events.
-        For real API calls, see the `specific_api_endpoint_call_example` method.
-
-        INTEGRATION DEVELOPER TIP:
-        This method acts as the PRODUCER in the producer-consumer pattern.
-        It fetches events from the API and should be called to fetch
-        batches of events. The events are then placed in an asyncio.Queue
-        for consumption by the consumer tasks.
-
-        In a real implementation, you would:
-        1. Build the API endpoint and parameters
-        2. Use `self.get(endpoint, params=params)` for sending HTTP requests
-        3. Handle offsetting/pagination if the API supports it
-        4. Return the raw API response
-
-        Args:
-            start_time (str): Start time for fetching events.
-            limit (int): Maximum number of events to fetch in this batch.
-            offset (int): Offset for pagination (default: 0).
-
-        Returns:
-            list[dict[str, Any]]: List of audit event dictionaries as returned from the API.
-        """
-        # INTEGRATION DEVELOPER TIP:
-        # In a real implementation, you would make an HTTP request here using ContentClient:
-        # endpoint = "/api/v1/audit/events"
-        # params = {
-        #     "start_time": start_time,
-        #     "limit": limit,
-        #     "offset": offset,
-        # }
-        # return self.get(endpoint, params=params)
-        demisto.debug(f"[Client] Fetching audit events using {start_time=} {offset=} {limit=}.")
-        mock_events: list[dict[str, Any]] = []
-        mock_cycle_length: int = 5
-        actions = ["login", "logout", "create", "update", "delete"]
-        statuses = ["success", "failed"]
-
-        for mock_number in range(limit):
-            mock_event_time = cast(datetime, arg_to_datetime(start_time)) + timedelta(milliseconds=offset + mock_number)
-            event_id = offset + mock_number + 1
-
-            event_str = Templates.MOCK_AUDIT_EVENT.format(
-                id=event_id,
-                timestamp=mock_event_time.timestamp(),
-                user=f"user{(offset + mock_number) % mock_cycle_length}@test.com",
-                action=actions[mock_number % mock_cycle_length],
-                resource=f"resource_{(offset + mock_number) % mock_cycle_length}",
-                status=statuses[0] if mock_number % mock_cycle_length != 0 else statuses[1],
-            )
-            mock_events.append(json.loads("{" + event_str + "}"))
-
-        demisto.debug(f"[Client] Fetched {len(mock_events)} audit events using {start_time=} {offset=} {limit=}.")
-        return mock_events
-
 
 """ HELPER FUNCTIONS """
 
 
 def format_as_incidents(
     alerts: list[dict[str, Any]],
-    name_field: str,
+    id_field: str,
     occurred_field: str,
     severity_field: str,
     custom_fields_mapping: dict | None = None,
 ) -> list[dict[str, Any]]:
-    """Map alerts to XSOAR incident format.
+    """Format alerts as XSOAR incident.
 
     Args:
         alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
-        name_field (str): The field name in the alert to use as the incident name.
+        id_field (str): The field name in the alert ID to use as part of the incident name.
         occurred_field (str): The field name in the alert to use as the occurred time.
         severity_field (str): The field name in the alert to use for severity.
         custom_fields_mapping (dict | None): Optional mapping for custom fields.
 
     Returns:
-        list[dict[str, Any]]: List of incidents in XSOAR format.
+        list[dict[str, Any]]: List of incidents formatted for XSOAR.
     """
     custom_fields_mapping = custom_fields_mapping or {}
     return [
         {
-            "name": alert[name_field],
-            "details": alert["name"],  # Include a description of the alert
+            "name": f"XSOAR Test Alert #{alert[id_field]}",
             "occurred": alert[occurred_field],
             "rawJSON": json.dumps(alert),
-            "type": "Hello World Alert",  # Map to a specific XSOAR alert Type
+            "type": "Hello World Alert",  # Map to a specific XSOAR incident type
             "severity": HelloWorldSeverity.convert_to_incident_severity(raw_severity=alert[severity_field]),
             "CustomFields": {
                 field_name: demisto.get(custom_fields_mapping, field_value)
@@ -1056,36 +980,34 @@ def format_as_incidents(
 
 
 def format_as_events(
-    audits: list[dict[str, Any]],
+    alerts: list[dict[str, Any]],
     time_field: str,
 ) -> list[dict[str, Any]]:
-    """Format audit events for XSIAM ingestion.
+    """Format alerts as XSIAM events.
 
     Args:
-        audits (list[dict[str, Any]]): List of audit event dictionaries from the API.
+        alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
         time_field (str): The field name in the audit to use as the event time.
 
     Returns:
         list[dict[str, Any]]: List of events formatted for XSIAM.
     """
     events: list[dict[str, Any]] = []
-    for audit in audits:
-        event = audit.copy()
+    for alert in alerts:
+        event = alert.copy()
         event_time = cast(datetime, arg_to_datetime(event[time_field]))
         event[EventsDatasetConfigs.TIME_KEY.value] = event_time.strftime(EventsDatasetConfigs.TIME_FORMAT.value)
-        event[EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] = (
-            "Audit"  # Important to add, especially if multiple event types are fetched
-        )
+        # Important to declare source log type, especially if multiple event types are fetched
+        event[EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] = "Alert"
         events.append(event)
     return events
 
 
-async def get_audit_events(
+async def get_alert_list(
     client: HelloWorldClient,
-    start_time: str,
+    start_offset: int,
+    severity: HelloWorldSeverity,
     limit: int,
-    last_fetched_ids: list | None = None,
-    should_push_events: bool = False,
 ) -> list[dict]:
     """Fetch audit events from the API in batches and optionally send them to XSIAM.
 
@@ -1104,83 +1026,44 @@ async def get_audit_events(
     Returns:
         list[dict]: List of all events fetched.
     """
-    all_events = []
-    offset = 0
-    all_fetched_ids = set(last_fetched_ids or [])
-    push_tasks = [] # Track the ongoing push task
+    all_alerts = []
+    demisto.debug(f"[Get audit events] Starting with {start_offset=} and {limit=}.")
 
-    demisto.debug(f"[Get audit events] Starting with {start_time=} and {limit=}.")
+    # Fetch events from API (this happens concurrently with the previous push)
+    alerts_tasks = [
+        client.get_alert_list(limit=500, id_offset=offset, severity=severity)
+        for offset in range(start_offset, start_offset + limit, 500)
+    ]
 
-    while len(all_events) < limit:
-        # Calculate how many events to fetch in this batch
-        remaining = limit - len(all_events)
-        batch_limit = min(remaining, EventsProducerConsumerConfigs.PRODUCER_BATCH_SIZE.value)
+    alerts_batches = await asyncio.gather(*alerts_tasks)
 
-        demisto.debug(f"[Get audit events] Fetching batch with {offset=} and {batch_limit=}.")
-
-        # Fetch events from API (this happens concurrently with the previous push)
-        events_batch = client.get_audit_events(start_time=start_time, limit=batch_limit, offset=offset)
-
-        if not events_batch:
-            demisto.debug("[Get audit events] Got empty batch. Stopping...")
-            break
-
-        # Deduplicate events
-        deduplicated_batch = []
-        for event in events_batch:
-            event_id = event["id"]
-            if event_id in all_fetched_ids:
-                demisto.debug(f"[Get audit events] Skipping duplicate {event_id=}.")
-                continue
-            deduplicated_batch.append(event)
-            all_fetched_ids.add(event_id)
-
-        # Send events to XSIAM if requested (start as background task)
-        if deduplicated_batch and should_push_events:
-            demisto.debug(f"[Get audit events] Starting push of {len(deduplicated_batch)} events to XSIAM.")
-            # Create a task to push events in the background
-            push_tasks.append(asyncio.to_thread(create_events, deduplicated_batch))
-
+    for alerts_batch in alerts_batches:
         # Add to all events
-        all_events.extend(deduplicated_batch)
-        offset += len(events_batch)
+        all_alerts.extend(alerts_batch)
+        demisto.debug(f"[Get audit events] Fetched {len(alerts_batch)} new alerts. Total: {len(all_alerts)}.")
 
-        demisto.debug(f"[Get audit events] Fetched {len(deduplicated_batch)} new events. Total: {len(all_events)}.")
-
-        # If we got fewer events than requested, we've reached the end
-        if len(events_batch) < batch_limit:
-            demisto.debug("[Get audit events] Got smaller batch than requested. Stopping...")
-            break
-
-    # Wait for the final push to complete
-    if push_tasks:
-        await asyncio.gather(*push_tasks)
-        demisto.updateModuleHealth({"eventsPulled": len(all_events)})
-
-    demisto.debug(f"[Get audit events] Finished. Fetched {len(all_events)} total events.")
-    
-    return all_events
+    demisto.debug(f"[Get audit events] Finished. Fetched {len(all_alerts)} total events.")
+    return all_alerts
 
 
-def create_events(audits: list[dict]) -> None:
-    """Format audit events and send them to XSIAM.
+def create_events(alerts: list[dict]) -> None:
+    """Format alerts and send them to XSIAM.
 
     Args:
-        audits (list[dict]): List of audit event dictionaries from the API.
+        audits (list[dict]): List of alert dictionaries from the API.
 
     Returns:
         None
     """
-    demisto.debug(f"[Create events] Formatting and sending {len(audits)} events to XSIAM.")
-    events = format_as_events(audits, time_field="timestamp")
+    demisto.debug(f"[Create events] Formatting and sending {len(alerts)} XSIAM events.")
+    events = format_as_events(alerts, time_field="timestamp")
     send_events_to_xsiam(
         events,
         vendor=EventsDatasetConfigs.VENDOR.value,
         product=EventsDatasetConfigs.PRODUCT.value,
         client_class=ContentClient,
-        should_update_health_module=False,
     )
-    demisto.debug(f"[Create events] Successfully sent {len(events)} events to XSIAM.")
+    demisto.debug(f"[Create events] Successfully sent {len(events)} XSIAM events.")
 
 
 def create_incidents(alerts: list[dict]) -> None:
@@ -1192,10 +1075,10 @@ def create_incidents(alerts: list[dict]) -> None:
     Returns:
         None
     """
-    demisto.debug(f"[Create incidents] Formatting and creating {len(alerts)} incidents.")
-    incidents = format_as_incidents(alerts, name_field="name", occurred_field="date", severity_field="severity")
+    demisto.debug(f"[Create incidents] Formatting and creating {len(alerts)} XSOAR incidents.")
+    incidents = format_as_incidents(alerts, id_field="id", occurred_field="date", severity_field="severity")
     demisto.incidents(incidents)
-    demisto.debug(f"[Create incidents] Successfully created {len(incidents)} incidents.")
+    demisto.debug(f"[Create incidents] Successfully created {len(incidents)} XSOAR incidents.")
 
 
 """ COMMAND FUNCTIONS """
@@ -1225,15 +1108,12 @@ def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
     # The tenant will treat anything other than 'ok' as an error
     try:
         demisto.debug("[Testing] Testing API connectivity")
-        client.get_alert_list(limit=1)
+        client.say_hello(name="Test")
         demisto.debug("[Testing] API connectivity test passed")
 
         if params.is_fetch:
-            demisto.debug(f"[Testing] Testing fetch flow. System can_send_events={SYSTEM.can_send_events}.")
-            if SYSTEM.can_send_events:
-                fetch_events(client=client, max_fetch=1, last_run=HelloWorldEventsLastRun())
-            else:
-                fetch_incidents(client=client, max_fetch=1, last_run=HelloWorldIncidentsLastRun(), severity=params.severity)
+            demisto.debug(f"[Testing] Testing fetch flow.")
+            fetch_alerts(client=client, max_fetch=1, last_run=HelloWorldLastRun(), severity=params.severity)
             demisto.debug("[Testing] Fetch flow test passed")
 
     except ContentClientAuthenticationError as e:
@@ -1279,94 +1159,36 @@ def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) ->
     return CommandResults(readable_output=readable_output, outputs_prefix="hello", outputs_key_field="", outputs=result)
 
 
-def fetch_incidents(
+def fetch_alerts(
     client: HelloWorldClient,
-    last_run: HelloWorldIncidentsLastRun,
+    last_run: HelloWorldLastRun,
     severity: HelloWorldSeverity,
     max_fetch: int,
-) -> HelloWorldIncidentsLastRun:
-    """Retrieve new alerts and convert them to incidents.
-
-    This function is invoked by Cortex XSOAR every minute by default. It uses last_run
-    to save the state of the last collection.
+) -> HelloWorldLastRun:
+    """Retrieve new alerts and format them as XSOAR incidents or XSIAM events.
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
-        last_run (HelloWorldIncidentsLastRun): State from the last fetch.
+        last_run (HelloWorldLastRun): State from the last fetch.
         severity (HelloWorldSeverity): Severity of the alerts to search for.
         max_fetch (int): Maximum number of alerts per fetch.
 
     Returns:
-        HelloWorldIncidentsLastRun: Next run state for the next fetch.
+        HelloWorldLastRun: Next run state for the next fetch.
     """
-    last_id = last_run.alert_start_id
-    demisto.debug(f"[Fetch incidents] Starting fetch {severity=} {last_id=} {max_fetch=}")
+    last_id_offset = last_run.id_offset
+    demisto.debug(f"[Fetch] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
 
-    alerts = client.get_alert_list(limit=max_fetch, severity=severity, last_id=last_id)
+    alerts = asyncio.run(get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch))
     if not alerts:
-        demisto.debug(f"[Fetch incidents] No new alerts found, keeping {last_id=}")
+        demisto.debug(f"[Fetch] No new alerts found. Keeping {last_id_offset=}.")
         return last_run
 
-    next_id = alerts[-1]["id"]
-    next_run = HelloWorldIncidentsLastRun(alert_start_id=next_id)
-    create_incidents(alerts)
+    next_id_offset = alerts[-1]["id"]
+    next_run = HelloWorldLastRun(id_offset=next_id_offset)
+    create_incidents(alerts) if SYSTEM.can_send_events else create_events(alerts)
 
-    demisto.debug(f"[Fetch incidents] Completed, fetched {len(alerts)} incidents {next_id=}")
-    return next_run
-
-
-def fetch_events(client: HelloWorldClient, last_run: HelloWorldEventsLastRun, max_fetch: int) -> HelloWorldEventsLastRun:
-    """Synchronous wrapper for async get_and_send_events function.
-
-    INTEGRATION DEVELOPER TIP:
-    This wrapper allows the async producer-consumer logic to be called from
-    the synchronous main() function. It uses asyncio.run() to execute the
-    async coroutine and return the results.
-
-    Args:
-        client (HelloWorldClient): HelloWorld client instance.
-        last_run (HelloWorldEventsLastRun): State from previous fetch execution.
-        max_fetch (int): Maximum number of events to fetch.
-
-    Returns:
-        HelloWorldEventsLastRun: Next run state for the next fetch.
-    """
-    demisto.debug(f"[Fetch events] Starting async execution {max_fetch=}")
-
-    start_time = last_run.audit_start_time
-    last_fetched_ids = last_run.last_audit_ids
-
-    demisto.debug(f"[Get and send events] Starting with {start_time=} {max_fetch=}")
-
-    # Fetch events using the concurrent approach
-    events = asyncio.run(
-            get_audit_events(
-            client=client,
-            start_time=start_time,
-            limit=max_fetch,
-            last_fetched_ids=last_fetched_ids,
-            should_push_events=True,
-        )
-    )
-
-    # Prepare next run state
-    if events:
-        # Get the latest event time for next run
-        latest_event = max(events, key=lambda e: e.get("timestamp", 0))
-        next_start_time = latest_event["timestamp"]
-        
-        # Keep track of the last batch of event IDs to prevent duplicates
-        last_event_ids = [event["id"] for event in events if event["timestamp"] == next_start_time]
-        
-        next_run = HelloWorldEventsLastRun(
-            audit_start_time=next_start_time,
-            last_audit_ids=last_event_ids,
-        )
-    else:
-        # No new events, keep the same state
-        next_run = last_run
-
-    demisto.debug("[Fetch events] Async execution completed")
+    demisto.debug(f"[Fetch] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
     return next_run
 
 
@@ -1515,7 +1337,7 @@ def alert_list_command(client: HelloWorldClient, args: HelloworldAlertListArgs) 
         CommandResults: CommandResults object containing alert data.
     """
     # Pagination params. See https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands
-    demisto.debug(f"[Alerts list] Fetching alerts {args.alert_id=} {args.severity=} {args.limit=}")
+    demisto.debug(f"[Alerts list] Fetching alerts using {args.alert_id=}, {args.severity=}, and {args.limit=}.")
 
     if args.alert_id:  # If alert_id is provided, we only need one call to API and pagination is not needed.
         demisto.debug(f"[Alerts list] Fetching single alert {args.alert_id=}")
@@ -1546,18 +1368,10 @@ def get_events_command(client: HelloWorldClient, args: HelloWorldGetEventsArgs) 
     Returns:
         CommandResults: CommandResults with collected events.
     """
-    demisto.debug(f"[Get events] Getting events {args.limit=} {args.start_time=}")
+    demisto.debug(f"[Get events] Getting events {args.severity=}, {args.offset=}, and {args.limit=}.")
 
     # Fetch events using the simplified approach
-    events = asyncio.run(
-        get_audit_events(
-            client=client,
-            start_time=args.start_datetime.isoformat(),
-            limit=args.limit,
-            last_fetched_ids=None,
-            should_push_events=args.should_push_events,
-        )
-    )
+    events = asyncio.run(get_alert_list(client=client, limit=args.limit, start_offset=args.offset, severity=args.severity))
 
     demisto.debug(f"[Get events] Fetched {len(events)} events")
     return CommandResults(readable_output=tableToMarkdown("HelloWorld Events", events))
@@ -1748,27 +1562,15 @@ def main() -> None:  # pragma: no cover
                 # Run command and get its results
                 return_results(ip_reputation_command(client, args, params))
 
-            case "fetch-incidents":
+            case "fetch-incidents" | "fetch-events":
                 # Implement command(s) that are invoked when fetch is enabled in the integration instance configuration
                 # Get last_run from the last time was invoked
-                demisto.debug("[Main] Starting fetch-incidents")
-                last_run = execution.incidents_last_run
-                next_run = fetch_incidents(client, last_run, severity=params.severity, max_fetch=params.max_incidents_fetch)
+                demisto.debug("[Main] Starting fetch")
+                last_run = execution.last_run
+                next_run = fetch_alerts(client, last_run, severity=params.severity, max_fetch=params.max_fetch)
                 # Save next_run for the next time fetch is invoked
                 next_run.set()
-                demisto.debug("[Main] fetch-incidents completed")
-
-            case "fetch-events":
-                # INTEGRATION DEVELOPER TIP:
-                # fetch-events is invoked periodically to collect events from the API
-                # and send them to XSIAM. It uses the producer-consumer pattern for
-                # efficient concurrent fetching and sending of events.
-                demisto.debug("[Main] Starting fetch-events")
-                last_run = execution.events_last_run
-                # Execute the producer-consumer pattern
-                next_run = fetch_events(client, last_run, max_fetch=params.max_events_fetch)
-                next_run.set()
-                demisto.debug("[Main] fetch-events completed")
+                demisto.debug("[Main] fetch completed")
 
             case "helloworld-get-events":
                 # Validate command arguments

@@ -54,6 +54,17 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   advanced: true
+- name: severity
+  display: Severity of alerts to fetch
+  defaultvalue: "high"
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - low
+  - medium
+  - high
+  - critical
   # Fetch incidents
   # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)
 - name: isFetch
@@ -65,34 +76,12 @@ configuration:
   hidden:
     - marketplacev2
     - platform
-- name: incidentType
-  display: Incident type
-  type: 13
-  required: false
-  section: Collect
-  hidden:
-    - marketplacev2
-    - platform
 - name: max_incidents_fetch
   display: Maximum number of incidents per fetch
   defaultvalue: '10'
   type: 0
   required: false
   section: Collect
-  hidden:
-    - marketplacev2
-    - platform
-- name: severity
-  display: Severity of alerts to fetch as incidents
-  defaultvalue: "high"
-  type: 15
-  required: true
-  section: Collect
-  options:
-  - low
-  - medium
-  - high
-  - critical
   hidden:
     - marketplacev2
     - platform
@@ -309,14 +298,23 @@ script:
       description: The type of the destination of the relationship.
       type: string
   - name: helloworld-get-events
-    description: Retrieves audit events from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
+    description: Retrieves alerts from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
     arguments:
-    - description: Maximum number of events to retrieve.
+    - description: The severity by which to filter the alerts.
+      name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - description: The alert ID (offset) from which to start retrieving.
+      name: offset
+      defaultValue: "0"
+    - description: Maximum number of alerts to retrieve.
       name: limit
       defaultValue: "10"
-    - description: The start time for retrieving events, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z').
-      name: start_time
-      defaultValue: "1 hour ago"
     - description: Whether to push events to XSIAM (only works on XSIAM tenants).
       name: should_push_events
       auto: PREDEFINED
