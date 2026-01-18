@@ -768,7 +768,7 @@ def fetch_events(proxies):
 
         else:  # Elasticsearch v7 and below
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
-            response = es.sear      ch(index=search._index, body=search.to_dict(), **search._params)
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     _, total_results = get_total_results(response)
     demisto.debug(f"fetch_events - total fetched: {total_results}, response:\n{response}.")
