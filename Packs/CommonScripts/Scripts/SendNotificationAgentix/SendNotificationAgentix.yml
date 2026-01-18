@@ -32,7 +32,8 @@ args:
   type: string
   required: false
 - name: thread_id
-  description: The ID of the message to which to reply.
+  description: The ID of the message to which to reply. Supported only for Microsoft Teams and Slack.
+  type: string
 comment: |
   Sends a notification message to a user, group, or channel. Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
 commonfields:
