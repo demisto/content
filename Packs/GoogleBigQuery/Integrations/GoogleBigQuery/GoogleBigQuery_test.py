@@ -20,8 +20,95 @@ def test_convert_to_string():
     test_conversion_for_empty_string = convert_to_string("")
     assert test_conversion_for_empty_string == ""
 
-    assert convert_to_string(b"test") == "test"
+
+def test_convert_to_string_datetime():
+    """
+    Given:
+    - A datetime object.
+    - A datetime format string.
+
+    When:
+    - Calling convert_to_string.
+
+    Then:
+    - The datetime object is converted to a string according to the format.
+    """
+    from GoogleBigQuery import convert_to_string
+
+    dt = datetime.datetime(2023, 1, 30, 12, 0, 0)
+    assert convert_to_string(dt, "%Y-%m-%d %H:%M:%S") == "2023-01-30 12:00:00"
+
+
+def test_convert_to_string_datetime_default_format():
+    """
+    Given:
+    - A datetime object.
+    - No datetime format string.
+
+    When:
+    - Calling convert_to_string.
+
+    Then:
+    - The datetime object is converted to a string using the default format "%m/%d/%Y %H:%M:%S".
+    """
+    from GoogleBigQuery import convert_to_string
+
+    dt = datetime.datetime(2023, 1, 30, 12, 0, 0)
+    assert convert_to_string(dt) == "01/30/2023 12:00:00"
+
+
+def test_convert_to_string_date():
+    """
+    Given:
+    - A date object.
+    - A datetime format string.
+
+    When:
+    - Calling convert_to_string.
+
+    Then:
+    - The date object is converted to a string according to the format.
+    """
+    from GoogleBigQuery import convert_to_string
+
+    d = datetime.date(2023, 1, 1)
+    assert convert_to_string(d, "%Y-%m-%d") == "2023-01-01"
+
+
+def test_convert_to_string_date_default_format():
+    """
+    Given:
+    - A date object.
+    - No datetime format string.
+
+    When:
+    - Calling convert_to_string.
+
+    Then:
+    - The date object is converted to a string using the default format "%m/%d/%Y".
+    """
+    from GoogleBigQuery import convert_to_string
+
+    d = datetime.date(2023, 1, 1)
+    assert convert_to_string(d) == "01/01/2023"
+
+
+def test_convert_to_string_other():
+    """
+    Given:
+    - A value that is not datetime, date, or bytes (e.g., a string or None).
+
+    When:
+    - Calling convert_to_string.
+
+    Then:
+    - The value is returned as is.
+    """
+    from GoogleBigQuery import convert_to_string
+
     assert convert_to_string("test") == "test"
+    assert convert_to_string(None) is None
+    assert convert_to_string(123) == 123
 
 
 def test_remove_outdated_incident_ids_keep_equal():
@@ -259,3 +346,91 @@ def test_get_max_incident_time_several_incidents():
     incidents = [incident_d, incident_a, incident_c, incident_b]
 
     assert get_max_incident_time(incidents) == "2020-05-06 09:09:09.000000"
+
+
+def test_query_command_dry_run(mocker):
+    """
+    Given:
+    - A query to run.
+    - dry_run argument set to "true".
+
+    When:
+    - Calling query_command.
+
+    Then:
+    - Ensure return_outputs is called with the expected dry run message.
+    """
+    from GoogleBigQuery import query_command
+    import GoogleBigQuery
+
+    mock_query_results = mocker.Mock()
+    mock_query_results.total_bytes_processed = 1024
+    mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=mock_query_results)
+    mocker.patch.object(demisto, "args", return_value={"query": "SELECT 1", "dry_run": "true"})
+    return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
+
+    query_command("SELECT 1")
+
+    assert return_outputs_mock.call_count == 1
+    _, kwargs = return_outputs_mock.call_args
+    assert "This query will process 1024 bytes" in kwargs["readable_output"]
+
+
+def test_query_command_with_results(mocker):
+    """
+    Given:
+    - A query to run.
+    - dry_run argument set to "false".
+    - Query returns results.
+
+    When:
+    - Calling query_command.
+
+    Then:
+    - Ensure return_outputs is called with the expected markdown table and context.
+    """
+    from GoogleBigQuery import query_command
+    import GoogleBigQuery
+
+    mock_row = {"user_id": 1, "user_name": "test"}
+    mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=[mock_row])
+    mocker.patch.object(demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false"})
+    return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
+
+    query_command("SELECT 1")
+
+    assert return_outputs_mock.call_count == 1
+    _, kwargs = return_outputs_mock.call_args
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["UserId"] == 1
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["UserName"] == "test"
+
+
+def test_query_command_with_underscore_format(mocker):
+    """
+    Given:
+    - A query to run.
+    - context_key_format argument set to "underscore".
+    - Query returns results.
+
+    When:
+    - Calling query_command.
+
+    Then:
+    - Ensure return_outputs is called with keys in underscore format.
+    """
+    from GoogleBigQuery import query_command
+    import GoogleBigQuery
+
+    mock_row = {"user_id": 1, "user_name": "test"}
+    mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=[mock_row])
+    mocker.patch.object(
+        demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false", "context_key_format": "underscore"}
+    )
+    return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
+
+    query_command("SELECT 1")
+
+    assert return_outputs_mock.call_count == 1
+    _, kwargs = return_outputs_mock.call_args
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["user_id"] == 1
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["user_name"] == "test"
