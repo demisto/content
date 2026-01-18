@@ -115,7 +115,7 @@ class Client(BaseClient):
             # InSync events use v2 API with tracker
             url_suffix = "/insync/eventmanagement/v2/events"
             param_name = "tracker"
-            
+
             # Add tracker parameter if provided
             if tracker:
                 encoded_tracker = quote(tracker, safe="!~*'()")
@@ -132,11 +132,11 @@ class Client(BaseClient):
             # 403 - "User is not authorized to access this resource with an explicit deny" - reason: tracker is expired
             # 400 - "Invalid tracker"
             raise DemistoException(f"Error in search-events: {e!s}") from e
-        
+
         # Normalize response: Cybersecurity events use 'nextPageToken', InSync events use 'tracker'
         if event_type == "Cybersecurity events" and "nextPageToken" in response:
             response["tracker"] = response.get("nextPageToken")
-        
+
         return response
 
     def _set_headers(self, token: str):
@@ -187,7 +187,9 @@ def get_events(client: Client, event_type: str, tracker: Optional[str] = None) -
     return response["events"], response["tracker"]
 
 
-def fetch_events(client: Client, last_run: dict[str, str], max_fetch: int, event_types: list[str]) -> tuple[list[dict], dict[str, str]]:
+def fetch_events(
+    client: Client, last_run: dict[str, str], max_fetch: int, event_types: list[str]
+) -> tuple[list[dict], dict[str, str]]:
     """
     Args:
         client (Client): Druva client to use.
@@ -201,13 +203,13 @@ def fetch_events(client: Client, last_run: dict[str, str], max_fetch: int, event
     demisto.debug(f"Last Run: {last_run}")
     demisto.debug(f"Event Types: {event_types}")
     final_events: list[dict] = []
-    
+
     # Fetch events for each selected event type
     for event_type in event_types:
         demisto.debug(f"Fetching events for type: {event_type}")
         done_fetching: bool = False
         type_events: list[dict] = []
-        
+
         while len(type_events) < max_fetch and not done_fetching:
             # Try new format first, then fall back to old format for backward compatibility
             tracker = last_run.get(f"tracker_{event_type}") or last_run.get("tracker")
@@ -287,21 +289,23 @@ def main() -> None:  # pragma: no cover
             all_events: list[dict] = []
             trackers: dict[str, str] = {}
             readable_parts: list[str] = []
-            
+
             # Fetch events for each selected event type
             for event_type in event_types_arg:
                 demisto.debug(f"Fetching events for type: {event_type}")
                 events, tracker = get_events(client, event_type, args.get("tracker"))
                 all_events.extend(events)
                 trackers[f"tracker_{event_type}"] = tracker
-                
+
                 # Add a separate table for each event type
                 readable_parts.append(tableToMarkdown(f"{event_type} ({len(events)} events):", events))
-                        
+
             # Convert trackers dict to list of dicts for table display
-            tracker_list = [{"Event Type": key.replace("tracker_", ""), "Tracker/PageToken": value} for key, value in trackers.items()]
+            tracker_list = [
+                {"Event Type": key.replace("tracker_", ""), "Tracker/PageToken": value} for key, value in trackers.items()
+            ]
             readable_parts.append(tableToMarkdown("Next Trackers/PageTokens:", tracker_list))
-            
+
             return_results(
                 CommandResults(
                     readable_output="\n".join(readable_parts),
@@ -317,10 +321,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             events, next_run = fetch_events(
-                client=client,
-                last_run=demisto.getLastRun(),
-                max_fetch=max_fetch,
-                event_types=event_types_param
+                client=client, last_run=demisto.getLastRun(), max_fetch=max_fetch, event_types=event_types_param
             )
 
             add_time_to_events(events)
