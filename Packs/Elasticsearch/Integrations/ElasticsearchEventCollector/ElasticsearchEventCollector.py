@@ -77,7 +77,7 @@ FETCH_INDEX = PARAMS.get("fetch_index", "")
 FETCH_QUERY_PARM = PARAMS.get("fetch_query", "")
 RAW_QUERY = PARAMS.get("raw_query", "")
 FETCH_TIME = "now"
-FETCH_SIZE = int(PARAMS.get("fetch_size", 50))
+FETCH_SIZE = int(PARAMS.get("fetch_size", 5000))
 INSECURE = not PARAMS.get("insecure", False)
 TIME_METHOD = PARAMS.get("time_method", "Simple-Date")
 TIMEOUT = int(PARAMS.get("timeout") or 60)
@@ -768,7 +768,7 @@ def fetch_events(proxies):
 
         else:  # Elasticsearch v7 and below
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
-            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+            response = es.sear      ch(index=search._index, body=search.to_dict(), **search._params)
 
     _, total_results = get_total_results(response)
     demisto.debug(f"fetch_events - total fetched: {total_results}, response:\n{response}.")
