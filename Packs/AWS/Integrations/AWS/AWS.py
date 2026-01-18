@@ -8,6 +8,7 @@ from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
+from xml.sax.saxutils import escape
 import re
 
 DEFAULT_MAX_RETRIES: int = 5
@@ -2942,7 +2943,7 @@ class EC2:
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
-            ) + f"\nImagesNextPageToken: {response.get('NextToken')}\n",
+            ) + f"\nImagesNextPageToken: {escape(response.get('NextToken'))}\n",
             raw_response=response,
         )
 
