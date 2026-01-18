@@ -103,7 +103,7 @@ def clear_trailing_whitespace(res):
 def replace_dots_in_keys(data: Any) -> Any:
     if isinstance(data, dict):
         return {k.replace(".", "_"): replace_dots_in_keys(v) for k, v in data.items()}
-    if isinstance(data, list):
+    elif isinstance(data, list):
         return [replace_dots_in_keys(i) for i in data]
     return data
 
@@ -538,7 +538,6 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(f"List assets: {res}")
         return res.get("reply", {}).get("data", [])
 
     def get_asset_schema(self):
@@ -1518,7 +1517,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
         try:
             filter_json = json.loads(filter_json)
         except ValueError:
-            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
@@ -1651,7 +1650,7 @@ def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
         try:
             membership_predicate_json = json.loads(membership_predicate_json)
         except ValueError:
-            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
 
     update_data = assign_params(
         group_name=group_name,
@@ -1702,7 +1701,7 @@ def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
         try:
             filter_json = json.loads(filter_json)
         except ValueError:
-            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
@@ -1769,7 +1768,7 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
         try:
             membership_predicate_json = json.loads(membership_predicate_json)
         except ValueError:
-            raise DemistoException("Couldn't convert filter_json to json. Please use the right format.")
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
 
     update_data = assign_params(
         group_name=group_name,

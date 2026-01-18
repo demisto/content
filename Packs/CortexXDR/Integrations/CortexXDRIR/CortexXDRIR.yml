@@ -3877,7 +3877,7 @@ script:
       predefined:
       - asc
       - desc
-    - description: The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema.
+    - description: 'The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
       name: filter_json
     - description: Maximum number of assets to return. Default is 50.
       name: limit
@@ -4019,7 +4019,7 @@ script:
       required: true
     - description: The description of the asset group.
       name: group_description
-    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case.'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Create-an-Asset-Group.'
       name: membership_predicate_json
     description: Creates an asset group.
     name: xdr-asset-group-create
@@ -4038,7 +4038,7 @@ script:
       predefined:
       - asc
       - desc
-    - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}".'
+    - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}". For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups.'
       name: filter_json
     - defaultValue: '50'
       description: Maximum number of asset groups to return. Default is 50.
@@ -4098,7 +4098,7 @@ script:
       - Dynamic
     - description: The description of the asset group.
       name: group_description
-    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case.'
+    - description: 'Define the filter conditions for selecting which assets to be included in a dynamic Asset Group. For example: "{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}". The SEARCH_FIELD need to in lower case. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-an-Asset-Group.'
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update
