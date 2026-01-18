@@ -281,6 +281,10 @@
         "userType": {
             "type": "string",
             "is_array": false
+        },
+        "createdDateTime":  {
+            "type": "datetime",
+            "is_array": false
         }
     },
     "msft_azure_ad_audit_raw": {
@@ -329,6 +333,10 @@
             "is_array": false
         },
         "targetResources": {
+            "type": "string",
+            "is_array": false
+        },
+        "activityDateTime": {
             "type": "string",
             "is_array": false
         }

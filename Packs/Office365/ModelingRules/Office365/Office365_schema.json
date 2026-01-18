@@ -319,6 +319,10 @@
         "Workload": {
             "type": "string",
             "is_array": false
+        },
+        "CreationTime": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_o365_exchange_online_raw": {
@@ -469,6 +473,10 @@
         "Workload": {
             "type": "string",
             "is_array": false
+        },
+        "CreationTime": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_o365_sharepoint_online_raw": {
@@ -611,6 +619,10 @@
         "ListTitle": {
             "type": "string",
             "is_array": false
+        },
+        "CreationTime": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_o365_dlp_raw": {
@@ -683,6 +695,10 @@
             "is_array": false
         },
         "Workload": {
+            "type": "string",
+            "is_array": false
+        },
+        "CreationTime": {
             "type": "string",
             "is_array": false
         }
@@ -770,6 +786,10 @@
           },
           "subject": {
             "type": "string",
+            "is_array": false
+          },
+         "createdDateTime": {
+            "type": "datetime",
             "is_array": false
           }
     }

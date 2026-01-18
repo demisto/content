@@ -87,6 +87,14 @@
         "parsed_fields": {
             "type": "string",
             "is_array": false
-        }                            
+        },
+        "Date": {
+            "type": "string",
+            "is_array": false
+        },
+        "Time": {
+            "type": "string",
+            "is_array": false
+        }
     }
 }
