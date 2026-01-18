@@ -3881,11 +3881,11 @@ script:
       name: filter_json
     - description: Maximum number of assets to return. Default is 50.
       name: limit
-      defaultvalue: '50'
+      defaultValue: '50'
     - description: Page size for pagination.
       name: page_size
-      defaultvalue: '50'
-    - defaultvalue: '0'
+      defaultValue: '50'
+    - defaultValue: '0'
       description: Page number for pagination.
       name: page
     description: Returns a list of assets.
@@ -4038,14 +4038,14 @@ script:
       predefined:
       - asc
       - desc
-    - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}"'
+    - description: 'The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}".'
       name: filter_json
-    - defaultvalue: '50'
+    - defaultValue: '50'
       description: Maximum number of asset groups to return. Default is 50.
       name: limit
     - description: Page size for pagination.
       name: page_size
-    - defaultvalue: '0'
+    - defaultValue: '0'
       description: Page number for pagination. 0 is the first page.
       name: page
     description: Returns a list of asset groups.
@@ -4116,6 +4116,7 @@ tests:
 - Test XDR Playbook quarantine file command
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
+- XDR_Testplaybook_V4
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
