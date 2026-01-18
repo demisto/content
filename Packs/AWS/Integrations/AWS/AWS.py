@@ -2925,8 +2925,6 @@ class EC2:
         if reserved_instances_ids := args.get("reserved_instances_ids"):
             kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
 
-        kwargs["DryRun"] = True  # TODO: Remove
-
         response = client.describe_reserved_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
