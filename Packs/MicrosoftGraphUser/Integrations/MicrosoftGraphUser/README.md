@@ -904,6 +904,36 @@ This operation is supported only when using a self-deployed app flow with the Di
 
 There is no context output for this command.
 
+### msgraph-user-get-auth-methods
+
+***
+Retrieve a list of authentication methods registered to a user.
+
+#### Base Command
+
+`msgraph-user-get-auth-methods`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUserAuthMethods.ID | String | The user ID. | 
+| MSGraphUserAuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. | 
+| MSGraphUserAuthMethods.Methods.ID | String | The unique identifier for the authentication method. | 
+| MSGraphUserAuthMethods.Methods.@Odata.Type | String | The type of the authentication method. | 
+| MSGraphUserAuthMethods.Methods.Password | String | The password associated with the authentication method, if applicable. | 
+| MSGraphUserAuthMethods.Methods.DisplayName | String | Authentication methods displayName. | 
+| MSGraphUserAuthMethods.Methods.DeviceTag | String | The device tag associated with the authentication method. | 
+| MSGraphUserAuthMethods.Methods.IsUsable | String | Indicates whether the authentication method is currently usable. | 
+| MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. | 
+| MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. | 
+
 ### msgraph-user-get-groups
 
 ***
@@ -963,34 +993,4 @@ Retrieves the groups a user is part of.
 | MSGraphUserGroups.Groups.UniqueName | String | Unique name of the group. | 
 | MSGraphUserGroups.Groups.Visibility | String | Groups visibility. | 
 | MSGraphUserGroups.Groups.WellKnownObject | String | Indicates if the group is a well-known system object. | 
-
-### msgraph-user-get-auth-methods
-
-***
-Retrieve a list of authentication methods registered to a user.
-
-#### Base Command
-
-`msgraph-user-get-auth-methods`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MSGraphUserAuthMethods.ID | String | The user ID. | 
-| MSGraphUserAuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. | 
-| MSGraphUserAuthMethods.Methods.ID | String | The unique identifier for the authentication method. | 
-| MSGraphUserAuthMethods.Methods.@Odata.Type | String | The type of the authentication method. | 
-| MSGraphUserAuthMethods.Methods.Password | String | The password associated with the authentication method, if applicable. | 
-| MSGraphUserAuthMethods.Methods.DisplayName | String | Authentication methods displayName. | 
-| MSGraphUserAuthMethods.Methods.DeviceTag | String | The device tag associated with the authentication method. | 
-| MSGraphUserAuthMethods.Methods.IsUsable | String | Indicates whether the authentication method is currently usable. | 
-| MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. | 
-| MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. | 
 
