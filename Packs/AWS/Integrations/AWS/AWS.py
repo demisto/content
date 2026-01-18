@@ -1207,6 +1207,8 @@ class S3:
         buckets = response.get("Buckets", [])
         for bucket in buckets:
             bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
+            bucket["BucketName"] = bucket.get("Name","")
+            del bucket["Name"]
         readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
         outputs = {
             "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,

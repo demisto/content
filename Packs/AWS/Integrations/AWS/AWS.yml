@@ -7434,7 +7434,7 @@ script:
           - me-central-1
           - sa-east-1
     outputs:
-      - contextPath: AWS.S3.Buckets.Name
+      - contextPath: AWS.S3.Buckets.BucketName
         description: The name of the bucket.
         type: string
       - contextPath: AWS.S3.Buckets.CreationDate
