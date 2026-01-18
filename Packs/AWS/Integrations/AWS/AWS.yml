@@ -7405,7 +7405,7 @@ script:
       isArray: true
 
   - name: aws-ec2-instance-running-waiter
-    description: Waits until EC2 instances are in the 'running' state. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
+    description: Waits until EC2 instances are in the 'running' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max is waiter_max_attempts arg value attempts).
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7462,7 +7462,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-status-ok-waiter
-    description: Waits until EC2 instance status checks pass. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
+    description: Waits until EC2 instance status checks pass. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7519,7 +7519,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-stopped-waiter
-    description: Waits until EC2 instances are in the 'stopped' state. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
+    description: Waits until EC2 instances are in the 'stopped' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7576,7 +7576,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-terminated-waiter
-    description: Waits until EC2 instances are in the 'terminated' state. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
+    description: Waits until EC2 instances are in the 'terminated' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
     arguments:
     - name: account_id
       description: The AWS account ID.
