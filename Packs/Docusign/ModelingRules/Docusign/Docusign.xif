@@ -62,6 +62,7 @@ call docusign_common_fields
    References: https://developers.docusign.com/docs/esign-rest-api/reference/users/users/
    Gets the user information for a specified user using a userId (GUID). To find a user based on their email address, use the list endpoint.
 */
+    xdm.event.type = check_event_type,
     xdm.target.user.username = userName,
     xdm.target.user.identifier = userId,
     xdm.target.user.is_disabled = if(userStatus = "Active", to_boolean(FALSE), to_boolean(TRUE)),
