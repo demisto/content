@@ -337,6 +337,11 @@ class URLCheck:
             self.url.hostname = ip.exploded
             self.output = self.output.replace(host, ip.exploded)
         self.url.hostname = str(parsed_ip)
+
+        # Add forward slash before query or fragment if missing
+        if index < len(self.modified_url) and self.modified_url[index] in ("?", "#"):
+            self.output += "/"
+
         self.check_done(index)
 
     def port_check(self):

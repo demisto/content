@@ -98,3 +98,24 @@ def test_proofpoint_v2(mocker):
         mock_result.call_args[0][0]["Contents"][0]
         == "https://media.mnn.com/assets/images/2016/06/jupiter-nasa.jpg.638x0_q80_crop-smart.jpg"
     )
+
+
+def test_missing_slash_before_query(mocker):
+    """Given
+        - A URL with query parameters but no path (missing / before ?).
+
+    When
+        - The FormatURL.main() function is executed.
+
+    Then
+        - A forward slash should be added after the domain before the query string.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"input": "https://example.com?test=value"},
+    )
+    mock_result = mocker.patch.object(demisto, "results")
+    FormatURL.main()
+    result = mock_result.call_args[0][0]["Contents"][0]
+    assert result == "https://example.com/?test=value", f"Expected 'https://example.com/?test=value', got: {result}"
