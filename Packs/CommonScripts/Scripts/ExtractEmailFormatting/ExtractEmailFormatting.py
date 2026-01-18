@@ -37,7 +37,7 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
-    if {"=", "?"}.issubset(set(email_address)):
+    if "?" in email_address or ("=" in email_address and "@" in email_address):
         # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
         email_address = extract_email_from_url_query(email_address)
 
@@ -106,9 +106,16 @@ def extract_email_from_url_query(email_address: str) -> str:
         if "@" in result:
             return result
 
-    # Fallback to search pattern for cases where reverse logic doesn't work
+    # Second, try to extract email as a query parameter key
     # This handles cases like: https://example.com/url/?user@test.net=email&a=b (email as a query parameter `key`)
     extracted_email = re.search(r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})=", email_address)
+
+    if extracted_email:
+        return extracted_email.group(1)
+
+    # Third, try to extract email directly from URL query without '='
+    # This handles cases like: //fiscaldigitalmxs.com?marketing.comunicacion@mahle.com
+    extracted_email = re.search(r"[?&]([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})", email_address)
 
     if extracted_email:
         return extracted_email.group(1)
