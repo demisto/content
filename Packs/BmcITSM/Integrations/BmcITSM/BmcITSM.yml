@@ -1,10 +1,12 @@
 commonfields:
   id: BmcITSM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
-provider: BMC Software
 description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
 - name: url
@@ -19,9 +21,9 @@ configuration:
   required: true
   defaultvalue:
   type: 9
+  section: Connect
   additionalinfo: ""
   displaypassword: Password
-  section: Connect
 - name: max_fetch
   display: Maximum Number of Incidents per Fetch
   defaultvalue: "50"
@@ -186,6 +188,10 @@ configuration:
   required: false
   section: Collect
 script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.6204436
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
@@ -802,7 +808,6 @@ script:
       defaultValue: ""
     - name: service_type
       description: The type of the incident ticket. Required when the template_instance_id argument is not provided.
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - User Service Restoration
@@ -810,6 +815,7 @@ script:
       - Infrastructure Restoration
       - Infrastructure Event
       - Security Incident
+      defaultValue: ""
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
       auto: PREDEFINED
@@ -838,11 +844,10 @@ script:
       - Closed
       - Cancelled
     - name: reported_source
-      description: The incident ticket reported source.  Required when the template_instance_id argument is not provided.
+      description: 'The incident ticket reported source.  Required when the template_instance_id argument is not provided.'
       defaultValue: ""
-      auto: PREDEFINED
       predefined:
-      - Direct Input
+      - 'Direct Input'
       - Email,External Escalation
       - Fax
       - Self Service
@@ -853,6 +858,7 @@ script:
       - Web
       - Other
       - BMC Impact Manager Event
+      auto: PREDEFINED
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
       defaultValue: ""
@@ -1187,7 +1193,7 @@ script:
       defaultValue: ""
     - name: root_request_mode
       description: "The parent ticket request mode."
-      defaultValue: "Real"
+      defaultValue: Real
       auto: PREDEFINED
       predefined:
       - Real
@@ -1205,12 +1211,12 @@ script:
       - Bypassed
       required: true
     - name: task_type
-      description: 'Whether the task is manual or automatic.'
+      description: Whether the task is manual or automatic.
       defaultValue: ""
-      predefined:
-      - 'Automatic'
-      - Manual
       auto: PREDEFINED
+      predefined:
+      - Automatic
+      - Manual
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
       defaultValue: ""
@@ -1298,7 +1304,7 @@ script:
       - Medium
       - Low
     - name: status
-      description: "The task ticket status."
+      description: The task ticket status.
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1341,15 +1347,15 @@ script:
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
       defaultValue:
     - name: assigned_group
-      description: "The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together."
+      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
       defaultValue: ""
     - name: task_type
       description: "The task ticket type."
       defaultValue: ""
-      predefined:
-      - 'Automatic'
-      - Manual
       auto: PREDEFINED
+      predefined:
+      - Automatic
+      - Manual
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
       defaultValue: ""
@@ -1959,16 +1965,16 @@ script:
     - name: incident_number
       description: Incident Number.
       required: true
-    - auto: PREDEFINED
-      description: Worklog Type
-      name: worklog_type
+    - name: worklog_type
+      description: Worklog Type.
+      auto: PREDEFINED
       predefined:
       - Chat
       - Status Update
       required: true
-    - auto: PREDEFINED
-      description: View Access
-      name: view_access
+    - name: view_access
+      description: View Access.
+      auto: PREDEFINED
       predefined:
       - Public
       - Internal
@@ -1979,34 +1985,36 @@ script:
     - name: entry_ids
       description: A comma-separated list of entry_ids to add as attachments.
       isArray: true
-  - arguments:
-    - description: A comma-separated list of DisplayIDs. Used as a filtering argument.
-      isArray: true
-      name: ticket_ids
-    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      name: query
-    - defaultValue: "50"
-      description: The maximum number of records to retrieve.
-      name: limit
-    - description: The maximum number of records to retrieve per page.
-      name: page_size
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The Work Log description. Used as a filtering argument.
-      name: description
+  - name: bmc-itsm-worklog-list
     description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    name: bmc-itsm-worklog-list
+    arguments:
+    - name: ticket_ids
+      description: A comma-separated list of DisplayIDs. Used as a filtering argument.
+      isArray: true
+    - name: query
+      description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: "50"
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: description
+      description: The Work Log description. Used as a filtering argument.
     outputs:
     - contextPath: BmcITSM.WorkLog.ID
       description: The Work Log ID.
       type: String
-  - arguments:
-    - description: First Request ID
-      name: first_request_id
+  - name: bmc-itsm-ticket-create-relationship
+    description: Creates a relationship between two tickets.
+    arguments:
+    - name: first_request_id
+      description: First Request ID.
       required: true
-    - auto: PREDEFINED
-      description: First Form Name
-      name: first_form_name
+    - name: first_form_name
+      description: First Form Name.
+      auto: PREDEFINED
       predefined:
       - incident
       - task
@@ -2015,12 +2023,11 @@ script:
       - known error
       - work order
       required: true
-    - description: Second Request ID
-      name: second_request_id
+    - name: second_request_id
+      description: Second Request ID.
       required: true
-    - auto: PREDEFINED
-      description: Second Form Name
-      name: second_form_name
+    - name: second_form_name
+      description: Second Form Name.
       predefined:
       - incident
       - task
@@ -2028,21 +2035,22 @@ script:
       - problem investigation
       - known error
       - work order
+      auto: PREDEFINED
       required: true
-    - auto: PREDEFINED
-      description: Request Type
-      name: request_type
+    - name: request_type
+      description: Request Type.
+      auto: PREDEFINED
       predefined:
       - Incident
       - Asset
       - Work order
       required: true
-    - description: Request Description
-      name: request_description
+    - name: request_description
+      description: Request Description.
       required: true
-    - auto: PREDEFINED
-      description: Association Type
-      name: association_type
+    - name: association_type
+      description: Association Type.
+      auto: PREDEFINED
       predefined:
       - Caused
       - Caused by
@@ -2051,17 +2059,15 @@ script:
       - Resolved
       - Resolved by
       required: true
-    - auto: PREDEFINED
+    - name: bidirectional
+      description: Bidirectionality.
       defaultValue: "true"
-      description: Bidirectionality
-      name: bidirectional
+      auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-    description: Creates a relationship between two tickets.
-    name: bmc-itsm-ticket-create-relationship
   - arguments:
-    - description: Worklog ID
+    - description: Worklog ID.
       name: worklog_id
     description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
     name: bmc-itsm-worklog-attachment-get
@@ -2320,13 +2326,6 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: '-'
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-sectionorder:
-- Connect
-- Collect
