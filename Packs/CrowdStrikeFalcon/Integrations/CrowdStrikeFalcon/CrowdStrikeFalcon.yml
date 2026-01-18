@@ -4210,6 +4210,12 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       defaultValue: '600'
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: Potentially unwanted programs (PUPs)  Adware detection level.
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: Potentially unwanted programs (PUPs)	 Adware prevention  level.
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4325,6 +4331,12 @@ script:
     - contextPath: CrowdStrike.ODSScan.last_updated
       description: The timestamp when the scan job was last updated.
       type: Date
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
+      type: Number
   - arguments:
     - description: A comma-separated list of host groups to be scanned.
       isArray: true
@@ -4383,6 +4395,12 @@ script:
       - Every other week
       - Every four weeks
       - Monthly
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: Potentially unwanted programs (PUPs)  Adware detection level.
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: Potentially unwanted programs (PUPs)	 Adware prevention  level.
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
@@ -4466,6 +4484,12 @@ script:
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
       description: The machine learning prevention level for the cloud.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
       type: Number
   - arguments:
     - description: Comma-separated list of scheduled scan IDs to delete.
