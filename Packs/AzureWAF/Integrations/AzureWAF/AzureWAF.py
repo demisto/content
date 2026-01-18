@@ -617,6 +617,11 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
             md = f"Front Door Policy {policy_name} was deleted successfully."
 
         if status.status_code == 204:
+            if old_context := demisto.dt(demisto.context(), f'AzureWAF.FrontDoorPolicy(val.id === "{policy_id}")'):
+                if isinstance(old_context, list):
+                    old_context = old_context[0]
+                old_context["IsDeleted"] = True
+                context["AzureWAF.FrontDoorPolicy(val.id === obj.id)"] = old_context
             md = f"Front Door policy {policy_name} was deleted or not found."
 
     return CommandResults(outputs=context, readable_output=md)
