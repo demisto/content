@@ -262,7 +262,7 @@ class PollingDefaults(int, Enum):
 
 class EventsDatasetConfigs(str, Enum):
     VENDOR = "Hello"
-    PRODUCT = "World"
+    PRODUCT = "WorldV2"
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
     TIME_KEY = "_time"
     SOURCE_LOG_TYPE_KEY = "source_log_type"
@@ -805,14 +805,14 @@ class HelloWorldClient(ContentClient):
 
         return f"Hello {name}"
 
-    async def get_alert_list(self, limit: int, severity: str | None = None, id_offset: int = 0) -> list[dict]:
+    async def get_alert_list(self, limit: int, severity: HelloWorldSeverity | None = None, id_offset: int = 0) -> list[dict]:
         """Get a list of alerts (dummy response for demonstration purposes).
 
         For real API calls, see the `sync_api_call_example` method.
 
         Args:
             limit (int): The number of items to generate.
-            severity (str | None): The severity value of the items returned.
+            severity (HelloWorldSeverity | None): The severity value of the items returned.
             id_offset (int): The ID of the last fetched alert for pagination.
 
         Returns:
@@ -831,12 +831,12 @@ class HelloWorldClient(ContentClient):
         await asyncio.sleep(1)  # sleep to mimic slow API response
         mock_response: list[dict] = []
         for mock_number in range(limit):
-            mock_alert_time = datetime(2023, 9, 14, 11, 30, 39, 882955) + timedelta(milliseconds=id_offset + mock_number)
+            mock_alert_time = datetime(2026, 1, 15) + timedelta(milliseconds=id_offset + mock_number)
             mock_alert_id = id_offset + mock_number + 1
             is_even = mock_alert_id % 2 == 0
             item = MOCK_ALERT.format(
                 id=mock_alert_id,
-                severity=severity if severity else "",
+                severity=severity.value if severity else "",
                 date=mock_alert_time.isoformat(),
                 action="Testing",
                 status="Success" if is_even else "Error",
@@ -1056,7 +1056,7 @@ def create_events(alerts: list[dict]) -> None:
         None
     """
     demisto.debug(f"[Create events] Formatting and sending {len(alerts)} XSIAM events.")
-    events = format_as_events(alerts, time_field="timestamp")
+    events = format_as_events(alerts, time_field="date")
     send_events_to_xsiam(
         events,
         vendor=EventsDatasetConfigs.VENDOR.value,
@@ -1186,7 +1186,7 @@ def fetch_alerts(
 
     next_id_offset = alerts[-1]["id"]
     next_run = HelloWorldLastRun(id_offset=next_id_offset)
-    create_incidents(alerts) if SYSTEM.can_send_events else create_events(alerts)
+    create_events(alerts) if SYSTEM.can_send_events else create_incidents(alerts)
 
     demisto.debug(f"[Fetch] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
     return next_run
