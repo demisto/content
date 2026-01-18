@@ -34,8 +34,7 @@ configuration:
   name: event_types
   type: 16
   additionalinfo: Select the types of events to fetch.
-  defaultvalue:
-  - InSync events
+  defaultvalue: "InSync events"
   options:
   - InSync events
   - Cybersecurity events
