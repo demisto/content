@@ -389,10 +389,10 @@ script:
     description: Check the status of the push factor mfa.
     name: okta-verify-mfa-status
     outputs:
-    - contextPath: Okta.ID
+    - contextPath: Okta.FactorResult.ID
       description: Okta user ID.
       type: String
-    - contextPath: Okta.factorResult
+    - contextPath: Okta.FactorResult.factorResult
       description: The status of the push factor.
       type: String
     - contextPath: Okta.Metadata.x-rate-limit-limit

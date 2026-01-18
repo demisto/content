@@ -757,6 +757,12 @@ def verify_push_factor_command(client, args):
 
 
 def verify_mfa_status_command(client: Client, args: dict):
+    """Checks the status of a push factor procedure
+
+    Args:
+        client (Client): The kta client
+        args (dict): The command arguments
+    """
     polling_url = args.get("polling_url", "")
 
     raw_response = client.get_push_factor_status(polling_url)
