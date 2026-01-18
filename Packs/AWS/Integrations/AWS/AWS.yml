@@ -7460,10 +7460,6 @@ script:
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
       defaultValue: "40"
-    - name: limit
-      description: The maximum number of results to return.
-    - name: next_token
-      description: The token for the next set of results.
 
   - name: aws-ec2-instance-status-ok-waiter
     description: Waits until EC2 instance status checks pass. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
@@ -7521,10 +7517,6 @@ script:
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
       defaultValue: "40"
-    - name: limit
-      description: The maximum number of results to return.
-    - name: next_token
-      description: The token for the next set of results.
 
   - name: aws-ec2-instance-stopped-waiter
     description: Waits until EC2 instances are in the 'stopped' state. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
@@ -7582,10 +7574,6 @@ script:
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
       defaultValue: "40"
-    - name: limit
-      description: The maximum number of results to return.
-    - name: next_token
-      description: The token for the next set of results.
 
   - name: aws-ec2-instance-terminated-waiter
     description: Waits until EC2 instances are in the 'terminated' state. Checks every 15 seconds until a successful state is reached (default max 40 attempts).
@@ -7643,10 +7631,6 @@ script:
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
       defaultValue: "40"
-    - name: limit
-      description: The maximum number of results to return.
-    - name: next_token
-      description: The token for the next set of results.
 
   - name: aws-ec2-iam-instance-profile-associations-describe
     description: Describes IAM instance profile associations.

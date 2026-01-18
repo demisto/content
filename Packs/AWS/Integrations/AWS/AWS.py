@@ -2638,8 +2638,6 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
-                - limit: The maximum number of results to return.
-                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are running
@@ -2652,12 +2650,6 @@ class EC2:
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
-        if max_results := args.get("limit"):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
-
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2667,9 +2659,7 @@ class EC2:
         try:
             waiter = client.get_waiter("instance_running")
             waiter.wait(**kwargs)
-            
             return CommandResults(readable_output="Instance(s) are now running.")
-            
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
@@ -2685,8 +2675,6 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
-                - limit: The maximum number of results to return.
-                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instance status is OK
@@ -2699,12 +2687,6 @@ class EC2:
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
-        if max_results := args.get("limit"):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
-
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2714,9 +2696,7 @@ class EC2:
         try:
             waiter = client.get_waiter("instance_status_ok")
             waiter.wait(**kwargs)
-            
             return CommandResults(readable_output="Instance status is now OK.")
-            
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
@@ -2732,8 +2712,6 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
-                - limit: The maximum number of results to return.
-                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are stopped
@@ -2746,12 +2724,6 @@ class EC2:
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
-        if max_results := args.get("limit"):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
-
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2761,9 +2733,7 @@ class EC2:
         try:
             waiter = client.get_waiter("instance_stopped")
             waiter.wait(**kwargs)
-            
             return CommandResults(readable_output="Instance(s) are now stopped.")
-            
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
@@ -2779,8 +2749,6 @@ class EC2:
                 - filters (str, optional): Filters for instances
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
-                - limit: The maximum number of results to return.
-                - next_token: The token for the next set of results.
 
         Returns:
             CommandResults: Results indicating instances are terminated
@@ -2793,12 +2761,6 @@ class EC2:
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
-        if max_results := args.get("limit"):
-            kwargs["MaxResults"] = max_results
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
-
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
@@ -2808,9 +2770,7 @@ class EC2:
         try:
             waiter = client.get_waiter("instance_terminated")
             waiter.wait(**kwargs)
-            
             return CommandResults(readable_output="Instance(s) are now terminated.")
-            
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
