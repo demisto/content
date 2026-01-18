@@ -53,7 +53,7 @@ from Azure import (
     STORAGE_DATE_FORMAT,
     get_command_and_token_scopes,
     create_set_tags_request_body,
-    nsg_security_rules_list_command
+    nsg_security_rules_list_command,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -4091,41 +4091,32 @@ def test_nsg_security_rules_list_command_success(mocker):
         "value": [
             {
                 "name": "rule1",
-                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1/securityRules/rule1",
-                "properties": {
-                    "direction": "Inbound",
-                    "priority": 100,
-                    "access": "Allow"
-                }
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule1",
+                "properties": {"direction": "Inbound", "priority": 100, "access": "Allow"},
             },
             {
-                "name": "rule2", 
-                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1/securityRules/rule2",
-                "properties": {
-                    "direction": "Outbound",
-                    "priority": 200,
-                    "access": "Deny"
-                }
-            }
+                "name": "rule2",
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule2",
+                "properties": {"direction": "Outbound", "priority": 200, "access": "Deny"},
+            },
         ]
     }
     mock_client.list_security_rules.return_value = mock_response
-    
+
     params = {}
-    args = {
-        "subscription_id": "test-sub-id",
-        "resource_group_name": "test-rg",
-        "network_security_group_name": "test-nsg"
-    }
-    
+    args = {"subscription_id": "test-sub-id", "resource_group_name": "test-rg", "network_security_group_name": "test-nsg"}
+
     result = nsg_security_rules_list_command(mock_client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == mock_response["value"]
     assert "Security Groups list" in result.readable_output
     assert "rule1" in result.readable_output
     assert "rule2" in result.readable_output
     mock_client.list_security_rules.assert_called_once_with("test-sub-id", "test-rg", "test-nsg")
+
 
 def test_nsg_security_rules_list_command_empty_response(mocker):
     """
@@ -4135,19 +4126,16 @@ def test_nsg_security_rules_list_command_empty_response(mocker):
     """
     mock_client = mocker.Mock()
     mock_client.list_security_rules.return_value = {"value": []}
-    
+
     params = {}
-    args = {
-        "subscription_id": "test-sub-id",
-        "resource_group_name": "test-rg",
-        "network_security_group_name": "test-nsg"
-    }
-    
+    args = {"subscription_id": "test-sub-id", "resource_group_name": "test-rg", "network_security_group_name": "test-nsg"}
+
     result = nsg_security_rules_list_command(mock_client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == []
     assert result.raw_response == []
+
 
 def test_nsg_security_rules_list_command_no_value_key(mocker):
     """
@@ -4157,47 +4145,45 @@ def test_nsg_security_rules_list_command_no_value_key(mocker):
     """
     mock_client = mocker.Mock()
     mock_client.list_security_rules.return_value = {}
-    
+
     params = {}
-    args = {"network_security_group_name": "test-nsg",
-            "subscription_id": "test-sub-id", "resource_group_name": "test-rg"
-            }
-    
+    args = {"network_security_group_name": "test-nsg", "subscription_id": "test-sub-id", "resource_group_name": "test-rg"}
+
     result = nsg_security_rules_list_command(mock_client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == []
+
 
 def test_nsg_security_rules_list_command_missing_properties(mocker):
     """
     Given: The command arguments.
     When: Calling azure-nsg-security-rules-list command.
-    Then: Test handling of rules with missing properties. The command should successfully process and return network security rules.
+    Then: Test handling of rules with missing properties. The command should successfully process and return network
+    security rules.
     """
     mock_client = mocker.Mock()
     mock_response = {
         "value": [
             {
                 "name": "rule1",
-                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1/securityRules/rule1"
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule1",
             },
             {
                 "name": "rule2",
-                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1/securityRules/rule2",
-                "properties": {}
-            }
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule2",
+                "properties": {},
+            },
         ]
     }
     mock_client.list_security_rules.return_value = mock_response
-    
+
     params = {}
-    args = {
-        "subscription_id": "test-sub-id",
-        "resource_group_name": "test-rg", 
-        "network_security_group_name": "test-nsg"
-    }
-    
+    args = {"subscription_id": "test-sub-id", "resource_group_name": "test-rg", "network_security_group_name": "test-nsg"}
+
     result = nsg_security_rules_list_command(mock_client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert len(result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"]) == 2

@@ -44,7 +44,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
         "azure-nsg-security-rule-update-quick-action",
-        "azure-nsg-security-rules-list"
+        "azure-nsg-security-rules-list",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
         "azure-nsg-security-rule-update",
@@ -252,7 +252,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
-    "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"]
+    "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -3819,11 +3819,13 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
     demisto.debug(f"{security_rules=}")
     hr_data = []
     for rule in security_rules:
-        hr_data.append({
-            "name": rule.get("name"),
-            "id": rule.get("id"),
-            "direction": rule.get("properties", {}).get("direction"),
-        })
+        hr_data.append(
+            {
+                "name": rule.get("name"),
+                "id": rule.get("id"),
+                "direction": rule.get("properties", {}).get("direction"),
+            }
+        )
 
     hr = tableToMarkdown(
         name="Security Groups list",
@@ -3833,9 +3835,7 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
         headerTransform=pascalToSpace,
     )
 
-    outputs = {
-        "Azure.NSGRule(val.id && val.id == obj.id)": security_rules
-    }
+    outputs = {"Azure.NSGRule(val.id && val.id == obj.id)": security_rules}
 
     return CommandResults(outputs=outputs, readable_output=hr, raw_response=security_rules)
 
