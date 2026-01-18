@@ -5867,9 +5867,6 @@ script:
         description: "The maximum number of attempts to check the image status. Default is 40 attempts."
         required: false
         defaultValue: "40"
-      - name: polling_timeout
-        description: The timeout in seconds until polling ends.
-        defaultValue: '600'
 
   - name: aws-s3-bucket-encryption-get
     description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.

@@ -3123,38 +3123,31 @@ class EC2:
         )
 
     @staticmethod
-    @polling_function(
-        name="aws-ec2-image-available-waiter",
-        interval=15,
-        timeout=DEFAULT_TIMEOUT,
-        requires_polling_arg=False,  # means it will always be default to poll, poll=true,
-    )
-    def image_available_waiter_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+    def image_available_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Waits until an Amazon Machine Image (AMI) becomes available.
 
-        This command polls the image state using describe_images API until it reaches
-        the 'available' state. It checks the image status at regular intervals
-        (configurable via interval_in_seconds) up to a maximum timeout
-        (configurable via polling_timeout).
+        This command uses AWS EC2's built-in waiter functionality to poll the image state
+        until it reaches the 'available' state. The waiter will check the image status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
 
         Args:
+            client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
                 - filters (str, optional): One or more filters separated by ';'
                 - image_ids (str, optional): Comma-separated list of image IDs to wait for
                 - owners (str, optional): Comma-separated list of image owners
                 - executable_users (str, optional): Comma-separated list of users with explicit launch permissions
-                - interval_in_seconds (int, optional): Time in seconds to wait between polling attempts (default: 15)
-                - polling_timeout (int, optional): Maximum timeout in seconds (default: 600)
-            client (BotoClient): The boto3 client for EC2 service
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
 
         Returns:
-            PollResult: Polling result with continue status and command results
+            CommandResults: Results with success message when image becomes available
 
         Raises:
-            DemistoException: If image check fails or image enters failed/invalid state
+            WaiterError: If the waiter times out or encounters an error
         """
-        demisto.info(f"{args=}")
         kwargs: Dict[str, Any] = {}
 
         # Add optional filters
@@ -3173,70 +3166,28 @@ class EC2:
         if owners := args.get("owners"):
             kwargs["Owners"] = parse_resource_ids(owners)
 
+        # Configure waiter settings
+        waiter_config: Dict[str, int] = {}
+        if waiter_delay := arg_to_number(args.get("waiter_delay")):
+            waiter_config["Delay"] = waiter_delay
+        if waiter_max_attempts := arg_to_number(args.get("waiter_max_attempts")):
+            waiter_config["MaxAttempts"] = waiter_max_attempts
+
+        if waiter_config:
+            kwargs["WaiterConfig"] = waiter_config
+
+        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Polling image availability with parameters: {kwargs}")
 
         try:
-            response = client.describe_images(**kwargs)
-            
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            waiter = client.get_waiter("image_available")
+            waiter.wait(**kwargs)
 
-            images = response.get("Images", [])
-            if not images:
-                raise DemistoException("No images found matching the specified criteria.")
-
-            all_images_available = True
-            failed_state_images = []
-            pending_state_images = []
-            
-            for image in images:
-                image_id = image.get("ImageId")
-                state = image.get("State")
-
-                if state == "available":
-                    continue
-                elif state in ["failed", "invalid", "deregistered"]:
-                    failed_state_images.append(f"{image_id} ({state})")
-                    break
-                else:
-                    pending_state_images.append(f"{image_id} ({state})")
-                    all_images_available = False
-
-            # If any images failed, stop polling and return error
-            if failed_state_images:
-                error_msg = f"Image(s) entered failed state: {failed_state_images[0]}"
-                return PollResult(
-                    response=CommandResults(readable_output=error_msg),
-                    continue_to_poll=False,
-                )
-
-            if all_images_available:
-                return PollResult(
-                    response=CommandResults(
-                        readable_output="Images are now available.",
-                        outputs_prefix="AWS.EC2.Images",
-                        outputs=images,
-                        outputs_key_field="ImageId",
-                    ),
-                    continue_to_poll=False,
-                )
-
-            # Continue polling - some images are still pending
-            return PollResult(
-                response=None,
-                continue_to_poll=True,
-                args_for_next_run=args,
-                partial_result=CommandResults(readable_output="Waiting for images to become available"),
+            return CommandResults(
+                readable_output="Image is now available."
             )
-
         except ClientError as e:
             AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-            # Return error result to stop polling
-            return PollResult(
-                response=CommandResults(readable_output=f"Error checking image availability: {str(e)}"),
-                continue_to_poll=False,
-            )
 
 
 class EKS:
