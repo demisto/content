@@ -522,21 +522,20 @@ class Client(CoreClient):
         return response["reply"]["alerts_ids"]
 
     def get_asset(self, asset_id: str):
-        res = self._http_request(
-            method="GET",
-            url_suffix=f"/assets/{asset_id}",
-            headers=self.headers,
-            timeout=self.timeout,
-        )
-        return res.get("reply", {}).get("data")
+        try:
+            res = self._http_request(
+                method="GET",
+                url_suffix=f"/assets/{asset_id}",
+            )
+            return res.get("reply", {}).get("data", [])
+        except DemistoException as e:
+            raise DemistoException(f"Error for asset with ID {asset_id}: {e.message}")
 
     def list_assets(self, request_data: dict):
         res = self._http_request(
             method="POST",
             url_suffix="/assets",
             json_data=request_data,
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {}).get("data", [])
 
@@ -544,8 +543,6 @@ class Client(CoreClient):
         res = self._http_request(
             method="GET",
             url_suffix="/assets/schema",
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {}).get("data", [])
 
@@ -553,8 +550,6 @@ class Client(CoreClient):
         res = self._http_request(
             method="GET",
             url_suffix=f"/assets/enum/{field_name}",
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {}).get("data", [])
 
@@ -563,17 +558,13 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/asset-groups/create",
             json_data=request_data,
-            headers=self.headers,
-            timeout=self.timeout,
         )
-        return res.get("reply")
+        return res.get("reply", {})
 
     def delete_asset_group(self, group_id: str):
         self._http_request(
             method="POST",
             url_suffix=f"/asset-groups/delete/{group_id}",
-            headers=self.headers,
-            timeout=self.timeout,
         )
 
     def list_asset_groups(self, request_data: dict):
@@ -581,8 +572,6 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/asset-groups",
             json_data=request_data,
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {}).get("data", [])
 
@@ -591,8 +580,6 @@ class Client(CoreClient):
             method="POST",
             url_suffix=f"/asset-groups/update/{group_id}",
             json_data=request_data,
-            headers=self.headers,
-            timeout=self.timeout,
         )
 
 
@@ -1525,9 +1512,7 @@ def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     assets = []
     if asset_id_list:
         for asset_id in asset_id_list:
-            if response := client.get_asset(asset_id):
-                asset = response.pop()
-                assets.append(asset)
+            assets.extend(client.get_asset(asset_id))
     else:
         request_data: Dict[str, Any] = {
             "request_data": {
