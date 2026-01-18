@@ -241,7 +241,8 @@ def parse_target_field(target_string: str | None):
     targets = []
     list_targets = argToList(target_string, separator=";")
     regex = re.compile(
-        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
+        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),"
+        r"values=([ \w@,.*-\/:]+)",
         flags=re.I,
     )
     for target in list_targets:
@@ -302,7 +303,9 @@ def parse_triple_filter(filter_string: str | None):
     list_filters = argToList(filter_string, separator=";")
     if len(list_filters) > MAX_TRIPLE_FILTER_VALUE:
         list_filters = list_filters[0:MAX_TRIPLE_FILTER_VALUE]
-        demisto.debug(f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters.")
+        demisto.debug(
+            f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters."
+        )
     regex = re.compile(
         r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
         flags=re.I,
@@ -383,20 +386,20 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
         "NetworkInterfaceId": network_interface_id,
         "Groups": argToList(args.get("groups")),
     }
-    
+
     tcp_established_timeout = arg_to_number(args.get("tcp_established_timeout"))
     udp_stream_timeout = arg_to_number(args.get("udp_stream_timeout"))
     udp_timeout = arg_to_number(args.get("udp_timeout"))
     if any([tcp_established_timeout, udp_stream_timeout, udp_timeout]):
         kwargs["ConnectionTrackingSpecification"] = {}
-    
+
     default_ena_queue_count = arg_to_bool_or_none(args.get("default_ena_queue_count"))
     ena_queue_count = arg_to_number(args.get("ena_queue_count"))
     attachment_id = args.get("attachment_id")
     delete_on_termination = arg_to_bool_or_none(args.get("delete_on_termination"))
     if any(b is not None for b in [default_ena_queue_count, ena_queue_count, attachment_id, delete_on_termination]):
         kwargs["Attachment"] = {}
-    
+
     if (ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))) is not None:
         kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
     if tcp_established_timeout:
@@ -1168,16 +1171,14 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        output = {
-            'Location': response.get("Location"),
-            'BucketArn': response.get("BucketArn"),
-            'BucketName': bucket_name
-        }
+        output = {"Location": response.get("Location"), "BucketArn": response.get("BucketArn"), "BucketName": bucket_name}
 
-        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully",
-                              outputs=output,
-                              outputs_prefix="AWS.S3.Buckets",
-                              outputs_key_field="BucketName")
+        return CommandResults(
+            readable_output=f"The bucket {bucket_name}, was created successfully",
+            outputs=output,
+            outputs_prefix="AWS.S3.Buckets",
+            outputs_key_field="BucketName",
+        )
 
     @staticmethod
     def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1207,7 +1208,7 @@ class S3:
         buckets = response.get("Buckets", [])
         for bucket in buckets:
             bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
-            bucket["BucketName"] = bucket.get("Name","")
+            bucket["BucketName"] = bucket.get("Name", "")
             del bucket["Name"]
         readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
         outputs = {
@@ -4343,8 +4344,7 @@ class SSM:
     @staticmethod
     @polling_function(
         name="aws-ssm-command-run",
-        interval=arg_to_number(
-            demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
         timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT,
         requires_polling_arg=False,  # means it will always be default to poll, poll=true,
     )

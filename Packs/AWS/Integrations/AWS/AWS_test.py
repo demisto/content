@@ -6832,6 +6832,7 @@ def test_build_pagination_kwargs_with_custom_max_limit():
     Then: The MaxResults should have the value of the max_limit
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 500}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
@@ -6845,12 +6846,9 @@ def test_build_pagination_kwargs_with_custom_parameter_names():
     Then: The returned value should have the custom names as the keys with their matching values.
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 25, "next_token": "abc123"}
-    result = build_pagination_kwargs(
-        args,
-        next_token_name="ContinuationToken",
-        limit_name="PageSize"
-    )
+    result = build_pagination_kwargs(args, next_token_name="ContinuationToken", limit_name="PageSize")
     expected = {"ContinuationToken": "abc123", "PageSize": 25}
     assert result == expected
 
@@ -6862,10 +6860,12 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     Then: The MaxResults should have the value of the max_limit and limit.
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 100}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
+
 
 def test_parse_target_field_single_target_single_value():
     """
@@ -6875,10 +6875,12 @@ def test_parse_target_field_single_target_single_value():
     Then: Should return a list containing a dictionary with correctly mapped key and value
     """
     from AWS import parse_target_field
+
     target_string = "key=resource-groups:ResourceTypeFilters,values=value"
     result = parse_target_field(target_string)
     expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["value"]}]
     assert result == expected
+
 
 def test_parse_target_field_single_target_multiple_values():
     """
@@ -6888,10 +6890,12 @@ def test_parse_target_field_single_target_multiple_values():
     Then: Should return a list containing a dictionary with correctly mapped key and multiple values
     """
     from AWS import parse_target_field
+
     target_string = "key=resource-groups:ResourceTypeFilters,values=resourceGroup1,resourceGroup2,resourceGroup3"
     result = parse_target_field(target_string)
     expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["resourceGroup1", "resourceGroup2", "resourceGroup3"]}]
     assert result == expected
+
 
 def test_parse_target_field_multiple_targets():
     """
@@ -6901,13 +6905,18 @@ def test_parse_target_field_multiple_targets():
     Then: Should return a list containing dictionaries with correctly mapped keys and values.
     """
     from AWS import parse_target_field
-    target_string = "key=resource-groups:Name,values=resourcegroups1;key=resource-groups:ResourceTypeFilters,values=ResourceTypeFilters1,ResourceTypeFilters2"
+
+    target_string = (
+        "key=resource-groups:Name,values=resourcegroups1;key=resource-groups:ResourceTypeFilters,"
+        "values=ResourceTypeFilters1,ResourceTypeFilters2"
+    )
     result = parse_target_field(target_string)
     expected = [
         {"Key": "resource-groups:Name", "Values": ["resourcegroups1"]},
-        {"Key": "resource-groups:ResourceTypeFilters", "Values": ["ResourceTypeFilters1", "ResourceTypeFilters2"]}
+        {"Key": "resource-groups:ResourceTypeFilters", "Values": ["ResourceTypeFilters1", "ResourceTypeFilters2"]},
     ]
     assert result == expected
+
 
 def test_parse_target_field_none_input():
     """
@@ -6917,9 +6926,11 @@ def test_parse_target_field_none_input():
     Then: Should return an empty list
     """
     from AWS import parse_target_field
+
     result = parse_target_field(None)
     expected = []
     assert result == expected
+
 
 def test_parse_target_field_empty_string():
     """
@@ -6929,9 +6940,11 @@ def test_parse_target_field_empty_string():
     Then: Should return an empty list.
     """
     from AWS import parse_target_field
+
     result = parse_target_field("")
     expected = []
     assert result == expected
+
 
 def test_parse_target_field_special_characters_in_values():
     """
@@ -6941,10 +6954,12 @@ def test_parse_target_field_special_characters_in_values():
     Then: Should return a list containing a dictionary with correctly mapped key and values.
     """
     from AWS import parse_target_field
+
     target_string = "key=resource-groups:ResourceTypeFilters,values=server-01.example.com,server-02/path"
     result = parse_target_field(target_string)
     expected = [{"Key": "resource-groups:ResourceTypeFilters", "Values": ["server-01.example.com", "server-02/path"]}]
     assert result == expected
+
 
 def test_parse_target_field_max_values_limit(mocker):
     """
@@ -6954,11 +6969,15 @@ def test_parse_target_field_max_values_limit(mocker):
     Then: Should return a list containing a dictionary with only the first MAX_TARGET_VALUES values.
     """
     from AWS import parse_target_field
-    mocker.patch('AWS.MAX_TARGET_VALUES', 3)
-    target_string = "key=resource-groups:Name,values=resourcegroups1,resourcegroups2,resourcegroups3,resourcegroups4,resourcegroups5"
+
+    mocker.patch("AWS.MAX_TARGET_VALUES", 3)
+    target_string = (
+        "key=resource-groups:Name,values=resourcegroups1,resourcegroups2,resourcegroups3,resourcegroups4,resourcegroups5"
+    )
     result = parse_target_field(target_string)
     expected = [{"Key": "resource-groups:Name", "Values": ["resourcegroups1", "resourcegroups2", "resourcegroups3"]}]
     assert result == expected
+
 
 def test_parse_target_field_invalid_format_missing_key():
     """
@@ -6968,10 +6987,12 @@ def test_parse_target_field_invalid_format_missing_key():
     Then: Should raise a ValueError with an appropriate error message.
     """
     from AWS import parse_target_field
+
     target_string = "values=Production"
     with pytest.raises(ValueError) as exc_info:
         parse_target_field(target_string)
     assert "Could not parse target" in str(exc_info.value)
+
 
 def test_parse_target_field_invalid_format_missing_values():
     """
@@ -6981,10 +7002,12 @@ def test_parse_target_field_invalid_format_missing_values():
     Then: Should raise a ValueError with an appropriate error message.
     """
     from AWS import parse_target_field
+
     target_string = "key=resource-groups:Name"
     with pytest.raises(ValueError) as exc_info:
         parse_target_field(target_string)
     assert "Could not parse target" in str(exc_info.value)
+
 
 def test_parse_target_field_invalid_format_wrong_separator():
     """
@@ -6994,10 +7017,12 @@ def test_parse_target_field_invalid_format_wrong_separator():
     Then: Should raise a ValueError with an appropriate error message.
     """
     from AWS import parse_target_field
+
     target_string = "key:resource-groups:Name,values:Production"
     with pytest.raises(ValueError) as exc_info:
         parse_target_field(target_string)
     assert "Could not parse target" in str(exc_info.value)
+
 
 def test_parse_target_field_whitespace_in_values():
     """
@@ -7007,6 +7032,7 @@ def test_parse_target_field_whitespace_in_values():
     Then: Should return a list containing a dictionary with the key and values, preserving the whitespace.
     """
     from AWS import parse_target_field
+
     target_string = "key=resource-groups:Name,values=My resource group,Another resource group"
     result = parse_target_field(target_string)
     expected = [{"Key": "resource-groups:Name", "Values": ["My resource group", "Another resource group"]}]
@@ -7295,16 +7321,15 @@ def test_bucket_create_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                              "Location": "eu-cental-1",
-                                              "BucketArn": "arn"}
+    mock_client.create_bucket.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Location": "eu-cental-1",
+        "BucketArn": "arn",
+    }
     bucket_name = "test-bucket"
     args = {"bucket_name": bucket_name, "region": "eu-cental-1"}
-    expected_api_args = {
-        "Bucket": bucket_name,
-        "CreateBucketConfiguration": {"LocationConstraint": args.get("region")}
-    }
-    expected_output = {"Location": "eu-cental-1","BucketArn": "arn", "BucketName": bucket_name}
+    expected_api_args = {"Bucket": bucket_name, "CreateBucketConfiguration": {"LocationConstraint": args.get("region")}}
+    expected_output = {"Location": "eu-cental-1", "BucketArn": "arn", "BucketName": bucket_name}
 
     result = S3.bucket_create_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -7324,21 +7349,12 @@ def test_bucket_create_command_with_grants(mocker):
     mock_client = mocker.Mock()
     mock_client.create_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket_name": "test-bucket",
-        "grant_full_control": "id=user1",
-        "grant_read": "id=user2",
-        "region": "us-east-1"
-    }
+    args = {"bucket_name": "test-bucket", "grant_full_control": "id=user1", "grant_read": "id=user2", "region": "us-east-1"}
 
     result = S3.bucket_create_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "The bucket test-bucket, was created successfully" in result.readable_output
-    mock_client.create_bucket.assert_called_once_with(
-        Bucket="test-bucket",
-        GrantFullControl="id=user1",
-        GrantRead="id=user2"
-    )
+    mock_client.create_bucket.assert_called_once_with(Bucket="test-bucket", GrantFullControl="id=user1", GrantRead="id=user2")
 
 
 def test_bucket_create_command_failure(mocker):
@@ -7453,15 +7469,9 @@ def test_network_interface_attribute_modify_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_network_interface_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_network_interface_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "network_interface_id": "eni-12345",
-        "description": "new description",
-        "source_dest_check": "true"
-    }
+    args = {"network_interface_id": "eni-12345", "description": "new description", "source_dest_check": "true"}
 
     result = EC2.network_interface_attribute_modify_command(mock_client, args)
 
@@ -7498,10 +7508,7 @@ def test_network_interface_attribute_modify_command_validation_error(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    args = {
-        "network_interface_id": "eni-12345",
-        "attachment_id": "attach-123"
-    }
+    args = {"network_interface_id": "eni-12345", "attachment_id": "attach-123"}
 
     with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
         EC2.network_interface_attribute_modify_command(mock_client, args)
@@ -7521,7 +7528,7 @@ def test_regions_describe_command_success(mocker):
         "Regions": [
             {"RegionName": "us-east-1", "Endpoint": "ec2.us-east-1.amazonaws.com", "OptInStatus": "opt-in-not-required"},
             {"RegionName": "us-west-2", "Endpoint": "ec2.us-west-2.amazonaws.com", "OptInStatus": "opt-in-not-required"},
-        ]
+        ],
     }
     mock_client.describe_regions.return_value = mock_response
 
@@ -7566,10 +7573,7 @@ def test_regions_describe_command_validation_error(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    args = {
-        "region_names": "us-east-1",
-        "all_regions": "true"
-    }
+    args = {"region_names": "us-east-1", "all_regions": "true"}
 
     with pytest.raises(DemistoException, match="Only one of the arguments 'region_name' and 'all_regions' should be provided."):
         EC2.regions_describe_command(mock_client, args)
@@ -7591,7 +7595,7 @@ def test_inventory_entries_list_command_success(mocker):
             {"Name": "entry2", "URL": "http://entry2", "Summary": "summary2"},
         ],
         "InstanceId": "i-12345",
-        "TypeName": "AWS:InstanceInformation"
+        "TypeName": "AWS:InstanceInformation",
     }
     mock_client.list_inventory_entries.return_value = mock_response
 
@@ -7614,10 +7618,7 @@ def test_inventory_entries_list_command_no_entries(mocker):
     from AWS import SSM
 
     mock_client = mocker.Mock()
-    mock_response = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Entries": []
-    }
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Entries": []}
     mock_client.list_inventory_entries.return_value = mock_response
 
     args = {"instance_id": "i-12345", "type_name": "AWS:InstanceInformation"}
@@ -7654,22 +7655,13 @@ def test_command_run_command_first_execution(mocker):
     Then: It should call send_command and return a PollResult with continue_to_poll=True and partial_result.
     """
     from AWS import SSM
-    from CommonServerPython import PollResult
 
     mock_client = mocker.Mock()
     mock_client.send_command.return_value = {
-        "Command": {
-            "CommandId": "cmd-123",
-            "Status": "Pending",
-            "RequestedDateTime": datetime(2023, 10, 15, 14, 30, 45)
-        }
+        "Command": {"CommandId": "cmd-123", "Status": "Pending", "RequestedDateTime": datetime(2023, 10, 15, 14, 30, 45)}
     }
 
-    args = {
-        "instance_ids": "i-12345",
-        "document_name": "AWS-RunShellScript",
-        "parameters": "key=commands,values=ls"
-    }
+    args = {"instance_ids": "i-12345", "document_name": "AWS-RunShellScript", "parameters": "key=commands,values=ls"}
 
     # We need to mock serialize_response_with_datetime_encoding because it's used in the function
     mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
@@ -7689,12 +7681,9 @@ def test_command_run_command_polling_not_terminal(mocker):
     Then: It should call list_commands and return a PollResult with continue_to_poll=True.
     """
     from AWS import SSM
-    from CommonServerPython import PollResult
 
     mock_client = mocker.Mock()
-    mock_client.list_commands.return_value = {
-        "Commands": [{"Status": "InProgress"}]
-    }
+    mock_client.list_commands.return_value = {"Commands": [{"Status": "InProgress"}]}
 
     args = {"command_id": "cmd-123"}
 
@@ -7712,12 +7701,9 @@ def test_command_run_command_polling_terminal_success(mocker):
     Then: It should call list_commands and return a PollResult with continue_to_poll=False and the final response.
     """
     from AWS import SSM
-    from CommonServerPython import PollResult
 
     mock_client = mocker.Mock()
-    mock_client.list_commands.return_value = {
-        "Commands": [{"Status": "Success"}]
-    }
+    mock_client.list_commands.return_value = {"Commands": [{"Status": "Success"}]}
 
     args = {"command_id": "cmd-123"}
 
