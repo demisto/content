@@ -7645,3 +7645,87 @@ def test_inventory_entries_list_command_failure(mocker):
 
     SSM.inventory_entries_list_command(mock_client, args)
     mock_handle_error.assert_called_once()
+
+
+def test_command_run_command_first_execution(mocker):
+    """
+    Given: Arguments for running a command (first execution, no command_id).
+    When: command_run_command is called.
+    Then: It should call send_command and return a PollResult with continue_to_poll=True and partial_result.
+    """
+    from AWS import SSM
+    from CommonServerPython import PollResult
+
+    mock_client = mocker.Mock()
+    mock_client.send_command.return_value = {
+        "Command": {
+            "CommandId": "cmd-123",
+            "Status": "Pending",
+            "RequestedDateTime": datetime(2023, 10, 15, 14, 30, 45)
+        }
+    }
+
+    args = {
+        "instance_ids": "i-12345",
+        "document_name": "AWS-RunShellScript",
+        "parameters": "key=commands,values=ls"
+    }
+
+    # We need to mock serialize_response_with_datetime_encoding because it's used in the function
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.command_run_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run["command_id"] == "cmd-123"
+    assert result.partial_result.outputs["CommandId"] == "cmd-123"
+    mock_client.send_command.assert_called_once()
+
+
+def test_command_run_command_polling_not_terminal(mocker):
+    """
+    Given: Arguments with a command_id and a non-terminal status from AWS.
+    When: command_run_command is called.
+    Then: It should call list_commands and return a PollResult with continue_to_poll=True.
+    """
+    from AWS import SSM
+    from CommonServerPython import PollResult
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "Commands": [{"Status": "InProgress"}]
+    }
+
+    args = {"command_id": "cmd-123"}
+
+    result = SSM.command_run_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is True
+    assert result.response is None
+    mock_client.list_commands.assert_called_once_with(CommandId="cmd-123")
+
+
+def test_command_run_command_polling_terminal_success(mocker):
+    """
+    Given: Arguments with a command_id and a terminal 'Success' status from AWS.
+    When: command_run_command is called.
+    Then: It should call list_commands and return a PollResult with continue_to_poll=False and the final response.
+    """
+    from AWS import SSM
+    from CommonServerPython import PollResult
+
+    mock_client = mocker.Mock()
+    mock_client.list_commands.return_value = {
+        "Commands": [{"Status": "Success"}]
+    }
+
+    args = {"command_id": "cmd-123"}
+
+    result = SSM.command_run_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is False
+    assert "The command cmd-123 status is Success" in result.response.readable_output
+    mock_client.list_commands.assert_called_once_with(CommandId="cmd-123")

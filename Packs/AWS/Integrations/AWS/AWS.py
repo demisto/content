@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-#from datetime import date, datetime, timedelta, UTC
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -4342,9 +4342,8 @@ class SSM:
     @polling_function(
         name="aws-ssm-command-run",
         interval=arg_to_number(
-            demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
-        ),
-        timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
+            demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT,
         requires_polling_arg=False,  # means it will always be default to poll, poll=true,
     )
     def command_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult | None:
