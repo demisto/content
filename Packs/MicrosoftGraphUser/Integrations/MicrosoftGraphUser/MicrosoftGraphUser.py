@@ -656,7 +656,7 @@ def get_groups_command(client: MsGraphClient, args: Dict):
     user = args.get("user")
     group_data = client.get_groups(user)
 
-    user_readable, user_outputs = parse_outputs(group_data["value"])
+    user_readable, user_outputs = parse_outputs(group_data.get("value", []))
     human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
     outputs = {"ID": user, "Groups": user_outputs}
 

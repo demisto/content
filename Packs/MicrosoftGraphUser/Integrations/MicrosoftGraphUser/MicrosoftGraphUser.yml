@@ -444,12 +444,6 @@ script:
     - description: User ID or userPrincipalName.
       name: user
       required: true
-    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
-      name: properties
-    - description: The URL for the next page in the list.
-      name: next_page
-    - description: 'Filter to be used directly with the API. For more information on the filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
-      name: filter
     description: |-
       Retrieves the groups a user is part of.
     name: msgraph-user-get-groups
