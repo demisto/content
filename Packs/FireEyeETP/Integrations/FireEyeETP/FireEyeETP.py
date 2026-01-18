@@ -26,6 +26,9 @@ GLOBAL VARS
 
 PARAMS = demisto.params()
 
+MAX_FETCHED_ALERT= min(int(PARAMS.get("incidents_per_fetch", 59)), 59)
+FETCH_TIME = PARAMS.get("fetch_time", "1 minutes")
+
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
 SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
@@ -52,7 +55,6 @@ SEARCH ATTRIBUTES VALID VALUES
 # The fetch command includes 1 request for retrieving the alerts, and then 1 request prt each fetched alert for retrieving the severity.
 # (which means max 59 alerts cab be fetched in 1 minutes)
 
-MAX_FETCHED_ALERT= 59 # TODO: change it to incidents_per_fetch configuration param and add to readme
 REJECTION_REASONS = [
     "ETP102",
     "ETP103",
@@ -92,6 +94,14 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 BASIC FUNCTIONS
 """
 
+def is_iso_utc(date_str) -> bool:
+    if not date_str:
+        return False
+    try:
+        datetime.strptime(date_str, ISO_FORMAT)
+        return True
+    except:
+        return False
 
 def fetch_oauth_token():
     """
@@ -528,6 +538,19 @@ def get_message_command():
         }
         demisto.results(entry)
 
+def create_output_alerts_search(alert):
+    return {
+        "Alert ID": alert.get("id"),
+        "Sha256": alert.get("sha256"),
+        "md5": alert.get("md5"),
+        "Domain": alert.get("domain"),
+        "Original": alert.get("original"),
+        "Report id": alert.get("report_id"),
+        "Alert date": alert.get("alert_date"),
+        "Malware name": alert.get("malware").get("name"),
+        "Malware stype": alert.get("malware").get("stype"),
+        "Email status": alert.get("email_status"),
+    }
 
 def alert_readable_data_summery(alert):
     return {
@@ -558,16 +581,30 @@ def alert_readable_data(alert):
         "Sevirity": alert.get("alert").get("severity"),
     }
 
+def create_output_single_alert(alert):
+    return {
+        "Alert ID": alert.get("id"),
+        "Domain": alert.get("domain"),
+        "Msg": alert.get("msg"),
+        "Traffic type": alert.get("traffic_type"),
+        "Verdict": alert.get("verdict"),
+        "Report id": alert.get("report_id"),
+        "Alert date": alert.get("alert_date"),
+        "Product": alert.get("product"),
+        "Occurred": alert.get("alert").get("occurred"),
+        "Name": alert.get("alert").get("name"),
+        "Attack time": alert.get("alert").get("attack-time"),
+        "Severity": alert.get("alert").get("severity"),
+    }
 
 def malware_readable_data(malware):
     return {
         "Name": malware.get("name"),
         "Domain": malware.get("domain"),
-        "Downloaded At": malware.get("downloaded_at"),
-        "Executed At": malware.get("executed_at"),
+        "Downloaded At": malware.get("downloaded-at"),
+        "Executed At": malware.get("executed-at"),
         "Type": malware.get("stype"),
-        "Submitted At": malware.get("submitted_at"),
-        "SID": malware.get("sid"),
+        "Submitted At": malware.get("submitted-at")
     }
 
 
@@ -578,24 +615,32 @@ def alert_context_data(alert):
     return context_data
 
 
-def get_alerts_request(size, start_time=None, end_time=None, pagination_token=None, alert_id=None):
-    '''
-    Fetching alerts from /api/v2/public/alerts/search endpoint
-    '''
+# TODO: CHECK IF alert_id IS IN USED, IS THERE ANY CALL USE IT?
+def get_alerts_request(size=None, start_time=None, end_time=None, pagination_token=None, body={}):
+    """
+    Fetch alerts from the /api/v2/public/alerts/search endpoint.
+
+    Args:
+        size (int, optional): Maximum number of alerts to return.
+        start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
+        end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
+        pagination_token (str, optional): Token used for pagination.
+        body (dict, optional): Additional request body parameters.
+
+    """
     url = f"{BASE_PATH_V2}/public/alerts/search"
-    
-    body = {"size": size, "sort":{"order": "asc"}}
+    body["sort"] = {"order": "asc"}
+    if size:
+        body["size"] = int(size)
     if start_time and end_time:
         body["date_range"] = { "from": start_time, "to": end_time}
     if pagination_token:
         body["sort"]["search_after"] = pagination_token
-    if alert_id:
-        body["alert_id"] = [alert_id]
 
     response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
     return response
 
-
+# TODO: deprecated command
 def get_alerts_command():
     args = demisto.args()
 
@@ -745,6 +790,48 @@ def get_alert_request(alert_id):
     return response
 
 
+def create_request_body_alert_search_endpoint(args):
+    body = {}
+    domain = argToList(args.get("domain"))
+    domain_group = argToList(args.get("domain_group"))
+    email_header_subject = argToList(args.get("email_header_subject"))
+    is_read = args.get("is_read")
+    is_retro = args.get("is_retro")
+    malwarename = argToList(args.get("malwarename"))
+    malwarestype = argToList(args.get("malwarestype"))
+    md5 = argToList(args.get("md5"))
+    mta_msg_id = argToList(args.get("mta_msg_id"))
+    traffic_type = args.get("traffic_type")
+    verdict = argToList(args.get("verdict"))
+    
+
+    if domain:
+        body["domain"] = domain
+    if domain_group:
+        body["domain_group"] = domain
+    if email_header_subject:
+        body["email-header"] = {"subject": email_header_subject}
+    if is_read:
+        body["is_read"] = argToBoolean(is_read)
+    if is_retro:
+        body["is_retro"] = argToBoolean(is_read)
+    if malwarename:
+        body["malwarename"] = malwarename
+    if malwarestype:
+        body["malwarestype"] = malwarestype
+    if md5:
+        body["md5"] = md5
+    if mta_msg_id:
+        body["mta_msg_id"] = mta_msg_id
+    if traffic_type:
+        body["traffic_type"] = traffic_type
+    if verdict:
+        body["verdict"] = verdict
+    
+    return body
+    
+
+
 def quarantine_release_command(client, args):
     message_id = args.get("message_id")
 
@@ -758,33 +845,32 @@ def quarantine_release_command(client, args):
 
     return command_results
 
-
-# TODO: try to run this command with all of the params, to check it's work as expected.# use one of the existing alerts.
+# TODO: split this function to 2 functions.
+# TODO: try to run this command with all of the params, to check it's work as expected. use one of the existing alerts.
 def get_alert_list():
     args = demisto.args()
     alert_id = args.get("alert_id")
 
-    # In case of alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
+    # In case alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
     if alert_id:
-        alert_raw = get_alert_request(alert_id)
-        if alert_raw:
+        alert = get_alert_request(alert_id)
+        if alert:
             # create context data # TODO: edit this function from this point, to be matched to the desired new output.
-            alert_context = alert_context_data(alert_raw)
 
             # create readable data (TODO: Should be HR: in case of the API 1)
-            readable_data = alert_readable_data(alert_context)
+            readable_data = create_output_single_alert(alert)
             alert_md_table = tableToMarkdown("Alert Details", readable_data)
-            data = alert_context["alert"]["explanation"]["malware_detected"]["malware"]
+            data = alert["alert"]["explanation"]["malware_detected"]["malware"]
             malware_data = [malware_readable_data(malware) for malware in data]
             malware_md_table = tableToMarkdown("Malware Details", malware_data)
 
             entry = {
                 "Type": entryTypes["note"],
-                "Contents": alert_raw,
+                "Contents": alert,
                 "ContentsFormat": formats["json"],
                 "ReadableContentsFormat": formats["markdown"],
                 "HumanReadable": f"## Trellix Email Security - Cloud - Get Alert\n{alert_md_table}\n{malware_md_table}",
-                "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert_context},
+                "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert},
             }
             demisto.results(entry)
         # no results
@@ -797,56 +883,50 @@ def get_alert_list():
                 "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\nno results",
             }
             demisto.results(entry)
-        return
-    
-    
-    # alert_id is not provided, calling:  /api/v2/public/alerts/search    
-    if "size" in args:
-        args["size"] = int(args["size"])
-    start_time = args.get("from_last_modified_on")
-    now_utc = datetime.now(timezone.utc).strftime(ISO_FORMAT)
-    
-    # TODO: continue from this point, edit to be matched to the new desired output, and the new api endpoint.
-    # get raw data
-    alerts_raw = get_alerts_request(
-        size=args.get("size"),
-        start_time=start_time,
-        end_time = now_utc,
-        alert_id=args.get("etp_message_id") # TODO: check how the alert_id and the time range work together, is it works?
-    )
 
-    # create context data
-    alerts_context = [alert_context_data(alert) for alert in alerts_raw]
+    # alert_id is not provided, calling:  /api/v2/public/alerts/search
+    else:
+        body = create_request_body_alert_search_endpoint(args)
+        size = args.get("limit")
+        start_time = args.get("date_from")
+        end_time = args.get("date_to")
+        if start_time and not is_iso_utc(start_time):
+            start_time = parse_date_range(start_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+        if end_time and not is_iso_utc(end_time):
+            end_time = parse_date_range(end_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+        response = get_alerts_request(size=size, start_time=start_time, end_time=end_time, body=body)
 
-    # create readable data (TODO: should be HR: in case of the API 2)
-    alerts_readable_data = [alert_readable_data_summery(alert) for alert in alerts_context]
-    alerts_summery_headers = [
-        "Alert ID",
-        "Alert Timestamp",
-        "Email Accepted",
-        "From",
-        "Recipients",
-        "Subject",
-        "MD5",
-        "URL/Attachment",
-        "Email Status",
-        "Threat Intel",
-    ]
-    md_table = tableToMarkdown(
-        "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
-    )
-    entry = {
-        "Type": entryTypes["note"],
-        "Contents": alerts_raw,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": md_table,
-        "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alerts_context},
-    }
-    demisto.results(entry)
+        # TODO: continue from this point, edit to be matched to the new desired output, and the new api endpoint.
+        # create readable data (TODO: should be HR: in case of the API 2)
+        alerts = response.get("data", [])
+        alerts_readable_data = [create_output_alerts_search(alert) for alert in alerts]
+        alerts_summery_headers = [
+            "Alert ID",
+            "Sha256",
+            "md5",
+            "Domain",
+            "Original",
+            "Report id",
+            "Malware name",
+            "Malware stype",
+            "Email status",
+        ]
+        md_table = tableToMarkdown(
+            "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
+        )
+        entry = {
+            "Type": entryTypes["note"],
+            "Contents": alerts,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": md_table,
+            "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alerts},
+        }
+        demisto.results(entry)
 
         
-
+# TODO: deprecated
 def get_alert_command():
     # get raw data
     alert_raw = get_alert_request(demisto.args()["alert_id"])
@@ -902,12 +982,11 @@ def parse_alert_to_incident(alert):
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-
-    week_ago = (datetime.now(timezone.utc) - timedelta(days=700)).strftime(ISO_FORMAT) # TODO: change it to fetch_time configuration param? or ask Dmitry about it, should it be "now"?
+    start_time = parse_date_range(FETCH_TIME)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
     now_utc =  datetime.now(timezone.utc).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
-    response = get_alerts_request(size=MAX_FETCHED_ALERT, start_time=week_ago, end_time=now_utc, pagination_token=pagination_token)
+    response = get_alerts_request(size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token)
 
     # When no alerts are found, there is no search_after token in the response.
     if not response or not response.get("data"):

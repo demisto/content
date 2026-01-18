@@ -59,6 +59,20 @@ configuration:
   type: 8
   required: false
   section: Collect
+- defaultvalue: 1 minutes
+  display: First fetch timestamp.
+  name: fetch_time
+  type: 0
+  section: Collect
+  required: false
+- display: Max incidents per fetch
+  name: incidents_per_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: '59'
+  additionalinfo: Input a value between 1-59.
 - display: Incident type
   name: incidentType
   type: 13
@@ -263,22 +277,36 @@ script:
     - name: date_to
       description: Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now").
     - name: domain
+      isArray: true
     - name: domain_group
+      isArray: true
     - name: email_header_subject
+      isArray: true
     - name: is_read
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
     - name: is_retro
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
     - name: malwarename
+      isArray: true
     - name: malwarestype
+      isArray: true
     - name: md5
+      isArray: true
     - name: mta_msg_id
+      isArray: true
     - name: traffic_type
       auto: PREDEFINED
       predefined:
       - inbound
       - outbound
     - name: verdict
-    - name: page
-    - name: page_size
+      isArray: true
     - name: limit
     outputs:
     - contextPath: FireEyeETP.Alerts.smtp-message.from
