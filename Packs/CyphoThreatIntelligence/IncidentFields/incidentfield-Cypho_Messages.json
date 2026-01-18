@@ -35,7 +35,7 @@
     "id": "incident_cyphomessages",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Messages",
+    "name": "Cypho Threat Intelligence Messages",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

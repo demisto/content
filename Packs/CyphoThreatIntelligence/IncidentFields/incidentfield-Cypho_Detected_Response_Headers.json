@@ -35,7 +35,7 @@
     "id": "incident_cyphodetectedresponseheaders",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detected Response Headers",
+    "name": "Cypho Threat Intelligence Detected Response Headers",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

@@ -35,7 +35,7 @@
     "id": "incident_cyphodetectedcontent",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detected Content",
+    "name": "Cypho Threat Intelligence Detected Content",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

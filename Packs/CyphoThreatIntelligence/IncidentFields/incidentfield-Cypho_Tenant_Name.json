@@ -35,7 +35,7 @@
     "id": "incident_cyphotenantname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Tenant Name",
+    "name": "Cypho Threat Intelligence Tenant Name",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -48,7 +48,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"

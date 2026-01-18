@@ -36,7 +36,7 @@
     "id": "incident_cyphodetectedrepositoryname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detected Repository Name",
+    "name": "Cypho Threat Intelligence Detected Repository Name",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -49,7 +49,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"

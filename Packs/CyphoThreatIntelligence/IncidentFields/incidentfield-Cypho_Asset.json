@@ -35,7 +35,7 @@
     "id": "incident_cyphoasset",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Asset",
+    "name": "Cypho Threat Intelligence Asset",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -48,7 +48,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"

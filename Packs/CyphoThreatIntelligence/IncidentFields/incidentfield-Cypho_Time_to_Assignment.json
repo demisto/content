@@ -35,7 +35,7 @@
     "id": "incident_cyphotimetoassignment",
     "isReadOnly": true,
     "locked": false,
-    "name": "Cypho Time to Assignment",
+    "name": "Cypho Threat Intelligence Time to Assignment",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -48,7 +48,7 @@
     "threshold": 0,
     "type": "timer",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"

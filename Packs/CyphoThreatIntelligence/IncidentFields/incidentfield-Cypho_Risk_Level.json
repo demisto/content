@@ -35,7 +35,7 @@
     "id": "incident_cyphorisklevel",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Risk Level",
+    "name": "Cypho Threat Intelligence Risk Level",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -55,7 +55,7 @@
     "threshold": 72,
     "type": "singleSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"

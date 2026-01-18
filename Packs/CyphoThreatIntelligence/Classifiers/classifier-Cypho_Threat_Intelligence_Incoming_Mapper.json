@@ -9,58 +9,58 @@
 		"Cypho Critical Ports Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Port": {
+				"Cypho Threat Intelligence Detected Port": {
 					"simple": "description.port"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Product Name": {
+				"Cypho Threat Intelligence Product Name": {
 					"simple": "description.product_name"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -68,64 +68,64 @@
 		"Cypho Dark Web Exposure Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.detail"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Content": {
+				"Cypho Threat Intelligence Detected Content": {
 					"simple": "description.content"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -133,67 +133,67 @@
 		"Cypho Dns Information Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.description"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected New Record": {
+				"Cypho Threat Intelligence Detected New Record": {
 					"simple": "description.new_record.record"
 				},
-				"Cypho Detected New Record IP": {
+				"Cypho Threat Intelligence Detected New Record IP": {
 					"simple": "description.new_record.value"
 				},
-				"Cypho Detected Old Record": {
+				"Cypho Threat Intelligence Detected Old Record": {
 					"simple": "description.old_record.record"
 				},
-				"Cypho Detected Old Record IP": {
+				"Cypho Threat Intelligence Detected Old Record IP": {
 					"simple": "description.old_record.value"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -201,61 +201,61 @@
 		"Cypho Email Dns Records Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Checker": {
+				"Cypho Threat Intelligence Checker": {
 					"simple": "description.checker"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Messages": {
+				"Cypho Threat Intelligence Messages": {
 					"simple": "description.message.message"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.message.keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -272,7 +272,7 @@
 				"Cypho Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
 				"Cypho Detail": {
@@ -296,34 +296,34 @@
 				"Cypho ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -331,70 +331,70 @@
 		"Cypho File Sharing Services Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Content Author Name": {
+				"Cypho Threat Intelligence Detected Content Author Name": {
 					"simple": "description.content.author_name"
 				},
-				"Cypho Detected Content Page Count": {
+				"Cypho Threat Intelligence Detected Content Page Count": {
 					"simple": "description.content.page_count"
 				},
-				"Cypho Detected Content Title": {
+				"Cypho Threat Intelligence Detected Content Title": {
 					"simple": "description.content.title"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -402,67 +402,67 @@
 		"Cypho Github Secrets Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Repository Name": {
+				"Cypho Threat Intelligence Detected Repository Name": {
 					"simple": "description.repository_name"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Login Name": {
+				"Cypho Threat Intelligence Login Name": {
 					"simple": "description.owner_login"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -470,64 +470,64 @@
 		"Cypho IM Platform Suspicious Content": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Content": {
+				"Cypho Threat Intelligence Detected Content": {
 					"simple": "description.content"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -535,79 +535,79 @@
 		"Cypho Improper Access Control": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Host": {
+				"Cypho Threat Intelligence Detected Host": {
 					"simple": "description.host"
 				},
-				"Cypho Detected Http Request Method": {
+				"Cypho Threat Intelligence Detected Http Request Method": {
 					"simple": "description.http_method"
 				},
-				"Cypho Detected Parameter": {
+				"Cypho Threat Intelligence Detected Parameter": {
 					"simple": "description.parameter"
 				},
-				"Cypho Detected Payload": {
+				"Cypho Threat Intelligence Detected Payload": {
 					"simple": "description.payload"
 				},
-				"Cypho Detected Request Body": {
+				"Cypho Threat Intelligence Detected Request Body": {
 					"simple": "description.body"
 				},
-				"Cypho Detected Request Headers": {
+				"Cypho Threat Intelligence Detected Request Headers": {
 					"simple": "description.request_headers"
 				},
-				"Cypho Detected Response Headers": {
+				"Cypho Threat Intelligence Detected Response Headers": {
 					"simple": "description.response_headers"
 				},
-				"Cypho Host Path": {
+				"Cypho Threat Intelligence Host Path": {
 					"simple": "description.host_path"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Messages": {
+				"Cypho Threat Intelligence Messages": {
 					"simple": "description.detail"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at"
 				}
 			}
@@ -615,76 +615,76 @@
 		"Cypho Injection Attacks": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.detail"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Attack Type": {
+				"Cypho Threat Intelligence Detected Attack Type": {
 					"simple": "description.attack_type"
 				},
-				"Cypho Detected Host": {
+				"Cypho Threat Intelligence Detected Host": {
 					"simple": "description.host"
 				},
-				"Cypho Detected Http Request Method": {
+				"Cypho Threat Intelligence Detected Http Request Method": {
 					"simple": "description.http_method"
 				},
-				"Cypho Detected Parameter": {
+				"Cypho Threat Intelligence Detected Parameter": {
 					"simple": "description.parameter"
 				},
-				"Cypho Detected Payload": {
+				"Cypho Threat Intelligence Detected Payload": {
 					"simple": "description.payload"
 				},
-				"Cypho Host Path": {
+				"Cypho Threat Intelligence Host Path": {
 					"simple": "description.host_path"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Threat Intelligence Cypho Impact": {
 					"simple": "impact"
 				},
-				"Cypho Messages": {
+				"Cypho Threat Intelligence Messages": {
 					"simple": "description.recommendation"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -692,52 +692,52 @@
 		"Cypho Insecure Subdomains Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -745,67 +745,67 @@
 		"Cypho Malware Analysis Services Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Base Name": {
+				"Cypho Threat Intelligence Detected Base Name": {
 					"simple": "description.basename"
 				},
-				"Cypho Detected Content": {
+				"Cypho Threat Intelligence Detected Content": {
 					"simple": "description.content"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -813,70 +813,70 @@
 		"Cypho PII Exposure Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Host": {
+				"Cypho Threat Intelligence Detected Host": {
 					"simple": "description.host"
 				},
-				"Cypho Detected Password": {
+				"Cypho Threat Intelligence Detected Password": {
 					"simple": "description.password"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Login Name": {
+				"Cypho Threat Intelligence Login Name": {
 					"simple": "description.login"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				},
-				"Date Detected by Cypho": {
+				"Cypho Threat Intelligence Date Detected by Cypho": {
 					"simple": "description.date"
 				}
 			}
@@ -884,76 +884,76 @@
 		"Cypho Phishing Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Confidence Score": {
+				"Cypho Threat Intelligence Confidence Score": {
 					"simple": "description.confidence_score"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.note"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Domains": {
+				"Cypho Threat Intelligence Detected Domains": {
 					"simple": "description.domains"
 				},
-				"Cypho Detected Package Name": {
+				"Cypho Threat Intelligence Detected Package Name": {
 					"simple": "description.parked"
 				},
-				"Cypho Detected Phishing Domain Name": {
+				"Cypho Threat Intelligence Detected Phishing Domain Name": {
 					"simple": "description.phishing_domain"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Not Parked Factor Score": {
+				"Cypho Threat Intelligence Not Parked Factor Score": {
 					"simple": "description.factors.not_parked"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Similarity Rate": {
+				"Cypho Threat Intelligence Similarity Rate": {
 					"simple": "description.similarity_rate"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -961,73 +961,73 @@
 		"Cypho Rogue Mobile Application Detection": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.description"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Developer": {
+				"Cypho Threat Intelligence Detected Developer": {
 					"simple": "description.developer"
 				},
-				"Cypho Detected Package Name": {
+				"Cypho Threat Intelligence Detected Package Name": {
 					"simple": "description.package_name"
 				},
-				"Cypho Detected Targeted Brand Name": {
+				"Cypho Threat Intelligence Detected Targeted Brand Name": {
 					"simple": "description.targeted_brand"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Messages": {
+				"Cypho Threat Intelligence Messages": {
 					"simple": "description.detail"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1035,73 +1035,73 @@
 		"Cypho SSL Certificate Expiry Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.description"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Host": {
+				"Cypho Threat Intelligence Detected Host": {
 					"simple": "description.host"
 				},
-				"Cypho Detected IP": {
+				"Cypho Threat Intelligence Detected IP": {
 					"simple": "description.ip"
 				},
-				"Cypho Detected Serial Number": {
+				"Cypho Threat Intelligence Detected Serial Number": {
 					"simple": "description.serial"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho SSL/TLS Certificate Expire Date": {
+				"Cypho Threat Intelligence SSL/TLS Certificate Expire Date": {
 					"simple": "description.expire_date"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Subject Alternative Names": {
+				"Cypho Threat Intelligence Subject Alternative Names": {
 					"simple": "description.subject_an"
 				},
-				"Cypho Subject Common Name": {
+				"Cypho Threat Intelligence Subject Common Name": {
 					"simple": "description.subject_cn"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1109,64 +1109,64 @@
 		"Cypho SSL Certificate Hostname Mismatch Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Host": {
+				"Cypho Threat Intelligence Detected Host": {
 					"simple": "description.host"
 				},
-				"Cypho Detected IP": {
+				"Cypho Threat Intelligence Detected IP": {
 					"simple": "description.ip"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Subject Alternative Names": {
+				"Cypho Threat Intelligence Subject Alternative Names": {
 					"simple": "description.subject_an"
 				},
-				"Cypho Subject Common Name": {
+				"Cypho Threat Intelligence Subject Common Name": {
 					"simple": "description.subject_cn"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1174,64 +1174,64 @@
 		"Cypho Security Misconfiguration": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.detail"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Request Headers": {
+				"Cypho Threat Intelligence Detected Request Headers": {
 					"simple": "description.request_headers"
 				},
-				"Cypho Detected Response Headers": {
+				"Cypho Threat Intelligence Detected Response Headers": {
 					"simple": "description.response_headers"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.link"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1239,67 +1239,67 @@
 		"Cypho Sensitive Data Exposure Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Content": {
+				"Cypho Threat Intelligence Detected Content": {
 					"simple": "description.content"
 				},
-				"Cypho Detected Content Title": {
+				"Cypho Threat Intelligence Detected Content Title": {
 					"simple": "description.title"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.link"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1307,61 +1307,61 @@
 		"Cypho Social Media Account Impersonation Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Targeted Brand Name": {
+				"Cypho Threat Intelligence Detected Targeted Brand Name": {
 					"simple": "description.targeted_brand"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.link"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1369,64 +1369,64 @@
 		"Cypho URL and Domain Analysis Services Monitoring": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected IP": {
+				"Cypho Threat Intelligence Detected IP": {
 					"simple": "description.ip_addresses"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.url"
 				},
-				"Cypho Detection Source": {
+				"Cypho Threat Intelligence Detection Source": {
 					"simple": "description.detection_source"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Searching keyword": {
+				"Cypho Threat Intelligence Searching keyword": {
 					"simple": "description.search_keyword"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1434,52 +1434,52 @@
 		"Cypho Unclassified Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}
@@ -1487,7 +1487,7 @@
 		"Cypho Under Review Issues": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Attachments": {
+				"Cypho Threat Intelligence Attachments": {
 					"simple": "attachments.name"
 				}
 			}
@@ -1495,61 +1495,61 @@
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Cypho Asset": {
+				"Cypho Threat Intelligence Asset": {
 					"simple": "asset"
 				},
-				"Cypho Category Name": {
+				"Cypho Threat Intelligence Category Name": {
 					"simple": "category_name"
 				},
-				"Cypho Created at Time": {
+				"Cypho Threat Intelligence Created at Time": {
 					"simple": "created_at_text"
 				},
-				"Cypho Description": {
+				"Cypho Threat Intelligence Description": {
 					"simple": "description.detail"
 				},
-				"Cypho Detail": {
+				"Cypho Threat Intelligence Detail": {
 					"simple": "detail"
 				},
-				"Cypho Detected Request Headers": {
+				"Cypho Threat Intelligence Detected Request Headers": {
 					"simple": "description.request_headers"
 				},
-				"Cypho Detected Response Headers": {
+				"Cypho Threat Intelligence Detected Response Headers": {
 					"simple": "description.response_headers"
 				},
-				"Cypho Detected URL": {
+				"Cypho Threat Intelligence Detected URL": {
 					"simple": "description.link"
 				},
-				"Cypho ID": {
+				"Cypho Threat Intelligence ID": {
 					"simple": "id"
 				},
-				"Cypho Impact": {
+				"Cypho Threat Intelligence Impact": {
 					"simple": "impact"
 				},
-				"Cypho Recommendation": {
+				"Cypho Threat Intelligence Recommendation": {
 					"simple": "recommendation"
 				},
-				"Cypho Risk Level": {
+				"Cypho Threat Intelligence Risk Level": {
 					"simple": "risk_level"
 				},
-				"Cypho Status": {
+				"Cypho Threat Intelligence Status": {
 					"simple": "status"
 				},
-				"Cypho Status Reason": {
+				"Cypho Threat Intelligence Status Reason": {
 					"simple": "status_reason"
 				},
-				"Cypho Target Type": {
+				"Cypho Threat Intelligence Target Type": {
 					"simple": "target_field_type"
 				},
-				"Cypho Tenant Name": {
+				"Cypho Threat Intelligence Tenant Name": {
 					"simple": "tenant_name"
 				},
-				"Cypho Ticket Id": {
+				"Cypho Threat Intelligence Ticket Id": {
 					"simple": "ticket_id"
 				},
-				"Cypho Title": {
+				"Cypho Threat Intelligence Title": {
 					"simple": "title"
 				},
-				"Cypho Updated at Time": {
+				"Cypho Threat Intelligence Updated at Time": {
 					"simple": "updated_at_text"
 				}
 			}

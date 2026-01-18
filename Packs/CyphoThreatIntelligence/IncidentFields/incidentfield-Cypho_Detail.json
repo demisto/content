@@ -35,7 +35,7 @@
     "id": "incident_cyphodetail",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detail",
+    "name": "Cypho Threat Intelligence Detail",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

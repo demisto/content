@@ -35,7 +35,7 @@
     "id": "incident_cyphoattachments",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Attachments",
+    "name": "Cypho Threat Intelligence Attachments",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

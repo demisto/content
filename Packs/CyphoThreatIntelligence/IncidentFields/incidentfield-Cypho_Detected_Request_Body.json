@@ -35,7 +35,7 @@
     "id": "incident_cyphodetectedrequestbody",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detected Request Body",
+    "name": "Cypho Threat Intelligence Detected Request Body",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

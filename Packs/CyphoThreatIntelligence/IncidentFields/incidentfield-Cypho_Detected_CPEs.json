@@ -35,7 +35,7 @@
     "id": "incident_cyphodetectedcpes",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cypho Detected CPEs",
+    "name": "Cypho Threat Intelligence Detected CPEs",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
