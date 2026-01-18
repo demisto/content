@@ -3877,7 +3877,7 @@ script:
       predefined:
       - asc
       - desc
-    - description: The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema.
+    - description: A JSON-formatted list of fields to filter the assets by. Use xdr-asset-schema-get to get the list of asset fields. The filter must match the format used in the API: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups
       name: filter_json
     - description: Maximum number of assets to return. Default is 50.
       name: limit
