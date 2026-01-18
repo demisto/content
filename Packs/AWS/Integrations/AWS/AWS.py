@@ -4309,6 +4309,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     """
     account_id: str = args.get("account_id", "")
     credentials: dict = {}
+    # TEST TEST
     if get_connector_id():
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
