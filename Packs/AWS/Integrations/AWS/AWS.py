@@ -2673,6 +2673,8 @@ class EC2:
             args (Dict[str, Any]): Command arguments containing:
                 - instance_ids (str, optional): Comma-separated list of instance IDs
                 - filters (str, optional): Filters for instances
+                - include_all_instances (bool, optional): Specifies whether to include the health status for all
+                 instances or only for those currently running.
                 - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
                 - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
 
@@ -2680,12 +2682,15 @@ class EC2:
             CommandResults: Results indicating instance status is OK
         """
         kwargs = {}
-        
+        # IncludeAllInstances
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
         
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        if include_all_instances := args.get("include_all_instances"):
+            kwargs["IncludeAllInstances"] = argToBoolean(include_all_instances)
 
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),

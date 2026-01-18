@@ -7517,6 +7517,13 @@ script:
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
       defaultValue: "40"
+    - name: include_all_instances
+      description: When true, includes the health status for all instances. When false, includes the health status for running instances only.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
 
   - name: aws-ec2-instance-stopped-waiter
     description: Waits until EC2 instances are in the 'stopped' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
