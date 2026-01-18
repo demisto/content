@@ -1961,6 +1961,7 @@ script:
       contextPath: BmcITSM.SupportGroup.SupportGroupName
       description: The support group.
   - name: bmc-itsm-worklog-add
+    description: Adds a worklog entry to an existing incident ticket in BMC Helix ITSM. Worklogs are used to document work performed, status updates, or communication related to an incident.
     arguments:
     - name: incident_number
       description: Incident Number.
