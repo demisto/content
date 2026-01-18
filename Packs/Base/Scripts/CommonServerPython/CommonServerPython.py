@@ -9140,7 +9140,7 @@ def is_xsoar():
     :return: True iff the platform is XSOAR.
     :rtype: ``bool``
     """
-    return "xsoar" in demisto.demistoVersion().get("platform")
+    return "xsoar" in demisto.demistoVersion().get("platform", "")
 
 
 def is_xsoar_on_prem():
@@ -11790,6 +11790,10 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
+            if not isinstance(args, dict):
+                demisto.debug("Detected args of type {args_type}. Casting to dict.".format(args_type=type(args)))
+                args = dict(args or {})
+
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
@@ -12547,7 +12551,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=BaseClient):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12601,7 +12605,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads
+        multiple_threads=multiple_threads,
+        client_class=client_class,
     )
 
 
@@ -12714,7 +12719,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       client_class=BaseClient):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12855,7 +12861,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
@@ -13348,6 +13354,26 @@ class ISOEncoder(json.JSONEncoder):
             return obj.isoformat()
         # Let the base class handle other objects
         return json.JSONEncoder.default(self, obj)
+
+
+class SystemCapabilities:
+    """
+    Determines if we are running in XSOAR, XSIAM, or a Hybrid context.
+    Acts as the traffic cop for Unified commands.
+    """
+    def __init__(self):
+        self.is_platform = is_platform()
+        self.is_xsiam = is_xsiam()
+        self.is_xsoar = is_xsoar()
+    
+    @property
+    def can_send_events(self):
+        """
+        """
+        if self.is_xsiam or self.is_platform:
+            demisto.debug("XSIAM Context detected. Sending events is supported.")
+            return True
+        return False
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
