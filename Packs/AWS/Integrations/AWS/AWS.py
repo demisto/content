@@ -2798,7 +2798,7 @@ class EC2:
         if association_ids := args.get("association_ids"):
             kwargs["AssociationIds"] = parse_resource_ids(association_ids)
 
-        if max_results := args.get("limit"):
+        if max_results := arg_to_number(args.get("limit")):
             kwargs["MaxResults"] = max_results
 
         if next_token := args.get("next_token"):
@@ -2924,6 +2924,8 @@ class EC2:
 
         if reserved_instances_ids := args.get("reserved_instances_ids"):
             kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
+
+        kwargs["DryRun"] = True  # TODO: Remove
 
         response = client.describe_reserved_instances(**kwargs)
 

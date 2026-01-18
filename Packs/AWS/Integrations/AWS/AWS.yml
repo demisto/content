@@ -7453,7 +7453,7 @@ script:
       description: A comma-separated list of instance IDs to wait for.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: waiter_delay
       description: The amount of time in seconds to wait between attempts. Default is 15.
       defaultValue: "15"
@@ -7510,7 +7510,7 @@ script:
       description: A comma-separated list of instance IDs to wait for.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: waiter_delay
       description: The amount of time in seconds to wait between attempts. Default is 15.
       defaultValue: "15"
@@ -7567,7 +7567,7 @@ script:
       description: A comma-separated list of instance IDs to wait for.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: waiter_delay
       description: The amount of time in seconds to wait between attempts. Default is 15.
       defaultValue: "15"
@@ -7624,7 +7624,7 @@ script:
       description: A comma-separated list of instance IDs to wait for.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: waiter_delay
       description: The amount of time in seconds to wait between attempts. Default is 15.
       defaultValue: "15"
@@ -7681,10 +7681,10 @@ script:
       description: A comma-separated list of IAM instance profile association IDs.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: limit
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
+      defaultValue: 50
     - name: next_token
       description: The token for the next set of results.
     outputs:
@@ -7816,7 +7816,7 @@ script:
       description: A comma-separated list of Reserved Instance IDs.
       isArray: true
     - name: filters
-      description: One or more filters separated by ';' (for example, name=<name>;values=<values>).
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: offering_class
       description: The offering class of the Reserved Instance.
       auto: PREDEFINED
