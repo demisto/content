@@ -1556,7 +1556,7 @@ def test_list_phone_method_command_list_all(mocker):
     result = list_phone_method_command(client, args)
 
     assert result.outputs_prefix == "MSGraphUser.PhoneAuthMethod"
-    assert result.outputs_key_field == "ID"
+    assert result.outputs_key_field == "Id"
     assert "Phone Authentication Methods for User test-user" in result.readable_output
 
 
@@ -1866,7 +1866,7 @@ def test_list_owned_device_command_list_all(mocker):
     mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, None))
     result = list_owned_device_command(client, args)
 
-    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert result.outputs_prefix == "MSGraphUser"
     assert result.outputs_key_field == "ID"
     assert "Owned Devices for User test-user" in result.readable_output
 
@@ -1921,7 +1921,7 @@ def test_list_owned_device_command_with_pagination(mocker):
     mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, next_page_url))
     result = list_owned_device_command(client, args)
 
-    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert result.outputs_prefix == "MSGraphUser"
     assert "To get further results, enter this to the next_page argument" in result.readable_output
     assert next_page_url in result.readable_output
 
@@ -2006,5 +2006,5 @@ def test_list_owned_device_command_with_filter(mocker):
     mocker.patch.object(client, "list_owned_devices", return_value=(mock_device_data, None))
     result = list_owned_device_command(client, args)
 
-    assert result.outputs_prefix == "MSGraphUser.OwnedDevice"
+    assert result.outputs_prefix == "MSGraphUser"
     assert "Owned Devices for User test-user" in result.readable_output

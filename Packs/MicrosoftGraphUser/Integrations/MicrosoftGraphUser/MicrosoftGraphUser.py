@@ -688,7 +688,7 @@ def suppress_errors_with_404_code(func):
                     human_readable = f"#### Manager -> {manager} does not exist"
                     return human_readable
                 elif "The specified user could not be found." in str(e.message):
-                    user = args.get("user_id", "___")
+                    user = args.get("user_id") or args.get("user", "___")
                     human_readable = f"#### User -> {user} does not exist"
                     return human_readable
             raise
@@ -1153,9 +1153,16 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
         CommandResults: Delete the Temporary Access Pass (TAP) police associated with a specific user.
     """
     user_id = args.get("user_id")
-    policy_id = args.get("policy_id")
+    policy_id = args.get("policy_id") or args.get(
+        "method_id"
+    )  # using the same function for msgraph-user-temp-access-pass-method-delete command  # noqa: E501
     client.delete_tap_policy(user_id, policy_id)
-    human_readable = f"Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted."
+    if args.get("policy_id"):
+        human_readable = f"Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted."
+    else:
+        human_readable = (
+            f"The user's Temporary Access Pass Authentication Method object id {policy_id} has been successfully deleted."  # noqa: E501
+        )
 
     return CommandResults(readable_output=human_readable)
 
@@ -1206,9 +1213,9 @@ def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResul
     )
 
     return CommandResults(
-        outputs_prefix="MSGraphUser.OwnedDevice",
+        outputs_prefix="MSGraphUser",
         outputs_key_field="ID",
-        outputs=devices_outputs,
+        outputs={"OwnedDevice": devices_outputs, "Id": user_id},
         readable_output=human_readable,
         raw_response=devices_data,
     )
@@ -1525,7 +1532,7 @@ def list_phone_method_command(client: MsGraphClient, args: dict) -> CommandResul
 
     return CommandResults(
         outputs_prefix="MSGraphUser.PhoneAuthMethod",
-        outputs_key_field="ID",
+        outputs_key_field="Id",
         outputs=phone_outputs,
         readable_output=human_readable,
         raw_response=phone_data,
@@ -1625,6 +1632,55 @@ def delete_software_oath_method_command(client: MsGraphClient, args: dict) -> Co
     human_readable = f"The user's Software OATH token authentication method object id {method_id} has been successfully deleted."
 
     return CommandResults(readable_output=human_readable)
+
+
+@suppress_errors_with_404_code
+def list_temp_access_pass_method_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the temporary access passwords method from a user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments:
+            - user_id (str, required): The user ID or user principal name
+            - method_id (str, optional): The ID of a specific software OATH method to retrieve
+
+    Returns:
+        CommandResults: The devices owned by the specified user.
+    """
+    user_id = args.get("user", "")
+    method_id = args.get("method_id", "")
+
+    if method_id:
+        temp_access_pass_data = client.get_temp_access_pass_method(user_id, method_id)
+    else:
+        temp_access_pass_data = client.list_tap_policy(user_id)
+
+    if not temp_access_pass_data:
+        return CommandResults(readable_output=f"No Windows Hello for Business authentication methods found for user {user_id}.")
+
+    temp_access_pass_readable, temp_access_pass_outputs = parse_outputs(temp_access_pass_data)
+
+    # Map the field names to custom headers for human readable output
+    field_mapping = {"id": "Temporary Access Pass ID", "isUsable": "Authentication method state"}
+    temp_access_pass_readable = map_auth_method_fields_to_readable(temp_access_pass_readable, field_mapping)
+
+    headers = ["Temporary Access Pass ID", "Authentication method state"]
+
+    if method_id:
+        title = f"WTemporary Access Pass Method {method_id} for User {user_id}:"
+    else:
+        title = f"Temporary Access Pass Methods for User {user_id}:"
+
+    human_readable = tableToMarkdown(name=title, headers=headers, t=temp_access_pass_readable, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MSGraphUser.TempAccessPassAuthMethod",
+        outputs_key_field="ID",
+        outputs=temp_access_pass_outputs,
+        readable_output=human_readable,
+        raw_response=temp_access_pass_data,
+    )
 
 
 @suppress_errors_with_404_code
@@ -1814,6 +1870,8 @@ def main():
         "msgraph-user-phone-method-delete": delete_phone_method_command,
         "msgraph-user-software-oath-method-list": list_software_oath_method_command,
         "msgraph-user-software-oath-method-delete": delete_software_oath_method_command,
+        "msgraph-user-temp-access-pass-method-list": list_temp_access_pass_method_command,
+        "msgraph-user-temp-access-pass-method-delete": delete_tap_policy_command,
         "msgraph-user-windows-hello-method-list": list_windows_hello_method_command,
         "msgraph-user-windows-hello-method-delete": delete_windows_hello_method_command,
     }

@@ -827,6 +827,9 @@ script:
       Permission: User.Read.All,Directory.Read.All - Delegated 
     name: msgraph-user-owned-devices-list
     outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
     - contextPath: MSGraphUser.OwnedDevice.ID
       description: Owned device's ID.
       type: String
@@ -934,7 +937,7 @@ script:
       required: true
     - description: The ID of the email authentication method to delete.
       name: method_id
-      required: true
+      required: false
       defaultValue: 3ddfcfc8-9383-446f-83cc-3ab9be4be18f
     description: |-
       Deletes an email authentication method from a user.
