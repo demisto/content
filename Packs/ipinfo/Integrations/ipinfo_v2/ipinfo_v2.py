@@ -1,49 +1,23 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from ContentClientApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
-import logging
 import traceback
 from typing import Any
-
-# Suppress verbose httpx/httpcore debug logs
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
 
 
-class Client(ContentClient):
+class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
         """
-        Client to use in the IPinfo integration. Uses ContentClient with enhanced features.
+        Client to use in the IPinfo integration. Uses BaseClient
         """
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         time_sensitive = is_time_sensitive()
         demisto.debug(f"{time_sensitive=}")
 
-        timeout = 2 if time_sensitive else 20
-        
-        # Create auth handler for API key (as query parameter)
-        auth_handler = APIKeyAuthHandler(key=api_key, query_param="token") if api_key else None
-        
-        # Enable diagnostic mode when running in debug-mode
-        diagnostic_mode = is_debug_mode()
-        
-        # Initialize ContentClient with minimal configuration to avoid Pydantic issues
-        # Pass None for policies to use defaults without validation
-        super().__init__(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            timeout=timeout,
-            auth_handler=auth_handler,
-            retry_policy=None,  # Use default retry policy
-            rate_limiter=None,  # No rate limiting
-            circuit_breaker=None,  # Use default circuit breaker
-            diagnostic_mode=diagnostic_mode,
-            client_name="IPinfo"
-        )
-        
+        self.timeout = 2 if time_sensitive else 20
+        self.api_key = api_key
         self.reliability = reliability
 
     def ipinfo_ip(self, ip: str) -> dict[str, Any]:
@@ -52,9 +26,7 @@ class Client(ContentClient):
     def http_request(self, ip: str) -> dict[str, Any]:
         """constructs url with token (if existent), then returns request"""
         return self._http_request(
-            method="GET",
-            url_suffix=f"{ip}/json",
-            timeout=self.timeout
+            method="GET", url_suffix=f"{ip}/json", params=assign_params(token=self.api_key), timeout=self.timeout
         )
 
 
@@ -245,7 +217,6 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
 
-    client = None
     try:
         client = Client(api_key=api_key, verify_certificate=not insecure, proxy=proxy, base_url=base_url, reliability=reliability)
 
@@ -262,15 +233,6 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
-    finally:
-        # Log diagnostic report if in debug mode
-        if client and is_debug_mode():
-            try:
-                report = client.get_diagnostic_report()
-                demisto.debug(f"Diagnostic Report: {json.dumps(report.__dict__, default=str, indent=2)}")
-                client.logger.log_metrics_summary()
-            except Exception as e:
-                demisto.debug(f"Failed to generate diagnostic report: {e}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
