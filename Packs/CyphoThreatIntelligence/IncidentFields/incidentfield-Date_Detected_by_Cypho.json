@@ -35,7 +35,7 @@
     "id": "incident_datedetectedbycypho",
     "isReadOnly": false,
     "locked": false,
-    "name": "Date Detected by Cypho",
+    "name": "Cypho Threat Intelligence Date Detected by Cypho",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
