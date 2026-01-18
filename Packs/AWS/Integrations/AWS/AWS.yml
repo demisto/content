@@ -7587,7 +7587,7 @@ script:
       - name: instance_ids
         description: The IDs of the managed nodes where the command should run. Maximum of 50 IDs.
       - name: targets
-        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria that targets managed nodes using a Key,Value combination"
+        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria that targets managed nodes using a Key,Value combination."
       - name: document_name
         description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
         required: true
@@ -7604,7 +7604,7 @@ script:
         description: User-specified information about the command, such as a brief description of what the command should do.
         required: false
       - name: parameters
-        description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'"
+        description: "The required and optional parameters specified in the document being run. The template is 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>'."
         required: false
       - name: output_s3_bucket_name
         description: The name of the S3 bucket where command execution responses should be stored.
