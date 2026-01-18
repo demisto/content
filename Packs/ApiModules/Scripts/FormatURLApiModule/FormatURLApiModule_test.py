@@ -167,6 +167,8 @@ FORMAT_USERINFO = [
 
 FORMAT_PORT = [
     ("www.test.com:443/path/to/file.html", "www.test.com:443/path/to/file.html"),  # disable-secrets-detection
+    ("http://example.com:8080?query=1", "http://example.com:8080/?query=1"),  # disable-secrets-detection - Port with query
+    ("http://example.com:8080#fragment", "http://example.com:8080/#fragment"),  # disable-secrets-detection - Port with fragment
 ]
 
 FORMAT_IPv4 = [

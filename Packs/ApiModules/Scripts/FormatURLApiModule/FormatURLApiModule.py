@@ -362,6 +362,11 @@ class URLCheck:
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         self.url.port = port
+        
+        # Add forward slash before query or fragment if missing
+        if index < len(self.modified_url) and self.modified_url[index] in ("?", "#"):
+            self.output += "/"
+        
         self.check_done(index)
 
     def path_check(self):
