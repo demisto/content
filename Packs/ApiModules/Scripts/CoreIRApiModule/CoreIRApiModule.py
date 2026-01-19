@@ -1421,14 +1421,6 @@ class CoreClient(BaseClient):
             json_data={"request_data": request_data},
         )
         return response.get("reply")
-    
-    def get_webapp_data(self, request_data: dict) -> dict:
-        return self._http_request(
-            method="POST",
-            url_suffix="/get_data",
-            json_data=request_data,
-        )
-
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
@@ -1451,12 +1443,11 @@ class FilterBuilder:
     """
 
     class FilterType(str, Enum):
-        operator: str
-
         """
         Available type options for filter filtering.
         Each member holds its string value and its logical operator for multi-value scenarios.
         """
+        operator: str
 
         def __new__(cls, value, operator):
             obj = str.__new__(cls, value)
@@ -1565,10 +1556,12 @@ class FilterBuilder:
 
         for field in self.filter_fields:
             if not isinstance(field.values, list):
-                field.values = [field.values]
+                values_list = [field.values]
+            else:
+                values_list = field.values
 
             search_values = []
-            for value in field.values:
+            for value in values_list:
                 if value is None:
                     continue
 
@@ -1609,20 +1602,20 @@ class FilterBuilder:
         start_time, end_time = None, None
 
         if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str)):
+            if start_dt := dateparser.parse(str(start_time_str), settings={'TIMEZONE': 'UTC'}):
                 start_time = int(start_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse start_time: {start_time_str}")
 
         if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str)):
+            if end_dt := dateparser.parse(str(end_time_str), settings={'TIMEZONE': 'UTC'}):
                 end_time = int(end_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse end_time: {end_time_str}")
 
         if start_time and not end_time:
             # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.now().timestamp() * 1000)
+            end_time = int(datetime.utcnow().timestamp() * 1000)
 
         return start_time, end_time
 
@@ -1669,7 +1662,7 @@ def build_webapp_request_data(
         "jsons": [],
         "onDemandFields": on_demand_fields,
     }
-    
+
 def catch_and_exit_gracefully(e):
     """
 
