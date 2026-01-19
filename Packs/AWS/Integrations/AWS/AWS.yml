@@ -183,7 +183,138 @@ script:
       - 'true'
       - 'false'
 
-    
+  - name: aws-s3-bucket-delete
+    description: Delete AWS S3 bucket, the bucket must be empty from files.
+    arguments:
+      - description: The name of S3 bucket.
+        name: bucket
+        required: true
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+
+  - name: aws-s3-bucket-objects-list
+    description: Returns some or all (up to 1,000) of the objects in a bucket.
+    arguments:
+      - description: The name of S3 bucket.
+        name: bucket
+        required: true
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - description: A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy.
+        name: delimiter
+      - description: Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category.
+        name: prefix
+      - description: The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket.
+        name: next_token
+      - description: "Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50."
+        name: limit
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of S3 bucket.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.Key
+        description: The name of S3 object.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.Size
+        description: Object size in bytes.
+        type: Number
+      - contextPath: AWS.S3.Buckets.Objects.LastModified
+        description: Last date object was modified.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.StorageClass
+        description: The storage class of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.Objects.ChecksumType
+        description: The checksum algorithm used to calculate the object checksum.
+        type: Array
+      - contextPath: AWS.S3.Buckets.Objects.ETag
+        description: The entity tag (hash) of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+
+
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
