@@ -536,6 +536,8 @@ script:
       name: roleSessionDuration
     description: Removes the specified managed policy from the specified IAM Entity.
     name: aws-iam-detach-policy
+    compliantpolicies:
+      - Role Management
   - arguments:
     - description: The name of the user whose password you want to delete.
       name: userName
@@ -1476,6 +1478,8 @@ script:
       required: true
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
     name: aws-iam-put-role-policy
+    compliantpolicies:
+      - Role Management
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
