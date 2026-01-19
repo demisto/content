@@ -184,7 +184,6 @@ def test_add_keys_to_events_with_external_url():
 
     events = [threat_event, alert_event, activity_event]
 
-    # Call the function
     add_keys_to_events(events, instance_url)
 
     # Assertions for Threat
@@ -233,7 +232,6 @@ def test_add_keys_to_events_missing_ids(mocker):
 
     events = [threat_event, alert_event]
 
-    # Call the function
     add_keys_to_events(events, instance_url)
 
     # Assertions for Threat
