@@ -173,7 +173,7 @@ def test_add_keys_to_events_with_external_url():
     """
     from SentinelOneEventCollector import add_keys_to_events
 
-    instance_url = "https://test.sentinelone.net"
+    instance_url = "https://example-instance.com"
 
     # Test data
     threat_event = {"threatInfo": {"threatId": "123456", "updatedAt": "2022-12-20T15:51:17.514437Z"}}
@@ -221,7 +221,7 @@ def test_add_keys_to_events_missing_ids(mocker):
     """
     from SentinelOneEventCollector import add_keys_to_events
 
-    instance_url = "https://test.sentinelone.net"
+    instance_url = "https://example-instance.com"
     mock_debug = mocker.patch.object(demisto, "debug")
 
     # Test data - threat without threatId
