@@ -2652,3 +2652,56 @@ def test_update_asset_group_command(mocker):
 
     res = update_asset_group_command(client, args)
     assert res.readable_output == "Asset group updated successfully"
+
+
+def test_replace_dots_in_keys():
+    """
+    Given:
+        - A data structure (dict, list, or primitive) containing keys with dots.
+    When:
+        - Calling replace_dots_in_keys.
+    Then:
+        - All dots in dictionary keys should be replaced with underscores.
+        - Nested structures (dicts within lists, etc.) should be processed correctly.
+    """
+    from CortexXDRIR import replace_dots_in_keys
+
+    # Test with a simple dictionary
+    data = {"a.b": 1, "c.d.e": "value"}
+    expected = {"a_b": 1, "c_d_e": "value"}
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with nested dictionary
+    data = {"a.b": {"c.d": 1}}
+    expected = {"a_b": {"c_d": 1}}
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with list of dictionaries
+    data = [{"a.b": 1}, {"c.d": 2}]
+    expected = [{"a_b": 1}, {"c_d": 2}]
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with complex nested structure
+    data = {
+        "outer.key": [
+            {"inner.key": 1, "another.key": {"deep.key": "deep.value"}},
+            "simple string"
+        ],
+        "primitive": 123
+    }
+    expected = {
+        "outer_key": [
+            {"inner_key": 1, "another_key": {"deep_key": "deep.value"}},
+            "simple string"
+        ],
+        "primitive": 123
+    }
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with no dots
+    data = {"key": "value", "list": [1, 2, 3]}
+    assert replace_dots_in_keys(data) == data
+
+    # Test with non-dict/list input
+    assert replace_dots_in_keys("string.with.dots") == "string.with.dots"
+    assert replace_dots_in_keys(123) == 123
