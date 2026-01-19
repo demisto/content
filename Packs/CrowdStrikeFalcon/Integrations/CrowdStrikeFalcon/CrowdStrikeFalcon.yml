@@ -61,6 +61,7 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  additionalinfo: Supported in Cortex XSOAR only.
   hidden:
   - marketplacev2
   - platform
@@ -71,7 +72,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Input a value between 1-500.
+  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
   - platform
@@ -312,6 +313,7 @@ configuration:
 - display: 'Incidents Fetch Interval'
   defaultvalue: '1'
   name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR only.
   type: 19
   section: Collect
   advanced: true

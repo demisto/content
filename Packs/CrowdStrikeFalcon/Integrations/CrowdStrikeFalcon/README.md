@@ -8,8 +8,8 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Max incidents per fetch | Input a value between 1-500. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
+| Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
 | Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | Endpoint Incidents filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
@@ -19,9 +19,9 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM Detection fetch query |  | False |
-| NGSIEM automated leads fetch query |  | False |
-| NGSIEM cases fetch query |  | False |
+| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | Fetch incidents |  | False |
 | Fetch events |  | False |
@@ -34,7 +34,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Fetch types | Choose what to fetch -  You can choose any combination. Note:<br/>Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
 | Fetch types | Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
 | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
-| Incidents Fetch Interval |  | False |
+| Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
 | Events Fetch Interval |  | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | Advanced: Time in minutes to look back when fetching events and detections | Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created. | False |
