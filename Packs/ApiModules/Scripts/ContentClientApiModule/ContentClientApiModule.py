@@ -1377,7 +1377,7 @@ class ContentClient:
         self._auth: Optional[Tuple[str, str]] = auth
         self.timeout: float = timeout
         self._closed: bool = False
-        self._is_multithreaded: bool = True
+        self._is_multithreaded: bool = is_multithreaded
 
         # Handle proxy exactly like BaseClient
         if proxy:
