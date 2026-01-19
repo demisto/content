@@ -125,7 +125,7 @@ class AzureWAFClient:
     ):
         if not params:
             params = {}
-        if not full_url and not params.get("api-version"):
+        if not full_url:
             params["api-version"] = API_VERSION
 
         return self.ms_client.http_request(
@@ -301,12 +301,13 @@ class AzureWAFClient:
                 res.append({"properties": f"{resource_group_name} threw Exception: {e!s}"})
         return res
 
-    def delete_front_door_policy(self, policy_name: str, resource_group_name: str) -> requests.Response:
+    def delete_front_door_policy(self, policy_name: str, resource_group_name: str, subscription_id: str) -> requests.Response:
+        base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         return self.http_request(
             method="DELETE",
             return_empty_response=True,
             resp_type="response",
-            url_suffix=f"/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
+            full_url=f"{base_url}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}",
             params={"api-version": FRONT_DOOR_API_VERSION},
         )
 
@@ -604,7 +605,7 @@ def front_door_policy_delete_command(client: AzureWAFClient, **args):
         policy_id = (
             f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/{FRONT_DOOR_POLICY_PATH}/{policy_name}"
         )
-        status = client.delete_front_door_policy(policy_name, resource_group_name)
+        status = client.delete_front_door_policy(policy_name, resource_group_name, subscription_id)
         md = ""
         context: dict = {}
         if status.status_code in [200, 202]:
