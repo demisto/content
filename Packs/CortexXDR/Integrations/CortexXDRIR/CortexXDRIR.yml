@@ -3994,7 +3994,7 @@ script:
       description: The pretty name of the field.
       type: String
   - arguments:
-    - description: 'The name of the field to get options for. You can use xdr-asset-schema-get in order to get the schema.  The field must be of type ENUM, for example: xdm.asset.provider'.
+    - description: "The name of the field to get options for. You can use xdr-asset-schema-get in order to get the schema.  The field must be of type ENUM, for example: xdm.asset.provider."
       name: field_name
       required: true
     description: Gets the enum values of a specified field in the asset schema.
