@@ -991,7 +991,6 @@ Retrieve a list of authentication methods registered to a user.
 | MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. |
 | MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. |
 
-
 ### msgraph-user-owned-devices-list
 
 ***
@@ -1016,6 +1015,7 @@ Note: When using the Xsoar app, this command will only show partial data. for th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| MSGraphUser.ID | String | User's ID. |
 | MSGraphUser.OwnedDevice.ID | String | Owned device's ID. |
 | MSGraphUser.OwnedDevice.PhysicalIds | String | Physical IDs of the device. |
 | MSGraphUser.OwnedDevice.DeviceVersion | String | The version of the device. |
