@@ -2529,8 +2529,15 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS EC2 Elastic IP Addresses",
                 readable_outputs,
-                headers=["PublicIp", "AllocationId", "Domain", "InstanceId", "AssociationId", "NetworkInterfaceId",
-                         "PrivateIpAddress"],
+                headers=[
+                    "PublicIp",
+                    "AllocationId",
+                    "Domain",
+                    "InstanceId",
+                    "AssociationId",
+                    "NetworkInterfaceId",
+                    "PrivateIpAddress",
+                ],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
