@@ -8,13 +8,20 @@ configuration:
   name: server_url
   required: true
   type: 0
-  defaultvalue: https://search.censys.io
+  defaultvalue: https://api.platform.censys.io
   section: Connect
-- display: App ID
-  name: credentials
+- display: ""
+  displaypassword: API Token
+  name: api_token
+  hiddenusername: true
   type: 9
   required: true
-  displaypassword: Secret
+  additionalinfo: Personal Access Token from Censys Platform
+  section: Connect
+- display: Organization ID
+  name: organization_id
+  type: 0
+  required: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -40,26 +47,61 @@ configuration:
   type: 16
   required: false
   options:
-  - database
-  - email
-  - file-sharing
-  - iot
-  - login-page
-  - network-administration
-  - network.device
-  - network.device.firewall
-  - network.device.soho
-  - network.device.vpn
-  - network.device.web-ui
-  - onion-enabled
-  - out-of-band-management
-  - remote-access
-  - scada
-  - voip
-  - web.control-panel.hosting
+  - ACCESS_CONTROL
+  - AI
+  - BUILDING_AUTOMATION
+  - BULLETPROOF
+  - CAMERA
+  - CMS
+  - CPE
+  - DATABASE
+  - DEFAULT_LANDING_PAGE
+  - ELECTRICAL
+  - EMAIL
+  - FILE_SHARING
+  - FINANCIAL
+  - FIREWALL
+  - HMI
+  - HONEYPOT
+  - HOSTING_WEB_UI
+  - ICS
+  - IOT
+  - IPV6
+  - KVM
+  - LOAD_BALANCER
+  - LOGIN_PAGE
+  - MEDIA_SERVER
+  - MEDICAL
+  - MEDICAL_DEVICE
+  - NAS
+  - NETWORK
+  - NVR
+  - OPEN_DIRECTORY
+  - P2P_SHARING
+  - PLC
+  - POWER_RELAY
+  - PRINT_SERVER
+  - PRINTER
+  - PROCESSOR
+  - PROXY_SERVER
+  - REMOTE_ACCESS
+  - ROUTER
+  - SCADA
+  - SECURITY_ALARM
+  - SENSOR
+  - SERVER
+  - SOHO
+  - SWITCH
+  - TELECOM
+  - VOIP
+  - VPN
+  - WAF
+  - WEB_SERVER
+  - WEB_TECHNOLOGY
+  - WEB_UI
   additionalinfo: |-
-    Used only when `Determine IP score by labels` is set. 
-    Labels to classify IP as Malicious. 
+    Used only when `Determine IP score by labels` is set.
+    Labels to classify IP as Malicious.
     Input can be an array or comma-separated values.
   section: Collect
   advanced: true
@@ -68,23 +110,58 @@ configuration:
   type: 16
   required: false
   options:
-  - database
-  - email
-  - file-sharing
-  - iot
-  - login-page
-  - network-administration
-  - network.device
-  - network.device.firewall
-  - network.device.soho
-  - network.device.vpn
-  - network.device.web-ui
-  - onion-enabled
-  - out-of-band-management
-  - remote-access
-  - scada
-  - voip
-  - web.control-panel.hosting
+  - ACCESS_CONTROL
+  - AI
+  - BUILDING_AUTOMATION
+  - BULLETPROOF
+  - CAMERA
+  - CMS
+  - CPE
+  - DATABASE
+  - DEFAULT_LANDING_PAGE
+  - ELECTRICAL
+  - EMAIL
+  - FILE_SHARING
+  - FINANCIAL
+  - FIREWALL
+  - HMI
+  - HONEYPOT
+  - HOSTING_WEB_UI
+  - ICS
+  - IOT
+  - IPV6
+  - KVM
+  - LOAD_BALANCER
+  - LOGIN_PAGE
+  - MEDIA_SERVER
+  - MEDICAL
+  - MEDICAL_DEVICE
+  - NAS
+  - NETWORK
+  - NVR
+  - OPEN_DIRECTORY
+  - P2P_SHARING
+  - PLC
+  - POWER_RELAY
+  - PRINT_SERVER
+  - PRINTER
+  - PROCESSOR
+  - PROXY_SERVER
+  - REMOTE_ACCESS
+  - ROUTER
+  - SCADA
+  - SECURITY_ALARM
+  - SENSOR
+  - SERVER
+  - SOHO
+  - SWITCH
+  - TELECOM
+  - VOIP
+  - VPN
+  - WAF
+  - WEB_SERVER
+  - WEB_TECHNOLOGY
+  - WEB_UI
   additionalinfo: |-
     Used when `Determine IP score by labels` is set.
     Labels to classify IP as Suspicious.
@@ -409,9 +486,6 @@ script:
       required: true
     - description: The fields to return. (Applies for the certificates search.)
       name: fields
-    - defaultValue: '1'
-      description: The page to return. (Applies for the certificates search.)
-      name: page
     description: Return previews of hosts matching a specified search query or a list of certificates that match the given query.
     name: cen-search
     outputs:

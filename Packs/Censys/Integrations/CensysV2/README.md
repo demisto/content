@@ -6,17 +6,19 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 ## Configure Censys v2 in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| App ID | True |
-| Secret | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Labels premium feature available | False |
-| IP and Domain Malicious labels | False |
-| IP and Domain Suspicious labels | False |
-| Malicious labels threshold | False |
-| Suspicious labels threshold | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Token | Personal Access Token from Censys Platform | True |
+| Organization ID |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Determine IP score by labels (for paid subscribers) | Censys API provides reputation data exclusively to paid subscribers. <br/>When set to True, the integration will use labels to determine the IP score.  | False |
+| IP Malicious labels | Used only when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Malicious.<br/>Input can be an array or comma-separated values. | False |
+| IP Suspicious labels | Used when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Suspicious.<br/>Input can be an array or comma-separated values. | False |
+| Malicious labels threshold | Determines the minimum number of labels returned that are classified as malicious for IP. | False |
+| Suspicious labels threshold | Determines the minimum number of labels returned that are classified as suspicious for IP. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. |  |
 
 ## Commands
 
@@ -458,7 +460,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 ### cen-search
 
 ***
-Returns previews of hosts matching a specified search query, or a list of certificates that match the given query.
+Return previews of hosts matching a specified search query or a list of certificates that match the given query.
 
 #### Base Command
 
@@ -469,11 +471,10 @@ Returns previews of hosts matching a specified search query, or a list of certif
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required |
-| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. (Applies for the host search.) | Optional |
+| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). (Applies for the host search.). Default is 50. | Optional |
 | limit | The number of results to return. Default is 50. | Optional |
 | index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required |
-| fields | The fields to return. (Applies for the certificates search). | Optional |
-| page | The page to return. (Applies for the certificates search). Default is 1. | Optional |
+| fields | The fields to return. (Applies for the certificates search.). | Optional |
 
 #### Context Output
 
@@ -481,7 +482,7 @@ Returns previews of hosts matching a specified search query, or a list of certif
 | --- | --- | --- |
 | Censys.Search.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
 | Censys.Search.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
-| Censys.Search.autonomous_system.country_code | String | he autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
+| Censys.Search.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
 | Censys.Search.autonomous_system.description | String | A brief description of the autonomous system. |
 | Censys.Search.autonomous_system.name | String | The friendly name of the autonomous system. |
 | Censys.Search.ip | String | The host’s IP address. |
@@ -493,7 +494,7 @@ Returns previews of hosts matching a specified search query, or a list of certif
 | Censys.Search.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
 | Censys.Search.location.timezone | String | The IANA time zone database name of the host's detected location. |
 | Censys.Search.services.port | Number | The port the service was reached at. |
-| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. |
+| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in case a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. |
 | Censys.Search.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). |
 | Censys.Search.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. |
 | Censys.Search.parsed.issuer.organization | Unknown | The organization name. |
@@ -543,11 +544,6 @@ Returns previews of hosts matching a specified search query, or a list of certif
 >|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
 >|---|---|---|---|---|---|
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
-
-## Additional Considerations for this Version
-
-* This version supports API v2 from Censys.
-* Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
 
 ### ip
 
