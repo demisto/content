@@ -54,8 +54,8 @@ def test_extract_email(input, output):
         ("co/ed/trn/update?a=b&email=user@test6.net", "user@test6.net"),
         ("co/ed/trn/update?", ""),
         ("marketing.comunicacion@example.com=ABA=123", "marketing.comunicacion@example.com"),
-        ("//example.com?marketing.comunicacion@example.com", "marketing.comunicacion@example.com"),
-        ("//example.com?marketing.comunicacion@example.com=", "marketing.comunicacion@example.com"),
+        ("//example.com?marketing.comunicacion@example.com", "marketing.comunicacion@example.com"),  # disable-secrets-detection
+        ("//example.com?marketing.comunicacion@example.com=", "marketing.comunicacion@example.com"),  # disable-secrets-detection
     ],
 )  # noqa: E124
 def test_extract_email_from_url_query(input, output):
