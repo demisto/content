@@ -3276,6 +3276,34 @@ script:
         - contextPath: Core.User.groups
           description: A specific name of a group the user belongs to within this instance.
           type: String
+    - name: core-get-cdr-protection-status
+      description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for both cloud VMs and Kubernetes clusters. Determines what percentage of assets have protection enabled.
+      hidden: true
+      outputs:
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.Total
+          description: Total number of cloud VM instances (excluding Kubernetes-managed VMs).
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.Protected
+          description: Number of VM instances with agents installed (protected).
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.Unprotected
+          description: Number of VM instances without agents (unprotected).
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.ProtectionPercentage
+          description: Percentage of VMs that have agents installed (0-100).
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Total
+          description: Total number of Kubernetes clusters.
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Protected
+          description: Number of Kubernetes clusters with realtime protection enabled.
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Unprotected
+          description: Number of Kubernetes clusters without realtime protection.
+          type: Number
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.ProtectionPercentage
+          description: Percentage of Kubernetes clusters with realtime protection enabled (0-100).
+          type: Number
     - name: core-xql-generic-query-platform
       arguments:
       - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.

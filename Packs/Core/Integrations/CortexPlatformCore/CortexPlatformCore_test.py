@@ -9905,3 +9905,301 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+class TestGetCDRProtectionStatusCommand:
+    """Test cases for get_cdr_protection_status_command function."""
+
+    def test_get_cdr_protection_status_command_success(self, mocker):
+        """
+        Given:
+            - API returns 75 VMs with agents out of 100 total VMs, and 8 K8S clusters protected out of 10 total.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns 75% VM coverage and 80% K8S coverage with correct counts.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        # Mock responses in order: VMs with agents, All VMs, K8S protected, All K8S
+        responses = [
+            {"reply": {"FILTER_COUNT": 75}},   # VMs with agents
+            {"reply": {"FILTER_COUNT": 100}},  # All VMs
+            {"reply": {"FILTER_COUNT": 8}},    # K8S clusters protected
+            {"reply": {"FILTER_COUNT": 10}},   # All K8S clusters
+        ]
+        
+        mock_get_webapp_data = mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        # Verify four API calls were made
+        assert mock_get_webapp_data.call_count == 4
+
+        # Verify VM outputs
+        assert result.outputs["CloudVMs"]["Total"] == 100
+        assert result.outputs["CloudVMs"]["Protected"] == 75
+        assert result.outputs["CloudVMs"]["Unprotected"] == 25
+        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 75.0
+
+        # Verify K8S outputs
+        assert result.outputs["KubernetesClusters"]["Total"] == 10
+        assert result.outputs["KubernetesClusters"]["Protected"] == 8
+        assert result.outputs["KubernetesClusters"]["Unprotected"] == 2
+        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 80.0
+
+        # Verify readable output contains both sections
+        assert "Cloud VMs Protection" in result.readable_output
+        assert "Kubernetes Clusters Protection" in result.readable_output
+        assert "75.0%" in result.readable_output
+        assert "80.0%" in result.readable_output
+
+        # Verify CommandResults structure
+        assert result.outputs_prefix == "Core.CDRProtectionStatus"
+
+    def test_get_cdr_protection_status_command_zero_totals(self, mocker):
+        """
+        Given:
+            - API returns 0 total VMs and 0 total K8S clusters.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns 0% coverage for both without division by zero error.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 0}},  # VMs with agents
+            {"reply": {"FILTER_COUNT": 0}},  # All VMs
+            {"reply": {"FILTER_COUNT": 0}},  # K8S protected
+            {"reply": {"FILTER_COUNT": 0}},  # All K8S
+        ]
+        
+        mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        assert result.outputs["CloudVMs"]["Total"] == 0
+        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 0.0
+        assert result.outputs["KubernetesClusters"]["Total"] == 0
+        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 0.0
+
+    def test_get_cdr_protection_status_command_100_percent_coverage(self, mocker):
+        """
+        Given:
+            - API returns 100% coverage for both VMs and K8S clusters.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns 100% protection coverage for both.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 50}},   # VMs with agents
+            {"reply": {"FILTER_COUNT": 50}},   # All VMs
+            {"reply": {"FILTER_COUNT": 20}},   # K8S protected
+            {"reply": {"FILTER_COUNT": 20}},   # All K8S
+        ]
+        
+        mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 100.0
+        assert result.outputs["CloudVMs"]["Unprotected"] == 0
+        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 100.0
+        assert result.outputs["KubernetesClusters"]["Unprotected"] == 0
+
+    def test_get_cdr_protection_status_command_zero_percent_coverage(self, mocker):
+        """
+        Given:
+            - API returns 0% coverage for both VMs and K8S clusters.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns 0% protection coverage for both.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 0}},    # VMs with agents
+            {"reply": {"FILTER_COUNT": 200}},  # All VMs
+            {"reply": {"FILTER_COUNT": 0}},    # K8S protected
+            {"reply": {"FILTER_COUNT": 15}},   # All K8S
+        ]
+        
+        mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        assert result.outputs["CloudVMs"]["Total"] == 200
+        assert result.outputs["CloudVMs"]["Protected"] == 0
+        assert result.outputs["CloudVMs"]["Unprotected"] == 200
+        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 0.0
+        
+        assert result.outputs["KubernetesClusters"]["Total"] == 15
+        assert result.outputs["KubernetesClusters"]["Protected"] == 0
+        assert result.outputs["KubernetesClusters"]["Unprotected"] == 15
+        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 0.0
+
+    def test_get_cdr_protection_status_command_k8s_filter_validation(self, mocker):
+        """
+        Given:
+            - Valid API responses.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - K8S protected query uses correct filter for realtime status.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 50}},   # VMs with agents
+            {"reply": {"FILTER_COUNT": 100}},  # All VMs
+            {"reply": {"FILTER_COUNT": 5}},    # K8S protected
+            {"reply": {"FILTER_COUNT": 10}},   # All K8S
+        ]
+        
+        mock_get_webapp_data = mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        get_cdr_protection_status_command(mock_client, args)
+
+        # Verify third call (K8S protected) filters by realtime status
+        third_call_args = mock_get_webapp_data.call_args_list[2][0][0]
+        third_filter = third_call_args["filter_data"]["filter"]["AND"]
+        
+        assert any(
+            f.get("SEARCH_FIELD") == "xdm__asset__type__category" and f.get("SEARCH_VALUE") == "Kubernetes Cluster"
+            for f in third_filter
+        )
+        assert any(
+            f.get("SEARCH_FIELD") == "xdm__kubernetes__profile__capabilities__realtime__status"
+            and f.get("SEARCH_VALUE") == "ENABLED"
+            for f in third_filter
+        )
+
+        # Verify fourth call (all K8S) only filters by category
+        fourth_call_args = mock_get_webapp_data.call_args_list[3][0][0]
+        fourth_filter = fourth_call_args["filter_data"]["filter"]["AND"]
+        
+        assert any(
+            f.get("SEARCH_FIELD") == "xdm__asset__type__category" and f.get("SEARCH_VALUE") == "Kubernetes Cluster"
+            for f in fourth_filter
+        )
+        assert not any(
+            f.get("SEARCH_FIELD") == "xdm__kubernetes__profile__capabilities__realtime__status"
+            for f in fourth_filter
+        )
+
+    def test_get_cdr_protection_status_command_decimal_percentages(self, mocker):
+        """
+        Given:
+            - API returns values that result in decimal percentages.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Returns properly rounded percentages.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 33}},   # VMs with agents (33/100 = 33%)
+            {"reply": {"FILTER_COUNT": 100}},  # All VMs
+            {"reply": {"FILTER_COUNT": 7}},    # K8S protected (7/9 = 77.78%)
+            {"reply": {"FILTER_COUNT": 9}},    # All K8S
+        ]
+        
+        mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        assert result.outputs["CloudVMs"]["ProtectionPercentage"] == 33.0
+        assert result.outputs["KubernetesClusters"]["ProtectionPercentage"] == 77.78
+
+    def test_get_cdr_protection_status_command_raw_response_structure(self, mocker):
+        """
+        Given:
+            - Valid API responses.
+        When:
+            - Calling get_cdr_protection_status_command.
+        Then:
+            - Raw response includes all four API call responses.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        
+        responses = [
+            {"reply": {"FILTER_COUNT": 50}},
+            {"reply": {"FILTER_COUNT": 100}},
+            {"reply": {"FILTER_COUNT": 5}},
+            {"reply": {"FILTER_COUNT": 10}},
+        ]
+        
+        mocker.patch.object(
+            mock_client,
+            "get_webapp_data",
+            side_effect=responses
+        )
+
+        args = {}
+
+        result = get_cdr_protection_status_command(mock_client, args)
+
+        assert "vms_with_agents" in result.raw_response
+        assert "all_vms" in result.raw_response
+        assert "k8s_protected" in result.raw_response
+        assert "all_k8s" in result.raw_response
+        assert result.raw_response["vms_with_agents"] == responses[0]
+        assert result.raw_response["all_vms"] == responses[1]
+        assert result.raw_response["k8s_protected"] == responses[2]
+        assert result.raw_response["all_k8s"] == responses[3]

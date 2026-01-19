@@ -67,6 +67,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-cdr-protection-status",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -76,6 +77,7 @@ XSOAR_COMMANDS = ["core-run-playbook"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
+UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE = "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
@@ -4487,6 +4489,163 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     return str(res)
 
 
+def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResults:
+    """
+    Calculates the CDR (Cloud Detection and Response) protection coverage percentages.
+    
+    This command queries the Unified Asset Management API to calculate protection coverage for:
+    1. Cloud VMs: VMs with agents / Total VMs (excluding Kubernetes)
+    2. Kubernetes Clusters: Clusters with realtime protection / Total clusters
+    
+    Args:
+        client: The API client instance
+        args: Command arguments from XSOAR (currently no inputs required)
+        
+    Returns:
+        CommandResults object with CDR protection coverage percentages
+    """
+    # ========== VM Protection Calculation ==========
+    # Query 1: Get count of VMs WITH agents (protected)
+    filter_vms_with_agents = FilterBuilder()
+    filter_vms_with_agents.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
+    filter_vms_with_agents.add_field('xdm__agent__version', FilterType.NIS_EMPTY, '<No Value>')
+    filter_vms_with_agents.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    
+    request_vms_with_agents = build_webapp_request_data(
+        table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
+        filter_dict=filter_vms_with_agents.to_dict(),
+        limit=1,  # We only need the count
+        sort_field='xdm__asset__name',
+        sort_order='DESC',
+        on_demand_fields=[]
+    )
+    
+    response_vms_with_agents = client.get_webapp_data(request_vms_with_agents)
+    vms_with_agents = response_vms_with_agents.get('reply', {}).get('FILTER_COUNT', 0)
+    
+    # Query 2: Get count of ALL VMs (total)
+    filter_all_vms = FilterBuilder()
+    filter_all_vms.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
+    filter_all_vms.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    
+    request_all_vms = build_webapp_request_data(
+        table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
+        filter_dict=filter_all_vms.to_dict(),
+        limit=1,  # We only need the count
+        sort_field='xdm__asset__name',
+        sort_order='DESC',
+        on_demand_fields=[]
+    )
+    
+    response_all_vms = client.get_webapp_data(request_all_vms)
+    total_vms = response_all_vms.get('reply', {}).get('FILTER_COUNT', 0)
+    
+    # Calculate VM protection percentage
+    if total_vms > 0:
+        vm_protection_percentage = round((vms_with_agents / total_vms) * 100, 2)
+    else:
+        vm_protection_percentage = 0.0
+    
+    vms_without_agents = total_vms - vms_with_agents
+    
+    # ========== Kubernetes Cluster Protection Calculation ==========
+    # Query 3: Get count of K8S clusters WITH realtime protection (protected)
+    filter_k8s_protected = FilterBuilder()
+    filter_k8s_protected.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
+    filter_k8s_protected.add_field('xdm__kubernetes__profile__capabilities__realtime__status', FilterType.EQ, 'ENABLED')
+    
+    request_k8s_protected = build_webapp_request_data(
+        table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
+        filter_dict=filter_k8s_protected.to_dict(),
+        limit=1,  # We only need the count
+        sort_field='xdm__asset__name',
+        sort_order='DESC',
+        on_demand_fields=[]
+    )
+    
+    response_k8s_protected = client.get_webapp_data(request_k8s_protected)
+    k8s_clusters_protected = response_k8s_protected.get('reply', {}).get('FILTER_COUNT', 0)
+    
+    # Query 4: Get count of ALL K8S clusters (total)
+    filter_all_k8s = FilterBuilder()
+    filter_all_k8s.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
+    
+    request_all_k8s = build_webapp_request_data(
+        table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
+        filter_dict=filter_all_k8s.to_dict(),
+        limit=1,  # We only need the count
+        sort_field='xdm__asset__name',
+        sort_order='DESC',
+        on_demand_fields=[]
+    )
+    
+    response_all_k8s = client.get_webapp_data(request_all_k8s)
+    total_k8s_clusters = response_all_k8s.get('reply', {}).get('FILTER_COUNT', 0)
+    
+    # Calculate K8S protection percentage
+    if total_k8s_clusters > 0:
+        k8s_protection_percentage = round((k8s_clusters_protected / total_k8s_clusters) * 100, 2)
+    else:
+        k8s_protection_percentage = 0.0
+    
+    k8s_clusters_unprotected = total_k8s_clusters - k8s_clusters_protected
+    
+    # Build combined output
+    outputs = {
+        'CloudVMs': {
+            'Total': total_vms,
+            'Protected': vms_with_agents,
+            'Unprotected': vms_without_agents,
+            'ProtectionPercentage': vm_protection_percentage
+        },
+        'KubernetesClusters': {
+            'Total': total_k8s_clusters,
+            'Protected': k8s_clusters_protected,
+            'Unprotected': k8s_clusters_unprotected,
+            'ProtectionPercentage': k8s_protection_percentage
+        }
+    }
+    
+    # Create readable output
+    readable_output = f"""### CDR Protection Status
+
+#### Cloud VMs Protection
+**Coverage**: {vm_protection_percentage}%
+
+| Metric | Count |
+|--------|-------|
+| Total Cloud VMs | {total_vms} |
+| VMs with Agents (Protected) | {vms_with_agents} |
+| VMs without Agents (Unprotected) | {vms_without_agents} |
+| Protection Percentage | {vm_protection_percentage}% |
+
+#### Kubernetes Clusters Protection
+**Coverage**: {k8s_protection_percentage}%
+
+| Metric | Count |
+|--------|-------|
+| Total Kubernetes Clusters | {total_k8s_clusters} |
+| Clusters with Realtime Protection (Protected) | {k8s_clusters_protected} |
+| Clusters without Realtime Protection (Unprotected) | {k8s_clusters_unprotected} |
+| Protection Percentage | {k8s_protection_percentage}% |
+
+**Note**: VM calculation excludes Kubernetes-managed VMs. K8S protection is based on realtime capabilities status.
+"""
+    
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus',
+        outputs_key_field='CloudVMs.ProtectionPercentage',
+        outputs=outputs,
+        raw_response={
+            'vms_with_agents': response_vms_with_agents,
+            'all_vms': response_all_vms,
+            'k8s_protected': response_k8s_protected,
+            'all_k8s': response_all_k8s
+        }
+    )
+
+
 def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     """Execute an XQL query using Platform API and poll for results.
 
@@ -4669,6 +4828,9 @@ def main():  # pragma: no cover
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
+        
+        elif command == "core-get-cdr-protection-status":
+            return_results(get_cdr_protection_status_command(client, args))
 
         elif command == "core-xql-generic-query-platform":
             if not is_demisto_version_ge("8.13.0"):
