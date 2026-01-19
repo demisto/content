@@ -19,14 +19,14 @@ The Docusign Admin API provides access to user data, which is information about 
 
 ## Go-Live - Customer events data type
 
-When you are ready to launch your app in production, you will need to promote your application’s integration key from your developer account to a production Docusign account by passing a Go-Live review, similar to the [Go-Live](https://developers.docusign.com/docs/esign-rest-api/go-live/) process for the eSignature REST API.
+When you are ready to launch your app in production, , you must promote your integration key from your developer account to a production DocuSign account by completing a Go-Live review. This process is similar to the standard [Go-Live](https://developers.docusign.com/docs/esign-rest-api/go-live/) process for the eSignature REST API.
 
 Before you can begin the Go-Live process, you must have:
 
 - A paid production Docusign account with a plan that includes Docusign Monitor
-- Completed at least 20 consecutive successful test eSignature API requests in the developer environment
+- At least 20 consecutive successful eSignature REST API requests completed in the developer environment.
 
-**The 20 successful requests must be [eSignature REST API](https://developers.docusign.com/docs/esign-rest-api/reference/) requests, not Monitor API requests.**
+Note: Only [eSignature REST API](https://developers.docusign.com/docs/esign-rest-api/reference/) requests count toward the 20-request requirement, Monitor API requests do not qualify.
 
 To start the Go-Live review for your application, follow the steps described on the [Go-Live](https://developers.docusign.com/docs/esign-rest-api/go-live/) overview page for the Docusign eSignature REST API.
 
@@ -43,7 +43,7 @@ The table below shows the base endpoint paths for each DocuSign environment, hel
 
 | Environment | API base URI | Web Site Login URL |
 |-------------|--------------|--------------------|
-| Developer   | `https://lens-d.docusign.net/api/v2.0/datasets/monitor/..` | `https://account-d.docusign.com` |
+| Developer   | `https://lens-d.docusign.net/api/v2.0/datasets/monitor/...` | `https://account-d.docusign.com` |
 | Production  | `https://lens.docusign.net/api/v2.0/datasets/monitor/...` | `https://{server}.docusign.net/` |
 
 > **Note:** To access production API endpoints, you will need to enable your integration key in the production environment. See [Go-Live](https://developers.docusign.com/platform/go-live/) for more information.
@@ -55,13 +55,15 @@ The table below shows the base endpoint paths for each DocuSign environment, hel
 Before you can begin the Go-Live process for an app that uses the Admin API, you must have:
 
 - Admin API access enabled for your account  
-- Completed at least 20 consecutive successful test eSignature API requests in the developer environment
+- At least 20 consecutive successful test eSignature API requests completed in the developer environment.
 
-**The 20 successful requests must be API Reference requests, not Admin API requests.**
+**The 20 successful requests must be API requests, not Admin API requests.**
 
-When you are ready to start the Go-Live review for your application, follow the steps described on the Go-Live overview page for Docusign eSignature.
+To begin the Go-Live review, follow the steps in the [Go-Live overview](https://developers.docusign.com/docs/esign-rest-api/go-live/)
+ page for Docusign eSignature.```
 
-> **Note:** If your application fails the Go-Live review, you may need to bring it into compliance with the API rules and resource limits before proceeding.
+> **Note:** If your application fails the Go-Live review, you may need to bring it into compliance with DocuSign [API rules and resource limits](https://developers.docusign.com/docs/esign-rest-api/esign101/rules-and-limits/)
+ before resubmitting.
 
 After the form is processed, your integration key is copied to your production account, enabling your app to call production Admin API endpoints.  
 Note that while the key is copied, you must configure all required values separately in the production environment; configuration settings are not copied automatically.
@@ -82,11 +84,11 @@ The examples in the how-to section use the developer paths; the table below show
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
-| Integration Key |  | True |
-| User ID |  | True |
-| Redirect URL |  | True |
-| Private Key |  | True |
+| Server URL | The base URI for the DocuSign API. For production, this is usually **https://account.docusign.com**. For testing, use **https://account-d.docusign.com**. | True |
+| Integration Key | Also known as the Client ID. This is generated in your DocuSign Settings | True |
+| User ID | The unique API User ID (GUID) of the user who will be impersonated by the integration. This user must have the necessary administrative permissions. | True |
+| Redirect URL | The URI where DocuSign sends the authorization code during the initial consent process. | True |
+| Private Key | The RSA private key generated in DocuSign. This is used to sign the JWT (JSON Web Token) for secure authentication. | True |
 | Account ID | For fetching user data only | False |
 | Organization ID | For fetching user data only | False |
 | Fetch events |  | False |
@@ -117,10 +119,6 @@ There is no input for this command.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-
-```!monday-generate-login-url```
 
 #### Human Readable Output
 

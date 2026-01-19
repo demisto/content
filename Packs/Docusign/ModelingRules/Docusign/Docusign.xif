@@ -8,7 +8,7 @@ call docusign_common_fields
 | filter check_event_type = "Monitor Events"
 | alter
 // Extract from the field 'os' only the operating system name without version.
-    extract_os_family = arrayindex(regextract(os, "^[A-za-z]+"),0)
+    extract_os_family = arrayindex(regextract(os, "^[A-Za-z]+"),0)
 | alter
 /* XDM Model mapping for Monitor Events.
    API: GET - /api/v{version}/datasets/{dataSetName}/stream
