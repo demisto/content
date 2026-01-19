@@ -2653,11 +2653,8 @@ class EC2:
         if include_disabled := args.get("include_disabled"):
             kwargs["IncludeDisabled"] = argToBoolean(include_disabled)
 
-        if limit := args.get("limit"):
-            kwargs["MaxResults"] = arg_to_number(limit)
-
-        if next_token := args.get("next_token"):
-            kwargs["NextToken"] = next_token
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+        kwargs.update(pagination_kwargs)
 
         print_debug_logs(client, f"Describing images with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
