@@ -380,6 +380,9 @@ script:
     - contextPath: Okta.Metadata.x-rate-limit-reset
       description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
       type: Number
+    - contextPath: Okta.PollingURL
+      description: The polling URL for the push factor challenge.
+      type: String
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -390,7 +393,7 @@ script:
     name: okta-verify-mfa-status
     outputs:
     - contextPath: Okta.FactorResult.ID
-      description: Okta user ID.
+      description: The push factor challenge ID.
       type: String
     - contextPath: Okta.FactorResult.factorResult
       description: The status of the push factor.

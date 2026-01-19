@@ -627,7 +627,7 @@ Verifies the status of a push factor challenge.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.FactorResult.ID | String | The ID of the factor result. |
+| Okta.FactorResult.ID | String | The push factor challenge ID. |
 | Okta.FactorResult.factorResult | String | The result of the factor challenge. |
 | Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
 | Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |

@@ -742,7 +742,8 @@ def verify_push_factor_command(client, args):
     if not polling:
         outputs = {"Okta.PollingURL(true)": poll_link.get("href")}
         readable_output = (
-            f"To check the push factor status, use the 'verify_mfa_status_command' command with url: {poll_link.get('href')}"
+            "Push factor challenge has been initiated. To check the push factor challenge status, "
+            f"use the 'okta-verify-mfa-status' command with url: {poll_link.get('href')}"
         )
         return (readable_output, outputs, raw_response)
 
@@ -760,7 +761,7 @@ def verify_mfa_status_command(client: Client, args: dict):
     """Checks the status of a push factor procedure
 
     Args:
-        client (Client): The kta client
+        client (Client): The Okta client
         args (dict): The command arguments
     """
     polling_url = args.get("polling_url", "")
