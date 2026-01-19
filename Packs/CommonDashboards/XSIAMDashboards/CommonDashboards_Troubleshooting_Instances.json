@@ -123,20 +123,27 @@
                                 "viewOptions": {
                                     "type": "single",
                                     "commands": [
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "subtype",
-                                                "value": "standard"
-                                            }
-                                        },
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "yaxis",
-                                                "value": "error_count"
-                                            }
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "subtype",
+                                        "value": "trend"
                                         }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "xaxis",
+                                        "value": "_time"
+                                        }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "yaxis",
+                                        "value": "error_count"
+                                        }
+                                    }
                                     ]
                                 }
                             }
