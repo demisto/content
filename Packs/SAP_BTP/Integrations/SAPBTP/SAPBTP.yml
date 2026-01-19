@@ -1,8 +1,8 @@
 commonfields:
-  id: SAPBTP
+  id: Jas_test
   version: -1
-name: SAPBTP
-display: SAP BTP (Business Technology Platform)
+name: Jas_test
+display: Jas_test
 category: Cloud Services
 provider: SAP
 description: SAP Business Technology Platform (BTP) is a cloud platform for building, integrating, and extending enterprise applications with data, analytics, AI, and automation.
