@@ -1,3 +1,14 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR:
-- You can use the following API Key: `dummy-key`
+## Hello World v2
+
+This section explains how to configure the instance of the Hello World v2 integration in Cortex.
+
+<!--
+INTEGRATION DEVELOPER TIP:
+This file, commonly known as the "Help section", appears on the right hand side of the integration instance configuration window.
+Ensure you include step-by-step instructions to help users connect to the service API and configure an integration instance. 
+For example: Finding the Server URL, Obtaining Auth Credentials, Assigning required Auth Client scopes or permissions.
+-->
+
+## API Key
+
+You can use the following API Key: `dummy-key`.

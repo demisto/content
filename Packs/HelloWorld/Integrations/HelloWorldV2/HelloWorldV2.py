@@ -361,7 +361,7 @@ class BaseParams(ContentBaseModel):
     proxy: bool = False
 
     @property
-    def verify(self):
+    def verify(self) -> bool:
         """Return SSL verification setting (inverse of insecure).
 
         Returns:
