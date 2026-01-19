@@ -827,7 +827,7 @@ class HelloWorldClient(ContentClient):
 
         mock_response: list[dict] = []
         for mock_number in range(limit):
-            mock_alert_time = datetime(2026, 1, 15) + timedelta(milliseconds=id_offset + mock_number)
+            mock_alert_time = datetime(2026, 1, 15) + timedelta(seconds=id_offset + mock_number)
             mock_alert_id = id_offset + mock_number + 1
             is_even = mock_alert_id % 2 == 0
             item = MOCK_ALERT.format(
@@ -1596,6 +1596,7 @@ def main() -> None:  # pragma: no cover
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
     demisto.debug(f"[Main] Starting to execute {command=}.")
+    client = None
     try:
         client = HelloWorldClient(params)
 
@@ -1674,7 +1675,8 @@ def main() -> None:  # pragma: no cover
 
     finally:
         demisto.debug(f"[Main] Generating diagnostic report after executing {command=}.")
-        client.log_optional_diagnostic_report()
+        if client:
+            client.log_optional_diagnostic_report()
 
 
 """ ENTRY POINT """
