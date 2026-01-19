@@ -5263,8 +5263,81 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. |
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. |
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. |
-| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. |
-| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
+
+#### Command Example
+
+```!cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": {
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:05.139153881Z",
+            "filecount": {
+                "malicious": 0,
+                "quarantined": 0,
+                "scanned": 0,
+                "skipped": 0,
+                "traversed": 0
+            },
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "id": "9ba8489e9f604b61bf9b4a2c5f95ede7",
+            "initiated_from": "cloud_adhoc",
+            "last_updated": "2023-06-11T13:23:05.139153881Z",
+            "max_duration": 1,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "filecount": {},
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:05.139153881Z",
+                    "scan_host_metadata_id": "31052e821a5a4189a1a9a2814cc88e4e",
+                    "status": "complete"
+                }
+            ],
+            "pause_duration": 1,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 1,
+            "profile_id": "335198a96e1a4a6b880d62b2e7ccbb91",
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "complete"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scans
+>
+>|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
+>|---|---|---|---|---|---|---|---|---|
+>| 9ba8489e9f604b61bf9b4a2c5f95ede7 | complete |  |  |  | 7471ba0636b34cbb8c65fae7979a6a9b |  |  | f7acf1bd5d3d4b40afe77546cbbaefde |
 
 ### cs-falcon-ods-create-scheduled-scan
 
@@ -5295,6 +5368,8 @@ Create an ODS scheduled scan.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required |
 | schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) Adware detection level. | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) Adware prevention level. | Optional |
 
 #### Context Output
 
@@ -5327,6 +5402,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. |
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. |
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 
@@ -5335,72 +5412,165 @@ Create an ODS scheduled scan.
 #### Context Example
 
 ```json
-### cs-falcon-ods-create-scheduled-scan
+{
+    "CrowdStrike": {
+        "ODSScan": {
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:10.564070276Z",
+            "deleted": false,
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "id": "7d08d9a3088f49b3aa20efafc355aef0",
+            "initiated_from": "cloud_scheduled",
+            "last_updated": "2023-06-11T13:23:10.564070276Z",
+            "max_duration": 2,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:10.564070276Z"
+                }
+            ],
+            "pause_duration": 2,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 15,
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "schedule": {
+                "interval": 1,
+                "start_timestamp": "2023-06-12T13:23"
+            },
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "scheduled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scheduled Scan Created
+>
+>|Scan ID|
+>|---|
+>| 7d08d9a3088f49b3aa20efafc355aef0 |
+
+### cs-falcon-ods-delete-scheduled-scan
 
 ***
-Create an ODS scheduled scan.
+Delete ODS scheduled scans.
 
 #### Base Command
 
-`cs-falcon-ods-create-scheduled-scan`
+`cs-falcon-ods-delete-scheduled-scan`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_groups | A comma-separated list of host groups to be scanned. | Required | 
-| file_paths | A comma-separated list of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_inclusions | A comma-separated list of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_exclusions | A comma-separated list of excluded files or locations for this scan. | Optional | 
-| initiated_from | Scan origin. | Optional | 
-| cpu_priority | The scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
-| description | Scan description. | Optional | 
-| quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
-| pause_duration | Amount of time (in hours) for scan pauses. Default is 2. | Optional | 
-| sensor_ml_level_detection | Sensor ML detection level. | Optional | 
-| sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
-| cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
-| cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
-| max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional | 
-| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required | 
-| schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required | 
-| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs)  Adware detection level. | Optional | 
-| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs)  Adware prevention  level. | Optional | 
+| ids | Comma-separated list of scheduled scan IDs to delete. | Optional |
+| filter | Valid CS-Falcon-FQL filter to delete scans by. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-ods-delete-scheduled-scan  ids=9acf0c069d3d4a5b82badb170966e77c```
+
+#### Human Readable Output
+
+>### Deleted Scans
+
+>|Scan ID|
+>|---|
+>| 9acf0c069d3d4a5b82badb170966e77c |
+
+### cs-falcon-list-identity-entities
+
+***
+List identity entities.
+
+#### Base Command
+
+`cs-falcon-list-identity-entities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | API type. Possible values are: USER, ENDPOINT. | Required |
+| sort_key | The key to sort by. Possible values are: RISK_SCORE, PRIMARY_DISPLAY_NAME, SECONDARY_DISPLAY_NAME, MOST_RECENT_ACTIVITY, ENTITY_ID. | Optional |
+| sort_order | The sort order. Possible values are: DESCENDING, ASCENDING. Default is ASCENDING. | Optional |
+| entity_id | A comma-separated list of entity IDs to look for. | Optional |
+| primary_display_name | A comma-separated list of primary display names to filter by. | Optional |
+| secondary_display_name | A comma-separated list of secondary display names to filter by. | Optional |
+| max_risk_score_severity | The maximum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional |
+| min_risk_score_severity | The minimum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional |
+| enabled | Whether to get only enabled or disabled identity entities. Possible values are: true, false. | Optional |
+| email | Email to filter by. | Optional |
+| next_token | The hash for the next page. | Optional |
+| page_size | The maximum number of items to fetch per page. The maximum value allowed is 1000. Default is 50. | Optional |
+| page | The page number. Default is 1. | Optional |
+| limit | The maximum number of identity entities to list. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.ODSScheduledScan.id | String | Unique identifier for the scan. | 
-| CrowdStrike.ODSScheduledScan.cid | String | Identifier for the customer or organization that owns the scan. | 
-| CrowdStrike.ODSScheduledScan.description | String | The ID of the description of the scan. | 
-| CrowdStrike.ODSScheduledScan.file_paths | String | The file or folder paths scanned. | 
-| CrowdStrike.ODSScheduledScan.scan_exclusions | String | The file or folder exclusions from the scan. | 
-| CrowdStrike.ODSScheduledScan.initiated_from | String | The source of the scan initiation. | 
-| CrowdStrike.ODSScheduledScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
-| CrowdStrike.ODSScheduledScan.preemption_priority | Number | The preemption priority for the scan. | 
-| CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
-| CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
-| CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
-| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of the scan in hours. | 
-| CrowdStrike.ODSScheduledScan.max_duration | Number | The maximum duration of the scan in hours. | 
-| CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
-| CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
-| CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
-| CrowdStrike.ODSScheduledScan.schedule.start_timestamp | Date | The timestamp when the first scan was created. | 
-| CrowdStrike.ODSScheduledScan.schedule.interval | Number | The interval between scans. | 
-| CrowdStrike.ODSScheduledScan.created_on | Date | The timestamp when the scan was created. | 
-| CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
-| CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
-| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan was deleted. | 
-| CrowdStrike.ODSScheduledScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
-| CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
-| CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
-| CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
-| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. | 
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. | 
-
+| CrowdStrike.IDPEntity.IsHuman | Boolean | Whether the identity entity is human made. |
+| CrowdStrike.IDPEntity.IsProgrammatic | Boolean | Whether the identity entity is programmatic made. |
+| CrowdStrike.IDPEntity.IsAdmin | String | Whether the identity entity is admin made. |
+| CrowdStrike.IDPEntity.PrimaryDisplayName | String | The identity entity primary display name. |
+| CrowdStrike.IDPEntity.RiskFactors.Type | Unknown | The identity entity risk factor type. |
 | CrowdStrike.IDPEntity.RiskFactors.Severity | Unknown | The identity entity risk factor severity. |
 | CrowdStrike.IDPEntity.RiskScore | Number | The identity entity risk score. |
 | CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. |
