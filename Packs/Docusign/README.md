@@ -5,11 +5,7 @@ Docusign is the world's leading electronic signature and digital transaction man
 ## What does this pack do?
 
 - Rest API integration to fetch audit and monitor events.
-- XDM Mapping for audit and monitor events.
-
-## Pack Contents
-
-- `Docusign` - Event Collector integration
+- XDM Mapping for user info and monitor events.
 
 ### Customer Events API
 

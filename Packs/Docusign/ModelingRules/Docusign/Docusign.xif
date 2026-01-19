@@ -1,7 +1,7 @@
 [RULE: docusign_common_fields]
 alter 
 // Check weather the event type is Audit or Monitor.
-    check_event_type = if(source_log_type = "auditusers", "Audit Events", "Monitor Events");
+    check_event_type = if(source_log_type = "auditusers", "User Info", "Monitor Events");
 
 [MODEL: dataset="docusign_docusign_raw"]
 call docusign_common_fields 
@@ -21,7 +21,7 @@ call docusign_common_fields
         action = "Updated", XDM_CONST.OPERATION_TYPE_UPDATE,
         action = "Created", XDM_CONST.OPERATION_TYPE_CREATE,
         action = "Deleted", XDM_CONST.OPERATION_TYPE_DELETE,
-        to_string(action)
+        to_string(uppercase(action))
     ),
     xdm.source.user.identifier = userId,
     xdm.source.ipv4 = if(is_ipv4(ipAddress),ipAddress,null),
@@ -53,11 +53,11 @@ call docusign_common_fields
     xdm.observer.type = source;
 
 call docusign_common_fields 
-| filter check_event_type = "Audit Events"
+| filter check_event_type = "User Info"
 | alter
     extract_group_name = arraymap(groupList -> [], "@element" -> groupName)
 | alter
-/* XDM Model mapping for Audit Events.
+/* XDM Model mapping for User Info Events.
     API: GET - /restapi/v2.1/accounts/{accountId}/users/{userId}
    References: https://developers.docusign.com/docs/esign-rest-api/reference/users/users/
    Gets the user information for a specified user using a userId (GUID). To find a user based on their email address, use the list endpoint.
