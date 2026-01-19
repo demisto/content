@@ -2526,3 +2526,270 @@ Adds the specified inbound (egress) rules to a security group.
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-instances-monitor
+
+***
+Enables detailed monitoring for one or more running Amazon EC2 instances.
+
+#### Base Command
+
+`aws-ec2-instances-monitor`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to enable monitoring for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). |
+
+### aws-ec2-instances-unmonitor
+
+***
+Disables detailed monitoring for one or more running Amazon EC2 instances.
+
+#### Base Command
+
+`aws-ec2-instances-unmonitor`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to disable monitoring for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). |
+
+### aws-ec2-instances-reboot
+
+***
+Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+
+#### Base Command
+
+`aws-ec2-instances-reboot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to reboot. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-running-waiter
+
+***
+Waits until EC2 instances are in the 'running' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max is waiter_max_attempts arg value attempts).
+
+#### Base Command
+
+`aws-ec2-instance-running-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-status-ok-waiter
+
+***
+Waits until EC2 instance status checks pass. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+
+#### Base Command
+
+`aws-ec2-instance-status-ok-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+| include_all_instances | When true, includes the health status for all instances. When false, includes the health status for running instances only. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-stopped-waiter
+
+***
+Waits until EC2 instances are in the 'stopped' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+
+#### Base Command
+
+`aws-ec2-instance-stopped-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-terminated-waiter
+
+***
+Waits until EC2 instances are in the 'terminated' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+
+#### Base Command
+
+`aws-ec2-instance-terminated-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-iam-instance-profile-associations-describe
+
+***
+Describes IAM instance profile associations.
+
+#### Base Command
+
+`aws-ec2-iam-instance-profile-associations-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| association_ids | A comma-separated list of IAM instance profile association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| limit | The maximum number of results to return.   Minimum value of 5. Maximum value of 1000. Default is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IamInstanceProfileAssociations.AssociationId | String | The ID of the association. |
+| AWS.EC2.IamInstanceProfileAssociations.InstanceId | String | The ID of the instance. |
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn | String | The Amazon Resource Name \(ARN\) of the instance profile. |
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id | String | The ID of the instance profile. |
+| AWS.EC2.IamInstanceProfileAssociations.State | String | The state of the association. |
+| AWS.EC2.IamInstanceProfileAssociationsNextToken | String | The token for the next set of results. |
+
+### aws-ec2-password-data-get
+
+***
+Retrieves the encrypted administrator password for a running Windows instance.
+
+#### Base Command
+
+`aws-ec2-password-data-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_id | The ID of the Windows instance. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.PasswordData.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.PasswordData.PasswordData | String | The password of the instance. Returns an empty string if the password is not available. |
+| AWS.EC2.Instances.PasswordData.Timestamp | Date | The time the data was last updated. |
+
+### aws-ec2-reserved-instances-describe
+
+***
+Describes one or more of the Reserved Instances that you purchased.
+
+#### Base Command
+
+`aws-ec2-reserved-instances-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| reserved_instances_ids | A comma-separated list of Reserved Instance IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| offering_class | The offering class of the Reserved Instance. Possible values are: standard, convertible. | Optional |
+| offering_type | The Reserved Instance offering type. Possible values are: Heavy Utilization, Medium Utilization, Light Utilization, No Upfront, Partial Upfront, All Upfront. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ReservedInstances.ReservedInstancesId | String | The ID of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceType | String | The instance type on which the Reserved Instance can be used. |
+| AWS.EC2.ReservedInstances.AvailabilityZone | String | The Availability Zone in which the Reserved Instance can be used. |
+| AWS.EC2.ReservedInstances.Start | Date | The date and time the Reserved Instance started. |
+| AWS.EC2.ReservedInstances.End | Date | The time when the Reserved Instance expires. |
+| AWS.EC2.ReservedInstances.Duration | Number | The duration of the Reserved Instance, in seconds. |
+| AWS.EC2.ReservedInstances.UsagePrice | Number | The usage price of the Reserved Instance, per hour. |
+| AWS.EC2.ReservedInstances.FixedPrice | Number | The purchase price of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceCount | Number | The number of reservations purchased. |
+| AWS.EC2.ReservedInstances.ProductDescription | String | The Reserved Instance product platform description. |
+| AWS.EC2.ReservedInstances.State | String | The state of the Reserved Instance purchase. |
+| AWS.EC2.ReservedInstances.CurrencyCode | String | The currency of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceTenancy | String | The tenancy of the instance. |
+| AWS.EC2.ReservedInstances.OfferingClass | String | The offering class of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.OfferingType | String | The Reserved Instance offering type. |
+| AWS.EC2.ReservedInstances.RecurringCharges.Amount | Number | The amount of the recurring charge. |
+| AWS.EC2.ReservedInstances.RecurringCharges.Frequency | String | The frequency of the recurring charge. |
+| AWS.EC2.ReservedInstances.Scope | String | The scope of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.Tags.Key | String | The key of the tag. |
+| AWS.EC2.ReservedInstances.Tags.Value | String | The value of the tag. |

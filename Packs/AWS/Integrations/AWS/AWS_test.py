@@ -6943,8 +6943,8 @@ def test_ec2_monitor_instances_command_success(mocker):
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "InstanceMonitorings": [
             {"InstanceId": "i-1234567890abcdef0", "Monitoring": {"State": "enabled"}},
-            {"InstanceId": "i-0987654321fedcba0", "Monitoring": {"State": "pending"}}
-        ]
+            {"InstanceId": "i-0987654321fedcba0", "Monitoring": {"State": "pending"}},
+        ],
     }
 
     args = {"instance_ids": "i-1234567890abcdef0,i-0987654321fedcba0"}
@@ -6954,9 +6954,7 @@ def test_ec2_monitor_instances_command_success(mocker):
     assert "Successfully enabled monitoring for instances" in result.readable_output
     assert result.outputs_prefix == "AWS.EC2.Instances"
     assert len(result.outputs) == 2
-    mock_client.monitor_instances.assert_called_once_with(
-        InstanceIds=["i-1234567890abcdef0", "i-0987654321fedcba0"]
-    )
+    mock_client.monitor_instances.assert_called_once_with(InstanceIds=["i-1234567890abcdef0", "i-0987654321fedcba0"])
 
 
 def test_ec2_monitor_instances_command_empty_instance_ids(mocker):
@@ -6986,7 +6984,7 @@ def test_ec2_monitor_instances_command_client_error(mocker):
     mock_client = mocker.Mock()
     error_response = {
         "Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"},
-        "ResponseMetadata": {"HTTPStatusCode": 404}
+        "ResponseMetadata": {"HTTPStatusCode": 404},
     }
     client_error = ClientError(error_response, "MonitorInstances")
     mock_client.monitor_instances.side_effect = client_error
@@ -7008,9 +7006,7 @@ def test_ec2_monitor_instances_command_http_error_response(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.monitor_instances.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.monitor_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
     mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
 
@@ -7890,7 +7886,6 @@ def test_ec2_describe_reserved_instances_command_multiple_instances(mocker):
     Then: It should return CommandResults with all reserved instances data.
     """
     from AWS import EC2
-    from datetime import datetime
 
     mock_client = mocker.Mock()
     mock_client.describe_reserved_instances.return_value = {

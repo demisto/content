@@ -2633,17 +2633,16 @@ class EC2:
         # Format output data
         readable_data = []
         for monitoring in instance_monitorings:
-            readable_data.append({
-                "InstanceId": monitoring.get("InstanceId"),
-                "MonitoringState": monitoring.get("Monitoring", {}).get("State")
-            })
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
 
         readable_output = tableToMarkdown(
             "Successfully enabled monitoring for instances",
             readable_data,
             headers=["InstanceId", "MonitoringState"],
             headerTransform=pascalToSpace,
-            removeNull=True
+            removeNull=True,
         )
 
         return CommandResults(
@@ -2651,7 +2650,7 @@ class EC2:
             outputs_key_field="InstanceId",
             outputs=instance_monitorings,
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -2670,7 +2669,7 @@ class EC2:
         instance_ids = parse_resource_ids(args.get("instance_ids"))
 
         response = client.unmonitor_instances(InstanceIds=instance_ids)
-            
+
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
@@ -2682,17 +2681,16 @@ class EC2:
         # Format output data
         readable_data = []
         for monitoring in instance_monitorings:
-            readable_data.append({
-                "InstanceId": monitoring.get("InstanceId"),
-                "MonitoringState": monitoring.get("Monitoring", {}).get("State")
-            })
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
 
         readable_output = tableToMarkdown(
             "Successfully disabled monitoring for instances",
             readable_data,
             headers=["InstanceId", "MonitoringState"],
             headerTransform=pascalToSpace,
-            removeNull=True
+            removeNull=True,
         )
 
         return CommandResults(
@@ -2700,7 +2698,7 @@ class EC2:
             outputs_key_field="InstanceId",
             outputs=instance_monitorings,
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -2723,8 +2721,7 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}",
-            raw_response=response
+            readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}", raw_response=response
         )
 
     @staticmethod
@@ -2744,19 +2741,19 @@ class EC2:
             CommandResults: Results indicating instances are running
         """
         kwargs = {}
-        
+
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
-            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
-        
+
         try:
             waiter = client.get_waiter("instance_running")
             waiter.wait(**kwargs)
@@ -2786,7 +2783,7 @@ class EC2:
         # IncludeAllInstances
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
@@ -2795,10 +2792,10 @@ class EC2:
 
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
-            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
-        
+
         try:
             waiter = client.get_waiter("instance_status_ok")
             waiter.wait(**kwargs)
@@ -2823,19 +2820,19 @@ class EC2:
             CommandResults: Results indicating instances are stopped
         """
         kwargs = {}
-        
+
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
-            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
-        
+
         try:
             waiter = client.get_waiter("instance_stopped")
             waiter.wait(**kwargs)
@@ -2860,19 +2857,19 @@ class EC2:
             CommandResults: Results indicating instances are terminated
         """
         kwargs = {}
-        
+
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
-            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40"))
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
-        
+
         try:
             waiter = client.get_waiter("instance_terminated")
             waiter.wait(**kwargs)
@@ -2897,10 +2894,10 @@ class EC2:
             CommandResults: Results containing IAM instance profile association information
         """
         kwargs = {}
-        
+
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if association_ids := args.get("association_ids"):
             kwargs["AssociationIds"] = parse_resource_ids(association_ids)
 
@@ -2920,32 +2917,29 @@ class EC2:
         # Format output data
         readable_data = []
         for association in associations:
-            readable_data.append({
-                "AssociationId": association.get("AssociationId"),
-                "InstanceId": association.get("InstanceId"),
-                "State": association.get("State"),
-                "IamInstanceProfile": association.get("IamInstanceProfile")
-            })
+            readable_data.append(
+                {
+                    "AssociationId": association.get("AssociationId"),
+                    "InstanceId": association.get("InstanceId"),
+                    "State": association.get("State"),
+                    "IamInstanceProfile": association.get("IamInstanceProfile"),
+                }
+            )
 
         readable_output = tableToMarkdown(
             "AWS IAM Instance Profile Associations",
             readable_data,
             headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
             headerTransform=pascalToSpace,
-            removeNull=True
+            removeNull=True,
         )
 
         outputs = {
             "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
-            "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")}
+            "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
         }
 
-        return CommandResults(
-            outputs=outputs,
-            readable_output=readable_output,
-            raw_response=response
-        )
-
+        return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
 
     @staticmethod
     def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -2973,7 +2967,7 @@ class EC2:
         password_data = {
             "InstanceId": response.get("InstanceId"),
             "PasswordData": response.get("PasswordData"),
-            "Timestamp": response.get("Timestamp")
+            "Timestamp": response.get("Timestamp"),
         }
 
         readable_output = tableToMarkdown(
@@ -2981,20 +2975,17 @@ class EC2:
             password_data,
             headers=["InstanceId", "PasswordData", "Timestamp"],
             headerTransform=pascalToSpace,
-            removeNull=True
+            removeNull=True,
         )
 
-        outputs = {
-            "PasswordData": password_data,
-            "InstanceId": password_data.get("InstanceId")
-        }
+        outputs = {"PasswordData": password_data, "InstanceId": password_data.get("InstanceId")}
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Instances",
             outputs_key_field="InstanceId",
             outputs=outputs,
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -3015,10 +3006,10 @@ class EC2:
             CommandResults: Results containing Reserved Instance information
         """
         kwargs = {}
-        
+
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
-        
+
         if offering_class := args.get("offering_class"):
             kwargs["OfferingClass"] = offering_class
 
@@ -3047,24 +3038,36 @@ class EC2:
         # Format output data
         readable_data = []
         for reservation in reserved_instances:
-            readable_data.append({
-                "ReservedInstancesId": reservation.get("ReservedInstancesId"),
-                "InstanceType": reservation.get("InstanceType"),
-                "InstanceCount": reservation.get("InstanceCount"),
-                "State": reservation.get("State"),
-                "Start": reservation.get("Start"),
-                "End": reservation.get("End"),
-                "Duration": reservation.get("Duration"),
-                "OfferingClass": reservation.get("OfferingClass"),
-                "Scope": reservation.get("Scope")
-            })
+            readable_data.append(
+                {
+                    "ReservedInstancesId": reservation.get("ReservedInstancesId"),
+                    "InstanceType": reservation.get("InstanceType"),
+                    "InstanceCount": reservation.get("InstanceCount"),
+                    "State": reservation.get("State"),
+                    "Start": reservation.get("Start"),
+                    "End": reservation.get("End"),
+                    "Duration": reservation.get("Duration"),
+                    "OfferingClass": reservation.get("OfferingClass"),
+                    "Scope": reservation.get("Scope"),
+                }
+            )
 
         readable_output = tableToMarkdown(
             "AWS EC2 Reserved Instances",
             readable_data,
-            headers=["ReservedInstancesId", "InstanceType", "InstanceCount", "State", "Start", "End", "Duration", "OfferingClass", "Scope"],
+            headers=[
+                "ReservedInstancesId",
+                "InstanceType",
+                "InstanceCount",
+                "State",
+                "Start",
+                "End",
+                "Duration",
+                "OfferingClass",
+                "Scope",
+            ],
             headerTransform=pascalToSpace,
-            removeNull=True
+            removeNull=True,
         )
 
         return CommandResults(
@@ -3072,7 +3075,7 @@ class EC2:
             outputs_key_field="ReservedInstancesId",
             outputs=reserved_instances,
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
         )
 
 
