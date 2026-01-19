@@ -2475,7 +2475,7 @@ There is no context output for this command.
 ### aws-ec2-images-describe
 
 ***
-Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+Describes the specified images (AMIs, AKIs, and ARIs) available to you or, if none are specified, all images available to you.
 
 #### Base Command
 
