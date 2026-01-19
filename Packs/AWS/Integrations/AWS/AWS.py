@@ -20,30 +20,9 @@ DEFAULT_REGION = "us-east-1"
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
-MAX_TARGET_VALUES = 5
-MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
-MAXIMUM_COMMAND_TIMEOUT = 2592000  # Maximum timeout for running commands in ssm (30 days).
-MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
-DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
-DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
-TERMINAL_COMMAND_STATUSES = {  # the status for run command command
-    "Success": "The command completed successfully.",
-    "Failed": "The command wasn't successfully on the managed node.",
-    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
-    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
-    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
-    "Cancelled": "The command was canceled before it was completed.",
-    "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
-    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
-    "The system has canceled the command before executing it on any node.",
-    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
-    "doesn't count against the parent command's max-errors limit, "
-    "but does contribute to whether the parent command status is Success or Failed.",
-    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
-}
 
 
 def handle_port_range(args: dict) -> tuple:
@@ -228,109 +207,6 @@ def parse_filter_field(filter_string: str | None):
     return filters
 
 
-def parse_target_field(target_string: str | None):
-    """
-    Parses a list representation of key and values with the form of 'key=<key>,values=<values>.
-    the maximum number of values for a key might be lower than the global maximum of 50.
-    Key minimum length of 1, maximum length of 163.
-
-    Args:
-        target_string (str): The key and values list
-    Returns:
-        A list of dicts with the form {"Key": <key>, "Values": [<value>]}
-    """
-    targets = []
-    list_targets = argToList(target_string, separator=";")
-    regex = re.compile(
-        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),values=([ \w@,.*-\/:]+)",
-        flags=re.I,
-    )
-    for target in list_targets:
-        match_target = regex.match(target)
-        if match_target is None:
-            raise ValueError(
-                f"Could not parse target: {target}. Please make sure you provided "
-                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
-            )
-        demisto.debug(
-            f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'
-            f' if larger than {MAX_TARGET_VALUES},'
-            f' parsing only first {MAX_TARGET_VALUES} values.'
-        )
-        targets.append({"Key": match_target.group(1), "Values": match_target.group(2).split(",")[0:MAX_TARGET_VALUES]})
-
-    return targets
-
-
-def parse_parameters_arg(parameters_str: str) -> dict:
-    """
-    Parses a list representation of key and values 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>.
-
-    Args:
-        parameters_str (str): The key and values list
-    Returns:
-        A dictionary containing the parameters
-        {"key1" : [ "string", "string"], "key2" : [ "string", "string"]}
-    """
-    parameters = {}
-    list_parameters = argToList(parameters_str, separator=";")
-    regex = re.compile(
-        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+)",
-        flags=re.I,
-    )
-    for param in list_parameters:
-        match_param = regex.match(param)
-        if match_param is None:
-            raise ValueError(
-                f"Could not parse the parameter: {param}. Please make sure you provided "
-                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
-            )
-        demisto.debug(f'Number of parameter values for filter {match_param.group(1)} is {len(match_param.group(2).split(","))}')
-        parameters[match_param.group(1)] = match_param.group(2).split(",")
-    return parameters
-
-
-def parse_triple_filter(filter_string: str | None):
-    """
-    Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
-    You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
-    Args:
-        filter_string: The name and values list
-    Returns:
-        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
-    """
-    filters = []
-    list_filters = argToList(filter_string, separator=";")
-    if len(list_filters) > MAX_TRIPLE_FILTER_VALUE:
-        list_filters = list_filters[0:MAX_TRIPLE_FILTER_VALUE]
-        demisto.debug(f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters.")
-    regex = re.compile(
-        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
-        flags=re.I,
-    )
-    for f in list_filters:
-        match_filter = regex.match(f)
-        if match_filter is None:
-            raise ValueError(
-                f"Could not parse field: {f}. Please make sure you provided "
-                "like so: name=<name>,values=<values>,type=<type>;name=<name>,values=<value1>,<value2>,type=<type>..."
-            )
-        demisto.debug(
-            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
-            f' if larger than {MAX_FILTER_VALUES},'
-            f' parsing only first {MAX_FILTER_VALUES} values.'
-        )
-        filters.append(
-            {
-                "Key": match_filter.group(1),
-                "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
-                "Type": match_filter.group(3),
-            }
-        )
-
-    return filters
-
-
 def parse_tag_field(tags_string: str | None):
     """
     Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
@@ -365,65 +241,6 @@ def convert_datetimes_to_iso_safe(data):
     """
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
-
-
-def build_kwargs_network_interface_attribute(args: dict, network_interface_id: str) -> dict:
-    """
-    Build the kwargs for network_interface_attribute_modify_command.
-    Args:
-        args (dict): The command arguments.
-        network_interface_id (str): the network interface id.
-    Returns:
-        A dictionary with the relevant values.
-    """
-    kwargs = {
-        "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
-        "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
-        "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
-        "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
-        "NetworkInterfaceId": network_interface_id,
-        "Groups": argToList(args.get("groups")),
-    }
-
-    tcp_established_timeout = arg_to_number(args.get("tcp_established_timeout"))
-    udp_stream_timeout = arg_to_number(args.get("udp_stream_timeout"))
-    udp_timeout = arg_to_number(args.get("udp_timeout"))
-    if any([tcp_established_timeout, udp_stream_timeout, udp_timeout]):
-        kwargs["ConnectionTrackingSpecification"] = {}
-
-    default_ena_queue_count = arg_to_bool_or_none(args.get("default_ena_queue_count"))
-    ena_queue_count = arg_to_number(args.get("ena_queue_count"))
-    attachment_id = args.get("attachment_id")
-    delete_on_termination = arg_to_bool_or_none(args.get("delete_on_termination"))
-    if any(b is not None for b in [default_ena_queue_count, ena_queue_count, attachment_id, delete_on_termination]):
-        kwargs["Attachment"] = {}
-
-    if (ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))) is not None:
-        kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
-    if tcp_established_timeout:
-        kwargs["ConnectionTrackingSpecification"]["TcpEstablishedTimeout"] = tcp_established_timeout
-    if udp_stream_timeout:
-        kwargs["ConnectionTrackingSpecification"]["UdpStreamTimeout"] = udp_stream_timeout
-    if udp_timeout:
-        kwargs["ConnectionTrackingSpecification"]["UdpTimeout"] = udp_timeout
-    if description := args.get("description"):
-        kwargs["Description"] = {"Value": description}
-    if (source_dest_check := arg_to_bool_or_none(args.get("source_dest_check"))) is not None:
-        kwargs["SourceDestCheck"] = {"Value": source_dest_check}
-    if default_ena_queue_count is not None:
-        kwargs["Attachment"]["DefaultEnaQueueCount"] = default_ena_queue_count
-    if ena_queue_count:
-        kwargs["Attachment"]["EnaQueueCount"] = ena_queue_count
-    if attachment_id:
-        kwargs["Attachment"]["AttachmentId"] = attachment_id
-    if delete_on_termination is not None:
-        kwargs["Attachment"]["DeleteOnTermination"] = delete_on_termination
-
-    if (attachment_id and delete_on_termination is None) or (not attachment_id and delete_on_termination is not None):
-        raise DemistoException(
-            "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well."
-        )
-    return kwargs
 
 
 class AWSErrorHandler:
@@ -595,7 +412,6 @@ class AWSServices(str, Enum):
     ELB = "elb"
     CostExplorer = "ce"
     BUDGETS = "budgets"
-    SSM = "ssm"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -1133,92 +949,6 @@ class S3:
             outputs=response.get("AccessControlPolicy", {}),
             raw_response=response.get("AccessControlPolicy", {}),
         )
-
-    @staticmethod
-    def bucket_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Creates a new S3 bucket.
-
-        Args:
-            client (BotoClient): The initialized Boto3 S3 client.
-            args (dict): A dictionary containing the arguments entered to the command.
-
-        Returns:
-            CommandResults: A success message and information on the newly created bucket.
-        """
-        bucket_name = args.get("bucket_name")
-        location = args.get("location_constraint") or args.get("region", "")
-        kwargs = {
-            "Bucket": bucket_name,
-            "GrantFullControl": args.get("grant_full_control"),
-            "GrantRead": args.get("grant_read"),
-            "GrantReadACP": args.get("grant_read_acp"),
-            "GrantWrite": args.get("grant_write"),
-            "GrantWriteACP": args.get("grant_write_acp"),
-        }
-        # The "us-east-1" is the default value for LocationConstraint, when added to the request the S3 API views that
-        # specific string as an invalid/unsupported value for the constraint.
-        if location != "us-east-1":
-            kwargs["CreateBucketConfiguration"] = {"LocationConstraint": location}
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-
-        response = client.create_bucket(**kwargs)
-        demisto.debug(f"{response=}")
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        output = {
-            'Location': response.get("Location"),
-            'BucketArn': response.get("BucketArn"),
-            'BucketName': bucket_name
-        }
-
-        return CommandResults(readable_output=f"The bucket {bucket_name}, was created successfully",
-                              outputs=output,
-                              outputs_prefix="AWS.S3.Buckets",
-                              outputs_key_field="BucketName")
-
-    @staticmethod
-    def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Returns a list of all buckets owned by the authenticated sender of the request.
-
-        Args:
-            client (BotoClient): The initialized Boto3 S3 client.
-            args (dict): A dictionary containing the following arguments: account_id, region, limit, next_page_token, prefix.
-
-        Returns:
-            CommandResults: Containing the list of buckets.
-        """
-        filter_by_region = args.get("filter_by_region")
-        prefix = args.get("prefix")
-        kwargs = {"Prefix": prefix, "BucketRegion": filter_by_region}
-        kwargs.update(
-            build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets")
-        )
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-        response = client.list_buckets(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        buckets = response.get("Buckets")
-        for bucket in buckets:
-            bucket["CreationDate"] = datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")
-        readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
-        outputs = {
-            "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
-            "AWS.S3(true)": {
-                "BucketsOwner": response.get("Owner"),
-                "BucketsNextPageToken": response.get("ContinuationToken"),
-                "BucketsPrefix": response.get("Prefix"),
-            },
-        }
-
-        return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
 
 
 class IAM:
@@ -2603,75 +2333,6 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output="The resources where tagged successfully")
-
-    @staticmethod
-    def network_interface_attribute_modify_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modifies the specified network interface attribute.
-        Args:
-            client (BotoClient): The initialized Boto3 EC2 client.
-            args (dict): A dictionary of the command arguments.
-
-        Returns:
-            CommandResults: A success message in case the modification was successful.
-        """
-        network_interface_id = args.get("network_interface_id", "")
-        kwargs = build_kwargs_network_interface_attribute(args, network_interface_id)
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-        response = client.modify_network_interface_attribute(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        return CommandResults(
-            readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully."
-        )
-
-    @staticmethod
-    def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Describes the Regions that are enabled for your account, or all Regions.
-
-        Args:
-            client (BotoClient): The initialized Boto3 EC2 client.
-            args (dict): A dictionary containing arguments for creating the tags.
-                  account_id (str): The account id
-                  region_names (str): The names of the regions to retrieve
-                  all_regions (bool): Indicates whether to display all Regions.
-                  filters (str): A filter name and value pair that is used to return a more specific list of results.
-                    name=<name>,values=<values>;name=<name>,values=<values>
-
-        Returns:
-            CommandResults: A list of Regions.
-        """
-        region_names = argToList(args.get("region_names", ""))
-        all_regions = arg_to_bool_or_none(args.get("all_regions"))
-        kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
-        if region_names and all_regions is not None:
-            raise DemistoException("Only one of the arguments 'region_name' and 'all_regions' should be provided.")
-
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-        response = client.describe_regions(**kwargs)
-        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        regions = response.get("Regions")
-        readable_output = tableToMarkdown(
-            f"The regions {region_names} information:",
-            regions,
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
-
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="AWS.EC2.Regions",
-            outputs=regions,
-            raw_response=response,
-            outputs_key_field="RegionName",
-        )
 
     @staticmethod
     def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
