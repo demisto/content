@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The integration now uses Censys API V3, which results in changes to the context outputs."
+}
