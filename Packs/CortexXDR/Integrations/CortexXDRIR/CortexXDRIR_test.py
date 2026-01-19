@@ -2394,6 +2394,47 @@ def test_extract_paths_and_names_single_item():
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
 
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_fetch_incidents_name_generation(mocker):
+    """
+    Given:
+        - Raw incidents from XDR (V4 with incident_name and Legacy without it)
+    When:
+        - Running fetch_incidents
+    Then:
+        - Verify the incident name is generated correctly for both cases
+    """
+    from CortexXDRIR import Client, fetch_incidents
+
+    # 1. XDR V4 (has incident_name)
+    # 2. XDR Legacy (no incident_name, has description)
+    raw_incidents = [
+        {
+            "incident": {
+                "incident_id": "100",
+                "incident_name": "V4 Incident Name",
+                "creation_time": 740314800000,
+                "description": "V4 Description",
+            }
+        },
+        {"incident": {"incident_id": "200", "creation_time": 740314800000, "description": "Legacy Description"}},
+    ]
+
+    mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=raw_incidents)
+    mocker.patch.object(Client, "save_modified_incidents_to_integration_context")
+    mocker.patch.object(demisto, "params", return_value={"exclude_fields": False, "mirror_direction": "Incoming"})
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    _, incidents = fetch_incidents(client, "3 month", "MyInstance", exclude_artifacts=False, last_run={})
+
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "XDR Incident 100 - V4 Incident Name"
+    assert incidents[1]["name"] == "XDR Incident 200 - Legacy Description"
+
+
+
 
 def test_get_asset_list_command(mocker):
     """
