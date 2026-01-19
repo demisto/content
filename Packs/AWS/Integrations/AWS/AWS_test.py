@@ -6832,6 +6832,7 @@ def test_build_pagination_kwargs_with_custom_max_limit():
     Then: The MaxResults should have the value of the max_limit
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 500}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
@@ -6845,12 +6846,9 @@ def test_build_pagination_kwargs_with_custom_parameter_names():
     Then: The returned value should have the custom names as the keys with their matching values.
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 25, "next_token": "abc123"}
-    result = build_pagination_kwargs(
-        args,
-        next_token_name="ContinuationToken",
-        limit_name="PageSize"
-    )
+    result = build_pagination_kwargs(args, next_token_name="ContinuationToken", limit_name="PageSize")
     expected = {"ContinuationToken": "abc123", "PageSize": 25}
     assert result == expected
 
@@ -6862,6 +6860,7 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     Then: The MaxResults should have the value of the max_limit and limit.
     """
     from AWS import build_pagination_kwargs
+
     args = {"limit": 100}
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}

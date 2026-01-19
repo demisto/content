@@ -2505,7 +2505,6 @@ class EC2:
         else:
             return AWSErrorHandler.handle_response_error(response)
 
-
     @staticmethod
     def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -2593,7 +2592,7 @@ class EC2:
             "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
             "AWS.EC2(true)": {
                 "ImagesNextPageToken": response.get("NextToken"),
-            }
+            },
         }
 
         return CommandResults(
@@ -2604,7 +2603,8 @@ class EC2:
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
-            ) + f"\nImagesNextPageToken: {escape(response.get('NextToken'))}\n",
+            )
+            + f"\nImagesNextPageToken: {escape(response.get('NextToken'))}\n",
             raw_response=response,
         )
 
@@ -2631,14 +2631,15 @@ class EC2:
             "Name": args.get("name"),
             "InstanceId": args.get("instance_id"),
             "Description": args.get("description"),
-            "NoReboot": arg_to_bool_or_none(args.get("no_reboot"))
+            "NoReboot": arg_to_bool_or_none(args.get("no_reboot")),
         }
 
         # Handle block device mappings if provided
         if block_device_mappings := args.get("block_device_mappings"):
             try:
-                kwargs["BlockDeviceMappings"] = json.loads(block_device_mappings) if isinstance(block_device_mappings,
-                                                                                                str) else block_device_mappings
+                kwargs["BlockDeviceMappings"] = (
+                    json.loads(block_device_mappings) if isinstance(block_device_mappings, str) else block_device_mappings
+                )
             except json.JSONDecodeError as e:
                 raise DemistoException(f"Invalid block_device_mappings JSON: {e}")
 
@@ -2845,9 +2846,7 @@ class EC2:
             waiter = client.get_waiter("image_available")
             waiter.wait(**kwargs)
 
-            return CommandResults(
-                readable_output="Image is now available."
-            )
+            return CommandResults(readable_output="Image is now available.")
         except ClientError as e:
             AWSErrorHandler.handle_client_error(e, args.get("account_id"))
 
