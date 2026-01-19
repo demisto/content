@@ -2394,6 +2394,7 @@ def test_extract_paths_and_names_single_item():
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
 
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_name_generation(mocker):
     """
@@ -2432,8 +2433,6 @@ def test_fetch_incidents_name_generation(mocker):
     assert len(incidents) == 2
     assert incidents[0]["name"] == "XDR Incident 100 - V4 Incident Name"
     assert incidents[1]["name"] == "XDR Incident 200 - Legacy Description"
-
-
 
 
 def test_get_asset_list_command(mocker):
