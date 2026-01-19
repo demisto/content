@@ -101,6 +101,15 @@ def clear_trailing_whitespace(res):
 
 
 def replace_dots_in_keys(data: Any) -> Any:
+    """
+    Recursively replaces dots with underscores in dictionary keys.
+
+    Args:
+        data (Any): The input data structure (dictionary, list, or primitive) to process.
+
+    Returns:
+        Any: The data structure with all dictionary keys having dots replaced by underscores.
+    """
     if isinstance(data, dict):
         return {k.replace(".", "_"): replace_dots_in_keys(v) for k, v in data.items()}
     elif isinstance(data, list):
