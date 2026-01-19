@@ -52,7 +52,11 @@ Hello command - prints hello to anyone.
 
 ```json
 {
-    "hello": "Hello Hello Dbot"
+    "HelloWorld": {
+        "Hello": {
+            "name": "Dbot"
+        }
+    }
 }
 ```
 

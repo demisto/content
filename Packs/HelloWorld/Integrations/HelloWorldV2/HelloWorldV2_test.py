@@ -56,8 +56,16 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 import pytest
 from pytest_mock import MockerFixture
-from CommonServerPython import DemistoException
-from HelloWorldV2 import HelloWorldParams, HelloWorldClient, HelloWorldLastRun, HelloWorldSeverity, Credentials, DUMMY_VALID_API_KEY
+from CommonServerPython import DemistoException, Common
+from HelloWorldV2 import (
+    BASE_CONTEXT_OUTPUT_PREFIX,
+    HelloWorldParams,
+    HelloWorldClient,
+    HelloWorldLastRun,
+    HelloWorldSeverity,
+    Credentials,
+    DUMMY_VALID_API_KEY,
+)
 
 
 # ========== Credentials Model Tests ==========
@@ -100,9 +108,8 @@ class TestCredentials:
         """
         from HelloWorldV2 import Credentials
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="password"):
             Credentials()  # type: ignore[call-arg]
-        assert "password" in str(exc_info.value).lower()
 
 
 # ========== HelloWorldParams Model Tests ==========
@@ -141,7 +148,7 @@ class TestHelloWorldParams:
         [
             pytest.param(10, 10, id="Within limit"),
             pytest.param(50, 50, id="At limit"),
-            pytest.param(100, 50, id="Exceeds limit capped"),
+            pytest.param(300, 200, id="Exceeds limit capped"),
         ],
     )
     def test_params_max_fetch_capping(self, max_fetch, expected):
@@ -199,8 +206,7 @@ class TestHelloWorldParams:
         assert params.insecure is False
         assert params.proxy is False
         assert params.max_fetch == 10
-        assert params.severity == HelloWorldSeverity.LOW
-        assert params.first_fetch == "3 days"
+        assert params.severity == HelloWorldSeverity.HIGH
         assert params.threshold_ip == 65
 
     def test_params_missing_url(self):
@@ -214,9 +220,8 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="url"):
             HelloWorldParams(credentials={"password": "secret"})  # type: ignore[call-arg]
-        assert "url" in str(exc_info.value).lower()
 
     def test_params_missing_credentials(self):
         """
@@ -229,9 +234,8 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="credentials"):
             HelloWorldParams(url="https://api.example.com")  # type: ignore[call-arg,arg-type]
-        assert "credentials" in str(exc_info.value).lower()
 
     def test_params_invalid_url(self):
         """
@@ -244,12 +248,11 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="url"):
             HelloWorldParams(
                 url="not-a-valid-url",  # type: ignore[arg-type]
                 credentials={"password": "secret"},  # type: ignore[arg-type]
             )
-        assert "url" in str(exc_info.value).lower()
 
 
 # ========== HelloworldSayHelloArgs Model Tests ==========
@@ -290,9 +293,8 @@ class TestHelloworldSayHelloArgs:
         """
         from HelloWorldV2 import HelloworldSayHelloArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="name"):
             HelloworldSayHelloArgs()  # type: ignore[call-arg]
-        assert "name" in str(exc_info.value).lower()
 
 
 # ========== HelloworldAlertListArgs Model Tests ==========
@@ -339,9 +341,8 @@ class TestHelloworldAlertListArgs:
         """
         from HelloWorldV2 import HelloworldAlertListArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="Either 'alert_id' or 'severity' arguments need to be provided."):
             HelloworldAlertListArgs(alert_id=alert_id, severity=severity)
-        assert "either" in str(exc_info.value).lower()
 
 
 # ========== HelloworldAlertNoteCreateArgs Model Tests ==========
@@ -390,9 +391,8 @@ class TestHelloworldAlertNoteCreateArgs:
         """
         from HelloWorldV2 import HelloworldAlertNoteCreateArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="Please provide a valid 'alert_id' argument"):
             HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text="Test note")
-        assert "positive" in str(exc_info.value).lower()
 
     def test_alert_note_create_args_missing_note_text(self):
         """
@@ -405,9 +405,8 @@ class TestHelloworldAlertNoteCreateArgs:
         """
         from HelloWorldV2 import HelloworldAlertNoteCreateArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="note_text"):
             HelloworldAlertNoteCreateArgs(alert_id=1)  # type: ignore[call-arg]
-        assert "note_text" in str(exc_info.value).lower()
 
 
 # ========== HelloWorldGetEventsArgs Model Tests ==========
@@ -417,12 +416,12 @@ class TestHelloWorldGetEventsArgs:
     @pytest.mark.parametrize(
         "limit,should_push_events",
         [
-            pytest.param(None, False, id="Defaults"),
+            pytest.param(10, False, id="Defaults"),
             pytest.param(100, True, id="With limit and push"),
             pytest.param(50, False, id="With limit no push"),
         ],
     )
-    def test_get_events_args_valid(self, limit, should_push_events):
+    def test_get_events_args_valid(self, mocker: MockerFixture, limit: int, should_push_events: bool):
         """
         Given:
             - Optional limit and should_push_events values.
@@ -432,8 +431,9 @@ class TestHelloWorldGetEventsArgs:
             - Assert model is created successfully with correct values.
         """
         from HelloWorldV2 import HelloWorldGetEventsArgs
+        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
 
-        args = HelloWorldGetEventsArgs(limit=limit, should_push_events=should_push_events)
+        args = HelloWorldGetEventsArgs(limit=limit, severity=HelloWorldSeverity.HIGH, should_push_events=should_push_events)
         assert args.limit == limit
         assert args.should_push_events == should_push_events
 
@@ -445,8 +445,7 @@ class TestHelloWorldJobSubmitArgs:
     @pytest.mark.parametrize(
         "interval,timeout",
         [
-            pytest.param(None, None, id="Defaults"),
-            pytest.param(60, 600, id="Custom values"),
+            pytest.param(30, 600, id="Defaults"),
             pytest.param("30", "300", id="String numbers"),
         ],
     )
@@ -504,9 +503,8 @@ class TestHelloWorldJobPollArgs:
         """
         from HelloWorldV2 import HelloWorldJobPollArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="job_id"):
             HelloWorldJobPollArgs()  # type: ignore[call-arg]
-        assert "job_id" in str(exc_info.value).lower()
 
 
 # ========== IpArgs Model Tests ==========
@@ -553,9 +551,8 @@ class TestIpArgs:
         """
         from HelloWorldV2 import IpArgs
 
-        with pytest.raises(DemistoException) as exc_info:
+        with pytest.raises(DemistoException, match="ip"):
             IpArgs()  # type: ignore[call-arg]
-        assert "ip" in str(exc_info.value).lower()
 
     def test_ip_args_all_invalid_ips(self, mocker):
         """
@@ -572,9 +569,8 @@ class TestIpArgs:
         mocker.patch("HelloWorldV2.demisto.error")
 
         args = IpArgs(ip=["not-an-ip", "also-invalid"])
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(ValueError):
             _ = args.ips
-
 
 
 @pytest.mark.parametrize(
@@ -702,9 +698,353 @@ def test_say_hello_command(mocker: MockerFixture, name: str):
     # Assertions
     assert mock_say_hello.call_count == 1
     assert mock_say_hello.call_args.kwargs == {"name": name}
-    
+
     # Verify CommandResults
     assert result.readable_output == f"## {expected_response}"
-    assert result.outputs == expected_response
-    assert result.outputs_prefix == "hello"
+    assert result.outputs == {"name": name}
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Hello"
 
+
+@pytest.mark.parametrize(
+    "ip,threshold,expected_score,expected_reputation",
+    [
+        pytest.param("8.8.8.8", 65, Common.DBotScore.NONE, 0, id="Bad IP - reputation below threshold/2"),
+        pytest.param("1.1.1.1", 65, Common.DBotScore.SUSPICIOUS, 50, id="Suspicious IP - reputation below threshold"),
+        pytest.param("151.1.1.1", 65, Common.DBotScore.GOOD, 70, id="Good IP - reputation above threshold"),
+        pytest.param("192.168.1.1", 65, Common.DBotScore.NONE, 0, id="Unknown IP - reputation is 0"),
+        pytest.param("10.0.0.1", 30, Common.DBotScore.SUSPICIOUS, 20, id="Custom threshold - suspicious"),
+    ],
+)
+def test_ip_reputation_command(mocker: MockerFixture, ip: str, threshold: int, expected_score: int, expected_reputation: int):
+    """
+    Given:
+        - Valid client, args with different IP addresses and thresholds.
+        - Mock IP reputation data with varying reputation scores.
+    When:
+        - Running ip_reputation_command.
+    Then:
+        - Assert client.get_ip_reputation is called once with the provided IP.
+        - Assert CommandResults is returned with correct DBotScore, IP context, and readable output.
+        - Assert the reputation score is correctly mapped to DBotScore (0-3).
+    """
+    from HelloWorldV2 import ip_reputation_command, IpArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+        threshold_ip=threshold,
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.get_ip_reputation
+    mock_ip_data = {
+        "attributes": {
+            "as_owner": "EMERALD-ONION",
+            "asn": 396507,
+            "continent": "NA",
+            "country": "US",
+            "reputation": expected_reputation,
+            "tags": [],
+        },
+        "id": ip,
+        "links": {"self": f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"},
+        "type": "ip_address",
+    }
+    mock_get_ip_reputation = mocker.patch.object(client, "get_ip_reputation", return_value=mock_ip_data)
+
+    # Create args
+    args = IpArgs(ip=ip, threshold=threshold)
+
+    # Execute command
+    results = ip_reputation_command(client, args, params)
+
+    # Assertions
+    assert mock_get_ip_reputation.call_count == 1
+    assert mock_get_ip_reputation.call_args.args[0] == ip
+
+    # Verify we got a list with one CommandResults
+    assert len(results) == 1
+
+    # Verify outputs
+    assert results[0].outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.IP"
+    assert results[0].outputs_key_field == "ip"
+    assert results[0].outputs["ip"] == ip
+    assert "attributes" not in results[0].outputs  # Should be excluded
+    assert "whois" not in results[0].outputs  # Should be excluded
+
+    # Verify indicator (IP standard context)
+    assert results[0].indicator is not None
+    assert results[0].indicator.ip == ip
+    assert results[0].indicator.dbot_score.score == expected_score
+    assert results[0].indicator.dbot_score.indicator == ip
+    assert results[0].indicator.dbot_score.indicator_type == "ip"
+    assert results[0].indicator.dbot_score.integration_name == "HelloWorld"
+
+    # Verify readable output contains IP data
+    assert ip in results[0].readable_output
+    assert "Attributes" in results[0].readable_output
+
+
+@pytest.mark.parametrize(
+    "ips",
+    [
+        pytest.param(["8.8.8.8", "1.1.1.1"], id="Multiple IPs"),
+        pytest.param(["192.168.1.1", "10.0.0.1", "172.16.0.1"], id="Three IPs"),
+    ],
+)
+def test_ip_reputation_command_multiple_ips(mocker: MockerFixture, ips: list[str]):
+    """
+    Given:
+        - Valid client and args with multiple IP addresses.
+    When:
+        - Running ip_reputation_command.
+    Then:
+        - Assert client.get_ip_reputation is called once for each IP.
+        - Assert a list of CommandResults is returned with one result per IP.
+    """
+    from HelloWorldV2 import ip_reputation_command, IpArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.get_ip_reputation to return different data for each IP
+    def mock_get_reputation(ip: str):
+        return {
+            "attributes": {
+                "as_owner": "TEST",
+                "asn": 12345,
+                "reputation": 50,
+            },
+            "id": ip,
+            "links": {"self": f"https://example.com/{ip}"},
+            "type": "ip_address",
+        }
+
+    mock_get_ip_reputation = mocker.patch.object(client, "get_ip_reputation", side_effect=mock_get_reputation)
+
+    # Create args
+    args = IpArgs(ip=ips)
+
+    # Execute command
+    results = ip_reputation_command(client, args, params)
+
+    # Assertions
+    assert mock_get_ip_reputation.call_count == len(ips)
+    assert len(results) == len(ips)
+
+    # Verify each result corresponds to the correct IP
+    for i, result in enumerate(results):
+        assert result.outputs["ip"] == ips[i]
+        assert result.indicator.ip == ips[i]
+
+
+def test_ip_reputation_command_with_relationships(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args.
+        - Mock IP reputation data with relationship links.
+    When:
+        - Running ip_reputation_command.
+    Then:
+        - Assert EntityRelationship objects are created for related URLs.
+        - Assert relationships are included in CommandResults.
+    """
+    from HelloWorldV2 import ip_reputation_command, IpArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.get_ip_reputation with relationship data
+    ip = "8.8.8.8"
+    related_url = "https://example.com/related"
+    mock_ip_data = {
+        "attributes": {
+            "reputation": 70,
+        },
+        "id": ip,
+        "links": {"self": [related_url]},  # Note: links.self is a list in the test
+        "type": "ip_address",
+    }
+    mocker.patch.object(client, "get_ip_reputation", return_value=mock_ip_data)
+
+    # Create args
+    args = IpArgs(ip=ip)
+
+    # Execute command
+    results = ip_reputation_command(client, args, params)
+
+    # Assertions
+    assert len(results) == 1
+    result = results[0]
+
+    # Verify relationships
+    assert result.relationships is not None
+    assert len(result.relationships) == 1
+    relationship = result.relationships[0]
+    assert relationship._entity_a == ip
+    assert relationship._entity_b == related_url
+    assert relationship._name == "related-to"
+
+
+def test_ip_reputation_command_threshold_override(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args with custom threshold in args.
+        - Params with different default threshold.
+    When:
+        - Running ip_reputation_command.
+    Then:
+        - Assert args threshold is used instead of params threshold.
+        - Assert DBotScore is calculated using args threshold.
+    """
+    from HelloWorldV2 import ip_reputation_command, IpArgs
+
+    # Create params with default threshold
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+        threshold_ip=100,  # High default threshold
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.get_ip_reputation
+    ip = "8.8.8.8"
+    reputation = 40  # Would be good with threshold=100, but suspicious with threshold=50
+    mock_ip_data = {
+        "attributes": {
+            "reputation": reputation,
+        },
+        "id": ip,
+        "links": {"self": ""},
+        "type": "ip_address",
+    }
+    mocker.patch.object(client, "get_ip_reputation", return_value=mock_ip_data)
+
+    # Create args with custom threshold
+    custom_threshold = 50
+    args = IpArgs(ip=ip, threshold=custom_threshold)
+
+    # Execute command
+    results = ip_reputation_command(client, args, params)
+
+    # Assertions
+    result = results[0]
+    # With threshold=50, reputation=40 should be suspicious (score=2)
+    # because 40 < 50 but 40 >= 50/2 (25)
+    assert result.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
+
+
+def test_get_events_command(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for get_events_command.
+    When:
+        - Running get_events_command.
+    Then:
+        - Assert get_alert_list is called once with correct parameters.
+        - Assert tableToMarkdown is called with correct args/kwargs.
+        - Assert CommandResults is returned with correct readable output.
+    """
+    from HelloWorldV2 import get_events_command, HelloWorldGetEventsArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alert data
+    mock_events = [
+        {
+            "id": 1,
+            "severity": "high",
+            "user": "test@example.com",
+            "action": "Testing",
+            "date": "2026-01-15T00:00:00",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "high",
+            "user": "admin@example.com",
+            "action": "Review",
+            "date": "2026-01-15T00:01:00",
+            "status": "Error",
+        },
+    ]
+
+    mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", return_value=mock_events)
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
+
+    args = HelloWorldGetEventsArgs(severity=HelloWorldSeverity.HIGH, offset=0, limit=10, should_push_events=False)
+    # Execute command
+    get_events_command(client, args)
+
+    # Assertions
+    assert mock_get_alert_list.call_count == 1
+    # Verify the call was made with correct parameters
+    assert mock_get_alert_list.call_args.kwargs == {
+        "client": client,
+        "start_offset": 0,
+        "severity": HelloWorldSeverity.HIGH,
+        "limit": 10,
+        "should_push": False,
+    }
+
+    # Verify tableToMarkdown was called with correct args
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args == ("HelloWorld Events", mock_events)
+
+
+def test_alert_note_create_command(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for alert_note_create_command.
+    When:
+        - Running alert_note_create_command.
+    Then:
+        - Assert client.create_note is called once with correct parameters.
+        - Assert CommandResults is returned with correct outputs and readable output.
+    """
+    from HelloWorldV2 import alert_note_create_command, HelloworldAlertNoteCreateArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock response data
+    alert_id = 123
+    note_text = "This is a test note"
+    mock_response = {"status": "success", "msg": f"Note was created for alert #{alert_id} successfully with comment: {note_text}"}
+
+    # Mock client.create_note
+    mock_create_note = mocker.patch.object(client, "create_note", return_value=mock_response)
+
+    # Create args
+    args = HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text=note_text)
+
+    # Execute command
+    result = alert_note_create_command(client, args)
+
+    # Assertions
+    assert mock_create_note.call_count == 1
+    assert mock_create_note.call_args.kwargs == {"alert_id": alert_id, "comment": note_text}
+
+    # Verify CommandResults
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Note"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.readable_output == "Note was created successfully."

@@ -1,3 +1,4 @@
+from collections.abc import Awaitable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from ContentClientApiModule import *  # noqa: F401
@@ -253,7 +254,12 @@ from pydantic import AnyUrl, BaseModel, Field, SecretStr, validator, root_valida
 
 """ CONSTANTS """
 
-MOCK_ALERT = '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
+MOCK_ALERT = (
+    '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
+)
+
+BASE_CONTEXT_OUTPUT_PREFIX = "HelloWorld"  # Context outputs from all commands will have this prefix
+
 
 class PollingDefaults(int, Enum):
     INTERVAL_SECONDS = 30
@@ -275,9 +281,10 @@ SYSTEM = SystemCapabilities()
 
 """ PYDANTIC MODELS """
 
+
 class BaseLastRun(BaseModel):
     """Base class for last_run state management in fetch commands.
-    
+
     INTEGRATION DEVELOPER TIP:
     This class provides a common interface for managing state between fetch executions.
     Subclasses should define specific fields needed to track their fetch progress.
@@ -286,36 +293,39 @@ class BaseLastRun(BaseModel):
 
     def set(self):
         """Save the current state for the next fetch execution.
-        
+
         This method persists the current instance's state using `demisto.setLastRun()`,
         making it available for the next time the fetch command is invoked.
         """
         demisto.setLastRun(dict(self))
 
+
 class HelloWorldLastRun(BaseLastRun):
     """State management for fetch-incidents command.
-    
+
     Tracks the progress of incident fetching to ensure no incidents are missed or duplicated
     between fetch executions.
-    
+
     Attributes:
         id_offset (int): The ID of the last fetched alert to use for offsetting.
     """
+
     id_offset: int = 0
 
 
 class ContentBaseModel(BaseModel):
     """Base Pydantic model with user-friendly validation error formatting.
-    
+
     INTEGRATION DEVELOPER TIP:
     This base class enhances Pydantic's default validation by:
     1. Catching ValidationError exceptions
     2. Formatting them in a user-friendly way
     3. Raising `DemistoException` with clear error messages
-    
+
     All parameter and argument models should inherit from this class to provide
     consistent, readable error messages to users when validation fails.
     """
+
     def __init__(self, **data):
         try:
             super().__init__(**data)
@@ -336,23 +346,24 @@ class ContentBaseModel(BaseModel):
 
 class BaseParams(ContentBaseModel):
     """Base class for integration parameters with common connection settings.
-    
+
     INTEGRATION DEVELOPER TIP:
     This class provides common parameters that most integrations need:
     - insecure: Whether to skip SSL certificate verification
     - proxy: Whether to use system proxy settings
     - verify: Computed property that returns the inverse of insecure
-    
+
     Your integration's parameter class should inherit from this to get these
     common settings automatically.
     """
+
     insecure: bool = False
     proxy: bool = False
 
     @property
     def verify(self):
         """Return SSL verification setting (inverse of insecure).
-        
+
         Returns:
             bool: True if SSL certificates should be verified, False otherwise.
         """
@@ -360,14 +371,14 @@ class BaseParams(ContentBaseModel):
 
 
 class IntegrationReliability(Enum):
-    A_PLUS_PLUS = 'A++ - Reputation script'
-    A_PLUS = 'A+ - 3rd party enrichment'
-    A = 'A - Completely reliable'
-    B = 'B - Usually reliable'
-    C = 'C - Fairly reliable'
-    D = 'D - Not usually reliable'
-    E = 'E - Unreliable'
-    F = 'F - Reliability cannot be judged'
+    A_PLUS_PLUS = "A++ - Reputation script"
+    A_PLUS = "A+ - 3rd party enrichment"
+    A = "A - Completely reliable"
+    B = "B - Usually reliable"
+    C = "C - Fairly reliable"
+    D = "D - Not usually reliable"
+    E = "E - Unreliable"
+    F = "F - Reliability cannot be judged"
 
 
 class HelloWorldSeverity(str, Enum):
@@ -388,7 +399,7 @@ class HelloWorldSeverity(str, Enum):
 
         Args:
             raw_severity (str): Severity as returned from the HelloWorld API.
-        
+
         Returns:
             int: Cortex XSOAR incident severity (0-4).
         """
@@ -420,7 +431,10 @@ class HelloWorldParams(BaseParams):
 
     # Fetch parameters
     is_fetch: bool | None = Field(default=False, alias=("isFetchEvents" if SYSTEM.can_send_events else "isFetch"))
-    max_fetch: int = Field(default=1000 if SYSTEM.can_send_events else 10, alias=("max_events_fetch" if SYSTEM.can_send_events else "max_incidents_fetch"))
+    max_fetch: int = Field(
+        default=1000 if SYSTEM.can_send_events else 10,
+        alias=("max_events_fetch" if SYSTEM.can_send_events else "max_incidents_fetch"),
+    )
     severity: HelloWorldSeverity = HelloWorldSeverity.HIGH
 
     # Advanced parameters
@@ -500,6 +514,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
             raise ValueError("[Args validation] 'should_push_events' is not supported on this tenant.")
         return should_push_events
 
+
 class HelloWorldJobSubmitArgs(ContentBaseModel):
     """Arguments for helloworld-job-submit command."""
 
@@ -546,7 +561,7 @@ class IpArgs(ContentBaseModel):
 
 class ExecutionConfig:
     """Centralized entry point for the integration that holds command, params, args, and last_run.
-    
+
     This class encapsulates all the information needed to execute a command, including:
     - command: The command being executed
     - params: Integration parameters (validated via Pydantic)
@@ -558,7 +573,7 @@ class ExecutionConfig:
         # INTEGRATION DEVELOPER TIP:
         # Centralize all your `demisto` class usages in the `ExecutionConfig`
         # class constructor and create an instance of the class *once* in the
-        # `main` function to avoid redundant system calls. Access the required 
+        # `main` function to avoid redundant system calls. Access the required
         # configurations as validated and type-safe properties.
         self._raw_command: str = demisto.command()
         self._raw_params: dict = demisto.params()
@@ -568,7 +583,7 @@ class ExecutionConfig:
     @property
     def command(self) -> str:
         """Get the current command being executed.
-        
+
         Returns:
             str: The command name (e.g., 'test-module', 'ip', 'fetch-incidents').
         """
@@ -577,7 +592,7 @@ class ExecutionConfig:
     @property
     def params(self) -> HelloWorldParams:
         """Get validated integration parameters.
-        
+
         Returns:
             HelloWorldParams: Validated integration parameters with all configuration settings.
         """
@@ -586,7 +601,7 @@ class ExecutionConfig:
     @property
     def ip_args(self) -> IpArgs:
         """Get validated arguments for the ip command.
-        
+
         Returns:
             IpArgs: Validated arguments containing IP addresses and threshold.
         """
@@ -595,7 +610,7 @@ class ExecutionConfig:
     @property
     def get_events_args(self) -> HelloWorldGetEventsArgs:
         """Get validated arguments for the helloworld-get-events command.
-        
+
         Returns:
             HelloWorldGetEventsArgs: Validated arguments containing limit, severity, start_time, and should_push_events.
         """
@@ -604,7 +619,7 @@ class ExecutionConfig:
     @property
     def alert_list_args(self) -> HelloworldAlertListArgs:
         """Get validated arguments for the helloworld-alert-list command.
-        
+
         Returns:
             HelloworldAlertListArgs: Validated arguments containing alert_id, limit, and severity.
         """
@@ -613,7 +628,7 @@ class ExecutionConfig:
     @property
     def alert_note_create_args(self) -> HelloworldAlertNoteCreateArgs:
         """Get validated arguments for the helloworld-alert-note-create command.
-        
+
         Returns:
             HelloworldAlertNoteCreateArgs: Validated arguments containing alert_id and note_text.
         """
@@ -622,7 +637,7 @@ class ExecutionConfig:
     @property
     def say_hello_args(self) -> HelloworldSayHelloArgs:
         """Get validated arguments for the helloworld-say-hello command.
-        
+
         Returns:
             HelloworldSayHelloArgs: Validated arguments containing name.
         """
@@ -631,7 +646,7 @@ class ExecutionConfig:
     @property
     def job_submit_args(self) -> HelloWorldJobSubmitArgs:
         """Get validated arguments for the helloworld-job-submit command.
-        
+
         Returns:
             HelloWorldJobSubmitArgs: Validated arguments containing polling interval and timeout.
         """
@@ -640,7 +655,7 @@ class ExecutionConfig:
     @property
     def job_poll_args(self) -> HelloWorldJobPollArgs:
         """Get validated arguments for the helloworld-job-poll command.
-        
+
         Returns:
             HelloWorldJobPollArgs: Validated arguments containing job_id, interval, and timeout.
         """
@@ -649,7 +664,7 @@ class ExecutionConfig:
     @property
     def last_run(self) -> HelloWorldLastRun:
         """Get the last_run state for fetch-events command.
-        
+
         Returns:
             HelloWorldLastRun: State from the previous fetch-events execution.
         """
@@ -694,9 +709,9 @@ class HelloWorldClient(ContentClient):
     HelloWorld client that extends `ContentClient` for API interactions.
 
     This client inherits from `ContentClient` to leverage built-in retry logic,
-    rate limit handling, authentication, and thread safety. 
+    rate limit handling, authentication, and thread safety.
     It adds HelloWorld-specific methods for mock / dummy API responses.
-    For real API calls, see the `sync_api_call_example` method.
+    For real API calls, see the `send_example_api_request` method.
     """
 
     def __init__(self, params: HelloWorldParams):
@@ -715,7 +730,7 @@ class HelloWorldClient(ContentClient):
             diagnostic_mode=is_debug_mode(),
         )
 
-    def sync_api_call_example(self, item_id: str | int, params: dict) -> dict:
+    def send_example_api_request(self, item_id: str | int, params: dict) -> dict:
         """Example of calling a real specific API endpoint using ContentClient.
 
         Args:
@@ -733,29 +748,10 @@ class HelloWorldClient(ContentClient):
         # - `self._http_request("GET", url_suffix=endpoint, params=params)`
         return self._http_request("GET", url_suffix=f"/api/endpoint/{item_id}", params=params)
 
-    async def async_api_call_example(self, item_id: str | int, params: dict) -> dict:
-        """Example of calling a real specific API endpoint using ContentClient.
-
-        Args:
-            item_id (str | int): The ID of the item to retrieve.
-            params (dict): Query parameters for the API request.
-
-        Returns:
-            dict: The API response.
-        """
-        # INTEGRATION DEVELOPER TIP:
-        # For real API calls, use the inherited HTTP verb methods, for example:
-        # - `self.get(endpoint, params)` for GET requests
-        # - `self.post(endpoint, json_body)` for POST requests
-        # Alternatively, call the legacy "_http_request" method:
-        # - `self._http_request("GET", url_suffix=endpoint, params=params)`
-        response = await self._request("GET", url_suffix=f"/api/endpoint/{item_id}", params=params)
-        return response.json()
-
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Get IP reputation (dummy response for demonstration purposes).
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             ip (str): IP address to get the reputation for.
@@ -805,10 +801,10 @@ class HelloWorldClient(ContentClient):
 
         return f"Hello {name}"
 
-    async def get_alert_list(self, limit: int, severity: HelloWorldSeverity | None = None, id_offset: int = 0) -> list[dict]:
+    def get_alert_list(self, limit: int, severity: HelloWorldSeverity | None = None, id_offset: int = 0) -> list[dict]:
         """Get a list of alerts (dummy response for demonstration purposes).
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             limit (int): The number of items to generate.
@@ -828,7 +824,7 @@ class HelloWorldClient(ContentClient):
         #   query=f"id>{id_offset}",
         # )
         # return self.get(endpoint, params=params)
-        await asyncio.sleep(1)  # sleep to mimic slow API response
+
         mock_response: list[dict] = []
         for mock_number in range(limit):
             mock_alert_time = datetime(2026, 1, 15) + timedelta(milliseconds=id_offset + mock_number)
@@ -850,7 +846,7 @@ class HelloWorldClient(ContentClient):
     def get_alert(self, alert_id: int) -> dict:
         """Get a specific alert by ID (dummy response for demonstration purposes).
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             alert_id (int): The alert ID to retrieve.
@@ -874,7 +870,7 @@ class HelloWorldClient(ContentClient):
     def create_note(self, alert_id: int, comment: str) -> dict:
         """Create a new note in an alert.
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             alert_id (int): The alert ID to add a note to.
@@ -894,7 +890,7 @@ class HelloWorldClient(ContentClient):
     def submit_job(self) -> dict[str, str]:
         """Submit a new job to the API.
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Returns:
             dict[str, str]: The summary of the newly created job.
@@ -908,7 +904,7 @@ class HelloWorldClient(ContentClient):
     def get_job_status(self, job_id: str) -> dict[str, str]:
         """Get the status of a job.
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             job_id (str): The job ID to check status for.
@@ -925,7 +921,7 @@ class HelloWorldClient(ContentClient):
     def get_job_result(self, job_id: str) -> dict[str, str]:
         """Get the finished result of a job.
 
-        For real API calls, see the `sync_api_call_example` method.
+        For real API calls, see the `send_example_api_request` method.
 
         Args:
             job_id (str): The job ID to get results for.
@@ -1003,7 +999,13 @@ def format_as_events(
     return events
 
 
-async def get_alert_list( client: HelloWorldClient, start_offset: int, severity: HelloWorldSeverity, limit: int) -> list[dict]:
+async def get_alert_list(
+    client: HelloWorldClient,
+    start_offset: int,
+    severity: HelloWorldSeverity,
+    limit: int,
+    should_push: bool,
+) -> list[dict]:
     """Fetch audit events from the API in batches and optionally send them to XSIAM.
 
     INTEGRATION DEVELOPER TIP:
@@ -1013,31 +1015,51 @@ async def get_alert_list( client: HelloWorldClient, start_offset: int, severity:
 
     Args:
         client (HelloWorldClient): HelloWorld client instance for API calls.
-        start_time (str): Start time for fetching events.
+        start_offset (int): Start time for fetching events.
         limit (int): Maximum total number of events to fetch.
-        last_fetched_ids (list | None): List of previously fetched event IDs for deduplication.
-        should_push_events (bool): Whether to send events to XSIAM as they're fetched.
+        push_events (bool): Whether to create incidents (XSOAR) or events (XSIAM).
 
     Returns:
         list[dict]: List of all events fetched.
     """
-    all_alerts = []
-    demisto.debug(f"[Get audit events] Starting with {start_offset=} and {limit=}.")
+    demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_offset=}, and {limit=}.")
 
-    # Fetch events from API (this happens concurrently with the previous push)
-    alerts_tasks = [
-        client.get_alert_list(limit=500, id_offset=offset, severity=severity)
-        for offset in range(start_offset, start_offset + limit, 500)
-    ]
+    all_alerts: list[dict] = []
+    async_push_tasks: list[Awaitable] = []
+    offset: int = start_offset
 
-    alerts_batches = await asyncio.gather(*alerts_tasks)
-
-    for alerts_batch in alerts_batches:
-        # Add to all events
+    while len(all_alerts) < limit:
+        remaining_alerts_count = limit - len(all_alerts)
+        batch_limit = min(500, remaining_alerts_count)
+        demisto.debug(f"[Get alert list] Request alerts batch using {offset=} and {batch_limit=}.")
+        alerts_batch = client.get_alert_list(limit=batch_limit, id_offset=offset, severity=severity)
         all_alerts.extend(alerts_batch)
-        demisto.debug(f"[Get audit events] Fetched {len(alerts_batch)} new alerts. Total: {len(all_alerts)}.")
+        offset += len(alerts_batch)
 
-    demisto.debug(f"[Get audit events] Finished. Fetched {len(all_alerts)} total events.")
+        if should_push:
+            if SYSTEM.can_send_events:
+                demisto.debug(
+                    f"[Get alert list] Creating asynchronous XSIAM events sending from {len(alerts_batch)} alerts batch."
+                )
+                async_push_tasks.append(asyncio.to_thread(create_events, alerts_batch))
+            else:
+                demisto.debug(
+                    f"[Get alert list] Calling synchronous XSOAR incidents creation flow from {len(alerts_batch)} alerts batch."
+                )
+                create_incidents(alerts_batch)
+
+        # If the number of returned alerts is less than the requested batch limit, no more new alerts are available for fetching
+        if len(alerts_batch) < batch_limit:
+            demisto.debug(f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking...")
+            break
+
+    if async_push_tasks:
+        demisto.debug(f"[Get alert list] Awaiting XSIAM events sending to finish for all {len(all_alerts)} alerts.")
+        await asyncio.gather(*async_push_tasks)
+
+    demisto.debug(
+        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, {start_offset=}, and {limit=}."
+    )
     return all_alerts
 
 
@@ -1107,7 +1129,7 @@ def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
         demisto.debug("[Testing] API connectivity test passed")
 
         if params.is_fetch:
-            demisto.debug(f"[Testing] Testing fetch flow.")
+            demisto.debug("[Testing] Testing fetch flow.")
             fetch_alerts(client=client, max_fetch=1, last_run=HelloWorldLastRun(), severity=params.severity)
             demisto.debug("[Testing] Fetch flow test passed")
 
@@ -1132,7 +1154,7 @@ def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) ->
     """
 
     # INTEGRATION DEVELOPER TIP
-    # In this case 'name' is an argument set in the HelloWorld.yml file as mandatory,
+    # In this case 'name' is an argument set in the HelloWorldV2.yml file as mandatory,
     # so Pydantic will validate it's present before the function is called.
     # The validation happens automatically when HelloworldSayHelloArgs is instantiated.
 
@@ -1151,7 +1173,12 @@ def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) ->
     # markdown here, so the argument `readable_output` is explicit. If not
     # passed, `CommandResults`` will do a `tableToMarkdown()` do the data
     # to generate the readable output.
-    return CommandResults(readable_output=readable_output, outputs_prefix="hello", outputs_key_field="", outputs=result)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Hello",
+        outputs_key_field="name",
+        outputs={"name": args.name},
+    )
 
 
 def fetch_alerts(
@@ -1174,14 +1201,15 @@ def fetch_alerts(
     last_id_offset = last_run.id_offset
     demisto.debug(f"[Fetch] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
 
-    alerts = asyncio.run(get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch))
+    alerts = asyncio.run(
+        get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch, should_push=True)
+    )
     if not alerts:
         demisto.debug(f"[Fetch] No new alerts found. Keeping {last_id_offset=}.")
         return last_run
 
     next_id_offset = alerts[-1]["id"]
     next_run = HelloWorldLastRun(id_offset=next_id_offset)
-    create_events(alerts) if SYSTEM.can_send_events else create_incidents(alerts)
 
     demisto.debug(f"[Fetch] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
     return next_run
@@ -1308,7 +1336,7 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
             CommandResults(
                 readable_output=readable_output,
                 raw_response=ip_data,
-                outputs_prefix="HelloWorld.IP",
+                outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.IP",
                 outputs_key_field="ip",
                 outputs=ip_data_outputs,
                 indicator=ip_standard_context,
@@ -1346,7 +1374,10 @@ def alert_list_command(client: HelloWorldClient, args: HelloworldAlertListArgs) 
     demisto.debug(f"[Alerts list] Fetched {len(full_res)} alerts")
     readable_output = tableToMarkdown("Items List (Sample Data)", full_res)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="HelloWorld.Alert", outputs_key_field="id", outputs=full_res
+        readable_output=readable_output,
+        outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Alert",
+        outputs_key_field="id",
+        outputs=full_res,
     )
 
 
@@ -1366,7 +1397,11 @@ def get_events_command(client: HelloWorldClient, args: HelloWorldGetEventsArgs) 
     demisto.debug(f"[Get events] Getting events {args.severity=}, {args.offset=}, and {args.limit=}.")
 
     # Fetch events using the simplified approach
-    events = asyncio.run(get_alert_list(client=client, limit=args.limit, start_offset=args.offset, severity=args.severity))
+    events = asyncio.run(
+        get_alert_list(
+            client=client, limit=args.limit, start_offset=args.offset, severity=args.severity, should_push=args.should_push_events
+        )
+    )
 
     demisto.debug(f"[Get events] Fetched {len(events)} events")
     return CommandResults(readable_output=tableToMarkdown("HelloWorld Events", events))
@@ -1390,7 +1425,7 @@ def alert_note_create_command(client: HelloWorldClient, args: HelloworldAlertNot
     demisto.debug(f"[Create note] Successfully created note for {args.alert_id=}")
     return CommandResults(
         readable_output="Note was created successfully.",
-        outputs_prefix="HelloWorld.Note",
+        outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Note",
         outputs_key_field="id",
         outputs=res_data,
     )
@@ -1433,7 +1468,7 @@ def job_submit_command(client: HelloWorldClient, args: HelloWorldJobSubmitArgs) 
 
     return CommandResults(
         readable_output=readable,
-        outputs_prefix="HelloWorld.Job",
+        outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Job",
         outputs_key_field="id",
         outputs=job_data,
         scheduled_command=ScheduledCommand(
@@ -1495,7 +1530,7 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
 
         final_results = CommandResults(
             readable_output=readable,
-            outputs_prefix="HelloWorld.Job",
+            outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Job",
             outputs_key_field="id",
             outputs=job_result,
         )
@@ -1511,11 +1546,11 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
     # Job is still running - continue polling
     else:
         demisto.debug(f"[Job polling] Job still running {job_id=} {status=}, scheduling next poll in {polling_interval}s")
-        
+
         readable = f"Scheduling next check in {polling_interval} seconds for {job_id=}."
         status_update = CommandResults(
             readable_output=readable,
-            outputs_prefix="HelloWorld.Job",
+            outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Job",
             outputs_key_field="id",
             outputs={"id": job_id, "status": status},
         )
@@ -1527,11 +1562,13 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
             partial_result=status_update,
         )
 
+
 """ MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
     """Parse and validate configuration parameters and command arguments, then run commands."""
+    support_multithreading()
     execution = ExecutionConfig()
     params = execution.params
     command = execution.command
@@ -1566,7 +1603,7 @@ def main() -> None:  # pragma: no cover
                 # Save next_run for the next time fetch is invoked
                 next_run.set()
                 demisto.debug("[Main] fetch completed")
-            
+
             case "fetch-assets":
                 pass
 
