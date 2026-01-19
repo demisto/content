@@ -136,8 +136,8 @@ def add_keys_to_events(events: list[dict[str, Any]] | None, instance_url: str):
         events (list): The events to add the fields key to.
         instance_url (str): The base URL of the SentinelOne instance (e.g., 'https://your-instance.sentinelone.net').
     """
-    instance_url = instance_url.rstrip('/')
-    
+    instance_url = instance_url.rstrip("/")
+
     for event in events or []:
         if alert_info := event.get("alertInfo"):
             event["_time"] = alert_info.get("updatedAt")
