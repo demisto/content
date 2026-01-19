@@ -6865,3 +6865,295 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
+
+
+def test_lambda_get_function_command_success(mocker):
+    """
+    Test Lambda.get_function_command with successful response.
+
+    Given: Valid function_name, region, and account_id
+    When: get_function_command is called
+    Then: Should return CommandResults with proper outputs and readable output
+    """
+    from AWS import Lambda
+
+    # Mock client
+    mock_client = mocker.Mock()
+
+    # Mock response from AWS
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Configuration": {
+            "FunctionName": "test-function",
+            "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:test-function",
+            "Runtime": "python3.9",
+            "Role": "arn:aws:iam::123456789012:role/lambda-role",
+            "Handler": "index.handler",
+            "CodeSize": 1024,
+            "Description": "Test function",
+            "Timeout": 30,
+            "MemorySize": 128,
+            "LastModified": "2024-01-01T00:00:00.000+0000",
+            "CodeSha256": "abc123",
+            "Version": "$LATEST",
+        },
+        "Code": {
+            "RepositoryType": "S3",
+            "Location": "https://awslambda-us-east-1-tasks.s3.us-east-1.amazonaws.com/snapshots/123456789012/test-function",
+        },
+        "Tags": {"Environment": "test"},
+        "Concurrency": {"ReservedConcurrentExecutions": 10},
+    }
+
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "test-function", "region": "us-east-1", "account_id": "123456789012"}
+
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Verify the client was called correctly
+    mock_client.get_function.assert_called_once_with(FunctionName="test-function")
+
+    # Verify CommandResults structure
+    assert result.outputs_prefix == "AWS.Lambda.Functions"
+    assert result.outputs_key_field == "FunctionArn"
+    assert result.outputs["Region"] == "us-east-1"
+    assert result.outputs["Configuration"]["FunctionName"] == "test-function"
+    assert "AWS Lambda Function" in result.readable_output
+
+
+def test_lambda_get_function_command_with_qualifier(mocker):
+    """
+    Test Lambda.get_function_command with qualifier parameter.
+
+    Given: Valid function_name with qualifier (version or alias)
+    When: get_function_command is called with qualifier
+    Then: Should pass qualifier to AWS API call
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Configuration": {
+            "FunctionName": "test-function",
+            "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:test-function:v1",
+            "Runtime": "python3.9",
+            "Version": "1",
+        },
+        "Code": {"RepositoryType": "S3", "Location": "https://example.com"},
+    }
+
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "test-function", "qualifier": "v1", "region": "us-east-1", "account_id": "123456789012"}
+
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Verify qualifier was passed to API
+    mock_client.get_function.assert_called_once_with(FunctionName="test-function", Qualifier="v1")
+    assert result.outputs["Configuration"]["Version"] == "1"
+
+
+def test_lambda_get_function_command_outputs_structure(mocker):
+    """
+    Test Lambda.get_function_command outputs structure includes all expected fields.
+
+    Given: Complete AWS Lambda get_function response
+    When: get_function_command processes the response
+    Then: Should include Configuration, Code, Tags, Concurrency, and Region in outputs
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Configuration": {
+            "FunctionName": "test-function",
+            "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:test-function",
+            "Runtime": "python3.9",
+        },
+        "Code": {"RepositoryType": "S3", "Location": "https://example.com/function.zip"},
+        "Tags": {"Project": "TestProject", "Environment": "Production"},
+        "Concurrency": {"ReservedConcurrentExecutions": 5},
+    }
+
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "test-function", "region": "us-west-2", "account_id": "123456789012"}
+
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Verify all major sections are present in outputs
+    assert "Configuration" in result.outputs
+    assert "Code" in result.outputs
+    assert "Tags" in result.outputs
+    assert "Concurrency" in result.outputs
+    assert result.outputs["Region"] == "us-west-2"
+
+
+def test_lambda_get_function_command_readable_output_format(mocker):
+    """
+    Test Lambda.get_function_command readable output formatting.
+
+    Given: AWS Lambda function response
+    When: get_function_command creates readable output
+    Then: Should format as markdown table with key function details
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Configuration": {
+            "FunctionName": "my-function",
+            "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:my-function",
+            "Runtime": "nodejs18.x",
+        },
+        "Code": {"RepositoryType": "S3"},
+    }
+
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "my-function", "region": "eu-west-1", "account_id": "123456789012"}
+
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Verify readable output contains expected information
+    assert "my-function" in result.readable_output
+    assert "arn:aws:lambda:eu-west-1:123456789012:function:my-function" in result.readable_output
+    assert "nodejs18.x" in result.readable_output
+    assert "eu-west-1" in result.readable_output
+
+
+def test_lambda_list_functions_command_success(mocker):
+    """
+    Test Lambda.list_functions_command with successful response.
+
+    Given: Valid region and account_id
+    When: list_functions_command is called
+    Then: Should return CommandResults with list of functions
+    """
+    from AWS import Lambda
+
+    # Mock client and paginator
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+
+    # Mock paginated response
+    mock_pages = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Functions": [
+                {
+                    "FunctionName": "function1",
+                    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function1",
+                    "Runtime": "python3.9",
+                    "LastModified": "2024-01-01T00:00:00.000+0000",
+                },
+                {
+                    "FunctionName": "function2",
+                    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function2",
+                    "Runtime": "nodejs18.x",
+                    "LastModified": "2024-01-02T00:00:00.000+0000",
+                },
+            ],
+        }
+    ]
+
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+
+    args = {"region": "us-east-1", "account_id": "123456789012"}
+
+    result = Lambda.list_functions_command(mock_client, args)
+
+    # Verify paginator was used
+    mock_client.get_paginator.assert_called_once_with("list_functions")
+    mock_paginator.paginate.assert_called_once()
+
+    # Verify CommandResults structure
+    assert result.outputs_prefix == "AWS.Lambda.Functions"
+    assert result.outputs_key_field == "FunctionArn"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["FunctionName"] == "function1"
+    assert result.outputs[0]["Region"] == "us-east-1"
+    assert result.outputs[1]["FunctionName"] == "function2"
+    assert "function1" in result.readable_output
+    assert "function2" in result.readable_output
+
+
+def test_lambda_list_functions_command_no_functions(mocker):
+    """
+    Test Lambda.list_functions_command when no functions exist.
+
+    Given: Empty functions list from AWS
+    When: list_functions_command is called
+    Then: Should return message indicating no functions found
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+
+    mock_pages = [{"ResponseMetadata": {"HTTPStatusCode": 200}, "Functions": []}]
+
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+
+    args = {"region": "us-west-2", "account_id": "123456789012"}
+
+    result = Lambda.list_functions_command(mock_client, args)
+
+    assert "No Lambda functions found" in result.readable_output
+
+
+def test_lambda_list_functions_command_multiple_pages(mocker):
+    """
+    Test Lambda.list_functions_command with multiple pages of results.
+
+    Given: Multiple pages of functions from paginator
+    When: list_functions_command is called
+    Then: Should aggregate all functions from all pages
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+
+    # Mock multiple pages
+    mock_pages = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Functions": [
+                {
+                    "FunctionName": "func1",
+                    "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:func1",
+                    "Runtime": "python3.11",
+                }
+            ],
+        },
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Functions": [
+                {
+                    "FunctionName": "func2",
+                    "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:func2",
+                    "Runtime": "java17",
+                }
+            ],
+        },
+    ]
+
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+
+    args = {"region": "eu-west-1", "account_id": "123456789012"}
+
+    result = Lambda.list_functions_command(mock_client, args)
+
+    # Verify all functions from all pages are included
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["FunctionName"] == "func1"
+    assert result.outputs[1]["FunctionName"] == "func2"
+    assert all(func["Region"] == "eu-west-1" for func in result.outputs)

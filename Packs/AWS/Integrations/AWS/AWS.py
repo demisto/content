@@ -3911,6 +3911,133 @@ class Lambda:
             raw_response=response,
         )
 
+    @staticmethod
+    def get_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves information about a Lambda function including configuration, code location, and metadata.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): Version or alias to retrieve
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing function configuration, code location, tags, and concurrency settings
+        """
+        # Build API parameters
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Getting Lambda function with parameters: {kwargs}")
+
+        try:
+            response = client.get_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            response = serialize_response_with_datetime_encoding(response)
+
+            # Add region to response
+            response["Region"] = args.get("region")
+
+            # Extract configuration for readable output
+            func_config = response.get("Configuration", {})
+            readable_data = {
+                "FunctionName": func_config.get("FunctionName"),
+                "FunctionArn": func_config.get("FunctionArn"),
+                "Runtime": func_config.get("Runtime"),
+                "Region": args.get("region"),
+            }
+
+            human_readable = tableToMarkdown("AWS Lambda Function", readable_data)
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Functions",
+                outputs_key_field="FunctionArn",
+                outputs=response,
+                readable_output=human_readable,
+                raw_response=response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+            return None
+        except Exception as e:
+            raise DemistoException(f"Error retrieving Lambda function: {str(e)}")
+
+    @staticmethod
+    def list_functions_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists Lambda functions in the specified region.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of Lambda functions with their configurations
+        """
+        print_debug_logs(client, "Listing Lambda functions")
+
+        try:
+            # Use paginator to handle large numbers of functions
+            paginator = client.get_paginator("list_functions")
+
+            all_functions = []
+            for page in paginator.paginate():
+                if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(page, args.get("account_id"))
+
+                all_functions.extend(page.get("Functions", []))
+
+            if not all_functions:
+                return CommandResults(readable_output="No Lambda functions found.")
+
+            # Serialize response with datetime encoding
+            serialized_functions = serialize_response_with_datetime_encoding({"Functions": all_functions})
+            functions_list = serialized_functions.get("Functions", [])
+
+            # Add region to each function
+            for func in functions_list:
+                func["Region"] = args.get("region")
+
+            # Prepare readable output
+            readable_data = []
+            for func in functions_list:
+                readable_data.append(
+                    {
+                        "FunctionName": func.get("FunctionName"),
+                        "FunctionArn": func.get("FunctionArn"),
+                        "Runtime": func.get("Runtime"),
+                        "LastModified": func.get("LastModified"),
+                        "Region": args.get("region"),
+                    }
+                )
+
+            human_readable = tableToMarkdown("AWS Lambda Functions", readable_data)
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Functions",
+                outputs_key_field="FunctionArn",
+                outputs=functions_list,
+                readable_output=human_readable,
+                raw_response=functions_list,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+            return None
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda functions: {str(e)}")
+
 
 class ACM:
     service = AWSServices.ACM
@@ -4050,6 +4177,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-get": Lambda.get_function_command,
+    "aws-lambda-functions-list": Lambda.list_functions_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
@@ -4127,6 +4256,8 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "lambda:GetFunction",
+    "lambda:ListFunctions",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
