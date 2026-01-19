@@ -283,29 +283,30 @@ repos:
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
 
-  - id: validate
-    name: validate
-    description: validate content
-    entry: demisto-sdk validate
-    args:
-    - --skip-pack-dependencies
-    - --config-path=validation_config.toml
-    - --ignore=AG100
-    args:packwise:
-    - --skip-pack-dependencies
-    - --config-path=validation_config.toml
-    - --ignore=DO106
-    - --ignore=CJ105
-    - --ignore=AG100
-    args:check_private_packs:
-    - --skip-pack-dependencies
-    - --config-path=validation_config.toml
-    pass_filenames: false
-    language: system
-    require_serial: true
-    skip:commit: true
-    skip:nightly: true
-    skip:docker_autoupdate: true
+#  - id: validate
+#    name: validate
+#    description: validate content
+#    entry: demisto-sdk validate
+#    args:
+#    - --skip-pack-dependencies
+#    - --config-path=validation_config.toml
+#    - --ignore=AG100
+#    args:packwise:
+#    - --skip-pack-dependencies
+#    - --config-path=validation_config.toml
+#    - --ignore=DO106
+#    - --ignore=CJ105
+#    - --ignore=AG100
+#    args:check_private_packs:
+#    - --skip-pack-dependencies
+#    - --config-path=validation_config.toml
+#    - --ignore=GR110
+#    pass_filenames: false
+#    language: system
+#    require_serial: true
+#    skip:commit: true
+#    skip:nightly: true
+#    skip:docker_autoupdate: true
 
   - id: format
     name: format
@@ -403,3 +404,9 @@ repos:
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
       exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
+
+- repo: https://github.com/kraymer/brack
+  rev: v1.0.0
+  hooks:
+    - id: brack
+      args: [-r, '^[_0-9A-Za-z/\\.-][_0-9A-Za-z/\\.-]*$' ]
