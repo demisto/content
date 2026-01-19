@@ -41,11 +41,11 @@
         "is_array": false
       },
       "isAdmin": {
-        "type": "boolean",
+        "type": "string",
         "is_array": false
       },
       "isNAREnabled": {
-        "type": "boolean",
+        "type": "string",
         "is_array": false
       },
       "lastName": {
@@ -53,11 +53,11 @@
         "is_array": false
       },
       "latitude": {
-        "type": "string",
+        "type": "float",
         "is_array": false
       },
       "longitude": {
-        "type": "string",
+        "type": "float",
         "is_array": false
       },
       "object": {
