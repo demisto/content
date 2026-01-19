@@ -63,6 +63,9 @@ NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
+FETCH_COMMANDS = ('fetch-incidents', 'fetch-credentials', 'fetch-indicators', 'fetch-assets')
+LONG_RUNNING_COMMAND = 'long-running-execution'
+                                                
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -8025,10 +8028,7 @@ def return_error(message, error='', outputs=None):
     """
     is_command = hasattr(demisto, 'command')
     try:
-        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                                 'fetch-credentials',
-                                                                 'long-running-execution',
-                                                                 'fetch-indicators')
+        is_server_handled = is_command and demisto.command() in [*FETCH_COMMANDS, LONG_RUNNING_COMMAND]
     except Exception:
         is_server_handled = False
     message = LOG(message)

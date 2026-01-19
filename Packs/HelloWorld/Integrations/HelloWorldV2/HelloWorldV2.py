@@ -578,7 +578,7 @@ class ExecutionConfig:
         self._raw_command: str = demisto.command()
         self._raw_params: dict = demisto.params()
         self._raw_args: dict = demisto.args()
-        self._raw_last_run: dict = demisto.getLastRun()
+        self._raw_last_run: dict = demisto.getLastRun() if self._raw_command in FETCH_COMMANDS else {}
 
     @property
     def command(self) -> str:
@@ -859,7 +859,7 @@ class HelloWorldClient(ContentClient):
         # endpoint = f"/api/v1/alerts/{alert_id}"
         # return self.get(endpoint)
 
-        item = Templates.MOCK_ALERT.format(
+        item = MOCK_ALERT.format(
             id=alert_id,
             severity=HelloWorldSeverity.LOW.value,
             date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
@@ -935,6 +935,22 @@ class HelloWorldClient(ContentClient):
         # return self.get(endpoint)
         return {"id": job_id, "msg": "The configuration has successfully been updated."}
 
+    def log_optional_diagnostic_report(self) -> None:
+        """Log diagnostic report for troubleshooting if diagnostic mode is enabled."""
+        # INTEGRATION DEVELOPER TIP:
+        # Adding diagnostic logs can help with troubleshooting bugs and common issues (authentication issues)
+
+        if not self._diagnostic_mode:
+            demisto.debug("[Client] Diagnostic mode is disabled. Skipping generating diagnostic report.")
+            return
+
+        try:
+            report = self.get_diagnostic_report()
+            demisto.debug(f"[Client] Diagnostic Report: {json.dumps(report.__dict__, default=str, indent=2)}")
+            self.logger.log_metrics_summary()
+        except Exception as e:
+            demisto.debug(f"Failed to generate diagnostic report: {e}")
+
 
 """ HELPER FUNCTIONS """
 
@@ -1006,21 +1022,21 @@ async def get_alert_list(
     limit: int,
     should_push: bool,
 ) -> list[dict]:
-    """Fetch audit events from the API in batches and optionally send them to XSIAM.
+    """Fetch raw alerts from the API in batches and optionally create XSOAR incidents or XSIAM events.
 
     INTEGRATION DEVELOPER TIP:
-    This function fetches events from the API in batches, handles deduplication,
-    and optionally sends events to XSIAM. It uses asyncio to concurrently fetch
-    the next batch while pushing the previous batch to XSIAM for improved performance.
+    This function fetches events from the API in batches. In when running on XSIAM, it uses asyncio to
+    concurrently fetch the next alerts batch while pushing the formatted events to XSIAM to improve
+    performance and scalability.
 
     Args:
         client (HelloWorldClient): HelloWorld client instance for API calls.
         start_offset (int): Start time for fetching events.
         limit (int): Maximum total number of events to fetch.
-        push_events (bool): Whether to create incidents (XSOAR) or events (XSIAM).
+        should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
 
     Returns:
-        list[dict]: List of all events fetched.
+        list[dict]: List of all raw alerts fetched.
     """
     demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_offset=}, and {limit=}.")
 
@@ -1075,7 +1091,7 @@ def create_events(alerts: list[dict]) -> None:
     demisto.debug(f"[Create events] Formatting and sending {len(alerts)} XSIAM events.")
     events = format_as_events(alerts, time_field="date")
     send_events_to_xsiam(
-        events,
+        events=events,
         vendor=EventsDatasetConfigs.VENDOR.value,
         product=EventsDatasetConfigs.PRODUCT.value,
         client_class=ContentClient,
@@ -1579,7 +1595,7 @@ def main() -> None:  # pragma: no cover
     # level in the integration instance configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug(f"[Main] Executing command: {command}")
+    demisto.debug(f"[Main] Starting to execute {command=}.")
     try:
         client = HelloWorldClient(params)
 
@@ -1604,9 +1620,6 @@ def main() -> None:  # pragma: no cover
                 next_run.set()
                 demisto.debug("[Main] fetch completed")
 
-            case "fetch-assets":
-                pass
-
             case "helloworld-get-events":
                 # Validate command arguments
                 args = execution.get_events_args
@@ -1614,6 +1627,12 @@ def main() -> None:  # pragma: no cover
                 results = get_events_command(client, args)
                 return_results(results)
 
+            case "fetch-assets":
+                pass
+
+            case "helloworld-get-assets":
+                pass
+            
             case "helloworld-alert-list":
                 # Validate command arguments, such as the existence of `alert_id` or `severity`
                 args = execution.alert_list_args
@@ -1650,11 +1669,12 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        # diagnosis = client.diagnose_error(e)
         demisto.error(f"[Main] Failed to execute {command=}: {str(e)}. {traceback.format_exc()}")
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
     finally:
-        pass
+        demisto.debug(f"[Main] Generating diagnostic report after executing {command=}.")
+        client.log_optional_diagnostic_report()
 
 
 """ ENTRY POINT """

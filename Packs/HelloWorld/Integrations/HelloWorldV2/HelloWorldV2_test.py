@@ -54,6 +54,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
+import json
 import pytest
 from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException, Common
@@ -65,7 +66,21 @@ from HelloWorldV2 import (
     HelloWorldSeverity,
     Credentials,
     DUMMY_VALID_API_KEY,
+    ContentClient,
 )
+
+
+def util_load_json(path):
+    """Load JSON test data from file.
+    
+    Args:
+        path (str): Path to JSON file relative to test_data directory.
+        
+    Returns:
+        dict | list: Parsed JSON data.
+    """
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
 # ========== Credentials Model Tests ==========
@@ -737,20 +752,11 @@ def test_ip_reputation_command(mocker: MockerFixture, ip: str, threshold: int, e
     )
     client = HelloWorldClient(params)
 
-    # Mock client.get_ip_reputation
-    mock_ip_data = {
-        "attributes": {
-            "as_owner": "EMERALD-ONION",
-            "asn": 396507,
-            "continent": "NA",
-            "country": "US",
-            "reputation": expected_reputation,
-            "tags": [],
-        },
-        "id": ip,
-        "links": {"self": f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"},
-        "type": "ip_address",
-    }
+    # Load base mock data and update with test-specific values
+    mock_ip_data = util_load_json("test_data/ip_reputation.json")
+    mock_ip_data["attributes"]["reputation"] = expected_reputation
+    mock_ip_data["id"] = ip
+    mock_ip_data["links"]["self"] = f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"
     mock_get_ip_reputation = mocker.patch.object(client, "get_ip_reputation", return_value=mock_ip_data)
 
     # Create args
@@ -863,17 +869,10 @@ def test_ip_reputation_command_with_relationships(mocker: MockerFixture):
     )
     client = HelloWorldClient(params)
 
-    # Mock client.get_ip_reputation with relationship data
+    # Load mock data with relationships
     ip = "8.8.8.8"
     related_url = "https://example.com/related"
-    mock_ip_data = {
-        "attributes": {
-            "reputation": 70,
-        },
-        "id": ip,
-        "links": {"self": [related_url]},  # Note: links.self is a list in the test
-        "type": "ip_address",
-    }
+    mock_ip_data = util_load_json("test_data/ip_reputation_with_relationships.json")
     mocker.patch.object(client, "get_ip_reputation", return_value=mock_ip_data)
 
     # Create args
@@ -963,25 +962,8 @@ def test_get_events_command(mocker: MockerFixture):
     )
     client = HelloWorldClient(params)
 
-    # Mock alert data
-    mock_events = [
-        {
-            "id": 1,
-            "severity": "high",
-            "user": "test@example.com",
-            "action": "Testing",
-            "date": "2026-01-15T00:00:00",
-            "status": "Success",
-        },
-        {
-            "id": 2,
-            "severity": "high",
-            "user": "admin@example.com",
-            "action": "Review",
-            "date": "2026-01-15T00:01:00",
-            "status": "Error",
-        },
-    ]
+    # Load mock alert data
+    mock_events = util_load_json("test_data/alert_events.json")
 
     mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", return_value=mock_events)
     mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
@@ -1025,10 +1007,10 @@ def test_alert_note_create_command(mocker: MockerFixture):
     )
     client = HelloWorldClient(params)
 
-    # Mock response data
+    # Load mock response data
     alert_id = 123
     note_text = "This is a test note"
-    mock_response = {"status": "success", "msg": f"Note was created for alert #{alert_id} successfully with comment: {note_text}"}
+    mock_response = util_load_json("test_data/note_create_response.json")
 
     # Mock client.create_note
     mock_create_note = mocker.patch.object(client, "create_note", return_value=mock_response)
@@ -1048,3 +1030,294 @@ def test_alert_note_create_command(mocker: MockerFixture):
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.readable_output == "Note was created successfully."
+
+
+def test_job_submit_command(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for job_submit_command.
+    When:
+        - Running job_submit_command.
+    Then:
+        - Assert client.submit_job is called once.
+        - Assert CommandResults is returned with correct outputs and ScheduledCommand.
+    """
+    from HelloWorldV2 import job_submit_command, HelloWorldJobSubmitArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Load mock job response
+    mock_job_data = util_load_json("test_data/job_submit_response.json")
+
+    # Mock client.submit_job
+    mock_submit_job = mocker.patch.object(client, "submit_job", return_value=mock_job_data)
+
+    # Create args
+    interval_in_seconds = 30
+    timeout_in_seconds = 600
+    args = HelloWorldJobSubmitArgs(interval_in_seconds=interval_in_seconds, timeout_in_seconds=timeout_in_seconds)
+
+    # Execute command
+    result = job_submit_command(client, args)
+
+    # Assertions
+    assert mock_submit_job.call_count == 1
+
+    # Verify CommandResults
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Job"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_job_data
+    assert "Successfully submitted" in result.readable_output
+    assert "test-job-123" in result.readable_output
+
+    # Verify ScheduledCommand
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "helloworld-job-poll"
+    assert result.scheduled_command._next_run == str(interval_in_seconds)
+    assert result.scheduled_command._timeout == str(timeout_in_seconds)
+    assert result.scheduled_command._args == {
+        "job_id": "test-job-123",
+        "interval_in_seconds": interval_in_seconds,
+        "timeout_in_seconds": timeout_in_seconds,
+    }
+
+
+
+def test_job_poll_command_complete(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for job_poll_command.
+        - Job status is "complete".
+    When:
+        - Running job_poll_command.
+    Then:
+        - Assert client.get_job_status is called once.
+        - Assert client.get_job_result is called once.
+        - Assert PollResult is returned with continue_to_poll=False and final results.
+    """
+    from HelloWorldV2 import job_poll_command, HelloWorldJobPollArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Load mock job status and result
+    job_id = "test-job-123"
+    mock_status_response = util_load_json("test_data/job_status_complete.json")
+    mock_job_result = util_load_json("test_data/job_result.json")
+
+    # Mock client methods
+    mock_get_job_status = mocker.patch.object(client, "get_job_status", return_value=mock_status_response)
+    mock_get_job_result = mocker.patch.object(client, "get_job_result", return_value=mock_job_result)
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
+
+    # Create args
+    args = HelloWorldJobPollArgs(job_id=job_id, interval_in_seconds=30, timeout_in_seconds=600)
+
+    # Execute command
+    result = job_poll_command(args, client)
+
+    # Assertions
+    assert mock_get_job_status.call_count == 1
+    assert mock_get_job_status.call_args.args == (job_id,)
+    assert mock_get_job_result.call_count == 1
+    assert mock_get_job_result.call_args.args == (job_id,)
+
+    # Verify tableToMarkdown was called
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args[0] == f"HelloWorld Job {job_id} - Complete"
+    assert mock_table_to_markdown.call_args.args[1] == mock_job_result
+
+    # Verify PollResult
+    assert result.scheduled_command is None  # No more scheduled commands since polling is complete
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Job"
+    assert result.outputs == mock_job_result
+
+
+def test_job_poll_command_in_progress(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for job_poll_command.
+        - Job status is "running" (not complete).
+    When:
+        - Running job_poll_command.
+    Then:
+        - Assert client.get_job_status is called once.
+        - Assert client.get_job_result is NOT called.
+        - Assert PollResult is returned with continue_to_poll=True and partial results.
+    """
+    from HelloWorldV2 import job_poll_command, HelloWorldJobPollArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Load mock job status (running)
+    job_id = "test-job-456"
+    mock_status_response = util_load_json("test_data/job_status_running.json")
+
+    # Mock client methods
+    mock_get_job_status = mocker.patch.object(client, "get_job_status", return_value=mock_status_response)
+    mock_get_job_result = mocker.patch.object(client, "get_job_result")
+
+    # Create args
+    interval = 30
+    args = HelloWorldJobPollArgs(job_id=job_id, interval_in_seconds=interval, timeout_in_seconds=600)
+
+    # Execute command
+    result = job_poll_command(args, client)
+
+    # Assertions
+    assert mock_get_job_status.call_count == 1
+    assert mock_get_job_status.call_args.args[0] == job_id
+    assert mock_get_job_result.call_count == 0  # Should NOT be called when job is not complete
+
+    # Verify No Command Results returned
+    assert result is None
+
+
+
+
+@pytest.mark.parametrize(
+    "alert_id,severity,limit,expected_method",
+    [
+        pytest.param(123, None, 10, "get_alert", id="With alert_id"),
+        pytest.param(None, HelloWorldSeverity.HIGH, 10, "get_alert_list", id="With severity"),
+    ],
+)
+def test_alert_list_command(mocker: MockerFixture, alert_id: int | None, severity: HelloWorldSeverity | None, limit: int, expected_method: str):
+    """
+    Given:
+        - Valid client and args with either alert_id or severity.
+    When:
+        - Running alert_list_command.
+    Then:
+        - Assert correct client method is called (get_alert for alert_id, get_alert_list for severity).
+        - Assert tableToMarkdown is called with correct args.
+        - Assert CommandResults is returned with correct outputs.
+    """
+    from HelloWorldV2 import alert_list_command, HelloworldAlertListArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alert data
+    mock_alert = {
+        "id": alert_id or 1,
+        "severity": severity.value if severity else "high",
+        "user": "test@example.com",
+        "action": "Testing",
+        "date": "2026-01-15T00:00:00",
+        "status": "Success",
+    }
+
+    # Mock the appropriate client method
+    if expected_method == "get_alert":
+        mock_get_alert = mocker.patch.object(client, "get_alert", return_value=mock_alert)
+        mock_get_alert_list = mocker.patch.object(client, "get_alert_list")
+    else:  # get_alert_list
+        mock_get_alert = mocker.patch.object(client, "get_alert")
+        mock_get_alert_list = mocker.patch.object(client, "get_alert_list", return_value=[mock_alert])
+
+    # Mock tableToMarkdown
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
+
+    # Create args
+    args = HelloworldAlertListArgs(alert_id=alert_id, severity=severity, limit=limit)
+
+    # Execute command
+    result = alert_list_command(client, args)
+
+    # Assertions - verify correct method was called
+    if expected_method == "get_alert":
+        assert mock_get_alert.call_count == 1
+        assert mock_get_alert.call_args.args == (alert_id,)
+        assert mock_get_alert_list.call_count == 0
+    else:  # get_alert_list
+        assert mock_get_alert_list.call_count == 1
+        assert mock_get_alert_list.call_args.kwargs == {"limit": limit, "severity": severity}
+        assert mock_get_alert.call_count == 0
+
+    # Verify tableToMarkdown was called
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args[0] == "Items List (Sample Data)"
+    assert isinstance(mock_table_to_markdown.call_args.args[1], list)
+
+    # Verify CommandResults
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Alert"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, list)
+
+
+
+def test_create_events(mocker: MockerFixture):
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running create_events.
+    Then:
+        - Assert format_as_events is called once with correct parameters.
+        - Assert send_events_to_xsiam is called once with formatted events.
+    """
+    from HelloWorldV2 import create_events, format_as_events, EventsDatasetConfigs
+
+    # Load mock alert data
+    mock_alerts = util_load_json("test_data/alert_events.json")
+    expected_formatted_events = format_as_events(mock_alerts, time_field="date")
+    mock_send_events = mocker.patch("HelloWorldV2.send_events_to_xsiam")
+
+    # Execute function
+    create_events(mock_alerts)
+
+    assert mock_send_events.call_count == 1
+    assert mock_send_events.call_args.kwargs == {
+        "events": expected_formatted_events,
+        "vendor": EventsDatasetConfigs.VENDOR.value,
+        "product": EventsDatasetConfigs.PRODUCT.value,
+        "client_class": ContentClient,
+    }
+
+
+def test_create_incidents(mocker: MockerFixture):
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running create_incidents.
+    Then:
+        - Assert format_as_incidents is called once with correct parameters.
+        - Assert demisto.incidents is called once with formatted incidents.
+    """
+    from HelloWorldV2 import create_incidents, format_as_incidents
+
+    # Load mock alert data
+    mock_alerts = util_load_json("test_data/alert_events.json")
+
+    # Mock formatted incidents
+    expected_formatted_incidents = format_as_incidents(mock_alerts, id_field="id", occurred_field="date", severity_field="severity")
+
+    # Mock helper functions
+    mock_demisto_incidents = mocker.patch("HelloWorldV2.demisto.incidents")
+
+    # Execute function
+    create_incidents(mock_alerts)
+
+    # Assertions
+    assert mock_demisto_incidents.call_count == 1
+    assert mock_demisto_incidents.call_args.args[0] ==  expected_formatted_incidents
