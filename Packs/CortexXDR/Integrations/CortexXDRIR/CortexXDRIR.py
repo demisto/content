@@ -50,6 +50,12 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
+BIOC_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH"
+}
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -517,56 +523,16 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/get/",
-            json_data={"request_data": {}},
-            # headers=self.headers,
-            # timeout=self.timeout,
+            json_data=request_data,
         )
-        return reply.get("reply", {})
+        return reply
 
     def insert_biocs(self, request_data):
-        request_data = [
-        {
-          "name": "TestBIOC",
-          "type": "EXECUTION",
-          "severity": "SEV_020_LOW",
-          "comment": "",
-          "status": "ENABLED",
-          "is_xql": False,
-          "indicator": {
-            "runOnCGO": True,
-            "investigationType": "FILE_EVENT",
-            "investigation": {
-              "FILE_EVENT": {
-                "filter": {
-                  "AND": [
-                    {
-                      "SEARCH_FIELD": "action_file_name",
-                      "SEARCH_TYPE": "EQ",
-                      "SEARCH_VALUE": "aaaaaa",
-                      "EXTRA_FIELDS": [],
-                      "isExtended": False
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "mitre_tactic_id_and_name": [
-            ""
-          ],
-          "mitre_technique_id_and_name": [
-            ""
-          ]
-        }
-      ]
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/insert/",
-            json_data={"request_data": [request_data]},
-            headers=self.headers,
-            timeout=self.timeout,
+            json_data=request_data,
         )
-        # return reply.get("reply", {})
         return reply
 
     def delete_biocs(self, request_data: dict):
@@ -1512,6 +1478,29 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
+def create_filters_for_bioc_list(args: dict) -> list:
+    filters = []
+    if name := args.get("name"):
+        filters.append({"field": "name", "operator": "EQ", "value": name})
+    if severity := args.get("severity"):
+        filters.append({"field": "severity", "operator": "EQ", "value": BIOC_SEVERITY_MAPPING.get(severity, severity)})
+    if type_ := args.get("type"):
+        filters.append({"field": "type", "operator": "EQ", "value": type_})
+    if is_xql := args.get("is_xql"):
+        filters.append({"field": "is_xql", "operator": "EQ", "value": argToBoolean(is_xql)})
+    if comment := args.get("comment"):
+        filters.append({"field": "comment", "operator": "EQ", "value": comment})
+    if status := args.get("status"):
+        filters.append({"field": "status", "operator": "EQ", "value": status})
+    if indicator := args.get("indicator"):
+        filters.append({"field": "indicator", "operator": "EQ", "value": indicator})
+    if mitre_technique := argToList(args.get("mitre_technique_id_and_name")):
+        filters.append({"field": "mitre_technique_id_and_name", "operator": "EQ", "value": mitre_technique})
+    if mitre_tactic := argToList(args.get("mitre_tactic_id_and_name")):
+        filters.append({"field": "mitre_tactic_id_and_name", "operator": "EQ", "value": mitre_tactic})
+    return filters
+
+
 def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Returns a list of BIOCs.
@@ -1521,30 +1510,29 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    filters = assign_params(
-        name=args.get("name"),
-        severity=args.get("severity"),
-        type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
-        comment=args.get("comment"),
-        status=args.get("status"),
-        indicator=argToList(args.get("indicator")),
-        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
-        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
-    )
+    filters = create_filters_for_bioc_list(args)
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    extended_view = argToBoolean(args.get("extra_data", False))
+
     request_data = assign_params(
         filters=filters,
-        extended_view=argToBoolean(args.get("extra_data", False)),
-        search_from=arg_to_number(args.get("page")),
-        search_to=arg_to_number(args.get("limit")),
+        extended_view=extended_view,
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
     )
-    reply = client.get_biocs(request_data)
+    reply = client.get_biocs({"request_data": request_data})
     biocs = reply.get("objects", [])
-    readable_output = tableToMarkdown(name="BIOCs", t=biocs, headers=["name", "type", "severity", "status"], removeNull=True)
+    readable_output = tableToMarkdown(name="BIOCs List",
+                                      t=biocs,
+                                      headerTransform=string_to_table_header,
+                                      headers=["rule_id", "name", "type", "severity", "status"],
+                                      removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
-        outputs_key_field="name",
+        outputs_key_field="rule_id",
         outputs=biocs,
         raw_response=reply,
     )
@@ -1561,7 +1549,7 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
     """
     bioc_data = assign_params(
         name=args.get("name"),
-        severity=args.get("severity"),
+        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
         type=args.get("type"),
         is_xql=argToBoolean(args.get("is_xql", False)),
         comment=args.get("comment"),
@@ -1570,7 +1558,7 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
         mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
         mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
     )
-    reply = client.insert_biocs(bioc_data)
+    reply = client.insert_biocs({"request_data": [bioc_data]})
     return CommandResults(
         readable_output="BIOC created successfully.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",

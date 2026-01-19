@@ -3866,10 +3866,10 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
-    - description: BIOC name.
+    - description: 'BIOC name. String.'
       name: name
     - auto: PREDEFINED
-      description: BIOC severity.
+      description: 'BIOC severity. Can be one of the following: SEV_010_INFO, SEV_020_LOW, SEV_030_MEDIUM, SEV_040_HIGH'
       name: severity
       predefined:
       - info
@@ -3877,7 +3877,7 @@ script:
       - medium
       - high
     - auto: PREDEFINED
-      description: BIOC type.
+      description: 'BIOC type. Can be one of the following: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery.'
       name: type
       predefined:
       - other
@@ -3897,26 +3897,25 @@ script:
       - reconnaissance
       - discovery
     - auto: PREDEFINED
-      description: Whether the BIOC is XQL.
+      description: 'Whether the BIOC is XQL. Boolean: true or false.'
       name: is_xql
       predefined:
       - 'true'
       - 'false'
-    - description: BIOC comment.
+    - description: 'BIOC comment. String.'
       name: comment
     - auto: PREDEFINED
-      description: BIOC status.
+      description: 'BIOC status. Can be one of the following: enabled, disabled.'
       name: status
       predefined:
       - enabled
       - disabled
-    - description: BIOC indicator.
-      isArray: true
+    - description: 'BIOC indicator. String or dictionary.'
       name: indicator
-    - description: MITRE technique ID and name.
+    - description: 'MITRE technique ID and name. List of strings.'
       isArray: true
       name: mitre_technique_id_and_name
-    - description: MITRE tactic ID and name.
+    - description: 'MITRE tactic ID and name. List of strings.'
       isArray: true
       name: mitre_tactic_id_and_name
     - auto: PREDEFINED
@@ -3934,6 +3933,9 @@ script:
     description: Returns a list of BIOCs.
     name: xdr-bioc-list
     outputs:
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC rule id.
+      type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.name
       description: BIOC name.
       type: String
@@ -3946,6 +3948,15 @@ script:
     - contextPath: PaloAltoNetworksXDR.BIOC.status
       description: BIOC status.
       type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.is_xql
+      description:
+      type: Bool
+    - contextPath: PaloAltoNetworksXDR.BIOC.comment
+      description:
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.indicator
+      description:
+      type: Unknown
   - arguments:
     - description: BIOC rule ID.
       name: rule_id
