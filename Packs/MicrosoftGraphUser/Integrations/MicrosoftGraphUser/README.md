@@ -899,11 +899,12 @@ Furthermore, the signed in user must have a higher privileged administrator role
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
+| user | User ID or userPrincipalName. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-user-get-groups
 
 ***
