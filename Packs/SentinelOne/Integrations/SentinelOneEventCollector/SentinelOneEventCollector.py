@@ -144,7 +144,7 @@ def add_keys_to_events(events: list[dict[str, Any]] | None, instance_url: str):
                 event["EXTERNAL_URL"] = f"{instance_url}/incidents/alerts/{alert_id}/overview"
             else:
                 demisto.debug(f"Alert event is missing alertId: {alert_info}")
-            
+
         elif threat_info := event.get("threatInfo"):
             event["_time"] = threat_info.get("updatedAt")
             event["eventType"] = "Threat"

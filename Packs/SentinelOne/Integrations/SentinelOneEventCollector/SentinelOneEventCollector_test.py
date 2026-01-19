@@ -176,23 +176,11 @@ def test_add_keys_to_events_with_external_url():
     instance_url = "https://test.sentinelone.net"
 
     # Test data
-    threat_event = {
-        "threatInfo": {
-            "threatId": "123456",
-            "updatedAt": "2022-12-20T15:51:17.514437Z"
-        }
-    }
+    threat_event = {"threatInfo": {"threatId": "123456", "updatedAt": "2022-12-20T15:51:17.514437Z"}}
 
-    alert_event = {
-        "alertInfo": {
-            "alertId": "789012",
-            "updatedAt": "2022-12-20T13:54:43.027000Z"
-        }
-    }
+    alert_event = {"alertInfo": {"alertId": "789012", "updatedAt": "2022-12-20T13:54:43.027000Z"}}
 
-    activity_event = {
-        "updatedAt": "2022-09-06T20:37:55.912951Z"
-    }
+    activity_event = {"updatedAt": "2022-09-06T20:37:55.912951Z"}
 
     events = [threat_event, alert_event, activity_event]
 
@@ -235,21 +223,13 @@ def test_add_keys_to_events_missing_ids(mocker):
     from SentinelOneEventCollector import add_keys_to_events
 
     instance_url = "https://test.sentinelone.net"
-    mock_debug = mocker.patch.object(demisto, 'debug')
+    mock_debug = mocker.patch.object(demisto, "debug")
 
     # Test data - threat without threatId
-    threat_event = {
-        "threatInfo": {
-            "updatedAt": "2022-12-20T15:51:17.514437Z"
-        }
-    }
+    threat_event = {"threatInfo": {"updatedAt": "2022-12-20T15:51:17.514437Z"}}
 
     # Test data - alert without alertId
-    alert_event = {
-        "alertInfo": {
-            "updatedAt": "2022-12-20T13:54:43.027000Z"
-        }
-    }
+    alert_event = {"alertInfo": {"updatedAt": "2022-12-20T13:54:43.027000Z"}}
 
     events = [threat_event, alert_event]
 
