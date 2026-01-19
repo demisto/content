@@ -497,8 +497,9 @@ script:
     - defaultValue: '10'
       description: Maximum number of policies to fetch. Default is "10".
       name: limit
-    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
+    - description: List of subscription IDs. If not provided, the integration default subscription ID will be used.
       name: subscription_id
+      isArray: true
     description: Lists all of the Front Door protection policies within a subscription.
     name: azure-waf-front-door-policies-list-all-in-subscription
     outputs:
@@ -526,10 +527,11 @@ script:
       name: resource_group_name
     - description: The subscription ID. If not provided, the integration default subscription ID will be used.
       name: subscription_id
+      isArray: true
     - description: Describes the managedRules structure.
       name: managed_rules
       required: true
-    - description: The custom rules inside the policy.
+    - description: The custom rules inside the policy in json format.
       name: custom_rules
     - description: Describes settings for the policy.
       name: policy_settings
