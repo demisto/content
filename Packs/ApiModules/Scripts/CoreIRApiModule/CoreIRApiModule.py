@@ -1615,7 +1615,7 @@ class FilterBuilder:
 
         if start_time and not end_time:
             # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.utcnow().timestamp() * 1000)
+            end_time = int(datetime.now().timestamp() * 1000)
 
         return start_time, end_time
 
