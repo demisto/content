@@ -4987,10 +4987,10 @@ class TestFilterBuilder:
         start_dt = datetime(2023, 1, 1, 10, 0, 0)
         mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=start_dt)
 
-        # Mock datetime.utcnow for end_time calculation
+        # Mock datetime.now for end_time calculation
         current_dt = datetime(2023, 1, 3, 12, 0, 0)
-        mock_utcnow = mocker.patch("CoreIRApiModule.datetime")
-        mock_utcnow.utcnow.return_value = current_dt
+        mock_now = mocker.patch("CoreIRApiModule.datetime")
+        mock_now.now.return_value = current_dt
 
         start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", None)
 
