@@ -114,7 +114,7 @@ def extract_email_from_url_query(email_address: str) -> str:
         return extracted_email.group(1)
 
     # Third, try to extract email directly from URL query without '='
-    # This handles cases like: //fiscaldigitalmxs.com?marketing.comunicacion@mahle.com
+    # This handles cases like: //example.com?marketing.comunicacion@mahle.com
     extracted_email = re.search(r"[?&]([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})", email_address)
 
     if extracted_email:
