@@ -4670,6 +4670,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
     service_client, _ = get_service_client(credentials, params, args, command)
+    return COMMANDS_MAPPING[command](service_client, args)
 
 
 def main():  # pragma: no cover
