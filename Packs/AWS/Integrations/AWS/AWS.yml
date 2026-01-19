@@ -7098,7 +7098,7 @@ script:
           - 'true'
           - 'false'
       - name: enable_primary_ipv6
-        description: If you’re modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address.
+        description: If you're modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address.
         required: false
         auto: PREDEFINED
         predefined:
@@ -7121,7 +7121,7 @@ script:
           - 'true'
           - 'false'
       - name: associated_subnet_ids
-        description: A list of comma separated subnet IDs to associate with the network interface.
+        description: A list of comma-separated subnet IDs to associate with the network interface.
         required: false
       - name: description
         description: A description for the network interface.
@@ -7134,7 +7134,7 @@ script:
           - 'true'
           - 'false'
       - name: groups
-        description: A comma separated list of security groups ids. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it’s just the default security group in the VPC.
+        description: A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it's just the default security group in the VPC.
         required: false
       - name: default_ena_queue_count
         description: Whether to use the default number of the ENA queues.
