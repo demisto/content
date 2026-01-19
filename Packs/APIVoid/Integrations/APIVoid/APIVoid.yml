@@ -7,6 +7,7 @@ sectionorder:
 name: APIVoid
 display: APIVoid
 category: Data Enrichment & Threat Intelligence
+provider: APIVoid
 description: APIVoid wraps up a number of services such as ipvoid & urlvoid.
 configuration:
 - display: Server URL
@@ -1143,7 +1144,7 @@ script:
     arguments:
     - name: host
       required: true
-      description: The host to check.
+      description: The host the check.
     outputs:
     - contextPath: APIVoid.ThreatLog.detected
       description: ''

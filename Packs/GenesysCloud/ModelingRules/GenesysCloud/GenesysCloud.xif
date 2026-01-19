@@ -1,0 +1,46 @@
+[MODEL: dataset=genesys_cloud_raw]
+/* Data Extraction & Normalization: 
+   - Extract 'remoteIp' from the context metadata.
+   - Parse and sanitize the primary IP address from the source array.
+   - Filter and categorize IP addresses into dedicated IPv4 and IPv6 arrays.
+*/
+alter
+    extract_context_ip_address = context -> remoteIp,
+    extract_first_ip_in_array = replex(arrayindex(arraymap(remoteIp -> [], "@element"),0),"\"",""),
+    extract_ip_v4_addresses_array = arraymap(remoteIp -> [], if(is_ipv4(replex("@element","\"","")) ,trim("@element", "\""),null)),
+    extract_ip_v6_addresses_array = arraymap(remoteIp -> [], if(is_ipv6(replex("@element","\"","")) ,trim("@element", "\""),null))
+// Perform protocol validation to identify if the source IP is IPv4 or IPv6.
+| alter
+    check_remote_ip_v4 = if(is_ipv4(extract_first_ip_in_array), extract_first_ip_in_array, null),
+    check_remote_ip_v6 = if(is_ipv6(extract_first_ip_in_array), extract_first_ip_in_array, null),
+    check_extract_context_ip_v4 = if(is_ipv4(extract_context_ip_address), extract_context_ip_address,null),
+    check_extract_context_ip_v6 = if(is_ipv6(extract_context_ip_address), extract_context_ip_address, null)
+/* Data Model (XDM) Mapping:
+   Aligning Genesys Cloud audit telemetry with XDM specifications for cross-platform correlation.
+   
+   Technical References:
+   - Action Catalog: https://developer.genesys.cloud/platform/audit/actioncatalog
+   - Audit Query API: https://developer.genesys.cloud/platform/audit/auditquerycreate
+*/
+| alter
+    xdm.source.ipv4 = coalesce(check_extract_context_ip_v4,check_remote_ip_v4),
+    xdm.source.ipv6 = coalesce(check_extract_context_ip_v6,check_remote_ip_v6),
+    xdm.source.host.ipv4_addresses = if(array_length(extract_ip_v4_addresses_array) > 1, arrayfilter(extract_ip_v4_addresses_array, is_known_private_ipv4("@element")), null), // Evaluate if the IPv4 array contains internal addresses.
+    xdm.source.host.ipv4_public_addresses = if(array_length(extract_ip_v4_addresses_array) > 1, arrayfilter(extract_ip_v4_addresses_array, is_known_private_ipv4("@element") = FALSE), null), // Evaluate if the IPv4 array contains public addresses.
+    xdm.source.host.ipv6_addresses = if(array_length(extract_ip_v6_addresses_array) > 1, arrayfilter(extract_ip_v6_addresses_array, is_known_private_ipv6("@element")), null), // Evaluate if the IPv6 array contains internal addresses.
+    xdm.source.host.ipv6_public_addresses = if(array_length(extract_ip_v6_addresses_array) > 1, arrayfilter(extract_ip_v6_addresses_array, is_known_private_ipv6("@element") = FALSE), null), // Evaluate if the IPv6 array contains public addresses.
+    xdm.observer.name = serviceName,
+    xdm.event.id = id,
+    xdm.event.type = action,
+    xdm.event.outcome = if(lowercase(status) = "success",XDM_CONST.OUTCOME_SUCCESS ,lowercase(status) = "failure",XDM_CONST.OUTCOME_FAILED,null),
+    xdm.event.outcome_reason = message -> localizableMessageCode,
+    xdm.event.description = message -> message,
+    xdm.event.operation = if(lowercase(action) contains "create", XDM_CONST.OPERATION_TYPE_CREATE, lowercase(action) contains "delete", XDM_CONST.OPERATION_TYPE_DELETE, lowercase(action) contains "update", XDM_CONST.OPERATION_TYPE_UPDATE, lowercase(action) contains "change", XDM_CONST.OPERATION_TYPE_UPDATE, lowercase(action) = "authorize",XDM_CONST.OPERATION_TYPE_AUTHENTICATION, null),
+    xdm.source.user.username = user -> name,
+    xdm.source.user.identifier = user -> id,
+    xdm.auth.privilege_level = if(lowercase(level) = "system", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, lowercase(level) = "user", XDM_CONST.PRIVILEGE_LEVEL_USER, null),
+    xdm.target.resource.name = entity -> name,
+    xdm.target.resource.type = entityType,
+    xdm.target.resource.sub_type = arraystring(arraymap(propertyChanges -> [], "@element" -> property),", "),
+    xdm.target.resource_before.value = arraystring(arraymerge(arraymap(propertyChanges ->[], "@element" -> oldValues{})), " , "),
+    xdm.target.resource.value = arraystring(arraymerge(arraymap(propertyChanges ->[], "@element" -> newValues{})), " , ");

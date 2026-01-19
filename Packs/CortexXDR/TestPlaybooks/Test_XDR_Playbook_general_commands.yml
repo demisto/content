@@ -86,7 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       gte_creation_time:
-        simple: 2010-10-10T00:00:00
+        simple: "2010-10-10T00:00:00"
       limit:
         simple: "3"
       sort_by_creation_time:
@@ -1250,7 +1250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-

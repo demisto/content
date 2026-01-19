@@ -5043,3 +5043,127 @@ def test_earliest_time_exists_in_query(query, expected):
     from SplunkPy import earliest_time_exists_in_query
 
     assert earliest_time_exists_in_query(query) == expected
+
+
+def test_splunk_get_indexes_command_success(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the REST API query.
+        - Ensure the fallback mechanism (service.indexes) is NOT used.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service and the oneshot job results
+    service = mocker.MagicMock()
+    mock_result = {"name": "main", "count": "100"}
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[mock_result])
+
+    # Mock return_results to capture the output
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify results
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps([mock_result])
+
+    # Verify oneshot was called
+    service.jobs.oneshot.assert_called_once()
+
+
+def test_splunk_get_indexes_command_fallback(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes fails.
+        - The direct API (service.indexes) succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the direct API.
+        - Ensure the error is logged and fallback is attempted.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to return a list of indexes
+    mock_index = mocker.MagicMock()
+    mock_index.name = "history"
+    # Mocking dictionary access for the index object since the code uses index["totalEventCount"]
+    mock_index.__getitem__.return_value = "50"
+
+    service.indexes = [mock_index]
+
+    # Mock logging and return_results
+    error_mock = mocker.patch("demistomock.error")
+    debug_mock = mocker.patch("demistomock.debug")
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify error was logged
+    assert error_mock.call_count == 1
+    assert "Failed to get indexes using REST API query approach" in error_mock.call_args[0][0]
+
+    # Verify fallback was attempted (debug log)
+    fallback_log_found = False
+    for call in debug_mock.call_args_list:
+        if "Falling back to direct API approach" in call[0][0]:
+            fallback_log_found = True
+            break
+    assert fallback_log_found
+
+    # Verify results
+    expected_result = [{"name": "history", "count": "50"}]
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps(expected_result)
+
+
+def test_splunk_get_indexes_command_failure(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - Both the REST API query and the direct API fail.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure a DemistoException is raised with details from both errors.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to raise an exception (property access raises exception)
+    type(service).indexes = mocker.PropertyMock(side_effect=Exception("Direct API Failed"))
+
+    # Mock logging
+    error_mock = mocker.patch("demistomock.error")
+
+    # Call the function and expect DemistoException
+    with pytest.raises(DemistoException) as e:
+        splunk_get_indexes_command(service, "search")
+
+    assert "Failed to retrieve indexes using both methods" in str(e.value)
+    assert "REST API error: REST API Failed" in str(e.value)
+    assert "Direct API error: Direct API Failed" in str(e.value)
+
+    # Verify errors were logged
+    assert error_mock.call_count >= 2  # One for REST failure, one for Direct failure
