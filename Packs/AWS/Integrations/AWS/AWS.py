@@ -4296,140 +4296,6 @@ class ACM:
             raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
 
 
-class SSM:
-    service = AWSServices.SSM
-
-    @staticmethod
-    def inventory_entries_list(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
-        """
-        Returns an inventory item, and it's list of entries.
-        Args:
-            client: The AWS ACM boto3 client used to perform the update request.
-            args (dict): A dictionary containing the command arguments.
-
-        Returns:
-            CommandResults: An object containing an inventory item, and it's list of entries.
-        """
-        instance_id = args.get("instance_id")
-        type_name = args.get("type_name")
-        filters = args.get("filters")
-        kwargs = {
-            "InstanceId": instance_id,
-            "TypeName": type_name,
-            "Filters": parse_triple_filter(filters),
-        }
-        kwargs.update(build_pagination_kwargs(args, 1, 50))
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-        response = client.list_inventory_entries(**kwargs)
-
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        if response.get("Entries"):
-            headers = ["Name", "URL", "Summary"]
-            readable_output = tableToMarkdown(
-                f"The inventory entries of item {instance_id} with the type {type_name}",
-                response.get("Entries"),
-                headers,
-                headerTransform=pascalToSpace,
-                removeNull=True,
-            )
-
-            return CommandResults(
-                outputs_prefix="AWS.SSM.Inventory",
-                outputs_key_field="InstanceId",
-                outputs=response,
-                readable_output=readable_output,
-                raw_response=response,
-            )
-        else:
-            return CommandResults(readable_output=f"No entries found for the item {instance_id}.")
-
-    @staticmethod
-    @polling_function(
-        name="aws-ssm-command-run",
-        interval=arg_to_number(
-            demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
-        ),
-        timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
-        requires_polling_arg=False,  # means it will always be default to poll, poll=true,
-    )
-    def command_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult | None:
-        """
-        Runs commands on one or more managed nodes.
-        Args:
-            client: The AWS ACM boto3 client used to perform the update request.
-            args (dict): A dictionary containing the command arguments.
-
-        Returns:
-            CommandResults: An object containing an inventory item, and it's list of entries.
-        """
-        if command_id := args.get("command_id"):
-            demisto.debug(f"There is a {command_id=}. Not the first execution.")
-            response_command_list = client.list_commands(CommandId=command_id)
-            status = response_command_list.get("Commands", [])[0].get("Status")
-            demisto.debug(f"The {status=} of {command_id=}")
-            if status in TERMINAL_COMMAND_STATUSES:
-                return PollResult(
-                    response=CommandResults(
-                        readable_output=f"The command {command_id} status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
-                    ),
-                    continue_to_poll=False,
-                )
-            #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
-            return PollResult(
-                continue_to_poll=True,
-                args_for_next_run=args,
-                response=None,
-            )
-
-        demisto.debug("First execution of command-run")
-        kwargs = {
-            "InstanceIds": argToList(args.get("instance_ids")),
-            "DocumentName": args.get("document_name"),
-            "DocumentVersion": args.get("document_version"),
-            "DocumentHash": args.get("document_hash"),
-            "Comment": args.get("comment"),
-            "OutputS3BucketName": args.get("output_s3_bucket_name"),
-            "OutputS3KeyPrefix": args.get("output_s3_key_prefix"),
-            "MaxConcurrency": args.get("max_concurrency"),
-            "MaxErrors": args.get("max_errors"),
-        }
-        if targets := args.get("Targets"):
-            kwargs["Targets"] = parse_target_field(targets)
-        if args.get("document_hash"):
-            kwargs["DocumentHashType"] = "Sha256"
-        if parameters := args.get("parameters"):
-            kwargs["Parameters"] = parse_parameters_arg(parameters)
-        if command_timeout := arg_to_number(args.get("command_timeout")):
-            if MAXIMUM_COMMAND_TIMEOUT < command_timeout < MINIMUM_COMMAND_TIMEOUT:
-                raise DemistoException(
-                    f"Command timeout must be between {MINIMUM_COMMAND_TIMEOUT} and {MAXIMUM_COMMAND_TIMEOUT} seconds."
-                )
-            kwargs["TimeoutSeconds"] = command_timeout
-        remove_nulls_from_dictionary(kwargs)
-        demisto.debug(f"{kwargs=}")
-
-        response_command_run = client.send_command(**kwargs)
-
-        command_id = response_command_run.get("Command", {}).get("CommandId", "")
-        demisto.debug(f"The {command_id=} of the current execution.")
-        args["command_id"] = command_id
-        command_response = serialize_response_with_datetime_encoding(response_command_run.get("Command", {}))
-        return PollResult(
-            response=None,
-            continue_to_poll=True,
-            args_for_next_run=args,
-            partial_result=CommandResults(
-                readable_output=f"Command {command_id} was sent successfully.",
-                outputs=command_response,
-                outputs_prefix="AWS.SSM.Command",
-                outputs_key_field="CommandId",
-            ),
-        )
-
-
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -4456,8 +4322,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-file-download": S3.file_download_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
     "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
-    "aws-s3-bucket-create": S3.bucket_create_command,
-    "aws-s3-buckets-list": S3.buckets_list_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -4526,8 +4390,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
     "aws-ec2-tags-create": EC2.create_tags_command,
-    "aws-ec2-regions-describe": EC2.regions_describe_command,
-    "aws-ec2-network-interface-attribute-modify": EC2.network_interface_attribute_modify_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
@@ -4542,8 +4404,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
-    "aws-ssm-inventory-entries-list": SSM.inventory_entries_list,
-    "aws-ssm-command-run": SSM.command_run_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4561,8 +4421,6 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
     "rds:ModifyDBSnapshotAttribute",
-    "s3:CreateBucket",
-    "s3:ListAllMyBuckets",
     "s3:PutBucketAcl",
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
@@ -4631,8 +4489,6 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
-    "ssm:SendCommand",
-    "ssm:ListCommands",
 ]
 
 COMMAND_SERVICE_MAP = {
@@ -4814,11 +4670,6 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
     service_client, _ = get_service_client(credentials, params, args, command)
-    # If it is a polling command, the args must be the first argument
-    if args.get("polling_timeout") is not None:
-        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
-        return COMMANDS_MAPPING[command](args, service_client)
-    return COMMANDS_MAPPING[command](service_client, args)
 
 
 def main():  # pragma: no cover
@@ -4841,8 +4692,7 @@ def main():  # pragma: no cover
             return_results(results)
 
         elif command in COMMANDS_MAPPING:
-            result = execute_aws_command(command, args, params)
-            return_results(result)
+            return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
