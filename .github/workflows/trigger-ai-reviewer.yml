@@ -34,7 +34,7 @@ jobs:
           
       - name: Trigger AI Review
         env:
-          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
           COMMENT_ID: ${{ github.event.comment.id }}
           TRIGGER_TYPE: ${{ github.event_name }}
         run: |
