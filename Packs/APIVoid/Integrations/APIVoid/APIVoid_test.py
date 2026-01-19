@@ -555,7 +555,7 @@ class TestParkedDomainWithStrictValidation:
 
         Given: Valid domain
         When: parked_domain_command is called
-        Then: Should send POST to /v2/parked-domain with exact JSON body {"domain": "value"}
+        Then: Should send POST to /v2/parked-domain with exact JSON body {"host": "value"}
         """
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_PARKED_DOMAIN_RESPONSE)
 
@@ -568,7 +568,7 @@ class TestParkedDomainWithStrictValidation:
         call_kwargs = mock_http.call_args[1]
         assert call_kwargs["method"] == "POST"
         assert call_kwargs["url_suffix"] == "/v2/parked-domain"
-        assert call_kwargs["json_data"] == {"domain": "example.com"}
+        assert call_kwargs["json_data"] == {"host": "example.com"}
 
     def test_parked_domain_different_domains(self, client, mocker):
         """
@@ -588,7 +588,7 @@ class TestParkedDomainWithStrictValidation:
             parked_domain_command(client, args)
 
             # Validate exact domain in request
-            assert mock_http.call_args[1]["json_data"]["domain"] == test_domain
+            assert mock_http.call_args[1]["json_data"]["host"] == test_domain
 
 
 # ============================================================================
@@ -605,7 +605,7 @@ class TestDomainAgeWithStrictValidation:
 
         Given: Valid domain
         When: domain_age_command is called
-        Then: Should send POST to /v2/domain-age with exact JSON body {"domain": "value"}
+        Then: Should send POST to /v2/domain-age with exact JSON body {"host": "value"}
         """
         mock_http = mocker.patch.object(client, "_http_request", return_value=MOCK_DOMAIN_AGE_RESPONSE)
 
@@ -618,7 +618,7 @@ class TestDomainAgeWithStrictValidation:
         call_kwargs = mock_http.call_args[1]
         assert call_kwargs["method"] == "POST"
         assert call_kwargs["url_suffix"] == "/v2/domain-age"
-        assert call_kwargs["json_data"] == {"domain": "example.com"}
+        assert call_kwargs["json_data"] == {"host": "example.com"}
 
     def test_domain_age_different_domains(self, client, mocker):
         """
@@ -638,7 +638,7 @@ class TestDomainAgeWithStrictValidation:
             domain_age_command(client, args)
 
             # Validate exact domain in request
-            assert mock_http.call_args[1]["json_data"]["domain"] == test_domain
+            assert mock_http.call_args[1]["json_data"]["host"] == test_domain
 
 
 # ============================================================================

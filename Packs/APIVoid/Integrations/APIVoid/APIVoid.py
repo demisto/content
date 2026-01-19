@@ -519,7 +519,7 @@ def parked_domain_command(client: Client, args: dict) -> CommandResults:
 
     # Make API request
     try:
-        response = client.api_request(ENDPOINTS["parked_domain"], {"domain": domain})
+        response = client.api_request(ENDPOINTS["parked_domain"], {"host": domain})
     except Exception as e:
         raise DemistoException(f"Failed to check parked domain: {str(e)}")
 
@@ -552,7 +552,7 @@ def domain_age_command(client: Client, args: dict) -> CommandResults:
 
     # Make API request
     try:
-        response = client.api_request(ENDPOINTS["domain_age"], {"domain": domain})
+        response = client.api_request(ENDPOINTS["domain_age"], {"host": domain})
     except Exception as e:
         raise DemistoException(f"Failed to get domain age: {str(e)}")
 
@@ -596,7 +596,7 @@ def screenshot_command(client: Client, args: dict) -> dict:
     if "error" in response:
         raise DemistoException(f'Error capturing screenshot for {url}: {response.get("error")}')
 
-    data = response.get("base64_file")
+    data = demisto.get(response, "rendered_file.base64_file")
     if data:
         # Create file name
         file_name = url.replace("https", "").replace("http", "").replace("://", "").replace(".", "_")
@@ -630,7 +630,7 @@ def url_to_pdf_command(client: Client, args: dict) -> dict:
     if "error" in response:
         raise DemistoException(f'Error converting URL to PDF for {url}: {response.get("error")}')
 
-    data = response.get("base64_file")
+    data = demisto.get(response, "rendered_file.base64_file")
     if data:
         # Create file name
         file_name = url.replace("https", "").replace("http", "").replace("://", "").replace(".", "_")
