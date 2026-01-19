@@ -120,7 +120,7 @@ script:
       predefined:
         - underscore
         - CamelCase
-      description: Choose whether the key in the context will be in a underscore or CamelCase format.
+      description: Choose whether the key in the context will be in an underscore or a CamelCase format.
       defaultValue: 'CamelCase'
     - name: datetime_format
       description: The requested date format for datetime objects returned from the query. The default value is "%m/%d/%Y %H:%M:%S" for datetime objects and "%m/%d/%Y" for date objects.
