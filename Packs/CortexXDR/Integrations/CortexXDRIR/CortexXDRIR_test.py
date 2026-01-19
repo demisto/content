@@ -2682,20 +2682,8 @@ def test_replace_dots_in_keys():
     assert replace_dots_in_keys(data) == expected
 
     # Test with complex nested structure
-    data = {
-        "outer.key": [
-            {"inner.key": 1, "another.key": {"deep.key": "deep.value"}},
-            "simple string"
-        ],
-        "primitive": 123
-    }
-    expected = {
-        "outer_key": [
-            {"inner_key": 1, "another_key": {"deep_key": "deep.value"}},
-            "simple string"
-        ],
-        "primitive": 123
-    }
+    data = {"outer.key": [{"inner.key": 1, "another.key": {"deep.key": "deep.value"}}, "simple string"], "primitive": 123}
+    expected = {"outer_key": [{"inner_key": 1, "another_key": {"deep_key": "deep.value"}}, "simple string"], "primitive": 123}
     assert replace_dots_in_keys(data) == expected
 
     # Test with no dots
