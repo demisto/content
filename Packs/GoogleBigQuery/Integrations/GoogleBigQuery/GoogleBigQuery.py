@@ -111,7 +111,7 @@ def build_query_job_config(
     return query_job_config
 
 
-def convert_to_string(field_value, datetime_format: str = "") -> str:
+def convert_to_string(field_value, datetime_format: str = ""):
     if isinstance(field_value, datetime):
         datetime_format = datetime_format if datetime_format else "%m/%d/%Y %H:%M:%S"
         return field_value.strftime(datetime_format)

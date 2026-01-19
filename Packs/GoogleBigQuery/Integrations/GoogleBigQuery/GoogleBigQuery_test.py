@@ -20,6 +20,8 @@ def test_convert_to_string():
     test_conversion_for_empty_string = convert_to_string("")
     assert test_conversion_for_empty_string == ""
 
+    assert convert_to_string(b"test") == "test"
+
 
 def test_convert_to_string_datetime():
     """
@@ -434,3 +436,34 @@ def test_query_command_with_underscore_format(mocker):
     _, kwargs = return_outputs_mock.call_args
     assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["user_id"] == 1
     assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["user_name"] == "test"
+
+
+def test_query_command_with_datetime_format(mocker):
+    """
+    Given:
+    - A query to run.
+    - A datetime_format argument set to "%Y-%m-%d".
+    - Query returns results with a datetime object.
+
+    When:
+    - Calling query_command.
+
+    Then:
+    - Ensure return_outputs is called with the datetime field formatted according to the datetime_format.
+    """
+    from GoogleBigQuery import query_command
+    import GoogleBigQuery
+
+    dt = datetime.datetime(2023, 1, 30, 12, 0, 0)
+    mock_row = {"time": dt}
+    mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=[mock_row])
+    mocker.patch.object(
+        demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false", "datetime_format": "%Y-%m-%d"}
+    )
+    return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
+
+    query_command("SELECT 1")
+
+    assert return_outputs_mock.call_count == 1
+    _, kwargs = return_outputs_mock.call_args
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Time"] == "2023-01-30"
