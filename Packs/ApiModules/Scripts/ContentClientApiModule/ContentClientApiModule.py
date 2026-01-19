@@ -1350,6 +1350,7 @@ class ContentClient:
         circuit_breaker: Optional[CircuitBreakerPolicy] = None,
         diagnostic_mode: bool = False,
         client_name: str = "ContentClient",
+        is_multithreaded: bool = True
     ) -> None:
         """Initialize ContentClient with BaseClient-compatible parameters.
 
@@ -1376,6 +1377,7 @@ class ContentClient:
         self._auth: Optional[Tuple[str, str]] = auth
         self.timeout: float = timeout
         self._closed: bool = False
+        self._is_multithreaded: bool = True
 
         # Handle proxy exactly like BaseClient
         if proxy:
@@ -1405,6 +1407,9 @@ class ContentClient:
         self._client_event_loop: Optional[asyncio.AbstractEventLoop] = None
         self._client_lock: threading.Lock = threading.Lock()
         self._http2_available: bool = True  # Will be set to False if HTTP/2 fails
+        
+        if self._is_multithreaded:
+            support_multithreading()
 
     def _get_async_client(self) -> httpx.AsyncClient:
         """Get or create an async client for the current event loop.
