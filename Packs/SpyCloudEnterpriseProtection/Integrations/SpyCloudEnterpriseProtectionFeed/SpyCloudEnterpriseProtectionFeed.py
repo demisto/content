@@ -5,8 +5,6 @@ from json import dumps
 from typing import Any
 from requests import Response
 from urllib3 import disable_warnings
-
-# from urllib.parse import urljoin
 from CommonServerPython import *
 
 disable_warnings()  # Disable SSL warnings
@@ -122,7 +120,6 @@ class Client(BaseClient):
             return
         elif LIMIT_EXCEED in response_headers.get(X_AMAZON_ERROR_TYPE, ""):
             raise DemistoException(MONTHLY_QUOTA_EXCEED_MSG, res=response)
-            return
 
         # Allow _http_request retry mechanism to handle 429
         if response.status_code == 429:
@@ -254,12 +251,6 @@ def build_iterators(client: Client, results: list) -> list:
             }
         )
     return incident_record
-
-
-def remove_duplicate(since_response: list, modified_response: list) -> list:
-    id_set = {rec["document_id"] for rec in modified_response}
-    modified_response.extend(res for res in since_response if res["document_id"] not in id_set)
-    return modified_response
 
 
 def fetch_incident(client: Client, args: dict):

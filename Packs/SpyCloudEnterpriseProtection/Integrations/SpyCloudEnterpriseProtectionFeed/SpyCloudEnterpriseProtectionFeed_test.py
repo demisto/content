@@ -6,7 +6,6 @@ from SpyCloudEnterpriseProtectionFeed import (
     Client,
     create_spycloud_args,
     fetch_incident,
-    remove_duplicate,
     fetch_domain_or_watchlist_data,
     LIMIT_EXCEED,
     MONTHLY_QUOTA_EXCEED_MSG,
@@ -125,8 +124,3 @@ def test_create_spycloud_args():
     args = {"severity": "2, 1"}
     with pytest.raises(DemistoException):
         create_spycloud_args(args, client)
-
-
-def test_remove_duplicate():
-    result = remove_duplicate(WATCHLIST_DATA["results"], MODIFIED_RESPONSE["results"])
-    assert MODIFIED_RESPONSE["results"] == result
