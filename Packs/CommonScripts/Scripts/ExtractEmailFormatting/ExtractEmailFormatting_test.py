@@ -42,6 +42,10 @@ def test_check_tld(address, valid):
         ("co/ed/trn/update?a=b&email=user@test6.net", "user@test6.net"),
         ("https://example.com/?marketing.comunicacion@example.com=ABA=123&a=456/", "marketing.comunicacion@example.com"),
         ("//example.com?marketing.comunicacion@example.com", "marketing.comunicacion@example.com"),  # disable-secrets-detection
+        # Regression tests: valid emails with special characters should not be treated as URL queries
+        ("user+tag@example.com", "user+tag@example.com"),  # Email with + (valid character)
+        ("user=name@example.com", "user=name@example.com"),  # Email with = in local part (valid but rare)
+        ("simple@example.com", "simple@example.com"),  # Simple valid email without special chars
     ],
 )  # noqa: E124
 def test_extract_email(input, output):
