@@ -4996,7 +4996,7 @@ class TestFilterBuilder:
 
         assert start_time == int(start_dt.timestamp() * 1000)
         assert end_time == int(current_dt.timestamp() * 1000)
-        mock_parse.assert_called_once_with("2023-01-01T10:00:00", settings={'TIMEZONE': 'UTC'})
+        mock_parse.assert_called_once_with("2023-01-01T10:00:00")
 
     def test_prepare_time_range_both_none_times(self):
         """
@@ -5040,7 +5040,7 @@ class TestFilterBuilder:
         with pytest.raises(ValueError, match="Could not parse start_time: invalid_start_time"):
             FilterBuilder._prepare_time_range("invalid_start_time", None)
 
-        mock_parse.assert_called_once_with("invalid_start_time", settings={'TIMEZONE': 'UTC'})
+        mock_parse.assert_called_once_with("invalid_start_time")
 
     def test_prepare_time_range_invalid_end_time_raises_value_error(self, mocker: MockerFixture):
         """
@@ -5078,7 +5078,7 @@ class TestFilterBuilder:
         start_time, end_time = FilterBuilder._prepare_time_range(20230101, None)
 
         # Verify that str() was called on the parameter
-        mock_parse.assert_called_with("20230101", settings={'TIMEZONE': 'UTC'})
+        mock_parse.assert_called_with("20230101")
         assert start_time == int(start_dt.timestamp() * 1000)
 
     def test_prepare_time_range_string_conversion_for_end_time(self, mocker: MockerFixture):

@@ -1602,13 +1602,13 @@ class FilterBuilder:
         start_time, end_time = None, None
 
         if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str), settings={'TIMEZONE': 'UTC'}):
+            if start_dt := dateparser.parse(str(start_time_str)):
                 start_time = int(start_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse start_time: {start_time_str}")
 
         if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str), settings={'TIMEZONE': 'UTC'}):
+            if end_dt := dateparser.parse(str(end_time_str)):
                 end_time = int(end_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse end_time: {end_time_str}")
