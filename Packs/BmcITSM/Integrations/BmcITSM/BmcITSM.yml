@@ -1209,7 +1209,7 @@ script:
       - Waiting
       - Closed
       - Bypassed
-      required: true
+      required: false
     - name: task_type
       description: Whether the task is manual or automatic.
       defaultValue: ""
