@@ -1827,12 +1827,24 @@ def get_incidents_entities(incidents_ids: list):
 
 
 def get_cases_entities(cases_ids: list):
+    """
+    Sends case entities request
+    :param cases_ids: IDs of the requested cases.
+    :return: Response json of the get case entities endpoint (case objects)
+    """
     ids_json = {"ids": cases_ids}
     raw_res = http_request("POST", "/cases/entities/cases/v2", data=json.dumps(ids_json))
     return raw_res["resources"]
 
 
 def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
+    """
+    Get details on cases by providing case IDs
+    Args:
+        ids: List of case IDs to get details on
+    Returns:
+        list[dict[str, Any]]: Response data
+    """
     full_cases = []
 
     for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
@@ -2381,6 +2393,12 @@ def update_detection_request(ids: list[str], status: str) -> dict:
 
 
 def update_ngsiem_case_request(id: str, status: str) -> dict:
+    """
+    Updates a NGSIEM case status
+    :param id: The case ID to update
+    :param status: The new status
+    :return: The response
+    """
     list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
@@ -2682,6 +2700,11 @@ def get_remote_incident_data(remote_incident_id: str):
 
 
 def get_remote_ngsiem_case_data(remote_case_id: str):
+    """
+    Called every time get-remote-data command runs on a NGSIEM case.
+    Gets the relevant case entity from the remote system (CrowdStrike Falcon).
+    We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
     # We remove the prefix IncidentType to make the API call, since the CS API does not recognize our internal prefix
     original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     mirrored_case_list = get_cases_details([original_remote_case_id])
@@ -3019,6 +3042,17 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
 
 
 def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id: str) -> str:
+    """
+    Sends the request to update the relevant NGSIEM case entity.
+    :type delta: ``dict``
+    :param delta: The modified fields.
+    :type inc_status: ``IncidentStatus``
+    :param inc_status: The NGSIEM case status.
+    :type ngsiem_case_id: ``str``
+    :param ngsiem_case_id: The NGSIEM case ID to update.
+    :return: The response.
+    :rtype ``str``
+    """
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
@@ -3930,7 +3964,10 @@ def fetch_detections_by_product_type(
 def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
     """
     Fetches NGSIEM cases from CrowdStrikeFalcon
-    :param last_run:
+    :param last_run: The last run object
+    :param look_back: The look back time in minutes
+    :param fetch_query: The fetch query
+    :return: A tuple containing a list of cases and the updated last run object
     """
     cases = []
     offset = last_run.get("offset", 0)
