@@ -5153,6 +5153,149 @@ def test_get_policy_command_result_outputs_prefix(mocker):
     assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
 
 
+def test_lambda_get_function_command_with_minimal_parameters(mocker):
+    """
+    Given: Only function_name parameter provided
+    When: get_function_command is called
+    Then: Should call get_function with function name only and return formatted results
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Configuration": {
+            "FunctionName": "test-function",
+            "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:test-function",
+            "Runtime": "python3.9",
+        },
+        "Code": {
+            "RepositoryType": "S3",
+            "Location": "https://awslambda-us-east-1-tasks.s3.us-east-1.amazonaws.com/snapshots/123456789012/test-function"
+        },
+        "Tags": {"Environment": "production"},
+        "ResponseMetadata": {"RequestId": "test-request-id", "HTTPStatusCode": 200},
+    }
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "test-function", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert "AWS Lambda Functions" in result.readable_output
+    assert "test-function" in result.readable_output
+    mock_client.get_function.assert_called_once_with(FunctionName="test-function")
+
+
+def test_lambda_get_function_command_with_qualifier(mocker):
+    """
+    Given: Function name and qualifier parameters provided
+    When: get_function_command is called
+    Then: Should include qualifier in API call and return complete function information
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Configuration": {
+            "FunctionName": "prod-function",
+            "FunctionArn": "arn:aws:lambda:us-west-2:123456789012:function:prod-function:LIVE",
+            "Runtime": "nodejs18.x",
+        },
+        "Code": {
+            "RepositoryType": "S3",
+            "Location": "https://awslambda-us-west-2-tasks.s3.us-west-2.amazonaws.com/snapshots/123456789012/prod-function"
+        },
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "prod-function", "qualifier": "LIVE", "region": "us-west-2"}
+
+    # Act
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    mock_client.get_function.assert_called_once_with(FunctionName="prod-function", Qualifier="LIVE")
+    assert "prod-function" in result.readable_output
+
+
+def test_lambda_get_function_command_outputs_structure(mocker):
+    """
+    Given: A valid function response from AWS
+    When: get_function_command is called
+    Then: Should return CommandResults with properly structured outputs including region
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Configuration": {
+            "FunctionName": "output-test-function",
+            "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:output-test-function",
+            "Runtime": "java11",
+        },
+        "Code": {"RepositoryType": "S3", "Location": "https://example.com/function.zip"},
+        "Tags": {"Team": "Backend", "Project": "API"},
+        "Concurrency": {"ReservedConcurrentExecutions": 10},
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "output-test-function", "region": "eu-west-1"}
+
+    # Act
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert "AWS.Lambda.Functions(val.FunctionArn === obj.FunctionArn)" in result.outputs
+    output_data = result.outputs["AWS.Lambda.Functions(val.FunctionArn === obj.FunctionArn)"]
+    assert output_data["Region"] == "eu-west-1"
+    assert output_data["Configuration"]["FunctionName"] == "output-test-function"
+    assert output_data["Code"]["RepositoryType"] == "S3"
+    assert output_data["Tags"]["Team"] == "Backend"
+
+
+def test_lambda_get_function_command_readable_output_format(mocker):
+    """
+    Given: A valid function response from AWS
+    When: get_function_command is called
+    Then: Should return CommandResults with properly formatted markdown table in readable_output
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Configuration": {
+            "FunctionName": "readable-test-function",
+            "FunctionArn": "arn:aws:lambda:ap-south-1:123456789012:function:readable-test-function",
+            "Runtime": "python3.11",
+        },
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.get_function.return_value = mock_response
+
+    args = {"function_name": "readable-test-function", "region": "ap-south-1"}
+
+    # Act
+    result = Lambda.get_function_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert "AWS Lambda Functions" in result.readable_output
+    assert "readable-test-function" in result.readable_output
+    assert "python3.11" in result.readable_output
+    assert "ap-south-1" in result.readable_output
+
+
 def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
     """
     Given: A mocked boto3 CostExplorer client and valid cost usage arguments.

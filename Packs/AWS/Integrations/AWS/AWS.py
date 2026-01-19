@@ -3902,6 +3902,45 @@ class Lambda:
         )
 
 
+    @staticmethod
+    def get_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves information about a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including function name and optional qualifier
+
+        Returns:
+            CommandResults: Results of the operation with function information
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if args.get("qualifier") is not None:
+            kwargs.update({"Qualifier": args.get("qualifier")})
+
+        response = client.get_function(**kwargs)
+        func = response["Configuration"]
+        data = {
+            "FunctionName": func["FunctionName"],
+            "FunctionArn": func["FunctionArn"],
+            "Runtime": func["Runtime"],
+            "Region": args.get("region"),
+        }
+
+        raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        if raw:
+            raw.update({"Region": args.get("region")})
+
+        ec = {"AWS.Lambda.Functions(val.FunctionArn === obj.FunctionArn)": raw}
+        human_readable = tableToMarkdown("AWS Lambda Functions", data)
+        
+        return CommandResults(
+            outputs=ec,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+
 class ACM:
     service = AWSServices.ACM
 
@@ -4040,6 +4079,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-get": Lambda.get_function_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
@@ -4112,6 +4152,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:DeleteBucketPolicy",
     "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
+    "lambda:GetFunction",
     "lambda:GetFunctionConfiguration",
     "lambda:GetFunctionUrlConfig",
     "lambda:GetPolicy",
