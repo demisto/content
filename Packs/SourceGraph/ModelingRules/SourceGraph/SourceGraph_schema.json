@@ -1,0 +1,128 @@
+{
+    "sourcegraph_sourcegraph_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+      "SeverityText": {
+        "type": "string",
+        "is_array": false
+      },
+      "InstrumentationScope": {
+        "type": "string",
+        "is_array": false
+      },
+      "Caller": {
+        "type": "string",
+        "is_array": false
+      },
+      "Body": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      },
+      "Function": {
+        "type": "string",
+        "is_array": false
+      },
+      "ServiceName": {
+        "type": "string",
+        "is_array": false
+      },
+      "ServiceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "ServiceInstanceId": {
+        "type": "string",
+        "is_array": false
+      },
+      "TraceId": {
+        "type": "string",
+        "is_array": false
+      },
+      "SpandId": {
+        "type": "string",
+        "is_array": false
+      },
+      "route_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "method": {
+        "type": "string",
+        "is_array": false
+      },
+      "code": {
+        "type": "string",
+        "is_array": false
+      },
+      "duration": {
+        "type": "string",
+        "is_array": false
+      },
+      "shouldTrace": {
+        "type": "string",
+        "is_array": false
+      },
+      "Forward_For": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "entity": {
+        "type": "string",
+        "is_array": false
+      },
+      "actorUID": {
+        "type": "string",
+        "is_array": false
+      },
+      "ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAgent": {
+        "type": "string",
+        "is_array": false
+      },
+      "UserID": {
+        "type": "string",
+        "is_array": false
+      },
+      "AnonymousUserID": {
+        "type": "string",
+        "is_array": false
+      },
+      "source": {
+        "type": "string",
+        "is_array": false
+      },
+      "argument": {
+        "type": "string",
+        "is_array": false
+      },
+      "version": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
+
+
+
+
+
+
+
+
