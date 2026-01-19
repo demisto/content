@@ -359,9 +359,13 @@ script:
     - description: Maximum number of polling calls.
       name: max_polling_calls
       defaultValue: 10
-    - description: Should the command poll the status of the push factor or not.
+    - auto: PREDEFINED
+      description: Should the command poll the status of the push factor or not.
       name: polling
-      defaultValue: true
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: Enrolls and verifies a push factor for the specified user.
     name: okta-verify-push-factor
     outputs:
