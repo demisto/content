@@ -1532,7 +1532,7 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
-        outputs_key_field="rule_id",
+        outputs_key_field="name",
         outputs=biocs,
         raw_response=reply,
     )
@@ -1554,15 +1554,28 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
         is_xql=argToBoolean(args.get("is_xql", False)),
         comment=args.get("comment"),
         status=args.get("status"),
-        indicator=argToList(args.get("indicator")),
-        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
-        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
     )
+
+    indicator = args.get("indicator")
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            bioc_data["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    # required fields but can be empty
+    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
+    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
+
     reply = client.insert_biocs({"request_data": [bioc_data]})
+    rule_id = reply.get("added_objects", [])[0].get("id")
+    message = reply.get("added_objects", [])[0].get("status")
     return CommandResults(
-        readable_output="BIOC created successfully.",
+        readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
-        outputs={"rule_id": reply.get("id")},
+        outputs_key_field="rule_id",
+        outputs={"rule_id": rule_id},
         raw_response=reply,
     )
 
@@ -1577,22 +1590,34 @@ def bioc_update_command(client: Client, args: Dict) -> CommandResults:
         CommandResults: The command results.
     """
     bioc_data = assign_params(
-        rule_id=args.get("rule_id"),
         name=args.get("name"),
-        severity=args.get("severity"),
+        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
         type=args.get("type"),
         is_xql=argToBoolean(args.get("is_xql", False)),
         comment=args.get("comment"),
         status=args.get("status"),
-        indicator=argToList(args.get("indicator")),
-        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
-        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
     )
-    reply = client.insert_biocs(bioc_data)
+
+    indicator = args.get("indicator")
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            bioc_data["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    # required fields but can be empty
+    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
+    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
+
+    reply = client.insert_biocs({"request_data": [bioc_data]})
+    rule_id = reply.get("added_objects", [])[0].get("id")
+    message = reply.get("added_objects", [])[0].get("status")
     return CommandResults(
-        readable_output="BIOC updated successfully.",
+        readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
-        outputs={"rule_id": reply.get("id")},
+        outputs_key_field="rule_id",
+        outputs={"rule_id": rule_id},
         raw_response=reply,
     )
 
@@ -1608,14 +1633,25 @@ def bioc_delete_command(client: Client, args: Dict) -> str:
     """
     filters = assign_params(
         name=args.get("name"),
-        severity=args.get("severity"),
+        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
         type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        is_xql=argToBoolean(args.get("is_xql", False)),
         comment=args.get("comment"),
-        indicator=argToList(args.get("indicator")),
-        mitre_technique_id_and_name=argToList(args.get("mitre_technique_id_and_name")),
-        mitre_tactic_id_and_name=argToList(args.get("mitre_tactic_id_and_name")),
+        status=args.get("status"),
     )
+
+    indicator = args.get("indicator")
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            filters["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    # required fields but can be empty
+    filters["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
+    filters["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
+
     client.delete_biocs(filters)
     return "BIOC deleted successfully."
 
