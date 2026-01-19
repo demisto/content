@@ -55,7 +55,7 @@ isInternal: true
 tags:
 - Utility
 type: python
-dockerimage: demisto/python3:3.12.11.4417419
+dockerimage: demisto/python3:3.12.12.6663663
 dependson:
   must:
   - send-notification
