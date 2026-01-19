@@ -4090,9 +4090,6 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    MAX_LIMIT = 1000
-    query = handle_xql_limit(query, MAX_LIMIT)
-
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
@@ -4117,9 +4114,11 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("query is not specified")
 
+    MAX_QUERY_LIMIT = 1000
+    query_with_limit = handle_xql_limit(query, MAX_QUERY_LIMIT)
     timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = start_xql_query_platform(client, query, timeframe)
+    execution_id = start_xql_query_platform(client, query_with_limit, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
@@ -4129,6 +4128,10 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "execution_id": execution_id,
         "query_url": query_url,
     }
+    if query != query_with_limit:
+        outputs["details"] = (
+            f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
+        )
 
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
