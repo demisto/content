@@ -5451,7 +5451,7 @@ script:
         description: Maximum number of AMIs to be returned in response.
         required: false
       - name: next_token
-        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if exist or from the output file header.
+        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header.
         required: false
     outputs:
       - contextPath: AWS.EC2.Images.Architecture
@@ -5503,7 +5503,7 @@ script:
         description: Indicates whether the EBS volume is encrypted.
         type: boolean
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination
-        description: Indicates whether the EBS volume is deleted on instance termination.
+        description: Indicates whether the EBS volume is deleted upon instance termination.
         type: boolean
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
         description: The number of input/output operations per second (IOPS).
@@ -5515,7 +5515,7 @@ script:
         description: The ID of the snapshot.
         type: string
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize
-        description: The size of the volume, in GiB.
+        description: The size of the EBS volume, in GiB.
         type: number
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
         description: The volume type.
@@ -5545,7 +5545,7 @@ script:
         description: The type of root device used by the AMI.
         type: string
       - contextPath: AWS.EC2.Images.SriovNetSupport
-        description: Specifies whether enhanced networking with the Intel 82599 VF interface is enabled.
+        description: Indicates whether enhanced networking with the Intel 82599 VF interface is enabled.
         type: string
       - contextPath: AWS.EC2.Images.StateReason.Code
         description: The reason code for the state change.
