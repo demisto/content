@@ -5506,7 +5506,7 @@ script:
         description: Indicates whether the EBS volume is deleted on instance termination.
         type: boolean
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
-        description: The number of I/O operations per second (IOPS).
+        description: The number of input/output operations per second (IOPS).
         type: number
       - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
         description: Identifier for a user-managed CMK under which the EBS volume is encrypted.
@@ -5795,7 +5795,7 @@ script:
         description: The source region from which the AMI was copied.
         type: string
       - contextPath: AWS.EC2.Images.Region
-        description: The destination region where the AMI was copied to.
+        description: The region to which the AMI was copied.
         type: string
 
   - name: aws-ec2-image-available-waiter
