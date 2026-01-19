@@ -5447,6 +5447,12 @@ script:
         predefined:
           - 'true'
           - 'false'
+      - name: limit
+        description: Maximum number of AMIs to be returned in response.
+        required: false
+      - name: next_token
+        description: The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if exist or from the output file header.
+        required: false
     outputs:
       - contextPath: AWS.EC2.Images.Architecture
         description: The architecture of the image.
