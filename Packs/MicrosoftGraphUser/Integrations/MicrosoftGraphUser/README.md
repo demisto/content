@@ -888,7 +888,7 @@ There is no context output for this command.
 Forces a user to reset their password the next time they log in.
 Note that this action does not terminate the user’s current session.
 If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
-This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All and User-PasswordProfile.ReadWrite.All delegated permissions.
 
 #### Base Command
 
@@ -898,12 +898,11 @@ This operation is supported only when using a self-deployed app flow with the Di
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### msgraph-user-get-groups
 
 ***
