@@ -1,8 +1,7 @@
 import pytest
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
-from DelineaSS import Client, AuthenticationModel, \
+from DelineaSS import Client, AuthenticationModel,AuthenticationService, get_credentials, PlatformLogin, \
     secret_password_get_command, secret_username_get_command, \
     secret_get_command, secret_password_update_command, \
     secret_checkout_command, secret_checkin_command, \
@@ -147,8 +146,6 @@ def test_commands(command, args, http_response, context, mocker):
 
 
 def test_authenticate_async_secret_server(mocker):
-    from DelineaSS import AuthenticationService, AuthenticationModel
-
     mocker.patch(
         "DelineaSS.requests.get",
         return_value=mocker.Mock(text='{"healthy": true}', json=lambda: {"healthy": True})
@@ -163,8 +160,6 @@ def test_authenticate_async_secret_server(mocker):
 
 
 def test_authenticate_async_platform(mocker):
-    from DelineaSS import AuthenticationService, AuthenticationModel, PlatformLogin
-
     mocker.patch(
         "DelineaSS.requests.get",
         side_effect=[
@@ -186,8 +181,6 @@ def test_authenticate_async_platform(mocker):
 
 
 def test_platform_login_token_failure(mocker):
-    from DelineaSS import PlatformLogin, AuthenticationModel
-
     mocker.patch(
         "DelineaSS.requests.post",
         return_value=mocker.Mock(status_code=401, text="Unauthorized")
@@ -200,8 +193,6 @@ def test_platform_login_token_failure(mocker):
 
 
 def test_client_platform_authentication(mocker):
-    from DelineaSS import Client, AuthenticationModel
-
     model = AuthenticationModel(
         platform_login=True,
         token="TOKEN",
@@ -223,8 +214,6 @@ def test_client_platform_authentication(mocker):
 
 
 def test_user_create_on_platform_raises(mocker):
-    from DelineaSS import Client
-
     mock_auth = mocker.Mock(
         platform_login=True,
         token="t",
@@ -241,8 +230,6 @@ def test_user_create_on_platform_raises(mocker):
 
 
 def test_platform_user_create_on_secret_server_raises(mocker):
-    from DelineaSS import Client
-
     mocker.patch("DelineaSS.is_platform_or_ss",
                  return_value=mocker.Mock(platform_login=False))
 
@@ -255,8 +242,6 @@ def test_platform_user_create_on_secret_server_raises(mocker):
 
 
 def test_get_credentials(mocker):
-    from DelineaSS import get_credentials
-
     mock_client = mocker.Mock()
     mock_client.getSecret.return_value = {
         "id": 1,
@@ -273,8 +258,6 @@ def test_get_credentials(mocker):
 
 
 def test_fetch_credentials_empty(mocker):
-    from DelineaSS import fetch_credentials_command
-
     mocker.patch("DelineaSS.demisto.args", return_value={})
     mocker.patch("DelineaSS.demisto.credentials")
 
@@ -283,3 +266,250 @@ def test_fetch_credentials_empty(mocker):
     result = fetch_credentials_command(client, "")
 
     assert result.outputs == []
+
+
+def test_client_authenticate_platform_error(mocker):
+    auth_model = mocker.Mock(
+        platform_login=True,
+        error="Auth failed",
+        token=None,
+        vault_url="https://example.com"
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=auth_model)
+
+    with pytest.raises(Exception, match="Auth failed"):
+        Client(
+            server_url="https://example.com",
+            username="u",
+            password="p",
+            proxy=False,
+            verify=False
+        )
+
+
+def test_authentication_model_setters():
+    model = AuthenticationModel("u", "p", "url")
+    model.set_platform_login(True)
+    assert model.platform_login is True
+    model.set_platform_login(False)
+    assert model.platform_login is False
+    assert model.error is None
+    model.error = "Some error"
+    assert model.error == "Some error"
+
+
+def test_http_request_raises_exception(mocker):
+    mocker.patch(
+        "DelineaSS.is_platform_or_ss",
+        return_value=mocker.Mock(
+            platform_login=False,
+            token="t",
+            vault_url="https://example.com"
+        )
+    )
+    mocker.patch.object(Client, "_generate_token", return_value="Bearer token")
+
+    client = Client("https://example.com", "u", "p", False, False)
+
+    # Now force exception in _http_request
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=Exception("Request failed")
+    )
+
+    with pytest.raises(Exception, match="Request failed"):
+        client._http_request("GET", "/test")
+
+
+def test_authentication_model_error_handling():
+    model = AuthenticationModel("u", "p", "url")
+    assert model.error is None
+    model.error = "Some error"
+    assert model.error == "Some error"
+
+
+def test_client_authenticate_non_platform_success(mocker):
+    auth_model = mocker.Mock(
+        platform_login=False,
+        token="SS_TOKEN",
+        vault_url="https://example.com",
+        error=None
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=auth_model)
+    mocker.patch.object(Client, "_generate_token", return_value="Bearer SS_TOKEN")
+
+    client = Client(
+        server_url="https://example.com",
+        username="u",
+        password="p",
+        proxy=False,
+        verify=False
+    )
+
+    assert client._token == "Bearer SS_TOKEN"
+
+
+def test_client_authenticate_platform_success(mocker):
+    auth_model = mocker.Mock(
+        platform_login=True,
+        token="PLATFORM_TOKEN",
+        vault_url="https://platform.example.com",
+        error=None
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=auth_model)
+
+    client = Client(
+        server_url="https://platform.example.com",
+        username="u",
+        password="p",
+        proxy=False,
+        verify=False
+    )
+
+    assert client._token == "PLATFORM_TOKEN"
+
+
+def test_authenticate_async_invalid_url(mocker):
+    mocker.patch(
+        "DelineaSS.requests.get",
+        return_value=mocker.Mock(text="", json=lambda: {})
+    )
+
+    model = AuthenticationModel(server_url="https://invalid.example.com")
+    result = AuthenticationService().authenticate_async(model)
+
+    assert result.error == "Invalid Server URL https://invalid.example.com"
+
+
+def test_platform_login_no_active_vault(mocker):
+    mocker.patch.object(
+        PlatformLogin,
+        "get_access_token",
+        return_value=mocker.Mock(status_code=200, json=lambda: {"access_token": "t", "expires_in": 10})
+    )
+
+    mocker.patch.object(
+        PlatformLogin,
+        "get_vaults",
+        return_value=mocker.Mock(status_code=200, json=lambda: {"vaults": []})
+    )
+
+    model = AuthenticationModel(server_url="https://pf.example.com")
+    result = PlatformLogin().platform_authentication(model)
+
+    assert result.error == "No active default vault found"
+
+
+def test_check_json_response_healthy_string(mocker):
+    mocker.patch(
+        "DelineaSS.requests.get",
+        return_value=mocker.Mock(text="Healthy", json=lambda: {})
+    )
+
+    model = AuthenticationModel(server_url="https://example.com")
+    service = AuthenticationService()
+
+    assert service.check_json_response_async("url", model) is True
+
+
+def test_test_module_failure(mocker):
+    from DelineaSS import test_module
+
+    client = mocker.Mock()
+    client._token = ""
+
+    result = test_module(client)
+
+    assert "Failed to get authorization token" in result
+
+
+def test_authenticate_async_exception(mocker):
+    mocker.patch("DelineaSS.requests.get", side_effect=Exception("Boom"))
+
+    model = AuthenticationModel(server_url="https://example.com")
+    result = AuthenticationService().authenticate_async(model)
+
+    assert result.error is not None
+    assert (
+        "Invalid Server URL" in result.error
+        or "Authentication failed" in result.error
+    )
+
+
+def test_authenticate_async_runtime_error(mocker):
+    mocker.patch.object(
+        AuthenticationService,
+        "check_json_response_async",
+        side_effect=Exception("Crash")
+    )
+
+    model = AuthenticationModel(server_url="https://example.com")
+
+    with pytest.raises(RuntimeError, match="Authentication failed: Crash"):
+        AuthenticationService().authenticate_async(model)
+
+
+def test_platform_handle_error_response():
+    model = PlatformLogin().handle_error_response("error")
+
+    assert model.error == "error"
+    assert model.platform_login is True
+
+
+def test_client_platform_authentication_error_message(mocker):
+    auth_model = mocker.Mock(
+        platform_login=True,
+        error="Platform error",
+        token=None,
+        vault_url=None
+    )
+
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=auth_model)
+
+    with pytest.raises(Exception, match="Platform error"):
+        Client("https://example.com", "u", "p", False, False)
+
+
+def test_get_credentials_partial(mocker):
+    mock_client = mocker.Mock()
+    mock_client.getSecret.return_value = {
+        "id": 1,
+        "items": [{"fieldName": "Username", "itemValue": "admin"}]
+    }
+
+    creds = get_credentials(mock_client, "1")
+    assert creds["user"] == "admin"
+    assert creds.get("password") is None
+
+
+def test_check_json_response_invalid_json(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.side_effect = ValueError("Invalid JSON")
+    mock_response.text = "Not JSON"
+    mocker.patch("DelineaSS.requests.get", return_value=mock_response)
+    service = AuthenticationService()
+    model = AuthenticationModel("u", "p", "https://example.com")
+    assert service.check_json_response_async("url", model) is False
+
+
+def test_client_generate_token_none(mocker):
+    mock_auth = mocker.Mock(platform_login=False, token=None, vault_url="https://url")
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=mock_auth)
+    mocker.patch.object(Client, "_generate_token", return_value=None)
+    client = Client("https://url", "u", "p", False, False)
+    token = client._generate_token()
+    assert token is None
+
+
+def test_client_user_update_on_platform_raises(mocker):
+    mock_auth = mocker.Mock(platform_login=True, token="t", vault_url="url", error=None)
+    mocker.patch("DelineaSS.is_platform_or_ss", return_value=mock_auth)
+
+    client = Client("https://url", "u", "p", False, False)
+
+    with pytest.raises(DemistoException):
+        client.userUpdate(id="1", Name="TestUser")

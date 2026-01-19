@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
-import json
 import urllib3
-from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -232,17 +230,19 @@ class Client(BaseClient):
         return search_id
 
     def searchSecret(self, **kwargs) -> list:
-        count_params = len(kwargs)
         params = {}
-        if count_params > 0:
-            for key, value in kwargs.items():
-                key = key.replace('_', '.')
-                key = key.replace("sortBy_", "sortBy[0]_")
-                params[key] = value
+        for key, value in kwargs.items():
+            key = key.replace('_', '.')
+            key = key.replace("sortBy_", "sortBy[0]_")
+            params[key] = value
 
-        response = self._http_request("GET", url_suffix="/api/v1/secrets", params=params).get("records")
-        idSecret = list(map(lambda x: x.get('id'), response))
-        return idSecret
+        response = self._http_request(
+            "GET",
+            url_suffix="/api/v1/secrets",
+            params=params
+        ).get("records", [])
+
+        return [item.get("id") for item in response]
 
     def updateSecretPassword(self, secret_id: str, new_password: str, auto_comment: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
@@ -338,11 +338,13 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix, json_data=body)
 
     def searchFolder(self, search_folder: str) -> list:
-        url_suffix = "/api/v1/folders/lookup?filter.searchText=" + search_folder
+        url_suffix = f"/api/v1/folders/lookup?filter.searchText={search_folder}"
 
-        response_records = self._http_request("GET", url_suffix).get('records')
-        idfolder = list(map(lambda x: x.get('id'), response_records))
-        return idfolder
+        response_records = self._http_request(
+            "GET", url_suffix
+        ).get("records", [])
+
+        return [item.get("id") for item in response_records]
 
     def folderDelete(self, folder_id: str) -> str:
         url_suffix = "/api/v1/folders/" + folder_id
