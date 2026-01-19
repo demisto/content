@@ -2114,7 +2114,7 @@ script:
           name: status
           predefined:
             - 'new'
-            - 'under_investigation'
+            - 'in_progress'
             - 'resolved'
         - auto: PREDEFINED
           description: |
