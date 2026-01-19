@@ -25,7 +25,7 @@ configuration:
   section: Connect
 - display: OAuth Scopes (OAuth)
   name: oauth_scopes
-  defaultvalue: etp.alrt.ro etp.trce.ro
+  defaultvalue: etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw
   type: 0
   required: false
   additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."

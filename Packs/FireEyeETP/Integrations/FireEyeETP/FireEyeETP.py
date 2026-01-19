@@ -26,12 +26,20 @@ GLOBAL VARS
 
 PARAMS = demisto.params()
 
+'''
+Cloud REST APIs are rate-limited to 60 requests per minute per API route
+(e.g., /trace, /alert, /quarantine) per customer.
+The fetch command uses:
+    - 1 request to retrieve the list of alerts
+    - 1 additional request per alert to retrieve its severity
+As a result, a maximum of 59 alerts can be fetched per minute.
+'''
 MAX_FETCHED_ALERT= min(int(PARAMS.get("incidents_per_fetch", 59)), 59)
 FETCH_TIME = PARAMS.get("fetch_time", "1 minutes")
 
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
-SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
+SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
 BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server"))
@@ -49,11 +57,6 @@ OAUTH_EXPIRES_KEY = "oauth_token_expires_at"
 """
 SEARCH ATTRIBUTES VALID VALUES
 """
-
-#TODO: refactor this comments
-# Cloud REST APIs have a rate limit of 60 requests per minute per API route (/trace, /alert, and /quarantine) for every customer.
-# The fetch command includes 1 request for retrieving the alerts, and then 1 request prt each fetched alert for retrieving the severity.
-# (which means max 59 alerts cab be fetched in 1 minutes)
 
 REJECTION_REASONS = [
     "ETP102",
@@ -615,7 +618,6 @@ def alert_context_data(alert):
     return context_data
 
 
-# TODO: CHECK IF alert_id IS IN USED, IS THERE ANY CALL USE IT?
 def get_alerts_request(size=None, start_time=None, end_time=None, pagination_token=None, body={}):
     """
     Fetch alerts from the /api/v2/public/alerts/search endpoint.
