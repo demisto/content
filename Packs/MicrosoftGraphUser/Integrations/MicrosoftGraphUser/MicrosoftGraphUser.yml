@@ -769,9 +769,9 @@ script:
       name: timeout
       required: false
       defaultValue: 60
-    - description: The specific authentication method ID to use.
-      name: auth_method_id
-      required: false
+    - description: The MFA access token obtained from msgraph-user-create-mfa-client-access-token command.
+      name: access_token
+      required: true
     description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
     name: msgraph-user-request-mfa
   - arguments:
@@ -787,14 +787,34 @@ script:
     - contextPath: MSGraphUser.AuthMethod.DisplayName
       description: The display name of the authentication method.
       type: String
-    - contextPath: MSGraphUser.MFAStatus.User
-      description: The user principal name.
+    - contextPath: MSGraphUser.AuthMethod.type
+      description: The type of the authentication method.
       type: String
-    - contextPath: MSGraphUser.MFAStatus.IsMfaCapable
-      description: Whether the user is MFA capable.
-      type: Boolean
   - name: msgraph-user-create-mfa-client-secret
     description: Issue a new client secret for the MFA app.
+    outputs:
+    - contextPath: MSGraphUser.mfa_client_secret.valid_until
+      description: The expiration date for the client secret in ISO 8601 format.
+      type: String
+    - contextPath: MSGraphUser.mfa_client_secret.MFA_client_secret
+      description: The new MFA client secret.
+      type: String
+    - contextPath: MSGraphUser.mfa_client_secret.valid_from
+      description: The date of issue for the client secret.
+      type: String
+  - name: msgraph-user-create-mfa-client-access-token
+    description: Issue a new access token for the MFA app.
+    arguments:
+    - description: The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command.
+      name: client_secret
+      required: true
+    outputs:
+    - contextPath: MSGraphUser.mfa_access_token.valid_until
+      description: The expiration date for the access token in epoch format.
+      type: String
+    - contextPath: MSGraphUser.mfa_access_token.access_token
+      description: The access token value.
+      type: String
   dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: '-'
