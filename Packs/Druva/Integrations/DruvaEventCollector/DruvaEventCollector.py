@@ -194,7 +194,7 @@ def fetch_events(
     Args:
         client (Client): Druva client to use.
         last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
-        max_fetch (int): The maximum number of events per fetch.
+        max_fetch (int): The maximum number of events per fetch (applied globally across all event types).
         event_types (list[str]): List of event types to fetch.
     Returns:
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
@@ -206,11 +206,16 @@ def fetch_events(
 
     # Fetch events for each selected event type
     for event_type in event_types:
+        # Check if we've already reached the global max_fetch limit
+        if len(final_events) >= max_fetch:
+            demisto.debug(f"Reached max_fetch limit of {max_fetch}. Skipping remaining event types.")
+            break
+
         demisto.debug(f"Fetching events for type: {event_type}")
         done_fetching: bool = False
         type_events: list[dict] = []
 
-        while len(type_events) < max_fetch and not done_fetching:
+        while not done_fetching:
             # Try new format first, then fall back to old format for backward compatibility
             tracker = last_run.get(f"tracker_{event_type}") or last_run.get("tracker")
             # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
@@ -229,7 +234,7 @@ def fetch_events(
             done_fetching = len(events) < MAX_EVENTS_API_CALL
 
             # Save the next_run as a dict with the last_fetch key to be stored
-            last_run[f"tracker_{event_type}"] = new_tracker
+            last_run[f"tracker_{event_type}"] = new_tracker or ""
             type_events.extend(events)
 
         final_events.extend(type_events)
