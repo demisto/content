@@ -1,5 +1,8 @@
 category: Analytics & SIEM
 provider: Druva
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: DruvaEventCollector
   version: -1
@@ -70,7 +73,7 @@ script:
     description: Gets events from Druva API in one batch (max 500). If tracker is given, only its successive events will be fetched.
     execution: false
     name: druva-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6663663
   isfetchevents: true
   runonce: false
   script: '-'
