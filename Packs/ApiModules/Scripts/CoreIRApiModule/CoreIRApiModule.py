@@ -1422,6 +1422,7 @@ class CoreClient(BaseClient):
         )
         return response.get("reply")
 
+
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
         self.search_field: str = search_field
@@ -1447,6 +1448,7 @@ class FilterBuilder:
         Available type options for filter filtering.
         Each member holds its string value and its logical operator for multi-value scenarios.
         """
+
         operator: str
 
         def __new__(cls, value, operator):
@@ -1662,6 +1664,7 @@ def build_webapp_request_data(
         "jsons": [],
         "onDemandFields": on_demand_fields,
     }
+
 
 def catch_and_exit_gracefully(e):
     """

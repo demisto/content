@@ -4371,6 +4371,7 @@ def test_create_filter_from_args():
     }
     assert expected_result == query
 
+
 class TestFilterBuilder:
     def test_add_field_without_mapper(self):
         """
