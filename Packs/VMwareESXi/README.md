@@ -2,25 +2,25 @@
 
 ## Overview
 
-VMware ESXi is a hypervisor that allows you to run multiple virtual machines on a single server. This integration collects logs to track user logins, VM actions, and system updates, providing visibility into your virtual environment
+VMware ESXi is a hypervisor that enables you to run multiple virtual machines on a single server. This integration collects logs related to user logins, VM operations, and system updates, providing enhanced visibility into your virtualized environment.
 
 ## This pack includes
 
 ### Data normalization capabilities
 
-* Rules for VMWare ESXi logs that are ingested via the Broker VM into Cortex XSIAM.
+* Rules for VMware ESXi logs ingested via the Broker VM into Cortex XSIAM.
 
 ### Supported timestamp formats
 
 * Pay attention: Timestamp parsing is available for UTC timezone in the following formats:
   * `%Y-%m-%dT%H:%M:%SZ` - UTC +00:00 format.  
-  * `%Y-%m-%dT%H:%M:%E*SZ` - UTC +00:00 format with digits of fractional precision.
+  * `%Y-%m-%dT%H:%M:%E*SZ` - UTC +00:00 format with fractional seconds.
 
 ***
 
 ## Data Collection
 
-### VMWare ESXi side
+### VMmare ESXi side
 
 To forward ESXi logs to the collector, you must configure the syslog target and allow the traffic through the ESXi firewall.
 
@@ -50,9 +50,9 @@ For more information, see [here](https://techdocs.broadcom.com/us/en/vmware-cis/
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/configuring-vcenter-server-8-0/configuring-vcenter-server-using-the-management-interface/forward-vcenter-server-log-files.html).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
-Follow the below steps to configure the Broker VM to receive VMWare ESXi logs.
+Follow the below steps to configure the Broker VM to receive VMware ESXi logs.
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
@@ -61,10 +61,10 @@ Follow the below steps to configure the Broker VM to receive VMWare ESXi logs.
 
 | Parameter    | Value                                                                                                                         |
 |:-------------|:------------------------------------------------------------------------------------------------------------------------------|
-| `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in VMWare ESXi). |
-| `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from VMWare ESXi.   |
+| `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in VMware ESXi). |
+| `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from VMware ESXi.   |
 | `Format`     | Enter **Raw**.                                                                                                                |
-| `Vendor`     | Enter **VMWare**.                                                                                                             |
+| `Vendor`     | Enter **VMware**.                                                                                                             |
 | `Product`    | Enter **ESXi**.                                                                                                               |
 
 </~XSIAM>
