@@ -1403,11 +1403,9 @@ class ContentClient:
         self.logger = ContentClientLogger(client_name, diagnostic_mode=diagnostic_mode)
 
         # httpx client for async operations - created lazily per event loop
-        self._client: Optional[httpx.AsyncClient] = None
-        self._client_event_loop: Optional[asyncio.AbstractEventLoop] = None
-        self._client_lock: threading.Lock = threading.Lock()
+        self._local_storage = threading.local()
         self._http2_available: bool = True  # Will be set to False if HTTP/2 fails
-        
+
         if self._is_multithreaded:
             support_multithreading()
 
@@ -1426,59 +1424,60 @@ class ContentClient:
         except RuntimeError:
             current_loop = None
 
-        with self._client_lock:
-            # Check if we need to create a new client
-            if self._client is None or self._client_event_loop != current_loop:
-                # Close existing client if any
-                if self._client is not None:
-                    try:
-                        # Schedule close on the old loop if possible
-                        if self._client_event_loop is not None and not self._client_event_loop.is_closed():
-                            self._client_event_loop.call_soon_threadsafe(lambda c=self._client: asyncio.create_task(c.aclose()))
-                    except Exception:
-                        pass  # Best effort cleanup
-
-                # Create new client for current loop
+        # Check if we need to create a new client
+        if not hasattr(self._local_storage, "client") or self._local_storage.client is None or \
+                getattr(self._local_storage, "client_event_loop", None) != current_loop:
+            # Close existing client if any
+            if getattr(self._local_storage, "client", None) is not None:
                 try:
-                    if self._http2_available:
-                        self._client = httpx.AsyncClient(
-                            base_url=self._base_url.rstrip("/"),
-                            timeout=self.timeout,
-                            headers={"User-Agent": DEFAULT_USER_AGENT},
-                            verify=self._verify,
-                            http2=True,
-                        )
-                except ImportError:
-                    self._http2_available = False
-                    self.logger.info("HTTP/2 dependencies missing, falling back to HTTP/1.1 transport")
+                    # Schedule close on the old loop if possible
+                    old_loop = getattr(self._local_storage, "client_event_loop", None)
+                    old_client = self._local_storage.client
+                    if old_loop is not None and not old_loop.is_closed():
+                        old_loop.call_soon_threadsafe(lambda c=old_client: asyncio.create_task(c.aclose()))
+                except Exception:
+                    pass  # Best effort cleanup
 
-                if not self._http2_available or self._client is None:
-                    self._client = httpx.AsyncClient(
+            # Create new client for current loop
+            try:
+                if self._http2_available:
+                    self._local_storage.client = httpx.AsyncClient(
                         base_url=self._base_url.rstrip("/"),
                         timeout=self.timeout,
                         headers={"User-Agent": DEFAULT_USER_AGENT},
                         verify=self._verify,
-                        http2=False,
+                        http2=True,
                     )
+            except ImportError:
+                self._http2_available = False
+                self.logger.info("HTTP/2 dependencies missing, falling back to HTTP/1.1 transport")
 
-                self._client_event_loop = current_loop
+            if not self._http2_available or getattr(self._local_storage, "client", None) is None:
+                self._local_storage.client = httpx.AsyncClient(
+                    base_url=self._base_url.rstrip("/"),
+                    timeout=self.timeout,
+                    headers={"User-Agent": DEFAULT_USER_AGENT},
+                    verify=self._verify,
+                    http2=False,
+                )
 
-            return self._client
+            self._local_storage.client_event_loop = current_loop
+
+        return self._local_storage.client
 
     async def aclose(self) -> None:
         """Close the async HTTP client and release resources."""
         if self._closed:
             return
         self._closed = True
-        with self._client_lock:
-            if self._client is not None:
-                try:
-                    await self._client.aclose()
-                except Exception as e:
-                    self.logger.error(f"Error closing async client: {e}")
-                finally:
-                    self._client = None
-                    self._client_event_loop = None
+        if hasattr(self._local_storage, "client") and self._local_storage.client is not None:
+            try:
+                await self._local_storage.client.aclose()
+            except Exception as e:
+                self.logger.error(f"Error closing async client: {e}")
+            finally:
+                self._local_storage.client = None
+                self._local_storage.client_event_loop = None
 
     def __enter__(self) -> "ContentClient":
         """Enter context manager."""
@@ -1931,14 +1930,13 @@ class ContentClient:
                     return response
             finally:
                 # Clean up the client after each sync request to prevent event loop issues
-                with self._client_lock:
-                    if self._client is not None:
-                        try:
-                            await self._client.aclose()
-                        except Exception:
-                            pass
-                        self._client = None
-                        self._client_event_loop = None
+                if hasattr(self._local_storage, "client") and self._local_storage.client is not None:
+                    try:
+                        await self._local_storage.client.aclose()
+                    except Exception:
+                        pass
+                    self._local_storage.client = None
+                    self._local_storage.client_event_loop = None
 
         # Check if we're already in an async context
         try:
