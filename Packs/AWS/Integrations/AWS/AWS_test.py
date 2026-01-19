@@ -6939,7 +6939,7 @@ def test_ec2_describe_images_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.describe_images.return_value = {
+    mock_response = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Images": [
             {
@@ -6952,15 +6952,19 @@ def test_ec2_describe_images_command_success(mocker):
             }
         ],
     }
+    mock_client.describe_images.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
 
     args = {"image_ids": "ami-12345678"}
 
     result = EC2.describe_images_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.Images"
-    assert result.outputs_key_field == "ImageId"
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["ImageId"] == "ami-12345678"
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    assert "AWS.EC2(true)" in result.outputs
+    assert len(result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]) == 1
+    assert result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"][0]["ImageId"] == "ami-12345678"
     assert "AWS EC2 Images" in result.readable_output
 
 
@@ -6973,7 +6977,7 @@ def test_ec2_describe_images_command_with_filters(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.describe_images.return_value = {
+    mock_response = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Images": [
             {
@@ -6985,14 +6989,18 @@ def test_ec2_describe_images_command_with_filters(mocker):
             }
         ],
     }
+    mock_client.describe_images.return_value = mock_response
 
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
     mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "name", "Values": ["ubuntu*"]}])
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
 
     args = {"filters": "name=name,values=ubuntu*"}
 
     result = EC2.describe_images_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert len(result.outputs) == 1
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    assert len(result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]) == 1
     mock_client.describe_images.assert_called_once()
 
 
@@ -7023,7 +7031,7 @@ def test_ec2_describe_images_command_with_multiple_images(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.describe_images.return_value = {
+    mock_response = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Images": [
             {
@@ -7042,14 +7050,20 @@ def test_ec2_describe_images_command_with_multiple_images(mocker):
             },
         ],
     }
+    mock_client.describe_images.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
 
     args = {"owners": "self"}
 
     result = EC2.describe_images_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["ImageId"] == "ami-11111111"
-    assert result.outputs[1]["ImageId"] == "ami-22222222"
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    images_list = result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]
+    assert len(images_list) == 2
+    assert images_list[0]["ImageId"] == "ami-11111111"
+    assert images_list[1]["ImageId"] == "ami-22222222"
 
 
 def test_ec2_create_image_command_success(mocker):
