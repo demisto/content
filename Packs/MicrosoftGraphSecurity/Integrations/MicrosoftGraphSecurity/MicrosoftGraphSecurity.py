@@ -251,7 +251,6 @@ class MsGraphClient:
             "dataSourceScopes": data_source_scopes,
         }
         remove_nulls_from_dictionary(body)
-        demisto.debug(body)
         self.ms_client.http_request(ok_codes=[204], method="PATCH", url_suffix=url, json_data=body, resp_type="text")
 
     def list_ediscovery_search(self, case_id, search_id):
@@ -666,12 +665,6 @@ class MsGraphClient:
             method="PATCH", url_suffix=f"security/incidents/{incident_id}", json_data=body, timeout=timeout
         )
         return updated_incident
-    
-    
-    def download_file(self, url):
-        return self.ms_client.http_request(
-            method="GET", url_suffix=url,
-        )
 
 """ HELPER FUNCTIONS """
 
@@ -1960,7 +1953,7 @@ def list_case_operation_command(
     """
     case_id = args.get("case_id")
     operation_id = args.get("operation_id")
-    limit = 0 if argToBoolean(args.get("all_results")) else int(args.get("limit"))
+    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit"))
 
     if operation_id:
         raw_res = client.get_case_operation(case_id, operation_id)
@@ -1976,10 +1969,11 @@ def list_case_operation_command(
             "Action": operation.get("action"),
             "Status": operation.get("status"),
             "Created By": operation.get("createdBy"),
-            "Link to download a file":
-                (m if isinstance(m := operation.get("exportFileMetadata"), dict)
-                else (m[0] if isinstance(m, list) and m and isinstance(m[0], dict) else {}))
-        .get("downloadUrl")
+            "Link to download a file": (
+                m
+                if isinstance(m := operation.get("exportFileMetadata"), dict)
+                else (m[0] if isinstance(m, list) and m and isinstance(m[0], dict) else {})
+            ).get("downloadUrl"),
         }
         for operation in operation_list
     ]
@@ -1989,10 +1983,7 @@ def list_case_operation_command(
         outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
         readable_output=tableToMarkdown(
-            name="Results",
-            headers=["ID", "Action", "Status", "Created By", "Link to download a file"],
-            t=hr,
-            removeNull=True
+            name="Results", headers=["ID", "Action", "Status", "Created By", "Link to download a file"], t=hr, removeNull=True
         ),
         raw_response=raw_res,
     )
@@ -2029,31 +2020,21 @@ def export_result_ediscovery_data_command(
     if not operation_url:
         raise DemistoException("Missing Location header in exportResult response")
 
-    case_id_from_url = (
-        re.search(r"ediscoveryCases\('([^']+)'\)", operation_url)
-        or re.search(r"ediscoveryCases/([^/]+)/", operation_url)
+    case_id_from_url = re.search(r"ediscoveryCases\('([^']+)'\)", operation_url) or re.search(
+        r"ediscoveryCases/([^/]+)/", operation_url
     )
-    operation_id_from_url = (
-        re.search(r"operations\('([^']+)'\)", operation_url)
-        or re.search(r"operations/([^/?]+)", operation_url)
+    operation_id_from_url = re.search(r"operations\('([^']+)'\)", operation_url) or re.search(
+        r"operations/([^/?]+)", operation_url
     )
 
     case_id = (case_id_from_url.group(1) if case_id_from_url else args.get("case_id")) or "N/A"
-    operation_id = (operation_id_from_url.group(1) if operation_id_from_url else "N/A")
+    operation_id = operation_id_from_url.group(1) if operation_id_from_url else "N/A"
 
     readable_output = (
-        "eDiscovery export request was submitted successfully.\n"
-        f"- Case ID: {case_id}\n"
-        f"- Operation ID: {operation_id}\n"
+        "eDiscovery export request was submitted successfully.\n" f"- Case ID: {case_id}\n" f"- Operation ID: {operation_id}\n"
     )
-    outputs = {
-        "Location": operation_url,
-        "OperationID": operation_id,
-        "CaseID": case_id
-    }
-    return CommandResults(readable_output=readable_output,
-                          outputs=outputs,
-                          outputs_prefix="MsGraph.eDiscoveryCase.Export")
+    outputs = {"Location": operation_url, "OperationID": operation_id, "CaseID": case_id}
+    return CommandResults(readable_output=readable_output, outputs=outputs, outputs_prefix="MsGraph.eDiscoveryCase.Export")
 
 
 # @polling_function(
@@ -2621,10 +2602,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
     return command_results
 
-def download_export_file(client: MsGraphClient, args) -> dict:
-    result = client.download_file(args.get("url"))
-    demisto.debug(result)
-    return fileResult(args.get("name", "Unknown"), result)
 
 def main():
     params: dict = demisto.params()
@@ -2693,7 +2670,6 @@ def main():
         "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
-        "msg-download-file": download_export_file,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")

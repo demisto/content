@@ -1225,5 +1225,5 @@ def test_export_result_ediscovery_data_command(mocker):
 
     result = export_result_ediscovery_data_command(client_mocker, args)
 
-    assert "eDiscovery export location" in result.readable_output
+    assert "eDiscovery export request was submitted successfully" in result.readable_output
     assert "op_123" in result.readable_output

@@ -3080,10 +3080,6 @@ script:
     description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate.
     name: msg-export-result-ediscovery-data
     outputs: []
-  - arguments:
-    - name: url
-    name: msg-download-file
-    description: downloadfile
   dockerimage: demisto/crypto:1.0.0.6308375
   isfetch: true
   runonce: false
