@@ -3912,10 +3912,10 @@ script:
       - disabled
     - description: 'The BIOC indicator to filter by.'
       name: indicator
-    - description: 'MITRE technique ID and name.'
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_technique_id_and_name
-    - description: 'MITRE tactic ID and name.'
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_tactic_id_and_name
     - auto: PREDEFINED
@@ -4007,7 +4007,10 @@ script:
       predefined:
       - enabled
       - disabled
-    - description: "The BIOC indicator, for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'. For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs."
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
       isArray: true
       name: indicator
       required: true
@@ -4035,11 +4038,14 @@ script:
   - arguments:
     - description: BIOC rule ID.
       name: rule_id
+      required: true
     - description: BIOC name.
       name: name
+      required: true
     - auto: PREDEFINED
       description: BIOC severity.
       name: severity
+      required: true
       predefined:
       - info
       - low
@@ -4048,6 +4054,7 @@ script:
     - auto: PREDEFINED
       description: BIOC type.
       name: type
+      required: true
       predefined:
       - other
       - persistence
@@ -4073,19 +4080,25 @@ script:
       - 'false'
     - description: BIOC comment.
       name: comment
+      required: true
     - auto: PREDEFINED
       description: BIOC status.
       name: status
+      required: true
       predefined:
       - enabled
       - disabled
-    - description: BIOC indicator.
+    - description: |-
+        The BIOC indicator,
+        for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
+        For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
       isArray: true
       name: indicator
-    - description: MITRE technique ID and name.
+      required: true
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_technique_id_and_name
-    - description: MITRE tactic ID and name.
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
       isArray: true
       name: mitre_tactic_id_and_name
     description: Updates an existing BIOC.
@@ -4145,10 +4158,10 @@ script:
     - description: BIOC indicator.
       isArray: true
       name: indicator
-    - description: MITRE technique ID and name.
+    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_technique_id_and_name
-    - description: MITRE tactic ID and name.
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']."
       isArray: true
       name: mitre_tactic_id_and_name
     description: Deletes a BIOC.

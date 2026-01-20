@@ -527,7 +527,7 @@ class Client(CoreClient):
         )
         return reply
 
-    def insert_biocs(self, request_data):
+    def insert_or_update_biocs(self, request_data):
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/insert/",
@@ -539,11 +539,11 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/bioc/delete",
-            json_data={"request_data": request_data},
+            json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
         )
-        return reply.get("reply", {})
+        return reply
 
     def get_correlation_rules(self, request_data: dict):
         reply = self._http_request(
@@ -1478,14 +1478,14 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
-def create_filters_for_bioc_list(args: dict) -> list:
+def create_filters_for_bioc(args: dict) -> list:
     filters = []
     if name := args.get("name"):
         filters.append({"field": "name", "operator": "EQ", "value": name})
     if severity := args.get("severity"):
         filters.append({"field": "severity", "operator": "EQ", "value": BIOC_SEVERITY_MAPPING.get(severity, severity)})
-    if type_ := args.get("type"):
-        filters.append({"field": "type", "operator": "EQ", "value": type_})
+    if bioc_type := args.get("type"):
+        filters.append({"field": "type", "operator": "EQ", "value": bioc_type})
     if is_xql := args.get("is_xql"):
         filters.append({"field": "is_xql", "operator": "EQ", "value": argToBoolean(is_xql)})
     if comment := args.get("comment"):
@@ -1503,6 +1503,7 @@ def create_filters_for_bioc_list(args: dict) -> list:
 
 def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-BIOCs
     Returns a list of BIOCs.
     Args:
         client (Client): The client to use.
@@ -1510,7 +1511,7 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    filters = create_filters_for_bioc_list(args)
+    filters = create_filters_for_bioc(args)
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
@@ -1538,8 +1539,35 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
+    bioc_data = assign_params(
+        rule_id=args.get("rule_id"),  # for update only
+        name=args.get("name"),
+        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
+        type=args.get("type"),
+        is_xql=argToBoolean(args.get("is_xql", False)),
+        comment=args.get("comment"),
+        status=args.get("status"),
+    )
+
+    indicator = args.get("indicator")
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            bioc_data["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    # required fields but can be empty
+    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
+    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
+
+    return client.insert_or_update_biocs({"request_data": [bioc_data]})
+
+
 def bioc_create_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
     Creates a new BIOC.
     Args:
         client (Client): The client to use.
@@ -1547,41 +1575,23 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    bioc_data = assign_params(
-        name=args.get("name"),
-        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
-        type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql", False)),
-        comment=args.get("comment"),
-        status=args.get("status"),
-    )
+    reply = bioc_create_or_update_helper(client, args)
+    added_objects = reply.get("added_objects")
+    message = added_objects[0].get("status")
+    outputs = {"rule_id": added_objects[0].get("id")}
 
-    indicator = args.get("indicator")
-    if indicator:
-        try:
-            indicator = json.loads(indicator)
-            bioc_data["indicator"] = indicator
-        except ValueError:
-            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
-
-    # required fields but can be empty
-    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
-    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
-
-    reply = client.insert_biocs({"request_data": [bioc_data]})
-    rule_id = reply.get("added_objects", [])[0].get("id")
-    message = reply.get("added_objects", [])[0].get("status")
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
         outputs_key_field="rule_id",
-        outputs={"rule_id": rule_id},
+        outputs=outputs,
         raw_response=reply,
     )
 
 
 def bioc_update_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
     Updates an existing BIOC.
     Args:
         client (Client): The client to use.
@@ -1589,41 +1599,26 @@ def bioc_update_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    bioc_data = assign_params(
-        name=args.get("name"),
-        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
-        type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql", False)),
-        comment=args.get("comment"),
-        status=args.get("status"),
-    )
+    reply = bioc_create_or_update_helper(client, args)
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No BIOCs updated."
+        outputs = {}
 
-    indicator = args.get("indicator")
-    if indicator:
-        try:
-            indicator = json.loads(indicator)
-            bioc_data["indicator"] = indicator
-        except ValueError:
-            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
-
-    # required fields but can be empty
-    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
-    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
-
-    reply = client.insert_biocs({"request_data": [bioc_data]})
-    rule_id = reply.get("added_objects", [])[0].get("id")
-    message = reply.get("added_objects", [])[0].get("status")
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
         outputs_key_field="rule_id",
-        outputs={"rule_id": rule_id},
+        outputs=outputs,
         raw_response=reply,
     )
 
 
 def bioc_delete_command(client: Client, args: Dict) -> str:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-BIOCs
     Deletes a BIOC.
     Args:
         client (Client): The client to use.
@@ -1631,29 +1626,21 @@ def bioc_delete_command(client: Client, args: Dict) -> str:
     Returns:
         str: Success message.
     """
-    filters = assign_params(
-        name=args.get("name"),
-        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
-        type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql", False)),
-        comment=args.get("comment"),
-        status=args.get("status"),
-    )
+    filters: list = create_filters_for_bioc(args)
+    request_data = {"request_data": {"filters": filters}}
+    res = client.delete_biocs(request_data)
+    rule_ids = res.get("objects", [])
+    count = len(rule_ids)
 
-    indicator = args.get("indicator")
-    if indicator:
-        try:
-            indicator = json.loads(indicator)
-            filters["indicator"] = indicator
-        except ValueError:
-            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+    if count == 1:
+        return f"BIOC with id {rule_ids[0]} deleted successfully."
 
-    # required fields but can be empty
-    filters["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
-    filters["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
+    elif count > 1:
+        ids_str = ", ".join(map(str, rule_ids))
+        return f"BIOCs with ids {ids_str} deleted successfully."
 
-    client.delete_biocs(filters)
-    return "BIOC deleted successfully."
+    else:
+        return "No BIOCs were found to delete."
 
 
 def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
