@@ -251,7 +251,7 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
         Returns:
             List of required OAuth scopes (On-Prem uses single scope string)
         """
-        return ["WRITE"]
+        return ["ADMIN"]
 
     def oauth_start(self) -> str:
         """

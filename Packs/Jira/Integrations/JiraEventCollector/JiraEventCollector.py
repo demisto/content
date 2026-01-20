@@ -9,7 +9,7 @@ from CommonServerPython import *  # noqa: F401
 from pydantic import AnyUrl, BaseConfig, BaseModel, Field, Json  # pylint: disable=no-name-in-module
 from requests.auth import HTTPBasicAuth
 
-from AtlassianApiModule import create_atlassian_oauth_client  # type: ignore[import] # noqa: F401
+from AtlassianApiModule import *  # type: ignore[import] # noqa: F401
 
 urllib3.disable_warnings()
 
@@ -45,7 +45,7 @@ class ReqParams(BaseModel):
         datetime.strftime(
             dateparser.parse(demisto.params().get("first_fetch", "3 days"), settings={"TIMEZONE": "UTC"})
             or datetime.now() - timedelta(days=3),
-            DATETIME_FORMAT,
+            "%Y-%m-%dT%H:%M:%S.000Z",
         ),
         alias="from",
     )
@@ -98,8 +98,40 @@ class Client:
                 # Remove basic auth if present
                 request_dict.pop('auth', None)
             
+            # Disable redirects to prevent following to login pages
+            request_dict['allow_redirects'] = False
+
+            demisto.debug(f"Sending request to {request_dict.get('url')} with method {request_dict.get('method')}")
+            if 'headers' in request_dict:
+                headers_to_log = request_dict['headers'].copy()
+                if 'Authorization' in headers_to_log:
+                    headers_to_log['Authorization'] = 'Bearer *****'
+                demisto.debug(f"Request headers: {headers_to_log}")
+
             response = self.session.request(**request_dict)
-            response.raise_for_status()
+
+            demisto.debug(f"Response status code: {response.status_code}")
+            if response.status_code in (301, 302, 303, 307, 308):
+                raise DemistoException(
+                    f"The request was redirected to '{response.headers.get('Location')}'.\n"
+                    "This usually indicates an authentication issue (e.g., invalid credentials, expired token) "
+                    "or an incorrect URL configuration.\n"
+                    "Please verify your authentication credentials and URL."
+                )
+
+            try:
+                response.raise_for_status()
+            except Exception as e:
+                demisto.debug(f"Request failed. Response content: {response.text}")
+                raise e
+
+            if "json" not in response.headers.get("Content-Type", "").lower():
+                raise DemistoException(
+                    f"Response content type is '{response.headers.get('Content-Type')}', but JSON was expected.\n"
+                    "This usually occurs when authentication fails and the request is redirected to a login page.\n"
+                    "Please verify your authentication credentials (API Key, Bearer Token, etc.) and URL."
+                )
+
             return response
         except Exception as exc:
             msg = f"Something went wrong with the http call {exc}"
@@ -126,7 +158,15 @@ class GetEvents:
 
     def call(self) -> list:
         resp = self.client.call()
-        return resp.json().get("records", [])
+        json_response = resp.json()
+        demisto.debug(f"API response keys: {json_response.keys() if isinstance(json_response, dict) else 'not a dict'}")
+        demisto.debug(f"API response (first 1000 chars): {str(json_response)[:1000]}")
+        
+        # Jira Data Center /rest/auditing/1.0/events uses 'entities' key
+        # Jira Cloud /rest/api/3/auditing/record uses 'records' key
+        events = json_response.get("entities") or json_response.get("records", [])
+        demisto.debug(f"Found {len(events)} events")
+        return events
 
     def _iter_events(self):
         events = self.call()
@@ -172,9 +212,35 @@ class GetEvents:
         last_run = demisto.getLastRun()
 
         if not last_run.get("next_time"):
-            last_datetime = log.get("created", "").removesuffix("+0000")
-            last_datetime_with_delta = datetime.strptime(last_datetime, DATETIME_FORMAT) + timedelta(milliseconds=1)
-            next_time = datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)
+            # Jira Data Center uses 'timestamp', Cloud uses 'created'
+            last_datetime = log.get("timestamp") or log.get("created", "")
+            # Remove timezone suffix if present (e.g., +0000 or Z)
+            last_datetime = last_datetime.removesuffix("+0000").removesuffix("Z")
+            
+            if not last_datetime:
+                demisto.debug("No timestamp found in event, skipping next_run update")
+                return last_run
+            
+            try:
+                # Parse with milliseconds (Data Center format: 2026-01-19T11:36:01.892)
+                last_datetime_obj = datetime.strptime(last_datetime, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                try:
+                    # Fallback for formats without milliseconds
+                    last_datetime_obj = datetime.strptime(last_datetime, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    try:
+                        # Try original format with microseconds
+                        last_datetime_obj = datetime.strptime(last_datetime, DATETIME_FORMAT)
+                    except ValueError as e:
+                        demisto.debug(f"Failed to parse timestamp '{last_datetime}': {e}")
+                        return last_run
+            
+            # Add 1 second to ensure we don't fetch duplicates (since we truncate milliseconds)
+            last_datetime_with_delta = last_datetime_obj + timedelta(seconds=1)
+            
+            # Use format without milliseconds for compatibility with Data Center
+            next_time = datetime.strftime(last_datetime_with_delta, "%Y-%m-%dT%H:%M:%S")
 
             if last_run.get("offset"):
                 last_run["next_time"] = next_time
@@ -263,10 +329,14 @@ def main():
     base_url = str(demisto_params.get("url", "")).removesuffix("/")
     if is_oauth and oauth_client and hasattr(oauth_client, 'cloud_id') and oauth_client.cloud_id:
         # For OAuth with Cloud ID, use the cloud-specific URL
-        demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/3/auditing/record"
+        # We force the base URL to be the Atlassian API gateway for Cloud OAuth
+        base_url = "https://api.atlassian.com/ex/jira"
+        demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/2/auditing/record"
     else:
         # For Basic auth or On-Prem OAuth
-        demisto_params["url"] = f"{base_url}/rest/api/3/auditing/record"
+        # Jira Server/Data Center uses API v2. Cloud supports both v2 and v3.
+        # Using v2 ensures compatibility with On-Prem instances.
+        demisto_params["url"] = f"{base_url}/rest/auditing/1.0/events"
     
     demisto_params["params"] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 
