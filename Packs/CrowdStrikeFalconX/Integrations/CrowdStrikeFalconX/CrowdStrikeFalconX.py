@@ -41,7 +41,6 @@ def convert_environment_id_string_to_int(environment_id: str) -> int:
     :return: environment_id represented by an int
     """
     try:
-        
         environment_id_options = {
             "400: MacOS Catalina 10.15": 400,
             "310: Linux Ubuntu 20, 64-bit": 310,
