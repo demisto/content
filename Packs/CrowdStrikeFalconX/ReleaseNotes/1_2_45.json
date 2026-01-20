@@ -1,0 +1,4 @@
+{
+    "breaking_change": true,
+    "description": "The enable_tor argument was deprecated in the cs-fx-submit-url and cs-fx-submit-uploaded-file commands. Use the network_settings argument instead to control the sandbox network configuration."
+}
