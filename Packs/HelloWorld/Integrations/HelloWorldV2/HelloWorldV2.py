@@ -1750,7 +1750,6 @@ def get_vulnerabilities_command(client: HelloWorldClient, args: HelloWorldGetVul
 
 def main() -> None:  # pragma: no cover
     """Parse and validate configuration parameters and command arguments, then run commands."""
-    support_multithreading()
     execution = ExecutionConfig()
     params = execution.params
     command = execution.command
@@ -1786,6 +1785,9 @@ def main() -> None:  # pragma: no cover
                 # Save next_run for the next time fetch is invoked
                 next_run.set()
                 demisto.debug("[Main] fetch completed")
+
+            case "fetch-assets":
+                pass
 
             case "helloworld-get-events":
                 # Validate command arguments

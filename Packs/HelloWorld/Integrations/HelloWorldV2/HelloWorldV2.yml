@@ -102,6 +102,15 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  # Fetch Assets (and Vulnerabilities)
+  # Not supported in Cortex XSOAR
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+    - xsoar
 description: This is the Hello World v2 integration for getting started.
 display: Hello World v2
 name: HelloWorldV2
@@ -386,7 +395,10 @@ script:
   isfetch:platform: false
   # Fetch Events
   isfetchevents: true
-  isfetchevents:xsoar: false  # "fetch-events" is not supported on Cortex XSOAR. This is automatically disabled during the XSOAR Marketplace upload process. This line was added to be clearer and more explicit. 
+  isfetchevents:xsoar: false  # "fetch-events" is not supported on Cortex XSOAR. This is automatically disabled during the XSOAR Marketplace upload process. This line was added to be clearer and more explicit.
+  # Fetch Assets
+  isfetchassets: true
+  isfetchassets:xsoar: false  # "fetch-assets" is not supported on Cortex XSOAR. This is automatically disabled during the XSOAR Marketplace upload process. This line was added to be clearer and more explicit.
   runonce: false
   script: '-'
   subtype: python3

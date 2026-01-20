@@ -17,6 +17,7 @@ This is the Hello World v2 integration for getting started.
 | Fetch events | Fetch HelloWorld alerts as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
 | Maximum number of events per fetch | Default value is 1000. Supported in Cortex XSIAM only. | False |
 | Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default value is high. | False |
+| Fetch assets and vulnerabilities | Fetch assets and vulnerabilities found in the HelloWorld environment. Supported in Cortex XSIAM only. | False |
 
 ## Commands
 
