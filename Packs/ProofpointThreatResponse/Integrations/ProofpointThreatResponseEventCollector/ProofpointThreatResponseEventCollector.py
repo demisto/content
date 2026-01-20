@@ -317,7 +317,7 @@ def get_incidents_batch_by_time_request(client, params):
 
         last_batch_duration = time.time() - last_batch_start
         demisto.info(
-f"[LAST_BATCH_API_END] Last batch returned {len(new_incidents)} incidents in {last_batch_duration:.2f} seconds"
+            f"[LAST_BATCH_API_END] Last batch returned {len(new_incidents)} incidents in {last_batch_duration:.2f} seconds"
         )
 
         incidents_list.extend(new_incidents)
