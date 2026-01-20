@@ -9144,6 +9144,7 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
 
+
 def test_enhance_with_pb_details():
     """
     GIVEN:
@@ -9156,10 +9157,7 @@ def test_enhance_with_pb_details():
     """
     from CortexPlatformCore import enhance_with_pb_details
 
-    pb_id_to_data = {
-        "pb1": {"name": "Playbook 1", "comment": "Comment 1"},
-        "pb2": {"name": "Playbook 2", "comment": "Comment 2"}
-    }
+    pb_id_to_data = {"pb1": {"name": "Playbook 1", "comment": "Comment 1"}, "pb2": {"name": "Playbook 2", "comment": "Comment 2"}}
 
     # Case 1: ID exists in metadata
     playbook1 = {"id": "pb1"}
@@ -9189,22 +9187,14 @@ def test_postprocess_case_resolution_statuses(mocker):
     mock_client = mocker.Mock()
     mock_client.get_playbooks_metadata.return_value = [
         {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
-        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"}
+        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"},
     ]
 
     response = {
-        "done": {
-            "caseTasks": [{"id": "pb1", "taskName": "Task 1"}]
-        },
-        "inProgress": {
-            "caseTasks": [{"id": "pb2", "taskName": "Task 2"}]
-        },
-        "pending": {
-            "caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]
-        },
-        "recommended": {
-            "caseTasks": [{"id": "pb4", "taskName": "Task 4"}]
-        }
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": [{"id": "pb2", "taskName": "Task 2"}]},
+        "pending": {"caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]},
+        "recommended": {"caseTasks": [{"id": "pb4", "taskName": "Task 4"}]},
     }
 
     result = postprocess_case_resolution_statuses(mock_client, response)

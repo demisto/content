@@ -7,7 +7,6 @@ import dateparser
 from enum import Enum
 import copy
 
-from Packs.CrowdStrikeFalcon.Scripts.Cspresentparentprocess.Cspresentparentprocess_test import raw_response
 
 # Disable insecure warnings
 urllib3.disable_warnings()
