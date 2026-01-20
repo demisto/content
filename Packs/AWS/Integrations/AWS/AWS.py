@@ -2693,6 +2693,9 @@ class EC2:
             },
         }
 
+        next_token = response.get('NextToken')
+        next_token_text = f"\nImagesNextPageToken: {escape(next_token)}\n" if next_token else ""
+        
         return CommandResults(
             outputs=outputs,
             readable_output=tableToMarkdown(
@@ -2702,7 +2705,7 @@ class EC2:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             )
-            + f"\nImagesNextPageToken: {escape(response.get('NextToken'))}\n",
+            + next_token_text,
             raw_response=response,
         )
 
@@ -2947,6 +2950,7 @@ class EC2:
             return CommandResults(readable_output="Image is now available.")
         except ClientError as e:
             AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+            return None
 
 
 class EKS:
