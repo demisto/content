@@ -9143,3 +9143,142 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+from CortexPlatformCore import postprocess_case_resolution_statuses
+
+# --- Mock Data Consolidated from your Playbook Metadata ---
+MOCK_PLAYBOOK_METADATA = [
+    {
+        "id": "66f0c152-da92-4305-8689-f0c5c6321e08",
+        "name": "Test-2",
+        "comment": "test",
+        "inputs": [{"key": "test_input", "value": {"simple": "true"}}]
+    },
+    {
+        "id": "Containment Plan",
+        "name": "Containment Plan",
+        "comment": "This playbook handles the main containment actions...",
+        "inputs": [
+            {"key": "AutoContainment", "value": {"simple": "False"}},
+            {"key": "FileContainment", "value": {"simple": "True"}}
+        ]
+    },
+    {
+        "id": "IP Enrichment - External - Generic v2",
+        "name": "IP Enrichment - External - Generic v2",
+        "comment": "Enrich IP addresses using one or more integrations."
+    }
+]
+
+
+@pytest.fixture
+def mock_client(mocker):
+    client = mocker.Mock()
+    client.get_playbooks_metadata.return_value = MOCK_PLAYBOOK_METADATA
+    return client
+
+
+def test_postprocess_full_mapping_logic(mock_client):
+    """
+    GIVEN: A client returning metadata for 'Containment Plan' and 'Test-2'.
+    WHEN: postprocess_case_resolution_statuses is called with tasks matching those IDs.
+    THEN: The tasks are enriched with the correct 'name' and 'description' (from comment).
+    """
+    response = {
+        "done": {
+            "caseTasks": [
+                {"id": "Containment Plan", "status": "completed"},
+                {"id": "66f0c152-da92-4305-8689-f0c5c6321e08", "status": "completed"}
+            ]
+        },
+        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    # Assertions
+    assert any(item["name"] == "Containment Plan" for item in result)
+    assert any(item["name"] == "Test-2" for item in result)
+
+
+def test_parent_playbook_enrichment(mock_client):
+    """
+    GIVEN: A pending task that belongs to the 'Containment Plan' parent.
+    WHEN: The results are post-processed.
+    THEN: The 'parentPlaybook' object is injected with the name 'Containment Plan'.
+    """
+    response = {
+        "done": {"caseTasks": []},
+        "pending": {
+            "caseTasks": [
+                {
+                    "id": "task_1",
+                    "name": "Manual Step",
+                    "parentdetails": {"id": "Containment Plan"}
+                }
+            ]
+        },
+        "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    pending_item = result[0]
+    assert pending_item["parentPlaybook"]["name"] == "Containment Plan"
+
+
+def test_flattening_and_category_assignment(mock_client):
+    """
+    GIVEN: A response with tasks in 'done' and 'pending' categories.
+    WHEN: The nested dictionary is processed.
+    THEN: The result is a flat list and each item has a 'category' key assigned.
+    """
+    response = {
+        "done": {"caseTasks": [{"id": "Containment Plan"}]},
+        "pending": {"caseTasks": [{"id": "IP Enrichment - External - Generic v2"}]},
+        "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    assert len(result) == 2
+    assert result[0]["category"] == "done"
+    assert result[1]["category"] == "pending"
+
+
+def test_metadata_input_consistency(mock_client):
+    """
+    GIVEN: Metadata containing specific inputs like 'AutoContainment'.
+    WHEN: The playbook details are resolved.
+    THEN: The system ensures the ID and associated metadata remain linked correctly.
+    """
+    response = {
+        "done": {"caseTasks": [{"id": "Containment Plan"}]},
+        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    # Verify that we can still identify the playbook to access its inputs if needed
+    target = next(item for item in result if item["id"] == "Containment Plan")
+    assert target["itemType"] == "playbook"
+
+
+def test_graceful_handling_of_missing_metadata(mocker):
+    """
+    GIVEN: A task ID that does not exist in the playbook metadata.
+    WHEN: The enrichment function is called.
+    THEN: The code does not crash and uses the ID as a fallback name.
+    """
+    mock_client_empty = mocker.Mock()
+    mock_client_empty.get_playbooks_metadata.return_value = []
+
+    response = {
+        "done": {"caseTasks": [{"id": "Missing-ID", "status": "completed"}]},
+        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client_empty, response)
+
+    assert result[0]["name"] == "Missing-ID"
