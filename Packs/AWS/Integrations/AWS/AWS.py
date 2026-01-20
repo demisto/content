@@ -2875,7 +2875,7 @@ class EC2:
             CommandResults: Results of the operation with monitoring status information
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
-
+        print_debug_logs(client, f"Monitoring instance(s): {instance_ids}")
         response = client.monitor_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -2923,7 +2923,7 @@ class EC2:
             CommandResults: Results of the operation with monitoring status information
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
-
+        print_debug_logs(client, f"Unmonitoring instance(s): {instance_ids}")
         response = client.unmonitor_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -2971,6 +2971,7 @@ class EC2:
             CommandResults: Results of the operation with reboot confirmation
         """
         instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Rebooting instance(s): {instance_ids}")
         response = client.reboot_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -3160,6 +3161,7 @@ class EC2:
         pagination_kwargs = build_pagination_kwargs(args)
         kwargs.update(pagination_kwargs)
 
+        print_debug_logs(client, f"Describe IAM instance profile associations parameters: {kwargs}")
         response = client.describe_iam_instance_profile_associations(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -3211,7 +3213,7 @@ class EC2:
             CommandResults: Results containing the password data
         """
         instance_id = args.get("instance_id")
-
+        print_debug_logs(client, f"Get password data for instance {instance_id}")
         response = client.get_password_data(InstanceId=instance_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:

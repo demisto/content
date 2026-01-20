@@ -8188,7 +8188,7 @@ script:
     - name: filters
       description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: limit
-      description: The maximum number of results to return.   Minimum value of 5. Maximum value of 1000.
+      description: The maximum number of results to return. Minimum value of 5. Maximum value of 1000.
       defaultValue: 50
     - name: next_token
       description: The token for the next set of results.
