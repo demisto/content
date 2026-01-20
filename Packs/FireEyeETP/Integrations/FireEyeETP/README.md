@@ -32,19 +32,19 @@ Select both **Email Threat Prevention** and **Identity Access Management**.
     * `iam.users.browse`
     * `iam.orgs.self.read`
 
-    #### Alerts APIs
+   #### Alerts APIs
 
     For accessing alerts APIs, the following additional entitlements are required:
 
     * `etp.alerts.read`
 
-    #### Trace APIs
+   #### Trace APIs
 
     For accessing trace APIs, the following additional entitlements are required:
 
     * `etp.email_trace.read`
 
-    #### Quarantine APIs
+   #### Quarantine APIs
 
     For accessing quarantine APIs, the following additional entitlements are required:
 
