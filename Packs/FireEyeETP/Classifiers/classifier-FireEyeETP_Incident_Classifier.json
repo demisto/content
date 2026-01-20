@@ -2,13 +2,10 @@
 	"id": "FireEye ETP",
 	"name": "FireEye ETP Incident Classifier",
 	"description": "FireEye ETP Incident Classifier",
-	"defaultIncidentType": "Trellix Email Security alerts V2",
+	"defaultIncidentType": "Trellix incident",
 	"keyTypeMap": {
-        "trellix_alerts": "Trellix Email Security alerts V2"
+        "trellix_alerts": "Trellix incident"
 	},
-    "transformer": {
-        "simple": "scope"
-    },
     "fromVersion": "6.0.0",
     "version": -1,
     "type": "classification"

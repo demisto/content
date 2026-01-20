@@ -2,7 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Trellix Email Security alerts V2"
+        "Trellix incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

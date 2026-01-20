@@ -27,7 +27,7 @@
     "FireEye NX IPS Event",
     "FireEye NX Alert",
     "FireEye EX Alert",
-    "Trellix Email Security alerts V2"
+    "Trellix incident"
   ],
   "associatedToAll": false,
   "unmapped": false,

@@ -35,7 +35,7 @@
         "CrowdStrike Falcon OFP Detection",
         "CrowdStrike Falcon Third Party Detection",
         "CrowdStrike Falcon NGSIEM Detection",
-        "Trellix Email Security alerts V2"
+        "Trellix incident"
     ],
     "systemAssociatedTypes": [
         "CrowdStrike Falcon OFP Detection"

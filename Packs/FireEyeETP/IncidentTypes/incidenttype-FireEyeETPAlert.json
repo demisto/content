@@ -1,10 +1,10 @@
 {
-    "id": "Trellix Email Security alerts V2",
+    "id": "Trellix incident",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Trellix Email Security alerts V2",
-    "prevName": "Trellix Email Security alerts V2",
+    "name": "Trellix incident",
+    "prevName": "Trellix incident",
     "color": "#E5CF7C",
     "hours": 0,
     "days": 0,
