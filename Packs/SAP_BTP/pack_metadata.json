@@ -14,8 +14,7 @@
     "keywords": [],
     "marketplaces": [
         "marketplacev2",
-        "platform",
-        "xsoar"
+        "platform"
     ],
     "supportedModules": [
         "xsiam"
