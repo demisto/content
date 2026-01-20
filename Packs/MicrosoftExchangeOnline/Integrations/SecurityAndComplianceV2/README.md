@@ -28,11 +28,13 @@ Note: The legacy content search solution is [retired](https://learn.microsoft.co
 
 #### Legacy Content Search (case-based in Graph eDiscovery)
 
-- `o365-sc-get-search` → Use `msg-list-ediscovery-searchs`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
-- `o365-sc-list-search` → Use `msg-list-ediscovery-searchs`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
-- `o365-sc-new-search` → Use `msg-create-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Create search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-searches?view=graph-rest-1.0)
-- `o365-sc-remove-search` → Use `msg-delete-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Delete search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-searches?view=graph-rest-1.0)
-- `o365-sc-set-search` → Use `msg-update-ediscovery-search`. Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery). [Microsoft Learn: Update search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-update?view=graph-rest-1.0)
+Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
+- `o365-sc-get-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
+- `o365-sc-list-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
+- `o365-sc-new-search` → Use `msg-create-ediscovery-search`. [Microsoft Learn: Create search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-post-searches?view=graph-rest-1.0)
+- `o365-sc-remove-search` → Use `msg-delete-ediscovery-search`. [Microsoft Learn: Delete search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-delete-searches?view=graph-rest-1.0)
+- `o365-sc-set-search` → Use `msg-update-ediscovery-search`. [Microsoft Learn: Update search](https://learn.microsoft.com/en-us/graph/api/security-ediscoverysearch-update?view=graph-rest-1.0)
 
 #### Search execution and actions
 
