@@ -457,10 +457,9 @@ inputs:
 - key: resource_type
   value: {}
   required: false
-  description: The type of the resource (IP, domain, URL, or file hash).
+  description: The type of the resource (ip, domain, url, or hash).
   playbookInputQuery:
 outputs: []
-quiet: true
 tests:
 - GoogleThreatIntelligence-test
 fromversion: 6.10.0
