@@ -2504,6 +2504,354 @@ class EC2:
         else:
             return AWSErrorHandler.handle_response_error(response)
 
+    @staticmethod
+    def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified EBS volumes or all of your EBS volumes.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters and volume IDs
+
+        Returns:
+            CommandResults: Results containing volume information
+        """
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add volume IDs if provided
+        if volume_ids := args.get("volume_ids"):
+            kwargs["VolumeIds"] = argToList(volume_ids)
+
+        print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            response = client.describe_volumes(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+            volumes = response.get("Volumes", [])
+
+            if not volumes:
+                return CommandResults(readable_output="No EC2 volumes were found.")
+
+            readable_output = tableToMarkdown(
+                "AWS EC2 Volumes",
+                volumes,
+                headers=["AvailabilityZone", "Encrypted", "State", "VolumeId", "VolumeType", "CreateTime"],
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Volumes",
+                outputs_key_field="VolumeId",
+                outputs=volumes,
+                readable_output=readable_output,
+                raw_response=response,
+            )
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error describing volumes: {str(e)}")
+
+    @staticmethod
+    def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and modification parameters
+
+        Returns:
+            CommandResults: Results containing volume modification information
+        """
+        kwargs = {"VolumeId": args.get("volume_id")}
+
+        # Add optional modification parameters
+        if size := args.get("size"):
+            kwargs["Size"] = arg_to_number(size)
+
+        if volume_type := args.get("volume_type"):
+            kwargs["VolumeType"] = volume_type
+
+        if iops := args.get("iops"):
+            kwargs["Iops"] = arg_to_number(iops)
+
+        if throughput := args.get("throughput"):
+            kwargs["Throughput"] = arg_to_number(throughput)
+
+        if multi_attach_enabled := args.get("multi_attach_enabled"):
+            kwargs["MultiAttachEnabled"] = argToBoolean(multi_attach_enabled)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
+
+        try:
+            response = client.modify_volume(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+            volume_modification = response.get("VolumeModification", {})
+
+            readable_output = tableToMarkdown(
+                "AWS EC2 Volume Modification",
+                [volume_modification],
+                headers=["VolumeId", "ModificationState", "TargetSize", "TargetIops", "TargetVolumeType",
+                        "OriginalSize", "OriginalIops", "OriginalVolumeType", "StartTime", "Progress"],
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Volumes",
+                outputs_key_field="VolumeId",
+                outputs={"Modification": volume_modification, "VolumeId": volume_modification.get("VolumeId")},
+                readable_output=readable_output,
+                raw_response=response,
+            )
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error modifying volume: {str(e)}")
+
+    @staticmethod
+    def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including availability zone and volume parameters
+
+        Returns:
+            CommandResults: Results containing created volume information
+        """
+        kwargs = {"AvailabilityZone": args.get("availability_zone")}
+
+        # Add optional parameters
+        if encrypted := args.get("encrypted"):
+            kwargs["Encrypted"] = argToBoolean(encrypted)
+
+        if iops := args.get("iops"):
+            kwargs["Iops"] = arg_to_number(iops)
+
+        if kms_key_id := args.get("kms_key_id"):
+            kwargs["KmsKeyId"] = kms_key_id
+
+        if outpost_arn := args.get("outpost_arn"):
+            kwargs["OutpostArn"] = outpost_arn
+
+        if size := args.get("size"):
+            kwargs["Size"] = arg_to_number(size)
+
+        if snapshot_id := args.get("snapshot_id"):
+            kwargs["SnapshotId"] = snapshot_id
+
+        if volume_type := args.get("volume_type"):
+            kwargs["VolumeType"] = volume_type
+
+        if throughput := args.get("throughput"):
+            kwargs["Throughput"] = arg_to_number(throughput)
+
+        if multi_attach_enabled := args.get("multi_attach_enabled"):
+            kwargs["MultiAttachEnabled"] = argToBoolean(multi_attach_enabled)
+
+        if tags := args.get("tags"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "volume", "Tags": parse_tag_field(tags)}]
+
+        if client_token := args.get("client_token"):
+            kwargs["ClientToken"] = client_token
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating volume with parameters: {kwargs}")
+
+        try:
+            response = client.create_volume(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+
+            readable_output = tableToMarkdown(
+                "AWS EC2 Volumes",
+                [response],
+                headers=["AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "VolumeId", "Iops", "VolumeType"],
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Volumes",
+                outputs_key_field="VolumeId",
+                outputs=response,
+                readable_output=readable_output,
+                raw_response=response,
+            )
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error creating volume: {str(e)}")
+
+    @staticmethod
+    def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including device, instance ID, and volume ID
+
+        Returns:
+            CommandResults: Results containing volume attachment information
+        """
+        kwargs = {
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id"),
+            "VolumeId": args.get("volume_id"),
+        }
+
+        print_debug_logs(client, f"Attaching volume with parameters: {kwargs}")
+
+        try:
+            response = client.attach_volume(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+
+            attachment_data = {
+                "AttachTime": response.get("AttachTime"),
+                "Device": response.get("Device"),
+                "InstanceId": response.get("InstanceId"),
+                "State": response.get("State"),
+                "VolumeId": response.get("VolumeId"),
+                "DeleteOnTermination": response.get("DeleteOnTermination"),
+            }
+
+            readable_output = tableToMarkdown(
+                "AWS EC2 Volume Attachments",
+                [attachment_data],
+                headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Volumes",
+                outputs_key_field="VolumeId",
+                outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+                readable_output=readable_output,
+                raw_response=response,
+            )
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error attaching volume: {str(e)}")
+
+    @staticmethod
+    def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Detaches an EBS volume from an instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and optional parameters
+
+        Returns:
+            CommandResults: Results containing volume detachment information
+        """
+        kwargs = {"VolumeId": args.get("volume_id")}
+
+        # Add optional parameters
+        if force := args.get("force"):
+            kwargs["Force"] = argToBoolean(force)
+
+        if device := args.get("device"):
+            kwargs["Device"] = device
+
+        if instance_id := args.get("instance_id"):
+            kwargs["InstanceId"] = instance_id
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Detaching volume with parameters: {kwargs}")
+
+        try:
+            response = client.detach_volume(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+
+            attachment_data = {
+                "AttachTime": response.get("AttachTime"),
+                "Device": response.get("Device"),
+                "InstanceId": response.get("InstanceId"),
+                "State": response.get("State"),
+                "VolumeId": response.get("VolumeId"),
+                "DeleteOnTermination": response.get("DeleteOnTermination"),
+            }
+
+            readable_output = tableToMarkdown(
+                "AWS EC2 Volume Attachments",
+                [attachment_data],
+                headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Volumes",
+                outputs_key_field="VolumeId",
+                outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+                readable_output=readable_output,
+                raw_response=response,
+            )
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error detaching volume: {str(e)}")
+
+    @staticmethod
+    def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        volume_id = args.get("volume_id")
+        print_debug_logs(client, f"Deleting volume: {volume_id}")
+
+        try:
+            response = client.delete_volume(VolumeId=volume_id)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error deleting volume: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -4052,6 +4400,12 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
+    "aws-ec2-volumes-describe": EC2.describe_volumes_command,
+    "aws-ec2-volume-modify": EC2.modify_volume_command,
+    "aws-ec2-volume-create": EC2.create_volume_command,
+    "aws-ec2-volume-attach": EC2.attach_volume_command,
+    "aws-ec2-volume-detach": EC2.detach_volume_command,
+    "aws-ec2-volume-delete": EC2.delete_volume_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4132,6 +4486,12 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ec2:DescribeVolumes",
+    "ec2:ModifyVolume",
+    "ec2:CreateVolume",
+    "ec2:AttachVolume",
+    "ec2:DetachVolume",
+    "ec2:DeleteVolume",
 ]
 
 COMMAND_SERVICE_MAP = {
