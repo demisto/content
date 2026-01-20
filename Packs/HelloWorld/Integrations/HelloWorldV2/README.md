@@ -6,7 +6,7 @@ This is the Hello World v2 integration for getting started.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.xsoar-example.com) |  | True |
+| Server URL (e.g., https://api.dummy-example.com) |  | True |
 | API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

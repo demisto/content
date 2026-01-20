@@ -10,4 +10,4 @@ This section explains how to configure the instance of the Hello World v2 integr
 
 ## API Key
 
-You can use the following API Key: `dummy-key`.
+Use `dummy-key` to emulate successful authentication. Otherwise, the "Test" button would fail.

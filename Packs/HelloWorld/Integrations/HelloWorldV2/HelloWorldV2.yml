@@ -7,8 +7,8 @@ commonfields:
   version: -1
 configuration:
 - name: url
-  display: Server URL (e.g., https://api.xsoar-example.com)
-  defaultvalue: https://api.xsoar-example.com
+  display: Server URL (e.g., https://api.dummy-example.com)
+  defaultvalue: https://api.dummy-example.com
   type: 0
   required: true
   section: Connect
