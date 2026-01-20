@@ -5325,6 +5325,8 @@ Create an ODS scan and wait for the results.
             ],
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "complete"
         }
     }
@@ -5488,6 +5490,8 @@ Create an ODS scheduled scan.
             },
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "scheduled"
         }
     }
