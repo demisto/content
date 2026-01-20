@@ -36,7 +36,7 @@ The [Security And Compliance V2](https://xsoar.pan.dev/docs/reference/integratio
 - manage the security of all your organization's emails, SharePoint sites, OneDrives, etc.
 - can perform actions (preview and delete) on emails.
 
-Note: This integration is planned for **deprecation** on **June 1, 2026**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For a detailed list on command replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2)**.
+- Note: This integration is planned for **deprecation** on **June 1, 2026**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For a detailed list on command replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2)**.
 
 ## EWS Permissions
 
