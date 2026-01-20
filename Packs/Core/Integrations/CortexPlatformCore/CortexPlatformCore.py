@@ -7,6 +7,8 @@ import dateparser
 from enum import Enum
 import copy
 
+from Packs.CrowdStrikeFalcon.Scripts.Cspresentparentprocess.Cspresentparentprocess_test import raw_response
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -4135,14 +4137,18 @@ def postprocess_case_resolution_statuses(client, response: dict):
 
 
 def get_case_resolution_statuses(client, args):
-    case_id = args.get("case_id")
-    response = client.get_case_resolution_statuses(case_id)
-    outputs = postprocess_case_resolution_statuses(client, response)
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
     return CommandResults(
         readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
-        raw_response=response,
+        raw_response=raw_responses,
     )
 
 
