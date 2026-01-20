@@ -1,4 +1,5 @@
 category: Endpoint
+provider: BMC Software Inc
 commonfields:
   id: BMC Discovery
   version: -1
@@ -28,101 +29,101 @@ name: BMC Discovery
 script:
   commands:
   - arguments:
-    - description: UUID of a specific scan (run)
+    - description: UUID of a specific scan (run).
       name: run_id
     description: Get status of all currently running scans (no arguments) or a specific scan (provide a run_id argument)
     name: bmc-discovery-scan-status-list
     outputs:
     - contextPath: BmcDiscovery.Scan.Status.cancelled
       type: String
-      description: Is canceled
+      description: Is canceled.
     - contextPath: BmcDiscovery.Scan.Status.blocked
       type: Boolean
-      description: Is blocked
+      description: Is blocked.
     - contextPath: BmcDiscovery.Scan.Status.done
       type: Number
-      description: Number of scanned hosts
+      description: Number of scanned hosts.
     - contextPath: BmcDiscovery.Scan.Status.key
       type: String
-      description: Scan key
+      description: Scan key.
     - contextPath: BmcDiscovery.Scan.Status.label
       type: String
-      description: Scan name
+      description: Scan name.
     - contextPath: BmcDiscovery.Scan.Status.scan_kind
       type: String
-      description: IP/Cloud/API
+      description: IP/Cloud/API.
     - contextPath: BmcDiscovery.Scan.Status.outpost_id
       type: String
-      description: Outpost id
+      description: Outpost id.
     - contextPath: BmcDiscovery.Scan.Status.scope
       type: String
-      description: Scan scope
+      description: Scan scope.
     - contextPath: BmcDiscovery.Scan.Status.scan_level
       type: String
-      description: Full discovery / Sweep scan
+      description: Full discovery / Sweep scan.
     - contextPath: BmcDiscovery.Scan.Status.scan_params.provider
       type: String
-      description: Scan provider
+      description: Scan provider.
     - contextPath: BmcDiscovery.Scan.Status.scan_options.NO_PING
       type: Boolean
-      description: Is NO_PING option set
+      description: Is NO_PING option set.
     - contextPath: BmcDiscovery.Scan.Status.scan_options.SESSION_LOGGING
       type: Boolean
-      description: Is SESSION_LOGGING option set
+      description: Is SESSION_LOGGING option set.
     - contextPath: BmcDiscovery.Scan.Status.scan_options.SKIP_IMPLICIT_SCANS
       type: Boolean
-      description: Is SKIP_IMPLICIT_SCANS option set
+      description: Is SKIP_IMPLICIT_SCANS option set.
     - contextPath: BmcDiscovery.Scan.Status.scan_options.MAX_START_SSM_SESSIONS
       type: Number
-      description: Is MAX_START_SSM_SESSIONS option set
+      description: Is MAX_START_SSM_SESSIONS option set.
     - contextPath: BmcDiscovery.Scan.Status.scan_options.MAX_ACTIVE_SSM_SESSIONS
       type: Number
-      description: Is MAX_ACTIVE_SSM_SESSIONS option set
+      description: Is MAX_ACTIVE_SSM_SESSIONS option set.
     - contextPath: BmcDiscovery.Scan.Status.scan_type
       type: String
-      description: Snapshot / Scheduled
+      description: Snapshot / Scheduled.
     - contextPath: BmcDiscovery.Scan.Status.scanning
       type: Number
-      description: Number of entities in scanning status
+      description: Number of entities in scanning status.
     - contextPath: BmcDiscovery.Scan.Status.pre_scanning
       type: Number
-      description: Number of entities in pre_scanning status
+      description: Number of entities in pre_scanning status.
     - contextPath: BmcDiscovery.Scan.Status.starttime
       type: Date
-      description: Scan start time
+      description: Scan start time.
     - contextPath: BmcDiscovery.Scan.Status.total
       type: Number
-      description: Number of hosts to scan
+      description: Number of hosts to scan.
     - contextPath: BmcDiscovery.Scan.Status.user
       type: String
-      description: Initiating user
+      description: Initiating user.
     - contextPath: BmcDiscovery.Scan.Status.valid_ranges
       type: String
-      description: IP ranges to scan
+      description: IP ranges to scan.
     - contextPath: BmcDiscovery.Scan.Status.waiting
       type: Number
-      description: Number of entities in waiting status
+      description: Number of entities in waiting status.
     - contextPath: BmcDiscovery.Scan.Status.uuid
       type: String
-      description: Scan UUID
+      description: Scan UUID.
     - contextPath: BmcDiscovery.Scan.Status.uri
       type: String
-      description: Scan URI
+      description: Scan URI.
     - contextPath: BmcDiscovery.Scan.Status.finished
       type: Boolean
-      description: Is finished
+      description: Is finished.
     - contextPath: BmcDiscovery.Scan.Status.inferred
       type: String
-      description: Scan inferred URI
+      description: Scan inferred URI.
     - contextPath: BmcDiscovery.Scan.Status.results
       type: String
-      description: Scan results URI
+      description: Scan results URI.
     - contextPath: BmcDiscovery.Scan.Status.consolidating
       type: Boolean
-      description: Is consolidating
+      description: Is consolidating.
     - contextPath: BmcDiscovery.Scan.Status.consolidation_source
       type: String
-      description: Consolidation Source
+      description: Consolidation Source.
 
   - arguments:
     - auto: PREDEFINED
@@ -133,24 +134,24 @@ script:
       - NetworkDevice
       - SNMPManagedDevice
       required: true
-      description: Type (kind) of BMC Discovery nodes
-    - description: IP address
+      description: Type (kind) of BMC Discovery nodes.
+    - description: IP address.
       name: ip
-    - description: Hostname
+    - description: Hostname.
       name: hostname
-    - description: Name of the search
+    - description: Name of the search.
       name: name
     description: Search for a node by hostname or IP address. If not found, repeat the search with a different node kind.
     name: bmc-discovery-search
     outputs:
     - contextPath: BmcDiscovery.Search.count
-      description: Number of search results
+      description: Number of search results.
       type: Number
     - contextPath: BmcDiscovery.Search.data
-      description: Search results
+      description: Search results.
       type: Unknown
     - contextPath: BmcDiscovery.Search.name
-      description: Name of the search
+      description: Name of the search.
       type: String
 
   - name: bmc-discovery-search-custom
@@ -160,20 +161,20 @@ script:
       required: true
       description: 'Full search query. Documentation for reference: https://docs.bmc.com/docs/discovery/113/using-the-query-language-788111625.html'
     - name: offset
-      description: Search results offset
+      description: Search results offset.
     - name: limit
-      description: Search limit
+      description: Search limit.
       defaultValue: "50"
     - name: results_id
-      description: Search results id
-    - description: Name of the search
+      description: Search results id.
+    - description: Name of the search.
       name: name
     outputs:
     - contextPath: BmcDiscovery.CustomSearch.data
-      description: Search results
+      description: Search results.
       type: Unknown
     - contextPath: BmcDiscovery.CustomSearch.name
-      description: Name of the search
+      description: Name of the search.
       type: String
 
   - name: bmc-discovery-scan-create
@@ -182,26 +183,26 @@ script:
     - name: ranges
       required: true
       isArray: true
-      description: IP ranges to scan (comma-separated)
+      description: IP ranges to scan (comma-separated).
     - name: label
       required: true
-      description: New scan (run) label
+      description: New scan (run) label.
     outputs:
     - contextPath: BmcDiscovery.Scan.Create.uri
-      description: New scan (run) URI
+      description: New scan (run) URI.
       type: String
     - contextPath: BmcDiscovery.Scan.Create.uuid
-      description: New scan (run) UUID
+      description: New scan (run) UUID.
       type: String
 
   - name: bmc-discovery-scan-stop
     arguments:
     - name: run_id
       required: true
-      description: UUID of a specific scan (run)
+      description: UUID of a specific scan (run).
     outputs:
     - contextPath: BmcDiscovery.Scan.Stop.cancelled
-      description: Scan cancelation status
+      description: Scan cancelation status.
       type: Boolean
     description: Stop a Discovery scan (run)
 
@@ -209,25 +210,25 @@ script:
     arguments:
     - name: run_id
       required: true
-      description: UUID of a specific scan (run)
+      description: UUID of a specific scan (run).
     outputs:
     - contextPath: BmcDiscovery.Scan.Summary.Success
-      description: Number of successfully scanned addresses
+      description: Number of successfully scanned addresses.
       type: Number
     - contextPath: BmcDiscovery.Scan.Summary.Skipped
-      description: Number of skipped addresses
+      description: Number of skipped addresses.
       type: Number
     - contextPath: BmcDiscovery.Scan.Summary.NoAccess
-      description: Number of addresses with no access
+      description: Number of addresses with no access.
       type: Number
     - contextPath: BmcDiscovery.Scan.Summary.NoResponse
-      description: Number of addresses with no response
+      description: Number of addresses with no response.
       type: Number
     - contextPath: BmcDiscovery.Scan.Summary.Error
-      description: Number of addresses in error state
+      description: Number of addresses in error state.
       type: Number
     - contextPath: BmcDiscovery.Scan.Summary.Dropped
-      description: Number of dropped addresses
+      description: Number of dropped addresses.
       type: Number
     description: Get scan (run) results summary
 
@@ -235,10 +236,10 @@ script:
     arguments:
     - name: run_id
       required: true
-      description: UUID of a specific scan (run)
+      description: UUID of a specific scan (run).
     - name: result_type
       required: true
-      description: Type of scan (run) results
+      description: Type of scan (run) results.
       auto: PREDEFINED
       predefined:
       - Success
@@ -249,30 +250,30 @@ script:
       - Dropped
       defaultValue: Success
     - name: offset
-      description: Search results offset
+      description: Search results offset.
     - name: limit
-      description: Search limit
+      description: Search limit.
       defaultValue: "50"
     - name: results_id
-      description: Search results id
+      description: Search results id.
     outputs:
     - contextPath: BmcDiscovery.Scan.Result.count
-      description: Number of hosts of the result type
+      description: Number of hosts of the result type.
       type: Number
     - contextPath: BmcDiscovery.Scan.Result.kind
-      description: Result kind type
+      description: Result kind type.
       type: String
     - contextPath: BmcDiscovery.Scan.Result.next_offset
-      description: Next offset to be used
+      description: Next offset to be used.
       type: Number
     - contextPath: BmcDiscovery.Scan.Result.offset
-      description: Current offset value
+      description: Current offset value.
       type: Number
     - contextPath: BmcDiscovery.Scan.Result.results_id
-      description: Current result id
+      description: Current result id.
       type: String
     - contextPath: BmcDiscovery.Scan.Result.results
-      description: The actual scan result data
+      description: The actual scan result data.
       type: Unknown
     description: Get detailed scan (run) results
 
