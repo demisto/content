@@ -2674,9 +2674,7 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Allocating address with parameters: {kwargs}")
-        demisto.info(f"{kwargs=}")
         response = client.allocate_address(**kwargs)
-        demisto.info(f"{response=}")
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
