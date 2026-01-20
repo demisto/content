@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Any, Optional
+from typing import Any
 
 
 IGNORE_UPDATE_KEYS = {
@@ -16,6 +16,7 @@ REMOVE_BEFORE_UPDATE_KEYS = {
     "sla",
 }
 
+
 def _escape_lucene_phrase(value: str) -> str:
     if not isinstance(value, str):
         value = str(value)
@@ -24,7 +25,7 @@ def _escape_lucene_phrase(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def _extract_gibdrp_id(current_incident: dict[str, Any]) -> Optional[str]:
+def _extract_gibdrp_id(current_incident: dict[str, Any]) -> str | None:
     custom_fields = current_incident.get("CustomFields") or {}
     gibdrpid = custom_fields.get("gibdrpid")
     if gibdrpid:
@@ -86,7 +87,7 @@ def _build_update_payload(current_incident: dict[str, Any]) -> dict[str, Any]:
     return prepared
 
 
-def _search_existing_incident_by_gibdrpid(gibdrpid: str) -> Optional[dict[str, Any]]:
+def _search_existing_incident_by_gibdrpid(gibdrpid: str) -> dict[str, Any] | None:
     query = f'gibdrpid:"{_escape_lucene_phrase(gibdrpid)}"'
     demisto.debug(f"GIBDRPIncidentUpdate: searching for duplicates with query: {query}")
     search_incident = demisto.executeCommand("getIncidents", {"query": query})
