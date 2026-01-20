@@ -656,14 +656,15 @@ def update_remote_system(
 
             updated_arguments: dict[str, Any] = {}
             updated_status = update_args.get("status")
-            xsoar_incident_closed = inc_status == 2
+            xsoar_incident_closed = inc_status == IncidentStatus.DONE
 
             if updated_status == "closed" or (not updated_status and xsoar_incident_closed):
                 # Closing the alert - need closure_reason and description
                 closure_reason = update_args.get("closure_reason", "other")
+                closure_reason_description = update_args.get("closure_reason_description", "Closed from XSOAR")
                 updated_arguments["status"] = "closed"
                 updated_arguments["closure_reason"] = closure_reason
-                updated_arguments["closure_reason_description"] = "Closed from XSOAR"
+                updated_arguments["closure_reason_description"] = closure_reason_description
             elif updated_status:
                 # Status change to non-closed state
                 updated_arguments["status"] = updated_status
@@ -671,7 +672,7 @@ def update_remote_system(
                 # No status change from XSOAR, check current Cyberint status
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
                 cyberint_alert: dict[str, Any] = cyberint_response["alert"]
-                cyberint_status = cyberint_alert.get("status", "open")
+                cyberint_status = cyberint_alert.get("status")
                 updated_arguments["status"] = cyberint_status
                 if cyberint_status == "closed":
                     updated_arguments["closure_reason"] = cyberint_alert.get("closure_reason", "other")

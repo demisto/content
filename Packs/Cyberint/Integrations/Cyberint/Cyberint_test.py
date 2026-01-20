@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 import Cyberint
 import pytest
 from CommonServerPython import DemistoException, EntryType, GetModifiedRemoteDataResponse, GetRemoteDataResponse
+from Packs.Cyberint.Integrations.Cyberint.CommonServerPython import IncidentStatus
 
 BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -756,7 +757,7 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
 
     args = {
         "remoteId": "INT-123",
-        "status": 2,  # XSOAR closed status
+        "status": IncidentStatus.DONE,  # XSOAR closed status
         "incidentChanged": True,
         "delta": {"closure_reason": "resolved"},
         "data": {},
