@@ -109,14 +109,13 @@ script:
       predefined:
         - "true"
         - "false"
-      required: true
     outputs: []
   runonce: false
   script: "-"
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6663663
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)
