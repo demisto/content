@@ -2,13 +2,17 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+from datetime import date, datetime, timedelta#, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
 import re
+
+
+from datetime import datetime, timezone
+UTC = datetime.now(timezone.utc)
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -4038,6 +4042,71 @@ class Lambda:
         except Exception as e:
             raise DemistoException(f"Error listing Lambda functions: {str(e)}")
 
+    @staticmethod
+    def list_aliases_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists aliases for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - function_version (str, optional): Function version to filter aliases
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of aliases for the function
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if function_version := args.get("function_version"):
+            kwargs["FunctionVersion"] = function_version
+
+        print_debug_logs(client, f"Listing Lambda aliases with parameters: {kwargs}")
+        
+        try:
+            # Use paginator to handle large numbers of aliases
+            paginator = client.get_paginator("list_aliases")
+            
+            all_aliases = []
+            for page in paginator.paginate(**kwargs):
+                if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(page, args.get("account_id"))
+                
+                all_aliases.extend(page.get("Aliases", []))
+            
+            if not all_aliases:
+                return CommandResults(readable_output=f"No aliases found for function {args.get('function_name')}.")
+            
+            # Serialize response with datetime encoding
+            serialized_aliases = serialize_response_with_datetime_encoding({"Aliases": all_aliases})
+            aliases_list = serialized_aliases.get("Aliases", [])
+            
+            # Prepare readable output
+            readable_data = []
+            for alias in aliases_list:
+                readable_data.append({
+                    "AliasArn": alias.get("AliasArn"),
+                    "Name": alias.get("Name"),
+                    "FunctionVersion": alias.get("FunctionVersion"),
+                })
+            
+            human_readable = tableToMarkdown("AWS Lambda Aliases", readable_data)
+            
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Aliases",
+                outputs_key_field="AliasArn",
+                outputs=aliases_list,
+                readable_output=human_readable,
+                raw_response=aliases_list,
+            )
+            
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+            return None
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda aliases: {str(e)}")
+
 
 class ACM:
     service = AWSServices.ACM
@@ -4179,6 +4248,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-lambda-function-get": Lambda.get_function_command,
     "aws-lambda-functions-list": Lambda.list_functions_command,
+    "aws-lambda-aliases-list": Lambda.list_aliases_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
@@ -4258,6 +4328,7 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:UpdateFunctionUrlConfig",
     "lambda:GetFunction",
     "lambda:ListFunctions",
+    "lambda:ListAliases",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",

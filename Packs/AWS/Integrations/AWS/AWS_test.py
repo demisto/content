@@ -7157,3 +7157,140 @@ def test_lambda_list_functions_command_multiple_pages(mocker):
     assert result.outputs[0]["FunctionName"] == "func1"
     assert result.outputs[1]["FunctionName"] == "func2"
     assert all(func["Region"] == "eu-west-1" for func in result.outputs)
+
+
+def test_lambda_list_aliases_command_success(mocker):
+    """
+    Test Lambda.list_aliases_command with successful response.
+    
+    Given: Valid function_name, region, and account_id
+    When: list_aliases_command is called
+    Then: Should return CommandResults with list of aliases
+    """
+    from AWS import Lambda
+    
+    # Mock client and paginator
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+    
+    # Mock paginated response
+    mock_pages = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Aliases": [
+                {
+                    "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:prod",
+                    "Name": "prod",
+                    "FunctionVersion": "1",
+                    "Description": "Production alias"
+                },
+                {
+                    "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:dev",
+                    "Name": "dev",
+                    "FunctionVersion": "2",
+                    "Description": "Development alias"
+                }
+            ]
+        }
+    ]
+    
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+    
+    args = {
+        "function_name": "my-function",
+        "region": "us-east-1",
+        "account_id": "123456789012"
+    }
+    
+    result = Lambda.list_aliases_command(mock_client, args)
+    
+    # Verify paginator was used correctly
+    mock_client.get_paginator.assert_called_once_with("list_aliases")
+    mock_paginator.paginate.assert_called_once_with(FunctionName="my-function")
+    
+    # Verify CommandResults structure
+    assert result.outputs_prefix == "AWS.Lambda.Aliases"
+    assert result.outputs_key_field == "AliasArn"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["Name"] == "prod"
+    assert result.outputs[1]["Name"] == "dev"
+    assert "prod" in result.readable_output
+    assert "dev" in result.readable_output
+
+
+def test_lambda_list_aliases_command_with_function_version(mocker):
+    """
+    Test Lambda.list_aliases_command with function_version filter.
+    
+    Given: function_name and function_version parameters
+    When: list_aliases_command is called
+    Then: Should pass FunctionVersion to AWS API
+    """
+    from AWS import Lambda
+    
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+    
+    mock_pages = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Aliases": [
+                {
+                    "AliasArn": "arn:aws:lambda:us-west-2:123456789012:function:test-func:stable",
+                    "Name": "stable",
+                    "FunctionVersion": "5"
+                }
+            ]
+        }
+    ]
+    
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+    
+    args = {
+        "function_name": "test-func",
+        "function_version": "5",
+        "region": "us-west-2",
+        "account_id": "123456789012"
+    }
+    
+    result = Lambda.list_aliases_command(mock_client, args)
+    
+    # Verify FunctionVersion was passed to API
+    mock_paginator.paginate.assert_called_once_with(FunctionName="test-func", FunctionVersion="5")
+    assert result.outputs[0]["FunctionVersion"] == "5"
+
+
+def test_lambda_list_aliases_command_no_aliases(mocker):
+    """
+    Test Lambda.list_aliases_command when no aliases exist.
+    
+    Given: Empty aliases list from AWS
+    When: list_aliases_command is called
+    Then: Should return message indicating no aliases found
+    """
+    from AWS import Lambda
+    
+    mock_client = mocker.Mock()
+    mock_paginator = mocker.Mock()
+    
+    mock_pages = [
+        {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            "Aliases": []
+        }
+    ]
+    
+    mock_paginator.paginate.return_value = mock_pages
+    mock_client.get_paginator.return_value = mock_paginator
+    
+    args = {
+        "function_name": "no-aliases-function",
+        "region": "ap-south-1",
+        "account_id": "123456789012"
+    }
+    
+    result = Lambda.list_aliases_command(mock_client, args)
+    
+    assert "No aliases found for function no-aliases-function" in result.readable_output

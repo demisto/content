@@ -6337,6 +6337,76 @@ script:
       description: The AWS Region.
       type: string
 
+  - name: aws-lambda-aliases-list
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - description: The name of the Lambda function.
+      name: function_name
+      required: true
+    - description: If you specify this optional parameter, the API returns only the aliases that are pointing to the specific Lambda function version, otherwise the API returns all of the aliases created for the Lambda function.
+      name: function_version
+    description: Returns a list of aliases created for a Lambda function. For each alias, the response includes information such as the alias ARN, description, alias name, and the function version to which it points.
+    outputs:
+    - contextPath: AWS.Lambda.Aliases.AliasArn
+      description: Lambda function ARN that is qualified using the alias name as the suffix.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Name
+      description: Alias name.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
+      description: Function version to which the alias points.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Description
+      description: Alias description.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
+      description: The name of the second alias, and the percentage of traffic that is routed to it.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+
   - arguments:
     - description: The AWS account ID.
       name: account_id
