@@ -1,5 +1,6 @@
 import copy
 import json
+from freezegun import freeze_time
 
 import demistomock as demisto
 import pytest
@@ -441,7 +442,7 @@ def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
         assert response.status_code == 200
         assert response.content_type == "application/vnd.oasis.stix+json; version=2.0"
         assert response.json == objects
-        assert response.headers.get("Content-Range") == "items 0-2/5"
+        assert response.headers.get("Content-Range") == "items 0-3/5"
 
 
 @pytest.mark.parametrize(
@@ -672,3 +673,57 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
             }
         )
         assert response.json == objects
+
+
+@freeze_time("2025-01-01 12:00:00 UTC")
+def test_remove_old_cache(mocker):
+    """
+    Given
+        An integration context with search_after_cache entries.
+    When
+        remove_old_cache is called.
+    Then
+        Validate that old cache entries are removed and new ones are kept.
+    """
+    from TAXII2Server import remove_old_cache
+
+    mocker.patch.object(demisto, "params", return_value={"cache_duration_hours": 24})
+
+    integration_context = {
+        "search_after_cache": {
+            "collection1": {
+                "0": {"search_after": ["val1"], "last_updated": "2024-12-31T10:00:00Z"},  # Expired (26 hours old)
+                "10": {"search_after": ["val2"], "last_updated": "2025-01-01T10:00:00Z"},  # Not expired (2 hours old)
+            },
+            "collection2": {
+                "0": {"search_after": ["val3"], "last_updated": "2024-12-30T10:00:00Z"},  # Expired (50 hours old)
+                "20": {"search_after": ["val4"], "last_updated": "2025-01-01T11:00:00Z"},  # Not expired (1 hour old)
+            },
+            "collection3": {
+                "0": {"search_after": ["val5"], "last_updated": "invalid-date"},  # Invalid date, should be kept
+            },
+            "collection4": {
+                "0": {"search_after": ["val6"]},  # Missing last_updated, should be kept
+            },
+        }
+    }
+
+    remove_old_cache(integration_context)
+
+    expected_context = {
+        "search_after_cache": {
+            "collection1": {
+                "10": {"search_after": ["val2"], "last_updated": "2025-01-01T10:00:00Z"},
+            },
+            "collection2": {
+                "20": {"search_after": ["val4"], "last_updated": "2025-01-01T11:00:00Z"},
+            },
+            "collection3": {
+                "0": {"search_after": ["val5"], "last_updated": "invalid-date"},
+            },
+            "collection4": {
+                "0": {"search_after": ["val6"]},
+            },
+        }
+    }
+    assert integration_context == expected_context

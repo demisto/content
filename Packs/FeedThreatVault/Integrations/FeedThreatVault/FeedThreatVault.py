@@ -9,7 +9,8 @@ urllib3.disable_warnings()
 
 
 VERSION = "latest"
-LIMIT = 1000
+DEFAULT_LIMIT = 200
+MAX_LIMIT = 1000
 CONTEXT_KEY = "EDL"
 INTEGRATION_ENTRY_CONTEXT = "ThreatVault"
 LOG_LINE = INTEGRATION_ENTRY_CONTEXT + "_" + CONTEXT_KEY + " -"
@@ -64,11 +65,7 @@ class Client(BaseClient):
 
         command_results_list = []
 
-        query = assign_params(
-            name="panw-known-ip-list",
-            version=VERSION,
-            listformat="array",
-        )
+        query = assign_params(name="panw-known-ip-list", version=VERSION, listformat="array", limit=1)
         try:
             self.get_indicators_request(args=query)
 
@@ -113,26 +110,30 @@ COMMANDS
 """
 
 
-def threatvault_get_indicators_command(client: Client, list_format: str, args: Dict) -> CommandResults:
+def threatvault_get_indicators_command(
+    client: Client, list_format: str, args: Dict, limit: int = DEFAULT_LIMIT
+) -> CommandResults:
     """Threatvault get indicators query main command.
 
     Args:
         client (Client): client.
+        list_format (str): format of the list to be returned.
         args (dict): arguments.
+        limit (int): maximum number of indicators per request.
 
     Returns:
         CommandResults: Command results response.
     """
     name = args.get("name")
     version = args.get("version")
-    offset = LIMIT
+    offset = limit
     ipaddr_list = []
 
     query = assign_params(
         name=name,
         version=version,
         listformat=list_format,
-        limit=LIMIT,
+        limit=limit,
     )
 
     try:
@@ -143,6 +144,12 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
             response = {}
             readable_output = "There is no information for your search."
             CommandResults(readable_output=readable_output)
+        elif err.res is not None and err.res.status_code == 504:
+            raise DemistoException(
+                f"Request timed out. Current page size limit is {limit}. "
+                f"Consider reducing the 'Page Size Limit' parameter "
+                f"in the integration configuration to improve performance. "
+            )
         else:
             raise
 
@@ -158,11 +165,22 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
                 version=version,
                 listformat=list_format,
                 offset=offset,
+                limit=limit,
             )
 
-            response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
-            offset += LIMIT
+            try:
+                response = client.get_indicators_request(args=query)
+                ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
+                offset += limit
+            except DemistoException as err:
+                if err.res is not None and err.res.status_code == 504:
+                    raise DemistoException(
+                        f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
+                        f"Current page size limit is {limit}. "
+                        f"Consider reducing the 'Page Size Limit' parameter "
+                        f"in the integration configuration to improve performance."
+                    )
+                raise
 
         # create the table based on the response
         table = {
@@ -188,26 +206,27 @@ def threatvault_get_indicators_command(client: Client, list_format: str, args: D
         raise DemistoException(f"couldn't fetch - {response.get('message')}")
 
 
-def fetch_indicators_command(client: Client, predefined_edl_name: str, list_format: str, tlp_color: str, feed_tags: str):
+def fetch_indicators_command(
+    client: Client, predefined_edl_name: str, list_format: str, tlp_color: str, feed_tags: str, limit: int = DEFAULT_LIMIT
+):
     """Threatvault fetch indicators query main command.
 
     Args:
         client (Client): client.
-        interval (int): interval to request new feed content.
         predefined_edl_name (str):  predefined EDL name to fetch.
         list_format (str): format of the list to be returned (e.g., "array").
         tlp_color (str): TLP color provided in the integration instance.
         feed_tags (str): tags to apply to the feed contents.
-        last_run (dict): last time the feed fetch executed.
+        limit (int): maximum number of indicators per request.
 
     Returns:
-        CommandResults: Command results response.
+        tuple: (run_datetime, results) - timestamp and list of indicators.
     """
 
     now = datetime.now(timezone.utc)
     name = predefined_edl_name
     version = VERSION
-    offset = LIMIT
+    offset = limit
     ipaddr_list = []
     # automatically add a tag for the feed name by stripping leading panw-* and trailing *-list
     # split on the first - and keep right match
@@ -219,7 +238,7 @@ def fetch_indicators_command(client: Client, predefined_edl_name: str, list_form
         name=name,
         version=version,
         listformat=list_format,
-        limit=LIMIT,
+        limit=limit,
     )
 
     try:
@@ -230,12 +249,19 @@ def fetch_indicators_command(client: Client, predefined_edl_name: str, list_form
             response = {}
             readable_output = "There is no information for your search."
             CommandResults(readable_output=readable_output)
+        elif err.res is not None and err.res.status_code == 504:
+            raise DemistoException(
+                f"Request timed out (504 Gateway Timeout) during indicator fetch. "
+                f"Current page size limit is {limit}. "
+                f"Consider reducing the 'Page Size Limit' parameter "
+                f"in the integration configuration to improve performance."
+            )
         else:
             raise
 
     if response.get("success"):
         count = response.get("count", 0)
-        ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
+        ipaddr_list.extend(response.get("data", {}).get("ipaddr", []))
 
         # get next page of data until there is none left
         while count > offset:
@@ -244,11 +270,22 @@ def fetch_indicators_command(client: Client, predefined_edl_name: str, list_form
                 version=version,
                 listformat=list_format,
                 offset=offset,
+                limit=limit,
             )
 
-            response = client.get_indicators_request(args=query)
-            ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
-            offset += LIMIT
+            try:
+                response = client.get_indicators_request(args=query)
+                ipaddr_list.extend(response.get("data", {}).get("ipaddr"))
+                offset += limit
+            except DemistoException as err:
+                if err.res is not None and err.res.status_code == 504:
+                    raise DemistoException(
+                        f"Request timed out (504 Gateway Timeout) while fetching page at offset {offset}. "
+                        f"Current page size limit is {limit}. "
+                        f"Consider reducing the 'Page Size Limit' parameter "
+                        f"in the integration configuration to improve performance."
+                    )
+                raise
 
     else:
         raise DemistoException(f"couldn't fetch - {response.get('message')}")
@@ -282,6 +319,15 @@ def main():
     feed_tags = params.get("feedTags", "")
     predefined_edl_name = params["name"]
     list_format = params["list_format"].lower()
+    limit = arg_to_number(params.get("limit", DEFAULT_LIMIT)) or DEFAULT_LIMIT
+
+    # Validate limit is within acceptable range
+    if limit > MAX_LIMIT:
+        limit = MAX_LIMIT
+        demisto.debug(f"{LOG_LINE} Limit {params.get('limit')} exceeds maximum {MAX_LIMIT}, using {MAX_LIMIT}")
+    elif limit < 1:
+        limit = DEFAULT_LIMIT
+        demisto.debug(f"{LOG_LINE} Invalid limit {params.get('limit')}, using default {DEFAULT_LIMIT}")
 
     if not DBotScoreReliability.is_valid_type(reliability):
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
@@ -309,6 +355,7 @@ def main():
                 list_format=list_format,
                 feed_tags=feed_tags,
                 tlp_color=tlp_color,
+                limit=limit,
             )
 
             for iter_ in batch(res, batch_size=2000):
@@ -318,7 +365,7 @@ def main():
             demisto.setLastRun({"last_successful_run": run_datetime})
 
         elif command in commands:
-            return_results(commands[command](client, list_format, demisto.args()))
+            return_results(commands[command](client, list_format, demisto.args(), limit))
         else:
             raise NotImplementedError(f'Command "{command}" was not implemented.')
 
@@ -328,7 +375,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Error runnning integration - {err}")
+        return_error(f"Error running integration - {err}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
