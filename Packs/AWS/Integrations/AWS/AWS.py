@@ -2656,8 +2656,8 @@ class EC2:
         pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
         kwargs.update(pagination_kwargs)
 
-        print_debug_logs(client, f"Describing images with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing images with parameters: {kwargs}")
 
         response = client.describe_images(**kwargs)
 
@@ -2694,7 +2694,7 @@ class EC2:
         }
 
         next_token = response.get("NextToken")
-        next_token_text = f"\nImagesNextPageToken: {escape(next_token)}\n" if next_token else ""
+        next_token_text = f"ImagesNextPageToken: {escape(next_token)}" if next_token else ""
 
         return CommandResults(
             outputs=outputs,
@@ -2704,8 +2704,8 @@ class EC2:
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
-            )
-            + next_token_text,
+                metadata=next_token_text
+            ),
             raw_response=response,
         )
 
@@ -2787,8 +2787,7 @@ class EC2:
         Deregisters the specified Amazon Machine Image (AMI).
 
         After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect
-        any instances that you've already launched from the AMI. You'll continue to be charged for those
-        instances until you terminate them.
+        any instances that you've already launched from the AMI.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service

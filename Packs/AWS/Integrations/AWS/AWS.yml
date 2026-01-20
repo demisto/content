@@ -5551,18 +5551,18 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: filters
-        description: "One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options."
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
         required: false
       - name: image_ids
         description: "A comma-separated list of image IDs to describe."
         required: false
         isArray: true
       - name: owners
-        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','."
+        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by a comma."
         required: false
         isArray: true
       - name: executable_users
-        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by ','."
+        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma."
         required: false
         isArray: true
       - name: include_deprecated
@@ -5976,18 +5976,18 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: filters
-        description: "One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options."
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
         required: false
       - name: image_ids
         description: "A comma-separated list of image IDs to wait for."
         required: false
         isArray: true
       - name: owners
-        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Separated by ','."
+        description: "Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft). Separated by a comma."
         required: false
         isArray: true
       - name: executable_users
-        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by ','."
+        description: "Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma."
         required: false
         isArray: true
       - name: waiter_delay
