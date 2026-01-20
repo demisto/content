@@ -378,17 +378,6 @@ class BaseParams(ContentBaseModel):
         return not self.insecure
 
 
-class IntegrationReliability(Enum):
-    A_PLUS_PLUS = "A++ - Reputation script"
-    A_PLUS = "A+ - 3rd party enrichment"
-    A = "A - Completely reliable"
-    B = "B - Usually reliable"
-    C = "C - Fairly reliable"
-    D = "D - Not usually reliable"
-    E = "E - Unreliable"
-    F = "F - Reliability cannot be judged"
-
-
 class HelloWorldSeverity(str, Enum):
     """Helloworld severity options matching the YML configuration parameter options."""
 
@@ -457,7 +446,7 @@ class HelloWorldParams(BaseParams):
 
     # Advanced parameters
     threshold_ip: int = 65
-    integration_reliability: IntegrationReliability = Field(default=IntegrationReliability.C, alias="integrationReliability")
+    integration_reliability: str = Field(default=DBotScoreReliability.C, alias="integrationReliability")
 
     @property
     def api_key(self):
@@ -1434,7 +1423,7 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
             integration_name="HelloWorld",
             score=score,
             malicious_description=f"Hello World returned reputation {reputation}",
-            reliability=params.integration_reliability.value,
+            reliability=params.integration_reliability,
         )
 
         # Create the IP Standard Context structure using Common.IP and add
