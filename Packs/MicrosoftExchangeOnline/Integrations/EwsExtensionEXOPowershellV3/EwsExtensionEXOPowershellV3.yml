@@ -2176,7 +2176,6 @@ script:
     - name: entity_type
       description: The type of entity being exported.
       auto: PREDEFINED
-      isArray: true
       predefined:
         - 'Email'
         - 'SharePointOnline'
