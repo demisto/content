@@ -397,7 +397,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit = arg_to_number(str(args.get("limit", "20")))
+    limit = arg_to_number(args.get("limit", "20"))
 
     policies: list[dict] = []
     try:
