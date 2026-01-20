@@ -666,6 +666,7 @@ class MsGraphClient:
         )
         return updated_incident
 
+
 """ HELPER FUNCTIONS """
 
 
