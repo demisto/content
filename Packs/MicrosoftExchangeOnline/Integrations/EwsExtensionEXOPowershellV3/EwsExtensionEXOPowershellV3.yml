@@ -2179,7 +2179,6 @@ script:
       predefined:
         - 'Email'
         - 'SharePointOnline'
-        - 'Teams'
         - 'DataLossPrevention'
     - name: force_conversion_to_mime
       auto: PREDEFINED
