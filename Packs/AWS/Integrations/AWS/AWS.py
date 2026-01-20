@@ -2948,8 +2948,8 @@ class EC2:
             waiter.wait(**kwargs)
 
             return CommandResults(readable_output="Image is now available.")
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
 
 
 class EKS:
