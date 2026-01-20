@@ -1126,19 +1126,10 @@ def test_xql_library_list_command(mocker):
     Then:
     - Ensure the client is called with correct parameters and results are returned correctly.
     """
-    args = {
-        "extra_data": "true",
-        "xql_query_name": "test_query",
-        "xql_query_tag": "test_tag"
-    }
+    args = {"extra_data": "true", "xql_query_name": "test_query", "xql_query_tag": "test_tag"}
     mock_response = {
         "xql_queries": [
-            {
-                "xql_query_name": "test_query",
-                "xql_query": "dataset = xdr_data",
-                "xql_query_tags": ["test_tag"],
-                "id": "123"
-            }
+            {"xql_query_name": "test_query", "xql_query": "dataset = xdr_data", "xql_query_tags": ["test_tag"], "id": "123"}
         ]
     }
     mocker.patch.object(CLIENT, "get_xql_queries", return_value=mock_response)
@@ -1162,17 +1153,19 @@ def test_xql_library_create_command(mocker):
         "override_existing": "true",
         "xql_query": "dataset = xdr_data",
         "xql_query_name": "test_query",
-        "xql_query_tag": "test_tag"
+        "xql_query_tag": "test_tag",
     }
     res = mocker.patch.object(CLIENT, "create_xql_queries")
     response = XQLQueryingEngine.xql_library_create_command(CLIENT, args)
 
     assert response.readable_output == "XQL queries created successfully."
-    res.assert_called_once_with({
-        "xql_queries_override": "true",
-        "xql_query_tags": ["test_tag"],
-        "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}]
-    })
+    res.assert_called_once_with(
+        {
+            "xql_queries_override": "true",
+            "xql_query_tags": ["test_tag"],
+            "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}],
+        }
+    )
 
 
 def test_xql_library_delete_command(mocker):
@@ -1184,15 +1177,9 @@ def test_xql_library_delete_command(mocker):
     Then:
     - Ensure the client is called with correct parameters.
     """
-    args = {
-        "xql_query_name": "test_query",
-        "xql_query_tag": "test_tag"
-    }
+    args = {"xql_query_name": "test_query", "xql_query_tag": "test_tag"}
     res = mocker.patch.object(CLIENT, "delete_xql_queries")
     response = XQLQueryingEngine.xql_library_delete_command(CLIENT, args)
 
     assert response.readable_output == "XQL queries deleted successfully."
-    res.assert_called_once_with({
-        "xql_query_names": ["test_query"],
-        "xql_query_tags": ["test_tag"]
-    })
+    res.assert_called_once_with({"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]})

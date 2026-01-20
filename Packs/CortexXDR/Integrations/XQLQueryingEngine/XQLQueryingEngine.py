@@ -84,6 +84,7 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-library-list": xql_library_list_command,
 }
 
+
 def main() -> None:
     """main function, parses params and runs command functions"""
     args = demisto.args()

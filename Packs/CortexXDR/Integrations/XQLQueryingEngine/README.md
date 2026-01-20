@@ -981,6 +981,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-07-31T01:47:07.000Z | PANW |  |  | ISRAEL | LOCAL_IP | REMOTE_IP | 80 |  |  |  |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  | IP |  |  | 2021-07-31T01:48:03.000Z |
+>
 ### xdr-xql-library-list
 
 ***
@@ -994,17 +995,18 @@ Gets a list of XQL queries from the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| extra_data | Whether to return an extended view. Possible values are: true, false. | Optional | 
-| xql_query_name | A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call. | Optional | 
-| xql_query_tag | A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call. | Optional | 
+| extra_data | Whether to return an extended view. Possible values are: true, false. | Optional |
+| xql_query_name | A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call. | Optional |
+| xql_query_tag | A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.Library.query_name | String | The name of the XQL query. | 
-| PaloAltoNetworksXQL.Library.query_tags | String | The tags of the XQL query. | 
-| PaloAltoNetworksXQL.Library.xql_query | String | The XQL query string. | 
+| PaloAltoNetworksXQL.Library.query_name | String | The name of the XQL query. |
+| PaloAltoNetworksXQL.Library.query_tags | String | The tags of the XQL query. |
+| PaloAltoNetworksXQL.Library.xql_query | String | The XQL query string. |
+
 ### xdr-xql-library-create
 
 ***
@@ -1018,14 +1020,15 @@ Creates or updates XQL queries in the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| override_existing | Whether to override existing queries. Possible values are: true, false. | Optional | 
-| xql_query | A comma-separated list of XQL query strings. For example: "dataset = xdr_data \|limit 1". | Optional | 
-| xql_query_name | A comma-separated list of new XQL query names. The XQL query name should be unique. | Optional | 
-| xql_query_tag | A comma-separated list of new XQL query tags. | Optional | 
+| override_existing | Whether to override existing queries. Possible values are: true, false. | Optional |
+| xql_query | A comma-separated list of XQL query strings. For example: "dataset = xdr_data \|limit 1". | Optional |
+| xql_query_name | A comma-separated list of new XQL query names. The XQL query name should be unique. | Optional |
+| xql_query_tag | A comma-separated list of new XQL query tags. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-xql-library-delete
 
 ***
@@ -1039,8 +1042,8 @@ Deletes XQL queries from the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| xql_query_name | A comma-separated list of XQL query names to delete. If deleting when using this argument, you cannot delete by xql_query_tag in the same call. | Optional | 
-| xql_query_tag | A comma-separated list of XQL query tags. If deleting when using this argument, you cannot delete by xql_query_name in the same call. | Optional | 
+| xql_query_name | A comma-separated list of XQL query names to delete. If deleting when using this argument, you cannot delete by xql_query_tag in the same call. | Optional |
+| xql_query_tag | A comma-separated list of XQL query tags. If deleting when using this argument, you cannot delete by xql_query_name in the same call. | Optional |
 
 #### Context Output
 

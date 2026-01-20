@@ -884,6 +884,7 @@ def get_xql_quota_command(client: CoreClient, args: Dict[str, Any]) -> CommandRe
         outputs_prefix="PaloAltoNetworksXQL.Quota", outputs_key_field="", outputs=result, readable_output=readable_output
     )
 
+
 def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-XQL-Queries
@@ -911,15 +912,28 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
             query["name"] = query.pop("xql_query_name", None)
             query["query_text"] = query.pop("xql_query", None)
             query["labels"] = query.pop("xql_query_tags", None)
-    readable_output = tableToMarkdown(name="XQL Queries",
-                                      t=xql_queries,
-                                      headers=["id", "name", "query_text", "description",
-                   "content_global_id", "created_at", "created_by",
-                   "modified_by", "is_private", "labels",
-                   "modified_at", "created_by_pretty", "modified_by_pretty"],
-                                      removeNull=True,
-                                      date_fields=["created_at", "modified_at"],
-                                      headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(
+        name="XQL Queries",
+        t=xql_queries,
+        headers=[
+            "id",
+            "name",
+            "query_text",
+            "description",
+            "content_global_id",
+            "created_at",
+            "created_by",
+            "modified_by",
+            "is_private",
+            "labels",
+            "modified_at",
+            "created_by_pretty",
+            "modified_by_pretty",
+        ],
+        removeNull=True,
+        date_fields=["created_at", "modified_at"],
+        headerTransform=string_to_table_header,
+    )
 
     return CommandResults(
         readable_output=readable_output,
