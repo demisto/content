@@ -309,48 +309,10 @@ script:
       isArray: true
     - name: limit
     outputs:
-    - contextPath: FireEyeETP.Alerts.smtp-message.from
-    - contextPath: FireEyeETP.Alerts.smtp-message.ip_address
-    - contextPath: FireEyeETP.Alerts.smtp-message.country
-    - contextPath: FireEyeETP.Alerts.smtp-message.protocol
-    - contextPath: FireEyeETP.Alerts.smtp-message.queue-id
-    - contextPath: FireEyeETP.Alerts.smtp-message.last-malware
-    - contextPath: FireEyeETP.Alerts.smtp-message.threat_type
-    - contextPath: FireEyeETP.Alerts.smtp-message.threat_type_description
-    - contextPath: FireEyeETP.Alerts.smtp-message.to
-    - contextPath: FireEyeETP.Alerts.email-header.to
-    - contextPath: FireEyeETP.Alerts.email-header.from
-    - contextPath: FireEyeETP.Alerts.email-header.cc
-    - contextPath: FireEyeETP.Alerts.email-header.subject
-    - contextPath: FireEyeETP.Alerts.email-header.message-id
-    - contextPath: FireEyeETP.Alerts.malware.name
-    - contextPath: FireEyeETP.Alerts.malware.stype
-    - contextPath: FireEyeETP.Alerts.sha256
     - contextPath: FireEyeETP.Alerts.domain
-    - contextPath: FireEyeETP.Alerts.verdict
-    - contextPath: FireEyeETP.Alerts.mta_msg_id
-    - contextPath: FireEyeETP.Alerts.original
     - contextPath: FireEyeETP.Alerts.report_id
     - contextPath: FireEyeETP.Alerts.id
-    - contextPath: FireEyeETP.Alerts.md5
-    - contextPath: FireEyeETP.Alerts.object_uuid
-    - contextPath: FireEyeETP.Alerts.traffic_type
     - contextPath: FireEyeETP.Alerts.alert_date
-    - contextPath: FireEyeETP.Alerts.accepted_time
-    - contextPath: FireEyeETP.Alerts.email_status
-    - contextPath: FireEyeETP.Alerts.custom.riskware_action
-    - contextPath: FireEyeETP.Alerts.custom.riskware_result
-    - contextPath: FireEyeETP.Alerts.custom.is_yara
-    - contextPath: FireEyeETP.Alerts.custom.is_riskware
-    - contextPath: FireEyeETP.Alerts.custom.is_sc_imp
-    - contextPath: FireEyeETP.Alerts.custom.is_custom_block
-    - contextPath: FireEyeETP.Alerts.custom.is_qr
-    - contextPath: FireEyeETP.Alerts.custom.is_other
-    - contextPath: FireEyeETP.Alerts.client_id
-    - contextPath: FireEyeETP.Alerts.domain_id
-    - contextPath: FireEyeETP.Alerts.ack
-    - contextPath: FireEyeETP.Alerts.is_retro
-    - contextPath: FireEyeETP.Alerts.is_read
     description: 'Get summary format information about the alerts.'
   - name: fireeye-etp-get-alert
     arguments:

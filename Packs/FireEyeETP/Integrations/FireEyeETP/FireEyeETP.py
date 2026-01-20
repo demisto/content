@@ -42,7 +42,9 @@ CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
 SCOPES = PARAMS.get(
     "oauth_scopes",
-    "etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw",
+    ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
+     "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
+     "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
 ).strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
@@ -108,7 +110,7 @@ def is_iso_utc(date_str) -> bool:
     try:
         datetime.strptime(date_str, ISO_FORMAT)
         return True
-    except:
+    except ValueError:
         return False
 
 
@@ -552,8 +554,7 @@ def get_message_command():
         }
         demisto.results(entry)
 
-
-def create_output_alerts_search(alert):
+def get_search_alert_summary_v2(alert):
     return {
         "Alert ID": alert.get("id"),
         "Sha256": alert.get("sha256"),
@@ -598,7 +599,7 @@ def alert_readable_data(alert):
     }
 
 
-def create_output_single_alert(alert):
+def get_single_alert_summary_v2(alert):
     return {
         "Alert ID": alert.get("id"),
         "Domain": alert.get("domain"),
@@ -906,38 +907,13 @@ def quarantine_release_command(client, args):
 
 def get_single_alert_entry(alert_id):
     alert = get_alert_request_v2(alert_id)
-    if alert:
-        readable_data = create_output_single_alert(alert)
-        headers = ["Alert ID", "Domain", "Msg", "Traffic type", "Verdict", "Report id",
-            "Alert date", "Occurred", "Name", "Attack time", "Severity" ]
-        alert_md_table = tableToMarkdown("Alert Details", readable_data, headers=headers)
+    sub_alert = get_single_alert_summary_v2(alert)
+    readable_output = tableToMarkdown("Alert Details", sub_alert)
 
-        data = alert["alert"]["explanation"]["malware_detected"]["malware"]
-        malware_data = [malware_readable_data_v2(malware) for malware in data]
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="FireEyeETP.Alerts", outputs_key_field="id", outputs=alert
+    )
 
-        headers= ["Name", "Domain", "Downloaded At", "Executed At", "Type", "Submitted At"]
-        malware_md_table = tableToMarkdown("Malware Details", malware_data, headers=headers)
-
-        entry = {
-            "Type": entryTypes["note"],
-            "Contents": alert,
-            "ContentsFormat": formats["json"],
-            "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": f"## Trellix Email Security - Cloud - Get Alert\n{alert_md_table}\n{malware_md_table}",
-            "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert},
-        }
-        demisto.results(entry)
-    # No response
-    else:
-        entry = {
-            "Type": entryTypes["note"],
-            "Contents": {},
-            "ContentsFormat": formats["json"],
-            "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\no results",
-        }
-    return entry
-            
 
 def get_alerts_entry(args):
     body = create_request_body_alert_search_endpoint(args)
@@ -952,32 +928,13 @@ def get_alerts_entry(args):
     response = get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
 
     alerts = response.get("data", [])
-    alerts_readable_data = [create_output_alerts_search(alert) for alert in alerts]
-    alerts_summery_headers = [
-        "Alert ID",
-        "Sha256",
-        "md5",
-        "Domain",
-        "Original",
-        "Report id",
-        "Alert date",
-        "Malware name",
-        "Malware stype",
-        "Email status",
-    ]
-    md_table = tableToMarkdown(
-        "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
+    sub_alerts = [get_search_alert_summary_v2(alert) for alert in alerts]
+    readable_output = tableToMarkdown("Trellix Email Security - Cloud - Get Alerts", sub_alerts)
+
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="FireEyeETP.Alerts", outputs_key_field="id", outputs=alerts
     )
-    entry = {
-        "Type": entryTypes["note"],
-        "Contents": alerts,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": md_table,
-        "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alerts},
-    }
-    return entry
-    
+
 
 def get_alert_list():
     args = demisto.args()
@@ -985,13 +942,13 @@ def get_alert_list():
 
     # In case alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
     if alert_id:
-        entry = get_single_alert_entry(alert_id)
+        command_result = get_single_alert_entry(alert_id)
 
     # alert_id is not provided, POST calling: /api/v2/public/alerts/search
     else:
-        entry = get_alerts_entry(args)
+        command_result = get_alerts_entry(args)
 
-    demisto.results(entry)
+    return command_result
 
 
 # Deprecated command
@@ -1147,7 +1104,7 @@ def main():
         elif command == "fireeye-etp-get-alert":
             get_alert_command()
         elif command == "fireeye-etp-list-alerts":
-            get_alert_list()
+            return_results(get_alert_list())
         elif command == "fireeye-etp-download-alert-artifact":
             client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_alert_artifacts_command(client, args))
