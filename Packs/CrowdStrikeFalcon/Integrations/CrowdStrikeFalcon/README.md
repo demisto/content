@@ -5219,8 +5219,8 @@ Create an ODS scan and wait for the results.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
-| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled). | Optional |
-| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled). | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 
@@ -5370,8 +5370,8 @@ Create an ODS scheduled scan.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required |
 | schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required |
-| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled). | Optional |
-| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled). | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 

@@ -4212,7 +4212,7 @@ script:
       defaultValue: '600'
     - name: cloud_pup_adware_level_detection
       required: false
-      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled).'
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
       - 0
@@ -4222,7 +4222,7 @@ script:
       - 4
     - name: cloud_pup_adware_level_prevention
       required: false
-      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled).'
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
       - 0
@@ -4411,7 +4411,7 @@ script:
       - Monthly
     - name: cloud_pup_adware_level_detection
       required: false
-      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled).'
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
       - 0
@@ -4421,7 +4421,7 @@ script:
       - 4
     - name: cloud_pup_adware_level_prevention
       required: false
-      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values: 0–4 (0 = Disabled). If not specified, CrowdStrike applies its default behavior (disabled).'
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
       - 0
