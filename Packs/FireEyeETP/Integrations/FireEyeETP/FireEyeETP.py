@@ -26,6 +26,7 @@ GLOBAL VARS
 
 PARAMS = demisto.params()
 
+ALERT_INCIDENT_TYPE_NAME = "trellix_alerts"
 '''
 Cloud REST APIs are rate-limited to 60 requests per minute per API route
 (e.g., /trace, /alert, /quarantine) per customer.
@@ -35,14 +36,15 @@ The fetch command uses:
 As a result, a maximum of 59 alerts can be fetched per minute.
 '''
 MAX_FETCHED_ALERT= min(int(PARAMS.get("incidents_per_fetch", 59)), 59)
-FETCH_TIME = PARAMS.get("fetch_time", "1 minutes")
+# FETCH_TIME = PARAMS.get("fetch_time", "1 minutes") TODO: rollback
+FETCH_TIME = PARAMS.get("fetch_time", "2 years")
 
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
 SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
-BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server"))
+BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server")) # Deprecated endpoint
 BASE_PATH_V2 = "{}/api/v2".format(PARAMS.get("server"))
 
 
@@ -240,9 +242,14 @@ def get_auth_headers():
 
 
 class Client(BaseClient):
-    def get_artifacts(self, alert_id):
+    def get_artifacts_v2(self, alert_id):
         url = f"/public/alerts/{alert_id}/casefile"
         response = self._http_request(method="GET", url_suffix=url, resp_type="response")
+        return response
+
+    def get_artifacts(self, alert_id):
+        url = f"/alerts/{alert_id}/downloadzip"
+        response = self._http_request(method="POST", url_suffix=url, resp_type="response")
         return response
 
     def get_yara_rulesets(self, policy_uuid):
@@ -600,7 +607,7 @@ def create_output_single_alert(alert):
         "Severity": alert.get("alert").get("severity"),
     }
 
-def malware_readable_data(malware):
+def malware_readable_data_v2(malware):
     return {
         "Name": malware.get("name"),
         "Domain": malware.get("domain"),
@@ -609,16 +616,52 @@ def malware_readable_data(malware):
         "Type": malware.get("stype"),
         "Submitted At": malware.get("submitted-at")
     }
-
+    
+def malware_readable_data(malware):
+    return {
+        "Name": malware.get("name"),
+        "Domain": malware.get("domain"),
+        "Downloaded At": malware.get("downloaded_at"),
+        "Executed At": malware.get("executed_at"),
+        "Type": malware.get("stype"),
+        "Submitted At": malware.get("submitted_at"),
+        "SID": malware.get("sid"),
+    }
 
 def alert_context_data(alert):
     context_data = copy.deepcopy(alert)
     # remove 'attributes' level
-    context_data.update(context_data.pop("attributes", {})) # TODO: how to change it? there is no attributes field in the response, how to flat the response?
+    context_data.update(context_data.pop("attributes", {}))
     return context_data
 
 
-def get_alerts_request(size=None, start_time=None, end_time=None, pagination_token=None, body={}):
+# Deprecated endpoint
+def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
+    url = f"{BASE_PATH_V1}/alerts"
+
+    # constract the body for the request
+    body = {}
+    attributes = {}
+    if legacy_id:
+        attributes["legacy_id"] = legacy_id
+    if etp_message_id:
+        attributes["etp_message_id"] = etp_message_id
+    if attributes:
+        body["attribute"] = attributes
+    if size:
+        body["size"] = size
+    if from_last_modified_on:
+        body["fromLastModifiedOn"] = from_last_modified_on
+
+    response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
+    if raw_response:
+        return response
+    if response["meta"]["total"] == 0:
+        return []
+    return response["data"]
+
+
+def get_alerts_request_v2(size=None, start_time=None, end_time=None, pagination_token=None, body={}):
     """
     Fetch alerts from the /api/v2/public/alerts/search endpoint.
 
@@ -642,7 +685,7 @@ def get_alerts_request(size=None, start_time=None, end_time=None, pagination_tok
     response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
     return response
 
-# TODO: deprecated command
+# Deprecated command
 def get_alerts_command():
     args = demisto.args()
 
@@ -655,8 +698,7 @@ def get_alerts_command():
     # get raw data
     alerts_raw = get_alerts_request(
         legacy_id=args.get("legacy_id"),
-        start_time=args.get("from_last_modified_on"),
-        end_time = datetime.now(timezone.utc).strftime(ISO_FORMAT),
+        from_last_modified_on=args.get("from_last_modified_on"),
         etp_message_id=args.get("etp_message_id"),
         size=args.get("size"),
     )
@@ -736,7 +778,7 @@ def get_events_data_command(client, args):
     )
     return command_results
 
-
+# Deprecated command
 def download_alert_artifacts_command(client, args):
     alert_id = args.get("alert_id")
 
@@ -749,7 +791,7 @@ def download_alert_artifacts_command(client, args):
 def download_alert_case_files(client: Client, args):
     alert_id = args.get("alert_id")
 
-    response = client.get_artifacts(alert_id)
+    response = client.get_artifacts_v2(alert_id)
     file_entry = fileResult(alert_id + ".zip", data=response.content, file_type=EntryType.FILE)
 
     # TODO: what does it the standard XSOAR mechanism?
@@ -786,11 +828,18 @@ def download_yara_file_command(client, args):
     return [CommandResults(readable_output="Download yara file completed successfully."), file_entry]
 
 
-def get_alert_request(alert_id):
-    url = f"{BASE_PATH_V2}/public/alerts/{alert_id}" # TODO: i change the url here, check which function calls this function too.
+def get_alert_request_v2(alert_id):
+    url = f"{BASE_PATH_V2}/public/alerts/{alert_id}"
     response = http_request("GET", url)
     return response
 
+# Deprecated endpoint
+def get_alert_request(alert_id):
+    url = f"{BASE_PATH_V1}/alerts/{alert_id}"
+    response = http_request("GET", url)
+    if response["meta"]["total"] == 0:
+        return {}
+    return response["data"][0]
 
 def create_request_body_alert_search_endpoint(args):
     body = {}
@@ -810,13 +859,13 @@ def create_request_body_alert_search_endpoint(args):
     if domain:
         body["domain"] = domain
     if domain_group:
-        body["domain_group"] = domain
+        body["domain_group"] = domain_group
     if email_header_subject:
         body["email-header"] = {"subject": email_header_subject}
     if is_read:
         body["is_read"] = argToBoolean(is_read)
     if is_retro:
-        body["is_retro"] = argToBoolean(is_read)
+        body["is_retro"] = argToBoolean(is_retro)
     if malwarename:
         body["malwarename"] = malwarename
     if malwarestype:
@@ -848,22 +897,19 @@ def quarantine_release_command(client, args):
     return command_results
 
 # TODO: split this function to 2 functions.
-# TODO: try to run this command with all of the params, to check it's work as expected. use one of the existing alerts.
 def get_alert_list():
     args = demisto.args()
     alert_id = args.get("alert_id")
 
     # In case alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
     if alert_id:
-        alert = get_alert_request(alert_id)
+        alert = get_alert_request_v2(alert_id)
         if alert:
-            # create context data # TODO: edit this function from this point, to be matched to the desired new output.
-
-            # create readable data (TODO: Should be HR: in case of the API 1)
             readable_data = create_output_single_alert(alert)
             alert_md_table = tableToMarkdown("Alert Details", readable_data)
             data = alert["alert"]["explanation"]["malware_detected"]["malware"]
-            malware_data = [malware_readable_data(malware) for malware in data]
+            malware_data = [malware_readable_data_v2(malware) for malware in data]
+            # TODO: check why headers is not provided here
             malware_md_table = tableToMarkdown("Malware Details", malware_data)
 
             entry = {
@@ -875,18 +921,18 @@ def get_alert_list():
                 "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert},
             }
             demisto.results(entry)
-        # no results
+        # No response
         else:
             entry = {
                 "Type": entryTypes["note"],
                 "Contents": {},
                 "ContentsFormat": formats["json"],
                 "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\nno results",
+                "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\no results",
             }
             demisto.results(entry)
 
-    # alert_id is not provided, calling:  /api/v2/public/alerts/search
+    # alert_id is not provided, POST calling: /api/v2/public/alerts/search
     else:
         body = create_request_body_alert_search_endpoint(args)
         size = args.get("limit")
@@ -897,10 +943,8 @@ def get_alert_list():
         if end_time and not is_iso_utc(end_time):
             end_time = parse_date_range(end_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
             
-        response = get_alerts_request(size=size, start_time=start_time, end_time=end_time, body=body)
+        response = get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
 
-        # TODO: continue from this point, edit to be matched to the new desired output, and the new api endpoint.
-        # create readable data (TODO: should be HR: in case of the API 2)
         alerts = response.get("data", [])
         alerts_readable_data = [create_output_alerts_search(alert) for alert in alerts]
         alerts_summery_headers = [
@@ -910,6 +954,7 @@ def get_alert_list():
             "Domain",
             "Original",
             "Report id",
+            "Alert date ",
             "Malware name",
             "Malware stype",
             "Email status",
@@ -928,7 +973,7 @@ def get_alert_list():
         demisto.results(entry)
 
         
-# TODO: deprecated
+# Deprecated command
 def get_alert_command():
     # get raw data
     alert_raw = get_alert_request(demisto.args()["alert_id"])
@@ -976,64 +1021,68 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
     return alert_last_modified
 
 
-def parse_alert_to_incident(alert):
-    context_data = alert_context_data(alert)
-    incident = {"name": context_data["email-header"]["subject"], "rawJSON": json.dumps(context_data)}
-    return incident
+def parse_alert_to_incident(response_1, response_2):
+    """
+    Creates an incident from an alert with proper field mapping.
+    
+    Args:
+        alert: The alert from the search API (first API call)
+        detailed_alert: The detailed alert from the get alert API (second API call)
+    
+    Returns:
+        Incident dictionary with mapped fields
+    """
 
+    return {
+        "name": response_2.get("id", ""),
+        "occurred": response_2.get("alert", {}).get("occurred", ""), # TODO: convert to iso foramet
+        "severity": response_2.get("alert", {}).get("severity", ""),
+        "rawJSON": json.dumps(response_2),
+        "incident_type": ALERT_INCIDENT_TYPE_NAME
+    }
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
+
+    # The start time does not change, progress happens using the pagination token.
     start_time = parse_date_range(FETCH_TIME)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
     now_utc =  datetime.now(timezone.utc).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
-    response = get_alerts_request(size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token)
+    response_1 = get_alerts_request_v2(size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token)
 
     # When no alerts are found, there is no search_after token in the response.
-    if not response or not response.get("data"):
+    if not response_1 or not response_1.get("data"):
         demisto.debug("[FireEyeETP - fetch_incidents] No incident found.")
         demisto.incidents([])
         return
     
-    pagination_token = response.get("meta", {}).get("search_after")
+    pagination_token = response_1.get("meta", {}).get("search_after")
     if pagination_token:
         last_run["pagination_token"] = pagination_token
 
-    total_alert_fetched = response.get("meta", {}).get("size")
+    total_alert_fetched = response_1.get("meta", {}).get("size")
     demisto.debug(f"[FireEyeETP - fetch_incidents] Total incident fetched: {total_alert_fetched}.")
 
-    alerts = response.get("data", [])
-    filtered_alerts = []
+    alerts = response_1.get("data", [])
+    incidents = []
     for alert in alerts:
         alert_id = alert.get("id")
         email_status = alert.get("email_status")
 
         if MESSAGE_STATUS and email_status not in MESSAGE_STATUS:
-            demisto.debug(f"[FireEyeETP - fetch_incidents] incident {alert_id} with status {email_status} filtered out.\n"
+            demisto.debug(f"[FireEyeETP - fetch_incidents] alert: {alert_id} with status {email_status} filtered out.\n"
                           "The fetched statuses configured are: {MESSAGE_STATUS}")
-            continue
-        filtered_alerts.append(alert)
+            continue    
 
-    if not filtered_alerts:
-        demisto.debug("[FireEyeETP - fetch_incidents] all incident filtered out.")
-        demisto.incidents([])
-        return
+        response_2 = get_alert_request_v2(alert_id)
+        incidents.append(parse_alert_to_incident(response_1, response_2))
 
-    # TODO: check how to flat alert and use parse_alert_to_incident which gets single alerts, which info shpuld apper on the incident? the first or second request?
-    incident = []
-    for alert in filtered_alerts:
-        response = get_alert_request(alert.get("id"))
-        severity = response.get("alert", {}).get("severity")
-        incident.append(response)
-
-    demisto.incidents(incident)
+    if not incidents:
+        demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out.")
+    
+    demisto.incidents(incidents)
     demisto.setLastRun(last_run)
-
-
-"""
-EXECUTION
-"""
 
 
 def main():
@@ -1057,8 +1106,7 @@ def main():
         command = demisto.command()
 
         if command == "test-module":
-            get_alerts_request(size=1)
-            # request was succesful
+            get_alerts_request_v2(size=1) # TODO: check this command
             demisto.results("ok")
         elif command == "fetch-incidents":
             fetch_incidents()
