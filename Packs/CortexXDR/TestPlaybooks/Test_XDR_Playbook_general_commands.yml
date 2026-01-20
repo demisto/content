@@ -3503,7 +3503,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "105"
+      - "106"
     scriptarguments:
       page_size:
         simple: "5"
@@ -3518,47 +3518,6 @@ tasks:
         "position": {
           "x": 162.5,
           "y": 14245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "105":
-    id: "105"
-    taskid: d72e19cb-4c8d-42dd-8572-12d43ac9072e
-    type: condition
-    task:
-      id: d72e19cb-4c8d-42dd-8572-12d43ac9072e
-      version: -1
-      name: Check if there are 5 results in Asset Groups List
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "106"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.AssetGroup
-            iscontext: true
-          right:
-            value:
-              simple: "5"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 14420
         }
       }
     note: false
