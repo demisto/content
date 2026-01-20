@@ -2671,7 +2671,6 @@ Releases the specified Elastic IP address. After releasing an Elastic IP address
 
 There is no context output for this command.
 
-
 ### aws-ec2-images-describe
 
 ***

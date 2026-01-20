@@ -7245,6 +7245,7 @@ def test_ec2_release_address_command_client_error(mocker):
     EC2.release_address_command(mock_client, args)
     mock_error_handler.assert_called_once()
 
+
 def test_ec2_describe_images_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client and valid image description arguments.
