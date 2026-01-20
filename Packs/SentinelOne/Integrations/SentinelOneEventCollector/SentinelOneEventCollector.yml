@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: SentinelOne
 commonfields:
   id: SentinelOneEventCollector
   version: -1
@@ -73,7 +72,7 @@ script:
       name: limit
     description: Gets events from SentinelOne.
     name: sentinelone-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6663663
   isfetchevents: true
   script: '-'
   subtype: python3
@@ -84,3 +83,6 @@ marketplaces:
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
