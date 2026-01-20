@@ -1,7 +1,6 @@
-name: Docusign Modeling Rule
-id: docusign_modeling_rule
-fromVersion: 6.10.0 # Will be updated with XSIAM version updates
-description: Defines the schema and transformations for Docusign logs.
+fromversion: 8.4.0 # Will be updated with XSIAM version updates
+name: Docusign Docusign Modeling Rule
+id: docusign_docusign_modeling_rule
 rules: ''
 schema: ''
 tags: ''
