@@ -1,0 +1,106 @@
+category: Email
+provider: Permira
+commonfields:
+  id: Mimecast Event Collector v2
+  version: -1
+sectionorder:
+  - Connect
+  - Collect
+configuration:
+- display: Base URL
+  name: base_url
+  defaultvalue: https://api.services.mimecast.com
+  additionalinfo: Use the https://api.services.mimecast.com/ Base URL for the Global region. See the Mimecast guide on API Gateway Options to find the relevant Base URL for other regions.
+  required: true
+  section: Connect
+  type: 0
+- display: Client ID
+  displaypassword: Client secret
+  name: client_credentials
+  additionalinfo: Refer to the help section for instructions on how to obtain the API 2.0 OAuth2 client credentials.
+  section: Connect
+  type: 9
+  required: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+- display: First fetch timestamp (Audit events only)
+  name: after
+  additionalinfo: "Should be in the <number> <time unit> format (for example, 12 hours, 7 days, 3 months, 1 year). This parameter is only relevant to Audit events. The first fetch timestamp of SIEM logs is internally set to the last minute due to API-side restrictions. For additional information, review the the integration documentation."
+  section: Collect
+  advanced: true
+  type: 0
+  required: false
+  defaultvalue: 7 days
+- display: Fetch event types
+  name: event_types
+  defaultvalue: 'Audit,SIEM'
+  options:
+  - 'Audit'
+  - 'SIEM'
+  required: false
+  section: Collect
+  type: 16
+- display: Maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: '1000'
+  required: false
+  section: Collect
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  advanced: true
+  required: false
+  section: Connect
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  advanced: true
+  required: false
+  section: Connect
+  type: 8
+description: 'Use the Mimecast Event Collector v2 integration to fetch Audit events and SIEM logs for various SIEM event types, using API 2.0 with OAuth2 authentication.'
+display: Mimecast Event Collector v2
+name: Mimecast Event Collector v2
+script:
+  script: ""
+  type: python
+  commands:
+  - arguments:
+    - name: should_push_events
+      description: If True, pushes the events to the Cortex XSIAM dataset. If False, only displays them.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - name: event_types
+      description: The event types to retrieve.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - 'Audit'
+      - 'SIEM'
+    - name: limit
+      description: The maximum number of events to retrieve per event type.
+      defaultValue: '10'
+    - name: start_date
+      description: The start time for retrieving events, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
+      defaultValue: '1 hour ago'
+    - name: end_date
+      description: The end date for retrieving events, expressed as relative time (for example, '2 hours ago') or an absolute time in the ISO 8601 format (for example, '2025-12-02T00:00:00Z'). Must be within the last 24 hours if retrieving SIEM logs.
+      defaultValue: 'now'
+    description: Retrieves Mimecast Audit events and SIEM logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    name: mimecast-get-events
+  dockerimage: demisto/py3-tools:1.0.0.6308650
+  isfetchevents: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 6.8.0
+tests:
+- No tests
