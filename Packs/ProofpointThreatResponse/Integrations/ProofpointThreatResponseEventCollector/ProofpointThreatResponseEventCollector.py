@@ -1,5 +1,6 @@
 import copy
 from datetime import timedelta
+import time
 
 import demistomock as demisto  # noqa: F401
 
@@ -223,8 +224,6 @@ def get_incidents_batch_by_time_request(client, params):
     Returns:
         list. The incidents returned from the API call
     """
-    import time
-
     function_start_time = time.time()
 
     incidents_list = []  # type:list
