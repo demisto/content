@@ -37,24 +37,28 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 ## Key Features
 
 ### Incident Fetching
+
 - Fetch incidents with configurable interval (default: 1 minute)
 - Support for date ranges and epoch timestamps
 - Automatic deduplication (tracks last 1000 alarm IDs)
 - Reverse pagination for optimal performance
 
 ### Flexible Filtering
+
 - **Multi-Status Selection**: OPEN, CLOSED, ON_HOLD (multi-select)
 - **Severity Levels**: LOW, MEDIUM, HIGH, CRITICAL
 - **Alarm Types**: Filter by main type, sub-type, or type ID
 - **Custom Filters**: Tags, assignees, date ranges
 
 ### Rich Incident Data
+
 - Dynamic CustomFields based on alarm type
 - Configurable content extraction (varies by alarm type)
 - Optional entity details inclusion
 - Optional company ID visibility
 
 ### Incident Management
+
 - Change alarm status (11 status options)
 - Add comments to alarms
 - Change assignees
@@ -66,12 +70,14 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 ## Prerequisites
 
 ### Required
+
 - SOCRadar account with Incident API access
 - API Key from SOCRadar platform
 - Company ID
 - XSOAR 6.x or later
 
 ### API Access
+
 To obtain your API credentials:
 
 1. Log in to [SOCRadar Platform](https://platform.socradar.com)
@@ -79,7 +85,6 @@ To obtain your API credentials:
 3. Go to **API Options** page
 4. Copy your **Company API Key** (for Incident API)
 5. Note your **Company ID**
-
 
 ## Configuration
 
@@ -183,6 +188,7 @@ Content Options:
 ### Step 5: Test Connection
 
 Click **Test** button to verify:
+
 - API connectivity
 - Authentication
 - Company ID validity
@@ -192,9 +198,11 @@ Click **Test** button to verify:
 ### Incident Management
 
 #### `socradar-change-alarm-status`
+
 Change the status of one or more alarms.
 
 **Arguments:**
+
 - `alarm_ids` (Required): Comma-separated alarm IDs (e.g., "12345,67890")
 - `status_reason` (Required): New status
   - `OPEN`, `INVESTIGATING`, `RESOLVED`, `PENDING_INFO`
@@ -204,36 +212,45 @@ Change the status of one or more alarms.
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review"
 ```
 
 **From Incident Context:**
+
 ```
 !socradar-change-alarm-status alarm_ids=${incident.dbotMirrorId} status_reason="RESOLVED"
 ```
 
 #### `socradar-mark-false-positive`
+
 Mark alarm as false positive (shortcut command).
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `comments` (Optional): Reason for false positive
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-mark-false-positive alarm_id="81171696" comments="Not a real threat"
 ```
+
 #### `socradar-mark-resolved`
+
 Mark alarm as resolved (shortcut command).
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `comments` (Optional): Resolution notes
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-mark-resolved alarm_id="81171696" comments="Issue fixed"
 ```
@@ -241,70 +258,84 @@ Mark alarm as resolved (shortcut command).
 ### For Notes
 
 #### `socradar-add-comment`
+
 Add a comment to an alarm.
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `user_email` (Required): Email of user posting comment
 - `comment` (Required): Comment text
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-add-comment alarm_id="81171696" user_email="analyst@company.com" comment="Investigating with security team"
 ```
 
 #### `socradar-ask-analyst`
+
 Request assistance from SOCRadar analyst.
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `comment` (Required): Message for analyst
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-ask-analyst alarm_id="81171696" comment="Need help analyzing this credential leak"
 ```
 
-
 ### Assignment & Organization
 
 #### `socradar-change-assignee`
+
 Change alarm assignee(s).(User must be defined the same company)
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `user_emails` (Required): Comma-separated email addresses
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-change-assignee alarm_id="81171696" user_emails="analyst1@company.com,analyst2@company.com"
 ```
 
 #### `socradar-add-tag`
+
 Add or remove a tag from alarm.
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `tag` (Required): Tag name
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-add-tag alarm_id="81171696" tag="reviewed"
 ```
 
 #### `socradar-change-severity`
+
 Modify alarm severity level.
 
 **Arguments:**
+
 - `alarm_id` (Required): Alarm ID
 - `severity` (Required): New severity (LOW, MEDIUM, HIGH, CRITICAL)
 - `company_id` (Optional): Override default company ID
 
 **Example:**
+
 ```
 !socradar-change-severity alarm_id="81171696" severity="HIGH"
 ```
@@ -312,18 +343,22 @@ Modify alarm severity level.
 ### Testing
 
 #### `socradar-test-fetch`
+
 Test the fetch incidents functionality without creating incidents.
 
 **Arguments:**
+
 - `first_fetch` (Optional): Time range to test (default: "3 days")
 - `limit` (Optional): Number of incidents to fetch (default: 5)
 
 **Example:**
+
 ```
 !socradar-test-fetch first_fetch="1 hour" limit="10"
 ```
 
 **Output:**
+
 ```
 Found 150 incident(s) from 2024-12-20!
 Total available: 1000 records across 10 pages
@@ -344,6 +379,7 @@ Sample incidents:
 The integration creates these CustomFields in XSOAR incidents:
 
 ### Standard Fields (Always Present)
+
 - `socradaralarmid`: Alarm ID
 - `socradarstatus`: Current status
 - `socradarasset`: Affected asset
@@ -355,23 +391,28 @@ The integration creates these CustomFields in XSOAR incidents:
 - `socradaralarmtext`: Alarm description (truncated to 1000 chars)
 
 ### Optional Fields
+
 - `socradarcompanyid`: Company ID (if "Include Company ID" enabled)
 - `socradarentities`: Related entities (if "Include Entities" enabled)
 
 ### Dynamic Content Fields (if "Include Content" enabled)
+
 Content structure varies by alarm type. Examples:
 
 **Impersonating Domain:**
+
 - `socradarcontentdns_information`
 - `socradarcontentwhois_information`
 - `socradarcontentdomain_status`
 
 **Stolen Credentials:**
+
 - `socradarcontentcredential_details`
 - `socradarcontentlog_content_link`
 - `socradarcontentmalware_family`
 
 **Data Leak:**
+
 - `socradarcontentsource_full_content`
 - `socradarcontentcompromised_emails`
 - `socradarcontentcompromised_domains`
@@ -385,6 +426,7 @@ Content structure varies by alarm type. Examples:
 **Scenario:** Detect and respond to phishing domains impersonating your brand.
 
 **Configuration:**
+
 ```
 Main Alarm Types: Brand Protection
 Status Filter: OPEN
@@ -392,6 +434,7 @@ Severity: HIGH, CRITICAL
 ```
 
 **Automation:**
+
 ```python
 # Get incident
 incident = demisto.incident()
@@ -407,12 +450,12 @@ demisto.executeCommand('socradar-change-assignee', {
 })
 ```
 
-
 ### 2. Multi-Tenant Operations (MSSP)
 
 **Scenario:** Manage incidents for multiple customers.
 
 **Configuration:**
+
 ```
 Instance 1:
 - Company ID: 789
@@ -424,6 +467,7 @@ Instance 2:
 ```
 
 **Automation:**
+
 ```python
 # Company ID is visible in CustomFields
 company_id = incident.get('CustomFields', {}).get('socradarcompanyid')
@@ -445,22 +489,25 @@ demisto.executeCommand('socradar-change-assignee', {
 ### No Incidents Fetched
 
 **Check:**
+
 1. **Test connection**: Click "Test" button
 2. **Date range**: Increase "First fetch time" to "7 days"
 3. **Filters**: Remove status/severity filters temporarily
 4. **Debug logs**: Check XSOAR server logs
 
 **Debug Command:**
+
 ```
 !socradar-test-fetch first_fetch="7 days" limit="10"
 ```
 
 Look for:
+
 ```
 [SOCRadar V4.0] Total available: 0 records
 ```
-If 0 records, no alarms match your filters.
 
+If 0 records, no alarms match your filters.
 
 ### Duplicate Incidents
 
@@ -468,10 +515,13 @@ This should NOT happen in v4.0! If you see duplicates:
 
 1. **Check fetch interval**: Should be ≥ 1 minute
 2. **Check logs** for deduplication stats:
+
    ```
    [SOCRadar V4.0] Page 1: Created 5 NEW incidents, skipped 95 duplicates
    ```
+
 3. **Verify epoch time usage**:
+
    ```
    [SOCRadar V4.0] Time window (epoch seconds): 1734465600 to 1734465660
    ```
@@ -481,16 +531,18 @@ If duplicates persist, contact support with debug logs.
 ### API Errors
 
 **401 Unauthorized:**
+
 - Verify API Key is correct
 
 **404 Not Found:**
+
 - Verify Company ID is correct (integer, not string)
 - Check endpoint URLs in debug logs
 
 **Rate Limiting:**
+
 - Reduce fetch frequency
 - Decrease "Max incidents per fetch"
-
 
 ### Missing CustomFields
 
@@ -503,14 +555,15 @@ If duplicates persist, contact support with debug logs.
    - Prefix: `socradarcontent`
 
 **If entities not appearing:**
-1. Verify "Include Related Entities Details" is **enabled**
 
+1. Verify "Include Related Entities Details" is **enabled**
 
 ## Performance Optimization
 
 ### High-Volume Environments
 
 **Recommended Settings:**
+
 ```
 Max incidents per fetch: 10000
 Fetch Interval: 5 (minutes)
@@ -519,6 +572,7 @@ Include Related Entities: ✓ (enabled)
 ```
 
 **With Filters:**
+
 ```
 Status Filter: OPEN only
 Severity: HIGH, CRITICAL only
@@ -526,10 +580,10 @@ Severity: HIGH, CRITICAL only
 
 This reduces data volume while capturing critical alerts.
 
-
 ### Low-Volume Environments
 
 **Recommended Settings:**
+
 ```
 Max incidents per fetch: 1000
 Fetch Interval: 1 (minutes)
@@ -542,19 +596,22 @@ Faster response to new incidents.
 ## Support
 
 ### Official Support
+
 - **SOCRadar XSOAR Support**: [XSOAR@socradar.io](mailto:XSOAR@socradar.io)
 - **SOCRadar Support**: [support@socradar.io](mailto:support@socradar.io)
 - **Platform**: [platform.socradar.com](https://platform.socradar.com)
 
 ### Feature Requests
+
 Submit feature requests through:
+
 1. SOCRadar platform Request
 2. XSOAR content repository issues
-
 
 ## Version History
 
 ### v4.0.0 (December 2024)
+
 - Initial release of SOCRadar Incidents v4.0
 - Multi-status filtering support
 - Epoch time precision for zero duplicates
@@ -565,7 +622,6 @@ Submit feature requests through:
 - Parametric company ID display
 - Comprehensive debug logging
 
-
 ## License
 
 This integration is provided under the MIT License.
@@ -573,6 +629,7 @@ This integration is provided under the MIT License.
 ## About SOCRadar
 
 SOCRadar is a leading Extended Threat Intelligence (XTI) platform that helps organizations:
+
 - Monitor and protect their digital assets
 - Detect brand abuse and phishing attacks
 - Identify stolen credentials and data leaks
