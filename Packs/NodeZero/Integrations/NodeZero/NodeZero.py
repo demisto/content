@@ -103,11 +103,13 @@ class Weakness(BaseModel):
         """Convert a Weakness to an XSOAR Incident."""
         asset_name = self.affected_asset_display_name or "Unknown Asset"
         vuln_name = self.vuln_short_name or self.vuln_name or self.vuln_id
+        data = self.model_dump()
+        data["incident_type"] = "NodeZero Weakness"
         return Incident(
             name=f"{vuln_name} on {asset_name}",
             occurred=self.created_at if self.created_at.endswith("Z") else f"{self.created_at}Z",
             dbotMirrorId=self.uuid,
-            rawJSON=self.model_dump_json(),
+            rawJSON=json.dumps(data),
         )
 
 

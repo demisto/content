@@ -3,14 +3,16 @@
     "description": "Classifies NodeZero incidents.",
     "feed": false,
     "id": "NodeZero - Classifier",
-    "keyTypeMap": {},
+    "keyTypeMap": {
+        "NodeZero Weakness": "NodeZero Weakness"
+    },
     "name": "NodeZero - Classifier",
     "propagationLabels": [
         "all"
     ],
     "transformer": {
         "complex": null,
-        "simple": ""
+        "simple": "incident_type"
     },
     "type": "classification",
     "version": -1,

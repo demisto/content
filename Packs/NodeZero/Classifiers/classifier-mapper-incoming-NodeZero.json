@@ -7,22 +7,10 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "dbotMirrorId": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "uuid",
-                        "transformers": []
-                    },
-                    "simple": ""
+                    "simple": "uuid"
                 },
                 "occurred": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "created_at",
-                        "transformers": []
-                    },
-                    "simple": ""
+                    "simple": "created_at"
                 },
                 "severity": {
                     "complex": {
@@ -35,14 +23,12 @@
                                     "input_values": {
                                         "isContext": false,
                                         "value": {
-                                            "complex": null,
                                             "simple": "CRITICAL,HIGH"
                                         }
                                     },
                                     "mapped_values": {
                                         "isContext": false,
                                         "value": {
-                                            "complex": null,
                                             "simple": "4,3"
                                         }
                                     }
@@ -50,98 +36,37 @@
                                 "operator": "MapValuesTransformer"
                             }
                         ]
-                    },
-                    "simple": ""
+                    }
                 },
-                "externalid": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "vuln_id",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "External ID": {
+                    "simple": "vuln_id"
                 },
-                "sourcehostname": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "affected_asset_display_name",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "Source Hostname": {
+                    "simple": "affected_asset_display_name"
                 },
-                "sourceip": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "ip",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "Source IP": {
+                    "simple": "ip"
                 },
-                "nodezeroweaknessscore": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "score",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Weakness Score": {
+                    "simple": "score"
                 },
-                "nodezeroweaknesscategory": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "vuln_category",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Weakness Category": {
+                    "simple": "vuln_category"
                 },
-                "nodezeroweaknessproven": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "has_proof",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Weakness Proven": {
+                    "simple": "has_proof"
                 },
-                "nodezeroattackpathscount": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "attack_paths_count",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Attack Paths Count": {
+                    "simple": "attack_paths_count"
                 },
-                "nodezerocisakov": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "vuln_cisa_kev",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero CISA KEV": {
+                    "simple": "vuln_cisa_kev"
                 },
-                "nodezeroransomwareuse": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "vuln_known_ransomware_campaign_use",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Ransomware Use": {
+                    "simple": "vuln_known_ransomware_campaign_use"
                 },
-                "nodezeroopid": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "op_id",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "NodeZero Operation ID": {
+                    "simple": "op_id"
                 }
             }
         }
