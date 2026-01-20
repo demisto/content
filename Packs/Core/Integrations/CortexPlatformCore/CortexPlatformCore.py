@@ -4489,156 +4489,231 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     return str(res)
 
 
+def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, float, list[dict]]:
+    """
+    Retrieves all cloud accounts and calculates log sending statistics.
+
+    Args:
+        client: The API client instance
+
+    Returns:
+        Tuple containing:
+            - total_accounts: Total number of cloud accounts
+            - accounts_not_sending_count: Number of accounts not sending logs
+            - percentage_not_sending: Percentage of accounts not sending logs
+            - accounts_not_sending_logs: List of account details not sending logs
+    """
+    all_accounts = []
+    next_token = ""
+
+    # Paginate through all accounts
+    while True:
+        params = {}
+        if next_token:
+            params["next_token"] = next_token
+
+        response = client.platform_http_request(
+            method="GET", json_data={}, url_suffix="/api/v0/onboarding/accounts/", params=params, ok_codes=[200]
+        )
+
+        accounts = response.get("values", [])
+        all_accounts.extend(accounts)
+
+        next_token = response.get("next_token", "")
+        if not next_token:
+            break
+
+    # Filter accounts not sending logs (automation_log_level = 'OFF')
+    accounts_not_sending_logs = []
+    for account in all_accounts:
+        additional_capabilities = account.get("additional_capabilities", {})
+        automation_log_level = additional_capabilities.get("automation_log_level", "")
+
+        if automation_log_level == "OFF":
+            accounts_not_sending_logs.append(
+                {
+                    "account_id": account.get("account_id"),
+                    "account_name": account.get("account_name") or "N/A",
+                    "cloud_type": account.get("cloud_type"),
+                    "status": account.get("status"),
+                }
+            )
+
+    # Calculate statistics
+    total_accounts = len(all_accounts)
+    accounts_not_sending_count = len(accounts_not_sending_logs)
+
+    if total_accounts > 0:
+        percentage_not_sending = round((accounts_not_sending_count / total_accounts) * 100, 2)
+    else:
+        percentage_not_sending = 0.0
+
+    return total_accounts, accounts_not_sending_count, percentage_not_sending, accounts_not_sending_logs
+
+
 def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResults:
     """
     Calculates the CDR (Cloud Detection and Response) protection coverage percentages.
-    
+
     This command queries the Unified Asset Management API to calculate protection coverage for:
     1. Cloud VMs: VMs with agents / Total VMs (excluding Kubernetes)
     2. Kubernetes Clusters: Clusters with realtime protection / Total clusters
-    
+
     Args:
         client: The API client instance
         args: Command arguments from XSOAR
             - tag (optional): Filter assets by tag in key:value format (e.g., "name:windows2", "environment:production")
-        
+
     Returns:
         CommandResults object with CDR protection coverage percentages
     """
     # Parse and validate tag argument
-    tag = args.get('tag')
+    tag = args.get("tag")
     tag_filter_value = None
     if tag:
         # Validate tag is a non-empty string
         if not isinstance(tag, str) or not tag.strip():
-            raise DemistoException('tag must be a non-empty string')
-        
+            raise DemistoException("tag must be a non-empty string")
+
         tag = tag.strip()
-        
+
         # Parse tag as key:value format
-        if ':' in tag:
-            tag_parts = tag.split(':', 1)  # Split only on first colon
+        if ":" in tag:
+            tag_parts = tag.split(":", 1)  # Split only on first colon
             tag_key = tag_parts[0].strip()
             tag_value = tag_parts[1].strip()
-            
+
             # Validate both key and value are non-empty
             if not tag_key:
                 raise DemistoException('Tag key cannot be empty. Format should be "key:value" (e.g., "name:windows2").')
             if not tag_value:
                 raise DemistoException('Tag value cannot be empty. Format should be "key:value" (e.g., "name:windows2").')
-            
-            tag_filter_value = {'key': tag_key, 'value': tag_value}
-    
+
+            tag_filter_value = {"key": tag_key, "value": tag_value}
+
     # ========== VM Protection Calculation ==========
     # Query 1: Get count of VMs WITH agents (protected)
     filter_vms_with_agents = FilterBuilder()
-    filter_vms_with_agents.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
-    filter_vms_with_agents.add_field('xdm__agent__version', FilterType.NIS_EMPTY, '<No Value>')
-    filter_vms_with_agents.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    filter_vms_with_agents.add_field("xdm__asset__type__category", FilterType.EQ, "VM Instance")
+    filter_vms_with_agents.add_field("xdm__agent__version", FilterType.NIS_EMPTY, "<No Value>")
+    filter_vms_with_agents.add_field("xdm__kubernetes__cluster__name", FilterType.IS_EMPTY, "<No Value>")
     if tag_filter_value:
-        filter_vms_with_agents.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
-    
+        filter_vms_with_agents.add_field("xdm__asset__tags", FilterType.JSON_WILDCARD, tag_filter_value)
+
     request_vms_with_agents = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
         filter_dict=filter_vms_with_agents.to_dict(),
         limit=1,  # We only need the count
-        sort_field='xdm__asset__name',
-        sort_order='DESC',
-        on_demand_fields=[]
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        on_demand_fields=[],
     )
-    
+
     response_vms_with_agents = client.get_webapp_data(request_vms_with_agents)
-    vms_with_agents = response_vms_with_agents.get('reply', {}).get('FILTER_COUNT', 0)
-    
+    vms_with_agents = response_vms_with_agents.get("reply", {}).get("FILTER_COUNT", 0)
+
     # Query 2: Get count of ALL VMs (total)
     filter_all_vms = FilterBuilder()
-    filter_all_vms.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
-    filter_all_vms.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    filter_all_vms.add_field("xdm__asset__type__category", FilterType.EQ, "VM Instance")
+    filter_all_vms.add_field("xdm__kubernetes__cluster__name", FilterType.IS_EMPTY, "<No Value>")
     if tag_filter_value:
-        filter_all_vms.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
-    
+        filter_all_vms.add_field("xdm__asset__tags", FilterType.JSON_WILDCARD, tag_filter_value)
+
     request_all_vms = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
         filter_dict=filter_all_vms.to_dict(),
         limit=1,  # We only need the count
-        sort_field='xdm__asset__name',
-        sort_order='DESC',
-        on_demand_fields=[]
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        on_demand_fields=[],
     )
-    
+
     response_all_vms = client.get_webapp_data(request_all_vms)
-    total_vms = response_all_vms.get('reply', {}).get('FILTER_COUNT', 0)
-    
+    total_vms = response_all_vms.get("reply", {}).get("FILTER_COUNT", 0)
+
     # Calculate VM protection percentage
     if total_vms > 0:
         vm_protection_percentage = round((vms_with_agents / total_vms) * 100, 2)
     else:
         vm_protection_percentage = 0.0
-    
+
     vms_without_agents = total_vms - vms_with_agents
-    
+
     # ========== Kubernetes Cluster Protection Calculation ==========
     # Query 3: Get count of K8S clusters WITH realtime protection (protected)
     filter_k8s_protected = FilterBuilder()
-    filter_k8s_protected.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
-    filter_k8s_protected.add_field('xdm__kubernetes__profile__capabilities__realtime__status', FilterType.EQ, 'ENABLED')
+    filter_k8s_protected.add_field("xdm__asset__type__category", FilterType.EQ, "Kubernetes Cluster")
+    filter_k8s_protected.add_field("xdm__kubernetes__profile__capabilities__realtime__status", FilterType.EQ, "ENABLED")
     if tag_filter_value:
-        filter_k8s_protected.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
-    
+        filter_k8s_protected.add_field("xdm__asset__tags", FilterType.JSON_WILDCARD, tag_filter_value)
+
     request_k8s_protected = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
         filter_dict=filter_k8s_protected.to_dict(),
         limit=1,  # We only need the count
-        sort_field='xdm__asset__name',
-        sort_order='DESC',
-        on_demand_fields=[]
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        on_demand_fields=[],
     )
-    
+
     response_k8s_protected = client.get_webapp_data(request_k8s_protected)
-    k8s_clusters_protected = response_k8s_protected.get('reply', {}).get('FILTER_COUNT', 0)
-    
+    k8s_clusters_protected = response_k8s_protected.get("reply", {}).get("FILTER_COUNT", 0)
+
     # Query 4: Get count of ALL K8S clusters (total)
     filter_all_k8s = FilterBuilder()
-    filter_all_k8s.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
+    filter_all_k8s.add_field("xdm__asset__type__category", FilterType.EQ, "Kubernetes Cluster")
     if tag_filter_value:
-        filter_all_k8s.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
-    
+        filter_all_k8s.add_field("xdm__asset__tags", FilterType.JSON_WILDCARD, tag_filter_value)
+
     request_all_k8s = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
         filter_dict=filter_all_k8s.to_dict(),
         limit=1,  # We only need the count
-        sort_field='xdm__asset__name',
-        sort_order='DESC',
-        on_demand_fields=[]
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        on_demand_fields=[],
     )
-    
+
     response_all_k8s = client.get_webapp_data(request_all_k8s)
-    total_k8s_clusters = response_all_k8s.get('reply', {}).get('FILTER_COUNT', 0)
-    
+    total_k8s_clusters = response_all_k8s.get("reply", {}).get("FILTER_COUNT", 0)
+
     # Calculate K8S protection percentage
     if total_k8s_clusters > 0:
         k8s_protection_percentage = round((k8s_clusters_protected / total_k8s_clusters) * 100, 2)
     else:
         k8s_protection_percentage = 0.0
-    
+
     k8s_clusters_unprotected = total_k8s_clusters - k8s_clusters_protected
-    
+
+    # ========== Cloud Accounts Log Sending Status ==========
+    total_accounts, accounts_not_sending_count, percentage_not_sending, accounts_not_sending_logs = (
+        get_cloud_accounts_log_sending_status(client)
+    )
+    accounts_sending_logs = total_accounts - accounts_not_sending_count
+
     # Build combined output
     outputs = {
-        'CloudVMs': {
-            'Total': total_vms,
-            'Protected': vms_with_agents,
-            'Unprotected': vms_without_agents,
-            'ProtectionPercentage': vm_protection_percentage
+        "CloudVMs": {
+            "Total": total_vms,
+            "Protected": vms_with_agents,
+            "Unprotected": vms_without_agents,
+            "ProtectionPercentage": vm_protection_percentage,
         },
-        'KubernetesClusters': {
-            'Total': total_k8s_clusters,
-            'Protected': k8s_clusters_protected,
-            'Unprotected': k8s_clusters_unprotected,
-            'ProtectionPercentage': k8s_protection_percentage
-        }
+        "KubernetesClusters": {
+            "Total": total_k8s_clusters,
+            "Protected": k8s_clusters_protected,
+            "Unprotected": k8s_clusters_unprotected,
+            "ProtectionPercentage": k8s_protection_percentage,
+        },
+        "CloudAccounts": {
+            "Total": total_accounts,
+            "SendingLogs": accounts_sending_logs,
+            "NotSendingLogs": accounts_not_sending_count,
+            "LogSendingPercentage": round(100 - percentage_not_sending, 2),
+            "AccountsNotSendingLogsList": accounts_not_sending_logs,
+        },
     }
-    
+
     # Create readable output
     readable_output = f"""### CDR Protection Status
 
@@ -4662,20 +4737,38 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
 | Clusters without Realtime Protection (Unprotected) | {k8s_clusters_unprotected} |
 | Protection Percentage | {k8s_protection_percentage}% |
 
-**Note**: VM calculation excludes Kubernetes-managed VMs. K8S protection is based on realtime capabilities status.
+#### Cloud Accounts Log Sending Status
+**Coverage**: {round(100 - percentage_not_sending, 2)}%
+
+| Metric | Count |
+|--------|-------|
+| Total Cloud Accounts | {total_accounts} |
+| Accounts Sending Logs | {accounts_sending_logs} |
+| Accounts NOT Sending Logs | {accounts_not_sending_count} |
+| Log Sending Percentage | {round(100 - percentage_not_sending, 2)}% |
+
 """
-    
+
+    if accounts_not_sending_logs:
+        readable_output += tableToMarkdown(
+            "Cloud Accounts Not Sending Logs (automation_log_level = OFF)",
+            accounts_not_sending_logs,
+            headers=["account_id", "account_name", "cloud_type", "status"],
+            headerTransform=string_to_table_header,
+        )
+
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus',
-        outputs_key_field='CloudVMs.ProtectionPercentage',
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus",
+        outputs_key_field="CloudVMs.ProtectionPercentage",
         outputs=outputs,
         raw_response={
-            'vms_with_agents': response_vms_with_agents,
-            'all_vms': response_all_vms,
-            'k8s_protected': response_k8s_protected,
-            'all_k8s': response_all_k8s
-        }
+            "vms_with_agents": response_vms_with_agents,
+            "all_vms": response_all_vms,
+            "k8s_protected": response_k8s_protected,
+            "all_k8s": response_all_k8s,
+            "cloud_accounts_not_sending_logs": accounts_not_sending_logs,
+        },
     )
 
 
@@ -4861,7 +4954,7 @@ def main():  # pragma: no cover
 
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
-        
+
         elif command == "core-get-cdr-protection-status":
             return_results(get_cdr_protection_status_command(client, args))
 
