@@ -7531,7 +7531,7 @@ script:
       description: The ID of a customer-owned address pool.
       required: false
     - name: tag_specifications
-      description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>"
+      description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
       required: false
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.PublicIp
