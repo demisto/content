@@ -3,6 +3,7 @@
 ## ⚠️ Important: Deprecation Notice
 
 Microsoft is deprecating the legacy Remote PowerShell (RPS) protocol used by this integration. As a result, the **O365 - Security And Compliance - Content Search v2** integration is planned for deprecation on **June 1, 2026**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality.
+
 Note: The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery). Content searches are now performed within the context of an eDiscovery case.
 
 ### Commands Replacement
@@ -28,7 +29,7 @@ Note: The legacy content search solution is [retired](https://learn.microsoft.co
 
 #### Legacy Content Search (case-based in Graph eDiscovery)
 
-Note: The legacy content search solution is retired and now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+Note: The legacy content search solution is [retired](https://learn.microsoft.com/en-us/purview/ediscovery). Content searches are now performed within the context of an eDiscovery case.
 
 - `o365-sc-get-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
 - `o365-sc-list-search` → Use `msg-list-ediscovery-searchs`. [Microsoft Learn: List searches in a case](https://learn.microsoft.com/en-us/graph/api/security-ediscoverycase-list-searches?view=graph-rest-1.0)
