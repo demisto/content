@@ -143,14 +143,14 @@ There is no context output for this command.
 
 ## Supported Event Types
 
-- [Fetching Users Documentation - Admin API](https://developers.Docusign.com/docs/admin-api/reference/usermanagement/users/getusers/)
-- [Fetching User Details Documentation - eSignature API](https://developers.Docusign.com/docs/esign-rest-api/reference/accounts/accounts/get/)
-
 ### Customer events
 
 - [Fetching Customer Event Documentation - Monitor API](https://developers.Docusign.com/docs/monitor-api/reference/monitor/dataset/getstream/)
 
 ### Audit Users
+
+- [Fetching Users Documentation - Admin API](https://developers.Docusign.com/docs/admin-api/reference/usermanagement/users/getusers/)
+- [Fetching User Details Documentation - eSignature API](https://developers.Docusign.com/docs/esign-rest-api/reference/accounts/accounts/get/)
 
 ## Additional Resources
 
