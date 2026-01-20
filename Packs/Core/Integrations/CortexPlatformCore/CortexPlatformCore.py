@@ -4499,17 +4499,44 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     
     Args:
         client: The API client instance
-        args: Command arguments from XSOAR (currently no inputs required)
+        args: Command arguments from XSOAR
+            - tag (optional): Filter assets by tag in key:value format (e.g., "name:windows2", "environment:production")
         
     Returns:
         CommandResults object with CDR protection coverage percentages
     """
+    # Parse and validate tag argument
+    tag = args.get('tag')
+    tag_filter_value = None
+    if tag:
+        # Validate tag is a non-empty string
+        if not isinstance(tag, str) or not tag.strip():
+            raise DemistoException('tag must be a non-empty string')
+        
+        tag = tag.strip()
+        
+        # Parse tag as key:value format
+        if ':' in tag:
+            tag_parts = tag.split(':', 1)  # Split only on first colon
+            tag_key = tag_parts[0].strip()
+            tag_value = tag_parts[1].strip()
+            
+            # Validate both key and value are non-empty
+            if not tag_key:
+                raise DemistoException('Tag key cannot be empty. Format should be "key:value" (e.g., "name:windows2").')
+            if not tag_value:
+                raise DemistoException('Tag value cannot be empty. Format should be "key:value" (e.g., "name:windows2").')
+            
+            tag_filter_value = {'key': tag_key, 'value': tag_value}
+    
     # ========== VM Protection Calculation ==========
     # Query 1: Get count of VMs WITH agents (protected)
     filter_vms_with_agents = FilterBuilder()
     filter_vms_with_agents.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
     filter_vms_with_agents.add_field('xdm__agent__version', FilterType.NIS_EMPTY, '<No Value>')
     filter_vms_with_agents.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    if tag_filter_value:
+        filter_vms_with_agents.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
     
     request_vms_with_agents = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
@@ -4527,6 +4554,8 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     filter_all_vms = FilterBuilder()
     filter_all_vms.add_field('xdm__asset__type__category', FilterType.EQ, 'VM Instance')
     filter_all_vms.add_field('xdm__kubernetes__cluster__name', FilterType.IS_EMPTY, '<No Value>')
+    if tag_filter_value:
+        filter_all_vms.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
     
     request_all_vms = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
@@ -4553,6 +4582,8 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     filter_k8s_protected = FilterBuilder()
     filter_k8s_protected.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
     filter_k8s_protected.add_field('xdm__kubernetes__profile__capabilities__realtime__status', FilterType.EQ, 'ENABLED')
+    if tag_filter_value:
+        filter_k8s_protected.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
     
     request_k8s_protected = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,
@@ -4569,6 +4600,8 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     # Query 4: Get count of ALL K8S clusters (total)
     filter_all_k8s = FilterBuilder()
     filter_all_k8s.add_field('xdm__asset__type__category', FilterType.EQ, 'Kubernetes Cluster')
+    if tag_filter_value:
+        filter_all_k8s.add_field('xdm__asset__tags', FilterType.JSON_WILDCARD, tag_filter_value)
     
     request_all_k8s = build_webapp_request_data(
         table_name=UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS_TABLE,

@@ -3278,7 +3278,10 @@ script:
           type: String
     - name: core-get-cdr-protection-status
       description: Calculates the CDR (Cloud Detection and Response) protection coverage percentages for both cloud VMs and Kubernetes clusters. Determines what percentage of assets have protection enabled.
-      hidden: true
+      hidden: false
+      arguments:
+        - name: tag
+          description: 'Filter assets by tag name. Only assets with this tag will be included in the protection status calculation, For example: "name:windows2", "environment:production".'
       outputs:
         - contextPath: Core.CDRProtectionStatus.CloudVMs.Total
           description: Total number of cloud VM instances (excluding Kubernetes-managed VMs).
