@@ -6928,3 +6928,319 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
+
+
+def test_ec2_describe_addresses_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid Elastic IP addresses response.
+    When: describe_addresses_command is called successfully.
+    Then: It should return CommandResults with address data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Addresses": [
+            {
+                "PublicIp": "mock_public_ip",
+                "AllocationId": "mock_allocation_id",
+                "Domain": "mock_domain",
+                "InstanceId": "mock_instance_id",
+                "AssociationId": "mock_association_id",
+                "NetworkInterfaceId": "mock_network_interface_id",
+                "PrivateIpAddress": "mock_private_ip_address",
+            }
+        ],
+    }
+
+    args = {"allocation_ids": "mock_allocation_id"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs[0]["PublicIp"] == "mock_public_ip"
+    assert "AWS EC2 Elastic IP Addresses" in result.readable_output
+
+
+def test_ec2_describe_addresses_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty addresses list.
+    When: describe_addresses_command is called with no matching addresses.
+    Then: It should return CommandResults with no addresses message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Addresses": []}
+
+    args = {"allocation_ids": "mock_allocation_id"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Elastic IP addresses were found."
+
+
+def test_ec2_describe_addresses_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filters argument.
+    When: describe_addresses_command is called with filters.
+    Then: It should pass filters to the API call and return results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Addresses": [{"PublicIp": "mock_public_ip", "AllocationId": "mock_allocation_id", "Domain": "mock_domain"}],
+    }
+
+    args = {"filters": "name=domain,values=vpc"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_addresses.assert_called_once()
+    call_args = mock_client.describe_addresses.call_args[1]
+    assert "Filters" in call_args
+
+
+def test_ec2_allocate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid allocation arguments.
+    When: allocate_address_command is called successfully.
+    Then: It should return CommandResults with allocated address data and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicIp": "mock_public_ip",
+        "AllocationId": "mock_allocation_id",
+        "Domain": "mock_domain",
+        "PublicIpv4Pool": "mock_public_ipv4_pool",
+        "NetworkBorderGroup": "mock_network_border_group",
+    }
+
+    args = {}
+
+    result = EC2.allocate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs["PublicIp"] == "mock_public_ip"
+    assert result.outputs["AllocationId"] == "mock_allocation_id"
+    assert "AWS EC2 Allocated Elastic IP" in result.readable_output
+
+
+def test_ec2_allocate_address_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and allocation arguments with tags.
+    When: allocate_address_command is called with tag_specifications.
+    Then: It should pass tags to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicIp": "mock_public_ip",
+        "AllocationId": "mock_allocation_id",
+        "Domain": "mock_domain",
+    }
+
+    args = {"domain": "vpc", "tag_specifications": "key=Environment,value=Production"}
+
+    result = EC2.allocate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.allocate_address.assert_called_once()
+    call_args = mock_client.allocate_address.call_args[1]
+    assert "TagSpecifications" in call_args
+
+
+def test_ec2_allocate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: allocate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"domain": "vpc"}
+
+    EC2.allocate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_associate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid association arguments.
+    When: associate_address_command is called successfully.
+    Then: It should return CommandResults with association data and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationId": "mock_association_id",
+    }
+
+    args = {"allocation_id": "mock_allocation_id", "instance_id": "mock_instance_id"}
+
+    result = EC2.associate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs["AssociationId"] == "mock_association_id"
+    assert result.outputs["AllocationId"] == "mock_allocation_id"
+    assert "AWS EC2 Elastic IP Association" in result.readable_output
+
+
+def test_ec2_associate_address_command_with_network_interface(mocker):
+    """
+    Given: A mocked boto3 EC2 client and association arguments with network interface.
+    When: associate_address_command is called with network_interface_id.
+    Then: It should pass network interface ID to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationId": "mock_association_id",
+    }
+
+    args = {
+        "allocation_id": "mock_allocation_id",
+        "network_interface_id": "mock_network_interface_id",
+        "private_ip_address": "mock_private_ip_address",
+        "allow_reassociation": "true",
+    }
+
+    result = EC2.associate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.associate_address.assert_called_once()
+    call_args = mock_client.associate_address.call_args[1]
+    assert call_args["NetworkInterfaceId"] == "mock_network_interface_id"
+    assert call_args["AllowReassociation"] is True
+
+
+def test_ec2_associate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: associate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"allocation_id": "mock_allocation_id", "instance_id": "mock_instance_id"}
+
+    EC2.associate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_disassociate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid association ID.
+    When: disassociate_address_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.disassociate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"association_id": "mock_association_id"}
+
+    result = EC2.disassociate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully disassociated Elastic IP address" in result.readable_output
+    assert "mock_association_id" in result.readable_output
+
+
+def test_ec2_disassociate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: disassociate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.disassociate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"association_id": "mock_association_id"}
+
+    EC2.disassociate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_release_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid allocation ID.
+    When: release_address_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"allocation_id": "mock_allocation_id"}
+
+    result = EC2.release_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully released Elastic IP address" in result.readable_output
+
+
+def test_ec2_release_address_command_with_network_border_group(mocker):
+    """
+    Given: A mocked boto3 EC2 client and release arguments with network border group.
+    When: release_address_command is called with network_border_group.
+    Then: It should pass network border group to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"allocation_id": "mock_allocation_id", "network_border_group": "mock_network_border_group"}
+
+    result = EC2.release_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.release_address.assert_called_once()
+    call_args = mock_client.release_address.call_args[1]
+    assert call_args["NetworkBorderGroup"] == "mock_network_border_group"
+
+
+def test_ec2_release_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: release_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"allocation_id": "mock_allocation_id"}
+
+    EC2.release_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
