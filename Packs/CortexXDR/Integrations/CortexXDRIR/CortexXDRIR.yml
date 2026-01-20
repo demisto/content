@@ -3869,7 +3869,8 @@ script:
     - description: 'A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
       isArray: true
       name: asset_id
-    - description: 'The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
+    - description: 'The field used to sort the results. For example: xdm.asset.first_observed. For additional sortable fields, see the documentation: [Get all or filtered assets](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets).'
+
       name: sort_field
     - auto: PREDEFINED
       description: The order in which to sort the results.
@@ -3877,7 +3878,8 @@ script:
       predefined:
       - asc
       - desc
-    - description: 'The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets.'
+    - description: 'The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get to retrieve the schema. For more details, see the documentation: [Get all or filtered assets](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets).'
+
       name: filter_json
     - description: Maximum number of assets to return. Default is 50.
       name: limit
@@ -3994,7 +3996,7 @@ script:
       description: The pretty name of the field.
       type: String
   - arguments:
-    - description: "The name of the field to get options for. You can use xdr-asset-schema-get in order to get the schema.  The field must be of type ENUM, for example: xdm.asset.provider."
+    - description: "The name of the field to get options for. You can use xdr-asset-schema-get to retrieve the schema. The field must be of type ENUM, for example: xdm.asset.provider."
       name: field_name
       required: true
     description: Gets the enum values of a specified field in the asset schema.
