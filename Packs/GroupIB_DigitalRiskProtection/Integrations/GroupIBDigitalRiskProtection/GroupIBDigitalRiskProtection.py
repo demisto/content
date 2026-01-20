@@ -128,7 +128,7 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Digital Risk Protection",
-            integration_version="1.0.0",
+            integration_version="1.1.0",
         )
         self.additional_headers = {
             "Accept": "*/*",
@@ -145,9 +145,19 @@ class Client(BaseClient):
             )
         date_from = date_from.strftime("%Y-%m-%d")
         demisto.debug(f"Client.generate_seq_update: date_from='{date_from}'")
-        sequpdate = self.poller.get_seq_update_dict(date=date_from, collection=Endpoints.VIOLATIONS.value)
-        demisto.debug(f"Client.generate_seq_update: sequpdate={sequpdate}")
-        return sequpdate
+        raw_seq = self.poller.get_seq_update_dict(date=date_from, collection=Endpoints.VIOLATIONS.value)
+        demisto.debug(f"Client.generate_seq_update: raw_seq(type={type(raw_seq).__name__})={raw_seq!r}")
+
+        # Verify the return type of get_seq_update_dict:
+        # With `collection` provided, the get_seq_update_dict is expected to return an integer seqUpdate.
+        if isinstance(raw_seq, int) and not isinstance(raw_seq, bool):
+            return raw_seq
+
+        raise DemistoException(
+            "DRPPoller.get_seq_update_dict returned unexpected type. "
+            "Expected int seqUpdate when 'collection' is provided. "
+            f"Got type={type(raw_seq).__name__}, value={raw_seq!r}"
+        )
 
     def _get_violation_section_number(self, name: str) -> int:
         normalized_name = name.upper()
@@ -293,7 +303,9 @@ class Client(BaseClient):
                     image_data_and_mime_type = self.get_file(file_sha=image)
                     if image_data_and_mime_type is not None:
                         image_data, mime_type = image_data_and_mime_type
-                        demisto.debug(f"Client.get_formatted_violation_by_id: image mime_type={mime_type}")
+                        demisto.debug(
+                            f"Client.get_formatted_violation_by_id: image mime_type={mime_type}"
+                        )
                         updated_images.append(
                             {
                                 "file_sha": image,
@@ -665,11 +677,14 @@ class IncidentBuilder:
             # Track the highest seqUpdate seen in this run
             try:
                 if isinstance(sequpdate, int):
-                    max_seq_update = max_seq_update if isinstance(max_seq_update, int) else None
-                    max_seq_update = max(sequpdate, (max_seq_update or 0))
-            except Exception:
-                # ignore seq comparison errors
-                pass
+                    current_max = max_seq_update if isinstance(max_seq_update, int) else 0
+                    max_seq_update = max(sequpdate, current_max)
+            except Exception as e:
+                demisto.debug(
+                    "IncidentBuilder.build: failed to compare/track seqUpdate; skipping. "
+                    f"sequpdate={sequpdate!r} max_seq_update={max_seq_update!r} "
+                    f"error_type={type(e).__name__} error={e!s}\n{format_exc()}"
+                )
             requests_count += 1
             if requests_count > self.max_requests:
                 break

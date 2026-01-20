@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Any
+from typing import Any, Optional
 
 
 IGNORE_UPDATE_KEYS = {
@@ -16,8 +16,15 @@ REMOVE_BEFORE_UPDATE_KEYS = {
     "sla",
 }
 
+def _escape_lucene_phrase(value: str) -> str:
+    if not isinstance(value, str):
+        value = str(value)
+    value = value.replace("\x00", "")
+    value = value.replace("\r", " ").replace("\n", " ")
+    return value.replace("\\", "\\\\").replace('"', '\\"')
 
-def _extract_gibdrp_id(current_incident: dict[str, Any]) -> str | None:
+
+def _extract_gibdrp_id(current_incident: dict[str, Any]) -> Optional[str]:
     custom_fields = current_incident.get("CustomFields") or {}
     gibdrpid = custom_fields.get("gibdrpid")
     if gibdrpid:
@@ -33,6 +40,12 @@ def _extract_gibdrp_id(current_incident: dict[str, Any]) -> str | None:
     if isinstance(raw_json_str, str) and raw_json_str:
         try:
             raw_obj = json.loads(raw_json_str)
+            if not isinstance(raw_obj, dict):
+                demisto.debug(
+                    "GIBDRPIncidentUpdate: rawJSON parsed but is not a dict; "
+                    f"type={type(raw_obj).__name__}. Skipping rawJSON extraction."
+                )
+                raw_obj = {}
             raw_id = raw_obj.get("id")
             if raw_id:
                 demisto.debug(f"GIBDRPIncidentUpdate: extracted gibdrpid from rawJSON.id: {raw_id}")
@@ -73,8 +86,8 @@ def _build_update_payload(current_incident: dict[str, Any]) -> dict[str, Any]:
     return prepared
 
 
-def _search_existing_incident_by_gibdrpid(gibdrpid: str) -> dict[str, Any] | None:
-    query = f'gibdrpid:"{gibdrpid}"'
+def _search_existing_incident_by_gibdrpid(gibdrpid: str) -> Optional[dict[str, Any]]:
+    query = f'gibdrpid:"{_escape_lucene_phrase(gibdrpid)}"'
     demisto.debug(f"GIBDRPIncidentUpdate: searching for duplicates with query: {query}")
     search_incident = demisto.executeCommand("getIncidents", {"query": query})
     if not search_incident:
