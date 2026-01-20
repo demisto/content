@@ -778,28 +778,34 @@ script:
     - description: User ID or userPrincipalName.
       name: user
       required: true
-    description: Retrieves the authentication methods for a user and determines if they are MFA capable.
-    name: msgraph-user-auth-methods-list
+    description: Retrieves the authentication preferences for a user, including the default method.
+    name: msgraph-user-get-user-default-auth-method
     outputs:
-    - contextPath: MSGraphUser.AuthMethod.ID
-      description: The ID of the authentication method.
+    - contextPath: MSGraphUser.AuthMethod.User
+      description: The user principal name.
       type: String
-    - contextPath: MSGraphUser.AuthMethod.DisplayName
-      description: The display name of the authentication method.
+    - contextPath: MSGraphUser.AuthMethod.DefaultMethod
+      description: The default authentication method for the user.
       type: String
-    - contextPath: MSGraphUser.AuthMethod.type
-      description: The type of the authentication method.
+    - contextPath: MSGraphUser.AuthMethod.IsSystemPreferredAuthenticationMethodEnabled
+      description: Whether system-preferred authentication is enabled.
+      type: Boolean
+    - contextPath: MSGraphUser.AuthMethod.UserPreferredMethodForSecondaryAuthentication
+      description: The user's preferred method for secondary authentication.
+      type: String
+    - contextPath: MSGraphUser.AuthMethod.SystemPreferredAuthenticationMethod
+      description: The system-preferred authentication method.
       type: String
   - name: msgraph-user-create-mfa-client-secret
     description: Issue a new client secret for the MFA app.
     outputs:
-    - contextPath: MSGraphUser.mfa_client_secret.valid_until
+    - contextPath: MSGraphUser.MFAClientSecret.ValidUntil
       description: The expiration date for the client secret in ISO 8601 format.
       type: String
-    - contextPath: MSGraphUser.mfa_client_secret.MFA_client_secret
+    - contextPath: MSGraphUser.MFAClientSecret.MFAClientSecret
       description: The new MFA client secret.
       type: String
-    - contextPath: MSGraphUser.mfa_client_secret.valid_from
+    - contextPath: MSGraphUser.MFAClientSecret.ValidFrom
       description: The date of issue for the client secret.
       type: String
   - name: msgraph-user-create-mfa-client-access-token
@@ -809,10 +815,10 @@ script:
       name: client_secret
       required: true
     outputs:
-    - contextPath: MSGraphUser.mfa_access_token.valid_until
+    - contextPath: MSGraphUser.MFAAccessToken.ValidUntil
       description: The expiration date for the access token in epoch format.
       type: String
-    - contextPath: MSGraphUser.mfa_access_token.access_token
+    - contextPath: MSGraphUser.MFAAccessToken.AccessToken
       description: The access token value.
       type: String
   dockerimage: demisto/crypto:1.0.0.4578119

@@ -328,14 +328,21 @@ class MsGraphClient:
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
 
-    def get_auth_methods(self, user: str):
+    def get_sign_in_preferences(self, user: str):
         """
-        Retrieves the authentication methods for a user.
-        API Reference: https://learn.microsoft.com/en-us/graph/api/authentication-list-methods?view=graph-rest-1.0&tabs=http
+        Retrieves the sign-in preferences for a user, which includes the preferred method.
+        API Reference: https://learn.microsoft.com/en-us/graph/api/authentication-get?view=graph-rest-beta
+        Note: This uses the beta endpoint as it's not available in v1.0 yet.
         """
-        url_suffix = f"users/{quote(user)}/authentication/methods"
-        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-        return res.get("value", [])
+        url_suffix = f"users/{quote(user)}/authentication/signInPreferences"
+        # We need to use beta for this specific call
+        original_base_url = self.ms_client._base_url
+        try:
+            self.ms_client._base_url = original_base_url.replace("/v1.0/", "/beta/")
+            res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+            return res
+        finally:
+            self.ms_client._base_url = original_base_url
 
     def request_mfa_app_secret(self) -> dict:
         """
@@ -388,7 +395,7 @@ class MsGraphClient:
 
         return secret_result
     
-    def get_mfa_app_client_token(self, client_secret) -> dict:
+    def get_mfa_app_client_token(self, client_secret: str) -> dict:
         demisto.debug("Creating new MFA access token.")
             
         # Hardcoded endpoints
@@ -414,7 +421,7 @@ class MsGraphClient:
             demisto.debug("Access token obtained successfully.")
             access_token = res.get('access_token')
             valid_until = res.get("expires_on")
-            mfa_access_token = {"valid_until": valid_until, "access_token": access_token}
+            mfa_access_token = {"ValidUntil": valid_until, "AccessToken": access_token}
             return mfa_access_token
 
         except requests.exceptions.HTTPError as e:
@@ -943,41 +950,44 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
 
 def create_access_token_command(client: MsGraphClient, args: dict) -> CommandResults:
-    client_secret = args.get("client_secret")
+    client_secret = args.get("client_secret", "")
     mfa_client_token = client.get_mfa_app_client_token(client_secret)
     outputs = mfa_client_token
     return CommandResults(
         outputs=outputs,
         readable_output=f"A new access token has been created.",
-        outputs_prefix="MSGraphUser.mfa_access_token"
+        outputs_prefix="MSGraphUser.MFAAccessToken"
     )
     
     
 @suppress_errors_with_404_code
-def get_auth_methods_command(client: MsGraphClient, args: dict) -> CommandResults:
+def get_default_auth_methods_command(client: MsGraphClient, args: dict) -> CommandResults:
     user = str(args.get("user"))
-    auth_methods = client.get_auth_methods(user)
-    readable_auth_methods, outputs_auth_methods = parse_outputs(auth_methods)
+    sign_in_preferences = client.get_sign_in_preferences(user)
+    # Priority: userPreferredMethodForSecondaryAuthentication -> systemPreferredAuthenticationMethod
+    default_method = sign_in_preferences.get("userPreferredMethodForSecondaryAuthentication") \
+        or sign_in_preferences.get("systemPreferredAuthenticationMethod") \
+        or "Unknown"
 
-    # Add a summary field for MFA capability
-    # A user is MFA capable if they have any method other than just a password
-    for method in outputs_auth_methods:
-        if "@Odata.Type" in method:
-            method["type"] = method.pop("@Odata.Type")        
+    default_auth_method = {
+        "User": user,
+        "DefaultMethod": default_method,
+        "IsSystemPreferredAuthenticationMethodEnabled": sign_in_preferences.get("isSystemPreferredAuthenticationMethodEnabled"),
+        "UserPreferredMethodForSecondaryAuthentication": sign_in_preferences.get("userPreferredMethodForSecondaryAuthentication"),
+        "SystemPreferredAuthenticationMethod": sign_in_preferences.get("systemPreferredAuthenticationMethod")
+    }
 
-    human_readable = tableToMarkdown(name=f"Authentication Methods for {user}", t=readable_auth_methods, removeNull=True)
+    human_readable = tableToMarkdown(name=f"Authentication Preferences for {user}", t=default_auth_method, removeNull=True)
+    human_readable += f"\n**Default Auth Method:** {default_method}"
 
     outputs = {
-        "MSGraphUser.AuthMethod(val.ID === obj.ID)": outputs_auth_methods,
-        "MSGraphUser.MFAStatus(val.User === obj.User)": {
-            "User": user,
-        }
+        "MSGraphUser.AuthMethod(val.User === obj.User)": default_auth_method
     }
 
     return CommandResults(
         outputs=outputs,
         readable_output=human_readable,
-        raw_response=auth_methods
+        raw_response=sign_in_preferences
     )
 
 
@@ -986,11 +996,11 @@ def create_client_secret_command(client: MsGraphClient, args: dict) -> CommandRe
     new_secret_value = mfa_app_secret.get('secretText')
     valid_from = mfa_app_secret.get('startDateTime')
     valid_until = mfa_app_secret.get('endDateTime')
-    outputs = {"MFA_client_secret": new_secret_value, "valid_from": valid_from, "valid_until": valid_until}
+    outputs = {"MFAClientSecret": new_secret_value, "ValidFrom": valid_from, "ValidUntil": valid_until}
     return CommandResults(
         readable_output=f"A new client secret has been added. Note you might need to wait 30-60 seconds before the secret will be activated.",
         outputs=outputs,
-        outputs_prefix="MSGraphUser.mfa_client_secret")
+        outputs_prefix="MSGraphUser.MFAClientSecret")
 
 
 def request_mfa_command(client: MsGraphClient, args: dict) -> CommandResults:
@@ -1123,7 +1133,7 @@ def main():
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
         "msgraph-user-request-mfa": request_mfa_command,
         "msgraph-user-create-mfa-client-secret": create_client_secret_command,
-        "msgraph-user-auth-methods-list": get_auth_methods_command,
+        "msgraph-user-get-user-default-auth-method": get_default_auth_methods_command,
         "msgraph-user-create-mfa-client-access-token": create_access_token_command
     }
     command = demisto.command()
