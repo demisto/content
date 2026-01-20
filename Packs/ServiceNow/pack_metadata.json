@@ -28,7 +28,7 @@
         "platform"
     ],
     "defaultDataSource": "ServiceNow v2",
-    "supportedModules": [
+    "supportedModulesNewfield": [
         "C1",
         "C3",
         "X0",
