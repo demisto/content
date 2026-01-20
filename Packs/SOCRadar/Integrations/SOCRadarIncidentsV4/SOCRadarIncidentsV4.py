@@ -440,7 +440,7 @@ def fetch_incidents(
         start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
         demisto.debug(f"[SOCRadar] Subsequent fetch: Using fetch_interval of {fetch_interval_minutes} minutes")
     else:
-        start_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
+        start_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)  # type: ignore[assignment]
         if not start_datetime:
             raise ValueError("Failed to parse first_fetch_time")
         demisto.debug("[SOCRadar] First fetch: Using first_fetch_time")
