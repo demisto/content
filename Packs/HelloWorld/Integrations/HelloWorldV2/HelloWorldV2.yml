@@ -367,6 +367,18 @@ script:
     - contextPath: HelloWorld.Job.msg
       description: Message from the completed job.
       type: String
+  - name: helloworld-get-assets
+    description: Retrieves resources and assets in the HelloWorld environment.
+    arguments:
+    - description: Maximum number of assets to retrieve.
+      name: limit
+      defaultValue: "10"
+  - name: helloworld-get-vulnerabilities
+    description: Retrieves vulnerabilities found in the HelloWorld environment.
+    arguments:
+    - description: Maximum number of vulnerabilities to retrieve.
+      name: limit
+      defaultValue: "10"
   dockerimage: demisto/fastapi:0.123.5.6111791
   # Fetch Incidents
   isfetch: true

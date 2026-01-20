@@ -1320,4 +1320,100 @@ def test_create_incidents(mocker: MockerFixture):
 
     # Assertions
     assert mock_demisto_incidents.call_count == 1
-    assert mock_demisto_incidents.call_args.args[0] ==  expected_formatted_incidents
+    assert mock_demisto_incidents.call_args.args[0] == expected_formatted_incidents
+
+
+def test_get_assets_command(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for get_assets_command.
+    When:
+        - Running get_assets_command.
+    Then:
+        - Assert client.get_assets is called once with correct parameters.
+        - Assert tableToMarkdown is called with correct args.
+        - Assert CommandResults is returned with correct readable output.
+    """
+    from HelloWorldV2 import get_assets_command, HelloWorldGetAssetsArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Load mock asset data
+    mock_assets = util_load_json("test_data/assets.json")
+
+    # Mock client.get_assets
+    mock_get_assets = mocker.patch.object(client, "get_assets", return_value=mock_assets)
+
+    # Mock tableToMarkdown
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown", return_value="Mocked table")
+
+    # Create args
+    limit = 10
+    args = HelloWorldGetAssetsArgs(limit=limit)
+
+    # Execute command
+    result = get_assets_command(client, args)
+
+    # Assertions
+    assert mock_get_assets.call_count == 1
+    assert mock_get_assets.call_args.kwargs == {"limit": limit}
+
+    # Verify tableToMarkdown was called
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args == ("HelloWorld Assets", mock_assets)
+
+    # Verify CommandResults
+    assert result.readable_output == "Mocked table"
+
+
+def test_get_vulnerabilities_command(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and args for get_vulnerabilities_command.
+    When:
+        - Running get_vulnerabilities_command.
+    Then:
+        - Assert client.get_vulnerabilities is called once with correct parameters.
+        - Assert tableToMarkdown is called with correct args.
+        - Assert CommandResults is returned with correct readable output.
+    """
+    from HelloWorldV2 import get_vulnerabilities_command, HelloWorldGetVulnerabilitiesArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Load mock vulnerability data
+    mock_vulnerabilities = util_load_json("test_data/vulnerabilities.json")
+
+    # Mock client.get_vulnerabilities
+    mock_get_vulnerabilities = mocker.patch.object(client, "get_vulnerabilities", return_value=mock_vulnerabilities)
+
+    # Mock tableToMarkdown
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown", return_value="Mocked table")
+
+    # Create args
+    limit = 10
+    args = HelloWorldGetVulnerabilitiesArgs(limit=limit)
+
+    # Execute command
+    result = get_vulnerabilities_command(client, args)
+
+    # Assertions
+    assert mock_get_vulnerabilities.call_count == 1
+    assert mock_get_vulnerabilities.call_args.kwargs == {"limit": limit}
+
+    # Verify tableToMarkdown was called
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args == ("HelloWorld Vulnerabilities", mock_vulnerabilities)
+
+    # Verify CommandResults
+    assert result.readable_output == "Mocked table"

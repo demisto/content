@@ -426,6 +426,72 @@ Submits a job to the HelloWorld API and polls for completion. This command demon
 >|---|---|
 >| abc-123 | The configuration has successfully been updated. |
 
+### helloworld-get-assets
+
+***
+Retrieves resources and assets in the HelloWorld environment.
+
+#### Base Command
+
+`helloworld-get-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of assets to retrieve. Default value is 10. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!helloworld-get-assets limit=3```
+
+#### Human Readable Output
+
+>### HelloWorld Assets
+>
+>| id | name | type | status | created |
+>| --- | --- | --- | --- | --- |
+>| 1 | Server-01 | server | active | 2024-01-15T10:00:00 |
+>| 2 | Database-01 | database | active | 2024-01-16T11:30:00 |
+>| 3 | Storage-01 | storage | active | 2024-01-17T09:15:00 |
+
+### helloworld-get-vulnerabilities
+
+***
+Retrieves vulnerabilities found in the HelloWorld environment.
+
+#### Base Command
+
+`helloworld-get-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of vulnerabilities to retrieve. Default value is 10. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!helloworld-get-vulnerabilities limit=3```
+
+#### Human Readable Output
+
+>### HelloWorld Vulnerabilities
+>
+>| id | cve_id | severity | description | published |
+>| --- | --- | --- | --- | --- |
+>| 1 | CVE-MOCK-0001 | critical | Remote code execution vulnerability | 2026-01-10T08:00:00 |
+>| 2 | CVE-MOCK-0002 | high | SQL injection vulnerability | 2026-01-12T14:30:00 |
+>| 3 | CVE-MOCK-0003 | medium | Cross-site scripting vulnerability | 2026-01-14T16:45:00 |
+
 ---
 
 ## Developer Guide

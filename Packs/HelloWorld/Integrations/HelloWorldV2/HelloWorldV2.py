@@ -258,6 +258,14 @@ MOCK_ALERT = (
     '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
 )
 
+MOCK_ASSET = (
+    '"id": {id}, "name": "{name}", "type": "{asset_type}", "status": "{status}", "created": "{created}"'
+)
+
+MOCK_VULN = (
+    '"id": {id}, "cve_id": "{cve_id}", "severity": "{severity}", "description": "{description}", "published": "{published}"'
+)
+
 BASE_CONTEXT_OUTPUT_PREFIX = "HelloWorld"  # Context outputs from all commands will have this prefix
 
 
@@ -382,12 +390,22 @@ class IntegrationReliability(Enum):
 
 
 class HelloWorldSeverity(str, Enum):
-    """Alert severity options matching the YML configuration parameter options."""
+    """Helloworld severity options matching the YML configuration parameter options."""
 
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
+    @classmethod
+    def all_values(cls) -> list[str]:
+        """
+        Get the string values of all enum members.
+
+        Returns:
+            list[str]: The values of the enum class members.
+        """
+        return [member.value for member in cls]
 
     @classmethod
     def convert_to_incident_severity(cls, raw_severity: str) -> int:
@@ -530,6 +548,18 @@ class HelloWorldJobPollArgs(ContentBaseModel):
     timeout_in_seconds: int = PollingDefaults.TIMEOUT_SECONDS
 
 
+class HelloWorldGetAssetsArgs(ContentBaseModel):
+    """Arguments for helloworld-get-assets command."""
+
+    limit: int = 10
+
+
+class HelloWorldGetVulnerabilitiesArgs(ContentBaseModel):
+    """Arguments for helloworld-get-vulnerabilities command."""
+
+    limit: int = 10
+
+
 class IpArgs(ContentBaseModel):
     """Arguments for ip command."""
 
@@ -662,6 +692,24 @@ class ExecutionConfig:
         return HelloWorldJobPollArgs(**self._raw_args)
 
     @property
+    def get_assets_args(self) -> HelloWorldGetAssetsArgs:
+        """Get validated arguments for the helloworld-get-assets command.
+
+        Returns:
+            HelloWorldGetAssetsArgs: Validated arguments containing limit.
+        """
+        return HelloWorldGetAssetsArgs(**self._raw_args)
+
+    @property
+    def get_vulnerabilities_args(self) -> HelloWorldGetVulnerabilitiesArgs:
+        """Get validated arguments for the helloworld-get-vulnerabilities command.
+
+        Returns:
+            HelloWorldGetVulnerabilitiesArgs: Validated arguments containing limit.
+        """
+        return HelloWorldGetVulnerabilitiesArgs(**self._raw_args)
+
+    @property
     def last_run(self) -> HelloWorldLastRun:
         """Get the last_run state for fetch-events command.
 
@@ -727,7 +775,7 @@ class HelloWorldClient(ContentClient):
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
-            diagnostic_mode=is_debug_mode(),
+            diagnostic_mode=is_debug_mode(),  # enable if commands are run with `debug-mode=true`
         )
 
     def send_example_api_request(self, item_id: str | int, params: dict) -> dict:
@@ -934,6 +982,80 @@ class HelloWorldClient(ContentClient):
         # endpoint = f"/api/v1/jobs/{job_id}/result"
         # return self.get(endpoint)
         return {"id": job_id, "msg": "The configuration has successfully been updated."}
+
+    def get_assets(self, limit: int, id_offset: int = 0) -> list[dict]:
+        """Get a list of assets (dummy response for demonstration purposes).
+
+        For real API calls, see the `send_example_api_request` method.
+
+        Args:
+            limit (int): The number of assets to retrieve.
+
+        Returns:
+            list[dict]: Dummy data of assets as it would be returned from the API.
+        """
+        # INTEGRATION DEVELOPER TIP:
+        # In a real implementation, you would make an HTTP request here using ContentClient:
+        # endpoint = "/api/v1/assets"
+        # params = {"limit": limit}
+        # return self.get(endpoint, params=params)
+
+        mock_response: list[dict] = []
+        asset_types = ["server", "database", "storage", "network"]
+        for mock_number in range(limit):
+            asset_id = id_offset + mock_number + 1,
+            asset_creation_time = datetime(2024, 1, 15) + timedelta(hours=mock_number)
+            item = MOCK_ASSET.format(
+                id=asset_id,
+                name=f"{asset_types[mock_number % len(asset_types)].capitalize()}-{mock_number + 1:02d}",
+                asset_type=asset_types[mock_number % len(asset_types)],
+                status="active",
+                created=asset_creation_time.isoformat(),
+            )
+            dict_item = json.loads("{" + item + "}")
+            mock_response.append(dict_item)
+
+        return mock_response
+
+    def get_vulnerabilities(self, limit: int, id_offset: int = 0) -> list[dict]:
+        """Get a list of vulnerabilities (dummy response for demonstration purposes).
+
+        For real API calls, see the `send_example_api_request` method.
+
+        Args:
+            limit (int): The number of vulnerabilities to retrieve.
+
+        Returns:
+            list[dict]: Dummy data of vulnerabilities as it would be returned from the API.
+        """
+        # INTEGRATION DEVELOPER TIP:
+        # In a real implementation, you would make an HTTP request here using ContentClient:
+        # endpoint = "/api/v1/vulnerabilities"
+        # params = {"limit": limit}
+        # return self.get(endpoint, params=params)
+
+        mock_response: list[dict] = []
+        severities = HelloWorldSeverity.all_values()
+        descriptions = [
+            "Remote code execution vulnerability",
+            "SQL injection vulnerability",
+            "Cross-site scripting vulnerability",
+            "Information disclosure vulnerability",
+        ]
+        for mock_number in range(limit):
+            vuln_id = id_offset + mock_number + 1
+            vuln_published_time = datetime(2026, 1, 15) + timedelta(hours=mock_number)
+            item = MOCK_VULN.format(
+                id=vuln_id,
+                cve_id=f"CVE-MOCK-{mock_number + 1:04d}",
+                severity=severities[mock_number % len(severities)],
+                description=descriptions[mock_number % len(descriptions)],
+                published=vuln_published_time.isoformat(),
+            )
+            dict_item = json.loads("{" + item + "}")
+            mock_response.append(dict_item)
+
+        return mock_response
 
     def log_optional_diagnostic_report(self) -> None:
         """Log diagnostic report for troubleshooting if diagnostic mode is enabled."""
@@ -1579,6 +1701,50 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
         )
 
 
+def get_assets_command(client: HelloWorldClient, args: HelloWorldGetAssetsArgs) -> CommandResults:
+    """Execute helloworld-get-assets command.
+
+    Args:
+        client (HelloWorldClient): HelloWorld client to use.
+        args (HelloWorldGetAssetsArgs): Validated command arguments containing:
+            - limit: Maximum number of assets to retrieve.
+
+    Returns:
+        CommandResults: CommandResults object containing asset data.
+    """
+    demisto.debug(f"[Get assets] Fetching assets with {args.limit=}")
+
+    # Fetch assets from the API
+    assets = client.get_assets(limit=args.limit)
+
+    demisto.debug(f"[Get assets] Fetched {len(assets)} assets")
+    readable_output = tableToMarkdown("HelloWorld Assets", assets)
+
+    return CommandResults(readable_output=readable_output)
+
+
+def get_vulnerabilities_command(client: HelloWorldClient, args: HelloWorldGetVulnerabilitiesArgs) -> CommandResults:
+    """Execute helloworld-get-vulnerabilities command.
+
+    Args:
+        client (HelloWorldClient): HelloWorld client to use.
+        args (HelloWorldGetVulnerabilitiesArgs): Validated command arguments containing:
+            - limit: Maximum number of vulnerabilities to retrieve.
+
+    Returns:
+        CommandResults: CommandResults object containing vulnerability data.
+    """
+    demisto.debug(f"[Get vulnerabilities] Fetching vulnerabilities with {args.limit=}")
+
+    # Fetch vulnerabilities from the API
+    vulnerabilities = client.get_vulnerabilities(limit=args.limit)
+
+    demisto.debug(f"[Get vulnerabilities] Fetched {len(vulnerabilities)} vulnerabilities")
+    readable_output = tableToMarkdown("HelloWorld Vulnerabilities", vulnerabilities)
+
+    return CommandResults(readable_output=readable_output)
+
+
 """ MAIN FUNCTION """
 
 
@@ -1628,11 +1794,17 @@ def main() -> None:  # pragma: no cover
                 results = get_events_command(client, args)
                 return_results(results)
 
-            case "fetch-assets":
-                pass
-
             case "helloworld-get-assets":
-                pass
+                # Validate command arguments
+                args = execution.get_assets_args
+                # Run command and get its results
+                return_results(get_assets_command(client, args))
+
+            case "helloworld-get-vulnerabilities":
+                # Validate command arguments
+                args = execution.get_vulnerabilities_args
+                # Run command and get its results
+                return_results(get_vulnerabilities_command(client, args))
             
             case "helloworld-alert-list":
                 # Validate command arguments, such as the existence of `alert_id` or `severity`
