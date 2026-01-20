@@ -1344,10 +1344,11 @@ def test_get_assets_command(mocker: MockerFixture):
     client = HelloWorldClient(params)
 
     # Load mock asset data
-    mock_assets = util_load_json("test_data/assets.json")
+    assets_raw_response = util_load_json("test_data/assets.json")
+    mock_assets = assets_raw_response.get("data", [])
 
     # Mock client.get_assets
-    mock_get_assets = mocker.patch.object(client, "get_assets", return_value=mock_assets)
+    mock_get_assets = mocker.patch.object(client, "get_assets", return_value=assets_raw_response)
 
     # Mock tableToMarkdown
     mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown", return_value="Mocked table")
@@ -1392,10 +1393,11 @@ def test_get_vulnerabilities_command(mocker: MockerFixture):
     client = HelloWorldClient(params)
 
     # Load mock vulnerability data
-    mock_vulnerabilities = util_load_json("test_data/vulnerabilities.json")
+    vulnerabilities_raw_response = util_load_json("test_data/vulnerabilities.json")
+    mock_vulnerabilities = vulnerabilities_raw_response.get("data", [])
 
     # Mock client.get_vulnerabilities
-    mock_get_vulnerabilities = mocker.patch.object(client, "get_vulnerabilities", return_value=mock_vulnerabilities)
+    mock_get_vulnerabilities = mocker.patch.object(client, "get_vulnerabilities", return_value=vulnerabilities_raw_response)
 
     # Mock tableToMarkdown
     mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown", return_value="Mocked table")

@@ -269,6 +269,8 @@ MOCK_VULN = (
 BASE_CONTEXT_OUTPUT_PREFIX = "HelloWorld"  # Context outputs from all commands will have this prefix
 
 
+UNIX_TIMESTAMP = str(round(time.time() * 1000))
+
 class PollingDefaults(int, Enum):
     INTERVAL_SECONDS = 30
     TIMEOUT_SECONDS = 60 * 10  # 10 minutes
@@ -282,43 +284,63 @@ class EventsDatasetConfigs(str, Enum):
     SOURCE_LOG_TYPE_KEY = "source_log_type"
 
 
+class FetchAssetsStages(str, Enum):
+    ASSETS = "assets"
+    VULNS = "vulnerabilities"
+
+
+class HelloWorldSeverity(str, Enum):
+    """Helloworld severity options matching the YML configuration parameter options."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+    @classmethod
+    def all_values(cls) -> list[str]:
+        """
+        Get the string values of all enum members.
+
+        Returns:
+            list[str]: The values of the enum class members.
+        """
+        return [member.value for member in cls]
+
+    @classmethod
+    def convert_to_incident_severity(cls, raw_severity: str) -> int:
+        """
+        Convert HelloWorld API severity to Cortex XSOAR incident severity.
+
+        Maps the HelloWorld alert severity levels ('low', 'medium', 'high', 'critical')
+        to Cortex XSOAR incident severity integers (1-4).
+
+        Args:
+            raw_severity (str): Severity as returned from the HelloWorld API.
+
+        Returns:
+            int: Cortex XSOAR incident severity (0-4).
+        """
+        # INTEGRATION DEVELOPER TIP:
+        # It is important to document the mapping between the API's severity
+        # format and XSOAR's severity format. This mapping should be consistent
+        # across the integration and clearly documented for users.
+        mapping = {
+            cls.LOW.value: IncidentSeverity.LOW,
+            cls.MEDIUM.value: IncidentSeverity.MEDIUM,
+            cls.HIGH.value: IncidentSeverity.HIGH,
+            cls.CRITICAL.value: IncidentSeverity.CRITICAL,
+            None: IncidentSeverity.UNKNOWN,
+        }
+        return mapping.get(raw_severity, IncidentSeverity.UNKNOWN)
+
+
 DUMMY_VALID_API_KEY = "dummy-key"  # to mock API errors
 
 SYSTEM = SystemCapabilities()
 
 
 """ PYDANTIC MODELS """
-
-
-class BaseLastRun(BaseModel):
-    """Base class for last_run state management in fetch commands.
-
-    INTEGRATION DEVELOPER TIP:
-    This class provides a common interface for managing state between fetch executions.
-    Subclasses should define specific fields needed to track their fetch progress.
-    The `set()` method saves the state.
-    """
-
-    def set(self):
-        """Save the current state for the next fetch execution.
-
-        This method persists the current instance's state using `demisto.setLastRun()`,
-        making it available for the next time the fetch command is invoked.
-        """
-        demisto.setLastRun(dict(self))
-
-
-class HelloWorldLastRun(BaseLastRun):
-    """State management for fetch-incidents command.
-
-    Tracks the progress of incident fetching to ensure no incidents are missed or duplicated
-    between fetch executions.
-
-    Attributes:
-        id_offset (int): The ID of the last fetched alert to use for offsetting.
-    """
-
-    id_offset: int = 0
 
 
 class ContentBaseModel(BaseModel):
@@ -378,50 +400,44 @@ class BaseParams(ContentBaseModel):
         return not self.insecure
 
 
-class HelloWorldSeverity(str, Enum):
-    """Helloworld severity options matching the YML configuration parameter options."""
+class HelloWorldLastRun(ContentBaseModel):
+    """
+    State management for fetch-incidents and fetch-events commands to ensure no
+    data is missed or duplicated between invocations.
+    """
+    # The ID of the last fetched alert to use for offsetting.
+    id_offset: int = 0
+    
+    def set(self):
+        """Save the current state for the next fetch-incidents or fetch-events execution."""
+        last_run = self.dict(by_alias=True)
+        demisto.debug(f"[Last Run] Setting {last_run=}.")
+        demisto.setLastRun(last_run)
 
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
 
-    @classmethod
-    def all_values(cls) -> list[str]:
-        """
-        Get the string values of all enum members.
+class HelloWorldAssetsLastRun(ContentBaseModel):
+    """
+    State management for fetch-assets command to ensure no data is missed or
+    duplicated between fetch invocations.
+    """
+    # Save the `stage` to denote the type of data to be fetched (assets or vulnerabilities)
+    stage: FetchAssetsStages = FetchAssetsStages.ASSETS
+    # The ID of the last fetched asset / vulnerability to use for offsetting.
+    id_offset: int = 0
+    # Keep a running total of fetched assets / vulnerabilities
+    cumulative_count: int = 0
+    # ID of snapshot in the dataset. Persist if ingestion is ongoing, reset once ingestion is done
+    snapshot_id: int = Field(default=UNIX_TIMESTAMP)
+    # `nextTrigger` instructs to the server when to trigger the next fetch invocation.
+    next_trigger_in_seconds: str | None = Field(default=None, alias="nextTrigger")
+    # `type` indicates to the server that the next fetch invocation is of type "assets" (1), rather than "events" (0)
+    trigger_type: int = Field(default=1, alias="type")
 
-        Returns:
-            list[str]: The values of the enum class members.
-        """
-        return [member.value for member in cls]
-
-    @classmethod
-    def convert_to_incident_severity(cls, raw_severity: str) -> int:
-        """
-        Convert HelloWorld API severity to Cortex XSOAR incident severity.
-
-        Maps the HelloWorld alert severity levels ('low', 'medium', 'high', 'critical')
-        to Cortex XSOAR incident severity integers (1-4).
-
-        Args:
-            raw_severity (str): Severity as returned from the HelloWorld API.
-
-        Returns:
-            int: Cortex XSOAR incident severity (0-4).
-        """
-        # INTEGRATION DEVELOPER TIP:
-        # It is important to document the mapping between the API's severity
-        # format and XSOAR's severity format. This mapping should be consistent
-        # across the integration and clearly documented for users.
-        mapping = {
-            cls.LOW.value: IncidentSeverity.LOW,
-            cls.MEDIUM.value: IncidentSeverity.MEDIUM,
-            cls.HIGH.value: IncidentSeverity.HIGH,
-            cls.CRITICAL.value: IncidentSeverity.CRITICAL,
-            None: IncidentSeverity.UNKNOWN,
-        }
-        return mapping.get(raw_severity, IncidentSeverity.UNKNOWN)
+    def set(self):
+        """Save the current state for the next fetch-assets execution."""
+        assets_last_run = self.dict(by_alias=True)
+        demisto.debug(f"[Assets Last Run] Setting {assets_last_run=}.")
+        demisto.setAssetsLastRun(assets_last_run)
 
 
 class Credentials(ContentBaseModel):
@@ -598,6 +614,7 @@ class ExecutionConfig:
         self._raw_params: dict = demisto.params()
         self._raw_args: dict = demisto.args()
         self._raw_last_run: dict = demisto.getLastRun() if self._raw_command in FETCH_COMMANDS else {}
+        self._raw_assets_last_run: dict = demisto.getAssetsLastRun() if self._raw_command == "fetch-assets" else {}
 
     @property
     def command(self) -> str:
@@ -700,12 +717,21 @@ class ExecutionConfig:
 
     @property
     def last_run(self) -> HelloWorldLastRun:
-        """Get the last_run state for fetch-events command.
+        """Get the last_run state for fetch-incidents or fetch-events commands.
 
         Returns:
-            HelloWorldLastRun: State from the previous fetch-events execution.
+            HelloWorldLastRun: State from the previous fetch execution.
         """
         return HelloWorldLastRun(**self._raw_last_run)
+
+    @property
+    def assets_last_run(self) -> HelloWorldAssetsLastRun:
+        """Get the last_run state for fetch-assets command.
+
+        Returns:
+            HelloWorldAssetsLastRun: State from the previous fetch-assets execution.
+        """
+        return HelloWorldAssetsLastRun(**self._raw_last_run)
 
 
 """ CLIENT CLASS """
@@ -972,7 +998,7 @@ class HelloWorldClient(ContentClient):
         # return self.get(endpoint)
         return {"id": job_id, "msg": "The configuration has successfully been updated."}
 
-    def get_assets(self, limit: int, id_offset: int = 0) -> list[dict]:
+    def get_assets(self, limit: int, id_offset: int = 0) -> dict[str, Any]:
         """Get a list of assets (dummy response for demonstration purposes).
 
         For real API calls, see the `send_example_api_request` method.
@@ -981,7 +1007,7 @@ class HelloWorldClient(ContentClient):
             limit (int): The number of assets to retrieve.
 
         Returns:
-            list[dict]: Dummy data of assets as it would be returned from the API.
+            dict[str, Any]: Dummy data of assets as it would be returned from the API.
         """
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
@@ -989,24 +1015,27 @@ class HelloWorldClient(ContentClient):
         # params = {"limit": limit}
         # return self.get(endpoint, params=params)
 
-        mock_response: list[dict] = []
+        mock_assets: list[dict] = []
         asset_types = ["server", "database", "storage", "network"]
         for mock_number in range(limit):
             asset_id = id_offset + mock_number + 1,
             asset_creation_time = datetime(2024, 1, 15) + timedelta(hours=mock_number)
-            item = MOCK_ASSET.format(
+            asset = MOCK_ASSET.format(
                 id=asset_id,
                 name=f"{asset_types[mock_number % len(asset_types)].capitalize()}-{mock_number + 1:02d}",
                 asset_type=asset_types[mock_number % len(asset_types)],
                 status="active",
                 created=asset_creation_time.isoformat(),
             )
-            dict_item = json.loads("{" + item + "}")
-            mock_response.append(dict_item)
+            asset_dict = json.loads("{" + asset + "}")
+            mock_assets.append(asset_dict)
 
+        # Assume our environment has no more assets batches after offset = 5000
+        mock_has_more_data = True if id_offset < 5000 else False
+        mock_response = {"has_more": mock_has_more_data, "data": mock_assets}
         return mock_response
 
-    def get_vulnerabilities(self, limit: int, id_offset: int = 0) -> list[dict]:
+    def get_vulnerabilities(self, limit: int, id_offset: int = 0) -> dict[str, Any]:
         """Get a list of vulnerabilities (dummy response for demonstration purposes).
 
         For real API calls, see the `send_example_api_request` method.
@@ -1015,7 +1044,7 @@ class HelloWorldClient(ContentClient):
             limit (int): The number of vulnerabilities to retrieve.
 
         Returns:
-            list[dict]: Dummy data of vulnerabilities as it would be returned from the API.
+            dict[str, Any]: Dummy data of vulnerabilities as it would be returned from the API.
         """
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
@@ -1023,7 +1052,7 @@ class HelloWorldClient(ContentClient):
         # params = {"limit": limit}
         # return self.get(endpoint, params=params)
 
-        mock_response: list[dict] = []
+        mock_vulns: list[dict] = []
         severities = HelloWorldSeverity.all_values()
         descriptions = [
             "Remote code execution vulnerability",
@@ -1034,16 +1063,19 @@ class HelloWorldClient(ContentClient):
         for mock_number in range(limit):
             vuln_id = id_offset + mock_number + 1
             vuln_published_time = datetime(2026, 1, 15) + timedelta(hours=mock_number)
-            item = MOCK_VULN.format(
+            vuln = MOCK_VULN.format(
                 id=vuln_id,
                 cve_id=f"CVE-MOCK-{mock_number + 1:04d}",
                 severity=severities[mock_number % len(severities)],
                 description=descriptions[mock_number % len(descriptions)],
                 published=vuln_published_time.isoformat(),
             )
-            dict_item = json.loads("{" + item + "}")
-            mock_response.append(dict_item)
+            vuln_dict = json.loads("{" + vuln + "}")
+            mock_vulns.append(vuln_dict)
 
+        # Assume our environment has a limited number of vulnerabilities that can all be fetched in one requested
+        mock_has_more_data = False
+        mock_response = {"has_more": mock_has_more_data, "data": mock_vulns}
         return mock_response
 
     def log_optional_diagnostic_report(self) -> None:
@@ -1704,7 +1736,8 @@ def get_assets_command(client: HelloWorldClient, args: HelloWorldGetAssetsArgs) 
     demisto.debug(f"[Get assets] Fetching assets with {args.limit=}")
 
     # Fetch assets from the API
-    assets = client.get_assets(limit=args.limit)
+    raw_response = client.get_assets(limit=args.limit)
+    assets = raw_response.get("data", [])
 
     demisto.debug(f"[Get assets] Fetched {len(assets)} assets")
     readable_output = tableToMarkdown("HelloWorld Assets", assets)
@@ -1726,7 +1759,8 @@ def get_vulnerabilities_command(client: HelloWorldClient, args: HelloWorldGetVul
     demisto.debug(f"[Get vulnerabilities] Fetching vulnerabilities with {args.limit=}")
 
     # Fetch vulnerabilities from the API
-    vulnerabilities = client.get_vulnerabilities(limit=args.limit)
+    raw_response = client.get_vulnerabilities(limit=args.limit)
+    vulnerabilities = raw_response.get("data", [])
 
     demisto.debug(f"[Get vulnerabilities] Fetched {len(vulnerabilities)} vulnerabilities")
     readable_output = tableToMarkdown("HelloWorld Vulnerabilities", vulnerabilities)
@@ -1776,7 +1810,11 @@ def main() -> None:  # pragma: no cover
                 demisto.debug("[Main] fetch completed")
 
             case "fetch-assets":
-                pass
+                demisto.debug("[Main] Starting fetch assets")
+                assets_last_run = execution.assets_last_run
+                assets_next_run = ...
+                assets_last_run.set()
+                demisto.debug("[Main] fetch assets")
 
             case "helloworld-get-events":
                 # Validate command arguments
