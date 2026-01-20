@@ -576,7 +576,7 @@ class ExchangeOnlinePowershellV3Client
             $cmd_params = @{ }
             if ($identities)
             {
-                $cmd_params.Identities = $identities
+                $cmd_params.Identities = $identities -split "," | ForEach-Object { $_.Trim() }
             }
             if ($identity)
             {
