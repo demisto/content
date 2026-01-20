@@ -616,7 +616,7 @@ There is no context output for this command.
 ### azure-waf-auth-start
 
 ***
-Run this command to start the authorization process and follow the instructions in the command results.
+Run this command to start the authorization process and follow the instructions provided in the command results.
 
 #### Base Command
 

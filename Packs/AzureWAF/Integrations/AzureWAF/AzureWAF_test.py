@@ -770,7 +770,7 @@ def test_front_door_policy_delete_command(mocker):
 
     assert "Front Door Policy fd_pol1 was deleted successfully" in commandResult.readable_output
     assert m.call_args[1].get("method") == "DELETE"
-    assert "FrontDoorWebApplicationFirewallPolicies/fd_pol1" in m.call_args[1].get("url_suffix")
+    assert "FrontDoorWebApplicationFirewallPolicies/fd_pol1" in m.call_args[1].get("full_url")
     assert m.call_args[1].get("params") == {"api-version": FRONT_DOOR_API_VERSION}
 
 

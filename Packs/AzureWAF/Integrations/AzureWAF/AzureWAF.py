@@ -234,6 +234,17 @@ class AzureWAFClient:
 
     # Front Door WAF Policy Methods
     def get_front_door_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> list[dict]:
+        """
+        Retrieve a Front Door WAF policy by name from specified resource groups.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to retrieve.
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name_list (list): List of resource group names to search in.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each resource group.
+        """
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_name_list:
@@ -252,6 +263,16 @@ class AzureWAFClient:
     def get_front_door_policy_list_by_resource_group_name(
         self, subscription_id: str, resource_group_name_list: list
     ) -> list[dict]:
+        """
+        Retrieve all Front Door WAF policies from specified resource groups.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name_list (list): List of resource group names to retrieve policies from.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each resource group.
+        """
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_name_list:
@@ -268,6 +289,15 @@ class AzureWAFClient:
         return res
 
     def get_front_door_policy_list_by_subscription_id(self, subscription_ids: list) -> list[dict]:
+        """
+        Retrieve all Front Door WAF policies from specified subscriptions.
+
+        Args:
+            subscription_ids (list): List of Azure subscription IDs to retrieve policies from.
+
+        Returns:
+            list[dict]: A list of policy dictionaries or error messages for each subscription.
+        """
         res = []
         for subscription_id in subscription_ids:
             base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
@@ -286,6 +316,18 @@ class AzureWAFClient:
     def update_front_door_policy_upsert(
         self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict
     ) -> list[dict]:
+        """
+        Create or update a Front Door WAF policy in specified resource groups.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to create or update.
+            resource_group_names (list): List of resource group names to apply the policy to.
+            subscription_id (str): The Azure subscription ID.
+            data (dict): The policy configuration data.
+
+        Returns:
+            list[dict]: A list of updated policy dictionaries or error messages for each resource group.
+        """
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_names:
@@ -302,6 +344,17 @@ class AzureWAFClient:
         return res
 
     def delete_front_door_policy(self, policy_name: str, resource_group_name: str, subscription_id: str) -> requests.Response:
+        """
+        Delete a Front Door WAF policy from a resource group.
+
+        Args:
+            policy_name (str): The name of the Front Door WAF policy to delete.
+            resource_group_name (str): The resource group name containing the policy.
+            subscription_id (str): The Azure subscription ID.
+
+        Returns:
+            requests.Response: The HTTP response from the delete operation.
+        """
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         return self.http_request(
             method="DELETE",
@@ -344,7 +397,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     subscription_id: str = args.get("subscription_id", client.subscription_id)
     resource_group_name_list: list = argToList(args.get("resource_group_name", client.resource_group_name))
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit = int(str(args.get("limit", "20")))
+    limit = arg_to_number(str(args.get("limit", "20")))
 
     policies: list[dict] = []
     try:
@@ -360,8 +413,8 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     except Exception:
         raise
     return CommandResults(
-        readable_output=policies_to_markdown(policies, verbose, limit),
-        outputs=policies[: min(limit, policies_num)],
+        readable_output=policies_to_markdown(policies, verbose, limit),  # type: ignore
+        outputs=policies[: min(limit, policies_num)],  # type: ignore
         outputs_key_field="id",
         outputs_prefix="AzureWAF.Policy",
         raw_response=policies,
@@ -374,7 +427,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     """
     policies: list[dict] = []
     verbose = argToBoolean(args.get("verbose", "false"))
-    limit: int = arg_to_number(str(args.get("limit", "10")))  # type: ignore
+    limit: int = arg_to_number(args.get("limit", "10"))  # type: ignore
     subscription_ids = argToList(args.get("subscription_id", client.subscription_id))
 
     try:
@@ -483,10 +536,19 @@ def policy_delete_command(client: AzureWAFClient, **args):
 # Front Door WAF Policy Commands
 def front_door_policies_list_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets resource group name (or taking instance's default one),
-    subscription id (or taking instance's default one) and policy name(optional).
-    If a policy name provided, Retrieve the policy by name and resource group.
-    Otherwise, retrieves all Front Door policies within the resource group.
+    List Front Door WAF policies by name or retrieve all policies in resource groups.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, optional): Specific policy name to retrieve.
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+            - limit (int, optional): Maximum number of policies to return (default: 10).
+
+    Returns:
+        CommandResults: Command results containing policy data and markdown output.
     """
 
     policy_name: str = args.get("policy_name", "")
@@ -519,7 +581,17 @@ def front_door_policies_list_command(client: AzureWAFClient, **args) -> CommandR
 
 def front_door_policies_list_all_in_subscription_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Retrieve all Front Door policies within the subscription id.
+    Retrieve all Front Door WAF policies within specified subscriptions.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - subscription_id (str, optional): Azure subscription ID(s) (defaults to client's subscription).
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+            - limit (int, optional): Maximum number of policies to return (default: 10).
+
+    Returns:
+        CommandResults: Command results containing policy data and markdown output.
     """
     policies: list[dict] = []
     verbose = argToBoolean(args.get("verbose", "false"))
@@ -547,9 +619,25 @@ def front_door_policies_list_all_in_subscription_command(client: AzureWAFClient,
 
 def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets a policy name, resource groups (or taking instance's default), location,
-    subscription id (or taking instance's default) and rules.
-    Updates the policy if exists, otherwise creates a new Front Door policy.
+    Create or update a Front Door WAF policy.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, required): The name of the policy to create or update.
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - managed_rules (dict, required): Managed rules configuration.
+            - location (str, optional): Azure location (defaults to "Global").
+            - custom_rules (dict, optional): Custom rules configuration.
+            - policy_settings (dict, optional): Policy settings configuration.
+            - tags (dict, optional): Resource tags.
+            - sku (str, optional): SKU name (default: "Classic_AzureFrontDoor").
+            - etag (str, optional): Entity tag for concurrency control.
+            - verbose (bool, optional): Whether to include detailed information (default: False).
+
+    Returns:
+        CommandResults: Command results containing the created/updated policy data and markdown output.
     """
 
     policy_name = str(args.get("policy_name", ""))
@@ -592,9 +680,17 @@ def front_door_policy_upsert_command(client: AzureWAFClient, **args) -> CommandR
 
 def front_door_policy_delete_command(client: AzureWAFClient, **args):
     """
-    Gets a policy name, resource group (or taking instance's default)
-    and subscription id (or taking instance's default)
-    and delete the Front Door policy from the resource group.
+    Delete a Front Door WAF policy from resource groups.
+
+    Args:
+        client (AzureWAFClient): The Azure WAF client instance.
+        **args: Command arguments including:
+            - policy_name (str, required): The name of the policy to delete.
+            - subscription_id (str, optional): Azure subscription ID (defaults to client's subscription).
+            - resource_group_name (str, optional): Resource group name(s) (defaults to client's resource group).
+
+    Returns:
+        CommandResults: Command results with deletion status message.
     """
     policy_name = str(args.get("policy_name", ""))
     subscription_id = args.get("subscription_id", client.subscription_id)
