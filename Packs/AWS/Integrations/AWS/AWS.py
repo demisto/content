@@ -2565,6 +2565,262 @@ class EC2:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
+    def describe_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Elastic IP addresses.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - public_ips (str, optional): Comma-separated list of public IP addresses
+                - allocation_ids (str, optional): Comma-separated list of allocation IDs
+
+        Returns:
+            CommandResults: Results containing Elastic IP address information
+        """
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add public IPs if provided
+        if public_ips := args.get("public_ips"):
+            kwargs["PublicIps"] = parse_resource_ids(public_ips)
+
+        # Add allocation IDs if provided
+        if allocation_ids := args.get("allocation_ids"):
+            kwargs["AllocationIds"] = parse_resource_ids(allocation_ids)
+
+        print_debug_logs(client, f"Describing addresses with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_addresses(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        addresses = response.get("Addresses", [])
+        if not addresses:
+            return CommandResults(readable_output="No Elastic IP addresses were found.")
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        addresses = response.get("Addresses", [])
+
+        # Build readable output data
+        readable_outputs = []
+        for address in addresses:
+            readable_data = {
+                "PublicIp": address.get("PublicIp"),
+                "AllocationId": address.get("AllocationId"),
+                "Domain": address.get("Domain"),
+                "InstanceId": address.get("InstanceId"),
+                "AssociationId": address.get("AssociationId"),
+                "NetworkInterfaceId": address.get("NetworkInterfaceId"),
+                "PrivateIpAddress": address.get("PrivateIpAddress"),
+            }
+            readable_data = remove_empty_elements(readable_data)
+            readable_outputs.append(readable_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=addresses,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Elastic IP Addresses",
+                readable_outputs,
+                headers=[
+                    "PublicIp",
+                    "AllocationId",
+                    "Domain",
+                    "InstanceId",
+                    "AssociationId",
+                    "NetworkInterfaceId",
+                    "PrivateIpAddress",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def allocate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Allocates an Elastic IP address to your AWS account.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - address (str, optional): The Elastic IP address to recover
+                - public_ipv4_pool (str, optional): The ID of an address pool
+                - network_border_group (str, optional): A unique set of Availability Zones, Local Zones, or Wavelength Zones
+                - customer_owned_ipv4_pool (str, optional): The ID of a customer-owned address pool
+                - tag_specifications (str, optional): Tags to assign to the Elastic IP address
+
+        Returns:
+            CommandResults: Results containing the allocated Elastic IP information
+        """
+        kwargs = {
+            "Address": args.get("address"),
+            "PublicIpv4Pool": args.get("public_ipv4_pool"),
+            "NetworkBorderGroup": args.get("network_border_group"),
+            "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
+        }
+
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "elastic-ip", "Tags": parse_tag_field(tag_specifications)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Allocating address with parameters: {kwargs}")
+        response = client.allocate_address(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+
+        # Build output data
+        output_data = {
+            "PublicIp": response.get("PublicIp"),
+            "AllocationId": response.get("AllocationId"),
+            "Domain": response.get("Domain"),
+            "PublicIpv4Pool": response.get("PublicIpv4Pool"),
+            "NetworkBorderGroup": response.get("NetworkBorderGroup"),
+            "CustomerOwnedIp": response.get("CustomerOwnedIp"),
+            "CustomerOwnedIpv4Pool": response.get("CustomerOwnedIpv4Pool"),
+            "CarrierIp": response.get("CarrierIp"),
+        }
+        output_data = remove_empty_elements(output_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=output_data,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Allocated Elastic IP",
+                output_data,
+                headers=["PublicIp", "AllocationId", "Domain", "PublicIpv4Pool", "NetworkBorderGroup"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def associate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Associates an Elastic IP address with an instance or a network interface.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - allocation_id (str): The allocation ID (required for VPC)
+                - instance_id (str, optional): The ID of the instance
+                - network_interface_id (str, optional): The ID of the network interface
+                - private_ip_address (str, optional): The primary or secondary private IP address
+                - allow_reassociation (str, optional): Whether to allow reassociation
+        Returns:
+            CommandResults: Results containing the association information
+        """
+        kwargs = {
+            "AllocationId": args.get("allocation_id"),
+            "InstanceId": args.get("instance_id"),
+            "NetworkInterfaceId": args.get("network_interface_id"),
+            "PrivateIpAddress": args.get("private_ip_address"),
+            "AllowReassociation": arg_to_bool_or_none(args.get("allow_reassociation")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Associating address with parameters: {kwargs}")
+
+        response = client.associate_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Build output data
+        output_data = {
+            "AllocationId": args.get("allocation_id"),
+            "AssociationId": response.get("AssociationId"),
+        }
+        output_data = remove_empty_elements(output_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ElasticIPs",
+            outputs_key_field="AllocationId",
+            outputs=output_data,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Elastic IP Association",
+                output_data,
+                headers=["AllocationId", "AssociationId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def disassociate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Disassociates an Elastic IP address from the instance or network interface it's associated with.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - association_id (str): The association ID (required for VPC)
+        Returns:
+            CommandResults: Results of the disassociation operation
+        """
+        kwargs = {"AssociationId": args.get("association_id")}
+
+        print_debug_logs(client, f"Disassociating address with parameters: {kwargs}")
+
+        response = client.disassociate_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully disassociated Elastic IP address (Association ID: {args.get('association_id')})",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def release_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Releases the specified Elastic IP address.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - allocation_id (str): The allocation ID (required for VPC)
+                - network_border_group (str, optional): The set of Availability Zones, Local Zones, or Wavelength Zones
+
+        Returns:
+            CommandResults: Results of the release operation
+        """
+        kwargs = {
+            "AllocationId": args.get("allocation_id"),
+            "NetworkBorderGroup": args.get("network_border_group"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Releasing address with parameters: {kwargs}")
+
+        response = client.release_address(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully released Elastic IP address (Allocation ID: {args.get('allocation_id')})",
+            raw_response=response,
+        )
+
+    @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
@@ -4502,6 +4758,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
+    "aws-ec2-addresses-describe": EC2.describe_addresses_command,
+    "aws-ec2-address-allocate": EC2.allocate_address_command,
+    "aws-ec2-address-associate": EC2.associate_address_command,
+    "aws-ec2-address-disassociate": EC2.disassociate_address_command,
+    "aws-ec2-address-release": EC2.release_address_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4548,6 +4809,11 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:GetIpamDiscoveredPublicAddresses",
     "ec2:CreateTags",
     "ec2:DeleteSecurityGroup",
+    "ec2:DescribeAddresses",
+    "ec2:AllocateAddress",
+    "ec2:AssociateAddress",
+    "ec2:DisassociateAddress",
+    "ec2:ReleaseAddress",
     "ec2:DescribeInstances",
     "ec2:DescribeSecurityGroups",
     "ec2:AuthorizeSecurityGroupEgress",

@@ -7863,6 +7863,372 @@ script:
       description: The ARN of the security group.
       type: string
 
+  - name: aws-ec2-addresses-describe
+    description: Describes one or more of your Elastic IP addresses.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: public_ips
+      description: "One or more Elastic IP addresses, separated by commas."
+      required: false
+      isArray: true
+    - name: allocation_ids
+      description: "One or more allocation IDs, separated by commas."
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.PublicIp
+      description: The Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The ID representing the allocation of the address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Domain
+      description: The network (vpc or standard).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.InstanceId
+      description: The ID of the instance the address is associated with (if any).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AssociationId
+      description: The ID representing the association of the address with an instance.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId
+      description: The ID of the AWS account that owns the network interface.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PrivateIpAddress
+      description: The private IP address associated with the Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PublicIpv4Pool
+      description: The ID of an address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkBorderGroup
+      description: The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIp
+      description: The customer-owned IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool
+      description: The ID of the customer-owned address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CarrierIp
+      description: The carrier IP address associated.
+      type: string
+
+  - name: aws-ec2-address-allocate
+    description: Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: address
+      description: The Elastic IP address to recover or an IPv4 address from an address pool.
+      required: false
+    - name: public_ipv4_pool
+      description: The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool.
+      required: false
+    - name: network_border_group
+      description: A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      required: false
+    - name: customer_owned_ipv4_pool
+      description: The ID of a customer-owned address pool.
+      required: false
+    - name: tag_specifications
+      description: "The tags to assign to the Elastic IP address. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.PublicIp
+      description: The Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The ID that represents the allocation of the Elastic IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.Domain
+      description: The network (vpc or standard).
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.PublicIpv4Pool
+      description: The ID of an address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.NetworkBorderGroup
+      description: The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIp
+      description: The customer-owned IP address.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool
+      description: The ID of the customer-owned address pool.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.CarrierIp
+      description: The carrier IP address.
+      type: string
+
+  - name: aws-ec2-address-associate
+    description: Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: allocation_id
+      description: The allocation ID.
+      required: true
+    - name: instance_id
+      description: The ID of the instance. The instance must have exactly one attached network interface.
+      required: false
+    - name: network_interface_id
+      description: The ID of the network interface.
+      required: false
+    - name: private_ip_address
+      description: The primary or secondary private IP address to associate with the Elastic IP address.
+      required: false
+    - name: allow_reassociation
+      description: Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: AWS.EC2.ElasticIPs.AllocationId
+      description: The allocation ID.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AssociationId
+      description: The ID that represents the association of the Elastic IP address with an instance.
+      type: string
+
+  - name: aws-ec2-address-disassociate
+    description: Disassociates an Elastic IP address from the instance or network interface it's associated with.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: association_id
+      description: The association ID. Required for VPC.
+      required: false
+
+  - name: aws-ec2-address-release
+    description: Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: allocation_id
+      description: The allocation ID. Required for VPC.
+      required: false
+    - name: network_border_group
+      description: The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
+      required: false
+
   isfetch: false
   runonce: false
   script: '-'
