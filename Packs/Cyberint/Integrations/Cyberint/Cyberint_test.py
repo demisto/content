@@ -775,7 +775,7 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     assert payload == {
         "alert_ref_ids": ["INT-123"],
         "data": {
-            "closureReason": "resolved",
+            "closure_reason": "resolved",
             "closure_reason_description": "Closed from XSOAR",
             "status": "closed",
         },
