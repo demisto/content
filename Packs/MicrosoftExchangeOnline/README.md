@@ -33,9 +33,10 @@ The [EWS Extension Online Powershell v2 integration](https://xsoar.pan.dev/docs/
 
 The [Security And Compliance V2](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2) enables you to:
 
-- This integration is planned for **deprecation** on **<DEPRECATION_DATE>**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For detailed list on commands and Playbooks replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2#permissions-and-authentication-setup)**.
 - manage the security of all your organization's emails, SharePoint sites, OneDrives, etc.
 - can perform actions (preview and delete) on emails.
+
+Note: This integration is planned for **deprecation** on **June 1, 2026**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For a detailed list on command replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2)**.
 
 ## EWS Permissions
 
