@@ -764,9 +764,10 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     }
 
     result = update_remote_system(client, args)
+    req = requests_mock.last_request
+
     assert result == "INT-123"
 
-    req = requests_mock.last_request
     assert req.method == "PUT"
     assert req.url == f"{BASE_URL}/api/v1/alerts/status"
 
@@ -774,10 +775,10 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     assert payload == {
         "alert_ref_ids": ["INT-123"],
         "data": {
-            "status": "closed",
             "closureReason": "resolved",
             "closure_reason_description": "Closed from XSOAR",
-        }
+            "status": "closed",
+        },
     }
 
 
