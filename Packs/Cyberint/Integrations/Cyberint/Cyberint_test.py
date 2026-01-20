@@ -766,8 +766,6 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     result = update_remote_system(client, args)
     req = requests_mock.last_request
 
-    assert result == "INT-123"
-
     assert req.method == "PUT"
     assert req.url == f"{BASE_URL}/api/v1/alerts/status"
 
@@ -780,6 +778,8 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
             "status": "closed",
         },
     }
+
+    assert result == "INT-123"
 
 
 def test_update_remote_system_status_closed_in_delta(requests_mock, client):
