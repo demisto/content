@@ -120,8 +120,6 @@ There is no input for this command.
 
 There is no context output for this command.
 
-#### Human Readable Output
-
 >### Docusign Consent URL
 >
 >[Click here to authorize]
