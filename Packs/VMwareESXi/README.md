@@ -20,7 +20,7 @@ VMware ESXi is a hypervisor that enables you to run multiple virtual machines on
 
 ## Data Collection
 
-### VMmare ESXi side
+### VMware ESXi side
 
 To forward ESXi logs to the collector, you must configure the syslog target and allow the traffic through the ESXi firewall.
 
