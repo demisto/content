@@ -2191,7 +2191,6 @@ script:
     - name: reason_for_export
       description: Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.
     - name: recipient_address
-      isArray: true
       description: Filters the results by the recipient's email address.
     outputs:
     - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
