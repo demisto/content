@@ -4760,7 +4760,6 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CDRProtectionStatus",
-        outputs_key_field="CloudVMs.ProtectionPercentage",
         outputs=outputs,
         raw_response={
             "vms_with_agents": response_vms_with_agents,
