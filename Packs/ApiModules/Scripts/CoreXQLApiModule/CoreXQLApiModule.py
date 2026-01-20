@@ -905,11 +905,6 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
     for query in xql_queries:
         query.pop("query_metadata", None)
 
-    # if extra_data:
-    #     headers = ["id", "name", "query_text", "description",
-    #                "content_global_id", "created_at", "created_by",
-    #                "modified_by", "is_private", "labels",
-    #                "modified_at", "created_by_pretty", "modified_by_pretty"]
     if not extra_data:
         # Aligning the context outputs to match the outputs where extra_data is selected
         for query in xql_queries:
