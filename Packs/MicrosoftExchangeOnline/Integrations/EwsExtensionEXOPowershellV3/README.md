@@ -787,7 +787,7 @@ Export quarantine messages.
 | force_conversion_to_mime | Specify whether to force conversion to MIME format.             | Optional |
 | password | Password to encrypt the exported file. Using this argument requires 'compress_output' argument to be set to true.                         | Optional |
 | reason_for_export | Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.                              | Optional |
-| recipient_address | Email address to send the exported message to.                  | Optional |
+| recipient_address | Filters the results by the recipient's email address.                  | Optional |
 
 #### Context Output
 
