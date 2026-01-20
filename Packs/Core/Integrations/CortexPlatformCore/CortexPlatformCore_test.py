@@ -9144,141 +9144,118 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
 
+def test_enhance_with_pb_details():
+    """
+    GIVEN:
+        - pb_id_to_data: A mapping of playbook IDs to their metadata (name and comment).
+        - playbook: A dictionary representing a playbook task, containing an 'id'.
+    WHEN:
+        - enhance_with_pb_details is called.
+    THEN:
+        - The playbook dictionary is updated with 'name' and 'description' from the metadata if the ID exists.
+    """
+    from CortexPlatformCore import enhance_with_pb_details
 
-from CortexPlatformCore import postprocess_case_resolution_statuses
-
-# --- Mock Data Consolidated from your Playbook Metadata ---
-MOCK_PLAYBOOK_METADATA = [
-    {
-        "id": "66f0c152-da92-4305-8689-f0c5c6321e08",
-        "name": "Test-2",
-        "comment": "test",
-        "inputs": [{"key": "test_input", "value": {"simple": "true"}}]
-    },
-    {
-        "id": "Containment Plan",
-        "name": "Containment Plan",
-        "comment": "This playbook handles the main containment actions...",
-        "inputs": [
-            {"key": "AutoContainment", "value": {"simple": "False"}},
-            {"key": "FileContainment", "value": {"simple": "True"}}
-        ]
-    },
-    {
-        "id": "IP Enrichment - External - Generic v2",
-        "name": "IP Enrichment - External - Generic v2",
-        "comment": "Enrich IP addresses using one or more integrations."
+    pb_id_to_data = {
+        "pb1": {"name": "Playbook 1", "comment": "Comment 1"},
+        "pb2": {"name": "Playbook 2", "comment": "Comment 2"}
     }
-]
+
+    # Case 1: ID exists in metadata
+    playbook1 = {"id": "pb1"}
+    enhance_with_pb_details(pb_id_to_data, playbook1)
+    assert playbook1["name"] == "Playbook 1"
+    assert playbook1["description"] == "Comment 1"
+
+    # Case 2: ID does not exist in metadata
+    playbook3 = {"id": "pb3", "name": "Original Name"}
+    enhance_with_pb_details(pb_id_to_data, playbook3)
+    assert playbook3["name"] == "Original Name"
+    assert "description" not in playbook3
 
 
-@pytest.fixture
-def mock_client(mocker):
-    client = mocker.Mock()
-    client.get_playbooks_metadata.return_value = MOCK_PLAYBOOK_METADATA
-    return client
-
-
-def test_postprocess_full_mapping_logic(mock_client):
+def test_postprocess_case_resolution_statuses(mocker):
     """
-    GIVEN: A client returning metadata for 'Containment Plan' and 'Test-2'.
-    WHEN: postprocess_case_resolution_statuses is called with tasks matching those IDs.
-    THEN: The tasks are enriched with the correct 'name' and 'description' (from comment).
+    GIVEN:
+        - A mocked client that returns playbook metadata.
+        - A response dictionary containing case tasks categorized by status.
+    WHEN:
+        - postprocess_case_resolution_statuses is called.
+    THEN:
+        - The tasks are correctly categorized, itemType is assigned, and playbook details are enhanced.
     """
+    from CortexPlatformCore import postprocess_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
+        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"}
+    ]
+
     response = {
         "done": {
-            "caseTasks": [
-                {"id": "Containment Plan", "status": "completed"},
-                {"id": "66f0c152-da92-4305-8689-f0c5c6321e08", "status": "completed"}
-            ]
+            "caseTasks": [{"id": "pb1", "taskName": "Task 1"}]
         },
-        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
-    }
-
-    result = postprocess_case_resolution_statuses(mock_client, response)
-
-    # Assertions
-    assert any(item["name"] == "Containment Plan" for item in result)
-    assert any(item["name"] == "Test-2" for item in result)
-
-
-def test_parent_playbook_enrichment(mock_client):
-    """
-    GIVEN: A pending task that belongs to the 'Containment Plan' parent.
-    WHEN: The results are post-processed.
-    THEN: The 'parentPlaybook' object is injected with the name 'Containment Plan'.
-    """
-    response = {
-        "done": {"caseTasks": []},
+        "inProgress": {
+            "caseTasks": [{"id": "pb2", "taskName": "Task 2"}]
+        },
         "pending": {
-            "caseTasks": [
-                {
-                    "id": "task_1",
-                    "name": "Manual Step",
-                    "parentdetails": {"id": "Containment Plan"}
-                }
-            ]
+            "caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]
         },
-        "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
+        "recommended": {
+            "caseTasks": [{"id": "pb4", "taskName": "Task 4"}]
+        }
     }
 
     result = postprocess_case_resolution_statuses(mock_client, response)
 
-    pending_item = result[0]
-    assert pending_item["parentPlaybook"]["name"] == "Containment Plan"
+    assert len(result) == 4
+
+    # Verify "done" category
+    done_task = next(item for item in result if item["category"] == "done")
+    assert done_task["itemType"] == "playbook"
+    assert done_task["name"] == "Enhanced PB 1"
+    assert done_task["description"] == "Enhanced Comment 1"
+
+    # Verify "inProgress" category
+    in_progress_task = next(item for item in result if item["category"] == "inProgress")
+    assert in_progress_task["itemType"] == "playbook"
+    assert in_progress_task["name"] == "Enhanced PB 2"
+
+    # Verify "pending" category
+    pending_task = next(item for item in result if item["category"] == "pending")
+    assert pending_task["itemType"] == "playbookTask"
+    assert "parentdetails" not in pending_task
+    assert pending_task["parentPlaybook"]["name"] == "Enhanced PB 1"
+
+    # Verify "recommended" category
+    recommended_task = next(item for item in result if item["category"] == "recommended")
+    assert recommended_task["itemType"] == "playbook"
+    assert "name" not in recommended_task  # pb4 not in metadata
 
 
-def test_flattening_and_category_assignment(mock_client):
+def test_get_case_resolution_statuses_command(mocker):
     """
-    GIVEN: A response with tasks in 'done' and 'pending' categories.
-    WHEN: The nested dictionary is processed.
-    THEN: The result is a flat list and each item has a 'category' key assigned.
+    GIVEN:
+        - A mocked client and arguments with case IDs.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The client is called for each case ID, and CommandResults are returned with correct structure.
     """
-    response = {
-        "done": {"caseTasks": [{"id": "Containment Plan"}]},
-        "pending": {"caseTasks": [{"id": "IP Enrichment - External - Generic v2"}]},
-        "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
-    }
+    from CortexPlatformCore import get_case_resolution_statuses
 
-    result = postprocess_case_resolution_statuses(mock_client, response)
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
+    mock_client.get_playbooks_metadata.return_value = []
 
-    assert len(result) == 2
-    assert result[0]["category"] == "done"
-    assert result[1]["category"] == "pending"
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
 
+    args = {"case_id": "123,456"}
+    result = get_case_resolution_statuses(mock_client, args)
 
-def test_metadata_input_consistency(mock_client):
-    """
-    GIVEN: Metadata containing specific inputs like 'AutoContainment'.
-    WHEN: The playbook details are resolved.
-    THEN: The system ensures the ID and associated metadata remain linked correctly.
-    """
-    response = {
-        "done": {"caseTasks": [{"id": "Containment Plan"}]},
-        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
-    }
-
-    result = postprocess_case_resolution_statuses(mock_client, response)
-
-    # Verify that we can still identify the playbook to access its inputs if needed
-    target = next(item for item in result if item["id"] == "Containment Plan")
-    assert target["itemType"] == "playbook"
-
-
-def test_graceful_handling_of_missing_metadata(mocker):
-    """
-    GIVEN: A task ID that does not exist in the playbook metadata.
-    WHEN: The enrichment function is called.
-    THEN: The code does not crash and uses the ID as a fallback name.
-    """
-    mock_client_empty = mocker.Mock()
-    mock_client_empty.get_playbooks_metadata.return_value = []
-
-    response = {
-        "done": {"caseTasks": [{"id": "Missing-ID", "status": "completed"}]},
-        "pending": {"caseTasks": []}, "inProgress": {"caseTasks": []}, "recommended": {"caseTasks": []}
-    }
-
-    result = postprocess_case_resolution_statuses(mock_client_empty, response)
-
-    assert result[0]["name"] == "Missing-ID"
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Core.CaseResolutionStatus"
+    assert len(result.outputs) == 2
+    assert len(result.raw_response) == 2
+    assert mock_client.get_case_resolution_statuses.call_count == 2
