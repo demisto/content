@@ -341,15 +341,13 @@ script:
       description: Sandbox environment used for analysis.
       name: environment_id
       predefined:
-      - '310: Linux Ubuntu 20'
-      - 64-bit
+      - '400: MacOS Catalina 10.15'
+      - '310: Linux Ubuntu 20, 64-bit'
       - '200: Android (static analysis)'
-      - '160: Windows 10'
-      - 64-bit
-      - '110: Windows 7'
-      - 64-bit
-      - '100: Windows 7'
-      - 32-bit
+      - '160: Windows 10, 64-bit'
+      - '140: Windows 11, 64-bit'
+      - '110: Windows 7, 64-bit'
+      - '100: Windows 7, 32-bit'
     - auto: PREDEFINED
       description: Runtime script for sandbox analysis.
       name: action_script
@@ -364,8 +362,9 @@ script:
     - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       name: document_password
     - auto: PREDEFINED
-      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR.
+      description: Deprecated, please use network_settings instead.
       name: enable_tor
+      deprecated: true
       predefined:
       - 'true'
       - 'false'
@@ -394,6 +393,21 @@ script:
       name: interval_in_seconds
     - description: Sets a custom time for the sandbox environment in the format HH:mm.
       name: system_time
+    - name: network_settings
+      required: false
+      description: |
+        Specifies the sandbox network configuration used for analysis.
+        Possible values are:
+        - default: Fully operating network (default behavior if not specified).
+        - tor: Route network traffic via TOR.
+        - simulated: Simulate network traffic.
+        - offline: Disable all network traffic.
+      auto: PREDEFINED
+      predefined:
+        - default
+        - tor
+        - simulated
+        - offline
     polling: true
     description: Submits a sample SHA256 hash for sandbox analysis.
     name: cs-fx-submit-uploaded-file
@@ -1443,15 +1457,13 @@ script:
       name: environment_id
       auto: PREDEFINED
       predefined:
-      - '310: Linux Ubuntu 20'
-      - 64-bit
+      - '400: MacOS Catalina 10.15'
+      - '310: Linux Ubuntu 20, 64-bit'
       - '200: Android (static analysis)'
-      - '160: Windows 10'
-      - 64-bit
-      - '110: Windows 7'
-      - 64-bit
-      - '100: Windows 7'
-      - 32-bit
+      - '160: Windows 10, 64-bit'
+      - '140: Windows 11, 64-bit'
+      - '110: Windows 7, 64-bit'
+      - '100: Windows 7, 32-bit'
     - description: |-
         Runtime script for sandbox analysis. Values:
         default
@@ -1466,7 +1478,8 @@ script:
       name: document_password
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.
+      description: Deprecated, please use network_settings instead.
+      deprecated: true
       name: enable_tor
       predefined:
       - 'false'
@@ -1496,6 +1509,21 @@ script:
       name: ids
     - description: Sets a custom time for the sandbox environment in the format HH:mm.
       name: system_time
+    - name: network_settings
+      required: false
+      description: |
+        Specifies the sandbox network configuration used for analysis.
+        Possible values are:
+        - default: Fully operating network (default behavior if not specified).
+        - tor: Route network traffic via TOR.
+        - simulated: Simulate network traffic.
+        - offline: Disable all network traffic.
+      auto: PREDEFINED
+      predefined:
+        - default
+        - tor
+        - simulated
+        - offline
     description: Submits a URL or FTP for sandbox analysis.
     name: cs-fx-submit-url
     polling: true
