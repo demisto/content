@@ -8330,3 +8330,93 @@ def test_fetch_detections_by_product_type_builds_grouped_filter(
     )
 
     assert get_detections_ids_mocker.call_args[1]["filter_arg"] == expected_filter
+
+
+def test_fetch_items_includes_recon_notifications(mocker):
+    """
+    Given:
+        - fetch_incidents_or_detections includes "Recon notifications"
+    When:
+        - fetch_items is called
+    Then:
+        - Ensure recon notifications returned by fetch_recon_incidents are included in the result items
+    """
+    from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
+
+    # Mock params
+    mocker.patch.object(demisto, "params", return_value={
+        "fetch_incidents_or_detections": ["Recon notifications"],
+        "look_back": 3
+    })
+
+    # Mock getLastRun
+    mocker.patch.object(demisto, "getLastRun", return_value=[{} for _ in range(TOTAL_FETCH_TYPE_XSOAR)])
+
+    # Mock fetch_recon_incidents
+    mock_recon_incidents = [{"name": "Recon Incident 1"}]
+    mocker.patch("CrowdStrikeFalcon.fetch_recon_incidents", return_value=(mock_recon_incidents, {}))
+
+    # Mock other fetch functions to return empty lists to isolate recon
+    mocker.patch("CrowdStrikeFalcon.fetch_endpoint_detections", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_endpoint_incidents", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_detections_by_product_type", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_iom_incidents", return_value=([], {}))
+    mocker.patch("CrowdStrikeFalcon.fetch_ioa_incidents", return_value=([], {}))
+
+    # Mock setLastRun
+    mocker.patch.object(demisto, "setLastRun")
+
+    _, items = fetch_items(command="fetch-incidents")
+
+    assert items == mock_recon_incidents
+
+
+def test_get_current_fetch_data_recon_time(mocker):
+    """
+    Given:
+        - next_token_key is "recon_offset"
+    When:
+        - get_current_fetch_data is called
+    Then:
+        - Ensure reformat_timestamp is called with time="3 months"
+    """
+    from CrowdStrikeFalcon import get_current_fetch_data
+
+    mock_reformat = mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+
+    last_run = {}
+    get_current_fetch_data(
+        last_run_object=last_run,
+        date_format="%Y-%m-%dT%H:%M:%SZ",
+        last_date_key="last_created_date",
+        next_token_key="recon_offset",
+        last_fetched_ids_key="last_resource_ids"
+    )
+
+    assert mock_reformat.call_args.kwargs["time"] == "3 days"
+
+
+def test_get_current_fetch_data_default_time(mocker):
+    """
+    Given:
+        - next_token_key is NOT "recon_offset" (e.g. "offset")
+    When:
+        - get_current_fetch_data is called
+    Then:
+        - Ensure reformat_timestamp is called with FETCH_TIME (mocked)
+    """
+    from CrowdStrikeFalcon import get_current_fetch_data
+
+    mock_reformat = mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
+    mocker.patch("CrowdStrikeFalcon.FETCH_TIME", "3 days")
+
+    last_run = {}
+    get_current_fetch_data(
+        last_run_object=last_run,
+        date_format="%Y-%m-%dT%H:%M:%SZ",
+        last_date_key="last_created_date",
+        next_token_key="offset",
+        last_fetched_ids_key="last_resource_ids"
+    )
+
+    assert mock_reformat.call_args.kwargs["time"] == "3 days"
