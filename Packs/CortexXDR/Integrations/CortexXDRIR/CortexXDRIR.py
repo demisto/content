@@ -50,7 +50,7 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
-BIOC_SEVERITY_MAPPING = {
+BIOC_AND_CR_SEVERITY_MAPPING = {
     "info": "SEV_010_INFO",
     "low": "SEV_020_LOW",
     "medium": "SEV_030_MEDIUM",
@@ -540,8 +540,6 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/bioc/delete",
             json_data=request_data,
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return reply
 
@@ -549,9 +547,7 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/get/",
-            json_data={"request_data": {"search_from": 0, "search_to": 100}},
-            headers=self.headers,
-            timeout=self.timeout,
+            json_data=request_data,
         )
         return reply.get("reply", {})
 
@@ -559,19 +555,15 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/insert",
-            json_data={"request_data": request_data},
-            headers=self.headers,
-            timeout=self.timeout,
+            json_data=request_data,
         )
-        return reply.get("reply", {})
+        return reply
 
     def delete_correlation_rules(self, request_data: dict):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/delete",
             json_data={"request_data": request_data},
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return reply.get("reply", {})
 
@@ -1478,12 +1470,21 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
-def create_filters_for_bioc(args: dict) -> list:
+def create_filters_for_bioc_and_correlation_rules(args: dict) -> list:
+    """
+    Creates a list of filters for BIOC and correlation rules based on the provided arguments.
+
+    Args:
+        args (dict): The command arguments containing filter criteria.
+
+    Returns:
+        list: A list of filter dictionaries compatible with the Cortex XDR API.
+    """
     filters = []
     if name := args.get("name"):
         filters.append({"field": "name", "operator": "EQ", "value": name})
     if severity := args.get("severity"):
-        filters.append({"field": "severity", "operator": "EQ", "value": BIOC_SEVERITY_MAPPING.get(severity, severity)})
+        filters.append({"field": "severity", "operator": "EQ", "value": BIOC_AND_CR_SEVERITY_MAPPING.get(severity, severity)})
     if bioc_type := args.get("type"):
         filters.append({"field": "type", "operator": "EQ", "value": bioc_type})
     if is_xql := args.get("is_xql"):
@@ -1498,6 +1499,52 @@ def create_filters_for_bioc(args: dict) -> list:
         filters.append({"field": "mitre_technique_id_and_name", "operator": "EQ", "value": mitre_technique})
     if mitre_tactic := argToList(args.get("mitre_tactic_id_and_name")):
         filters.append({"field": "mitre_tactic_id_and_name", "operator": "EQ", "value": mitre_tactic})
+    if xql_query := args.get("xql_query"):
+        filters.append({"field": "xql_query", "operator": "EQ", "value": xql_query})
+    if is_enabled := args.get("is_enabled"):
+        filters.append({"field": "is_enabled", "operator": "EQ", "value": argToBoolean(is_enabled)})
+    if description := args.get("description"):
+        filters.append({"field": "description", "operator": "EQ", "value": description})
+    if alert_name := args.get("alert_name"):
+        filters.append({"field": "alert_name", "operator": "EQ", "value": alert_name})
+    if alert_category := args.get("alert_category"):
+        filters.append({"field": "alert_category", "operator": "EQ", "value": alert_category})
+    if alert_description := args.get("alert_description"):
+        filters.append({"field": "alert_description", "operator": "EQ", "value": alert_description})
+    if alert_fields := argToList(args.get("alert_fields")):
+        filters.append({"field": "alert_fields", "operator": "EQ", "value": alert_fields})
+    if execution_mode := args.get("execution_mode"):
+        filters.append({"field": "execution_mode", "operator": "EQ", "value": execution_mode})
+    if search_window := args.get("search_window"):
+        filters.append({"field": "search_window", "operator": "EQ", "value": search_window})
+    if simple_schedule := args.get("schedule"):
+        filters.append({"field": "schedule", "operator": "EQ", "value": simple_schedule})
+    if timezone := args.get("timezone"):
+        filters.append({"field": "timezone", "operator": "EQ", "value": timezone})
+    if crontab := args.get("schedule_linux"):
+        filters.append({"field": "schedule_linux", "operator": "EQ", "value": crontab})
+    if suppression_enabled := args.get("suppression_enabled"):
+        filters.append({"field": "suppression_enabled", "operator": "EQ", "value": argToBoolean(suppression_enabled)})
+    if suppression_duration := args.get("suppression_duration"):
+        filters.append({"field": "suppression_duration", "operator": "EQ", "value": suppression_duration})
+    if suppression_fields := args.get("suppression_fields"):
+        filters.append({"field": "suppression_fields", "operator": "EQ", "value": suppression_fields})
+    if dataset := args.get("dataset"):
+        filters.append({"field": "dataset", "operator": "EQ", "value": dataset})
+    if user_defined_severity := args.get("user_defined_severity"):
+        filters.append({"field": "user_defined_severity", "operator": "EQ", "value": user_defined_severity})
+    if user_defined_category := args.get("user_defined_category"):
+        filters.append({"field": "user_defined_category", "operator": "EQ", "value": user_defined_category})
+    if mitre_defs := args.get("mitre_defs_json"):
+        filters.append({"field": "mitre_defs", "operator": "EQ", "value": json.loads(mitre_defs)})
+    if investigation_query_link := args.get("investigation_query_link"):
+        filters.append({"field": "investigation_query_link", "operator": "EQ", "value": investigation_query_link})
+    if drilldown_query_timeframe := args.get("drilldown_query_timeframe"):
+        filters.append({"field": "drilldown_query_timeframe", "operator": "EQ", "value": drilldown_query_timeframe})
+    if mapping_strategy := args.get("mapping_strategy"):
+        filters.append({"field": "mapping_strategy", "operator": "EQ", "value": mapping_strategy})
+    if alert_domain := args.get("alert_domain"):
+        filters.append({"field": "alert_domain", "operator": "EQ", "value": alert_domain})
     return filters
 
 
@@ -1511,7 +1558,7 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    filters = create_filters_for_bioc(args)
+    filters = create_filters_for_bioc_and_correlation_rules(args)
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
@@ -1543,7 +1590,7 @@ def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
     bioc_data = assign_params(
         rule_id=args.get("rule_id"),  # for update only
         name=args.get("name"),
-        severity=BIOC_SEVERITY_MAPPING.get(args.get("severity")),
+        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
         type=args.get("type"),
         is_xql=argToBoolean(args.get("is_xql", False)),
         comment=args.get("comment"),
@@ -1626,7 +1673,7 @@ def bioc_delete_command(client: Client, args: Dict) -> str:
     Returns:
         str: Success message.
     """
-    filters: list = create_filters_for_bioc(args)
+    filters: list = create_filters_for_bioc_and_correlation_rules(args)
     request_data = {"request_data": {"filters": filters}}
     res = client.delete_biocs(request_data)
     rule_ids = res.get("objects", [])
@@ -1652,19 +1699,9 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    filters = assign_params(
-        name=args.get("name"),
-        severity=args.get("severity"),
-        xql_query=args.get("xql_query"),
-        is_xql=argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
-        dataset=args.get("dataset"),
-        alert_name=args.get("alert_name"),
-        alert_category=args.get("alert_category"),
-        alert_fields=argToList(args.get("alert_fields")),
-        alet_domain=args.get("alert_domain"),
-    )
+    filters = create_filters_for_bioc_and_correlation_rules(args)
     if filter_json := args.get("filter_json"):
-        filters.update(json.loads(filter_json))
+        filters.extend(json.loads(filter_json))
 
     request_data = assign_params(
         filters=filters,
@@ -1672,10 +1709,13 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
         search_from=arg_to_number(args.get("page")),
         search_to=arg_to_number(args.get("limit")),
     )
-    reply = client.get_correlation_rules(request_data)
+    reply = client.get_correlation_rules({"request_data": request_data})
     rules = reply.get("objects", [])
-    readable_output = tableToMarkdown(
-        name="Correlation Rules", t=rules, headers=["id", "name", "description", "is_enabled"], removeNull=True
+    readable_output = tableToMarkdown(name="Correlation Rules List",
+                                      t=rules,
+                                      headers=["id", "name", "description", "is_enabled"],
+                                      removeNull=True,
+                                      headerTransform=string_to_table_header,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1688,6 +1728,7 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
 
 def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
     Creates a new correlation rule.
     Args:
         client (Client): The client to use.
@@ -1697,19 +1738,20 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
     """
     rule_data = assign_params(
         name=args.get("name"),
-        severity=args.get("severity"),
+        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
         xql_query=args.get("xql_query"),
         is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
         description=args.get("description"),
         alert_name=args.get("alert_name"),
-        alert_category=args.get("alert_category"),
+        action="ALERTS",
+        alert_category=args.get("alert_category").upper() if args.get("alert_category") else None,
         alert_description=args.get("alert_description"),
         alert_fields=args.get("alert_fields"),
-        execution_mode=args.get("execution_mode"),
+        execution_mode=args.get("execution_mode").upper() if args.get("execution_mode") else None,
         search_window=args.get("search_window"),
-        schedule=args.get("schedule"),
-        schedule_linux=args.get("schedule_linux"),
+        crontab=args.get("schedule_linux"),
         timezone=args.get("timezone"),
+        simple_schedule=args.get("schedule"),
         suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
         suppression_duration=args.get("suppression_duration"),
         suppression_fields=args.get("suppression_fields"),
@@ -1718,12 +1760,30 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         user_defined_category=args.get("user_defined_category"),
         investigation_query_link=args.get("investigation_query_link"),
         drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
-        mapping_strategy=args.get("mapping_strategy"),
+        mapping_strategy=args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
     )
-    if mitre_defs_json := args.get("mitre_defs_json"):
-        rule_data["mitre_defs"] = json.loads(mitre_defs_json)
 
-    reply = client.insert_correlation_rules(rule_data)
+    required_fields = [
+        "dataset", "investigation_query_link", "user_defined_severity",
+        "simple_schedule", "suppression_duration", "suppression_fields",
+        "drilldown_query_timeframe", "timezone", "user_defined_category", "crontab"
+    ]
+
+    for field in required_fields:
+        if field not in rule_data:
+            rule_data[field] = ""
+
+    mitre_defs_json = args.get("mitre_defs_json") or "{}"
+    rule_data["mitre_defs"] = json.loads(mitre_defs_json)
+
+    alert_fields_json = args.get("alert_fields") or "{}"
+    rule_data["alert_fields"] = json.loads(alert_fields_json)
+
+    # If dataset is missing in args, send explicit empty string instead of letting it be removed
+    if "dataset" not in rule_data:
+        rule_data["dataset"] = ""
+
+    reply = client.insert_correlation_rules({"request_data": [rule_data]})
     return CommandResults(
         readable_output="Correlation rule created successfully.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
@@ -1754,8 +1814,8 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
         alert_fields=args.get("alert_fields"),
         execution_mode=args.get("execution_mode"),
         search_window=args.get("search_window"),
-        schedule=args.get("schedule"),
-        schedule_linux=args.get("schedule_linux"),
+        simple_schedule=args.get("schedule"),
+        crontab=args.get("schedule_linux"),
         timezone=args.get("timezone"),
         suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
         suppression_duration=args.get("suppression_duration"),

@@ -4185,7 +4185,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Dataset.
+    - description: Correlation rule dataset.
       name: dataset
     - description: Alert name.
       name: alert_name
@@ -4226,10 +4226,9 @@ script:
       description: Whether the correlation rule is enabled.
       type: Boolean
   - arguments:
-    - description: Correlation rule ID.
-      name: rule_id
     - description: Correlation rule name.
       name: name
+      required: true
     - auto: PREDEFINED
       description: Correlation rule severity.
       name: severity
@@ -4241,7 +4240,7 @@ script:
     - description: Correlation rule XQL query.
       name: xql_query
     - auto: PREDEFINED
-      description: Whether the correlation rule is enabled.
+      description: Whether the correlation rule is enabled or disabled.
       name: is_enabled
       predefined:
       - 'true'
@@ -4275,43 +4274,43 @@ script:
     - description: Alert fields.
       name: alert_fields
     - auto: PREDEFINED
-      description: Execution mode.
+      description: Whether execution mode is scheduled or real time.
       name: execution_mode
       predefined:
       - scheduled
       - real_time
-    - description: Search window.
+    - description: Amount of time for search window.
       name: search_window
-    - description: Simple schedule.
+    - description: Correlation rule schedule.
       name: schedule
-    - description: Crontab schedule.
+    - description: Linux scheduling for correlation rule.
       name: schedule_linux
-    - description: Timezone.
+    - description: Correlation rule timezone.
       name: timezone
     - auto: PREDEFINED
-      description: Whether suppression is enabled.
+      description: Whether suppression is enabled for correlation rule.
       name: suppression_enabled
       predefined:
       - 'true'
       - 'false'
-    - description: Suppression duration.
+    - description: Duration of correlation rule suppression.
       name: suppression_duration
-    - description: Suppression fields.
+    - description: Suppration fields.
       name: suppression_fields
-    - description: Dataset.
+    - description: Correlation rule dataset.
       name: dataset
-    - description: User defined severity.
+    - description: User-defined severity.
       name: user_defined_severity
-    - description: User defined category.
+    - description: User-defined category.
       name: user_defined_category
-    - description: MITRE definitions JSON.
+    - description: MITRE definitions.
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: Drilldown query timeframe.
+    - description: Whether the drilldown query timeframe is query or alert.
       name: drilldown_query_timeframe
     - auto: PREDEFINED
-      description: Mapping strategy.
+      description: Whether the mapping strategy is auto or custom.
       name: mapping_strategy
       predefined:
       - auto
@@ -4347,7 +4346,7 @@ script:
     - description: Correlation rule XQL query.
       name: xql_query
     - auto: PREDEFINED
-      description: Whether the correlation rule is enabled.
+      description: Whether the correlation rule is enabled or disabled.
       name: is_enabled
       predefined:
       - 'true'
@@ -4381,43 +4380,43 @@ script:
     - description: Alert fields.
       name: alert_fields
     - auto: PREDEFINED
-      description: Execution mode.
+      description: Whether execution mode is scheduled or real time.
       name: execution_mode
       predefined:
       - scheduled
       - real_time
-    - description: Search window.
+    - description: Amount of time for search window.
       name: search_window
-    - description: Simple schedule.
+    - description: Correlation rule schedule.
       name: schedule
-    - description: Crontab schedule.
+    - description: Linux scheduling for correlation rule.
       name: schedule_linux
-    - description: Timezone.
+    - description: Correlation rule timezone.
       name: timezone
     - auto: PREDEFINED
-      description: Whether suppression is enabled.
+      description: Whether suppression is enabled for correlation rule.
       name: suppression_enabled
       predefined:
       - 'true'
       - 'false'
-    - description: Suppression duration.
+    - description: Duration of correlation rule suppression.
       name: suppression_duration
-    - description: Suppression fields.
+    - description: Suppration fields.
       name: suppression_fields
-    - description: Dataset.
+    - description: Correlation rule dataset.
       name: dataset
-    - description: User defined severity.
+    - description: User-defined severity.
       name: user_defined_severity
-    - description: User defined category.
+    - description: User-defined category.
       name: user_defined_category
-    - description: MITRE definitions JSON.
+    - description: MITRE definitions.
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: Drilldown query timeframe.
+    - description: Whether the drilldown query timeframe is query or alert.
       name: drilldown_query_timeframe
     - auto: PREDEFINED
-      description: Mapping strategy.
+      description: Whether the mapping strategy is auto or custom.
       name: mapping_strategy
       predefined:
       - auto
