@@ -2446,6 +2446,7 @@ def test_api_key_delete_command(requests_mock):
 
     assert response.readable_output == "API Keys deleted successfully."
 
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_name_generation(mocker):
     """
