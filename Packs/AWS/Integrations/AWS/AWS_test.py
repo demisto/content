@@ -7409,29 +7409,22 @@ def test_ec2_image_available_waiter_command_with_filters(mocker):
     assert "Filters" in call_args
 
 
-def test_ec2_image_available_waiter_command_client_error(mocker):
+def test_ec2_image_available_waiter_command_waiter_error(mocker):
     """
-    Given: A mocked boto3 EC2 client that raises ClientError during wait.
+    Given: A mocked boto3 EC2 client that raises Exception during wait.
     When: image_available_waiter_command encounters an error.
-    Then: It should call AWSErrorHandler.handle_client_error.
+    Then: It should raise DemistoException with waiter error message.
     """
     from AWS import EC2
-    from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
     mock_waiter = mocker.Mock()
     mock_client.get_waiter.return_value = mock_waiter
 
-    error_response = {
-        "Error": {"Code": "InvalidAMIID.NotFound", "Message": "The image id '[ami-invalid]' does not exist"},
-        "ResponseMetadata": {"HTTPStatusCode": 400},
-    }
-    client_error = ClientError(error_response, "DescribeImages")
-    mock_waiter.wait.side_effect = client_error
-
-    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
+    error_message = "Waiter image_available failed: Max attempts exceeded"
+    mock_waiter.wait.side_effect = Exception(error_message)
 
     args = {"image_ids": "ami-invalid"}
 
-    EC2.image_available_waiter_command(mock_client, args)
-    mock_error_handler.assert_called_once_with(client_error, None)
+    with pytest.raises(DemistoException, match="Waiter error:"):
+        EC2.image_available_waiter_command(mock_client, args)
