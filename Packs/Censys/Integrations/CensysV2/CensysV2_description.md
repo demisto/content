@@ -1,4 +1,4 @@
-## How to Obtain Authentication Parameters
+## Obtain Authentication Parameters
 
 To successfully connect to the Censys Platform API v3, the integration requires a Personal Access Token (PAT) and an Organization ID.
 
@@ -16,8 +16,8 @@ To successfully connect to the Censys Platform API v3, the integration requires 
 
 ## Rate limit
 
-Censys rate limits vary depending on your subscription tier. For unauthenticated clients, the limit is 10 queries per day. Authenticated users have variable limits based on their pricing plan. For more details, visit the [Censys Subscriptions](https://search.censys.io/subscriptions) page.
+Censys rate limits to 10 queries a day per IP for unauthenticated clients, and variable numbers per day depending on your pricing tier. <https://search.censys.io/subscriptions>
 
 ## IP reputation command
 
-Censys provides reputation data through labels. In the v3 API, labels are returned by default for customers with the appropriate account permissions. The integration uses these labels to determine the reputation of an IP address.
+Censys API provides reputation data exclusively to paying customers. When set to True, the integration will use labels to determinate reputation on IPs.

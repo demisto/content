@@ -230,13 +230,30 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
         censys_search_with_pagination(client, query, fields=fields, limit=1)
         return "ok"
     except DemistoException as e:
-        # Handle permission error for non-premium users attempting to access premium features
-        if e.res is not None and e.res.status_code == 403 and "specific fields" in e.message:
-            raise DemistoException(
-                "Your user does not have permission for premium features (v3 API). "
-                "Please ensure that you deselect the 'Determine IP score by label' option "
-                "for non-premium access."
-            )
+        if e.res is not None:
+            if e.res.status_code == 401:
+                raise DemistoException(
+                    "401 Unauthorized: Access credentials are invalid. "
+                    "Please verify your 'API Token' in the integration configuration."
+                )
+            if e.res.status_code == 403:
+                # Handle permission error for non-premium users attempting to access premium features
+                if "specific fields" in e.message:
+                    raise DemistoException(
+                        "Your user does not have permission for premium features (v3 API). "
+                        "Please ensure that you deselect the 'Determine IP score by label' option "
+                        "for non-premium access."
+                    )
+                # Handle organization authorization error
+                raise DemistoException(
+                    "403 Forbidden: The provided Organization ID is incorrect or the user is not authorized to access it. "
+                    "Please verify your 'Organization ID' in the integration configuration."
+                )
+            # Handle organization ID format error
+            if e.res.status_code == 422:
+                raise DemistoException(
+                    "422 Unprocessable Entity: The provided Organization ID is malformed. " "Please ensure it is a valid UUID."
+                )
         raise e
 
 
@@ -260,9 +277,18 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
         lat = demisto.get(resource, "location.coordinates.latitude")
         lon = demisto.get(resource, "location.coordinates.longitude")
 
+        params = demisto.params()
+        labels = list({label.get("value") for label in resource.get("labels", [])})
+        dbot_score = Common.DBotScore(
+            indicator=query,
+            indicator_type=DBotScoreType.IP,
+            integration_name="Censys",
+            score=get_dbot_score(params, labels),
+            reliability=params.get("integration_reliability"),
+        )
         indicator = Common.IP(
             ip=query,
-            dbot_score=Common.DBotScore(indicator=query, indicator_type=DBotScoreType.IP, score=Common.DBotScore.NONE),
+            dbot_score=dbot_score,
             asn=demisto.get(resource, "autonomous_system.asn"),
             geo_latitude=str(lat) if lat else None,
             geo_longitude=str(lon) if lon else None,
@@ -278,7 +304,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
             "Protocols": ", ".join(
                 [f"{service.get('port')}/{service.get('protocol')}" for service in resource.get("services", [])]
             ),
-            "Last Updated": demisto.get(resource, "whois.network.updated"),
+            "Whois Last Updated": demisto.get(resource, "whois.network.updated"),
         }
         human_readable = tableToMarkdown(f"Information for IP {query}", hr_content, removeNull=True)
         return CommandResults(
@@ -423,7 +449,7 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
 def ip_command(client: Client, args: dict, params: dict):
     fields = (
         [
-            "host.services.labels.value",
+            "host.labels.value",
             "host.ip",
             "host.autonomous_system.asn",
             "host.autonomous_system.name",
@@ -461,7 +487,7 @@ def ip_command(client: Client, args: dict, params: dict):
 
     try:
         # Build query for all IPs
-        query = " or ".join([f'host.ip:"{ip_addr}"' for ip_addr in ips])
+        query = " or ".join([f'host.ip="{ip_addr}"' for ip_addr in ips])
 
         # Send all IPs in a single API call with pagination
         raw_response = censys_search_with_pagination(client, query, fields=fields)
@@ -475,12 +501,12 @@ def ip_command(client: Client, args: dict, params: dict):
             # Extract resource from host_v1 wrapper
             resource = demisto.get(hit, "host_v1.resource", {})
             ip = resource.get("ip")
-
+            labels = list({label.get("value") for label in resource.get("labels", [])})
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name="Censys",
-                score=get_dbot_score(params, resource.get("labels", [])),
+                score=get_dbot_score(params, labels),
                 reliability=params.get("integration_reliability"),
             )
             content = {
@@ -493,13 +519,22 @@ def ip_command(client: Client, args: dict, params: dict):
                 "port": ", ".join([str(service.get("port")) for service in resource.get("services", [])]),
             }
             indicator = Common.IP(dbot_score=dbot_score, **content)
-            content["reputation"] = dbot_score.score
+
+            hr_content = {
+                **content,
+                "labels": ", ".join(labels),
+                "score": dbot_score.score,
+            }
+
             results.append(
                 CommandResults(
                     outputs_prefix="Censys.IP",
                     outputs_key_field="ip",
                     readable_output=tableToMarkdown(
-                        f"censys results for IP: {ip}", content, headerTransform=string_to_table_header, removeNull=True
+                        f"censys results for IP: {ip}",
+                        hr_content,
+                        headerTransform=string_to_table_header,
+                        removeNull=True,
                     ),
                     outputs=resource,
                     raw_response=raw_response,
@@ -575,12 +610,18 @@ def domain_command(client: Client, args: dict, params: dict):
                 )
                 for hit in hits_for_domain
             ]
-            result_labels = [labels_obj.get("value") for labels_obj in resource.get("labels", []) if "value" in labels_obj]
+            # Collect all labels from all hits for this domain
+            all_labels = []
+            for res in resources:
+                all_labels.extend([label.get("value") for label in res.get("labels", [])])
+            all_labels = list(set(all_labels))
+
             dbot_score = Common.DBotScore(
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name="Censys",
-                score=get_dbot_score(params, result_labels),
+                score=get_dbot_score(params, all_labels),
+                reliability=params.get("integration_reliability"),
             )
             indicator = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
@@ -590,7 +631,11 @@ def domain_command(client: Client, args: dict, params: dict):
                     outputs_key_field="Domain",
                     readable_output=tableToMarkdown(
                         f"Censys results for Domain: {domain}",
-                        {"domain": domain},
+                        {
+                            "domain": domain,
+                            "labels": ", ".join(all_labels),
+                            "score": dbot_score.score,
+                        },
                         headerTransform=string_to_table_header,
                         removeNull=True,
                     ),

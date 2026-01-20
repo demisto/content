@@ -176,6 +176,7 @@ def test_domain_command(client, requests_mock):
     result = results[0]
     assert result.outputs_prefix == "Censys.Domain"
     assert result.indicator.domain == "facebook.com"  # type: ignore
+    assert result.indicator.dbot_score.score == Common.DBotScore.NONE
     assert len(result.relationships) > 0  # type: ignore
 
 
@@ -244,7 +245,7 @@ def test_censys_search_with_pagination_remaining(client, requests_mock):
             },
             {
                 "json": {
-                    "result": {"hits": [{"host_v1": {"resource": {"ip": "2.1.1.1"}}}], "total_hits": 2, "next_page_token": ""}
+                    "result": {"hits": [{"host_v1": {"resource": {"ip": "8.8.8.8"}}}], "total_hits": 2, "next_page_token": ""}
                 }
             },
         ],
@@ -422,6 +423,63 @@ def test_test_module_premium_permission_error(client, requests_mock):
         json={"error": "Your query contains specific fields that require premium access"},
     )
     with pytest.raises(DemistoException, match="Your user does not have permission for premium features"):
+        censys_test_module(client, params)
+
+
+def test_test_module_unauthorized_error(client, requests_mock):
+    """
+    Given:
+        - A 401 error during test-module.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure a descriptive DemistoException is raised.
+    """
+    params = {"premium_access": False}
+    requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query",
+        status_code=401,
+        json={"error": {"code": 401, "status": "Unauthorized", "message": "Access credentials are invalid"}},
+    )
+    with pytest.raises(DemistoException, match="401 Unauthorized: Access credentials are invalid"):
+        censys_test_module(client, params)
+
+
+def test_test_module_forbidden_error(client, requests_mock):
+    """
+    Given:
+        - A 403 error (not premium) during test-module.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure a descriptive DemistoException is raised.
+    """
+    params = {"premium_access": False}
+    requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query",
+        status_code=403,
+        json={"error": "Forbidden"},
+    )
+    with pytest.raises(DemistoException, match="403 Forbidden: The provided Organization ID is incorrect"):
+        censys_test_module(client, params)
+
+
+def test_test_module_unprocessable_entity_error(client, requests_mock):
+    """
+    Given:
+        - A 422 error during test-module.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure a descriptive DemistoException is raised.
+    """
+    params = {"premium_access": False}
+    requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query",
+        status_code=422,
+        json={"error": "Unprocessable Entity"},
+    )
+    with pytest.raises(DemistoException, match="422 Unprocessable Entity: The provided Organization ID is malformed"):
         censys_test_module(client, params)
 
 
