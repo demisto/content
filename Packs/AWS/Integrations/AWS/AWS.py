@@ -2704,7 +2704,7 @@ class EC2:
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
-                metadata=next_token_text
+                metadata=next_token_text,
             ),
             raw_response=response,
         )
@@ -2798,10 +2798,6 @@ class EC2:
             CommandResults: Results of the deregistration operation
         """
         image_id = args.get("image_id")
-
-        if not image_id:
-            raise DemistoException("image_id parameter is required")
-
         print_debug_logs(client, f"Deregistering image: {image_id}")
         response = client.deregister_image(ImageId=image_id)
 
@@ -2852,6 +2848,7 @@ class EC2:
 
         # Remove None values
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Copying image with parameters: {kwargs}")
         response = client.copy_image(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:

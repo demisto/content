@@ -7143,6 +7143,67 @@ def test_ec2_create_image_command_with_tags(mocker):
     assert call_args["TagSpecifications"][0]["ResourceType"] == "image"
 
 
+def test_ec2_create_image_command_with_block_device_mappings_as_json_string(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with block_device_mappings as JSON string.
+    When: create_image_command is called with block_device_mappings parameter.
+    Then: It should parse the JSON string and pass BlockDeviceMappings to the API call correctly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-blockdevice123",
+    }
+
+    # AWS expects block_device_mappings as a list of device mapping objects
+    block_device_mappings_json = json.dumps(
+        [{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 20, "VolumeType": "gp3", "DeleteOnTermination": True}}]
+    )
+
+    args = {
+        "name": "image-with-block-devices",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": block_device_mappings_json,
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+
+    # Verify the API was called with parsed BlockDeviceMappings
+    call_args = mock_client.create_image.call_args[1]
+    assert "BlockDeviceMappings" in call_args
+    assert isinstance(call_args["BlockDeviceMappings"], list)
+    assert call_args["BlockDeviceMappings"][0]["DeviceName"] == "/dev/sda1"
+    assert call_args["BlockDeviceMappings"][0]["Ebs"]["VolumeSize"] == 20
+
+
+def test_ec2_create_image_command_with_invalid_block_device_mappings_json(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with invalid JSON in block_device_mappings.
+    When: create_image_command is called with malformed JSON string.
+    Then: It should raise DemistoException with descriptive error message about invalid JSON.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "name": "test-image",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": "{invalid-json-not-parseable}",
+        "region": "us-east-1",
+    }
+
+    with pytest.raises(DemistoException, match="Invalid block_device_mappings JSON"):
+        EC2.create_image_command(mock_client, args)
+
+    # Verify the API was never called due to validation failure
+    mock_client.create_image.assert_not_called()
+
+
 def test_ec2_create_image_command_failure(mocker):
     """
     Given: A mocked boto3 EC2 client returning non-OK status code.
@@ -7178,21 +7239,6 @@ def test_ec2_deregister_image_command_success(mocker):
     result = EC2.deregister_image_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Successfully deregistered AMI: ami-12345678" in result.readable_output
-
-
-def test_ec2_deregister_image_command_missing_image_id(mocker):
-    """
-    Given: A mocked boto3 EC2 client and missing image_id argument.
-    When: deregister_image_command is called without image_id.
-    Then: It should raise DemistoException indicating image_id is required.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    args = {}
-
-    with pytest.raises(DemistoException, match="image_id parameter is required"):
-        EC2.deregister_image_command(mock_client, args)
 
 
 def test_ec2_deregister_image_command_failure(mocker):
