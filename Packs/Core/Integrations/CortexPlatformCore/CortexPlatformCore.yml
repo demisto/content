@@ -3317,6 +3317,9 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
+      - contextPath: GenericXQLQuery.details
+        description: Additional details regarding the Query execution.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
