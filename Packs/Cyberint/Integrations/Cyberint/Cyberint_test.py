@@ -772,9 +772,12 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
 
     payload = req.json()
     assert payload == {
-        "alertId": "INT-123",
-        "status": "closed",  # or whatever the integration expects
-        "closureReason": "resolved",
+        "alert_ref_ids": ["INT-123"],
+        "data": {
+            "status": "closed",
+            "closureReason": "resolved",
+            "closure_reason_description": "Closed from XSOAR",
+        }
     }
 
 
