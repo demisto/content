@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Palo Alto Networks
 defaultEnabled: true
 sectionorder:
   - Connect
@@ -1653,6 +1654,21 @@ script:
             - CORTEX_SERVERLESS_FUNCTION_SCANNER
             - QUALYS
             - TENABLE
+        - name: cvrs_gte
+          description: The minimum risk score assigned to the vulnerability (range 0-100).
+        - name: compensating_controls_effective_coverage
+          description: The assessed effectiveness and coverage of detected compensating controls.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - EFFECTIVE
+            - EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE
+            - EFFECTIVE_REQUIRES_CONTENT_UPDATE
+            - EXPLOIT_CONFIRMED
+            - EXPLOIT_UNREACHABLE
+            - NOT_INSTALLED
+            - NO_CONTROLS_FOUND
+            - UNKNOWN_COVERAGE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
@@ -1701,6 +1717,39 @@ script:
           type: String
         - contextPath: Core.VulnerabilityIssue.FINDING_SOURCES
           description: The finding sources that originally generated the security finding of the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE
+          description: The coverage status of detected compensating controls.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE
+          description: The risk score assigned to the vulnerability.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.FIX_VERSIONS
+          description: The package versions that contain a fix for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.ASSET_TYPES
+          description: The types of assets affected by the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS
+          description: The compensating controls that were detected for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.EXPLOIT_LEVEL
+          description: The exploitability level or status of the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ISSUE_NAME
+          description: The name of the vulnerability issue.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.PACKAGE_IN_USE
+          description: Indicates whether the vulnerable package is actively used in the environment.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.PROVIDERS
+          description: The providers or sources of the vulnerability information.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.OS_FAMILY
+          description: The operating system family of the affected asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.IMAGE
+          description: Information related to the affected container or system image.
           type: String
     - arguments:
         - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
@@ -2864,6 +2913,105 @@ script:
         description: The cloud region of the endpoint.
         type: String
     - arguments:
+      - name: profile_name
+        description: The name of the assessment profile to create.
+        required: true
+      - name: profile_description
+        description: The description of the assessment profile to create.
+      - name: standard_name
+        description: The name of the compliance standard to associate with the profile.
+        required: true
+      - name: asset_group_name
+        description: The name of the asset group to apply the assessment profile to.
+        required: true
+      - auto: PREDEFINED
+        name: day
+        description: The day of the week to schedule the assessment. If left empty, assessment runs daily.
+        predefined:
+          - "Sunday"
+          - "Monday"
+          - "Tuesday"
+          - "Wednesday"
+          - "Thursday"
+          - "Friday"
+          - "Saturday"
+      - name: time
+        description: The time of day to run the assessment in HH:MM format.
+        defaultValue: "12:00"
+      name: core-add-assessment-profile
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.AssessmentProfile.assessment_profile_id
+        description: The unique identifier of the newly created assessment profile.
+        type: String
+    - arguments:
+      - name: name
+        description: The name of the standard.
+      - auto: PREDEFINED
+        name: created_by
+        description: The user or entity who created the compliance.
+        predefined:
+        - System
+        - Custom
+      - name: page_size
+        description: The number of standards to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the standards to return for pagination. Default is 0.
+      - auto: PREDEFINED
+        name: labels
+        description: A comma-separated list of labels to filter compliance standards.
+        predefined:
+          - "Aws"
+          - "Azure"
+          - "GCP"
+          - "GKE"
+          - "K8S"
+          - "Windows"
+          - "Linux"
+          - "EKS"
+          - "AKS"
+          - "OCI"
+          - "Alibaba Cloud"
+          - "On Prem"
+          - "LLM"
+          - "Docker"
+          - "Openshift"
+      name: core-list-compliance-standards
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.ComplianceStandards.id
+        description: The unique identifier of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.name
+        description: The name of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.description
+        description: The description of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.labels
+        description: The labels associated with the compliance standard.
+        type: Array
+      - contextPath: Core.ComplianceStandards.controls_count
+        description: The number of controls in the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandards.assessments_profiles_count
+        description: The number of assessment profiles associated with the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.returned_count
+        description: The actual number of compliance standards that match all filter criteria and returned in this specific response.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.filtered_count
+        description: The total number of compliance standards in the system that match all filter criteria.
+        type: Number
+    - arguments:
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
         required: true
@@ -3130,7 +3278,7 @@ script:
           type: String
     - name: core-xql-generic-query-platform
       arguments:
-      - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+      - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.
         name: query
         required: true
       - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
