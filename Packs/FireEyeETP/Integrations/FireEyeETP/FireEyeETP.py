@@ -999,6 +999,26 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
     return alert_last_modified
 
 
+def convert_to_demisto_severity(severity: str) -> int:
+    """
+    Converts the FireEyeETP alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR alert
+    severity (1 to 4).
+
+    Args:
+        severity (str): severity as returned from the FireEyeETP API.
+
+    Returns:
+        int: Cortex XSOAR Severity (1 to 4)
+    """
+
+    return {
+        "crit": IncidentSeverity.CRITICAL,
+        "majr": IncidentSeverity.HIGH,
+        "minr": IncidentSeverity.LOW,
+        "unkn": IncidentSeverity.UNKNOWN,
+    }[severity]
+
+
 def parse_alert_to_incident(response_1, response_2):
     """
     Creates an incident from an alert with proper field mapping.
@@ -1013,10 +1033,11 @@ def parse_alert_to_incident(response_1, response_2):
     occurred = arg_to_datetime(arg=response_2.get("alert", {}).get("occurred", ""))
     occurred = occurred.strftime(ISO_FORMAT) if occurred else None
 
+    severity = response_2.get("alert", {}).get("severity")
     return {
         "name": response_2.get("id", ""),
         "occurred": occurred,
-        "severity": response_2.get("alert", {}).get("severity", ""),
+        "severity": convert_to_demisto_severity(severity),
         "rawJSON": json.dumps(response_2),
         "incident_type": ALERT_INCIDENT_TYPE_NAME,
     }
