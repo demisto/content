@@ -4,7 +4,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
-from enum import Enum
 import copy
 
 # Disable insecure warnings
@@ -65,7 +64,6 @@ WEBAPP_COMMANDS = [
     "core-run-script-agentix",
     "core-list-endpoints",
     "core-list-exception-rules",
-    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
@@ -331,11 +329,6 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
-
 EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
     "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
     "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
@@ -374,191 +367,6 @@ DAYS_MAPPING = {
     "friday": 6,
     "saturday": 7,
 }
-
-
-class FilterBuilder:
-    """
-    Filter class for creating filter dictionary objects.
-    """
-
-    class FilterType(str, Enum):
-        operator: str
-
-        """
-        Available type options for filter filtering.
-        Each member holds its string value and its logical operator for multi-value scenarios.
-        """
-
-        def __new__(cls, value, operator):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.operator = operator
-            return obj
-
-        EQ = ("EQ", "OR")
-        RANGE = ("RANGE", "OR")
-        CONTAINS = ("CONTAINS", "OR")
-        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
-        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
-        GTE = ("GTE", "OR")
-        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
-        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
-        IS_EMPTY = ("IS_EMPTY", "OR")
-        NIS_EMPTY = ("NIS_EMPTY", "AND")
-        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
-        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
-
-    AND = "AND"
-    OR = "OR"
-    FIELD = "SEARCH_FIELD"
-    TYPE = "SEARCH_TYPE"
-    VALUE = "SEARCH_VALUE"
-
-    class Field:
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
-            self.field_name = field_name
-            self.filter_type = filter_type
-            self.values = values
-
-    class MappedValuesField(Field):
-        def __init__(
-            self,
-            field_name: str,
-            filter_type: "FilterType",
-            values: Any,
-            mappings: dict[str, "FilterType"],
-        ):
-            super().__init__(field_name, filter_type, values)
-            self.mappings = mappings
-
-    def __init__(self, filter_fields: list[Field] | None = None):
-        self.filter_fields = filter_fields or []
-
-    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
-        """
-        Adds a new field to the filter.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The type to use for the field.
-            values (Any): The values to filter for.
-            mapper (dict | None): An optional dictionary to map values before filtering.
-        """
-        processed_values = values
-        if mapper:
-            if not isinstance(values, list):
-                values = [values]
-            processed_values = [mapper[v] for v in values if v in mapper]
-
-        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
-
-    def add_field_with_mappings(
-        self,
-        name: str,
-        type: "FilterType",
-        values: Any,
-        mappings: dict[str, "FilterType"],
-    ):
-        """
-        Adds a new field to the filter with special value mappings.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The default filter type for non-mapped values.
-            values (Any): The values to filter for.
-            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
-                Example:
-                    mappings = {
-                        "unassigned": FilterType.IS_EMPTY,
-                        "assigned": FilterType.NIS_EMPTY,
-                    }
-        """
-        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
-
-    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
-        """
-        Adds a time range field to the filter.
-        Args:
-            name (str): The name of the field.
-            start_time (str | None): The start time of the range.
-            end_time (str | None): The end time of the range.
-        """
-        start, end = self._prepare_time_range(start_time, end_time)
-        if start is not None and end is not None:
-            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
-
-    def to_dict(self) -> dict[str, list]:
-        """
-        Creates a filter dict from a list of Field objects.
-        The filter will require each field to be one of the values provided.
-        Returns:
-            dict[str, list]: Filter object.
-        """
-        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
-
-        for field in self.filter_fields:
-            if not isinstance(field.values, list):
-                field.values = [field.values]
-
-            search_values = []
-            for value in field.values:
-                if value is None:
-                    continue
-
-                current_filter_type = field.filter_type
-                current_value = value
-
-                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
-                    current_filter_type = field.mappings[value]
-                    if current_filter_type in [
-                        FilterType.IS_EMPTY,
-                        FilterType.NIS_EMPTY,
-                    ]:
-                        current_value = "<No Value>"
-
-                search_values.append(
-                    {
-                        FilterBuilder.FIELD: field.field_name,
-                        FilterBuilder.TYPE: current_filter_type.value,
-                        FilterBuilder.VALUE: current_value,
-                    }
-                )
-
-            if search_values:
-                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
-                filter_structure[FilterBuilder.AND].append(search_obj)
-
-        if not filter_structure[FilterBuilder.AND]:
-            filter_structure = {}
-
-        return filter_structure
-
-    @staticmethod
-    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
-        """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
-        start_time, end_time = None, None
-
-        if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str)):
-                start_time = int(start_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse start_time: {start_time_str}")
-
-        if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str)):
-                end_time = int(end_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse end_time: {end_time_str}")
-
-        if start_time and not end_time:
-            # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.now().timestamp() * 1000)
-
-        return start_time, end_time
-
-
-FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -990,6 +798,19 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/case/set_data",
+            json_data=request_data,
+        )
+
+    def bulk_update_case(self, case_update_payload, case_ids):
+        request_data = {
+            "request_data": {
+                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
+                "update_attrs": case_update_payload,
+            }
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/bulk_update_cases",
             json_data=request_data,
         )
 
@@ -1459,47 +1280,6 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=response,
     )
-
-
-def build_webapp_request_data(
-    table_name: str,
-    filter_dict: dict,
-    limit: int,
-    sort_field: str | None,
-    on_demand_fields: list | None = None,
-    sort_order: str | None = "DESC",
-    start_page: int = 0,
-) -> dict:
-    """
-    Builds the request data for the generic /api/webapp/get_data endpoint.
-    """
-    sort = (
-        [
-            {
-                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
-                "ORDER": sort_order,
-            }
-        ]
-        if sort_field
-        else []
-    )
-    filter_data = {
-        "sort": sort,
-        "paging": {"from": start_page, "to": limit},
-        "filter": filter_dict,
-    }
-    demisto.debug(f"{filter_data=}")
-
-    if on_demand_fields is None:
-        on_demand_fields = []
-
-    return {
-        "type": "grid",
-        "table_name": table_name,
-        "filter_data": filter_data,
-        "jsons": [],
-        "onDemandFields": on_demand_fields,
-    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -3134,10 +2914,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
-    if assignee == "unassigned":
-        for case_id in case_ids:
-            client.unassign_case(case_id)
-        assignee = ""
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
@@ -3145,7 +2921,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved.'"
+            "'resolved'."
         )
 
     if status and not CaseManagement.STATUS.get(status):
@@ -3165,7 +2941,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "description": description if description else None,
         "assignedUser": assignee if assignee else None,
         "notes": notes if notes else None,
-        "starred": starred if starred else None,
+        "starred": argToBoolean(starred) if starred else None,
         "status": CaseManagement.STATUS.get(status) if status else None,
         "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
@@ -3175,11 +2951,129 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+    if not case_update_payload:
         raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = [process_case_response(resp) for resp in responses]
+    def is_bulk_update_allowed(case_update_payload: dict) -> bool:
+        # Bulk update supports only those fields
+        allowed_bulk_fields = {"userSeverity", "status", "starred", "assignedUser"}
+
+        for field_name, field_value in case_update_payload.items():
+            if (
+                field_name == "status"
+                and field_value == CaseManagement.STATUS["resolved"]
+                or field_name not in allowed_bulk_fields
+            ):
+                return False
+        return True
+
+    def repackage_to_update_case_format(case_list):
+        """
+        Maps raw API case data to the Update Case Format,
+        """
+        if not case_list or not isinstance(case_list, list):
+            return []
+
+        reverse_tags = {v: k for k, v in CaseManagement.TAGS.items()}
+        grouping_status_map = {"enabled": "GROUPING_STATUS_010_ENABLED", "disabled": "GROUPING_STATUS_020_DISABLED"}
+
+        target = []
+        for raw_case in case_list:
+            raw_status = str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", ""))).split("_")[-1].lower()
+            status_key = raw_status.replace("investigation", "under_investigation")
+            raw_severity = str(raw_case.get("SEVERITY", "")).split("_")[-1].lower()
+            raw_grouping = str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
+
+            target.append(
+                {
+                    "id": str(raw_case.get("CASE_ID")),
+                    "name": {"isUser": True, "value": raw_case.get("NAME")},
+                    "score": {
+                        "manual_score": raw_case.get("MANUAL_SCORE"),
+                        "score": raw_case.get("SCORE"),
+                        "score_source": raw_case.get("SCORE_SOURCE"),
+                        "scoring_rules": raw_case.get("CALCULATED_SCORE"),
+                        "scortex": raw_case.get("SCORTEX"),
+                    },
+                    "notes": None,
+                    "description": {"isUser": True, "value": raw_case.get("DESCRIPTION")},
+                    "caseDomain": raw_case.get("INCIDENT_DOMAIN"),
+                    "creationTime": raw_case.get("CREATION_TIME"),
+                    "lastUpdateTime": raw_case.get("LAST_UPDATE_TIME"),
+                    "modifiedBy": None,
+                    "starred": raw_case.get("CASE_STARRED"),
+                    "status": {
+                        "value": CaseManagement.STATUS.get(status_key),
+                        "resolveComment": raw_case.get("RESOLVED_COMMENT"),
+                        "resolve_reason": raw_case.get("RESOLVED_REASON"),
+                    },
+                    "severity": CaseManagement.SEVERITY.get(raw_severity),
+                    "userSeverity": raw_case.get("USER_SEVERITY"),
+                    "assigned": {"mail": raw_case.get("ASSIGNED_USER"), "pretty": raw_case.get("ASSIGNED_USER_PRETTY")},
+                    "severityCounters": {
+                        "SEV_020_LOW": raw_case.get("LOW_SEVERITY_ALERTS", 0),
+                        "SEV_030_MEDIUM": raw_case.get("MEDIUM_SEVERITY_ALERTS", 0),
+                        "SEV_040_HIGH": raw_case.get("HIGH_SEVERITY_ALERTS", 0),
+                        "SEV_050_CRITICAL": raw_case.get("CRITICAL_SEVERITY_ALERTS", 0),
+                    },
+                    "topCounters": {
+                        "HOSTS": len(raw_case.get("HOSTS", []) or []),
+                        "MAL_ARTIFACTS": raw_case.get("WF_HITS", 0),
+                        "USERS": len(raw_case.get("USERS", []) or []),
+                    },
+                    "tags": [
+                        {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
+                        for tag in (raw_case.get("CURRENT_TAGS", []) or [])
+                    ],
+                    "groupingStatus": {
+                        "pretty": raw_grouping.capitalize(),
+                        "raw": grouping_status_map.get(raw_grouping),
+                        "reason": None,
+                    },
+                    "hasAttachment": raw_case.get("HAS_ATTACHMENT", False),
+                    "internalStatus": raw_case.get("INTERNAL_STATUS", "STATUS_010_NONE"),
+                }
+            )
+
+        return target
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    replies = []
+    if is_bulk_update_allowed(case_update_payload):
+        demisto.debug("Performing bulk case update")
+        if case_update_payload.get("userSeverity"):
+            case_update_payload["severity"] = case_update_payload.pop("userSeverity")
+        if case_update_payload.get("assignedUser") == "unassigned":
+            case_update_payload["assignedUser"] = None
+
+        client.bulk_update_case(case_update_payload, case_ids)
+        filter_builder = FilterBuilder()
+        filter_builder.add_field(
+            CaseManagement.FIELDS["case_id_list"],
+            FilterType.EQ,
+            case_ids,
+        )
+        request_data = build_webapp_request_data(
+            table_name=CASES_TABLE,
+            filter_dict=filter_builder.to_dict(),
+            limit=len(case_ids),
+            sort_field="CREATION_TIME",
+        )
+        demisto.debug(f"request_data to retrieve cases that were updated via bulk: {request_data}")
+        response = client.get_webapp_data(request_data)
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        replies = repackage_to_update_case_format(data)
+
+    else:
+        demisto.debug("Performing iterative case update")
+        if assignee == "unassigned":
+            for case_id in case_ids:
+                client.unassign_case(case_id)
+        responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+        replies = []
+        for resp in responses:
+            replies.append(process_case_response(resp))
 
     command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
