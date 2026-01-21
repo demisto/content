@@ -4569,7 +4569,6 @@ def generic_api_call_command(args: dict) -> CommandResults:
     # Return the response
     return CommandResults(
         readable_output=tableToMarkdown("Generic API Call Response", response),
-        # outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.GenericApiCall",
         outputs=response,
         raw_response=response,
     )
