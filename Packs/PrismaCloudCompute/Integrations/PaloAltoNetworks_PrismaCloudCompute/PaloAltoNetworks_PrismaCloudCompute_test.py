@@ -1760,29 +1760,78 @@ def test_process_host_results_success():
     """
     raw_data = [
         {
-            "cloudMetadata": {"name": "host1", "provider": "AWS", "region": "us-east-1", "accountID": "12345"},
+            "cloudMetadata": {
+                "name": "host1",
+                "provider": "AWS",
+                "region": "us-east-1",
+                "accountID": "12345",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
+            "scanTime": "2024-01-01T00:00:00Z",
             "tags": ["tag1"],
             "labels": ["label1"],
-            "hostDevices": [{"ip": "192.168.1.1"}, {"ip": "10.0.0.1"}],
             "hostname": "test-host-1",
+            "osDistro": "Ubuntu",
+            "osDistroVersion": "22.04",
+            "type": "host",
+            "packageManager": "apt",
+            "vulnerabilities": [{"cve": "CVE-1"}],
         }
     ]
-    expected_result = [
+    expected_assets = [
         {
-            "Name": "host1",
-            "Provider": "AWS",
-            "Type": "Virtual Machine",
-            "Category": "VM Instance",
-            "Class": "Compute",
-            "Region": "us-east-1",
-            "Realm": "12345",
-            "Tags": ["tag1", "label1"],
-            "Internal IP": "192.168.1.1, 10.0.0.1",
-            "Strong ID": "test-host-1",
+            "name": "host1",
+            "scanTime": "2024-01-01T00:00:00Z",
+            "provider": "AWS",
+            "region": "us-east-1",
+            "accountID": "12345",
+            "tags": ["tag1"],
+            "labels": ["label1"],
+            "resourceUrl": "url",
+            "hostname": "test-host-1",
+            "resourceID": "res-id",
+            "osDistro": "Ubuntu",
+            "osDistroVersion": "22.04",
+            "vmImageID": "vm-id",
+            "type": "host",
+            "packageManager": "apt",
+            "cloudMetadata": {
+                "name": "host1",
+                "provider": "AWS",
+                "region": "us-east-1",
+                "accountID": "12345",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
         }
     ]
-    result = process_host_results(raw_data)
-    assert result == expected_result
+    expected_vulnerabilities = [
+        {
+            "scanTime": "2024-01-01T00:00:00Z",
+            "description": "",
+            "cve": "CVE-1",
+            "id": "",
+            "provider": "",
+            "cause": "",
+            "scanVersion": "",
+            "severity": "",
+            "type": "",
+            "cvss": "",
+            "published": "",
+            "fixDate": "",
+            "link": "",
+            "packageName": "",
+            "packageVersion": "",
+            "packageType": "",
+            "asset_id": "res-id",
+        }
+    ]
+    assets, vulnerabilities = process_host_results(raw_data)
+    assert assets == expected_assets
+    assert vulnerabilities == expected_vulnerabilities
 
 
 def test_process_host_results_empty_data():
@@ -1792,9 +1841,9 @@ def test_process_host_results_empty_data():
     Then: It should return an empty list.
     """
     raw_data = []
-    expected_result = []
-    result = process_host_results(raw_data)
-    assert result == expected_result
+    assets, vulnerabilities = process_host_results(raw_data)
+    assert assets == []
+    assert vulnerabilities == []
 
 
 def test_process_runtime_image_results_success():
@@ -1805,27 +1854,78 @@ def test_process_runtime_image_results_success():
     """
     raw_data = [
         {
-            "cloudMetadata": {"name": "image1", "provider": "GCP", "region": "us-central1", "accountID": "67890"},
+            "cloudMetadata": {
+                "name": "image1",
+                "provider": "GCP",
+                "region": "us-central1",
+                "accountID": "67890",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
+            "scanTime": "2024-01-01T00:00:00Z",
             "tags": ["tagA"],
             "labels": ["labelB"],
-            "id": "image-id-1",
+            "hostname": "test-host",
+            "osDistro": "Alpine",
+            "osDistroVersion": "3.18",
+            "type": "image",
+            "packageManager": "apk",
+            "vulnerabilities": [{"cve": "CVE-2"}],
         }
     ]
-    expected_result = [
+    expected_assets = [
         {
-            "Name": "image1",
-            "Provider": "GCP",
-            "Type": "Runtime Image",
-            "Category": "Container Image",
-            "Class": "Compute",
-            "Region": "us-central1",
-            "Realm": "67890",
-            "Tags": ["tagA", "labelB"],
-            "Strong ID": "image-id-1",
+            "name": "image1",
+            "scanTime": "2024-01-01T00:00:00Z",
+            "provider": "GCP",
+            "region": "us-central1",
+            "accountID": "67890",
+            "tags": ["tagA"],
+            "labels": ["labelB"],
+            "resourceUrl": "url",
+            "hostname": "test-host",
+            "resourceID": "res-id",
+            "osDistro": "Alpine",
+            "osDistroVersion": "3.18",
+            "vmImageID": "vm-id",
+            "type": "image",
+            "packageManager": "apk",
+            "cloudMetadata": {
+                "name": "image1",
+                "provider": "GCP",
+                "region": "us-central1",
+                "accountID": "67890",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
         }
     ]
-    result = process_runtime_image_results(raw_data)
-    assert result == expected_result
+    expected_vulnerabilities = [
+        {
+            "scanTime": "2024-01-01T00:00:00Z",
+            "description": "",
+            "cve": "CVE-2",
+            "id": "",
+            "provider": "",
+            "cause": "",
+            "scanVersion": "",
+            "severity": "",
+            "type": "",
+            "cvss": "",
+            "published": "",
+            "fixDate": "",
+            "link": "",
+            "packageName": "",
+            "packageVersion": "",
+            "packageType": "",
+            "asset_id": "res-id",
+        }
+    ]
+    assets, vulnerabilities = process_runtime_image_results(raw_data)
+    assert assets == expected_assets
+    assert vulnerabilities == expected_vulnerabilities
 
 
 def test_process_runtime_image_results_empty_data():
@@ -1835,9 +1935,9 @@ def test_process_runtime_image_results_empty_data():
     Then: It should return an empty list.
     """
     raw_data = []
-    expected_result = []
-    result = process_runtime_image_results(raw_data)
-    assert result == expected_result
+    assets, vulnerabilities = process_runtime_image_results(raw_data)
+    assert assets == []
+    assert vulnerabilities == []
 
 
 def test_process_tas_droplet_results_success():
@@ -1849,31 +1949,69 @@ def test_process_tas_droplet_results_success():
     raw_data = [
         {
             "name": "droplet1",
+            "scanTime": "2024-01-01T00:00:00Z",
             "provider": "Azure",
-            "region": "eastus",
-            "accountID": "abcde",
-            "tags": ["tagX"],
             "labels": ["labelY"],
-            "cloudControllerAddress": "droplet.example.com",
-            "id": "droplet-id-1",
+            "hostname": "test-host",
+            "osDistro": "Ubuntu",
+            "osDistroVersion": "20.04",
+            "type": "droplet",
+            "packageManager": "apt",
+            "lastModified": "2024-01-01T00:00:00Z",
+            "cloudMetadata": {
+                "region": "eastus",
+                "accountID": "abcde",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
+            "vulnerabilities": [{"cve": "CVE-3"}],
         }
     ]
-    expected_result = [
+    expected_assets = [
         {
-            "Name": "droplet1",
-            "Provider": "Azure",
-            "Type": "Runtime Image",
-            "Category": "Container Image",
-            "Class": "Compute",
-            "Region": "eastus",
-            "Realm": "abcde",
-            "Tags": ["tagX", "labelY"],
-            "FQDN": "droplet.example.com",
-            "Strong ID": "droplet-id-1",
+            "name": "droplet1",
+            "scanTime": "2024-01-01T00:00:00Z",
+            "provider": "Azure",
+            "labels": ["labelY"],
+            "hostname": "test-host",
+            "osDistro": "Ubuntu",
+            "osDistroVersion": "20.04",
+            "type": "droplet",
+            "packageManager": "apt",
+            "cloudMetadata": {
+                "region": "eastus",
+                "accountID": "abcde",
+                "resourceUrl": "url",
+                "resourceID": "res-id",
+                "vmImageID": "vm-id",
+            },
         }
     ]
-    result = process_tas_droplet_results(raw_data)
-    assert result == expected_result
+    expected_vulnerabilities = [
+        {
+            "lastModified": "2024-01-01T00:00:00Z",
+            "description": "",
+            "cve": "CVE-3",
+            "id": "",
+            "provider": "",
+            "cause": "",
+            "scanVersion": "",
+            "severity": "",
+            "type": "",
+            "cvss": "",
+            "published": "",
+            "fixDate": "",
+            "link": "",
+            "packageName": "",
+            "packageVersion": "",
+            "packageType": "",
+            "asset_id": "res-id",
+        }
+    ]
+    assets, vulnerabilities = process_tas_droplet_results(raw_data)
+    assert assets == expected_assets
+    assert vulnerabilities == expected_vulnerabilities
 
 
 def test_process_tas_droplet_results_empty_data():
@@ -1883,9 +2021,9 @@ def test_process_tas_droplet_results_empty_data():
     Then: It should return an empty list.
     """
     raw_data = []
-    expected_result = []
-    result = process_tas_droplet_results(raw_data)
-    assert result == expected_result
+    assets, vulnerabilities = process_tas_droplet_results(raw_data)
+    assert assets == []
+    assert vulnerabilities == []
 
 
 class MockAsyncClient(PrismaCloudComputeAsyncClient):

@@ -53,6 +53,9 @@ MAX_API_LIMIT = 50
 INTEGRATION_NAME = "PaloAltoNetworks_PrismaCloudCompute"
 # 12 hours converted to seconds
 TWELVE_HOURS_AS_SECONDS = 12 * 60 * 60
+VENDOR = "Prisma_Cloud_Compute"
+ASSETS_PRODUCT: str = "Assets"
+VULNERABILITIES_PRODUCT: str = "Vulnerabilities"
 
 """ COMMANDS + REQUESTS FUNCTIONS """
 
@@ -828,18 +831,13 @@ def async_send_data_to_xsiam(
         demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
         return None
 
-    if not data:
-        demisto.debug(f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM")
-        demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
-        return None
-
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        if isinstance(data[0], dict):
+        if data and isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
-            data_format = "json"
+        data_format = "json"
         # Separating each event with a new line
         data = "\n".join(data)
     elif not isinstance(data, str):
@@ -1088,14 +1086,14 @@ class AssetType(Enum):
 class AssetTypeRelatedData:
     ctx_lock: asyncio.Lock
     endpoint: str
-    product: str
     asset_type: AssetType
     process_result_func: Callable
-    snapshot_id: str
+    assets_snapshot_id: str
+    vulnerabilities_snapshot_id: str
     offset: int = 0
     limit: int = MAX_API_LIMIT
-    total_count: int = 0
-    vendor: str = "Prisma_Cloud_Compute"
+    assets_total_count: int = 0
+    vulnerabilities_total_count: int = 0
 
     def next_page(self):
         self.offset += self.limit
@@ -1106,13 +1104,13 @@ class AssetTypeRelatedData:
     async def safe_update_integration_context(self):
         async with self.ctx_lock:
             ctx = get_integration_context()
-            ctx[self.asset_type.value] = {"offset": self.offset, "total_count": self.total_count, "snapshot_id": self.snapshot_id}
-            set_integration_context(ctx)
-
-    async def remove_related_data_from_ctx(self):
-        async with self.ctx_lock:
-            ctx = get_integration_context()
-            ctx.pop(self.asset_type.value)
+            ctx["vulnerabilities_snapshot_id"] = self.vulnerabilities_snapshot_id
+            ctx["assets_snapshot_id"] = self.assets_snapshot_id
+            ctx[self.asset_type.value] = {
+                "offset": self.offset,
+                "assets_total_count": self.assets_total_count,
+                "vulnerabilities_total_count": self.vulnerabilities_total_count,
+            }
             set_integration_context(ctx)
 
 
@@ -3359,8 +3357,54 @@ async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClien
             demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
 
 
+def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
+    ctx = get_integration_context() or {}
+    ctx_lock = asyncio.Lock()
+    assets_snapshot_id = ctx.get("assets_snapshot_id", str(round(time.time() * 1000)))
+    # sleeping 1 second to ensure the same snapshot won't be created twice
+    time.sleep(1)
+    vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", str(round(time.time() * 1000)))
+
+    related_data_objects_list = [
+        init_asset_type_related_data(
+            endpoint="/tas-droplets",
+            asset_type=AssetType.TAS_DROPLET,
+            process_result_func=process_tas_droplet_results,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+        init_asset_type_related_data(
+            endpoint="/hosts",
+            asset_type=AssetType.HOST,
+            process_result_func=process_host_results,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+        init_asset_type_related_data(
+            endpoint="/images",
+            asset_type=AssetType.RUNTIME_IMAGE,
+            process_result_func=process_runtime_image_results,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+    ]
+    return related_data_objects_list
+
+
 def init_asset_type_related_data(
-    endpoint: str, product: str, asset_type: AssetType, process_result_func: Callable, ctx_lock: asyncio.Lock
+    endpoint: str,
+    asset_type: AssetType,
+    process_result_func: Callable,
+    ctx_lock: asyncio.Lock,
+    ctx: dict,
+    assets_snapshot_id: str,
+    vulnerabilities_snapshot_id: str,
 ) -> AssetTypeRelatedData:
     """Attempts to check if there's exiting information related to the asset type in the context.
     If there is such data, will create a new AssetTypeRelatedData from that data.
@@ -3368,7 +3412,6 @@ def init_asset_type_related_data(
 
     Args:
         endpoint (str): The endpoint to request the asset from.
-        product (str): The product to assign to the asset type when sending data to xsiam.
         asset_type (AssetType): The type of the asset.
         process_result_func (Callable): The function that flow should use to process the incoming results.
         ctx_lock (Lock): The lock for editing the context.
@@ -3376,73 +3419,68 @@ def init_asset_type_related_data(
     Returns:
         AssetTypeRelatedData: The initialized AssetTypeRelatedData object.
     """
-    ctx = get_integration_context() or {}
-    if asset_type_ctx := ctx.get(asset_type.value):
-        offset = int(asset_type_ctx.get("offset", 0))
-        total_count = int(asset_type_ctx.get("total_count", 0))
-        snapshot_id = asset_type_ctx.get("snapshot_id", str(round(time.time() * 1000)))
-        return AssetTypeRelatedData(
-            endpoint=endpoint,
-            product=product,
-            asset_type=asset_type,
-            process_result_func=process_result_func,
-            offset=offset,
-            total_count=total_count,
-            snapshot_id=snapshot_id,
-            ctx_lock=ctx_lock,
-        )
-    else:
-        # sleeping 1 second to ensure the same snapshot won't be created twice
-        time.sleep(1)
-        snapshot_id = str(round(time.time() * 1000))
-        ctx[asset_type.value] = {"offset": 0, "snapshot_id": snapshot_id}
-        set_integration_context(ctx)
-        return AssetTypeRelatedData(
-            endpoint=endpoint,
-            product=product,
-            asset_type=asset_type,
-            process_result_func=process_result_func,
-            ctx_lock=ctx_lock,
-            snapshot_id=snapshot_id,
-        )
+    asset_type_ctx = ctx.get(asset_type.value, {})
+    offset = int(asset_type_ctx.get("offset", 0))
+    assets_total_count = int(asset_type_ctx.get("assets_total_count", 0))
+    vulnerabilities_total_count = int(asset_type_ctx.get("vulnerabilities_total_count", 0))
+    return AssetTypeRelatedData(
+        endpoint=endpoint,
+        asset_type=asset_type,
+        process_result_func=process_result_func,
+        offset=offset,
+        assets_total_count=assets_total_count,
+        assets_snapshot_id=assets_snapshot_id,
+        vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ctx_lock=ctx_lock,
+        vulnerabilities_total_count=vulnerabilities_total_count,
+    )
 
 
 async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
-    ctx_lock = asyncio.Lock()
-    tas_droplets_related_data = init_asset_type_related_data(
-        endpoint="/tas-droplets",
-        product="Tas_Droplets",
-        asset_type=AssetType.TAS_DROPLET,
-        process_result_func=process_tas_droplet_results,
-        ctx_lock=ctx_lock,
-    )
-    host_scan_related_data = init_asset_type_related_data(
-        endpoint="/hosts",
-        product="Hosts",
-        asset_type=AssetType.HOST,
-        process_result_func=process_host_results,
-        ctx_lock=ctx_lock,
-    )
-    image_scan_related_data = init_asset_type_related_data(
-        endpoint="/images",
-        product="Runtime_images",
-        asset_type=AssetType.RUNTIME_IMAGE,
-        process_result_func=process_runtime_image_results,
-        ctx_lock=ctx_lock,
-    )
-    tasks = [
-        collect_assets_and_send_to_xsiam(client, tas_droplets_related_data),
-        collect_assets_and_send_to_xsiam(client, host_scan_related_data),
-        collect_assets_and_send_to_xsiam(client, image_scan_related_data),
-    ]
+    related_data_objects_list = init_asset_types_related_data()
+
+    tasks = [collect_assets_and_send_to_xsiam(client, related_data_obj) for related_data_obj in related_data_objects_list]
+
     demisto.debug("Initiated all asset collection tasks.")
     await asyncio.gather(*tasks)
-    total = tas_droplets_related_data.total_count + host_scan_related_data.total_count + image_scan_related_data.total_count
-    demisto.debug(
-        f"Finished sending all assets to XSIAM. {tas_droplets_related_data.total_count} Tas Droplets,"
-        f"{host_scan_related_data.total_count} Hosts, and {image_scan_related_data.total_count} Runtime images."
+    assets_total = sum([related_data_obj.assets_total_count for related_data_obj in related_data_objects_list])
+    vulnerabilities_total = sum([related_data_obj.vulnerabilities_total_count for related_data_obj in related_data_objects_list])
+    ctx = get_integration_context()
+    vulnerabilities_snapshot_id = ctx["vulnerabilities_snapshot_id"]
+    assets_snapshot_id = ctx["assets_snapshot_id"]
+    assets_coroutine = async_send_data_to_xsiam(
+        data=[],
+        vendor=VENDOR,
+        product=ASSETS_PRODUCT,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=assets_snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=-1,
     )
-    demisto.updateModuleHealth({"assetsPulled": total})
+    vulnerabilities_coroutine = async_send_data_to_xsiam(
+        data=[],
+        vendor=VENDOR,
+        product=VULNERABILITIES_PRODUCT,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=vulnerabilities_snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=-1,
+    )
+    if assets_coroutine:
+        await assets_coroutine
+    if vulnerabilities_coroutine:
+        await vulnerabilities_coroutine
+    demisto.debug(f"Finished sending all data to XSIAM. Sent a total of {assets_total} assets, and {vulnerabilities_total} vulnerabilities.")
+    set_integration_context({})
+    demisto.updateModuleHealth({"assetsPulled": assets_total + vulnerabilities_total})
 
 
 async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
@@ -3453,7 +3491,10 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
         client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
         asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
     """
-    asset_type_related_data.write_debug_log(f"starting execution with snapshot = {asset_type_related_data.snapshot_id}.")
+    asset_type_related_data.write_debug_log(
+        f"starting execution with assets snapshot = {asset_type_related_data.assets_snapshot_id} and"
+        f"vulnerabilities snapshot = {asset_type_related_data.vulnerabilities_snapshot_id}."
+    )
     while True:
         try:
             data = await obtain_asset_data_from_prisma(asset_type_related_data=asset_type_related_data, client=client)
@@ -3464,16 +3505,15 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
             asset_type_related_data.next_page()
             asset_type_related_data.write_debug_log(
                 "Finished sending assets batch to xsiam, sent "
-                f"{min(asset_type_related_data.offset, asset_type_related_data.total_count)} assets so far."
+                f"{min(asset_type_related_data.offset, asset_type_related_data.assets_total_count)} assets so far."
             )
             await asset_type_related_data.safe_update_integration_context()
         except Exception as e:
             traceback_str = "".join(traceback.format_tb(e.__traceback__))
             demisto.debug(f"Got error {e}\n{traceback_str=}")
     asset_type_related_data.write_debug_log(
-        f"Finished obtaining and sending a total of {asset_type_related_data.total_count} assets to xsiam."
+        f"Finished obtaining and sending a total of {asset_type_related_data.assets_total_count} assets to xsiam."
     )
-    await asset_type_related_data.remove_related_data_from_ctx()
 
 
 async def obtain_asset_data_from_prisma(
@@ -3490,7 +3530,7 @@ async def obtain_asset_data_from_prisma(
     """
     params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
     response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
-    asset_type_related_data.total_count = int(response.headers.get("Total-Count", -1))
+    asset_type_related_data.assets_total_count = int(response.headers.get("Total-Count", -1))
     data = await response.json()
     return data
 
@@ -3506,64 +3546,38 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         _type_: The send_data_to_xsiam tasks.
     """
     processed_assets, processed_vulnerabilities = asset_type_related_data.process_result_func(data)
+    asset_type_related_data.vulnerabilities_total_count += len(processed_vulnerabilities)
+
     assets_coroutine = async_send_data_to_xsiam(
         data=processed_assets,
-        vendor=asset_type_related_data.vendor,
-        product=asset_type_related_data.product,
+        vendor=VENDOR,
+        product=ASSETS_PRODUCT,
         num_of_attempts=3,
         chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
         data_type=ASSETS,
         add_proxy_to_request=False,
-        snapshot_id=asset_type_related_data.snapshot_id,
+        snapshot_id=asset_type_related_data.assets_snapshot_id,
         data_size_expected_to_split_evenly=False,
         url_key="address",
-        items_count=asset_type_related_data.total_count,
+        items_count=-1,
     )
     vulnerabilities_coroutine = async_send_data_to_xsiam(
-        data=processed_assets,
-        vendor=asset_type_related_data.vendor,
-        product=asset_type_related_data.product,
+        data=processed_vulnerabilities,
+        vendor=VENDOR,
+        product=VULNERABILITIES_PRODUCT,
         num_of_attempts=3,
         chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
         data_type=ASSETS,
         add_proxy_to_request=False,
-        snapshot_id=asset_type_related_data.snapshot_id,
+        snapshot_id=asset_type_related_data.vulnerabilities_snapshot_id,
         data_size_expected_to_split_evenly=False,
         url_key="address",
-        items_count=asset_type_related_data.total_count,
+        items_count=-1,
     )
     if assets_coroutine:
         await assets_coroutine
     if vulnerabilities_coroutine:
         await vulnerabilities_coroutine
-
-
-def process_tas_droplet_results(data_list):
-    processed_results_list = []
-    processed_vulnerabilities_list = []
-    for data in data_list:
-        processed_results_list.append(
-            {
-                "name": data.get("name", ""),
-                "scanTime": data.get("scanTime", ""),
-                "provider": data.get("provider", "VMWare"),
-                "labels": data.get("labels", []),
-                "hostname": data.get("hostname", ""),
-                "osDistro": data.get("osDistro", ""),
-                "osDistroVersion": data.get("osDistroVersion", ""),
-                "type": data.get("type", ""),
-                "packageManager": data.get("packageManager", ""),
-                "cloudMetadata": {
-                    "region": data.get("cloudMetadata", {}).get("region", ""),
-                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
-                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
-                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
-                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
-                },
-            }
-        )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "lastModified"))
-    return processed_results_list, processed_vulnerabilities_list
 
 
 def process_findings(vulnerabilities, related_asset, time_field):
@@ -3597,24 +3611,32 @@ def process_runtime_image_and_host_results(data_list):
     processed_results_list = []
     processed_vulnerabilities_list = []
     for data in data_list:
+        cloud_metadata = data.get("cloudMetadata", {})
         processed_results_list.append(
             {
+                "name": cloud_metadata.get("name", ""),
                 "scanTime": data.get("scanTime", ""),
+                "provider": cloud_metadata.get("provider", ""),
+                "region": cloud_metadata.get("region", ""),
+                "accountID": cloud_metadata.get("accountID", ""),
                 "tags": data.get("tags", []),
                 "labels": data.get("labels", []),
+                "resourceUrl": cloud_metadata.get("resourceUrl", ""),
                 "hostname": data.get("hostname", ""),
+                "resourceID": cloud_metadata.get("resourceID", ""),
                 "osDistro": data.get("osDistro", ""),
                 "osDistroVersion": data.get("osDistroVersion", ""),
+                "vmImageID": cloud_metadata.get("vmImageID", ""),
                 "type": data.get("type", ""),
                 "packageManager": data.get("packageManager", ""),
                 "cloudMetadata": {
-                    "name": data.get("cloudMetadata", {}).get("name", ""),
-                    "provider": data.get("cloudMetadata", {}).get("provider", ""),
-                    "region": data.get("cloudMetadata", {}).get("region", ""),
-                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
-                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
-                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
-                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
+                    "name": cloud_metadata.get("name", ""),
+                    "provider": cloud_metadata.get("provider", ""),
+                    "region": cloud_metadata.get("region", ""),
+                    "accountID": cloud_metadata.get("accountID", ""),
+                    "resourceUrl": cloud_metadata.get("resourceUrl", ""),
+                    "resourceID": cloud_metadata.get("resourceID", ""),
+                    "vmImageID": cloud_metadata.get("vmImageID", ""),
                 },
             }
         )
@@ -3623,12 +3645,40 @@ def process_runtime_image_and_host_results(data_list):
     return processed_results_list, processed_vulnerabilities_list
 
 
+def process_host_results(data_list):
+    return process_runtime_image_and_host_results(data_list=data_list)
+
+
 def process_runtime_image_results(data_list):
     return process_runtime_image_and_host_results(data_list=data_list)
 
 
-def process_host_results(data_list):
-    return process_runtime_image_and_host_results(data_list=data_list)
+def process_tas_droplet_results(data_list):
+    processed_results_list = []
+    processed_vulnerabilities_list = []
+    for data in data_list:
+        processed_results_list.append(
+            {
+                "name": data.get("name", ""),
+                "scanTime": data.get("scanTime", ""),
+                "provider": data.get("provider", "VMWare"),
+                "labels": data.get("labels", []),
+                "hostname": data.get("hostname", ""),
+                "osDistro": data.get("osDistro", ""),
+                "osDistroVersion": data.get("osDistroVersion", ""),
+                "type": data.get("type", ""),
+                "packageManager": data.get("packageManager", ""),
+                "cloudMetadata": {
+                    "region": data.get("cloudMetadata", {}).get("region", ""),
+                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
+                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
+                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
+                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
+                },
+            }
+        )
+        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "lastModified"))
+    return processed_results_list, processed_vulnerabilities_list
 
 
 def main():
