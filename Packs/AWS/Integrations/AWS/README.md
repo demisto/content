@@ -52,61 +52,6 @@ Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 
 There is no context output for this command.
 
-### aws-s3-bucket-delete
-
-***
-Delete AWS S3 bucket, the bucket must be empty from files.
-
-#### Base Command
-
-`aws-s3-bucket-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| bucket | The name of S3 bucket. | Required |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-s3-bucket-objects-list
-
-***
-Returns some or all (up to 1,000) of the objects in a bucket.
-
-#### Base Command
-
-`aws-s3-bucket-objects-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| bucket | The name of S3 bucket. | Required |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional |
-| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional |
-| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional |
-| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. |
-| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. |
-| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. |
-| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. |
-| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. |
-| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. |
-| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. |
-| AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. |
-
 ### aws-iam-account-password-policy-get
 
 ***
@@ -2527,6 +2472,40 @@ Adds the specified inbound (egress) rules to a security group.
 
 There is no context output for this command.
 
+### aws-ec2-address-allocate
+
+***
+Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+
+#### Base Command
+
+`aws-ec2-address-allocate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
+| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
+| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
+| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
+| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
+| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
+| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
+| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
+| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
+| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
+
 ### aws-ec2-addresses-describe
 
 ***
@@ -2565,68 +2544,6 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
 | AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
 | AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address associated. |
-
-### aws-ec2-address-allocate
-
-***
-Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
-
-#### Base Command
-
-`aws-ec2-address-allocate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
-| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
-| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
-| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
-| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
-| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
-| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
-| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
-| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
-| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
-
-### aws-ec2-address-associate
-
-***
-Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
-
-#### Base Command
-
-`aws-ec2-address-associate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| allocation_id | The allocation ID. | Required |
-| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
-| network_interface_id | The ID of the network interface. | Optional |
-| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
-| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
-| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |
 
 ### aws-ec2-address-disassociate
 
@@ -2670,3 +2587,31 @@ Releases the specified Elastic IP address. After releasing an Elastic IP address
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-address-associate
+
+***
+Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+
+#### Base Command
+
+`aws-ec2-address-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| allocation_id | The allocation ID. | Required |
+| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
+| network_interface_id | The ID of the network interface. | Optional |
+| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
+| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
+| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |
