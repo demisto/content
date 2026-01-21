@@ -488,6 +488,27 @@
                 "agentix",
                 "xsiam"
             ]
+        },
+        {
+            "id": "CommonDashboards",
+            "supportedModules": [
+                "C1",
+                "C3",
+                "X0",
+                "X1",
+                "X3",
+                "X5",
+                "ENT_PLUS",
+                "agentix",
+                "asm",
+                "cloud",
+                "cloud_appsec",
+                "cloud_posture",
+                "cloud_runtime_security",
+                "edr",
+                "exposure_management",
+                "xsiam"
+            ]
         }
     ]
 }

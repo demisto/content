@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 commonfields:
   id: TAXII 2 Feed
   version: -1
@@ -157,6 +158,7 @@ configuration:
   - location
   - vulnerability
   - x509-certificate
+  - software
   additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
   section: Collect
 - display: Certificate File as Text
