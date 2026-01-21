@@ -628,7 +628,7 @@ class IncidentBuilder:
     def build(self) -> tuple[dict[str, int | Any], list]:
         previous_last_fetch = self.last_run.get("last_fetch")
         next_run: dict[str, int | Any] = {"last_fetch": previous_last_fetch}
-        violations = []
+        violations: list[dict[str, Any]] = []
         requests_count = 0
         max_seq_update: int | None = None
 
@@ -641,9 +641,11 @@ class IncidentBuilder:
             only_typosquatting=self.only_typosquatting,
         )
         for portion in portions:
+            portion_sequpdate = getattr(portion, "sequpdate", None)
             demisto.debug(
                 "IncidentBuilder.build: processing portion - "
-                f"requests_count={requests_count} max_requests={self.max_requests} portion_sequpdate={getattr(portion, 'sequpdate', None)!r}"
+                f"requests_count={requests_count} max_requests={self.max_requests} "
+                f"portion_sequpdate={portion_sequpdate!r}"
             )
             sequpdate = portion.sequpdate
             parse_result: list[dict[Any, Any]] = portion.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)
