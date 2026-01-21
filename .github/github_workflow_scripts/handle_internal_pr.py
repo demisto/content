@@ -30,7 +30,7 @@ def main():
 
     org_name = "demisto"
     repo_name = "content"
-    gh = Github(get_env_var("MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN"), verify=False)
+    gh = Github(get_env_var("CONTENTBOT_GH_TOKEN"), verify=False)
     content_repo = gh.get_repo(f"{org_name}/{repo_name}")
     pr_number = payload.get("pull_request", {}).get("number")
     pr = content_repo.get_pull(pr_number)

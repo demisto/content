@@ -24,11 +24,6 @@ jobs:
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v9
 
-      - name: Print Context
-        run: |
-          echo "$GITHUB_CONTEXT"
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
 
       - name: Install Python Dependencies
         run: |
@@ -40,10 +35,10 @@ jobs:
 
       - name: Post AI Review Introduction
         env:
-          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          CONTENTBOT_GH_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN }}
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
         run: |
-          echo "Posting AI review introduction on Internal PR ${{ github.event.pull_request.html_url }}"
+          echo "Posting AI review introduction on Internal PR"
           cd .github/github_workflow_scripts
           poetry run ./handle_internal_pr.py
           echo "Finished handling Internal PR"
