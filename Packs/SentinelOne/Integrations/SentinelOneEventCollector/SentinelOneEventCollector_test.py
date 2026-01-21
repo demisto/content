@@ -153,7 +153,7 @@ def test_main(mocker):
     assert events.call_args[1].get("product") == PRODUCT
 
 
-def test_add_keys_to_events_with_external_url():
+def test_add_keys_to_events_with_external_url(mocker):
     """
     Tests add_keys_to_events function with _EXTERNAL_URL field construction.
 
@@ -173,6 +173,7 @@ def test_add_keys_to_events_with_external_url():
     """
     from SentinelOneEventCollector import add_keys_to_events
 
+    mocker.patch.object(demisto, "debug")
     instance_url = "https://example-instance.com"
 
     # Test data
@@ -244,5 +245,5 @@ def test_add_keys_to_events_missing_ids(mocker):
     assert alert_event.get("_time") == "2022-12-20T13:54:43.027000Z"
     assert "_EXTERNAL_URL" not in alert_event
 
-    # Verify debug messages were called
-    assert mock_debug.call_count == 2
+    # Verify debug messages were called (1 for the count log + 2 for missing IDs)
+    assert mock_debug.call_count == 3
