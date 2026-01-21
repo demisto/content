@@ -3872,7 +3872,7 @@ script:
     - description: A comma-separated list of API key roles to retrieve.
       isArray: true
       name: role
-    - description: 'Filters API keys that expire before this date. For example: "in a year". Filters API keys that have an expiration date.'
+    - description: 'Filters API keys that expire before this date. For example: "1 year". Filters API keys that have an expiration date.'
       name: expires_before
     - description: 'Filters API keys that expire after this date. For example: "in a year". Filters API keys that have an expiration date.'
       name: expires_after
