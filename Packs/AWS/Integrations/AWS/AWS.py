@@ -2808,19 +2808,12 @@ class EC2:
         """
         volume_id = args.get("volume_id")
         print_debug_logs(client, f"Deleting volume: {volume_id}")
+        response = client.delete_volume(VolumeId=volume_id)
 
-        try:
-            response = client.delete_volume(VolumeId=volume_id)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-            return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error deleting volume: {str(e)}")
+        return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
 
 
 class EKS:
