@@ -2,40 +2,50 @@ category: Analytics & SIEM
 commonfields:
   id: SOCRadarIncidentsV4
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: API Key
   name: apikey
   required: true
   type: 4
+  section: Connect
   additionalinfo: Your SOCRadar API key from platform.socradar.com
 - display: Company ID
   name: company_id
   required: true
   type: 0
+  section: Connect
   additionalinfo: Your company ID from SOCRadar platform
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: First Fetch Time
   name: first_fetch
   type: 0
   defaultvalue: 3 days
+  section: Collect
   additionalinfo: 'Time range for FIRST fetch only. Examples: "3 days", "7 days", "30 days". After first fetch, integration will use Fetch Interval for subsequent fetches.'
 - display: Fetch Interval (Minutes)
   name: fetch_interval_minutes
   type: 0
   defaultvalue: '1'
+  section: Collect
   additionalinfo: 'Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle.'
 - display: Max incidents per fetch
   name: max_fetch
   type: 0
   defaultvalue: '200'
+  section: Collect
   additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
 - display: Status Filter
   name: status
   type: 15
   required: false
+  section: Collect
   options:
   - OPEN
   - CLOSED
@@ -45,6 +55,7 @@ configuration:
   name: severities
   type: 16
   required: false
+  section: Collect
   options:
   - LOW
   - MEDIUM
@@ -55,33 +66,40 @@ configuration:
   name: alarm_type_ids
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm type IDs to include (e.g., "1,2,3"). Leave empty to include all alarm types.
 - display: Alarm Type IDs (Exclude)
   name: excluded_alarm_type_ids
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm type IDs to exclude (e.g., "4,5,6"). Takes precedence if same ID appears in both include and exclude.
 - display: Alarm Main Types
   name: alarm_main_types
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm main types to filter (e.g., "Brand Protection,Attack Surface Management")
 - display: Alarm Sub Types
   name: alarm_sub_types
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm sub types to filter (e.g., "Impersonating Domain,Stolen Credential")
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 description: SOCRadar Incidents v4 API integration with advanced incident management, status reasons, and compliance tracking. Fetches security incidents from SOCRadar platform with proper deduplication and date handling. Supports filtering by alarm type IDs for granular control.
 display: SOCRadar Incidents v4
 name: SOCRadarIncidentsV4
@@ -229,7 +247,7 @@ script:
       description: Parsed start date used for the test.
       type: String
 
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6796194
   isfetch: true
   script: '-'
   subtype: python3
