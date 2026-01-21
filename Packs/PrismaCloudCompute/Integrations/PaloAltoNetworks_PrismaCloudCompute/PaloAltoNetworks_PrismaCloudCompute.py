@@ -819,7 +819,6 @@ def async_send_data_to_xsiam(
     await asyncio.gather(*tasks)
     :rtype: ``List[Task]`` or ``None``
     """
-    data_size = 0
     params = demisto.params()
     url = params.get(url_key)
     calling_context = demisto.callingContext.get("context", {})
