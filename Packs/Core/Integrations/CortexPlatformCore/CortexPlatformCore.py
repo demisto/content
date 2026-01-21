@@ -4286,7 +4286,7 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, flo
         )
 
         accounts = response.get("values", [])
-        
+
         # Process accounts on the fly without storing all in memory
         for account in accounts:
             total_accounts += 1
