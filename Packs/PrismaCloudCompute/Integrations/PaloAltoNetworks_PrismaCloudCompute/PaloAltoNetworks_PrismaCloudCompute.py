@@ -3478,7 +3478,9 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
         await assets_coroutine
     if vulnerabilities_coroutine:
         await vulnerabilities_coroutine
-    demisto.debug(f"Finished sending all data to XSIAM. Sent a total of {assets_total} assets, and {vulnerabilities_total} vulnerabilities.")
+    demisto.debug(
+        f"Finished sending all data to XSIAM. Sent a total of {assets_total} assets, and {vulnerabilities_total} vulnerabilities."
+    )
     set_integration_context({})
     demisto.updateModuleHealth({"assetsPulled": assets_total + vulnerabilities_total})
 
@@ -3580,7 +3582,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         await vulnerabilities_coroutine
 
 
-def process_findings(vulnerabilities, related_asset, time_field):
+def process_findings(vulnerabilities=[], related_asset={}, time_field=""):
     processed_vulnerabilities = []
     for vulnerability in vulnerabilities:
         processed_vulnerabilities.append(
@@ -3640,7 +3642,7 @@ def process_runtime_image_and_host_results(data_list):
                 },
             }
         )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "scanTime"))
+        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []) or [], data, "scanTime"))
 
     return processed_results_list, processed_vulnerabilities_list
 
@@ -3677,7 +3679,7 @@ def process_tas_droplet_results(data_list):
                 },
             }
         )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "lastModified"))
+        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []) or [], data, "lastModified"))
     return processed_results_list, processed_vulnerabilities_list
 
 
