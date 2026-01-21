@@ -7,7 +7,6 @@ sectionorder:
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
-provider: Atlassian
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
 - name: server_url
@@ -1835,7 +1834,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.5185022
+  dockerimage: demisto/btfl-soup:1.0.1.6337886
   isfetch: true
   ismappable: true
   isremotesyncin: true
