@@ -1135,8 +1135,8 @@ def test_xql_library_list_command(mocker):
     mocker.patch.object(CLIENT, "get_xql_queries", return_value=mock_response)
     response = XQLQueryingEngine.xql_library_list_command(CLIENT, args)
 
-    assert response.outputs[0]["name"] == "test_query"  # type: ignore
-    assert response.outputs[0]["query_text"] == "dataset = xdr_data"  # type: ignore
+    assert response.outputs[0]["name"] == "test_query"
+    assert response.outputs[0]["query_text"] == "dataset = xdr_data"
     assert response.outputs_prefix == "PaloAltoNetworksXQL.Library"
 
 
@@ -1161,9 +1161,11 @@ def test_xql_library_create_command(mocker):
     assert response.readable_output == "XQL queries created successfully."
     res.assert_called_once_with(
         {
-            "xql_queries_override": "true",
-            "xql_query_tags": ["test_tag"],
-            "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}],
+            "request_data": {
+                "xql_queries_override": True,
+                "xql_query_tags": ["test_tag"],
+                "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}],
+            }
         }
     )
 
@@ -1182,4 +1184,6 @@ def test_xql_library_delete_command(mocker):
     response = XQLQueryingEngine.xql_library_delete_command(CLIENT, args)
 
     assert response.readable_output == "XQL queries deleted successfully."
-    res.assert_called_once_with({"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]})
+    res.assert_called_once_with(
+        {"request_data": {"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]}}
+    )
