@@ -3301,8 +3301,18 @@ class EC2:
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Modification",
             [volume_modification],
-            headers=["VolumeId", "ModificationState", "TargetSize", "TargetIops", "TargetVolumeType",
-                    "OriginalSize", "OriginalIops", "OriginalVolumeType", "StartTime", "Progress"],
+            headers=[
+                "VolumeId",
+                "ModificationState",
+                "TargetSize",
+                "TargetIops",
+                "TargetVolumeType",
+                "OriginalSize",
+                "OriginalIops",
+                "OriginalVolumeType",
+                "StartTime",
+                "Progress",
+            ],
             removeNull=True,
         )
 
