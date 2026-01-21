@@ -3545,26 +3545,35 @@ def process_host_results(data_list):
 
 def process_tas_droplet_results(data_list):
     processed_results_list = []
+    extracted_vulnerabilities_list = []
     for data in data_list:
         processed_results_list.append(
             {
-                "Name": data.get("name", ""),
-                "Provider": data.get("provider", "VMWare"),
-                "Type": "Runtime Image",
-                "Category": "Container Image",
-                "Class": "Compute",
-                "Region": data.get("region", ""),
-                "Realm": data.get("accountID", ""),
-                "Tags": data.get("tags", []) + data.get("labels", []),
-                "FQDN": data.get("cloudControllerAddress", ""),
-                "Strong ID": data.get("id", ""),
+                "name": data.get("name", ""),
+                "scanTime": data.get("scanTime", ""),
+                "provider": data.get("provider", "VMWare"),
+                "labels": data.get("labels", []),
+                "hostname": data.get("hostname", ""),
+                "osDistro": data.get("osDistro", ""),
+                "osDistroVersion": data.get("osDistroVersion", ""),
+                "type": data.get("type", ""),
+                "packageManager": data.get("packageManager", ""),
+                "cloudMetadata": {
+                    "region": data.get("cloudMetadata", {}).get("region", ""),
+                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
+                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
+                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
+                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
+                }
             }
         )
+        extracted_vulnerabilities_list.extend(data.get("vulnerabilities", []))
     return processed_results_list
 
 
 def process_runtime_image_results(data_list):
     processed_results_list = []
+    extracted_vulnerabilities_list = []
     for data in data_list:
         processed_results_list.append(
             {
@@ -3579,6 +3588,7 @@ def process_runtime_image_results(data_list):
                 "Strong ID": data.get("id", ""),
             }
         )
+        extracted_vulnerabilities_list.extend(data.get("vulnerabilities", []))
     return processed_results_list
 
 
