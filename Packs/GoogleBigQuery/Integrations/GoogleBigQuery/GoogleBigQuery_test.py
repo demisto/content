@@ -73,8 +73,8 @@ def test_convert_to_string_date():
     """
     from GoogleBigQuery import convert_to_string
 
-    d = datetime.date(2023, 1, 1)
-    assert convert_to_string(d, "%Y-%m-%d") == "2023-01-01"
+    d = datetime.date(2023, 1, 15)
+    assert convert_to_string(d, date_only_format="%Y-%m-%d") == "2023-01-15"
 
 
 def test_convert_to_string_date_default_format():
@@ -91,8 +91,8 @@ def test_convert_to_string_date_default_format():
     """
     from GoogleBigQuery import convert_to_string
 
-    d = datetime.date(2023, 1, 1)
-    assert convert_to_string(d) == "01/01/2023"
+    d = datetime.date(2023, 1, 15)
+    assert convert_to_string(d) == "01/15/2023"
 
 
 def test_convert_to_string_other():
@@ -465,3 +465,32 @@ def test_query_command_with_datetime_format(mocker):
     assert return_outputs_mock.call_count == 1
     _, kwargs = return_outputs_mock.call_args
     assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Time"] == "2023-01-30"
+
+
+def test_query_command_with_date_only_format(mocker):
+    """
+    Given:
+    - A query to run.
+    - A date_only_format argument set to "%Y-%m-%d".
+    - Query returns results with a date object.
+
+    When:
+    - Calling query_command.
+
+    Then:
+    - Ensure return_outputs is called with the date field formatted according to the date_only_format.
+    """
+    from GoogleBigQuery import query_command
+    import GoogleBigQuery
+
+    d = datetime.date(2023, 1, 30)
+    mock_row = {"date": d}
+    mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=[mock_row])
+    mocker.patch.object(demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false", "date_only_format": "%Y-%m-%d"})
+    return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
+
+    query_command("SELECT 1")
+
+    assert return_outputs_mock.call_count == 1
+    _, kwargs = return_outputs_mock.call_args
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Date"] == "01/30/2023"

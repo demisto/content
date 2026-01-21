@@ -123,7 +123,11 @@ script:
       description: Choose whether the key in the context will be in an underscore or a CamelCase format.
       defaultValue: 'CamelCase'
     - name: datetime_format
-      description: The requested date format for datetime objects returned from the query. The default value is "%m/%d/%Y %H:%M:%S" for datetime objects and "%m/%d/%Y" for date objects.
+      description: The requested date and time format for datetime objects returned from the query.
+      defaultValue: "%m/%d/%Y %H:%M:%S"
+    - name: date_only_format
+      description: The requested date format for date objects returned from the query, which includes only date, without the time.
+      defaultValue: "%m/%d/%Y"
     outputs:
     - contextPath: BigQuery.Query
       description: The query performed.

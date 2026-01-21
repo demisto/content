@@ -111,13 +111,11 @@ def build_query_job_config(
     return query_job_config
 
 
-def convert_to_string(field_value, datetime_format: str = ""):
+def convert_to_string(field_value, datetime_format: str = "%m/%d/%Y %H:%M:%S", date_only_format: str = "%m/%d/%Y"):
     if isinstance(field_value, datetime):
-        datetime_format = datetime_format if datetime_format else "%m/%d/%Y %H:%M:%S"
         return field_value.strftime(datetime_format)
     if isinstance(field_value, date):
-        datetime_format = datetime_format if datetime_format else "%m/%d/%Y"
-        return field_value.strftime(datetime_format)
+        return field_value.strftime(date_only_format)
     if isinstance(field_value, bytes):
         return field_value.decode("utf-8")
     return field_value
@@ -216,13 +214,14 @@ def query_command(query_to_run=None):
 
     else:
         context_key_format = args.get("context_key_format", "")
-        datetime_format = args.get("datetime_format", "")
-        demisto.debug(f"context_key_format: {context_key_format}, datetime_format: {datetime_format}")
+        datetime_format = args.get("datetime_format", "%m/%d/%Y %H:%M:%S")
+        date_only_format = args.get("datetime_format", "%m/%d/%Y")
+        demisto.debug(f"{context_key_format=}, {datetime_format=}, {date_only_format=}")
         for row in query_results:
             if context_key_format == "underscore":
-                row_context = {k: convert_to_string(v, datetime_format) for k, v in row.items()}
+                row_context = {k: convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
             else:
-                row_context = {underscoreToCamelCase(k): convert_to_string(v, datetime_format) for k, v in row.items()}
+                row_context = {underscoreToCamelCase(k): convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
