@@ -12,7 +12,17 @@ supportedModules:
 - agentix
 - xsiam
 - cloud_posture
-args: []
+args:
+- name: page
+  type: number
+  defaultvalue: "0"
+  description: Page number (for pagination). The default is 0 (the first page).
+  underlyingargname: page
+- name: limit
+  type: number
+  defaultvalue: "100"
+  description: Maximum number of cases to return per page. The default and maximum value is 100.
+  underlyingargname: limit
 outputs:
 - name: Core.Case.CASE_ID
   description: The unique identifier for the case.

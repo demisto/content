@@ -6,7 +6,10 @@ import json
 def main():
     try:
         args = demisto.args()
-        demisto.debug(f"GetCases called with {args}")
+        page = int(args.get('page' , 0))
+        limit = int(args.get('limit', 100))
+        start = page * limit
+        end = page * limit + limit
         res = demisto.executeCommand(
             "core-generic-api-call",
             {
@@ -18,7 +21,7 @@ def main():
                         "table_name": "CASE_MANAGER_TABLE",
                         "filter_data": {
                             "sort": [{"FIELD": "LAST_UPDATE_TIME", "ORDER": "DESC"}],
-                            "paging": {"from": 0, "to": 100},
+                            "paging": {"from": start, "to": end},
                             "filter": {},
                         },
                         "jsons": [],

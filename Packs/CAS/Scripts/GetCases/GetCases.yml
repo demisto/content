@@ -8,7 +8,11 @@ tags:
 - Utilities
 comment: Get all cases.
 enabled: true
-args: []
+args:
+- name: page
+  description: Page number (for pagination). The default is 0 (the first page).
+- name: limit
+  description: Maximum number of cases to return per page. The default and maximum value is 100.
 outputs:
 - contextPath: Core.Case.CASE_ID
   description: The unique identifier for the case.
