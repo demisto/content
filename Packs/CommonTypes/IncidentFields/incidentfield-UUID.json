@@ -5,6 +5,7 @@
     "FireEye NX Alert",
     "FireEye EX Alert",
     "Trellix incident"
+    "CrowdStrike Falcon NGSIEM Case"
   ],
   "breachScript": "",
   "caseInsensitive": true,
