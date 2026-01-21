@@ -4503,7 +4503,8 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, flo
             - percentage_not_sending: Percentage of accounts not sending logs
             - accounts_not_sending_logs: List of account details not sending logs
     """
-    all_accounts = []
+    total_accounts = 0
+    accounts_not_sending_logs = []
     next_token = ""
 
     # Paginate through all accounts
@@ -4517,30 +4518,28 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, flo
         )
 
         accounts = response.get("values", [])
-        all_accounts.extend(accounts)
+        
+        # Process accounts on the fly without storing all in memory
+        for account in accounts:
+            total_accounts += 1
+            additional_capabilities = account.get("additional_capabilities", {}) or {}
+            automation_log_level = additional_capabilities.get("automation_log_level", "")
+
+            if automation_log_level == "OFF":
+                accounts_not_sending_logs.append(
+                    {
+                        "account_id": account.get("account_id"),
+                        "account_name": account.get("account_name") or "N/A",
+                        "cloud_type": account.get("cloud_type"),
+                        "status": account.get("status"),
+                    }
+                )
 
         next_token = response.get("next_token", "")
         if not next_token:
             break
 
-    # Filter accounts not sending logs (automation_log_level = 'OFF')
-    accounts_not_sending_logs = []
-    for account in all_accounts:
-        additional_capabilities = account.get("additional_capabilities", {}) or {}
-        automation_log_level = additional_capabilities.get("automation_log_level", "")
-
-        if automation_log_level == "OFF":
-            accounts_not_sending_logs.append(
-                {
-                    "account_id": account.get("account_id"),
-                    "account_name": account.get("account_name") or "N/A",
-                    "cloud_type": account.get("cloud_type"),
-                    "status": account.get("status"),
-                }
-            )
-
     # Calculate statistics
-    total_accounts = len(all_accounts)
     accounts_not_sending_count = len(accounts_not_sending_logs)
 
     if total_accounts > 0:
