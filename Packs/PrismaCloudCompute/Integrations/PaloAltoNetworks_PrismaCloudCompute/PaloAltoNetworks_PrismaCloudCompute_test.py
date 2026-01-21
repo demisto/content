@@ -2105,17 +2105,25 @@ def test_init_asset_type_related_data_from_context(mocker):
     Then: It should initialize AssetTypeRelatedData with values from the context.
     """
     ctx_lock = asyncio.Lock()
-    mocker.patch.object(
-        demisto,
-        "getIntegrationContext",
-        return_value={"Host": {"offset": 50, "total_count": 100, "snapshot_id": "test_snapshot"}},
-    )
+    ctx = {
+        "Host": {"offset": 50, "assets_total_count": 100, "vulnerabilities_total_count": 200},
+        "assets_snapshot_id": "assets_snapshot",
+        "vulnerabilities_snapshot_id": "vulnerabilities_snapshot",
+    }
     asset_type_data = init_asset_type_related_data(
-        endpoint="/hosts", product="Hosts", asset_type=AssetType.HOST, process_result_func=process_host_results, ctx_lock=ctx_lock
+        endpoint="/hosts",
+        asset_type=AssetType.HOST,
+        process_result_func=process_host_results,
+        ctx_lock=ctx_lock,
+        ctx=ctx,
+        assets_snapshot_id="assets_snapshot",
+        vulnerabilities_snapshot_id="vulnerabilities_snapshot",
     )
     assert asset_type_data.offset == 50
-    assert asset_type_data.total_count == 100
-    assert asset_type_data.snapshot_id == "test_snapshot"
+    assert asset_type_data.assets_total_count == 100
+    assert asset_type_data.vulnerabilities_total_count == 200
+    assert asset_type_data.assets_snapshot_id == "assets_snapshot"
+    assert asset_type_data.vulnerabilities_snapshot_id == "vulnerabilities_snapshot"
     assert asset_type_data.asset_type == AssetType.HOST
 
 
@@ -2126,18 +2134,21 @@ def test_init_asset_type_related_data_new_data(mocker):
     Then: It should initialize AssetTypeRelatedData with default values.
     """
     ctx_lock = asyncio.Lock()
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    ctx = {}
     asset_type_data = init_asset_type_related_data(
         endpoint="/images",
-        product="Runtime_images",
         asset_type=AssetType.RUNTIME_IMAGE,
         process_result_func=process_runtime_image_results,
         ctx_lock=ctx_lock,
+        ctx=ctx,
+        assets_snapshot_id="new_assets_snapshot",
+        vulnerabilities_snapshot_id="new_vulnerabilities_snapshot",
     )
     assert asset_type_data.offset == 0
-    assert asset_type_data.total_count == 0
+    assert asset_type_data.assets_total_count == 0
+    assert asset_type_data.vulnerabilities_total_count == 0
     assert asset_type_data.asset_type == AssetType.RUNTIME_IMAGE
-    assert isinstance(asset_type_data.snapshot_id, str)  # Should be a new snapshot ID
+    assert asset_type_data.assets_snapshot_id == "new_assets_snapshot"
 
 
 @pytest.mark.asyncio
@@ -2180,15 +2191,15 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
 
     asset_type_related_data = AssetTypeRelatedData(
         endpoint="/hosts",
-        product="Hosts",
         asset_type=AssetType.HOST,
         process_result_func=process_host_results,
         ctx_lock=ctx_lock,
-        snapshot_id="1",
+        assets_snapshot_id="1",
+        vulnerabilities_snapshot_id="1",
     )
 
     mock_send_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.async_send_data_to_xsiam")
-    mock_remove_data = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx", new_callable=AsyncMock)
+    mock_remove_data = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.remove_related_data_from_ctx", new_callable=AsyncMock)
     await collect_assets_and_send_to_xsiam(mock_client, asset_type_related_data)
     mock_send_data.assert_not_called()
     assert mock_remove_data.called
@@ -2215,19 +2226,19 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
 
     asset_type_related_data = AssetTypeRelatedData(
         endpoint="/hosts",
-        product="Hosts",
         asset_type=AssetType.HOST,
         process_result_func=process_host_results,
         limit=1,
         ctx_lock=ctx_lock,
-        snapshot_id="1",
+        assets_snapshot_id="1",
+        vulnerabilities_snapshot_id="1",
     )
 
     mock_send_data = mocker.patch(
         "PaloAltoNetworks_PrismaCloudCompute.process_asset_data_and_send_to_xsiam", new_callable=MagicMock
     )
     mock_update_context = mocker.patch.object(asset_type_related_data, "safe_update_integration_context", new_callable=AsyncMock)
-    mock_clear_context = mocker.patch.object(asset_type_related_data, "remove_related_data_from_ctx", new_callable=AsyncMock)
+    mock_clear_context = mocker.patch("PaloAltoNetworks_PrismaCloudCompute.remove_related_data_from_ctx", new_callable=AsyncMock)
 
     mock_send_data.return_value = asyncio.Future()
     mock_send_data.return_value.set_result(None)
