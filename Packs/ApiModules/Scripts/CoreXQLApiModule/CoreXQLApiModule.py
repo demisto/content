@@ -208,7 +208,7 @@ class CoreClient(BaseClient):
         # The API returns 200 even if xql query doesn't exist
         return self._http_request(
             method="POST",
-            url_suffix="../xql_library/delete/",  # The endpoint is without v1
+            url_suffix="../xql_library/delete",  # The endpoint is without v1
             json_data=request_data,
         )
 
