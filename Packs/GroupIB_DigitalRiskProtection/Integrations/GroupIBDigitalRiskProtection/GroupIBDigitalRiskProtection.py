@@ -648,8 +648,7 @@ class IncidentBuilder:
             sequpdate = portion.sequpdate
             parse_result: list[dict[Any, Any]] = portion.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)
             demisto.debug(
-                "IncidentBuilder.build: portion parsed - "
-                f"portion_sequpdate={sequpdate!r} parsed_items={len(parse_result)}"
+                "IncidentBuilder.build: portion parsed - " f"portion_sequpdate={sequpdate!r} parsed_items={len(parse_result)}"
             )
 
             created_before = len(violations)
