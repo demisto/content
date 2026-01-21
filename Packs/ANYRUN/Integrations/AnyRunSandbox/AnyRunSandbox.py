@@ -7,7 +7,7 @@ from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import WindowsConnector, LinuxConnector, AndroidConnector
 
 
-VERSION = "PA-XSOAR:2.2.1"
+VERSION = "PA-XSOAR:2.3.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 
