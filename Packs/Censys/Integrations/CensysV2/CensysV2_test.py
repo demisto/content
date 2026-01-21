@@ -130,16 +130,24 @@ def test_ip_command(client, requests_mock):
     """
     Given:
         - An IP address to check.
+        - Malicious labels and threshold in params.
     When:
         - Running the ip command.
     Then:
         - Ensure the API is called with the correct parameters.
         - Ensure the command results contain the expected indicator and reputation data.
+        - Ensure the DBotScore is calculated based on labels.
     """
     # Given
     args = {"ip": "127.0.0.1"}
-    params = {"integration_reliability": "C - Fairly reliable"}
+    params = {
+        "integration_reliability": "C - Fairly reliable",
+        "malicious_labels": "malicious",
+        "malicious_labels_threshold": 1,
+    }
     mock_res = util_load_json("ip_command_response.json")
+    # Ensure the mock response has the malicious label
+    mock_res["result"]["hits"][0]["host_v1"]["resource"]["labels"] = [{"value": "malicious"}]
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
 
     # When
@@ -150,6 +158,7 @@ def test_ip_command(client, requests_mock):
     result = results[0]
     assert result.outputs_prefix == "Censys.IP"
     assert result.indicator.ip == "127.0.0.1"  # type: ignore
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
 
 
 def test_domain_command(client, requests_mock):
