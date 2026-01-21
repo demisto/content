@@ -1604,11 +1604,44 @@ script:
     description: Gets a list of XQL queries from the library.
     name: xdr-xql-library-list
     outputs:
+    - contextPath: PaloAltoNetworksXQL.Library.id
+      description: The unique identifier of the saved query.
+      type: Number
     - contextPath: PaloAltoNetworksXQL.Library.name
       description: The name of the XQL query.
       type: String
+    - contextPath: PaloAltoNetworksXQL.Library.description
+      description: A description of what the query searches for.
+      type: String
     - contextPath: PaloAltoNetworksXQL.Library.query_text
-      description: The XQL query string.
+      description: The actual XQL query syntax.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.created_at
+      description: The date and time when the query was created (in Unix Epoch format).
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.Library.modified_at
+      description: The date and time when the query was last modified (in Unix Epoch format).
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.Library.created_by
+      description: The email address of the user who created the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.modified_by
+      description: The email address of the user who last modified the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.created_by_pretty
+      description: The display name that created the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.modified_by_pretty
+      description: The display name that last modified the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.is_private
+      description: Whether the query is private to the user or shared.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXQL.Library.content_global_id
+      description: The global content identifier.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.labels
+      description: A list of labels associated with the query.
       type: String
   - arguments:
     - description: Whether to override existing queries.
