@@ -6,12 +6,25 @@ import json
 def main():
     try:
         args = demisto.args()
+        demisto.debug(f"GetCases called with {args}")
         res = demisto.executeCommand(
-        "core-generic-api-call",
+            "core-generic-api-call",
             {
                 "path": "/api/webapp/get_data",
                 "method": "POST",
-                "data": json.dumps({'type': 'grid', 'table_name': 'CASE_MANAGER_TABLE', 'filter_data': {'sort': [{'FIELD': 'LAST_UPDATE_TIME', 'ORDER': 'DESC'}], 'paging': {'from': 0, 'to': 100}, 'filter': {}}, 'jsons': [], 'onDemandFields': []})
+                "data": json.dumps(
+                    {
+                        "type": "grid",
+                        "table_name": "CASE_MANAGER_TABLE",
+                        "filter_data": {
+                            "sort": [{"FIELD": "LAST_UPDATE_TIME", "ORDER": "DESC"}],
+                            "paging": {"from": 0, "to": 100},
+                            "filter": {},
+                        },
+                        "jsons": [],
+                        "onDemandFields": [],
+                    }
+                ),
             },
         )
 
