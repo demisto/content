@@ -4824,7 +4824,6 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:StopInstances",
     "ec2:TerminateInstances",
     "ec2:RunInstances",
-    "ec2:ModifyNetworkInterfaceAttribute",
     "eks:UpdateClusterConfig",
     "iam:PassRole",
     "iam:DeleteLoginProfile",
