@@ -7,13 +7,28 @@ import json
 def main():
     try:
         args = demisto.args()
-        query = args["query"]
         res = demisto.executeCommand(
         "core-generic-api-call",
             {
-                "path": "/xql/start_xql_query",
+                "path": "/get_data",
                 "method": "POST",
-                "data": json.dumps({"request_data":{"query": query}}),
+                "data": json.dumps({
+        "type": "grid",
+        "table_name": "COVERAGE",
+        "filter_data": {
+    "sort": [],
+    "filter": {},
+    "free_text": "",
+    "visible_columns": None,
+    "locked": {},
+    "paging": {
+        "from": 0,
+        "to": 100
+    }
+} ,
+        "jsons": [],
+        "onDemandFields": None,
+    }),
             },
         )
 
@@ -28,9 +43,9 @@ def main():
 
             return_results(
                 CommandResults(
-                    outputs_prefix="Core.XQLQuery",
-                    outputs={"queryId": reply},
-                    readable_output=f"XQL query started successfully. Query ID: {reply}",
+                    outputs_prefix="Core.Coverage.Asset",
+                    outputs=reply,
+                    readable_output=f"Asset Coverage {reply}",
                 )
             )
     except Exception as ex:

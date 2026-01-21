@@ -34,7 +34,7 @@ Upload a content entity to Cortex XSIAM.
 In order to run the command, `DEMISTO_BASE_URL` environment variable should contain the Cortex XSIAM instance URL, and `DEMISTO_API_KEY` environment variable should contain a valid Cortex XSIAM API Key.
 
 ### Notes for Cortex XSIAM:
-*   **Cortex XSIAM Base URL** should be retrieved from XSIAM instance -> Settings -> Configurations -> API Keys -> Copy URL button in the top right corner.
+*   **Cortex XSIAM Base URL** should be retrieved from Settings -> Configurations -> API Keys -> Copy URL button in the top right corner.
 *   **API key** should be of a standard security level, and have the Instance Administrator role.
 *   To use the command the `XSIAM_AUTH_ID` environment variable **must** be set.
 
