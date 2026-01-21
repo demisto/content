@@ -23,12 +23,14 @@ def main():
             data = context.get("data")
             data = json.loads(data)
             reply = data.get("reply")
+            data = reply.get("DATA")
 
             return_results(
                 CommandResults(
-                    outputs_prefix="Core.Cases",
-                    outputs=reply,
-                    readable_output=f"Cases {reply}",
+                    outputs_prefix="Core.Case",
+                    outputs=data,
+                    readable_output=f"Cases {data}",
+                    raw_response=data,
                 )
             )
     except Exception as ex:

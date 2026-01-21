@@ -6,14 +6,15 @@ script: ''
 type: python
 tags:
 - Utilities
-comment: Start an XQL query for threat hunting and investigation purposes
+comment: Get all cases.
 enabled: true
-args:
-- description: The XQL query to start and execute.
-  name: query
+args: []
 outputs:
-- contextPath: Core.XQLQuery.queryId
-  description: The unique identifier for the started XQL query.
+- contextPath: Core.Case.CASE_ID
+  description: The unique identifier for the case.
+  type: Number
+- contextPath: Core.Case.NAME
+  description: The name of the case.
   type: String
 scripttarget: 0
 subtype: python3
