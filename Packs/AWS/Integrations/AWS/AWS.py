@@ -2526,7 +2526,7 @@ class EC2:
         if volume_ids := args.get("volume_ids"):
             kwargs["VolumeIds"] = argToList(volume_ids)
 
-        pagination_kwargs = build_pagination_kwargs(args)
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
         kwargs.update(pagination_kwargs)
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
