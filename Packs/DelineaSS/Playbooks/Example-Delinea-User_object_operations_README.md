@@ -1,4 +1,4 @@
-Example for usage integration REST API User object  for Delinea Secret Server.
+Example for usage integration REST API User object for Delinea Secret Server.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* delinea-user-delete
-* delinea-user-create
-* delinea-user-update
-* delinea-user-search
+* delinea-secret-server-user-delete
+* delinea-secret-server-user-create
+* delinea-secret-server-user-update
+* delinea-secret-server-user-search
 
 ## Playbook Inputs
 ---

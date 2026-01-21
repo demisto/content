@@ -1,7 +1,7 @@
-Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
+Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Delinea
-
 ## Configure Delinea in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,24 +13,22 @@ This integration was integrated and tested with version 5.0 of Delinea
 | credentialobjects | List secret name for fetch credentials \(separated by commas\) | False |
 
 ## Commands
-
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### delinea-secret-password-get
-
 ***
 Retrieved password from secret
+
 
 #### Base Command
 
 `delinea-secret-password-get`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret | Required |
+
 
 #### Context Output
 
@@ -38,12 +36,11 @@ Retrieved password from secret
 | --- | --- | --- |
 | Delinea.Secret.Password | String | Retrieved password from secret  |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-password-get secret_id=2```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -54,20 +51,21 @@ Retrieved password from secret
 }
 ```
 
-### delinea-secret-username-get
 
+### delinea-secret-username-get
 ***
 Retrieved username from secret
+
 
 #### Base Command
 
 `delinea-secret-username-get`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret | Required |
+
 
 #### Context Output
 
@@ -75,12 +73,11 @@ Retrieved username from secret
 | --- | --- | --- |
 | Delinea.Secret.Username | String | Retrieved username from secret. |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-username-get secret_id=2```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -91,20 +88,21 @@ Retrieved username from secret
 }
 ```
 
-### delinea-secret-search-name
 
+### delinea-secret-search-name
 ***
 Search ID secret by field name
+
 
 #### Base Command
 
 `delinea-secret-search-name`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | Search name secret. | Required |
+
 
 #### Context Output
 
@@ -112,12 +110,11 @@ Search ID secret by field name
 | --- | --- | --- |
 | Delinea.Secret.Id | String | Retrieved list ID for find secret by field secret name |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-search-name search_name=xsoarSecret```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -130,15 +127,15 @@ Search ID secret by field name
 }
 ```
 
-### delinea-secret-password-update
 
+### delinea-secret-password-update
 ***
 Update password for secret
+
 
 #### Base Command
 
 `delinea-secret-password-update`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -146,18 +143,18 @@ Update password for secret
 | secret_id | ID secret for update  password | Required |
 | newpassword | Value new password for secret | Required |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Newpassword | String | New password changed for secret |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-password-update secret_id=2 newpassword=12345```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -168,20 +165,21 @@ Update password for secret
 }
 ```
 
-### delinea-secret-checkout
 
+### delinea-secret-checkout
 ***
 Check Out a secret
+
 
 #### Base Command
 
 `delinea-secret-checkout`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret for check out command | Required |
+
 
 #### Context Output
 
@@ -189,38 +187,38 @@ Check Out a secret
 | --- | --- | --- |
 | Delinea.Secret.Checkout | String | Return call command Check Out |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-checkout secret_id=2```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
         "Secret": {
             "Checkout": {
-              "responseCodes":null
+            "responseCodes":null
             }
         }
     }
 }
 ```
 
-### delinea-secret-checkin
 
+### delinea-secret-checkin
 ***
 Check In a secret
+
 
 #### Base Command
 
 `delinea-secret-checkin`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | Secret ID. | Required |
+
 
 #### Context Output
 
@@ -228,12 +226,11 @@ Check In a secret
 | --- | --- | --- |
 | Delinea.Secret.Checkin | String | Secret object |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-checkin secret_id=13```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -270,15 +267,16 @@ Check In a secret
 }
 ```
 
-### delinea-folder-create
 
+
+### delinea-folder-create
 ***
 Create a new secret folder
+
 
 #### Base Command
 
 `delinea-folder-create`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -290,18 +288,18 @@ Create a new secret folder
 | inheritSecretPolicy | Whether the folder should inherit the secret policy. Defaults to true unless creating a root folder. | Optional |
 | secretPolicyId | Secret policy ID | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Folder.Create | Unknown | New object folder |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -323,20 +321,21 @@ Create a new secret folder
 }
 ```
 
-### delinea-folder-search
 
+### delinea-folder-search
 ***
 Search folder by name folder
+
 
 #### Base Command
 
 `delinea-folder-search`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | foldername | Search name folder | Required |
+
 
 #### Context Output
 
@@ -344,12 +343,11 @@ Search folder by name folder
 | --- | --- | --- |
 | Delinea.Folder.Id | String | Retrieved folder ID from search query |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-folder-search foldername="xsoarFolderTest"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -362,12 +360,11 @@ Search folder by name folder
 }
 ```
 
-#### Command Example
 
+#### Command Example
 ```!delinea-folder-delete folder_id="18"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -382,20 +379,21 @@ Search folder by name folder
 }
 ```
 
-### delinea-secret-get
 
+### delinea-secret-get
 ***
 Get secret object by ID secret
+
 
 #### Base Command
 
 `delinea-secret-get`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID for secret | Required |
+
 
 #### Context Output
 
@@ -403,12 +401,11 @@ Get secret object by ID secret
 | --- | --- | --- |
 | Delinea.Secret | String | Secret object |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-get secret_id=2```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -510,15 +507,15 @@ Get secret object by ID secret
 }
 ```
 
-### delinea-secret-search
 
+### delinea-secret-search
 ***
 Search secret ID by multiply params
+
 
 #### Base Command
 
 `delinea-secret-search`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -532,7 +529,7 @@ Search secret ID by multiply params
 | filter.heartbeatStatus | Return only secrets with a certain heartbeat status | Optional |
 | filter.includeActive | Whether to include active secrets in results (when excluded equals true) | Optional |
 | filter.includeInactive | Whether to include inactive secrets in results | Optional |
-| filter.includeRestricted | Whether to include restricted secrets in results   | Optional |
+| filter.includeRestricted | Whether to include restricted secrets in results | Optional |
 | filter.isExactMatch | Whether to do an exact match of the search text or a partial match | Optional |
 | filter.onlyRPCEnabled | Whether to only include secrets whose template has Remote Password Changing enabled | Optional |
 | filter.onlySharedWithMe | When true only Secrets where you are not the owner and the Secret was shared explicitly with your user id will be returned. | Optional |
@@ -551,18 +548,18 @@ Search secret ID by multiply params
 | take | Maximum number of records to include in results | Optional |
 | filter.includeSubFolders | Whether to include secrets in subfolders of the specified folder | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Secret | String | Search secret object |
 
-#### Command Example
 
-```!delinea-user-search filter_searchfields="username" filter_searchtext="xsoar"```
+#### Command Example
+```!delinea-secret-search filter_searchfields="username" filter_searchtext="xsoar"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -575,15 +572,16 @@ Search secret ID by multiply params
 }
 ```
 
-### delinea-folder-update
 
+
+### delinea-folder-update
 ***
 Update a single secret folder by ID
+
 
 #### Base Command
 
 `delinea-folder-update`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -596,18 +594,18 @@ Update a single secret folder by ID
 | parentFolderId | ID parent folder | Optional |
 | secretPolicyId | Secret Policy ID | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Folder.Update | String | Retrieved return operation update folder |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-folder-update id=4 foldername="SafexsoarTest"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -629,15 +627,15 @@ Update a single secret folder by ID
 }
 ```
 
-### delinea-secret-create
 
+### delinea-secret-create
 ***
 Create new object Secret
+
 
 #### Base Command
 
 `delinea-secret-create`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -665,18 +663,18 @@ Create new object Secret
 | password_item | Item Password for secret.If need to select template. | Optional |
 | notes_item | Item Notes for secret.IF  need to select template. | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Create | String | Secret Model |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-create name="xsoarSecret" secrettemplateid="6003" siteid="1" checkoutenabled=true folderid=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -780,20 +778,21 @@ Create new object Secret
 }
 ```
 
-### delinea-secret-delete
 
+### delinea-secret-delete
 ***
 Delete secret
+
 
 #### Base Command
 
 `delinea-secret-delete`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID secret for delete | Required |
+
 
 #### Context Output
 
@@ -801,12 +800,11 @@ Delete secret
 | --- | --- | --- |
 | Delinea.Secret.Delete | String | Information about an object that was deleted |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-delete id=2```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -821,15 +819,15 @@ Delete secret
 }
 ```
 
-### delinea-user-create
 
+### delinea-secret-server-user-create
 ***
-Create a new user
+Create a new Secret Server user
+
 
 #### Base Command
 
-`delinea-user-create`
-
+`delinea-secret-server-user-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -849,60 +847,60 @@ Create a new user
 | radiusUserName | RADIUS username | Optional |
 | twoFactor | Whether two-factor authentication is enabled | Optional |
 
+
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Delinea.User.Create | String | User Model |
+| **Path**                          | **Type** | **Description** |
+|-----------------------------------|----------|-----------------|
+| Delinea.Secret.Server.User.Create | String   | User Model      |
+
 
 #### Command Example
-
-```!delinea-user-create displayname="UserOne" password="12345" username="UserOne"```
+```!delinea-secret-server-user-create displayname="UserOne" password="12345" username="UserOne" ```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
         "User": {
             "Create": {
-              "adAccountExpires":"0001-01-01T00:00:00",
-     "adGuid":null,
-     "created":"2022-06-01T08:31:15.275Z",
-     "dateOptionId":-1,
-     "displayName":"UserOne",
-     "domainId":-1,
-     "duoTwoFactor":false,
-     "emailAddress":null,
-     "enabled":true,
-     "externalUserSource":"None",
-     "fido2TwoFactor":false,
-     "id":29,
-     "ipAddressRestrictions":null,
-     "isApplicationAccount":false,
-     "isEmailCopiedFromAD":false,
-     "isEmailVerified":false,
-     "isLockedOut":false,
-     "lastLogin":0001-01-01T00:00:00,
-     "lastSessionActivity":null,
-     "lockOutReason":null,
-     "lockOutReasonDescription":null,
-     "loginFailures":0,
-     "mustVerifyEmail":false,
-     "oathTwoFactor":false,
-     "oathVerified":false,
-     "passwordLastChanged":"0001-01-01T00:00:00",
-     "personalGroupId":0,
-     "radiusTwoFactor":false,
-     "radiusUserName":null,
-     "resetSessionStarted":"0001-01-01T00:00:00",
-     "slackId":null,
-     "timeOptionId":-1,
-     "twoFactor":false,
-     "unixAuthenticationMethod":Password,
-     "userLcid":0,
-     "userName":"UserOne",
-     "verifyEmailSentDate":"0001-01-01T00:00:00"
+                "adAccountExpires":"0001-01-01T00:00:00",
+                "adGuid":null,
+                "created":"2022-06-01T08:31:15.275Z",
+                "dateOptionId":-1,
+                "displayName":"UserOne",
+                "domainId":-1,
+                "duoTwoFactor":false,
+                "emailAddress":null,
+                "enabled":true,
+                "externalUserSource":"None",
+                "fido2TwoFactor":false,
+                "id":29,
+                "ipAddressRestrictions":null,
+                "isApplicationAccount":false,
+                "isEmailCopiedFromAD":false,
+                "isEmailVerified":false,
+                "isLockedOut":false,
+                "lastLogin":0001-01-01T00:00:00,
+                "lastSessionActivity":null,
+                "lockOutReason":null,
+                "lockOutReasonDescription":null,
+                "loginFailures":0,
+                "mustVerifyEmail":false,
+                "oathTwoFactor":false,
+                "oathVerified":false,
+                "passwordLastChanged":"0001-01-01T00:00:00",
+                "personalGroupId":0,
+                "radiusTwoFactor":false,
+                "radiusUserName":null,
+                "resetSessionStarted":"0001-01-01T00:00:00",
+                "slackId":null,
+                "timeOptionId":-1,
+                "twoFactor":false,
+                "unixAuthenticationMethod":Password,
+                "userLcid":0,
+                "userName":"UserOne",
+                "verifyEmailSentDate":"0001-01-01T00:00:00"
             }
         }
     }
@@ -910,14 +908,14 @@ Create a new user
 
 ```
 
-### delinea-user-search
-
+### delinea-secret-server-user-search
 ***
-Search, filter, sort, and page users
+Search, filter, sort, and page Secret Server users
+
 
 #### Base Command
 
-`delinea-user-search`
+`delinea-secret-server-user-search`
 
 #### Input
 
@@ -933,18 +931,18 @@ Search, filter, sort, and page users
 | sortBy[0].priority | Priority index. Sorts with lower values are executed earlier (integer) | Optional |
 | take | Maximum number of records to include in results(integer) | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Search | String | Specify paging and sorting options for querying records and returning results |
+| Delinea.Secret.Server.User.Search | String | Specify paging and sorting options for querying records and returning results |
+
 
 #### Command Example
-
-```!delinea-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
+```!delinea-secret-server-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -955,15 +953,15 @@ Search, filter, sort, and page users
 }
 ```
 
-### delinea-user-update
 
+### delinea-secret-server-user-update
 ***
-Update a single user by ID
+Update a single Secret Server user by ID
+
 
 #### Base Command
 
-`delinea-user-update`
-
+`delinea-secret-server-user-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -987,60 +985,60 @@ Update a single user by ID
 | timeOptionId | timeOptionId (integer) | Optional |
 | twoFactor | Whether two-factor authentication is enabled | Optional |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Update | String | User Model |
+| Delinea.Secret.Server.User.Update | String | User Model |
+
 
 #### Command Example
-
-```!delinea-user-update id=28 displayname="myTestUser"```
+```!delinea-secret-server-user-update id=28 displayname="myTestUser"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
         "User": {
             "Update": {
-              "unixAuthenticationMethod":"Password",
-     "enabled":true,
-     "passwordLastChanged":"0001-01-01T00:00:00",
-     "isEmailCopiedFromAD":false,
-     "isApplicationAccount":false,
-     "lockOutReason":null,
-     "created":"2022-06-01T08:09:39",
-     "radiusUserName":"UserOne",
-     "radiusTwoFactor":false,
-     "verifyEmailSentDate":"0001-01-01T00:00:00",
-     "adAccountExpires":"0001-01-01T00:00:00",
-     "slackId":null,
-     "adGuid":null,
-     "displayName":"myTestUser",
-     "oathVerified":false,
-     "lastSessionActivity":null,
-     "externalUserSource":"None",
-     "loginFailures":0,
-     "lastLogin":"0001-01-01T00:00:00",
-     "ipAddressRestrictions":null,
-     "oathTwoFactor":false,
-     "lockOutReasonDescription":null,
-     "userName":"UserOne",
-     "fido2TwoFactor":false,
-     "emailAddress":null,
-     "resetSessionStarted":"0001-01-01T00:00:00",
-     "mustVerifyEmail":false,
-     "isEmailVerified":false,
-     "personalGroupId":0,
-     "isLockedOut":false,
-     "id":28,
-     "twoFactor":false,
-     "duoTwoFactor":false,
-     "timeOptionId":-1,
-     "userLcid":0,
-     "dateOptionId":-1,
-     "domainId":-1,
+                "unixAuthenticationMethod":"Password",
+                "enabled":true,
+                "passwordLastChanged":"0001-01-01T00:00:00",
+                "isEmailCopiedFromAD":false,
+                "isApplicationAccount":false,
+                "lockOutReason":null,
+                "created":"2022-06-01T08:09:39",
+                "radiusUserName":"UserOne",
+                "radiusTwoFactor":false,
+                "verifyEmailSentDate":"0001-01-01T00:00:00",
+                "adAccountExpires":"0001-01-01T00:00:00",
+                "slackId":null,
+                "adGuid":null,
+                "displayName":"myTestUser",
+                "oathVerified":false,
+                "lastSessionActivity":null,
+                "externalUserSource":"None",
+                "loginFailures":0,
+                "lastLogin":"0001-01-01T00:00:00",
+                "ipAddressRestrictions":null,
+                "oathTwoFactor":false,
+                "lockOutReasonDescription":null,
+                "userName":"UserOne",
+                "fido2TwoFactor":false,
+                "emailAddress":null,
+                "resetSessionStarted":"0001-01-01T00:00:00",
+                "mustVerifyEmail":false,
+                "isEmailVerified":false,
+                "personalGroupId":0,
+                "isLockedOut":false,
+                "id":28,
+                "twoFactor":false,
+                "duoTwoFactor":false,
+                "timeOptionId":-1,
+                "userLcid":0,
+                "dateOptionId":-1,
+                "domainId":-1
             }
         }
     }
@@ -1048,33 +1046,33 @@ Update a single user by ID
 
 ```
 
-### delinea-user-delete
 
+### delinea-secret-server-user-delete
 ***
-Delete a user by ID
+Delete a Secret Server user by ID
+
 
 #### Base Command
 
-`delinea-user-delete`
-
+`delinea-secret-server-user-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | User ID | Required |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Delete | String | Information about an object that was deleted |
+| Delinea.Secret.Server.User.Delete | String | Information about an object that was deleted |
+
 
 #### Command Example
-
-```!delinea-user-delete id=5```
+```!delinea-secret-server-user-delete id=5 ```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -1090,14 +1088,13 @@ Delete a user by ID
 ```
 
 ### delinea-secret-rpc-changepassword
-
 ***
 Change a secret's password
+
 
 #### Base Command
 
 `delinea-secret-rpc-changepassword`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1105,18 +1102,18 @@ Change a secret's password
 | secret_id | Secret ID | Required |
 | newPassword | New secret password | Required |
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.ChangePassword | String | Secret summary object |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
 
 #### Context Example
-
 ```json
 {
     "Delinea": {
@@ -1154,17 +1151,16 @@ Change a secret's password
 ```
 
 ### delinea-fetch-users
-
 ***
 Fetch credentials from secret
+
 
 #### Base Command
 
 `delinea-fetch-users`
-
 #### Input
-
 NO input argumets
+
 
 #### Context Output
 
@@ -1172,12 +1168,11 @@ NO input argumets
 | --- | --- | --- |
 | Delinea.User.Credentials | String | Secret credential objects |
 
-#### Command Example
 
+#### Command Example
 ```!delinea-fetch-users```
 
 #### Context Example
-
 ```json
 [
     {
@@ -1191,4 +1186,423 @@ NO input argumets
         "user": "secret2"
     }
 ]
+```
+
+### delinea-platform-user-create
+***
+Create a new user in Platform
+
+
+#### Base Command
+
+`delinea-platform-user-create`
+#### Input
+
+| **Argument Name**     | **Description**                                                                                                                             | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| MobileNumber          | The user mobile number.                                                                                                                     | Optional     |
+| ID                    | The UUID of the cloud user to change.                                                                                                       | Optional     |
+| InEverybodyRole       | The user is in the Everybody role?                                                                                                          | Optional     |
+| CmaRedirectedUserUuid | The MFA redirected user UUID.                                                                                                               | Optional     |
+| OfficeNumber          | The user office number.                                                                                                                     | Optional     |
+| ReportsTo             | The user reports to this user UUID.                                                                                                         | Optional     |
+| PreferredCulture      | The user preferred culture.                                                                                                                 | Optional     |
+| DisplayName           | The user display.                                                                                                                           | Optional     |
+| Password              | Password for new user. The password used to log in.                                                                                         | Required     |
+| Name                  | The user name.                                                                                                                              | Required     |
+| AccountExp            | Account expires date/time.                                                                                                                  | Optional     |
+| PasswordNeverExpire   | Does user's password expire?                                                                                                                | Optional     |
+| Mail                  | The User email.                                                                                                                             | Optional     |
+| ServiceUser           | Whether this is a service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license. | Optional     |
+| Description           | The User description.                                                                                                                       | Optional     |
+| HomeNumber            | The user home number.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description** |
+|------------------------------|----------|-----------------|
+| Delinea.Platform.User.Create | String   | Result          |
+
+
+#### Command Example
+```!delinea-platform-user-create Password="Test@123" Name="uniquexsoar1" ServiceUser="true"```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+      "Platform" : {
+          "User": {
+              "Create": {
+                  "Result": "a09eb441-f0a0-4894-a129-af4e0b3559d6",
+                  "success": true,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+            }
+          }
+        }
+      }
+    }
+```
+
+### delinea-platform-user-get
+***
+Get single Platform user by uuid
+
+
+#### Base Command
+
+`delinea-platform-user-get`
+
+#### Input
+
+| **Argument Name**      | **Description**                                               | **Required** |
+|------------------------|---------------------------------------------------------------|--------------|
+| userUuidOrUpn          | Fetches a Platform user by uuid or upn                        | Required     |
+ 
+
+
+#### Context Output
+
+| **Path**                  | **Type** | **Description** |
+|---------------------------|----------|-----------------|
+| Delinea.Platform.User.Get | String   | User Model      |
+
+
+#### Command Example
+```!delinea-platform-user-get userUuidOrUpn="09b9a9b0-6ce8-465f-ab03-65766d33b05e" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+          "User": {
+            "Get": {
+                "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                "directoryServiceName": "Delinea",
+                "directoryInstanceName": "Delinea",
+                "uuid": "c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                "name": "admin@loud",
+                "displayName": "admin",
+                "state": "Active",
+                "lastLogin": "2025-09-29T13:37:19.4639582Z",
+                "lastInvite": "2025-04-16T17:38:47.0519372Z",
+                "platformMembershipType": "Employee",
+                "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428440b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                "_links": {
+                  "self": {
+                    "href": "/api/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                    "method": "GET",
+                    "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428440b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                    "title": "PlatformUser(Platform): admin"
+                  },
+                  "directory-users": [
+                    {
+                      "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05R/users/c2c7bcc6-9560-44e0-8dff-5be221cd37e",
+                      "method": "GET",
+                      "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                      "title": "User(Delinea): admin"
+                    }
+                  ]
+                }
+            }
+          }
+        }
+    }
+}
+```
+
+
+### delinea-platform-user-update
+***
+Update a single Platform user by ID
+
+
+#### Base Command
+
+`delinea-platform-user-update`
+#### Input
+
+| **Argument Name**     | **Description**                                                                                                                             | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| MobileNumber          | The user mobile number.                                                                                                                     | Optional     |
+| ID                    | The UUID of the cloud user to change.                                                                                                       | Required     |
+| InEverybodyRole       | The user is in the Everybody role?                                                                                                          | Optional     |
+| CmaRedirectedUserUuid | The MFA redirected user uuid.                                                                                                               | Optional     |
+| OfficeNumber          | The user office number.                                                                                                                     | Optional     |
+| ReportsTo             | The user reports to this user UUID.                                                                                                         | Optional     |
+| PreferredCulture      | The user preferred culture.                                                                                                                 | Optional     |
+| DisplayName           | The user display.                                                                                                                           | Optional     |
+| Password              | Password for new user. The password used to log in.                                                                                         | Optional     |
+| Name                  | The user name.                                                                                                                              | Optional     |
+| AccountExp            | Account expires date/time.                                                                                                                  | Optional     |
+| PasswordNeverExpire   | Does user's password expire?                                                                                                                | Optional     |
+| Mail                  | The User email.                                                                                                                             | Optional     |
+| ServiceUser           | Whether this is a service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license. | Optional     |
+| Description           | The User description.                                                                                                                       | Optional     |
+| HomeNumber            | The user home number.                                                                                                                       | Optional     |
+
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**                                                     |
+|------------------------------|----------|---------------------------------------------------------------------|
+| Delinea.Platform.User.Update | String   | User is successfully updated then returning success: true in result |
+
+
+#### Command Example
+```!delinea-platform-user-update ID="b02319fc-b26a-4352-8e4e-d8ea1188f160" Name="xsoarUserTest1"```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "User": {
+                "Update": {
+                  "success": true,
+                  "Result": null,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+               }
+            }
+        }
+    }
+}
+```
+
+
+### delinea-platform-user-delete
+***
+Delete a Platform user by UUID or Name
+
+
+#### Base Command
+
+`delinea-platform-user-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------|--------------|
+| id                | User UUID       | Required     |
+
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**                                                                   |
+|------------------------------|----------|-----------------------------------------------------------------------------------|
+| Delinea.Platform.User.Delete | String   | Information about an object that was deleted and returning success: true in result |
+
+
+#### Command Example
+```!delinea-platform-user-delete id="a09eb441-f0a0-4894-a129-af4e0b3559d6" ```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "User": {
+                "Delete": {
+                  "success": true,
+                  "Result": null,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+               }
+            }
+        }
+    }
+}
+```
+
+
+### delinea-platform-get-all-users
+***
+Get single Platform user by uuid
+
+
+#### Base Command
+
+`delinea-platform-get-all-users`
+
+#### Input
+
+| **Argument Name**     | **Description**                   | **Required** |
+|-----------------------|-----------------------------------|--------------|
+| filter_displayName    | Display name to filter users.     | Optional     |
+| pageSize              | Page size. Default 1000.          | Optional     |
+
+
+#### Context Output
+
+| **Path**               | **Type** | **Description**                                                 |
+|------------------------|----------|-----------------------------------------------------------------|
+| Delinea.Platform.Users | String   | Returning users based on pageSize and default page size is 1000 |
+
+
+#### Command Example
+```!delinea-platform-get-all-users pageSize="1" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "Get" : {
+                "All" : {
+                    "Users": {
+                        "users": [
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                            "name": "cloudadmin@cloud",
+                            "displayName": "cloudadmin",
+                            "state": "Active",
+                            "lastLogin": "2025-09-29T13:37:19.4639582Z",
+                            "lastInvite": "2025-04-16T17:38:47.0519372Z",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                "title": "PlatformUser(Platform): cloudadmin"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                  "title": "User(Delinea): cloudadmin"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+### delinea-platform-get-user-search-by-text
+***
+Get Platform users search by Text
+
+#### Base Command
+
+`delinea-platform-get-user-search-by-text`
+
+#### Input
+
+| **Argument Name** | **Description**                              | **Required** |
+|-------------------|----------------------------------------------|--------------|
+| filter.searchText | Search Text is looked for in multiple fields | Required     |
+
+
+#### Context Output
+
+| **Path**                           | **Type** | **Description**                                                   |
+|------------------------------------|----------|-------------------------------------------------------------------|
+| Delinea.Platform.UserSearchResults | String   | SearchText is looked for in multiple fields and returning results |
+
+
+#### Command Example
+```!delinea-platform-get-user-search-by-text filter.searchText="sail" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "Get" : {
+                "User" : {
+                    "Searchbytext": {
+                        "users": [
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "3f4b80c0-c853-473f-9534-66e4a8331843",
+                            "name": "ren@cloud",
+                            "displayName": "sailpoint+user.service",
+                            "state": "Created",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                "title": "PlatformUser(Platform): sailpoint+user.service"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                  "title": "User(Delinea): sailpoint+user.service"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "b977dd7d-b771-40b6-83f3-f04154a733c5",
+                            "name": "roderick@cloud",
+                            "displayName": "roderick",
+                            "state": "Active",
+                            "lastLogin": "2025-08-28T17:52:02.0344759Z",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                "title": "PlatformUser(Platform): roderick"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                  "title": "User(Delinea): roderick"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
 ```
