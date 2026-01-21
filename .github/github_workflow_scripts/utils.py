@@ -427,7 +427,7 @@ def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = N
         reviewers (list[str] | None): List of assigned reviewers. If None or empty, uses generic greeting.
         t (Terminal | None): The terminal object for printing.
     """
-    pass # TODO
+    # TODO
     # if reviewers:
     #     reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
     #     greeting = f"Hi {reviewer_mentions}, you"
