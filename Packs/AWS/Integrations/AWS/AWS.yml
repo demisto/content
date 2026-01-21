@@ -7290,6 +7290,10 @@ script:
       description: A comma-separated list of volume IDs.
       required: false
       isArray: true
+    - name: limit
+      description: The maximum number of records to return.
+    - name: next_token
+      description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
     outputs:
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
       description: The time stamp when the attachment initiated.

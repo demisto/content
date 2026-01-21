@@ -2526,40 +2526,38 @@ class EC2:
         if volume_ids := args.get("volume_ids"):
             kwargs["VolumeIds"] = argToList(volume_ids)
 
-        print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
+        pagination_kwargs = build_pagination_kwargs(args)
+        kwargs.update(pagination_kwargs)
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
+        response = client.describe_volumes(**kwargs)
 
-        try:
-            response = client.describe_volumes(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        volumes = response.get("Volumes", [])
 
-            response = serialize_response_with_datetime_encoding(response)
-            volumes = response.get("Volumes", [])
+        if not volumes:
+            return CommandResults(readable_output="No EC2 volumes were found.")
 
-            if not volumes:
-                return CommandResults(readable_output="No EC2 volumes were found.")
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            volumes,
+            headers=["AvailabilityZone", "Encrypted", "State", "VolumeId", "VolumeType", "CreateTime"],
+            removeNull=True,
+        )
 
-            readable_output = tableToMarkdown(
-                "AWS EC2 Volumes",
-                volumes,
-                headers=["AvailabilityZone", "Encrypted", "State", "VolumeId", "VolumeType", "CreateTime"],
-                removeNull=True,
-            )
+        outputs = {
+            "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)": volumes,
+            "AWS.EC2(true)": {"VolumesNextToken": response.get("NextToken")},
+        }
 
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Volumes",
-                outputs_key_field="VolumeId",
-                outputs=volumes,
-                readable_output=readable_output,
-                raw_response=response,
-            )
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error describing volumes: {str(e)}")
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2593,36 +2591,29 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
+        response = client.modify_volume(**kwargs)
 
-        try:
-            response = client.modify_volume(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        volume_modification = response.get("VolumeModification", {})
 
-            response = serialize_response_with_datetime_encoding(response)
-            volume_modification = response.get("VolumeModification", {})
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Modification",
+            [volume_modification],
+            headers=["VolumeId", "ModificationState", "TargetSize", "TargetIops", "TargetVolumeType",
+                    "OriginalSize", "OriginalIops", "OriginalVolumeType", "StartTime", "Progress"],
+            removeNull=True,
+        )
 
-            readable_output = tableToMarkdown(
-                "AWS EC2 Volume Modification",
-                [volume_modification],
-                headers=["VolumeId", "ModificationState", "TargetSize", "TargetIops", "TargetVolumeType",
-                        "OriginalSize", "OriginalIops", "OriginalVolumeType", "StartTime", "Progress"],
-                removeNull=True,
-            )
-
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Volumes",
-                outputs_key_field="VolumeId",
-                outputs={"Modification": volume_modification, "VolumeId": volume_modification.get("VolumeId")},
-                readable_output=readable_output,
-                raw_response=response,
-            )
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error modifying volume: {str(e)}")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Modification": volume_modification, "VolumeId": volume_modification.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2674,34 +2665,27 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating volume with parameters: {kwargs}")
+        response = client.create_volume(**kwargs)
 
-        try:
-            response = client.create_volume(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
 
-            response = serialize_response_with_datetime_encoding(response)
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            [response],
+            headers=["AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "VolumeId", "Iops", "VolumeType"],
+            removeNull=True,
+        )
 
-            readable_output = tableToMarkdown(
-                "AWS EC2 Volumes",
-                [response],
-                headers=["AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "VolumeId", "Iops", "VolumeType"],
-                removeNull=True,
-            )
-
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Volumes",
-                outputs_key_field="VolumeId",
-                outputs=response,
-                readable_output=readable_output,
-                raw_response=response,
-            )
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error creating volume: {str(e)}")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs=response,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2722,43 +2706,36 @@ class EC2:
         }
 
         print_debug_logs(client, f"Attaching volume with parameters: {kwargs}")
+        response = client.attach_volume(**kwargs)
 
-        try:
-            response = client.attach_volume(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
 
-            response = serialize_response_with_datetime_encoding(response)
+        attachment_data = {
+            "AttachTime": response.get("AttachTime"),
+            "Device": response.get("Device"),
+            "InstanceId": response.get("InstanceId"),
+            "State": response.get("State"),
+            "VolumeId": response.get("VolumeId"),
+            "DeleteOnTermination": response.get("DeleteOnTermination"),
+        }
 
-            attachment_data = {
-                "AttachTime": response.get("AttachTime"),
-                "Device": response.get("Device"),
-                "InstanceId": response.get("InstanceId"),
-                "State": response.get("State"),
-                "VolumeId": response.get("VolumeId"),
-                "DeleteOnTermination": response.get("DeleteOnTermination"),
-            }
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            [attachment_data],
+            headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+            removeNull=True,
+        )
 
-            readable_output = tableToMarkdown(
-                "AWS EC2 Volume Attachments",
-                [attachment_data],
-                headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
-                removeNull=True,
-            )
-
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Volumes",
-                outputs_key_field="VolumeId",
-                outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
-                readable_output=readable_output,
-                raw_response=response,
-            )
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error attaching volume: {str(e)}")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2786,43 +2763,36 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Detaching volume with parameters: {kwargs}")
+        response = client.detach_volume(**kwargs)
 
-        try:
-            response = client.detach_volume(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
 
-            response = serialize_response_with_datetime_encoding(response)
+        attachment_data = {
+            "AttachTime": response.get("AttachTime"),
+            "Device": response.get("Device"),
+            "InstanceId": response.get("InstanceId"),
+            "State": response.get("State"),
+            "VolumeId": response.get("VolumeId"),
+            "DeleteOnTermination": response.get("DeleteOnTermination"),
+        }
 
-            attachment_data = {
-                "AttachTime": response.get("AttachTime"),
-                "Device": response.get("Device"),
-                "InstanceId": response.get("InstanceId"),
-                "State": response.get("State"),
-                "VolumeId": response.get("VolumeId"),
-                "DeleteOnTermination": response.get("DeleteOnTermination"),
-            }
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            [attachment_data],
+            headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+            removeNull=True,
+        )
 
-            readable_output = tableToMarkdown(
-                "AWS EC2 Volume Attachments",
-                [attachment_data],
-                headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
-                removeNull=True,
-            )
-
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Volumes",
-                outputs_key_field="VolumeId",
-                outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
-                readable_output=readable_output,
-                raw_response=response,
-            )
-
-        except ClientError as e:
-            AWSErrorHandler.handle_client_error(e, args.get("account_id"))
-        except Exception as e:
-            raise DemistoException(f"Error detaching volume: {str(e)}")
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
