@@ -221,7 +221,9 @@ def query_command(query_to_run=None):
             if context_key_format == "underscore":
                 row_context = {k: convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
             else:
-                row_context = {underscoreToCamelCase(k): convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
+                row_context = {
+                    underscoreToCamelCase(k): convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()
+                }
             rows_contexts.append(row_context)
 
         if rows_contexts:
