@@ -170,6 +170,7 @@ call esxi_event_classification
     pid = arrayindex(regextract(msg, "started\s+from\s+\'\w+\'\s+(\d+)"),0),
     command_line = arrayindex(regextract(msg, "with\s+cmdline\s+\'(.+)\'"),0),
     ppid = arrayindex(regextract(msg, "parent\s+(\d+)"),0)
+
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,
     xdm.source.process.name = process_name,
@@ -289,7 +290,7 @@ call esxi_event_classification
 
 // Log format 5#: "rejected connection from .*<source_ip>.*:<source_port>"
 // Log format 6#: "accepted connection from .*<source_ip>.*:<source_port>"
-// Log format 7#:
+// Log format 7#: "Accepted connection from <<ipv6>:<ipv4>>"
 call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Connection" AND _raw_log ~= "(?i:rejected|accepted)\s+connection\s+from\s+.*\:\d+"
@@ -326,7 +327,7 @@ call esxi_event_classification
         msg ~= "rejected","rejected connection",
         msg ~= "accepted", "accepted connection");
 
-// Log format 7#: "Connect from remote socket (<source_ip>:<source_port>)."
+// Log format 8#: "Connect from remote socket (<source_ip>:<source_port>)."
 call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Connection" AND _raw_log ~= "Connect\s+from\s+remote\s+socket\s+\(.+\:\d+\)"
@@ -352,7 +353,7 @@ call esxi_event_classification
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
     xdm.event.operation_sub_type = "remote socket connection";
 
-// Log format 8#: "Accepted keyboard-interactive/pam for <user_name> from <source_ip> port <source_port> <protocol>"
+// Log format 9#: "Accepted keyboard-interactive/pam for <user_name> from <source_ip> port <source_port> <protocol>"
 call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Connection" AND _raw_log ~= "Accepted\s+keyboard\-interactive\/pam\s+for\s+(?:invalid user |user )?\w+\s+from\s+.+\s+port\s+\d+\s+\w+"
@@ -382,7 +383,7 @@ call esxi_event_classification
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
     xdm.event.operation_sub_type = "keyboard interactive session";
 
-// Log format 9#: "Failed|Postponed keyboard-interactive/pam for ?invalid user <user_name> from <source_ip> port <source_port> <protocol>"
+// Log format 10#: "Failed|Postponed keyboard-interactive/pam for ?invalid user <user_name> from <source_ip> port <source_port> <protocol>"
 call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Connection" AND _raw_log ~= "(?:Failed|Postponed)\s+keyboard\-interactive\/pam\s+for\s+(?:invalid user |user )?\w+\s+from\s+.+\s+port\s+\d+\s+\w+"
@@ -859,7 +860,7 @@ call esxi_event_classification
     xdm.target.virtualization.vm.hostname = vm_name,
     xdm.target.virtualization.data_center.name = data_center_name,
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
-    xdm.event.outcome_reason = outcome_reason,
+    xdm.event.outcome_reason = coalesce(outcome_reason, msg),
     xdm.event.operation = if(
         msg ~= "Removed\s+.+", XDM_CONST.OPERATION_TYPE_DELETE,
         msg ~= "Registered\s+.+", XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE),
