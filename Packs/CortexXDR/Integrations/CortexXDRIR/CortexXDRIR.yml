@@ -3882,10 +3882,10 @@ script:
     - contextPath: PaloAltoNetworksXDR.APIKeyData.id
       description: The API key ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.APIKeyData.role
-      description: The role associated with the API key.
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.roles
+      description: The roles associated with the API key.
       type: String
-    - contextPath: PaloAltoNetworksXDR.APIKeyData.expiration_date
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.expiration
       description: The expiration date of the API key.
       type: Date
   - arguments:
