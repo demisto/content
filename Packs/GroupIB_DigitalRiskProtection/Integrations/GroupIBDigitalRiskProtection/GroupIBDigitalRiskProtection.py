@@ -178,9 +178,13 @@ class Client(BaseClient):
         section: str | None = None,
     ):
         last_fetch = last_run.get("last_fetch", None)
-        demisto.debug(f"Client.create_generator: last_fetch={last_fetch}")
-        sequpdate: int = (
-            last_fetch if isinstance(last_fetch, int) and last_fetch > 0 else self.generate_seq_update(first_fetch_time)
+        demisto.debug(f"Client.create_generator: last_fetch={last_fetch!r}")
+        use_last_fetch = isinstance(last_fetch, int) and last_fetch > 0
+        sequpdate: int = last_fetch if use_last_fetch else self.generate_seq_update(first_fetch_time)
+        demisto.debug(
+            "Client.create_generator: sequpdate selection - "
+            f"selected={sequpdate} source={'last_run.last_fetch' if use_last_fetch else 'generate_seq_update(first_fetch_time)'} "
+            f"first_fetch_time={first_fetch_time!r}"
         )
 
         if section:
@@ -237,6 +241,12 @@ class Client(BaseClient):
             )
             return response.status_code
         else:
+            demisto.debug(
+                "Client.change_violation_status: cannot change violation status due to current state - "
+                f"id={feed_id} requested={status!r} "
+                f"current_status={violation_status!r} approve_state={violation_approve_state!r} "
+                "expected: status='detected' and approveState='under_review'"
+            )
             return "Can not change the status of the selected feed"
 
     def get_formatted_brands(self) -> list[dict[str, str]]:
@@ -280,10 +290,20 @@ class Client(BaseClient):
                 headers=self.additional_headers,
                 resp_type="response",
             )
-            data = response.content, CommonHelpers.extract_mime_type(response.headers.get("content-type", ""))
-        except Exception:
+            mime_type = CommonHelpers.extract_mime_type(response.headers.get("content-type", ""))
+            content_len = len(response.content) if hasattr(response, "content") and response.content is not None else 0
+            status_code = getattr(response, "status_code", None)
+            demisto.debug(
+                "Client.get_file: downloaded file - "
+                f"file_sha={file_sha} status_code={status_code} mime_type={mime_type} content_len={content_len}"
+            )
+            data = response.content, mime_type
+        except Exception as e:
             data = None
-            demisto.debug(f"Could not download or the following image is not available: {file_sha}")
+            demisto.debug(
+                "Client.get_file: Could not download or the following image is not available - "
+                f"file_sha={file_sha} error_type={type(e).__name__} error={e!s}\n{format_exc()}"
+            )
         return data
 
     def get_violation_by_id(self, violation_id: str) -> Parser:
@@ -621,8 +641,19 @@ class IncidentBuilder:
             only_typosquatting=self.only_typosquatting,
         )
         for portion in portions:
+            demisto.debug(
+                "IncidentBuilder.build: processing portion - "
+                f"requests_count={requests_count} max_requests={self.max_requests} portion_sequpdate={getattr(portion, 'sequpdate', None)!r}"
+            )
             sequpdate = portion.sequpdate
             parse_result: list[dict[Any, Any]] = portion.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)
+            demisto.debug(
+                "IncidentBuilder.build: portion parsed - "
+                f"portion_sequpdate={sequpdate!r} parsed_items={len(parse_result)}"
+            )
+
+            created_before = len(violations)
+            max_seq_before = max_seq_update
 
             for feed in parse_result:
                 feed = CommonHelpers.data_pre_cleaning(violation=feed)
@@ -684,7 +715,19 @@ class IncidentBuilder:
                     f"error_type={type(e).__name__} error={e!s}\n{format_exc()}"
                 )
             requests_count += 1
+            created_after = len(violations)
+            demisto.debug(
+                "IncidentBuilder.build: portion done - "
+                f"portion_sequpdate={sequpdate!r} created_in_portion={created_after - created_before} "
+                f"max_seq_update_before={max_seq_before!r} max_seq_update_after={max_seq_update!r} "
+                f"requests_count={requests_count} max_requests={self.max_requests}"
+            )
             if requests_count > self.max_requests:
+                demisto.debug(
+                    "IncidentBuilder.build: stopping due to max_requests limit - "
+                    f"requests_count={requests_count} max_requests={self.max_requests} "
+                    f"last_portion_sequpdate={sequpdate!r} max_seq_update={max_seq_update!r}"
+                )
                 break
         # Decide effective next_run.last_fetch
         effective_last = previous_last_fetch
@@ -693,6 +736,12 @@ class IncidentBuilder:
                 effective_last = max(previous_last_fetch, max_seq_update)
             else:
                 effective_last = max_seq_update
+        else:
+            demisto.debug(
+                "IncidentBuilder.build: not updating last_fetch because no seqUpdate was observed - "
+                f"previous_last_fetch={previous_last_fetch!r} max_seq_update={max_seq_update!r} "
+                f"requests_count={requests_count} created_incidents={len(violations)}"
+            )
         next_run["last_fetch"] = effective_last
         demisto.debug(
             "IncidentBuilder.build: "
