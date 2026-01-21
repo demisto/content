@@ -1126,7 +1126,7 @@ def test_xql_library_list_command(mocker):
     Then:
     - Ensure the client is called with correct parameters and results are returned correctly.
     """
-    args = {"extra_data": "true", "xql_query_name": "test_query", "xql_query_tag": "test_tag"}
+    args = {"extra_data": "false", "xql_query_name": "test_query", "xql_query_tag": "test_tag"}
     mock_response = {
         "xql_queries": [
             {"xql_query_name": "test_query", "xql_query": "dataset = xdr_data", "xql_query_tags": ["test_tag"], "id": "123"}
