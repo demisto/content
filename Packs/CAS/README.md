@@ -1,12 +1,8 @@
 # CAS Pack Guide & Contribution Example
 
-## Contribution Flow Overview
+## Contribution Flow - Overview
 
 This pack serves as an example for contributors on how to interact with the Cortex APIs without modifying the Core integration directly.
-
-### The Problem
-
-Contributors often need to call internal APIs. However, we want to avoid direct contributions to the Core integration to maintain stability and security.
 
 ### The Solution
 
