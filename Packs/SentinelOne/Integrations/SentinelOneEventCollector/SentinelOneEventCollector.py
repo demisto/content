@@ -136,6 +136,7 @@ def add_keys_to_events(events: list[dict[str, Any]] | None, instance_url: str):
         events (list): The events to add the fields key to.
         instance_url (str): The base URL of the SentinelOne instance (e.g., 'https://your-instance.sentinelone.net').
     """
+    demisto.debug(f"Adding keys to {len(events) if events else 0} events")
     instance_url = instance_url.rstrip("/")
 
     for event in events or []:
