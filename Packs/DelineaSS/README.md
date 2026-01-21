@@ -1,4 +1,5 @@
 # Delinea Secret Server / Platform
+
 This pack includes XSIAM content.
 
 Secret Server and Platform are the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. They empowers security and IT operations teams to secure and manage all types of privileged accounts, offering the fastest time to value of any PAM solution. Integrations between Palo Alto Networks and Delinea allow you to manage credentials for applications, databases, CI/CD tools, and services without disrupting the development process.
@@ -12,6 +13,7 @@ This integration allows to secure privileges for service, application, root and 
 - Methods for managing User objects (Platform): create, update, search, delete, search by text
 - Fetch updated data from secret for usage in owner automate process.
 <~XSIAM>
+
 ## Configuration on Server Side
 
 1. Navigate to **Admin** > **Configuration**.
@@ -30,10 +32,10 @@ This integration allows to secure privileges for service, application, root and 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
-
 
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Right-click and select **Syslog Collector** > **Configure**.

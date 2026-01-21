@@ -1,7 +1,7 @@
 Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Delinea
-## Configure Delinea in Cortex
 
+## Configure Delinea in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,22 +13,24 @@ This integration was integrated and tested with version 5.0 of Delinea
 | credentialobjects | List secret name for fetch credentials \(separated by commas\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### delinea-secret-password-get
+
 ***
 Retrieved password from secret
-
 
 #### Base Command
 
 `delinea-secret-password-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret | Required |
-
 
 #### Context Output
 
@@ -36,11 +38,12 @@ Retrieved password from secret
 | --- | --- | --- |
 | Delinea.Secret.Password | String | Retrieved password from secret  |
 
-
 #### Command Example
+
 ```!delinea-secret-password-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -51,21 +54,20 @@ Retrieved password from secret
 }
 ```
 
-
 ### delinea-secret-username-get
+
 ***
 Retrieved username from secret
-
 
 #### Base Command
 
 `delinea-secret-username-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret | Required |
-
 
 #### Context Output
 
@@ -73,11 +75,12 @@ Retrieved username from secret
 | --- | --- | --- |
 | Delinea.Secret.Username | String | Retrieved username from secret. |
 
-
 #### Command Example
+
 ```!delinea-secret-username-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -88,21 +91,20 @@ Retrieved username from secret
 }
 ```
 
-
 ### delinea-secret-search-name
+
 ***
 Search ID secret by field name
-
 
 #### Base Command
 
 `delinea-secret-search-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | Search name secret. | Required |
-
 
 #### Context Output
 
@@ -110,11 +112,12 @@ Search ID secret by field name
 | --- | --- | --- |
 | Delinea.Secret.Id | String | Retrieved list ID for find secret by field secret name |
 
-
 #### Command Example
+
 ```!delinea-secret-search-name search_name=xsoarSecret```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -127,15 +130,15 @@ Search ID secret by field name
 }
 ```
 
-
 ### delinea-secret-password-update
+
 ***
 Update password for secret
-
 
 #### Base Command
 
 `delinea-secret-password-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,18 +146,18 @@ Update password for secret
 | secret_id | ID secret for update  password | Required |
 | newpassword | Value new password for secret | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Newpassword | String | New password changed for secret |
 
-
 #### Command Example
+
 ```!delinea-secret-password-update secret_id=2 newpassword=12345```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -165,21 +168,20 @@ Update password for secret
 }
 ```
 
-
 ### delinea-secret-checkout
+
 ***
 Check Out a secret
-
 
 #### Base Command
 
 `delinea-secret-checkout`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID secret for check out command | Required |
-
 
 #### Context Output
 
@@ -187,11 +189,12 @@ Check Out a secret
 | --- | --- | --- |
 | Delinea.Secret.Checkout | String | Return call command Check Out |
 
-
 #### Command Example
+
 ```!delinea-secret-checkout secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -204,21 +207,20 @@ Check Out a secret
 }
 ```
 
-
 ### delinea-secret-checkin
+
 ***
 Check In a secret
-
 
 #### Base Command
 
 `delinea-secret-checkin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | Secret ID. | Required |
-
 
 #### Context Output
 
@@ -226,11 +228,12 @@ Check In a secret
 | --- | --- | --- |
 | Delinea.Secret.Checkin | String | Secret object |
 
-
 #### Command Example
+
 ```!delinea-secret-checkin secret_id=13```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -267,16 +270,15 @@ Check In a secret
 }
 ```
 
-
-
 ### delinea-folder-create
+
 ***
 Create a new secret folder
-
 
 #### Base Command
 
 `delinea-folder-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -288,18 +290,18 @@ Create a new secret folder
 | inheritSecretPolicy | Whether the folder should inherit the secret policy. Defaults to true unless creating a root folder. | Optional |
 | secretPolicyId | Secret policy ID | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Folder.Create | Unknown | New object folder |
 
-
 #### Command Example
+
 ```!delinea-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -321,21 +323,20 @@ Create a new secret folder
 }
 ```
 
-
 ### delinea-folder-search
+
 ***
 Search folder by name folder
-
 
 #### Base Command
 
 `delinea-folder-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | foldername | Search name folder | Required |
-
 
 #### Context Output
 
@@ -343,11 +344,12 @@ Search folder by name folder
 | --- | --- | --- |
 | Delinea.Folder.Id | String | Retrieved folder ID from search query |
 
-
 #### Command Example
+
 ```!delinea-folder-search foldername="xsoarFolderTest"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -360,11 +362,12 @@ Search folder by name folder
 }
 ```
 
-
 #### Command Example
+
 ```!delinea-folder-delete folder_id="18"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -379,21 +382,20 @@ Search folder by name folder
 }
 ```
 
-
 ### delinea-secret-get
+
 ***
 Get secret object by ID secret
-
 
 #### Base Command
 
 `delinea-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | secret_id | ID for secret | Required |
-
 
 #### Context Output
 
@@ -401,11 +403,12 @@ Get secret object by ID secret
 | --- | --- | --- |
 | Delinea.Secret | String | Secret object |
 
-
 #### Command Example
+
 ```!delinea-secret-get secret_id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -507,15 +510,15 @@ Get secret object by ID secret
 }
 ```
 
-
 ### delinea-secret-search
+
 ***
 Search secret ID by multiply params
-
 
 #### Base Command
 
 `delinea-secret-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -548,18 +551,18 @@ Search secret ID by multiply params
 | take | Maximum number of records to include in results | Optional |
 | filter.includeSubFolders | Whether to include secrets in subfolders of the specified folder | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Secret | String | Search secret object |
 
-
 #### Command Example
+
 ```!delinea-secret-search filter_searchfields="username" filter_searchtext="xsoar"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -572,16 +575,15 @@ Search secret ID by multiply params
 }
 ```
 
-
-
 ### delinea-folder-update
+
 ***
 Update a single secret folder by ID
-
 
 #### Base Command
 
 `delinea-folder-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,18 +596,18 @@ Update a single secret folder by ID
 | parentFolderId | ID parent folder | Optional |
 | secretPolicyId | Secret Policy ID | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Folder.Update | String | Retrieved return operation update folder |
 
-
 #### Command Example
+
 ```!delinea-folder-update id=4 foldername="SafexsoarTest"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -627,15 +629,15 @@ Update a single secret folder by ID
 }
 ```
 
-
 ### delinea-secret-create
+
 ***
 Create new object Secret
-
 
 #### Base Command
 
 `delinea-secret-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -663,18 +665,18 @@ Create new object Secret
 | password_item | Item Password for secret.If need to select template. | Optional |
 | notes_item | Item Notes for secret.IF  need to select template. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Create | String | Secret Model |
 
-
 #### Command Example
+
 ```!delinea-secret-create name="xsoarSecret" secrettemplateid="6003" siteid="1" checkoutenabled=true folderid=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -778,21 +780,20 @@ Create new object Secret
 }
 ```
 
-
 ### delinea-secret-delete
+
 ***
 Delete secret
-
 
 #### Base Command
 
 `delinea-secret-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID secret for delete | Required |
-
 
 #### Context Output
 
@@ -800,11 +801,12 @@ Delete secret
 | --- | --- | --- |
 | Delinea.Secret.Delete | String | Information about an object that was deleted |
 
-
 #### Command Example
+
 ```!delinea-secret-delete id=2```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -819,15 +821,15 @@ Delete secret
 }
 ```
 
-
 ### delinea-secret-server-user-create
+
 ***
 Create a new Secret Server user
-
 
 #### Base Command
 
 `delinea-secret-server-user-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -847,18 +849,18 @@ Create a new Secret Server user
 | radiusUserName | RADIUS username | Optional |
 | twoFactor | Whether two-factor authentication is enabled | Optional |
 
-
 #### Context Output
 
 | **Path**                          | **Type** | **Description** |
 |-----------------------------------|----------|-----------------|
 | Delinea.Secret.Server.User.Create | String   | User Model      |
 
-
 #### Command Example
-```!delinea-secret-server-user-create displayname="UserOne" password="12345" username="UserOne" ```
+
+```!delinea-secret-server-user-create displayname="UserOne" password="12345" username="UserOne"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -909,9 +911,9 @@ Create a new Secret Server user
 ```
 
 ### delinea-secret-server-user-search
+
 ***
 Search, filter, sort, and page Secret Server users
-
 
 #### Base Command
 
@@ -931,18 +933,18 @@ Search, filter, sort, and page Secret Server users
 | sortBy[0].priority | Priority index. Sorts with lower values are executed earlier (integer) | Optional |
 | take | Maximum number of records to include in results(integer) | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Server.User.Search | String | Specify paging and sorting options for querying records and returning results |
 
-
 #### Command Example
+
 ```!delinea-secret-server-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -953,15 +955,15 @@ Search, filter, sort, and page Secret Server users
 }
 ```
 
-
 ### delinea-secret-server-user-update
+
 ***
 Update a single Secret Server user by ID
-
 
 #### Base Command
 
 `delinea-secret-server-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -985,18 +987,18 @@ Update a single Secret Server user by ID
 | timeOptionId | timeOptionId (integer) | Optional |
 | twoFactor | Whether two-factor authentication is enabled | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.Server.User.Update | String | User Model |
 
-
 #### Command Example
+
 ```!delinea-secret-server-user-update id=28 displayname="myTestUser"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1046,21 +1048,20 @@ Update a single Secret Server user by ID
 
 ```
 
-
 ### delinea-secret-server-user-delete
+
 ***
 Delete a Secret Server user by ID
-
 
 #### Base Command
 
 `delinea-secret-server-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | User ID | Required |
-
 
 #### Context Output
 
@@ -1068,11 +1069,12 @@ Delete a Secret Server user by ID
 | --- | --- | --- |
 | Delinea.Secret.Server.User.Delete | String | Information about an object that was deleted |
 
-
 #### Command Example
-```!delinea-secret-server-user-delete id=5 ```
+
+```!delinea-secret-server-user-delete id=5```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1088,13 +1090,14 @@ Delete a Secret Server user by ID
 ```
 
 ### delinea-secret-rpc-changepassword
+
 ***
 Change a secret's password
-
 
 #### Base Command
 
 `delinea-secret-rpc-changepassword`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1102,18 +1105,18 @@ Change a secret's password
 | secret_id | Secret ID | Required |
 | newPassword | New secret password | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Delinea.Secret.ChangePassword | String | Secret summary object |
 
-
 #### Command Example
+
 ```!delinea-secret-rpc-changepassword secret_id=4 newPassword="Test000"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1151,16 +1154,17 @@ Change a secret's password
 ```
 
 ### delinea-fetch-users
+
 ***
 Fetch credentials from secret
-
 
 #### Base Command
 
 `delinea-fetch-users`
-#### Input
-NO input argumets
 
+#### Input
+
+NO input argumets
 
 #### Context Output
 
@@ -1168,11 +1172,12 @@ NO input argumets
 | --- | --- | --- |
 | Delinea.User.Credentials | String | Secret credential objects |
 
-
 #### Command Example
+
 ```!delinea-fetch-users```
 
 #### Context Example
+
 ```json
 [
     {
@@ -1189,13 +1194,14 @@ NO input argumets
 ```
 
 ### delinea-platform-user-create
+
 ***
 Create a new user in Platform
-
 
 #### Base Command
 
 `delinea-platform-user-create`
+
 #### Input
 
 | **Argument Name**     | **Description**                                                                                                                             | **Required** |
@@ -1223,11 +1229,12 @@ Create a new user in Platform
 |------------------------------|----------|-----------------|
 | Delinea.Platform.User.Create | String   | Result          |
 
-
 #### Command Example
+
 ```!delinea-platform-user-create Password="Test@123" Name="uniquexsoar1" ServiceUser="true"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1251,9 +1258,9 @@ Create a new user in Platform
 ```
 
 ### delinea-platform-user-get
+
 ***
 Get single Platform user by uuid
-
 
 #### Base Command
 
@@ -1264,8 +1271,6 @@ Get single Platform user by uuid
 | **Argument Name**      | **Description**                                               | **Required** |
 |------------------------|---------------------------------------------------------------|--------------|
 | userUuidOrUpn          | Fetches a Platform user by uuid or upn                        | Required     |
- 
-
 
 #### Context Output
 
@@ -1273,9 +1278,9 @@ Get single Platform user by uuid
 |---------------------------|----------|-----------------|
 | Delinea.Platform.User.Get | String   | User Model      |
 
-
 #### Command Example
-```!delinea-platform-user-get userUuidOrUpn="09b9a9b0-6ce8-465f-ab03-65766d33b05e" ```
+
+```!delinea-platform-user-get userUuidOrUpn="09b9a9b0-6ce8-465f-ab03-65766d33b05e"```
 
 #### Context Example
 
@@ -1319,15 +1324,15 @@ Get single Platform user by uuid
 }
 ```
 
-
 ### delinea-platform-user-update
+
 ***
 Update a single Platform user by ID
-
 
 #### Base Command
 
 `delinea-platform-user-update`
+
 #### Input
 
 | **Argument Name**     | **Description**                                                                                                                             | **Required** |
@@ -1349,18 +1354,18 @@ Update a single Platform user by ID
 | Description           | The User description.                                                                                                                       | Optional     |
 | HomeNumber            | The user home number.                                                                                                                       | Optional     |
 
-
 #### Context Output
 
 | **Path**                     | **Type** | **Description**                                                     |
 |------------------------------|----------|---------------------------------------------------------------------|
 | Delinea.Platform.User.Update | String   | User is successfully updated then returning success: true in result |
 
-
 #### Command Example
+
 ```!delinea-platform-user-update ID="b02319fc-b26a-4352-8e4e-d8ea1188f160" Name="xsoarUserTest1"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1383,21 +1388,20 @@ Update a single Platform user by ID
 }
 ```
 
-
 ### delinea-platform-user-delete
+
 ***
 Delete a Platform user by UUID or Name
-
 
 #### Base Command
 
 `delinea-platform-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 |-------------------|-----------------|--------------|
 | id                | User UUID       | Required     |
-
 
 #### Context Output
 
@@ -1405,11 +1409,12 @@ Delete a Platform user by UUID or Name
 |------------------------------|----------|-----------------------------------------------------------------------------------|
 | Delinea.Platform.User.Delete | String   | Information about an object that was deleted and returning success: true in result |
 
-
 #### Command Example
-```!delinea-platform-user-delete id="a09eb441-f0a0-4894-a129-af4e0b3559d6" ```
+
+```!delinea-platform-user-delete id="a09eb441-f0a0-4894-a129-af4e0b3559d6"```
 
 #### Context Example
+
 ```json
 {
     "Delinea": {
@@ -1432,11 +1437,10 @@ Delete a Platform user by UUID or Name
 }
 ```
 
-
 ### delinea-platform-get-all-users
+
 ***
 Get single Platform user by uuid
-
 
 #### Base Command
 
@@ -1449,16 +1453,15 @@ Get single Platform user by uuid
 | filter_displayName    | Display name to filter users.     | Optional     |
 | pageSize              | Page size. Default 1000.          | Optional     |
 
-
 #### Context Output
 
 | **Path**               | **Type** | **Description**                                                 |
 |------------------------|----------|-----------------------------------------------------------------|
 | Delinea.Platform.Users | String   | Returning users based on pageSize and default page size is 1000 |
 
-
 #### Command Example
-```!delinea-platform-get-all-users pageSize="1" ```
+
+```!delinea-platform-get-all-users pageSize="1"```
 
 #### Context Example
 
@@ -1509,6 +1512,7 @@ Get single Platform user by uuid
 ```
 
 ### delinea-platform-get-user-search-by-text
+
 ***
 Get Platform users search by Text
 
@@ -1522,16 +1526,15 @@ Get Platform users search by Text
 |-------------------|----------------------------------------------|--------------|
 | filter.searchText | Search Text is looked for in multiple fields | Required     |
 
-
 #### Context Output
 
 | **Path**                           | **Type** | **Description**                                                   |
 |------------------------------------|----------|-------------------------------------------------------------------|
 | Delinea.Platform.UserSearchResults | String   | SearchText is looked for in multiple fields and returning results |
 
-
 #### Command Example
-```!delinea-platform-get-user-search-by-text filter.searchText="sail" ```
+
+```!delinea-platform-get-user-search-by-text filter.searchText="sail"```
 
 #### Context Example
 
