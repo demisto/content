@@ -1579,6 +1579,7 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         raw_response=api_keys,
     )
 
+
 def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys

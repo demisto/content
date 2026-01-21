@@ -4078,7 +4078,6 @@ Returns a list of assets.
 | PaloAltoNetworksXDR.Asset.xdm_asset_relations | Unknown | Relations to other assets. |
 | PaloAltoNetworksXDR.Asset.xdm_asset_group_ids | Number | Group IDs associated with the asset. |
 
- 
 ### xdr-api-key-delete
 
 ***
