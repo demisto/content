@@ -4335,7 +4335,7 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "query_url": query_url,
     }
     if query != query_with_limit:
-        outputs["details"] = (
+        outputs["query_limit_modified"] = (
             f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
         )
 

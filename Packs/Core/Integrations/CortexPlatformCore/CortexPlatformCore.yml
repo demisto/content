@@ -3317,8 +3317,8 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
-      - contextPath: GenericXQLQuery.details
-        description: Additional details regarding the Query execution.
+      - contextPath: GenericXQLQuery.query_limit_modified
+        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
         type: String
   runonce: false
   script: "-"
