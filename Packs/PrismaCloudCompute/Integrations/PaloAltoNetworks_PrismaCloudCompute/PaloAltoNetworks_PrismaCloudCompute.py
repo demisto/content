@@ -3505,9 +3505,9 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
     Returns:
         _type_: The send_data_to_xsiam tasks.
     """
-    processed_data = asset_type_related_data.process_result_func(data)
-    coroutine = async_send_data_to_xsiam(
-        data=processed_data,
+    processed_assets, processed_vulnerabilities = asset_type_related_data.process_result_func(data)
+    assets_coroutine = async_send_data_to_xsiam(
+        data=processed_assets,
         vendor=asset_type_related_data.vendor,
         product=asset_type_related_data.product,
         num_of_attempts=3,
@@ -3519,33 +3519,28 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         url_key="address",
         items_count=asset_type_related_data.total_count,
     )
-    if coroutine:
-        await coroutine
-
-
-def process_host_results(data_list):
-    processed_results_list = []
-    for data in data_list:
-        processed_results_list.append(
-            {
-                "Name": data.get("cloudMetadata", {}).get("name", ""),
-                "Provider": data.get("cloudMetadata", {}).get("provider", ""),
-                "Type": "Virtual Machine",
-                "Category": "VM Instance",
-                "Class": "Compute",
-                "Region": data.get("cloudMetadata", {}).get("region", ""),
-                "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
-                "Tags": data.get("tags", []) + data.get("labels", []),
-                "Internal IP": ", ".join([ip.get("ip") for ip in data.get("hostDevices", {})]),
-                "Strong ID": data.get("hostname", ""),
-            }
-        )
-    return processed_results_list
+    vulnerabilities_coroutine = async_send_data_to_xsiam(
+        data=processed_assets,
+        vendor=asset_type_related_data.vendor,
+        product=asset_type_related_data.product,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=asset_type_related_data.snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=asset_type_related_data.total_count,
+    )
+    if assets_coroutine:
+        await assets_coroutine
+    if vulnerabilities_coroutine:
+        await vulnerabilities_coroutine
 
 
 def process_tas_droplet_results(data_list):
     processed_results_list = []
-    extracted_vulnerabilities_list = []
+    processed_vulnerabilities_list = []
     for data in data_list:
         processed_results_list.append(
             {
@@ -3564,32 +3559,76 @@ def process_tas_droplet_results(data_list):
                     "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
                     "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
                     "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
-                }
+                },
             }
         )
-        extracted_vulnerabilities_list.extend(data.get("vulnerabilities", []))
-    return processed_results_list
+        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "lastModified"))
+    return processed_results_list, processed_vulnerabilities_list
 
 
-def process_runtime_image_results(data_list):
+def process_findings(vulnerabilities, related_asset, time_field):
+    processed_vulnerabilities = []
+    for vulnerability in vulnerabilities:
+        processed_vulnerabilities.append(
+            {
+                time_field: related_asset.get(time_field, ""),
+                "description": vulnerability.get("description", ""),
+                "cve": vulnerability.get("cve", ""),
+                "id": vulnerability.get("id", ""),
+                "provider": vulnerability.get("provider", ""),
+                "cause": vulnerability.get("cause", ""),
+                "scanVersion": related_asset.get("scanVersion", ""),
+                "severity": vulnerability.get("severity", ""),
+                "type": vulnerability.get("type", ""),
+                "cvss": vulnerability.get("cvss", ""),
+                "published": vulnerability.get("published", ""),
+                "fixDate": vulnerability.get("fixDate", ""),
+                "link": vulnerability.get("link", ""),
+                "packageName": vulnerability.get("packageName", ""),
+                "packageVersion": vulnerability.get("packageVersion", ""),
+                "packageType": vulnerability.get("packageType", ""),
+                "asset_id": related_asset.get("cloudMetadata", {}).get("resourceID", ""),
+            }
+        )
+    return processed_vulnerabilities
+
+
+def process_runtime_image_and_host_results(data_list):
     processed_results_list = []
-    extracted_vulnerabilities_list = []
+    processed_vulnerabilities_list = []
     for data in data_list:
         processed_results_list.append(
             {
-                "Name": data.get("cloudMetadata", {}).get("name", ""),
-                "Provider": data.get("cloudMetadata", {}).get("provider", ""),
-                "Type": "Runtime Image",
-                "Category": "Container Image",
-                "Class": "Compute",
-                "Region": data.get("cloudMetadata", {}).get("region", ""),
-                "Realm": data.get("cloudMetadata", {}).get("accountID", ""),
-                "Tags": data.get("tags", []) + data.get("labels", []),
-                "Strong ID": data.get("id", ""),
+                "scanTime": data.get("scanTime", ""),
+                "tags": data.get("tags", []),
+                "labels": data.get("labels", []),
+                "hostname": data.get("hostname", ""),
+                "osDistro": data.get("osDistro", ""),
+                "osDistroVersion": data.get("osDistroVersion", ""),
+                "type": data.get("type", ""),
+                "packageManager": data.get("packageManager", ""),
+                "cloudMetadata": {
+                    "name": data.get("cloudMetadata", {}).get("name", ""),
+                    "provider": data.get("cloudMetadata", {}).get("provider", ""),
+                    "region": data.get("cloudMetadata", {}).get("region", ""),
+                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
+                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
+                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
+                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
+                },
             }
         )
-        extracted_vulnerabilities_list.extend(data.get("vulnerabilities", []))
-    return processed_results_list
+        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []), data, "scanTime"))
+
+    return processed_results_list, processed_vulnerabilities_list
+
+
+def process_runtime_image_results(data_list):
+    return process_runtime_image_and_host_results(data_list=data_list)
+
+
+def process_host_results(data_list):
+    return process_runtime_image_and_host_results(data_list=data_list)
 
 
 def main():
