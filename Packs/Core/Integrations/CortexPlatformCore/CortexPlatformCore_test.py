@@ -10552,6 +10552,24 @@ class TestGetCDRProtectionStatusCommand:
         assert result.outputs["CloudAccounts"]["SendingLogs"] == 125
         assert result.outputs["CloudAccounts"]["LogSendingPercentage"] == 50.0
 
+    def test_get_cdr_protection_status_command_invalid_tag_format(self, mocker):
+        """
+        Given:
+            - API call with an invalid tag format (missing colon separator).
+        When:
+            - Calling get_cdr_protection_status_command with tag="invalid_tag".
+        Then:
+            - Raises DemistoException indicating invalid tag format.
+        """
+        from CortexPlatformCore import get_cdr_protection_status_command, Client
+
+        mock_client = Client(base_url="", headers={})
+
+        args = {"tag": "invalid_tag"}
+
+        with pytest.raises(DemistoException, match='Tag format should be "key:value"'):
+            get_cdr_protection_status_command(mock_client, args)
+
 
 class TestGetCloudAccountsLogSendingStatus:
     """Test cases for get_cloud_accounts_log_sending_status helper function."""

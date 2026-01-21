@@ -4526,7 +4526,7 @@ def get_cloud_accounts_log_sending_status(client: Client) -> tuple[int, int, flo
     # Filter accounts not sending logs (automation_log_level = 'OFF')
     accounts_not_sending_logs = []
     for account in all_accounts:
-        additional_capabilities = account.get("additional_capabilities", {})
+        additional_capabilities = account.get("additional_capabilities", {}) or {}
         automation_log_level = additional_capabilities.get("automation_log_level", "")
 
         if automation_log_level == "OFF":
@@ -4571,10 +4571,6 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
     tag = args.get("tag")
     tag_filter_value = None
     if tag:
-        # Validate tag is a non-empty string
-        if not isinstance(tag, str) or not tag.strip():
-            raise DemistoException("tag must be a non-empty string")
-
         tag = tag.strip()
 
         # Parse tag as key:value format
@@ -4590,6 +4586,9 @@ def get_cdr_protection_status_command(client: Client, args: dict) -> CommandResu
                 raise DemistoException('Tag value cannot be empty. Format should be "key:value" (e.g., "name:windows2").')
 
             tag_filter_value = {"key": tag_key, "value": tag_value}
+
+        else:
+            raise DemistoException('Tag format should be "key:value" (e.g., "name:windows2").')
 
     # ========== VM Protection Calculation ==========
     # Query 1: Get count of VMs WITH agents (protected)
