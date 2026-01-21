@@ -68,6 +68,8 @@ class MsClient:
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {"api-version": API_VERSION}
         events: list = []
+        demisto.debug(f"Fetching events with last_run={last_run}")
+
         response = self.ms_client.http_request(
             method="GET",
             url_suffix=cmd_url,
@@ -76,21 +78,28 @@ class MsClient:
             resource=Resources.management_azure,
         )
         curr_events = response.get("value", [])
+        demisto.debug(f"API returned {len(curr_events)} events in first page.")
 
         curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
         if check_events_were_filtered_out(curr_events, curr_filtered_events):
+            demisto.debug(f"Events were filtered in first page, returning {len(curr_filtered_events)} events.")
             return curr_filtered_events
 
         events.extend(curr_filtered_events)
 
+        page_count = 1
         while nextLink := response.get("nextLink", None):
+            page_count += 1
             response = self.ms_client.http_request(method="GET", full_url=nextLink)
             curr_events = response.get("value", [])
+            demisto.debug(f"API returned {len(curr_events)} events in page {page_count}.")
             curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
             events.extend(curr_filtered_events)
             if check_events_were_filtered_out(curr_events, curr_filtered_events):
+                demisto.debug(f"Events were filtered in page {page_count}, stopping pagination.")
                 break
 
+        demisto.debug(f"Total events collected: {len(events)} from {page_count} page(s).")
         return events
 
 
@@ -103,14 +112,22 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
         (list): A list with all the duplicates from lastrun filtered out
     """
     if not last_run:
+        demisto.debug(f"No last_run provided, returning all {len(events)} events without filtering.")
         return events
-    events = [
+
+    last_run_time = last_run.get("last_run", "")
+    dup_ids = last_run.get("dup_digested_time_id", [])
+    demisto.debug(f"Filtering events with last_run_time={last_run_time}, dup_ids count={len(dup_ids)}")
+
+    filtered_events = [
         event
         for event in events
-        if event.get("properties", {}).get("startTimeUtc", "") >= last_run.get("last_run", "")
-        and event.get("id", "") not in last_run.get("dup_digested_time_id", [])
+        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time
+        and event.get("id", "") not in dup_ids
     ]
-    return events
+
+    demisto.debug(f"Filtered {len(events)} events down to {len(filtered_events)} events.")
+    return filtered_events
 
 
 def check_events_were_filtered_out(events: list, filtered_events: list) -> bool:
@@ -191,7 +208,14 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     if not events_list:
         return last_run
 
-    next_run = events_list[0].get("properties", {}).get("startTimeUtc", "")
+    # Sort events by startTimeUtc descending to ensure we get the newest event's timestamp
+    # This prevents issues when the API returns events in an unexpected order
+    sorted_events = sorted(
+        events_list,
+        key=lambda x: x.get("properties", {}).get("startTimeUtc", ""),
+        reverse=True
+    )
+    next_run = sorted_events[0].get("properties", {}).get("startTimeUtc", "")
     id_same_next_run_list = [
         event.get("id") for event in events_list if event.get("properties", {}).get("startTimeUtc") == next_run
     ]
