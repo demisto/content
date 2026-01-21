@@ -789,7 +789,7 @@ script:
       required: true
     - description: Flag for rate limit retry.
       name: ran_once_flag
-    description: Moves a message to a different folder.
+    description: Moves a message to a different folder. Note that the message ID might change after the move operation.
     name: msgraph-mail-move-email
     outputs:
     - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
