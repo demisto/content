@@ -126,7 +126,7 @@ script:
       description: The requested date and time format for datetime objects returned from the query.
       defaultValue: "%m/%d/%Y %H:%M:%S"
     - name: date_only_format
-      description: The requested date format for date objects returned from the query, which includes only date, without the time.
+      description: The requested format for date objects returned from the query, including only the date without time.
       defaultValue: "%m/%d/%Y"
     outputs:
     - contextPath: BigQuery.Query
