@@ -1,0 +1,19 @@
+commonfields:
+  id: GetCases
+  version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: GetCases
+script: ''
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.12.12.6796194
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+restrictioncenter: {}
+signature: ''
