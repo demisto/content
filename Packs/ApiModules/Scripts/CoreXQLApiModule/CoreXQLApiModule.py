@@ -193,7 +193,7 @@ class CoreClient(BaseClient):
         """
         return self._http_request(
             method="POST",
-            url_suffix="../xql_library/insert/",  # The endpoint is without v1
+            url_suffix="../xql_library/insert",  # The endpoint is without v1
             json_data={"request_data": request_data},
         )
 
@@ -895,18 +895,18 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: The results of the command.
     """
-    extra_data = args.get("extra_data")
+    extended_view = args.get("extra_data", "false")
     xql_query_name = argToList(args.get("xql_query_name", []))
     xql_query_tag = argToList(args.get("xql_query_tag", []))
 
-    request_data = assign_params(extended_view=extra_data, xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
+    request_data = assign_params(extended_view=extended_view, xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
 
     queries = client.get_xql_queries(request_data)
     xql_queries = queries.get("xql_queries", [])
     for query in xql_queries:
         query.pop("query_metadata", None)
 
-    if not extra_data:
+    if not argToBoolean(extended_view):
         # Aligning the context outputs to match the outputs where extra_data is selected
         for query in xql_queries:
             query["name"] = query.pop("xql_query_name", None)

@@ -1604,13 +1604,10 @@ script:
     description: Gets a list of XQL queries from the library.
     name: xdr-xql-library-list
     outputs:
-    - contextPath: PaloAltoNetworksXQL.Library.query_name
+    - contextPath: PaloAltoNetworksXQL.Library.name
       description: The name of the XQL query.
       type: String
-    - contextPath: PaloAltoNetworksXQL.Library.query_tags
-      description: The tags of the XQL query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.Library.xql_query
+    - contextPath: PaloAltoNetworksXQL.Library.query_text
       description: The XQL query string.
       type: String
   - arguments:
