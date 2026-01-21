@@ -7214,9 +7214,9 @@ def test_build_kwargs_network_interface_attribute_minimal():
     result = build_kwargs_network_interface_attribute(args, ni_id)
 
     assert result["NetworkInterfaceId"] == ni_id
-    assert result["EnaSrdSpecification"] is None
-    assert result["AssociatedSubnetIds"] == []
-    assert result["Groups"] == []
+    assert result.get("EnaSrdSpecification") is None
+    assert result.get("AssociatedSubnetIds", []) == []
+    assert result.get("Groups", []) == []
 
 
 def test_build_kwargs_network_interface_attribute_basic_fields():
@@ -7235,7 +7235,7 @@ def test_build_kwargs_network_interface_attribute_basic_fields():
     ni_id = "eni-12345"
     result = build_kwargs_network_interface_attribute(args, ni_id)
 
-    assert result["EnaSrdSpecification"] is True
+    assert result["EnaSrdSpecification"]["EnaSrdEnabled"] is True
     assert result["Description"] == {"Value": "test description"}
     assert result["SourceDestCheck"] == {"Value": False}
 
@@ -7406,7 +7406,7 @@ def test_buckets_list_command_success(mocker):
     assert "bucket1" in result.readable_output
     assert "bucket2" in result.readable_output
 
-    buckets_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+    buckets_output = result.outputs["AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)"]
     assert len(buckets_output) == 2
     assert buckets_output[0]["BucketName"] == "bucket1"
     assert buckets_output[0]["CreationDate"] == "2023-10-15T14:30:45"

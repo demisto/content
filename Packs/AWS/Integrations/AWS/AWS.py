@@ -10,7 +10,6 @@ from botocore.exceptions import ClientError
 from boto3 import Session
 import re
 
-from Packs.CrowdStrikeFalcon.Scripts.Cspresentparentprocess.Cspresentparentprocess_test import raw_response
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -388,9 +387,7 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     kwargs = {
         "EnaSrdSpecification": {
             "EnaSrdEnabled": arg_to_bool_or_none(args.get("ena_srd_enabled")),
-            "EnaSrdUdpSpecification": {
-                "EnaSrdUdpEnabled": arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))
-            }
+            "EnaSrdUdpSpecification": {"EnaSrdUdpEnabled": arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))},
         },
         "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
         "ConnectionTrackingSpecification": {
@@ -402,9 +399,7 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
         "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
         "NetworkInterfaceId": network_interface_id,
         "Groups": argToList(args.get("groups")),
-        "Description": {
-            "Value": args.get("description")
-        },
+        "Description": {"Value": args.get("description")},
         "SourceDestCheck": {
             "Value": arg_to_bool_or_none(args.get("source_dest_check")),
         },
@@ -413,7 +408,7 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
             "EnaQueueCount": arg_to_number(args.get("ena_queue_count")),
             "AttachmentId": attachment_id,
             "DeleteOnTermination": delete_on_termination,
-        }
+        },
     }
     kwargs = remove_empty_elements(kwargs)
     demisto.debug(f"After remove_empty_elements: {kwargs}")
@@ -1171,7 +1166,7 @@ class S3:
             outputs=output,
             outputs_prefix="AWS.S3.Buckets",
             outputs_key_field="BucketName",
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
@@ -4359,7 +4354,7 @@ class SSM:
                 return PollResult(
                     response=CommandResults(
                         readable_output=f"The command {command_id} status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
-                        raw_response=serialize_response_with_datetime_encoding(response_command_list)
+                        raw_response=serialize_response_with_datetime_encoding(response_command_list),
                     ),
                     continue_to_poll=False,
                 )
