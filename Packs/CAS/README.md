@@ -1,6 +1,6 @@
 # CAS Pack Guide & Contribution Example
 
-## Contribution Flow Overview 
+## Contribution Flow Overview
 
 This pack serves as an example for contributors on how to interact with the Cortex APIs without modifying the Core integration directly.
 
@@ -13,7 +13,7 @@ Contributors often need to call internal APIs. However, we want to avoid direct 
 1. **Generic API Command**: A new command `core-generic-api-call` has been implemented.
 2. **Tenant-Specific Core**: An enhanced version of the Core integration (containing this command) is uploaded manually to the developer's tenant (it will not be merged to the main repository).
 3. **Isolated Pack**: Contributors write their scripts and actions in a dedicated pack (like this CAS pack).
-4. **Execution**: Instead of calling platform APIs directly, scripts in this pack use `demisto.executeCommand('core-generic-api-call', ...)` to perform API requests. 
+4. **Execution**: Instead of calling platform APIs directly, scripts in this pack use `demisto.executeCommand('core-generic-api-call', ...)` to perform API requests.
 
 ---
 

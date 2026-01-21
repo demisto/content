@@ -6,8 +6,8 @@ import json
 def main():
     try:
         args = demisto.args()
-        page = int(args.get('page' , 0))
-        limit = int(args.get('limit', 100))
+        page = int(args.get("page", 0))
+        limit = int(args.get("limit", 100))
         start = page * limit
         end = page * limit + limit
         res = demisto.executeCommand(
