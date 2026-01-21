@@ -1796,27 +1796,55 @@ def parsed_whois_command():
     human_readable = tableToMarkdown(f"DomainTools whois result for {domain}", table, headers=headers)
 
     parsed = response.get("parsed_whois", {})
+    registrar_contacts = parsed.get("contacts", {})
+
+    domain_kwargs = {
+        "registrant_name": "",
+        "registrant_email": "",
+        "registrant_phone": "",
+        "registrant_country": "",
+        "admin_name": "",
+        "admin_email": "",
+        "admin_phone": "",
+        "admin_country": "",
+        "tech_country": "",
+        "tech_name": "",
+        "tech_organization": "",
+        "tech_email": "",
+        "billing": "",
+    }
+
+    if isinstance(registrar_contacts, dict):
+        domain_kwargs["registrant_name"] = registrar_contacts.get("registrant", {}).get("name")
+        domain_kwargs["registrant_email"] = registrar_contacts.get("registrant", {}).get("email")
+        domain_kwargs["registrant_phone"] = registrar_contacts.get("registrant", {}).get("phone")
+        domain_kwargs["registrant_country"] = registrar_contacts.get("registrant", {}).get("country")
+        domain_kwargs["admin_name"] = registrar_contacts.get("admin", {}).get("name")
+        domain_kwargs["admin_email"] = registrar_contacts.get("admin", {}).get("email")
+        domain_kwargs["admin_phone"] = registrar_contacts.get("admin", {}).get("phone")
+        domain_kwargs["admin_country"] = registrar_contacts.get("admin", {}).get("country")
+        domain_kwargs["tech_country"] = registrar_contacts.get("tech", {}).get("country")
+        domain_kwargs["tech_name"] = registrar_contacts.get("tech", {}).get("name")
+        domain_kwargs["tech_organization"] = registrar_contacts.get("tech", {}).get("org")
+        domain_kwargs["tech_email"] = registrar_contacts.get("tech", {}).get("email")
+        domain_kwargs["billing"] = registrar_contacts.get("billing", {}).get("name")
+    else:  # for list type when querying IP and make sure its not null
+        if registrar_contacts and isinstance(registrar_contacts, list) and len(registrar_contacts) > 0:
+            registrar_contact = registrar_contacts[0]  # get the first one
+            domain_kwargs["registrant_name"] = registrar_contact.get("name")
+            domain_kwargs["registrant_email"] = registrar_contact.get("email")
+            domain_kwargs["registrant_phone"] = registrar_contact.get("phone")
+            domain_kwargs["registrant_country"] = registrar_contact.get("country")
+
     domain_indicator = Common.Domain(
         domain,
         None,
         registrar_name=parsed.get("registrar", {}).get("name"),
         registrar_abuse_email=parsed.get("registrar", {}).get("abuse_contact_email"),
         registrar_abuse_phone=parsed.get("registrar", {}).get("abuse_contact_phone"),
-        registrant_name=parsed.get("contacts", {}).get("registrant", {}).get("name"),
-        registrant_email=parsed.get("contacts", {}).get("registrant", {}).get("email"),
-        registrant_phone=parsed.get("contacts", {}).get("registrant", {}).get("phone"),
-        registrant_country=parsed.get("contacts", {}).get("registrant", {}).get("country"),
-        admin_name=parsed.get("contacts", {}).get("admin", {}).get("name"),
-        admin_email=parsed.get("contacts", {}).get("admin", {}).get("email"),
-        admin_phone=parsed.get("contacts", {}).get("admin", {}).get("phone"),
-        admin_country=parsed.get("contacts", {}).get("admin", {}).get("country"),
-        tech_country=parsed.get("contacts", {}).get("tech", {}).get("country"),
-        tech_name=parsed.get("contacts", {}).get("tech", {}).get("name"),
-        tech_organization=parsed.get("contacts", {}).get("tech", {}).get("org"),
-        tech_email=parsed.get("contacts", {}).get("tech", {}).get("email"),
-        billing=parsed.get("contacts", {}).get("billing", {}).get("name"),
         name_servers=parsed.get("name_servers"),
         whois_records=[Common.WhoisRecord(whois_record_value=whois_record, whois_record_date=parsed.get("updated_date"))],
+        **domain_kwargs,
     )
 
     return CommandResults(
