@@ -1539,18 +1539,17 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: The results of the command.
     """
-    api_id_str_list = argToList(args.get("api_id", []))
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
     roles_list = argToList(args.get("role", []))
     expires_before = (
         arg_to_timestamp(args.get("expires_before"), arg_name="expires_before") if args.get("expires_before") else None
     )
     expires_after = arg_to_timestamp(args.get("expires_after"), arg_name="expires_after") if args.get("expires_after") else None
-    api_id_int_list = [int(x) for x in api_id_str_list] if api_id_str_list else None
 
     filters = []
 
-    if api_id_int_list:
-        filters.append({"field": "id", "operator": "in", "value": api_id_int_list})
+    if api_ids:
+        filters.append({"field": "id", "operator": "in", "value": api_ids})
 
     if roles_list:
         filters.append({"field": "roles", "operator": "contains", "value": roles_list})
@@ -1590,9 +1589,8 @@ def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    api_id_list = argToList(args.get("api_id", []))
-    api_id_int_list = [int(x) for x in api_id_list] if api_id_list else None
-    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_id_int_list}]}
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_ids}]}
     client.delete_api_keys(request_data=request_data)
     return CommandResults(readable_output="API Keys deleted successfully.")
 

@@ -4134,7 +4134,7 @@ script:
     name: xdr-asset-group-update
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
-  isfetch_xpanse: false
+  isfetch:xpanse: false
   script: ''
   subtype: python3
   ismappable: true
