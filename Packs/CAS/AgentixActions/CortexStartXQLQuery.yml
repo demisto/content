@@ -1,0 +1,31 @@
+commonfields:
+  id: CortexStartXQLQuery
+  version: -1
+name: CortexStartXQLQuery
+display: Cortex - Start XQL Query
+description: Starts an XQL query in Cortex for threat hunting and investigation purposes.
+category: Threat Hunting
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+args:
+- name: query
+  required: true
+  description: The XQL query to start and execute.
+  underlyingargname: query
+  type: textArea
+outputs:
+- name: Core.XQLQuery.queryId
+  description: The unique identifier for the started XQL query.
+  type: string
+  underlyingoutputcontextpath: Core.XQLQuery.queryId
+underlyingcontentitem:
+  id: StartXQLQuery
+  name: StartXQLQuery
+  type: script
+  version: -1
+  command: ""
