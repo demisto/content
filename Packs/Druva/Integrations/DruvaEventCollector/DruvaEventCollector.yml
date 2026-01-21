@@ -27,7 +27,7 @@ configuration:
   name: proxy
   section: Connect
   type: 8
-- display: The maximum number of events per fetch.
+- display: The maximum number of events per fetch per type.
   additionalinfo: The API only returns up to 500 events at a time without limiting capabilities, so it is best to enter this parameter in multiples of 500.
   name: max_fetch
   type: 0

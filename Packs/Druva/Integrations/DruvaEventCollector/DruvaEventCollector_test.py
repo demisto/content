@@ -497,6 +497,7 @@ def test_fetch_events_multiple_types(mocker, mock_client, event_types, expected_
 
     Then:
     - Ensure correct trackers are stored for each event type
+    - Ensure _time and source_log_type fields are added to events
     """
 
     def mock_search(tracker=None, event_type="InSync events"):
@@ -511,3 +512,10 @@ def test_fetch_events_multiple_types(mocker, mock_client, event_types, expected_
 
     # Verify event count matches number of event types
     assert len(events) == len(event_types)
+
+    # Verify _time and source_log_type fields are added
+    for event in events:
+        assert "_time" in event
+        assert "source_log_type" in event
+        # Verify source_log_type has correct value
+        assert event["source_log_type"] in ["insync_events", "cybersecurity_events"]

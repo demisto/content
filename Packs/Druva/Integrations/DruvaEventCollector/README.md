@@ -9,7 +9,7 @@ This is the Druva event collector integration for Cortex XSIAM.
 | Secret Key | True |
 | Trust any certificate (not secure) |  |
 | Use system proxy settings |  |
-| The maximum number of events per fetch |  |
+| The maximum number of events per fetch per type |  |
 | Events to fetch |  |
 
 ### Additional Information

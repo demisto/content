@@ -194,7 +194,7 @@ def fetch_events(
     Args:
         client (Client): Druva client to use.
         last_run (dict): A dict with a key containing a pointer to the latest event created time we got from last fetch.
-        max_fetch (int): The maximum number of events per fetch (applied globally across all event types).
+        max_fetch (int): The maximum number of events per fetch (applied per event type).
         event_types (list[str]): List of event types to fetch.
     Returns:
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
@@ -206,18 +206,17 @@ def fetch_events(
 
     # Fetch events for each selected event type
     for event_type in event_types:
-        # Check if we've already reached the global max_fetch limit
-        if len(final_events) >= max_fetch:
-            demisto.debug(f"Reached max_fetch limit of {max_fetch}. Skipping remaining event types.")
-            break
-
-        demisto.debug(f"Fetching events for type: {event_type}")
+        demisto.debug(f"Fetching events for type: {event_type} (max {max_fetch} events per type)")
         done_fetching: bool = False
         type_events: list[dict] = []
 
         while not done_fetching:
-            # Try new format first, then fall back to old format for backward compatibility
-            tracker = last_run.get(f"tracker_{event_type}") or last_run.get("tracker")
+            # Backward compatibility: Migrate from old format {"tracker": "..."} to new format {"tracker_<event_type>": "..."}
+            # Only "InSync events" (original type) inherits the old tracker; new types start fresh
+            if "tracker" in last_run and f"tracker_{event_type}" not in last_run:
+                tracker = last_run.get("tracker") if event_type == "InSync events" else None
+            else:
+                tracker = last_run.get(f"tracker_{event_type}")
             # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
             try:
                 events, new_tracker = get_events(client, event_type, tracker)
@@ -235,7 +234,15 @@ def fetch_events(
 
             # Save the next_run as a dict with the last_fetch key to be stored
             last_run[f"tracker_{event_type}"] = new_tracker or ""
+
+            # Add source_log_type to events before extending
+            add_time_and_source_to_events(events, event_type)
             type_events.extend(events)
+
+            # Check if we've reached the per-type max_fetch limit
+            if len(type_events) >= max_fetch:
+                demisto.debug(f"Reached max_fetch limit of {max_fetch} for {event_type}. Stopping fetch for this type.")
+                done_fetching = True
 
         final_events.extend(type_events)
 
@@ -245,20 +252,23 @@ def fetch_events(
 """ MAIN FUNCTION """
 
 
-def add_time_to_events(events: list[dict]):
+def add_time_and_source_to_events(events: list[dict], event_type: str):
     """
-    Adds the _time key to the events.
+    Adds the _time and source_log_type keys to the events.
     Args:
-        events: list[dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
+        events: list[dict] - list of events to add the fields to.
+        event_type: str - type of events ("InSync events" or "Cybersecurity events").
     """
     if events:
+        # Determine source_log_type based on event_type
+        source_log_type = "cybersecurity_events" if event_type == "Cybersecurity events" else "insync_events"
+
         for event in events:
             # Handle both timestamp formats: "timestamp" (InSync events) and "timeStamp" (Cybersecurity events)
             timestamp_value = event.get("timestamp") or event.get("timeStamp")
             create_time = arg_to_datetime(timestamp_value)
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+            event["source_log_type"] = source_log_type
 
 
 def main() -> None:  # pragma: no cover
@@ -299,6 +309,9 @@ def main() -> None:  # pragma: no cover
             for event_type in event_types_arg:
                 demisto.debug(f"Fetching events for type: {event_type}")
                 events, tracker = get_events(client, event_type, args.get("tracker"))
+
+                # Add time and source_log_type to events
+                add_time_and_source_to_events(events, event_type)
                 all_events.extend(events)
                 trackers[f"tracker_{event_type}"] = tracker
 
@@ -321,7 +334,6 @@ def main() -> None:  # pragma: no cover
                 )
             )
             if argToBoolean(args.get("should_push_events", False)):
-                add_time_to_events(all_events)
                 send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
@@ -329,7 +341,6 @@ def main() -> None:  # pragma: no cover
                 client=client, last_run=demisto.getLastRun(), max_fetch=max_fetch, event_types=event_types_param
             )
 
-            add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.debug(f"fetched {len(events or [])} events. Setting {next_run=}.")
