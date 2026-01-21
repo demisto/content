@@ -7045,10 +7045,10 @@ def test_parse_parameters_arg_single_param():
     When: parse_parameters_arg is called.
     Then: It should return a dictionary with one key 'K1' and a list of values ['V1'].
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
     parameters_str = "key=K1,values=V1"
-    result = parse_parameters_arg(parameters_str)
+    result = parse_key_values_2_dict(parameters_str)
     assert result == {"K1": ["V1"]}
 
 
@@ -7058,10 +7058,10 @@ def test_parse_parameters_arg_multiple_params():
     When: parse_parameters_arg is called.
     Then: It should return a dictionary with all keys and their respective value lists.
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
     parameters_str = "key=K1,values=V1;key=K2,values=V2"
-    result = parse_parameters_arg(parameters_str)
+    result = parse_key_values_2_dict(parameters_str)
     assert result == {"K1": ["V1"], "K2": ["V2"]}
 
 
@@ -7071,10 +7071,10 @@ def test_parse_parameters_arg_multiple_values():
     When: parse_parameters_arg is called.
     Then: It should return a dictionary where the key maps to a list of all values.
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
     parameters_str = "key=K1,values=V1,V2,V3"
-    result = parse_parameters_arg(parameters_str)
+    result = parse_key_values_2_dict(parameters_str)
     assert result == {"K1": ["V1", "V2", "V3"]}
 
 
@@ -7084,9 +7084,9 @@ def test_parse_parameters_arg_empty_input():
     When: parse_parameters_arg is called.
     Then: It should return an empty dictionary.
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
-    assert parse_parameters_arg("") == {}
+    assert parse_key_values_2_dict("") == {}
 
 
 def test_parse_parameters_arg_malformed_missing_values():
@@ -7095,11 +7095,11 @@ def test_parse_parameters_arg_malformed_missing_values():
     When: parse_parameters_arg is called.
     Then: It should raise an IndexError because it expects at least two parts from the split.
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
     parameters_str = "key=K1"
     with pytest.raises(ValueError) as exc_info:
-        parse_parameters_arg(parameters_str)
+        parse_key_values_2_dict(parameters_str)
     assert "Could not parse" in str(exc_info.value)
 
 
@@ -7109,11 +7109,11 @@ def test_parse_parameters_arg_malformed_missing_key_prefix():
     When: parse_parameters_arg is called.
     Then: It should return a dictionary where the key is sliced incorrectly (missing first 4 chars of whatever is there).
     """
-    from AWS import parse_parameters_arg
+    from AWS import parse_key_values_2_dict
 
     parameters_str = "K1,values=V1"
     with pytest.raises(ValueError) as exc_info:
-        parse_parameters_arg(parameters_str)
+        parse_key_values_2_dict(parameters_str)
     assert "Could not parse" in str(exc_info.value)
 
 
@@ -7123,10 +7123,10 @@ def test_parse_triple_filter_single():
     When: parse_triple_filter is called.
     Then: It should return a list containing one dictionary with Key, Values, and Type.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
     filter_string = "key=project,values=P1,type=string"
-    result = parse_triple_filter(filter_string)
+    result = parse_name_value_type_format_filter(filter_string)
     assert result == [{"Key": "project", "Values": ["P1"], "Type": "string"}]
 
 
@@ -7136,10 +7136,10 @@ def test_parse_triple_filter_multiple():
     When: parse_triple_filter is called.
     Then: It should return a list of dictionaries for all filters.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
     filter_string = "key=project,values=P1,type=string;key=tag:Name,values=V1,type=string"
-    result = parse_triple_filter(filter_string)
+    result = parse_name_value_type_format_filter(filter_string)
     assert result == [
         {"Key": "project", "Values": ["P1"], "Type": "string"},
         {"Key": "tag:Name", "Values": ["V1"], "Type": "string"},
@@ -7152,10 +7152,10 @@ def test_parse_triple_filter_multiple_values():
     When: parse_triple_filter is called.
     Then: It should return a dictionary where 'Values' is a list of all items.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
     filter_string = "key=project,values=P1,P2,P3,type=string"
-    result = parse_triple_filter(filter_string)
+    result = parse_name_value_type_format_filter(filter_string)
     assert result == [{"Key": "project", "Values": ["P1", "P2", "P3"], "Type": "string"}]
 
 
@@ -7165,11 +7165,11 @@ def test_parse_triple_filter_max_filters(mocker):
     When: parse_triple_filter is called.
     Then: It should only parse the first 5 filters and log a debug message.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
     mocker.patch("AWS.demisto.debug")
     filter_string = ";".join([f"key=K{i},values=V{i},type=T{i}" for i in range(10)])
-    result = parse_triple_filter(filter_string)
+    result = parse_name_value_type_format_filter(filter_string)
     assert len(result) == 5
     assert result[0]["Key"] == "K0"
     assert result[4]["Key"] == "K4"
@@ -7181,10 +7181,10 @@ def test_parse_triple_filter_empty():
     When: parse_triple_filter is called.
     Then: It should return an empty list.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
-    assert parse_triple_filter("") == []
-    assert parse_triple_filter(None) == []
+    assert parse_name_value_type_format_filter("") == []
+    assert parse_name_value_type_format_filter(None) == []
 
 
 def test_parse_triple_filter_malformed():
@@ -7193,12 +7193,12 @@ def test_parse_triple_filter_malformed():
     When: parse_triple_filter is called.
     Then: It should raise a ValueError.
     """
-    from AWS import parse_triple_filter
+    from AWS import parse_name_value_type_format_filter
 
     # The docstring says 'name=' but the regex uses 'key='
     filter_string = "name=K1,values=V1,type=T1"
     with pytest.raises(ValueError, match="Could not parse field"):
-        parse_triple_filter(filter_string)
+        parse_name_value_type_format_filter(filter_string)
 
 
 def test_build_kwargs_network_interface_attribute_minimal():

@@ -3359,7 +3359,7 @@ script:
   - arguments:
     - description: A comma-separated list of the IPAM resource discovery IDs.
       name: ipam_resource_discovery_ids
-    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -3429,7 +3429,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: ipam_resource_discovery_association_ids
-    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+    - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
       name: limit
@@ -7134,7 +7134,7 @@ script:
           - 'true'
           - 'false'
       - name: groups
-        description: A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it's just the default security group in the VPC.
+        description: A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set.
         required: false
       - name: default_ena_queue_count
         description: Whether to use the default number of the ENA queues.
@@ -7317,6 +7317,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: grant_full_control
         description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
         required: false
@@ -7433,6 +7435,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
     outputs:
       - contextPath: AWS.S3.Buckets.BucketName
         description: The name of the bucket.
@@ -7510,10 +7514,10 @@ script:
         description: The type of inventory item for which you want information.
         required: true
       - name: limit
-        description: Maximum number of buckets to be returned in response.
+        description: The maximum number of items to return for this call.
         defaultValue: 50
         required: false
-      - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+      - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;key=<key>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
         name: filters
         required: false
       - name: next_token
@@ -7536,7 +7540,7 @@ script:
         description: A list of inventory items on the managed nodes.
         type: object
       - contextPath: AWS.SSM.Inventory.EntriesNextPageToken
-        description: A list of inventory items on the managed nodes.
+        description: The token to use when requesting the next set of items.
         type: object
   - name: aws-ssm-command-run
     description: Runs commands on one or more managed nodes.
@@ -7585,14 +7589,14 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: instance_ids
-        description: The IDs of the managed nodes where the command should run. Maximum of 50 IDs.
+        description: A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs.
       - name: targets
         description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria that targets managed nodes using a Key,Value combination."
       - name: document_name
         description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
         required: true
       - name: document_version
-        description: The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number. If you run commands by using the Command Line Interface (Amazon Web Services CLI), then you must escape the first two options by using a backslash. If you specify a version number, then you don’t need to use the backslash.
+        description: The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number.
         required: false
       - name: document_hash
         description: The Sha256 hash created by the system when the document was created.
@@ -7613,10 +7617,12 @@ script:
         description: The directory structure within the S3 bucket where the responses should be stored.
         required: false
       - name: max_concurrency
-        description: The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%. The default value is 50.
+        description: The maximum number of managed nodes that are allowed to run the command at the same time. You can specify a number such as 10 or a percentage such as 10%.
         required: false
+        defaultValue: "50"
       - name: max_errors
-        description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%. The default value is 0.
+        description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. You can specify a number like 10 or a percentage like 10%.
+        defaultValue: "0"
         required: false
       - description: A unique identifier for this command. This is for the polling to work, not for the user.
         name: command_id
@@ -7628,6 +7634,96 @@ script:
         name: hide_polling_output
         hidden: true
     outputs:
+      - contextPath: AWS.SSM.Command.CommandId
+        description: A unique identifier for this command.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentName
+        description: The name of the document requested for execution.
+        type: String
+      - contextPath: AWS.SSM.Command.DocumentVersion
+        description: The Systems Manager document (SSM document) version.
+        type: String
+      - contextPath: AWS.SSM.Command.Comment
+        description: User-specified information about the command, such as a brief description of what the command should do.
+        type: String
+      - contextPath: AWS.SSM.Command.ExpiresAfter
+        description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command.
+        type: String
+      - contextPath: AWS.SSM.Command.Parameters
+        description: The parameter values to be inserted in the document when running the command.
+        type: Object
+      - contextPath: AWS.SSM.Command.InstanceIds
+        description: The managed node IDs against which this command was requested.
+        type: Object
+      - contextPath: AWS.SSM.Command.Targets
+        description: An array of search criteria that targets managed nodes using a Key,Value combination that you specify.
+        type: Object
+      - contextPath: AWS.SSM.Command.RequestedDateTime
+        description: The date and time the command was requested.
+        type: String
+      - contextPath: AWS.SSM.Command.Status
+        description: The status of the command.
+        type: String
+      - contextPath: AWS.SSM.Command.StatusDetails
+        description: A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3BucketName
+        description: The name of the S3 bucket where command execution responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.OutputS3KeyPrefix
+        description: The directory structure within the S3 bucket where the responses should be stored.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxConcurrency
+        description: The maximum number of managed nodes that are allowed to run the command at the same time.
+        type: String
+      - contextPath: AWS.SSM.Command.MaxErrors
+        description: The maximum number of errors allowed before the system stops sending the command to additional targets.
+        type: String
+      - contextPath: AWS.SSM.Command.TargetCount
+        description: The number of targets for the command.
+        type: Number
+      - contextPath: AWS.SSM.Command.CompletedCount
+        description: 'The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable.'
+        type: Number
+      - contextPath: AWS.SSM.Command.ErrorCount
+        description: The number of targets for which the status is Failed or Execution Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.DeliveryTimedOutCount
+        description: The number of targets for which the status is Delivery Timed Out.
+        type: Number
+      - contextPath: AWS.SSM.Command.ServiceRole
+        description: The Identity and Access Management (IAM) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationArn
+        description: An Amazon Resource Name (ARN) for an Amazon Simple Notification Service (Amazon SNS) topic. Run Command pushes notifications about command status changes to this topic.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationEvents
+        description: The different events for which you can receive notifications.
+        type: String
+      - contextPath: AWS.SSM.Command.NotificationConfig.NotificationType
+        description: The type of notification.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName
+        description: The name of the CloudWatch Logs log group where you want to send command output.
+        type: String
+      - contextPath: AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled
+        description: Enables Systems Manager to send command output to CloudWatch Logs.
+        type: Boolean
+      - contextPath: AWS.SSM.Command.TimeoutSeconds
+        description: The TimeoutSeconds value specified for a command.
+        type: Number
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure
+        description: When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value.
+        type: String
+      - contextPath: AWS.SSM.Command.AlarmConfiguration.Alarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.Name
+        description: The name of your CloudWatch alarm.
+        type: String
+      - contextPath: AWS.SSM.Command.TriggeredAlarms.State
+        description: The state of your CloudWatch alarm.
+        type: String
 
   - name: aws-ec2-security-group-create
     execution: true

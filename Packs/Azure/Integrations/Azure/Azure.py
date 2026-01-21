@@ -43,7 +43,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
-        "azure-nsg-security-rule-update-quick-action",
         "azure-nsg-security-rules-list",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
@@ -569,7 +568,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_security_rules(self, subscription_id: str, resource_group_name: str, network_security_group_name: str):
+    def list_security_rules(self, subscription_id: str, resource_group_name: str, network_security_group_name: str) -> dict:
         """
         Gets all security rules in a network security group.
 
@@ -579,7 +578,7 @@ class AzureClient:
             network_security_group_name(str): The name of the network security group
 
         Returns:
-            A list of dictionary containing the security rules information
+            A dict containing a list of dictionary with the security rules information
 
         Raises:
             DemistoException: If there are permission or other API errors
@@ -3835,9 +3834,7 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
         headerTransform=pascalToSpace,
     )
 
-    outputs = {"Azure.NSGRule(val.id && val.id == obj.id)": security_rules}
-
-    return CommandResults(outputs=outputs, readable_output=hr, raw_response=security_rules)
+    return CommandResults(outputs=security_rules, readable_output=hr, raw_response=security_rules, outputs_prefix="Azure.NSGRule", outputs_key_field="id")
 
 
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:

@@ -10,6 +10,8 @@ from botocore.exceptions import ClientError
 from boto3 import Session
 import re
 
+from Packs.CrowdStrikeFalcon.Scripts.Cspresentparentprocess.Cspresentparentprocess_test import raw_response
+
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
@@ -24,10 +26,8 @@ MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
-MAXIMUM_COMMAND_TIMEOUT = 2592000  # Maximum timeout for running commands in ssm (30 days).
-MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
-DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "Success": "The command completed successfully.",
     "Failed": "The command wasn't successfully on the managed node.",
@@ -262,7 +262,7 @@ def parse_target_field(target_string: str | None):
     return targets
 
 
-def parse_parameters_arg(parameters_str: str) -> dict:
+def parse_key_values_2_dict(parameters_str: str) -> dict:
     """
     Parses a list representation of key and values 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>.
 
@@ -290,7 +290,7 @@ def parse_parameters_arg(parameters_str: str) -> dict:
     return parameters
 
 
-def parse_triple_filter(filter_string: str | None):
+def parse_name_value_type_format_filter(filter_string: str | None):
     """
     Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
     You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
@@ -378,53 +378,46 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     Returns:
         A dictionary with the relevant values.
     """
-    kwargs = {
-        "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
-        "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
-        "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
-        "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
-        "NetworkInterfaceId": network_interface_id,
-        "Groups": argToList(args.get("groups")),
-    }
-
-    tcp_established_timeout = arg_to_number(args.get("tcp_established_timeout"))
-    udp_stream_timeout = arg_to_number(args.get("udp_stream_timeout"))
-    udp_timeout = arg_to_number(args.get("udp_timeout"))
-    if any([tcp_established_timeout, udp_stream_timeout, udp_timeout]):
-        kwargs["ConnectionTrackingSpecification"] = {}
-
-    default_ena_queue_count = arg_to_bool_or_none(args.get("default_ena_queue_count"))
-    ena_queue_count = arg_to_number(args.get("ena_queue_count"))
     attachment_id = args.get("attachment_id")
     delete_on_termination = arg_to_bool_or_none(args.get("delete_on_termination"))
-    if any(b is not None for b in [default_ena_queue_count, ena_queue_count, attachment_id, delete_on_termination]):
-        kwargs["Attachment"] = {}
-
-    if (ena_srd_udp_enabled := arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))) is not None:
-        kwargs["EnaSrdUdpSpecification"] = {"EnaSrdUdpEnabled": ena_srd_udp_enabled}
-    if tcp_established_timeout:
-        kwargs["ConnectionTrackingSpecification"]["TcpEstablishedTimeout"] = tcp_established_timeout
-    if udp_stream_timeout:
-        kwargs["ConnectionTrackingSpecification"]["UdpStreamTimeout"] = udp_stream_timeout
-    if udp_timeout:
-        kwargs["ConnectionTrackingSpecification"]["UdpTimeout"] = udp_timeout
-    if description := args.get("description"):
-        kwargs["Description"] = {"Value": description}
-    if (source_dest_check := arg_to_bool_or_none(args.get("source_dest_check"))) is not None:
-        kwargs["SourceDestCheck"] = {"Value": source_dest_check}
-    if default_ena_queue_count is not None:
-        kwargs["Attachment"]["DefaultEnaQueueCount"] = default_ena_queue_count
-    if ena_queue_count:
-        kwargs["Attachment"]["EnaQueueCount"] = ena_queue_count
-    if attachment_id:
-        kwargs["Attachment"]["AttachmentId"] = attachment_id
-    if delete_on_termination is not None:
-        kwargs["Attachment"]["DeleteOnTermination"] = delete_on_termination
 
     if (attachment_id and delete_on_termination is None) or (not attachment_id and delete_on_termination is not None):
         raise DemistoException(
             "If one of the arguments 'attachment_id' or 'delete_on_termination' is given, the other one must be given as well."
         )
+    kwargs = {
+        "EnaSrdSpecification": {
+            "EnaSrdEnabled": arg_to_bool_or_none(args.get("ena_srd_enabled")),
+            "EnaSrdUdpSpecification": {
+                "EnaSrdUdpEnabled": arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))
+            }
+        },
+        "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
+        "ConnectionTrackingSpecification": {
+            "TcpEstablishedTimeout": arg_to_number(args.get("tcp_established_timeout")),
+            "UdpStreamTimeout": arg_to_number(args.get("udp_stream_timeout")),
+            "UdpTimeout": arg_to_number(args.get("udp_timeout")),
+        },
+        "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
+        "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
+        "NetworkInterfaceId": network_interface_id,
+        "Groups": argToList(args.get("groups")),
+        "Description": {
+            "Value": args.get("description")
+        },
+        "SourceDestCheck": {
+            "Value": arg_to_bool_or_none(args.get("source_dest_check")),
+        },
+        "Attachment": {
+            "DefaultEnaQueueCount": arg_to_bool_or_none(args.get("default_ena_queue_count")),
+            "EnaQueueCount": arg_to_number(args.get("ena_queue_count")),
+            "AttachmentId": attachment_id,
+            "DeleteOnTermination": delete_on_termination,
+        }
+    }
+    kwargs = remove_empty_elements(kwargs)
+    demisto.debug(f"After remove_empty_elements: {kwargs}")
+
     return kwargs
 
 
@@ -1178,6 +1171,7 @@ class S3:
             outputs=output,
             outputs_prefix="AWS.S3.Buckets",
             outputs_key_field="BucketName",
+            raw_response=response
         )
 
     @staticmethod
@@ -1192,9 +1186,7 @@ class S3:
         Returns:
             CommandResults: Containing the list of buckets.
         """
-        filter_by_region = args.get("filter_by_region")
-        prefix = args.get("prefix")
-        kwargs = {"Prefix": prefix, "BucketRegion": filter_by_region}
+        kwargs = {"Prefix": args.get("filter_by_region"), "BucketRegion": args.get("prefix")}
         kwargs.update(
             build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets")
         )
@@ -1212,7 +1204,7 @@ class S3:
             del bucket["Name"]
         readable_output = tableToMarkdown("The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace)
         outputs = {
-            "AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)": buckets,
+            "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
             "AWS.S3(true)": {
                 "BucketsOwner": response.get("Owner"),
                 "BucketsNextPageToken": response.get("ContinuationToken"),
@@ -2649,9 +2641,11 @@ class EC2:
         """
         region_names = argToList(args.get("region_names", ""))
         all_regions = arg_to_bool_or_none(args.get("all_regions"))
-        kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
+
         if region_names and all_regions is not None:
             raise DemistoException("Only one of the arguments 'region_name' and 'all_regions' should be provided.")
+
+        kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
 
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
@@ -4311,7 +4305,7 @@ class SSM:
         kwargs = {
             "InstanceId": instance_id,
             "TypeName": type_name,
-            "Filters": parse_triple_filter(filters),
+            "Filters": parse_name_value_type_format_filter(filters),
         }
         kwargs.update(build_pagination_kwargs(args, 1, 50))
         remove_nulls_from_dictionary(kwargs)
@@ -4322,11 +4316,9 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         if response.get("Entries"):
-            headers = ["Name", "URL", "Summary"]
             readable_output = tableToMarkdown(
                 f"The inventory entries of item {instance_id} with the type {type_name}",
                 response.get("Entries"),
-                headers,
                 headerTransform=pascalToSpace,
                 removeNull=True,
             )
@@ -4345,7 +4337,7 @@ class SSM:
     @polling_function(
         name="aws-ssm-command-run",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
-        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
         requires_polling_arg=False,  # means it will always be default to poll, poll=true,
     )
     def command_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult | None:
@@ -4367,6 +4359,7 @@ class SSM:
                 return PollResult(
                     response=CommandResults(
                         readable_output=f"The command {command_id} status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                        raw_response=serialize_response_with_datetime_encoding(response_command_list)
                     ),
                     continue_to_poll=False,
                 )
@@ -4378,27 +4371,29 @@ class SSM:
             )
 
         demisto.debug("First execution of command-run")
+        document_hash = args.get("document_hash")
         kwargs = {
             "InstanceIds": argToList(args.get("instance_ids")),
             "DocumentName": args.get("document_name"),
             "DocumentVersion": args.get("document_version"),
-            "DocumentHash": args.get("document_hash"),
+            "DocumentHash": document_hash,
             "Comment": args.get("comment"),
             "OutputS3BucketName": args.get("output_s3_bucket_name"),
             "OutputS3KeyPrefix": args.get("output_s3_key_prefix"),
             "MaxConcurrency": args.get("max_concurrency"),
             "MaxErrors": args.get("max_errors"),
+            "DocumentHashType": "Sha256" if document_hash else None,
         }
-        if targets := args.get("Targets"):
+        if targets := args.get("targets"):
             kwargs["Targets"] = parse_target_field(targets)
-        if args.get("document_hash"):
-            kwargs["DocumentHashType"] = "Sha256"
         if parameters := args.get("parameters"):
-            kwargs["Parameters"] = parse_parameters_arg(parameters)
+            kwargs["Parameters"] = parse_key_values_2_dict(parameters)
         if command_timeout := arg_to_number(args.get("command_timeout")):
-            if MAXIMUM_COMMAND_TIMEOUT < command_timeout < MINIMUM_COMMAND_TIMEOUT:
+            max_command_timeout = 2592000  # Maximum timeout for running commands in ssm (30 days).
+            min_command_timeout = 30  # Minimum timeout for running commands in ssm.
+            if max_command_timeout < command_timeout < min_command_timeout:
                 raise DemistoException(
-                    f"Command timeout must be between {MINIMUM_COMMAND_TIMEOUT} and {MAXIMUM_COMMAND_TIMEOUT} seconds."
+                    f"Command timeout must be between {min_command_timeout} and {max_command_timeout} seconds."
                 )
             kwargs["TimeoutSeconds"] = command_timeout
         remove_nulls_from_dictionary(kwargs)
@@ -4419,6 +4414,7 @@ class SSM:
                 outputs=command_response,
                 outputs_prefix="AWS.SSM.Command",
                 outputs_key_field="CommandId",
+                raw_response=response_command_run,
             ),
         )
 
@@ -4428,7 +4424,7 @@ def get_file_path(file_id):
     return filepath_result
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
+COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-billing-cost-usage-list": CostExplorer.billing_cost_usage_list_command,
     "aws-billing-forecast-list": CostExplorer.billing_forecast_list_command,
     "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
