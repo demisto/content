@@ -563,8 +563,8 @@ def get_search_alert_summary_v2(alert):
         "Original": alert.get("original"),
         "Report id": alert.get("report_id"),
         "Alert date": alert.get("alert_date"),
-        "Malware name": alert.get("malware").get("name"),
-        "Malware stype": alert.get("malware").get("stype"),
+        "Malware name": str([item.get("name") for item in alert.get("malware")]),
+        "Malware stype": str([item.get("stype") for item in alert.get("malware")]),
         "Email status": alert.get("email_status"),
     }
 
