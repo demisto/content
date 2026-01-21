@@ -5263,8 +5263,8 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. |
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. |
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. |
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 

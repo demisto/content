@@ -4215,21 +4215,21 @@ script:
       description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     - name: cloud_pup_adware_level_prevention
       required: false
       description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4414,21 +4414,21 @@ script:
       description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     - name: cloud_pup_adware_level_prevention
       required: false
       description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
       auto: PREDEFINED
       predefined:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
