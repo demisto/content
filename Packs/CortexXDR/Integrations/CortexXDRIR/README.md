@@ -4112,7 +4112,7 @@ Gets a list of existing API keys.
 | api_id | A comma-separated list of API key IDs to retrieve. | Optional | 
 | role | A comma-separated list of API key roles to retrieve. | Optional | 
 | expires_before | Filters API keys that expire before this date. For example: "1 year". Filters API keys that have an expiration date. | Optional | 
-| expires_after | Filters API keys that expire after this date. For example: "in a year". Filters API keys that have an expiration date. | Optional | 
+| expires_after | Filters API keys that expire after this date. For example: "1 year". Filters API keys that have an expiration date. | Optional | 
 
 #### Context Output
 
