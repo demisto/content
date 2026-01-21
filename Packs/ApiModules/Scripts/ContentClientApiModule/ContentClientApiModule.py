@@ -1349,7 +1349,7 @@ class ContentClient:
         circuit_breaker: Optional[CircuitBreakerPolicy] = None,
         diagnostic_mode: bool = False,
         client_name: str = "ContentClient",
-        is_multithreaded: bool = True
+        is_multithreaded: bool = True,
     ) -> None:
         """Initialize ContentClient with BaseClient-compatible parameters.
 
@@ -1424,8 +1424,11 @@ class ContentClient:
             current_loop = None
 
         # Check if we need to create a new client
-        if not hasattr(self._local_storage, "client") or self._local_storage.client is None or \
-                getattr(self._local_storage, "client_event_loop", None) != current_loop:
+        if (
+            not hasattr(self._local_storage, "client")
+            or self._local_storage.client is None
+            or getattr(self._local_storage, "client_event_loop", None) != current_loop
+        ):
             # Close existing client if any
             if getattr(self._local_storage, "client", None) is not None:
                 try:

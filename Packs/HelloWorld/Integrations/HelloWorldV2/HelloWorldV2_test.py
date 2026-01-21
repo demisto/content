@@ -72,10 +72,10 @@ from HelloWorldV2 import (
 
 def util_load_json(path):
     """Load JSON test data from file.
-    
+
     Args:
         path (str): Path to JSON file relative to test_data directory.
-        
+
     Returns:
         dict | list: Parsed JSON data.
     """
@@ -446,6 +446,7 @@ class TestHelloWorldGetEventsArgs:
             - Assert model is created successfully with correct values.
         """
         from HelloWorldV2 import HelloWorldGetEventsArgs
+
         mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
 
         args = HelloWorldGetEventsArgs(limit=limit, severity=HelloWorldSeverity.HIGH, should_push_events=should_push_events)
@@ -1087,7 +1088,6 @@ def test_job_submit_command(mocker: MockerFixture):
     }
 
 
-
 def test_job_poll_command_complete(mocker: MockerFixture):
     """
     Given:
@@ -1187,8 +1187,6 @@ def test_job_poll_command_in_progress(mocker: MockerFixture):
     assert result is None
 
 
-
-
 @pytest.mark.parametrize(
     "alert_id,severity,limit,expected_method",
     [
@@ -1196,7 +1194,9 @@ def test_job_poll_command_in_progress(mocker: MockerFixture):
         pytest.param(None, HelloWorldSeverity.HIGH, 10, "get_alert_list", id="With severity"),
     ],
 )
-def test_alert_list_command(mocker: MockerFixture, alert_id: int | None, severity: HelloWorldSeverity | None, limit: int, expected_method: str):
+def test_alert_list_command(
+    mocker: MockerFixture, alert_id: int | None, severity: HelloWorldSeverity | None, limit: int, expected_method: str
+):
     """
     Given:
         - Valid client and args with either alert_id or severity.
@@ -1264,7 +1264,6 @@ def test_alert_list_command(mocker: MockerFixture, alert_id: int | None, severit
     assert isinstance(result.outputs, list)
 
 
-
 def test_create_events(mocker: MockerFixture):
     """
     Given:
@@ -1310,7 +1309,9 @@ def test_create_incidents(mocker: MockerFixture):
     mock_alerts = util_load_json("test_data/alert_events.json")
 
     # Mock formatted incidents
-    expected_formatted_incidents = format_as_incidents(mock_alerts, id_field="id", occurred_field="date", severity_field="severity")
+    expected_formatted_incidents = format_as_incidents(
+        mock_alerts, id_field="id", occurred_field="date", severity_field="severity"
+    )
 
     # Mock helper functions
     mock_demisto_incidents = mocker.patch("HelloWorldV2.demisto.incidents")

@@ -258,9 +258,7 @@ MOCK_ALERT = (
     '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
 )
 
-MOCK_ASSET = (
-    '"id": {id}, "name": "{name}", "type": "{asset_type}", "status": "{status}", "created": "{created}"'
-)
+MOCK_ASSET = '"id": {id}, "name": "{name}", "type": "{asset_type}", "status": "{status}", "created": "{created}"'
 
 MOCK_VULN = (
     '"id": {id}, "cve_id": "{cve_id}", "severity": "{severity}", "description": "{description}", "published": "{published}"'
@@ -268,8 +266,6 @@ MOCK_VULN = (
 
 BASE_CONTEXT_OUTPUT_PREFIX = "HelloWorld"  # Context outputs from all commands will have this prefix
 
-
-UNIX_TIMESTAMP = str(round(time.time() * 1000))
 
 class PollingDefaults(int, Enum):
     INTERVAL_SECONDS = 30
@@ -284,7 +280,19 @@ class EventsDatasetConfigs(str, Enum):
     SOURCE_LOG_TYPE_KEY = "source_log_type"
 
 
+class AssetsDatasetConfigs(str, Enum):
+    VENDOR = "Hello_WorldV2"
+    PRODUCT = "Assets"
+
+
+class VulnerabilitiesDatasetConfigs(str, Enum):
+    VENDOR = "Hello_WorldV2"
+    PRODUCT = "Vulnerabilities"
+
+
 class FetchAssetsStages(str, Enum):
+    """HelloWorld sequential stages for fetching assets and vulnerabilities"""
+
     ASSETS = "assets"
     VULNS = "vulnerabilities"
 
@@ -369,6 +377,12 @@ class ContentBaseModel(BaseModel):
 
             raise DemistoException("Invalid Inputs:\n" + "\n".join(error_messages)) from e
 
+    def __str__(self):
+        return str(self.dict(by_alias=True))
+
+    def __repr__(self):
+        return str(self.dict(by_alias=True))
+
     class Config:
         extra = Extra.ignore
         allow_population_by_field_name = True
@@ -405,9 +419,10 @@ class HelloWorldLastRun(ContentBaseModel):
     State management for fetch-incidents and fetch-events commands to ensure no
     data is missed or duplicated between invocations.
     """
+
     # The ID of the last fetched alert to use for offsetting.
     id_offset: int = 0
-    
+
     def set(self):
         """Save the current state for the next fetch-incidents or fetch-events execution."""
         last_run = self.dict(by_alias=True)
@@ -420,6 +435,7 @@ class HelloWorldAssetsLastRun(ContentBaseModel):
     State management for fetch-assets command to ensure no data is missed or
     duplicated between fetch invocations.
     """
+
     # Save the `stage` to denote the type of data to be fetched (assets or vulnerabilities)
     stage: FetchAssetsStages = FetchAssetsStages.ASSETS
     # The ID of the last fetched asset / vulnerability to use for offsetting.
@@ -427,7 +443,7 @@ class HelloWorldAssetsLastRun(ContentBaseModel):
     # Keep a running total of fetched assets / vulnerabilities
     cumulative_count: int = 0
     # ID of snapshot in the dataset. Persist if ingestion is ongoing, reset once ingestion is done
-    snapshot_id: int = Field(default=UNIX_TIMESTAMP)
+    snapshot_id: str | None = None
     # `nextTrigger` instructs to the server when to trigger the next fetch invocation.
     next_trigger_in_seconds: str | None = Field(default=None, alias="nextTrigger")
     # `type` indicates to the server that the next fetch invocation is of type "assets" (1), rather than "events" (0)
@@ -452,13 +468,16 @@ class HelloWorldParams(BaseParams):
     url: AnyUrl
     credentials: Credentials
 
-    # Fetch parameters
+    # Fetch events / incidents parameters
     is_fetch: bool | None = Field(default=False, alias=("isFetchEvents" if SYSTEM.can_send_events else "isFetch"))
     max_fetch: int = Field(
         default=1000 if SYSTEM.can_send_events else 10,
         alias=("max_events_fetch" if SYSTEM.can_send_events else "max_incidents_fetch"),
     )
     severity: HelloWorldSeverity = HelloWorldSeverity.HIGH
+
+    # Fetch assets parameter
+    is_fetch_assets: bool | None = Field(default=False, alias="isFetchAssets")
 
     # Advanced parameters
     threshold_ip: int = 65
@@ -790,6 +809,7 @@ class HelloWorldClient(ContentClient):
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
+            client_name="HelloWorldClient",
             diagnostic_mode=is_debug_mode(),  # enable if commands are run with `debug-mode=true`
         )
 
@@ -1018,7 +1038,7 @@ class HelloWorldClient(ContentClient):
         mock_assets: list[dict] = []
         asset_types = ["server", "database", "storage", "network"]
         for mock_number in range(limit):
-            asset_id = id_offset + mock_number + 1,
+            asset_id = id_offset + mock_number + 1
             asset_creation_time = datetime(2024, 1, 15) + timedelta(hours=mock_number)
             asset = MOCK_ASSET.format(
                 id=asset_id,
@@ -1096,6 +1116,10 @@ class HelloWorldClient(ContentClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def generate_unix_timestamp() -> str:
+    return str(round(time.time() * 1000))
 
 
 def format_as_incidents(
@@ -1289,8 +1313,13 @@ def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
 
         if params.is_fetch:
             demisto.debug("[Testing] Testing fetch flow.")
-            fetch_alerts(client=client, max_fetch=1, last_run=HelloWorldLastRun(), severity=params.severity)
+            fetch_alerts(client, max_fetch=1, last_run=HelloWorldLastRun(), severity=params.severity, should_push=False)
             demisto.debug("[Testing] Fetch flow test passed")
+
+        if params.is_fetch_assets:
+            demisto.debug("[Testing] Testing fetch assets flow.")
+            fetch_assets(client, last_run=HelloWorldAssetsLastRun(), should_push=False)
+            demisto.debug("[Testing] Fetch assets flow test passed")
 
     except ContentClientAuthenticationError as e:
         demisto.error(f"[Testing] Authentication failed. Got error={e}.")
@@ -1345,6 +1374,7 @@ def fetch_alerts(
     last_run: HelloWorldLastRun,
     severity: HelloWorldSeverity,
     max_fetch: int,
+    should_push: bool = True,
 ) -> HelloWorldLastRun:
     """Retrieve new alerts and format them as XSOAR incidents or XSIAM events.
 
@@ -1353,6 +1383,7 @@ def fetch_alerts(
         last_run (HelloWorldLastRun): State from the last fetch.
         severity (HelloWorldSeverity): Severity of the alerts to search for.
         max_fetch (int): Maximum number of alerts per fetch.
+        should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
 
     Returns:
         HelloWorldLastRun: Next run state for the next fetch.
@@ -1361,7 +1392,7 @@ def fetch_alerts(
     demisto.debug(f"[Fetch] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
 
     alerts = asyncio.run(
-        get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch, should_push=True)
+        get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch, should_push=should_push)
     )
     if not alerts:
         demisto.debug(f"[Fetch] No new alerts found. Keeping {last_id_offset=}.")
@@ -1372,6 +1403,151 @@ def fetch_alerts(
 
     demisto.debug(f"[Fetch] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
     return next_run
+
+
+def fetch_assets(
+    client: HelloWorldClient,
+    last_run: HelloWorldAssetsLastRun,
+    should_push: bool = True,
+) -> HelloWorldAssetsLastRun:
+    """Retrieve assets and vulnerabilities in sequential batched stages and send to XSIAM.
+
+    INTEGRATION DEVELOPER TIP:
+    This function implements a two-stage batched fetching approach:
+
+    Stage 1 (ASSETS): Fetch all assets in batches until has_more=False
+    Stage 2 (VULNS): Fetch all vulnerabilities in batches until has_more=False
+
+    The workflow:
+    1. Generate snapshot_id on first run (when stage=ASSETS and offset=0)
+    2. Fetch data in batches using offset for pagination
+    3. Send each batch to XSIAM with should_update_module_health=False
+    4. Track cumulative_count across all batches
+    5. When has_more=False, move to next stage or complete
+    6. Update module health only when both stages complete
+    7. Use nextTrigger to control immediate continuation vs. scheduled interval
+
+    Args:
+        client (HelloWorldClient): HelloWorld client to use.
+        last_run (HelloWorldAssetsLastRun): State from the previous fetch-assets execution.
+        should_push (bool): Whether to create assets in XSIAM.
+
+    Returns:
+        HelloWorldAssetsLastRun: Next run state for the next fetch-assets execution.
+    """
+    current_fetch_stage: FetchAssetsStages = last_run.stage
+    current_data_type: str = current_fetch_stage.value
+    current_offset: int = last_run.id_offset
+    cumulative_count: int = last_run.cumulative_count
+    current_snapshot_id: str = (
+        last_run.snapshot_id or generate_unix_timestamp()
+    )  # Generate a new `snapshot_id` if starting fresh (first fetch)
+    batch_limit = 1000
+
+    demisto.debug(
+        f"[Fetch assets] Starting to fetch with {current_fetch_stage=}, {current_offset=}, {cumulative_count=}, {current_snapshot_id=}."
+    )
+
+    # Call the relevant client method based on the `current_fetch_stage`
+    if current_fetch_stage is FetchAssetsStages.ASSETS:
+        demisto.debug(f"[Fetch assets] Fetching assets batch with {current_offset=} and {batch_limit=}.")
+        response = client.get_assets(limit=batch_limit, id_offset=current_offset)
+        dataset_vendor = AssetsDatasetConfigs.VENDOR.value
+        dataset_product = AssetsDatasetConfigs.PRODUCT.value
+
+    else:
+        demisto.debug(f"[Fetch assets] Fetching vulnerabilities batch with {current_offset=} and {batch_limit=}.")
+        response = client.get_vulnerabilities(limit=batch_limit, id_offset=current_offset)
+        dataset_vendor = VulnerabilitiesDatasetConfigs.VENDOR.value
+        dataset_product = VulnerabilitiesDatasetConfigs.PRODUCT.value
+
+    # Parse raw API response
+    demisto.debug(f"[Fetch assets] Parsing raw response of {current_data_type} API.")
+    data = response.get("data", [])
+    has_more = response.get("has_more", False)
+
+    batch_count = len(data)
+    cumulative_count += batch_count
+    demisto.debug(f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}.")
+
+    # Determine how to send items to XSIAM vendor/product dataset based on pulled type
+
+    # INTEGRATION DEVELOPER TIP:
+    # Pay special attention to the variables used when calling `send_data_to_xsiam`:
+    # If no more remaining data available to fetch:
+    #   - Report the actual (cumulative) count of items fetched to indicate to the server that pulling is complete (i.e. snapshot can be sealed)
+    #   - Update the integration instance heath status with the total count of pulled assets / vulnerabilities on the tenant UI
+    # Otherwise:
+    #   - Report "1" items fetched to indicate to the server that pulling is ongoing (i.e. snapshot is not yet complete)
+    #   - Do *NOT* update the the integration instance heath status to avoid showing a partial / incorrect count of pulled assets / vulnerabilities
+
+    reported_items_count = 1 if has_more else cumulative_count
+    update_health_module = False if has_more else True
+    if should_push:
+        demisto.debug(
+            f"[Fetch assets] Starting to send {batch_count} {current_data_type} to XSIAM with {current_snapshot_id=} and {reported_items_count=}."
+        )
+        send_data_to_xsiam(
+            data=data,
+            vendor=dataset_vendor,
+            product=dataset_product,
+            data_type=ASSETS,  # use "assets" data type even if pulling vulnerabilities
+            items_count=reported_items_count,
+            snapshot_id=current_snapshot_id,
+            should_update_health_module=update_health_module,  # Do not update health until all stages complete
+            client_class=ContentClient,
+        )
+        demisto.debug(
+            f"[Fetch assets] Successfully sent {batch_count} {current_data_type} to XSIAM with {current_snapshot_id=} and {reported_items_count=}."
+        )
+
+    # Determine next state based on `has_more` and `current_fetch_stage`
+
+    # INTEGRATION DEVELOPER TIP:
+    # Pay special attention to the variables used when setting `assets_next_run`:
+    # If no more remaining data available to fetch:
+    #   - Retain the same `snapshot_id` and `fetch_stage`
+    #   - Increment the `offset` by the `batch_count`
+    #   - Set `nextTrigger` = 1 to immediately trigger the next fetch-assets invocation
+    # Otherwise:
+    #   - Generate a new `snapshot_id`.
+    #   - Move on to the next `fetch_stage`
+    #   - Reset the `offset` back to 0
+    #   - Set `nextTrigger` = 1 *ONLY* if the `current_fetch_stage` is not the last one (vulnerabilities)
+    if has_more:
+        next_snapshot_id = current_snapshot_id
+        next_fetch_stage = current_fetch_stage
+        next_offset = current_offset + batch_count
+        next_trigger_in_seconds = "1"
+        demisto.debug(
+            f"[Fetch assets] More {current_data_type} available. Setting {next_offset=}, {next_fetch_stage=}, {next_trigger_in_seconds=}."
+        )
+
+    else:
+        # Generate new snapshot ID and reset offset since no more remaining data to fetch as part of the current stage
+        next_snapshot_id = generate_unix_timestamp()
+        next_offset = 0
+        if current_fetch_stage is FetchAssetsStages.ASSETS:
+            # First stage (assets) finished, send immediate server trigger to move on to second stage (vulnerabilities)
+            next_fetch_stage = FetchAssetsStages.VULNS
+            next_trigger_in_seconds = "1"
+
+        else:
+            # Second stage (vulnerabilities) finished, trigger first stage (assets) based on the configured assets fetch interval
+            next_fetch_stage = FetchAssetsStages.ASSETS
+            next_trigger_in_seconds = None
+
+    assets_next_run = HelloWorldAssetsLastRun(
+        stage=next_fetch_stage,
+        id_offset=next_offset,
+        cumulative_count=cumulative_count,
+        snapshot_id=next_snapshot_id,
+        nextTrigger=next_trigger_in_seconds,
+    )
+
+    demisto.debug(f"[Fetch assets] Completed. " f"Fetched {batch_count} {current_data_type}. " f"Set {assets_next_run=}.")
+
+    return assets_next_run
 
 
 def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloWorldParams) -> list[CommandResults]:
@@ -1810,11 +1986,15 @@ def main() -> None:  # pragma: no cover
                 demisto.debug("[Main] fetch completed")
 
             case "fetch-assets":
-                demisto.debug("[Main] Starting fetch assets")
+                # Implement fetch-assets command that is invoked when fetch is enabled in the integration instance configuration
+                demisto.debug("[Main] Starting fetch-assets")
+                # Get last_run from the last time fetch-assets was invoked
                 assets_last_run = execution.assets_last_run
-                assets_next_run = ...
-                assets_last_run.set()
-                demisto.debug("[Main] fetch assets")
+                # Fetch assets and vulnerabilities in sequential batched stages
+                assets_next_run = fetch_assets(client, assets_last_run)
+                # Save next_run for the next time fetch-assets is invoked
+                assets_next_run.set()
+                demisto.debug("[Main] fetch-assets completed")
 
             case "helloworld-get-events":
                 # Validate command arguments
@@ -1834,7 +2014,7 @@ def main() -> None:  # pragma: no cover
                 args = execution.get_vulnerabilities_args
                 # Run command and get its results
                 return_results(get_vulnerabilities_command(client, args))
-            
+
             case "helloworld-alert-list":
                 # Validate command arguments, such as the existence of `alert_id` or `severity`
                 args = execution.alert_list_args
