@@ -79,19 +79,22 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Incident type
+  name: incidentType
+  type: 13
 description: SOCRadar Incidents v4 API integration with advanced incident management, status reasons, and compliance tracking. Fetches security incidents from SOCRadar platform with proper deduplication and date handling. Supports filtering by alarm type IDs for granular control.
 display: SOCRadar Incidents v4
 name: SOCRadarIncidentsV4
 script:
   commands:
   - name: socradar-change-alarm-status
-    description: Change the status of one or more alarms
+    description: Change the status of one or more alarms.
     arguments:
     - name: alarm_ids
-      description: Comma-separated list of alarm IDs to update
+      description: Comma-separated list of alarm IDs to update.
       required: true
     - name: status_reason
-      description: New status reason for the alarms
+      description: New status reason for the alarms.
       required: true
       auto: PREDEFINED
       predefined:
@@ -107,130 +110,130 @@ script:
       - MITIGATED
       - NOT_APPLICABLE
     - name: comments
-      description: Optional comments explaining the status change
+      description: Optional comments explaining the status change.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-      
+
   - name: socradar-mark-false-positive
-    description: Mark an alarm as false positive
+    description: Mark an alarm as false positive.
     arguments:
     - name: alarm_id
-      description: Alarm ID to mark as false positive
+      description: Alarm ID to mark as false positive.
       required: true
     - name: comments
-      description: Optional comments explaining why this is a false positive
+      description: Optional comments explaining why this is a false positive.
       required: false
       defaultValue: False positive
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-      
+
   - name: socradar-mark-resolved
-    description: Mark an alarm as resolved
+    description: Mark an alarm as resolved.
     arguments:
     - name: alarm_id
-      description: Alarm ID to mark as resolved
+      description: Alarm ID to mark as resolved.
       required: true
     - name: comments
-      description: Optional comments explaining the resolution
+      description: Optional comments explaining the resolution.
       required: false
       defaultValue: Resolved
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-      
+
   - name: socradar-add-comment
-    description: Add a comment to an alarm
+    description: Add a comment to an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to add comment to
+      description: Alarm ID to add comment to.
       required: true
     - name: user_email
-      description: Email address of the user adding the comment
+      description: Email address of the user adding the comment.
       required: true
     - name: comment
-      description: Comment text to add
+      description: Comment text to add.
       required: true
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
-      
+
   - name: socradar-change-assignee
-    description: Change the assignee(s) of an alarm
+    description: Change the assignee(s) of an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to change assignee for
+      description: Alarm ID to change assignee for.
       required: true
     - name: user_emails
-      description: Comma-separated list of user email addresses to assign
+      description: Comma-separated list of user email addresses to assign.
       required: true
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Assignees
-      description: New assignees
+      description: New assignees.
       type: String
-      
+
   - name: socradar-add-tag
-    description: Add or remove a tag from an alarm
+    description: Add or remove a tag from an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to add/remove tag for
+      description: Alarm ID to add/remove tag for.
       required: true
     - name: tag
-      description: Tag name to add or remove
+      description: Tag name to add or remove.
       required: true
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Tags
-      description: Alarm tags
+      description: Alarm tags.
       type: String
-      
+
   - name: socradar-test-fetch
-    description: Test incident fetching to verify alarms are available and date parsing works correctly
+    description: Test incident fetching to verify alarms are available and date parsing works correctly.
     arguments:
     - name: limit
-      description: Number of incidents to test fetch (default 5)
+      description: Number of incidents to test fetch (default 5).
       required: false
       defaultValue: '5'
     - name: first_fetch
-      description: 'Test date range (e.g., "3 days", "7 days")'
+      description: 'Test date range (e.g., "3 days", "7 days").'
       required: false
       defaultValue: '3 days'
     outputs:
     - contextPath: SOCRadar.TestFetch.TotalCount
-      description: Total number of incidents found
+      description: Total number of incidents found.
       type: Number
     - contextPath: SOCRadar.TestFetch.SampleIncidents
-      description: Sample incidents for testing
+      description: Sample incidents for testing.
       type: Unknown
     - contextPath: SOCRadar.TestFetch.StartDate
-      description: Parsed start date used for the test
+      description: Parsed start date used for the test.
       type: String
-      
+
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
