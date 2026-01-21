@@ -3879,7 +3879,7 @@ script:
     description: Gets a list of existing API keys.
     name: xdr-api-key-list
     outputs:
-    - contextPath: PaloAltoNetworksXDR.APIKeyData.api_key_id
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.id
       description: The API key ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.APIKeyData.role
@@ -3895,6 +3895,9 @@ script:
       required: true
     description: Deletes the specified API keys.
     name: xdr-api-key-delete
+  - name: xdr-asset-list
+    description: Returns a list of assets.
+    arguments:
     - description: 'A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
       isArray: true
       name: asset_id
@@ -3917,8 +3920,6 @@ script:
     - defaultValue: '0'
       description: Page number for pagination.
       name: page
-    description: Returns a list of assets.
-    name: xdr-asset-list
     outputs:
       - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_id
         description: The unique identifier of the asset.
@@ -4133,7 +4134,7 @@ script:
     name: xdr-asset-group-update
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
-  isfetch:xpanse: false
+  isfetch_xpanse: false
   script: ''
   subtype: python3
   ismappable: true

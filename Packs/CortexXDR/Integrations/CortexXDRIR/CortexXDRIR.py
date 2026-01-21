@@ -429,7 +429,7 @@ class Client(CoreClient):
         """
         Gets a list of existing API keys.
         Args:
-            request_data (list): The request data
+            request_data (dict): The request data
         Returns:
             list: A list of API keys.
         """
@@ -1575,6 +1575,7 @@ def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.APIKeyData",
         outputs=api_keys,
+        outputs_key_field="id",
         raw_response=api_keys,
     )
 
