@@ -1184,6 +1184,4 @@ def test_xql_library_delete_command(mocker):
     response = XQLQueryingEngine.xql_library_delete_command(CLIENT, args)
 
     assert response.readable_output == "XQL queries deleted successfully."
-    res.assert_called_once_with(
-        {"request_data": {"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]}}
-    )
+    res.assert_called_once_with({"request_data": {"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]}})
