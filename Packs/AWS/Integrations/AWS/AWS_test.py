@@ -7790,3 +7790,107 @@ def test_ec2_image_available_waiter_command_waiter_error(mocker):
 
     with pytest.raises(DemistoException, match="Waiter error:"):
         EC2.image_available_waiter_command(mock_client, args)
+
+
+def test_ec2_describe_snapshots_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot description arguments.
+    When: describe_snapshots_command is called successfully.
+    Then: It should return CommandResults with snapshot data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Snapshots": [
+            {
+                "SnapshotId": "snap-12345678",
+                "Description": "Test snapshot",
+                "State": "completed",
+                "VolumeId": "vol-12345678",
+                "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Progress": "100%",
+                "OwnerId": "123456789012",
+                "VolumeSize": 8,
+                "Encrypted": False,
+            }
+        ],
+    }
+    mock_client.describe_snapshots.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"snapshot_ids": "snap-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_snapshots_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Snapshots"
+    assert result.outputs[0]["SnapshotId"] == "snap-12345678"
+    assert "AWS EC2 Snapshots" in result.readable_output
+
+
+def test_ec2_delete_snapshot_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot ID.
+    When: delete_snapshot_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_snapshot.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"snapshot_id": "snap-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.delete_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted snapshot snap-12345678" in result.readable_output
+
+
+def test_ec2_copy_snapshot_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot copy arguments.
+    When: copy_snapshot_command is called successfully.
+    Then: It should return CommandResults with new snapshot ID and copy details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_snapshot.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SnapshotId": "snap-copied123",
+    }
+
+    args = {
+        "source_snapshot_id": "snap-source123",
+        "source_region": "us-west-1",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    result = EC2.copy_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Snapshots"
+    assert result.outputs["SnapshotId"] == "snap-copied123"
+    assert "AWS EC2 Snapshots" in result.readable_output
+
+
+def test_ec2_snapshot_completed_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with waiter that completes successfully.
+    When: snapshot_completed_waiter_command is called.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"snapshot_ids": "snap-12345678", "waiter_delay": "1", "waiter_max_attempts": "1"}
+
+    result = EC2.snapshot_completed_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Snapshot is now completed" in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("snapshot_completed")
