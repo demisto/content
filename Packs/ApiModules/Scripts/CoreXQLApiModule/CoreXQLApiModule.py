@@ -179,7 +179,7 @@ class CoreClient(BaseClient):
         res = self._http_request(
             method="POST",
             url_suffix="../xql_library/get",  # The endpoint is without v1
-            json_data={"request_data": request_data},
+            json_data=request_data,
         )
         return res.get("reply", {})
 
@@ -194,7 +194,7 @@ class CoreClient(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="../xql_library/insert",  # The endpoint is without v1
-            json_data={"request_data": request_data},
+            json_data=request_data,
         )
 
     def delete_xql_queries(self, request_data: dict):
@@ -209,7 +209,7 @@ class CoreClient(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="../xql_library/delete/",  # The endpoint is without v1
-            json_data={"request_data": request_data},
+            json_data=request_data,
         )
 
 
@@ -895,41 +895,29 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: The results of the command.
     """
-    extended_view = args.get("extra_data", "false")
+    extended_view = argToBoolean(args.get("extra_data", "False"))
     xql_query_name = argToList(args.get("xql_query_name", []))
     xql_query_tag = argToList(args.get("xql_query_tag", []))
 
     request_data = assign_params(extended_view=extended_view, xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
 
-    queries = client.get_xql_queries(request_data)
+    queries = client.get_xql_queries({"request_data": request_data})
     xql_queries = queries.get("xql_queries", [])
     for query in xql_queries:
         query.pop("query_metadata", None)
 
-    if not argToBoolean(extended_view):
+    if not extended_view:
         # Aligning the context outputs to match the outputs where extra_data is selected
         for query in xql_queries:
             query["name"] = query.pop("xql_query_name", None)
             query["query_text"] = query.pop("xql_query", None)
             query["labels"] = query.pop("xql_query_tags", None)
+
     readable_output = tableToMarkdown(
         name="XQL Queries",
         t=xql_queries,
-        headers=[
-            "id",
-            "name",
-            "query_text",
-            "description",
-            "content_global_id",
-            "created_at",
-            "created_by",
-            "modified_by",
-            "is_private",
-            "labels",
-            "modified_at",
-            "created_by_pretty",
-            "modified_by_pretty",
-        ],
+        headers=["id", "name", "query_text", "description", "content_global_id", "created_at", "created_by", "modified_by",
+                 "is_private", "labels", "modified_at", "created_by_pretty", "modified_by_pretty"],
         removeNull=True,
         date_fields=["created_at", "modified_at"],
         headerTransform=string_to_table_header,
@@ -954,7 +942,7 @@ def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> Comm
     Returns:
         CommandResults: The results of the command.
     """
-    override_existing = args.get("override_existing")
+    override_existing = argToBoolean(args.get("override_existing"))
     xql_query_list = argToList(args.get("xql_query", []))
     xql_query_name_list = argToList(args.get("xql_query_name", []))
     xql_query_tag = argToList(args.get("xql_query_tag", []))
@@ -966,12 +954,12 @@ def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> Comm
         xql_queries_override=override_existing,
         xql_query_tags=xql_query_tag,
     )
-    if len(xql_query_list) > 0:  # in case there is something in the lists
+    if xql_query_list:  # in case there is something in the lists
         request_data["xql_queries"] = []
         for i in range(0, len(xql_query_list)):
             request_data["xql_queries"].append({"xql_query": xql_query_list[i], "xql_query_name": xql_query_name_list[i]})
 
-    client.create_xql_queries(request_data)
+    client.create_xql_queries({"request_data": request_data})
 
     return CommandResults(readable_output="XQL queries created successfully.")
 
@@ -991,7 +979,7 @@ def xql_library_delete_command(client: CoreClient, args: Dict[str, Any]) -> Comm
 
     request_data = assign_params(xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
 
-    client.delete_xql_queries(request_data)
+    client.delete_xql_queries({"request_data": request_data})
 
     return CommandResults(readable_output="XQL queries deleted successfully.")
 
