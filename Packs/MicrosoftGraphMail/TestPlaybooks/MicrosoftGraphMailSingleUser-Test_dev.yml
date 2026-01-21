@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5687ea24-7e58-4529-8347-42fc6ed84273
+    taskid: eb381794-8090-42af-8f27-36055033be2b
     type: start
     task:
-      id: 5687ea24-7e58-4529-8347-42fc6ed84273
+      id: eb381794-8090-42af-8f27-36055033be2b
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 74f0da76-3b12-4578-8a31-341da54fe45e
+    taskid: f97ad12f-82aa-4216-b0be-db4fd52dafba
     type: regular
     task:
-      id: 74f0da76-3b12-4578-8a31-341da54fe45e
+      id: f97ad12f-82aa-4216-b0be-db4fd52dafba
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3a8b5282-423a-4b31-8a30-fce1a1b0855b
+    taskid: db3a8df4-9478-4326-843d-8c3080769725
     type: regular
     task:
-      id: 3a8b5282-423a-4b31-8a30-fce1a1b0855b
+      id: db3a8df4-9478-4326-843d-8c3080769725
       version: -1
       name: List Folders
       description: Returns the mail folder list directly under the root folder.
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2a004e5e-e136-4325-8d74-561797991863
+    taskid: 5b1984de-3d2e-4ded-bd66-ffc971e16290
     type: regular
     task:
-      id: 2a004e5e-e136-4325-8d74-561797991863
+      id: 5b1984de-3d2e-4ded-bd66-ffc971e16290
       version: -1
       name: List Emails
       description: Gets the properties of returned emails. Typically shows partial
@@ -140,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a24d48bd-c1d6-4a49-8e4d-f207706c206f
+    taskid: 21e68f13-c826-4ff7-a817-c69513f5a34c
     type: regular
     task:
-      id: a24d48bd-c1d6-4a49-8e4d-f207706c206f
+      id: 21e68f13-c826-4ff7-a817-c69513f5a34c
       version: -1
       name: List Rules
       description: List email rules for a user's mailbox using Microsoft Graph API.
@@ -172,10 +172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a2ce25a4-5249-4448-8a1c-aeda6b912d6a
+    taskid: ee741ff5-4250-4ae2-a213-fca3ebfd5264
     type: regular
     task:
-      id: a2ce25a4-5249-4448-8a1c-aeda6b912d6a
+      id: ee741ff5-4250-4ae2-a213-fca3ebfd5264
       version: -1
       name: Move Email to Folder
       description: Moves a message to a different folder.
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f93af007-8aa9-4de4-a079-07f8d12062b0
+    taskid: 568dee01-b927-4730-9f37-dfbf85be58d3
     type: condition
     task:
-      id: f93af007-8aa9-4de4-a079-07f8d12062b0
+      id: 568dee01-b927-4730-9f37-dfbf85be58d3
       version: -1
       name: Check Results for Moved Email
       type: condition
@@ -268,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a0b1db5b-4376-4d86-8821-61a7263f3324
+    taskid: ba2044be-7e2a-4ae2-87e4-81c2fa8962dc
     type: regular
     task:
-      id: a0b1db5b-4376-4d86-8821-61a7263f3324
+      id: ba2044be-7e2a-4ae2-87e4-81c2fa8962dc
       version: -1
       name: 'Get Email as EML '
       description: Retrieves an email message by message ID and uploads the content
@@ -289,7 +289,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0721329d-0510-4848-8b21-b958ba5cdd11
+    taskid: 45983f80-085c-44c2-82de-8f7e9a3c2d29
     type: regular
     task:
-      id: 0721329d-0510-4848-8b21-b958ba5cdd11
+      id: 45983f80-085c-44c2-82de-8f7e9a3c2d29
       version: -1
       name: Get Attachments
       description: Gets an attachment from the email.
@@ -328,7 +328,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -347,10 +347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 422c54f3-6d84-43d1-8659-8563e2153695
+    taskid: d51a6378-1633-4ddd-8ae1-62ed3263242f
     type: regular
     task:
-      id: 422c54f3-6d84-43d1-8659-8563e2153695
+      id: d51a6378-1633-4ddd-8ae1-62ed3263242f
       version: -1
       name: Create Email Draft
       description: Creates a draft message in the specified user's mailbox.
@@ -386,10 +386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1f0a0109-9387-4c8c-8eb1-b04ffd11375a
+    taskid: c87cba80-1253-481a-a254-0ec6292c04d1
     type: regular
     task:
-      id: 1f0a0109-9387-4c8c-8eb1-b04ffd11375a
+      id: c87cba80-1253-481a-a254-0ec6292c04d1
       version: -1
       name: Send Email Draft
       description: Sends a draft email using Microsoft Graph.
@@ -421,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e519a630-45ed-42e7-8dc2-c2dd10c0d055
+    taskid: ecce7d83-5316-4e78-ac3d-d4d3607a27e1
     type: regular
     task:
-      id: e519a630-45ed-42e7-8dc2-c2dd10c0d055
+      id: ecce7d83-5316-4e78-ac3d-d4d3607a27e1
       version: -1
       name: Update Email Status to Unread
       description: Update the status of an email to read / unread.
@@ -441,7 +441,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
       status:
         simple: Unread
     separatecontext: false
@@ -462,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b78cf6fb-8aa7-4a50-8a56-b6a80cc06fcd
+    taskid: 0ac2d4fb-8846-4b03-a3ae-77811cce879c
     type: regular
     task:
-      id: b78cf6fb-8aa7-4a50-8a56-b6a80cc06fcd
+      id: 0ac2d4fb-8846-4b03-a3ae-77811cce879c
       version: -1
       name: Get Rule
       description: Get details of a specific email rule by ID for a user's mailbox
