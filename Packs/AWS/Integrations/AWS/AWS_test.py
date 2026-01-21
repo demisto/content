@@ -111,6 +111,69 @@ def test_s3_put_bucket_versioning_command_exception(mocker):
         S3.put_bucket_versioning_command(mock_client, args)
 
 
+@pytest.mark.parametrize(
+    "status_code, expected_msg_fragment, is_error",
+    [
+        (HTTPStatus.NO_CONTENT, "Successfully deleted bucket", False),  # Case 1: Success (204 No Content)
+        (HTTPStatus.NOT_FOUND, "Error deleting bucket", True),  # Case 2: Failure (404 Not Found or other error)
+    ],
+)
+def test_delete_bucket_command(mocker, status_code, expected_msg_fragment, is_error):
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket.return_value = {"ResponseMetadata": {"HTTPStatusCode": status_code}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.return_value = CommandResults(readable_output="Error deleting bucket")
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.delete_bucket_command(mock_client, args)
+
+    assert expected_msg_fragment in result.readable_output
+
+    if is_error:
+        mock_error_handler.assert_called_once()
+    else:
+        mock_error_handler.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "mock_contents, expected_readable_fragment, expected_output_len",
+    [
+        # Case 1: Bucket has objects (Success) - Verifies Size conversion (1024 -> 1.0 KB)
+        (
+            [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+            "AWS S3 Bucket Object",
+            1,
+        ),
+        ([], "No objects found in bucket", 0),  # Case 2: Bucket is empty (Success but no content)
+    ],
+)
+def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fragment, expected_output_len):
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Contents": mock_contents}
+
+    mock_client.list_objects.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    args = {"bucket": "test-bucket"}
+
+    result = S3.list_bucket_objects_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert expected_readable_fragment in result.readable_output
+
+    if expected_output_len > 0:
+        assert len(result.outputs["Objects"]) == expected_output_len
+        assert result.outputs["BucketName"] == "test-bucket"
+        assert result.outputs["Objects"][0]["Key"] == "test.txt"
+        assert result.outputs["Objects"][0]["Size"] == 1024
+
+
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
     """
     Given: A mocked boto3 S3 client and arguments to enable bucket logging.
@@ -6865,3 +6928,865 @@ def test_build_pagination_kwargs_at_maximum_boundary():
     result = build_pagination_kwargs(args, max_limit=100)
     expected = {"MaxResults": 100}
     assert result == expected
+
+
+def test_ec2_describe_addresses_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid Elastic IP addresses response.
+    When: describe_addresses_command is called successfully.
+    Then: It should return CommandResults with address data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Addresses": [
+            {
+                "PublicIp": "mock_public_ip",
+                "AllocationId": "mock_allocation_id",
+                "Domain": "mock_domain",
+                "InstanceId": "mock_instance_id",
+                "AssociationId": "mock_association_id",
+                "NetworkInterfaceId": "mock_network_interface_id",
+                "PrivateIpAddress": "mock_private_ip_address",
+            }
+        ],
+    }
+
+    args = {"allocation_ids": "mock_allocation_id"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs[0]["PublicIp"] == "mock_public_ip"
+    assert "AWS EC2 Elastic IP Addresses" in result.readable_output
+
+
+def test_ec2_describe_addresses_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty addresses list.
+    When: describe_addresses_command is called with no matching addresses.
+    Then: It should return CommandResults with no addresses message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Addresses": []}
+
+    args = {"allocation_ids": "mock_allocation_id"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Elastic IP addresses were found."
+
+
+def test_ec2_describe_addresses_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filters argument.
+    When: describe_addresses_command is called with filters.
+    Then: It should pass filters to the API call and return results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Addresses": [{"PublicIp": "mock_public_ip", "AllocationId": "mock_allocation_id", "Domain": "mock_domain"}],
+    }
+
+    args = {"filters": "name=domain,values=vpc"}
+
+    result = EC2.describe_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_addresses.assert_called_once()
+    call_args = mock_client.describe_addresses.call_args[1]
+    assert "Filters" in call_args
+
+
+def test_ec2_allocate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid allocation arguments.
+    When: allocate_address_command is called successfully.
+    Then: It should return CommandResults with allocated address data and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicIp": "mock_public_ip",
+        "AllocationId": "mock_allocation_id",
+        "Domain": "mock_domain",
+        "PublicIpv4Pool": "mock_public_ipv4_pool",
+        "NetworkBorderGroup": "mock_network_border_group",
+    }
+
+    args = {}
+
+    result = EC2.allocate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs["PublicIp"] == "mock_public_ip"
+    assert result.outputs["AllocationId"] == "mock_allocation_id"
+    assert "AWS EC2 Allocated Elastic IP" in result.readable_output
+
+
+def test_ec2_allocate_address_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and allocation arguments with tags.
+    When: allocate_address_command is called with tag_specifications.
+    Then: It should pass tags to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicIp": "mock_public_ip",
+        "AllocationId": "mock_allocation_id",
+        "Domain": "mock_domain",
+    }
+
+    args = {"domain": "vpc", "tag_specifications": "key=Environment,value=Production"}
+
+    result = EC2.allocate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.allocate_address.assert_called_once()
+    call_args = mock_client.allocate_address.call_args[1]
+    assert "TagSpecifications" in call_args
+
+
+def test_ec2_allocate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: allocate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"domain": "vpc"}
+
+    EC2.allocate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_associate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid association arguments.
+    When: associate_address_command is called successfully.
+    Then: It should return CommandResults with association data and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationId": "mock_association_id",
+    }
+
+    args = {"allocation_id": "mock_allocation_id", "instance_id": "mock_instance_id"}
+
+    result = EC2.associate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ElasticIPs"
+    assert result.outputs_key_field == "AllocationId"
+    assert result.outputs["AssociationId"] == "mock_association_id"
+    assert result.outputs["AllocationId"] == "mock_allocation_id"
+    assert "AWS EC2 Elastic IP Association" in result.readable_output
+
+
+def test_ec2_associate_address_command_with_network_interface(mocker):
+    """
+    Given: A mocked boto3 EC2 client and association arguments with network interface.
+    When: associate_address_command is called with network_interface_id.
+    Then: It should pass network interface ID to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AssociationId": "mock_association_id",
+    }
+
+    args = {
+        "allocation_id": "mock_allocation_id",
+        "network_interface_id": "mock_network_interface_id",
+        "private_ip_address": "mock_private_ip_address",
+        "allow_reassociation": "true",
+    }
+
+    result = EC2.associate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.associate_address.assert_called_once()
+    call_args = mock_client.associate_address.call_args[1]
+    assert call_args["NetworkInterfaceId"] == "mock_network_interface_id"
+    assert call_args["AllowReassociation"] is True
+
+
+def test_ec2_associate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: associate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.associate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"allocation_id": "mock_allocation_id", "instance_id": "mock_instance_id"}
+
+    EC2.associate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_disassociate_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid association ID.
+    When: disassociate_address_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.disassociate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"association_id": "mock_association_id"}
+
+    result = EC2.disassociate_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully disassociated Elastic IP address" in result.readable_output
+    assert "mock_association_id" in result.readable_output
+
+
+def test_ec2_disassociate_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: disassociate_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.disassociate_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"association_id": "mock_association_id"}
+
+    EC2.disassociate_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_release_address_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid allocation ID.
+    When: release_address_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"allocation_id": "mock_allocation_id"}
+
+    result = EC2.release_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully released Elastic IP address" in result.readable_output
+
+
+def test_ec2_release_address_command_with_network_border_group(mocker):
+    """
+    Given: A mocked boto3 EC2 client and release arguments with network border group.
+    When: release_address_command is called with network_border_group.
+    Then: It should pass network border group to the API call and return success.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"allocation_id": "mock_allocation_id", "network_border_group": "mock_network_border_group"}
+
+    result = EC2.release_address_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.release_address.assert_called_once()
+    call_args = mock_client.release_address.call_args[1]
+    assert call_args["NetworkBorderGroup"] == "mock_network_border_group"
+
+
+def test_ec2_release_address_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning error response.
+    When: release_address_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.release_address.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"allocation_id": "mock_allocation_id"}
+
+    EC2.release_address_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_describe_images_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image description arguments.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with image data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-12345678",
+                "Name": "test-image",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+                "Description": "Test AMI",
+            }
+        ],
+    }
+    mock_client.describe_images.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
+
+    args = {"image_ids": "ami-12345678"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    assert "AWS.EC2(true)" in result.outputs
+    assert len(result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]) == 1
+    assert result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"][0]["ImageId"] == "ami-12345678"
+    assert "AWS EC2 Images" in result.readable_output
+
+
+def test_ec2_describe_images_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_images_command is called with filters.
+    Then: It should pass filters to the API call and return filtered results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-11111111",
+                "Name": "ubuntu-image",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": True,
+            }
+        ],
+    }
+    mock_client.describe_images.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "name", "Values": ["ubuntu*"]}])
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
+
+    args = {"filters": "name=name,values=ubuntu*"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    assert len(result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]) == 1
+    mock_client.describe_images.assert_called_once()
+
+
+def test_ec2_describe_images_command_no_images_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty images list.
+    When: describe_images_command is called with no matching images.
+    Then: It should return CommandResults with no images message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Images": []}
+
+    args = {"image_ids": "ami-nonexistent"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "No images were found" in result.readable_output
+
+
+def test_ec2_describe_images_command_with_multiple_images(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning multiple images.
+    When: describe_images_command is called successfully.
+    Then: It should return CommandResults with all images in outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Images": [
+            {
+                "ImageId": "ami-11111111",
+                "Name": "image-1",
+                "CreationDate": "2023-10-15T14:30:45.000Z",
+                "State": "available",
+                "Public": False,
+            },
+            {
+                "ImageId": "ami-22222222",
+                "Name": "image-2",
+                "CreationDate": "2023-10-16T14:30:45.000Z",
+                "State": "available",
+                "Public": True,
+            },
+        ],
+    }
+    mock_client.describe_images.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.escape", side_effect=lambda x: str(x) if x is not None else "None")
+
+    args = {"owners": "self"}
+
+    result = EC2.describe_images_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)" in result.outputs
+    images_list = result.outputs["AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)"]
+    assert len(images_list) == 2
+    assert images_list[0]["ImageId"] == "ami-11111111"
+    assert images_list[1]["ImageId"] == "ami-22222222"
+
+
+def test_ec2_create_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image creation arguments.
+    When: create_image_command is called successfully.
+    Then: It should return CommandResults with new image ID and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-new12345",
+    }
+
+    args = {"name": "test-image", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-new12345"
+    assert result.outputs["Name"] == "test-image"
+    assert "AWS EC2 Image Created" in result.readable_output
+
+
+def test_ec2_create_image_command_with_no_reboot(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with no_reboot flag.
+    When: create_image_command is called with no_reboot=true.
+    Then: It should pass NoReboot=True to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-noreboot123",
+    }
+
+    args = {"name": "no-reboot-image", "instance_id": "i-1234567890abcdef0", "no_reboot": "true", "region": "us-west-2"}
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert call_args["NoReboot"] is True
+
+
+def test_ec2_create_image_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with tags.
+    When: create_image_command is called with tag specifications.
+    Then: It should configure tag specifications correctly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-tagged123",
+    }
+
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+
+    args = {
+        "name": "tagged-image",
+        "instance_id": "i-1234567890abcdef0",
+        "tag_specifications": "key=Environment,value=Production",
+        "region": "eu-west-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_image.call_args[1]
+    assert "TagSpecifications" in call_args
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "image"
+
+
+def test_ec2_create_image_command_with_block_device_mappings_as_json_string(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with block_device_mappings as JSON string.
+    When: create_image_command is called with block_device_mappings parameter.
+    Then: It should parse the JSON string and pass BlockDeviceMappings to the API call correctly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-blockdevice123",
+    }
+
+    # AWS expects block_device_mappings as a list of device mapping objects
+    block_device_mappings_json = json.dumps(
+        [{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 20, "VolumeType": "gp3", "DeleteOnTermination": True}}]
+    )
+
+    args = {
+        "name": "image-with-block-devices",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": block_device_mappings_json,
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+
+    # Verify the API was called with parsed BlockDeviceMappings
+    call_args = mock_client.create_image.call_args[1]
+    assert "BlockDeviceMappings" in call_args
+    assert isinstance(call_args["BlockDeviceMappings"], list)
+    assert call_args["BlockDeviceMappings"][0]["DeviceName"] == "/dev/sda1"
+    assert call_args["BlockDeviceMappings"][0]["Ebs"]["VolumeSize"] == 20
+
+
+def test_ec2_create_image_command_with_invalid_block_device_mappings_json(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image creation arguments with invalid JSON in block_device_mappings.
+    When: create_image_command is called with malformed JSON string.
+    Then: It should raise DemistoException with descriptive error message about invalid JSON.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "name": "test-image",
+        "instance_id": "i-1234567890abcdef0",
+        "block_device_mappings": "{invalid-json-not-parseable}",
+        "region": "us-east-1",
+    }
+
+    with pytest.raises(DemistoException, match="Invalid block_device_mappings JSON"):
+        EC2.create_image_command(mock_client, args)
+
+    # Verify the API was never called due to validation failure
+    mock_client.create_image.assert_not_called()
+
+
+def test_ec2_create_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: create_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"name": "test-image", "instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.create_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image ID.
+    When: deregister_image_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"image_id": "ami-12345678"}
+
+    result = EC2.deregister_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deregistered AMI: ami-12345678" in result.readable_output
+
+
+def test_ec2_deregister_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: deregister_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"image_id": "ami-nonexistent"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_deregister_image_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image ID.
+    When: deregister_image_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.deregister_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"image_id": "ami-12345678"}
+
+    EC2.deregister_image_command(mock_client, args)
+    mock_print_debug_logs.assert_called_once_with(mock_client, "Deregistering image: ami-12345678")
+
+
+def test_ec2_copy_image_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid image copy arguments.
+    When: copy_image_command is called successfully.
+    Then: It should return CommandResults with new image ID and copy details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-copied123",
+    }
+
+    args = {
+        "name": "copied-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Images"
+    assert result.outputs_key_field == "ImageId"
+    assert result.outputs["ImageId"] == "ami-copied123"
+    assert result.outputs["SourceImageId"] == "ami-source123"
+    assert result.outputs["SourceRegion"] == "us-west-1"
+    assert "AWS EC2 Image Copy" in result.readable_output
+
+
+def test_ec2_copy_image_command_with_encryption(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image copy arguments with encryption.
+    When: copy_image_command is called with encrypted=true and kms_key_id.
+    Then: It should pass encryption parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-encrypted123",
+    }
+
+    args = {
+        "name": "encrypted-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "encrypted": "true",
+        "kms_key_id": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Encrypted"] is True
+    assert "kms" in call_args["KmsKeyId"]
+
+
+def test_ec2_copy_image_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: copy_image_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error and raise SystemExit.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mocker.patch("AWS.demisto.command", return_value="aws-ec2-image-copy")
+    mocker.patch("AWS.demisto.args", return_value={})
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    args = {"name": "test-image", "source_image_id": "ami-source123", "source_region": "us-west-1", "region": "us-east-1"}
+
+    with pytest.raises(SystemExit):
+        EC2.copy_image_command(mock_client, args)
+
+    demisto_results.assert_called_once()
+
+
+def test_ec2_copy_image_command_with_description(mocker):
+    """
+    Given: A mocked boto3 EC2 client and image copy arguments with description.
+    When: copy_image_command is called with description parameter.
+    Then: It should include description in the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_image.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ImageId": "ami-described123",
+    }
+
+    args = {
+        "name": "described-image",
+        "source_image_id": "ami-source123",
+        "source_region": "us-west-1",
+        "description": "This is a copied AMI with description",
+        "region": "us-east-1",
+    }
+
+    result = EC2.copy_image_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_image.call_args[1]
+    assert call_args["Description"] == "This is a copied AMI with description"
+
+
+def test_ec2_image_available_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with waiter that completes successfully.
+    When: image_available_waiter_command is called.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"image_ids": "ami-12345678"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Image is now available" in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("image_available")
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_image_available_waiter_command_with_custom_waiter_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with custom delay and max attempts.
+    When: image_available_waiter_command is called with waiter configuration.
+    Then: It should pass waiter configuration to the wait call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"image_ids": "ami-12345678", "waiter_delay": "30", "waiter_max_attempts": "20"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 30
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 20
+
+
+def test_ec2_image_available_waiter_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with filters.
+    When: image_available_waiter_command is called with filters.
+    Then: It should pass filters to the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "state", "Values": ["available"]}])
+
+    args = {"filters": "name=state,values=available"}
+
+    result = EC2.image_available_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_args
+
+
+def test_ec2_image_available_waiter_command_waiter_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises Exception during wait.
+    When: image_available_waiter_command encounters an error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    error_message = "Waiter image_available failed: Max attempts exceeded"
+    mock_waiter.wait.side_effect = Exception(error_message)
+
+    args = {"image_ids": "ami-invalid"}
+
+    with pytest.raises(DemistoException, match="Waiter error:"):
+        EC2.image_available_waiter_command(mock_client, args)
