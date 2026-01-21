@@ -4524,6 +4524,57 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def generic_api_call_command(args: dict) -> CommandResults:
+    """Execute a generic API call using demisto._apiCall.
+
+    This command provides direct access to the demisto._apiCall function,
+    allowing users to make custom API calls with all available parameters.
+
+    Args:
+        args (dict): Command arguments including:
+            - name: Name of the API
+            - params: URL query arguments as JSON string
+            - data: POST data as string
+            - headers: Headers as JSON string
+            - method: HTTP method to use
+            - path: Path to append to base URL
+            - timeout: Request timeout in seconds
+            - response_data_type: Response type ('bin' for binary, None otherwise)
+
+    Returns:
+        CommandResults: The response from the API call wrapped in CommandResults
+    """
+    # Extract arguments
+    name = args.get("name")
+    params = safe_load_json(args.get("params")) if args.get("params") else None
+    data = args.get("data")
+    headers = safe_load_json(args.get("headers")) if args.get("headers") else None
+    method = args.get("method")
+    path = args.get("path")
+    timeout = arg_to_number(args.get("timeout"))
+    response_data_type = args.get("response_data_type")
+
+    # Call demisto._apiCall with all parameters
+    response = demisto._apiCall(
+        name=name,
+        params=params,
+        data=data,
+        headers=headers,
+        method=method,
+        path=path,
+        timeout=timeout,
+        response_data_type=response_data_type,
+    )
+
+    # Return the response
+    return CommandResults(
+        readable_output=tableToMarkdown("Generic API Call Response", response),
+        # outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.GenericApiCall",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4675,6 +4726,9 @@ def main():  # pragma: no cover
                 raise DemistoException("This command is not available for this platform version")
 
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-generic-api-call":
+            return_results(generic_api_call_command(args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
