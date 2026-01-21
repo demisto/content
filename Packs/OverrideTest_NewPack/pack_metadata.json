@@ -14,7 +14,7 @@
         "Incident Response"
     ],
     "keywords": ["CAPE", "sandbox", "malware", "analysis", "forensics"],
-    "marketplaces": ["xsoar", "marketplacev2"],
+    "marketplaces": ["xsoar", "marketplacev2", "platform"],
     "supportedModules": [
         "X1",
         "X3",
