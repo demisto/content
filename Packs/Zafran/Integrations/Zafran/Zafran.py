@@ -3,7 +3,9 @@ from CommonServerPython import *
 
 
 class Client(BaseClient):
+
     def __init__(self, server_url, verify, proxy, headers, auth):
+
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def findings_request(self, count):
