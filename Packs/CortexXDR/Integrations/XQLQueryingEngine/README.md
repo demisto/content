@@ -1052,8 +1052,8 @@ Deletes XQL queries from the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| xql_query_name | A comma-separated list of XQL query names to delete. If deleting when using this argument, you cannot delete by xql_query_tag in the same call. | Optional |
-| xql_query_tag | A comma-separated list of XQL query tags. If deleting when using this argument, you cannot delete by xql_query_name in the same call. | Optional |
+| xql_query_name | A comma-separated list of XQL query names to delete.When using this argument, you cannot delete queries by xql_query_tag in the same request. | Optional |
+| xql_query_tag | A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request. | Optional |
 
 #### Context Output
 

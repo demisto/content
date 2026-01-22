@@ -1662,10 +1662,10 @@ script:
     description: Creates or updates XQL queries in the library.
     name: xdr-xql-library-create
   - arguments:
-    - description: A comma-separated list of XQL query names to delete. If deleting when using this argument, you cannot delete by xql_query_tag in the same call.
+    - description: A comma-separated list of XQL query names to delete. When using this argument, you cannot delete queries by xql_query_tag in the same request.
       isArray: true
       name: xql_query_name
-    - description: A comma-separated list of XQL query tags. If deleting when using this argument, you cannot delete by xql_query_name in the same call.
+    - description: A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request.
       isArray: true
       name: xql_query_tag
     description: Deletes XQL queries from the library.
