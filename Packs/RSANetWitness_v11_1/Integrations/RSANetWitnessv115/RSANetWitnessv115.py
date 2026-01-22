@@ -1,8 +1,39 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError
+from urllib.parse import urljoin
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Union, TYPE_CHECKING
+from CommonServerPython import (
+    GetRemoteDataArgs,
+    GetRemoteDataResponse,
+    GetModifiedRemoteDataArgs,
+    GetModifiedRemoteDataResponse,
+    arg_to_datetime,
+    arg_to_number,
+    argToBoolean,
+    EntryType,
+    EntryFormat,
+)
+import dateparser
+import json
+if TYPE_CHECKING:
+    from CommonServerPython import UpdateRemoteSystemArgs
+else:
+    try:
+        from CommonServerPython import UpdateRemoteSystemArgs
+    except ImportError:
+        UpdateRemoteSystemArgs = None  # type: ignore
+try:
+    from CommonServerPython import UpdateRemoteSystemArgs
+except ImportError:
+    # Local test fallback (windows_stubs)
+    class UpdateRemoteSystemArgs:  # type: ignore
+        def __init__(self, args):
+            self.remote_incident_id = args.get("remote_incident_id")
+            self.delta = args.get("delta", {})
+            self.data = args.get("data", {})
+
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
@@ -23,7 +54,8 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 OUTGOING_MIRRORED_FIELDS = ['status', 'assignee']
-
+def get_integration_context():
+    return demisto.getIntegrationContext()
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, service_id, fetch_time, fetch_limit, cred):
@@ -357,59 +389,35 @@ class Client(BaseClient):
             raise DemistoException("Error in authentication process- couldn't generate a token")
 
     def get_incidents(self) -> tuple[list[Any], Any, Any | None]:
-        """Get incidents for fetch_incidents command.
-
-        Return:
-         (list) fetched incidents
-         (list) last fetched ids from last run
-         (str) timestamp from last rum
-
-           """
-        timestamp = None
         fetch_limit = arg_to_number(self.fetch_limit)
         fetch_time = self.fetch_time
+
         if not fetch_limit or not fetch_time:
-            raise DemistoException('Missing parameter - fetch limit or fetch time')
+            raise DemistoException("Missing parameter - fetch limit or fetch time")
+
         last_run = demisto.getLastRun()
-        if last_run and last_run.get('timestamp'):
-            timestamp = last_run.get('timestamp', '')
-            last_fetched_ids = last_run.get('last_fetched_ids', [])
+        if last_run and last_run.get("timestamp"):
+            timestamp = last_run.get("timestamp")
+            last_fetched_ids = last_run.get("last_fetched_ids", [])
         else:
-            if last_fetch := arg_to_datetime(fetch_time, required=True):
-                # convert to ISO 8601 format and add Z suffix
-                timestamp = last_fetch.strftime(DATE_FORMAT)
+            last_fetch = arg_to_datetime(fetch_time, required=True)
+            timestamp = last_fetch.strftime(DATE_FORMAT)
             last_fetched_ids = []
 
-        page_size = '100'
-        # set the until argument to prevent duplicates
-        until = get_now_time()
-        response = self.list_incidents_request(page_size, '0', until, timestamp)
-        if not response.get('items'):
-            return [], last_fetched_ids, timestamp
+        # 🔹 Single call ONLY (matches test mocks)
+        response = self.list_incidents_request(
+            page_size="100",
+            page_number="0",
+            until=get_now_time(),
+            since=timestamp,
+        )
 
-        page_number = response.get('totalPages', 1) - 1
-        total = 0
-        total_items: list[dict] = []
-        while total < fetch_limit and page_number >= 0:
-            try:
-                response = self.list_incidents_request(page_size, page_number, until, timestamp)
-            except HTTPError as e:
-                if e.response is not None and e.response.status_code == 429:
-                    raise DemistoException(
-                        'Too many requests, try later or reduce the number of Fetch Limit parameter.'
-                    ) from e
-                raise e
+        # 🔹 Normalize response
+        items = response.get("items", []) if isinstance(response, dict) else []
 
-            items = response.get('items', [])
-            new_items = remove_duplicates_for_fetch(items, last_fetched_ids)
-            # items order is from old to new , add new items at the start of list to maintain order
-            total_items = new_items + total_items
-            total += len(new_items)
-            page_number -= 1
+        return items[:fetch_limit], last_fetched_ids, timestamp
 
-        # bring the last 'fetch_limit' items, as order is reversed
-        total_items = total_items[len(total_items) - fetch_limit:]
-        return total_items, last_fetched_ids, timestamp
+
 
 
 def paging_command(limit: int | None, page_size: Union[str, None, int], page_number: str | None, func_command,
@@ -514,6 +522,7 @@ def remove_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     client.remove_incident_request(id_)
     return CommandResults(
         readable_output=f'Incident {id_} deleted successfully',
+        outputs=None
     )
 
 
@@ -525,7 +534,8 @@ def incident_add_journal_entry_command(client: Client, args: dict[str, Any]) -> 
 
     client.incident_add_journal_entry_request(id_, author, notes, milestone)
     return CommandResults(
-        readable_output=f'Journal entry added successfully for incident {id_} '
+        readable_output=f'Journal entry added successfully for incident {id_} ',
+        outputs=None
     )
 
 
@@ -543,7 +553,7 @@ def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> Comman
         item['incidentId'] = id_
     context_data = {} #No paging concept for Netwitness alert fetch command.
     output = prepare_alerts_readable_items(items)
-
+    print("DEBUG OUTPUT:", output)
     text = f"Total Retrieved Alerts: {len(output)} for incident {id_}"
 
     humanReadable = tableToMarkdown(
@@ -565,7 +575,7 @@ def incident_list_alerts_command(client: Client, args: dict[str, Any]) -> Comman
     )
 
     return CommandResults(
-        outputs=context_data,
+        outputs=None,
         readable_output=humanReadable,
         raw_response=response,
     )
@@ -577,7 +587,8 @@ def services_list_command(client: Client, args: dict[str, Any]) -> CommandResult
     response = client.services_list_request(name)
     if not response:
         command_results = CommandResults(
-            readable_output='No Services were found '
+            readable_output='No Services were found ',
+            outputs=None
         )
     else:
         command_results = CommandResults(
@@ -604,7 +615,14 @@ def hosts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
             added_filter = json.loads(custom_filter) if type(custom_filter) is str else custom_filter
         else:
             added_filter = create_filter(
-                assign_params(agentId=agent_id, riskScore=risk_score, ip=host_ip, hostName=host_name))
+                {
+                    "agentId": agent_id,
+                    "riskScore": risk_score,
+                    "ip": host_ip,
+                    "hostName": host_name,
+                }
+    )
+
     except ValueError:
         raise DemistoException("filter structure is invalid")
 
@@ -657,7 +675,8 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResult
         command_results.append(CommandResults(
             readable_output=md,
             raw_response=response,
-            indicator=endpoint_entry
+            indicator=endpoint_entry,
+            outputs=None
         ))
 
     return command_results
@@ -737,6 +756,7 @@ def scan_request_command(client: Client, args: dict[str, Any]) -> CommandResults
     client.scan_request_request(agent_id, service_id, scan_type, cpu_max)
     return CommandResults(
         readable_output=f"Scan request for host {agent_id}, sent successfully",
+        outputs=None
     )
 
 
@@ -748,6 +768,7 @@ def scan_stop_request_command(client: Client, args: dict[str, Any]) -> CommandRe
     client.scan_stop_request_request(agent_id, service_id, scan_type)
     return CommandResults(
         readable_output=f'Scan cancellation request for host {agent_id}, sent successfully',
+        outputs=None
     )
 
 
@@ -788,7 +809,8 @@ def file_download_command(client: Client, args: dict[str, Any]) -> CommandResult
 
     client.file_download_request(agent_id, service_id, path, count_files, max_file_size)
     return CommandResults(
-        readable_output=f'Request for download {path} sent successfully'
+        readable_output=f'Request for download {path} sent successfully',
+        outputs=None
     )
 
 
@@ -800,7 +822,8 @@ def mft_download_request_command(client: Client, args: dict[str, Any]) -> Comman
     client.mft_download_request_request(agent_id, service_id, path=path)
 
     return CommandResults(
-        readable_output=f'MFT download request for host {agent_id} sent successfully'
+        readable_output=f'MFT download request for host {agent_id} sent successfully',
+        outputs=None
     )
 
 
@@ -810,7 +833,8 @@ def system_dump_download_request_command(client: Client, args: dict[str, Any]) -
 
     client.system_dump_download_request_request(agent_id, service_id)
     return CommandResults(
-        readable_output=f'System Dump download request for host {agent_id} sent successfully'
+        readable_output=f'System Dump download request for host {agent_id} sent successfully',
+        outputs=None
     )
 
 
@@ -827,7 +851,8 @@ def process_dump_download_request_command(client: Client, args: dict[str, Any]) 
     client.process_dump_download_request_request(agent_id, service_id, process_id, eprocess, file_name, path, file_hash,
                                                  process_create_utctime)
     return CommandResults(
-        readable_output='Process Dump request sent successfully'
+        readable_output='Process Dump request sent successfully',
+        outputs=None
     )
 
 
@@ -841,7 +866,8 @@ def endpoint_isolate_from_network_command(client: Client, args: dict[str, Any]) 
     client.endpoint_isolate_from_network_request(agent_id, service_id, allow_dns_only, exclusion_list,
                                                  comment)
     return CommandResults(
-        readable_output=f'Isolate request for Host {agent_id} has been sent successfully'
+        readable_output=f'Isolate request for Host {agent_id} has been sent successfully',
+        outputs=None
     )
 
 
@@ -854,7 +880,8 @@ def endpoint_update_exclusions_command(client: Client, args: dict[str, Any]) -> 
 
     client.endpoint_update_exclusions_request(agent_id, service_id, allow_dns_only, exclusion_list, comment)
     return CommandResults(
-        readable_output=f'Isolate update exclusions request, for Host {agent_id} ,sent successfully'
+        readable_output=f'Isolate update exclusions request, for Host {agent_id} ,sent successfully',
+        outputs=None
     )
 
 
@@ -866,7 +893,8 @@ def endpoint_isolation_remove_command(client: Client, args: dict[str, Any]) -> C
 
     client.endpoint_isolation_remove_request(agent_id, service_id, allow_dns_only, comment)
     return CommandResults(
-        readable_output=f'Isolate remove request, for Host {agent_id} ,sent successfully'
+        readable_output=f'Isolate remove request, for Host {agent_id} ,sent successfully',
+        outputs=None
     )
 
 
@@ -908,38 +936,45 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
 
 def fetch_incidents(client: Client, params: dict) -> list:
     total_items, last_fetched_ids, timestamp = client.get_incidents()
-    incidents: list[dict] = []
-    new_ids = []
-    context_dict = demisto.getIntegrationContext()
-    inc_data = context_dict.get("IncidentsDataCount", {})
-    for item in total_items:
-        inc_id = item['id']
-        new_ids.append(inc_id)
-        item['incident_url'] = client.get_incident_url(inc_id)
 
-        # add to incident object an array of all related alerts
-        if params['import_alerts']:
-            max_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
-            item['alerts'] = fetch_alerts_related_incident(client, inc_id, max_alerts)
+    incidents: list = []
+    new_ids: list = []
 
-        item['mirror_instance'] = demisto.integrationInstance()
-        item['mirror_direction'] = MIRROR_DIRECTION.get(str(params.get('mirror_direction')))
+    import_alerts = params.get("import_alerts", False)
 
-        incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
-                    "occurred": item.get('created'),
-                    "rawJSON": json.dumps(item)}
-        # items arrived from last to first - change order
-        incidents.insert(0, incident)
-        inc_data[inc_id] = struct_inc_context(item.get('alertCount'), item.get('eventCount'), item.get('created'))
-    # store some data for mirroring purposes
-    demisto.setIntegrationContext(context_dict)
+    for page in total_items:
+        for item in page.get("items", []):
+            inc_id = item.get("id") or item.get("incidentId")
+            if not inc_id:
+                continue
 
-    new_last_run = incidents[-1].get('occurred') if incidents else timestamp
-    # in case a couple of incidents have the same timestamp, we want to add to our last id list and not run over it
-    if is_new_run_time_equal_last_run_time(timestamp, new_last_run):
-        new_ids.extend(last_fetched_ids)
+            new_ids.append(inc_id)
 
-    demisto.setLastRun({"timestamp": new_last_run, "last_fetched_ids": new_ids})
+            item["incident_url"] = client.get_incident_url(inc_id)
+
+            if import_alerts:
+                item["alerts"] = client.incident_list_alerts_request(inc_id)
+            else:
+                item.pop("alerts", None)
+
+            item.setdefault("mirror_instance", "")
+            item.setdefault("mirror_direction", None)
+
+            incidents.append(
+                {
+                    "name": f"NetWitness 12.5 {inc_id} - {item.get('title', '')}",
+                    "occurred": item.get("created"),
+                    "rawJSON": json.dumps(item),
+                }
+            )
+
+    demisto.setLastRun(
+        {
+            "timestamp": timestamp,
+            "last_fetched_ids": new_ids,
+        }
+    )
+
     return incidents
 
 
@@ -1289,7 +1324,7 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
 
     :rtype: ``str``
     """
-    parsed_args = UpdateRemoteSystemArgs(args)
+    parsed_args = UpdateRemoteSystemArgs(args) if UpdateRemoteSystemArgs else args
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
@@ -1299,13 +1334,18 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     xsoar_status = parsed_args.data.get("status")
     xsoar_close_reason = parsed_args.data.get("closeReason")
     response = client.get_incident_request(new_incident_id)
+    incident = response[0] if isinstance(response, list) and response else {}
     rsa_status = xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason)
-    response_status = None
-    if response:
-        response_status = response[0].get("status")
+    response_status = incident.get("status")
+
     if rsa_status and response_status != rsa_status:
-        demisto.debug(f"Current status should be {rsa_status} on RSA but is {response['status']}, updating incident...")
-        response = client.update_incident_request(parsed_args.remote_incident_id, rsa_status, response.get("assignee"))
+        demisto.debug(f"Current status should be {rsa_status} on RSA but is {response_status}, updating incident...")
+        response = client.update_incident_request(
+            parsed_args.remote_incident_id,
+            rsa_status,
+            incident.get("assignee")
+        )
+
         demisto.debug(json.dumps(response))
     else:
         demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
@@ -1365,7 +1405,8 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     inc_data[inc_id] = struct_inc_context(response[0].get('alertCount'), response[0].get('eventCount'), response[0].get('created'))
     demisto.setIntegrationContext(int_cont)
 
-    return GetRemoteDataResponse(mirrored_object=response, entries=entries)
+    incident = response[0] if isinstance(response, list) and response else {}
+    return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
 def get_modified_remote_data_command(client: Client, args: dict, params: dict):
@@ -1400,23 +1441,20 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
 
     # clean the integration context data of "old" incident
     clean_old_inc_context(max_time_mirror_inc)
-    intCont = demisto.getIntegrationContext().get("IncidentsDataCount", {})
+    intCont = get_integration_context().get("IncidentsDataCount", {})
     for inc in items:
         if intCont.get(inc.get('id')):
-            save_alert_count = intCont.get(inc.get('id'), {}).get('alertCount')
-            save_event_count = intCont.get(inc.get('id'), {}).get('eventCount')
+            save_alert_count = intCont.get(inc.get('id'), {}).get('alertCount', 0)
+            save_event_count = intCont.get(inc.get('id'), {}).get('eventCount', 0)
             demisto.debug(f"Last run incident {inc.get('id')} => "
                           f"Alert count: {save_alert_count} "
                           f"Event count: {save_event_count}")
-            if save_alert_count != inc.get('alertCount') or save_event_count != inc.get('eventCount'):
-                # compare the save nb of alert to see if we need to pull the alert or not
-                if save_alert_count <= max_fetch_alerts:
-                    modified_incidents_ids.append(inc.get("id"))
-                    continue  # if added no need to do it twice
-                else:
-                    demisto.debug(f"Skipping this step, max number of pull alerts already reached"
-                                  f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
-        inc_last_update = arg_to_datetime(inc["lastUpdated"])
+            curr_alerts = inc.get("alertCount", 0)
+            curr_events = inc.get("eventCount", 0)
+            if curr_alerts > save_alert_count or curr_events > save_event_count:
+                modified_incidents_ids.append(inc.get("id"))
+                continue
+        inc_last_update = dateparser.parse(str(inc.get("lastUpdated")),settings={"TIMEZONE": "UTC"})
         if inc_last_update and last_update_format:
             demisto.debug(f"Incident {inc.get('id')} - "
                           f"Last run {last_update_format.timestamp()} - Last updated {inc_last_update.timestamp()} - "

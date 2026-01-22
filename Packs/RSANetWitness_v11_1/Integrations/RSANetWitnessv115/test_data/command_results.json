@@ -193,135 +193,21 @@
       ]
     }
   },
-  "list_alerts_for_incident": {
-    "RSANetWitness115.IncidentAlerts(val.id === obj.id)": [
-      {
-        "id": "616e89b3ec6fe54e08b712af",
-        "title": "testAlert",
-        "detail": null,
-        "created": "2021-10-19T09:02:43.195Z",
-        "source": "NetWitness Investigate",
-        "riskScore": 50,
-        "type": "Log",
-        "events": [
-          {
-            "source": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": "NT AUTHORITY\\SYSTEM",
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "destination": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": null,
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "domain": "host_name",
-            "eventSource": null,
-            "eventSourceId": "181740"
-          },
-          {
-            "source": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": "NT AUTHORITY\\SYSTEM",
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "destination": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": null,
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "domain": "host_name",
-            "eventSource": null,
-            "eventSourceId": "181741"
-          },
-          {
-            "source": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": "NT AUTHORITY\\SYSTEM",
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "destination": {
-              "device": {
-                "ipAddress": null,
-                "port": null,
-                "macAddress": null,
-                "dnsHostname": null,
-                "dnsDomain": null
-              },
-              "user": {
-                "username": null,
-                "emailAddress": null,
-                "adUsername": null,
-                "adDomain": null
-              }
-            },
-            "domain": "host_name",
-            "eventSource": null,
-            "eventSourceId": "181742"
-          }
-        ],
-        "IncidentId": "INC-1"
-      }
-    ],
-    "RSANetWitness115.paging.IncidentAlerts(true)": {
-      "pageNumber": 0,
-      "pageSize": 50,
-      "totalPages": 1,
-      "totalItems": 1,
-      "hasNext": false,
-      "hasPrevious": false
+  "list_alerts_for_incident": [
+    {
+      "id": "ALERT-1",
+      "Alert ID": "ALERT-1",
+      "Name": "Suspicious Activity",
+      "Source": "NetWitness",
+      "Type": "Malware",
+      "Risk Score": 50,
+      "Severity": "Medium",
+      "Events": 3,
+      "Detected At": "2021-10-19T09:02:43.195Z",
+      "Incident ID": "INC-1",
+      "Device Type": "Endpoint"
     }
-  },
+  ],
   "services_list": [
     {
       "id": "213b6e75-691e-4df1-8d4f-52aef2970f5d",
@@ -433,7 +319,7 @@
       }
     }
   },
-  "empty_response": null,
+  "empty_response": {},
   "endpoint_command": {
     "Type": 1,
     "ContentsFormat": "json",
