@@ -25,6 +25,7 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 - Identity Protection Detections - Read and Write
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
+- Cases - Read and Write
 
 ### Troubleshooting
 
