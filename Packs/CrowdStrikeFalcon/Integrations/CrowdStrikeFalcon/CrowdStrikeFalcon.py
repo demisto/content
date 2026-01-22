@@ -2707,6 +2707,9 @@ def get_remote_recon_data(remote_incident_id: str):
     Called every time get-remote-data command runs on a Recon notification.
     Gets the relevant Recon notification entity from the remote system (CrowdStrike Falcon).
     We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+
+    :param remote_incident_id: The remote incident ID.
+    :return: The mirrored data, the updated object, and the incident type.
     """
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     mirrored_data_list = get_recon_notifications_detailed([remote_id])
@@ -2726,10 +2729,14 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     Updates the status of a CrowdStrike Falcon Recon Notification via PATCH API call (Mirror Out)
     using the generic http_request function.
 
+    :type delta: ``dict``
     :param delta: Dictionary of fields changed in the local XSOAR incident.
+    :type inc_status: ``int``
     :param inc_status: The current status of the local XSOAR incident (0=Closed, 1=Active).
+    :type remote_incident_id: ``str``
     :param remote_incident_id: The ID of the Recon Notification in CrowdStrike.
-    :returns: The API response payload on success, or None if no relevant change found.
+    :return: The API response payload on success, or None if no relevant change found.
+    :rtype: ``dict`` or ``None``
     """
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     # 1. Status Change Check and Mapping
@@ -2766,6 +2773,9 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
     """
     Fetches the IDs of Recon notifications that have been modified (status update)
     since the last synchronization timestamp.
+
+    :param last_update_timestamp: The last update timestamp.
+    :return: A list of modified Recon notification IDs.
     """
     mirror_status_filter = (f"status:['in-progress','closed-false-positive','closed-true-positive']"
                             f"+updated_date:>'{last_update_timestamp}'")
@@ -2774,9 +2784,9 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
     try:
         ids, _, _ = recon_notifications_pagination(
             filter=mirror_status_filter,
-            api_limit=MAX_FETCH_SIZE,
+            api_limit=100,
             recon_offset=0,
-            fetch_limit=MAX_FETCH_SIZE,
+            fetch_limit=100,
             is_fetch=False,
         )
         prefixed_incident_ids = [f"{IncidentType.RECON.value}{id}" for id in ids]
@@ -3478,6 +3488,7 @@ def fetch_items(command="fetch-incidents"):
 
     # Initialize and migrate last_run
     last_run = demisto.getLastRun()
+    demisto.debug(f"CrowdStrikeFalconMsg: last_run object before fetch: {last_run}")
     last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
     if not last_run:
         last_run = [{} for _ in range(last_run_length)]
@@ -3941,6 +3952,16 @@ def parse_ioa_iom_incidents(
 def get_recon_notification_ids_for_fetch(
     filter: str, recon_offset: Optional[int], limit: int = INCIDENTS_PER_FETCH, sort: str = "created_date|desc", query: str = ""
 ) -> tuple[list[str], int, int]:
+    """
+    Get the Recon notification IDs for fetch.
+
+    :param filter: The filter to use.
+    :param recon_offset: The offset to start from.
+    :param limit: The limit of the results.
+    :param sort: The sort order.
+    :param query: The query to use.
+    :return: A tuple containing the IDs, the offset, and the total number of results.
+    """
     params = assign_params(filter=filter, limit=limit, offset=recon_offset, sort=sort, q=query)
     demisto.debug(f"Recon-Log Recon notifications query params: {params=}")
     # The API limit of this request(limit + offset) is 10K
