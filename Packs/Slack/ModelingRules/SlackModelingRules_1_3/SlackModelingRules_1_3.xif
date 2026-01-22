@@ -6,6 +6,7 @@ filter
 | alter
     xdm.event.id = id,
     xdm.event.operation = action,
+    xdm.event.description = "Eido Was Here - Login2",
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
     xdm.target.resource.type = get_type,
@@ -21,6 +22,7 @@ filter
     xdm.event.id = id,
     xdm.event.operation = action,
     xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
+    xdm.event.description = "Eido Was Here - Login1",
     xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
     xdm.target.user.identifier = json_extract_scalar(entity, "$.user.id"),
     xdm.target.user.username = json_extract_scalar(entity, "$.user.name"),
