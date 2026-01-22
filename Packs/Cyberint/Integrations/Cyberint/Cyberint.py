@@ -38,6 +38,19 @@ MIRRORING_FIELDS_MAPPER = {
     "cyberintclosurereasondescription": "closure_reason_description",
 }
 
+# Mapping from human-readable UI values to API values
+CLOSURE_REASON_TO_API = {
+    "None": "none",
+    "Resolved": "resolved",
+    "No Longer a Threat": "no_longer_a_threat",
+    "Irrelevant Alert Subtype": "irrelevant_alert_subtype",
+    "False Positive": "false_positive",
+    "Other": "other",
+}
+
+# Reverse mapping from API values to human-readable UI values
+CLOSURE_REASON_TO_DISPLAY = {v: k for k, v in CLOSURE_REASON_TO_API.items()}
+
 
 class Client(BaseClient):
     """
@@ -405,13 +418,16 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     if status == "closed" and not closure_reason:
         raise DemistoException("You must supply a closure reason when closing an alert.")
 
-    if closure_reason == "other" and not closure_reason_description:
-        raise DemistoException("You must supply a closure_reason_description when specify closure_reason to 'other'.")
+    # Convert display value to API value
+    closure_reason_api = CLOSURE_REASON_TO_API.get(closure_reason, closure_reason) if closure_reason else None
+
+    if closure_reason_api == "other" and not closure_reason_description:
+        raise DemistoException("You must supply a closure_reason_description when specify closure_reason to 'Other'.")
 
     response = client.update_alerts(
         alerts=alert_ids,
         status=status,
-        closure_reason=closure_reason,
+        closure_reason=closure_reason_api,
         closure_reason_description=closure_reason_description,
     )
     table_headers = ["ref_id", "status", "closure_reason", "closure_reason_description"]
@@ -660,10 +676,12 @@ def update_remote_system(
 
             if updated_status == "closed" or (not updated_status and xsoar_incident_closed):
                 # Closing the alert - need closure_reason and description
-                closure_reason = update_args.get("closure_reason", "other")
+                closure_reason = update_args.get("closure_reason", "Other")
+                # Convert display value to API value
+                closure_reason_api = CLOSURE_REASON_TO_API.get(closure_reason, closure_reason)
                 closure_reason_description = update_args.get("closure_reason_description", "Closed from XSOAR")
                 updated_arguments["status"] = "closed"
-                updated_arguments["closure_reason"] = closure_reason
+                updated_arguments["closure_reason"] = closure_reason_api
                 updated_arguments["closure_reason_description"] = closure_reason_description
             elif updated_status:
                 # Status change to non-closed state
@@ -730,7 +748,9 @@ def get_remote_data_command(
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
 
     mirrored_ticket["cyberintstatus"] = MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
-    mirrored_ticket["cyberintclosurereason"] = mirrored_ticket.get("closure_reason")
+    # Convert API value to display value for closure_reason
+    api_closure_reason = mirrored_ticket.get("closure_reason")
+    mirrored_ticket["cyberintclosurereason"] = CLOSURE_REASON_TO_DISPLAY.get(api_closure_reason, api_closure_reason)
     mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket.get("closure_reason_description")
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")

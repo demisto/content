@@ -113,9 +113,9 @@ def test_cyberint_alerts_status_update_closing_without_reason(client):
 
 def test_cyberint_alerts_status_update_other_reason_without_description(client):
     """
-    Scenario: Attempt to close an alert with closure_reason='other' but without closure_reason_description.
+    Scenario: Attempt to close an alert with closure_reason='Other' but without closure_reason_description.
     Given:
-     - User sets closure_reason to 'other'.
+     - User sets closure_reason to 'Other'.
     When:
      - No closure_reason_description is provided.
     Then:
@@ -123,9 +123,9 @@ def test_cyberint_alerts_status_update_other_reason_without_description(client):
     """
 
     with pytest.raises(
-        DemistoException, match="You must supply a closure_reason_description when specify closure_reason to 'other'."
+        DemistoException, match="You must supply a closure_reason_description when specify closure_reason to 'Other'."
     ):
-        Cyberint.cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "closed", "closure_reason": "other"})
+        Cyberint.cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "closed", "closure_reason": "Other"})
 
 
 @pytest.mark.parametrize(
@@ -759,7 +759,7 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
         "remoteId": "INT-123",
         "status": IncidentStatus.DONE,  # XSOAR closed status
         "incidentChanged": True,
-        "delta": {"closure_reason": "resolved"},
+        "delta": {"closure_reason": "Resolved"},  # Human-readable display value from XSOAR
         "data": {},
     }
 
@@ -773,7 +773,7 @@ def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
     assert payload == {
         "alert_ref_ids": ["INT-123"],
         "data": {
-            "closure_reason": "resolved",
+            "closure_reason": "resolved",  # API value (converted from display value)
             "closure_reason_description": "Closed from XSOAR",
             "status": "closed",
         },
@@ -794,7 +794,7 @@ def test_update_remote_system_status_closed_in_delta(requests_mock, client):
         "remoteId": "INT-124",
         "status": 1,
         "incidentChanged": True,
-        "delta": {"status": "closed", "closure_reason": "other"},
+        "delta": {"status": "closed", "closure_reason": "Other"},  # Human-readable display value
         "data": {},
     }
 
