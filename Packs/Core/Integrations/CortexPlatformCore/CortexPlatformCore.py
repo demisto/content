@@ -1956,20 +1956,21 @@ def get_cases_command(client, args):
         )
     ]
 
-    if (
-        returned_count == 1 and data[0].get("issue_count", 0) > 1 # type: ignore
-    ):  # AI summary supported in cases of a single case query with more than one issue
-        case_id = data[0].get("case_id")
-        try:  # if functionality isn't supported exception is raised and should be handled
-            response = client.get_case_ai_summary(int(case_id))
-            if response:
-                reply = response.get("reply", {})
-                if case_description := reply.get("case_description"):
-                    data["description"] = case_description
-                if case_name := reply.get("case_name"):
-                    data["name"] = case_name
-        except Exception as e:
-            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
+
+    if returned_count == 1:  # AI summary supported in cases of a single case query with more than one issue
+        issue_count : int =  data[0].get("issue_count", 0)  # type: ignore
+        if issue_count > 1:
+            case_id = data[0].get("case_id")
+            try:  # if functionality isn't supported exception is raised and should be handled
+                response = client.get_case_ai_summary(int(case_id))
+                if response:
+                    reply = response.get("reply", {})
+                    if case_description := reply.get("case_description"):
+                        data["description"] = case_description
+                    if case_name := reply.get("case_name"):
+                        data["name"] = case_name
+            except Exception as e:
+                demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
