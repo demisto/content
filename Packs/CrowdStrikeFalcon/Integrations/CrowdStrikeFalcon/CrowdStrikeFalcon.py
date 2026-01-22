@@ -5937,6 +5937,54 @@ def list_incident_summaries_command():
     )
 
 
+def cases_to_human_readable(cases):
+    """
+    Converts a list of cases to a human-readable format.
+    Args:
+        cases: A list of cases.
+    Returns:
+        str: The human-readable string.
+    """
+    cases_readable_outputs = []
+    for case in cases:
+        readable_output = assign_params(
+            case_id=case.get("id"),
+            name=case.get("name"),
+            created_time=case.get("created_timestamp"),
+            status=case.get("status"),
+            version=case.get("version"),
+            description=case.get("description"),
+            severity=case.get("severity"),
+            assigned_to=case.get("assigned_to"),
+            tags=case.get("tags"),
+        )
+        demisto.debug(f"appending {readable_output=} to cases_readable_outputs")
+        cases_readable_outputs.append(readable_output)
+    headers = ["case_id", "name", "created_timestamp", "status", "version", "description", "severity", "assigned_to", "tags"]
+    return tableToMarkdown("CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header)
+
+
+def list_case_summaries_command():
+    """
+    Lists case summaries.
+    """
+    args = demisto.args()
+    ids = argToList(args.get("ids"))
+    if not ids:
+        return CommandResults(readable_output="No cases were found.")
+
+    demisto.debug(f"About to call get_cases_entities with {ids=}")
+    cases = get_cases_entities(ids)
+    demisto.debug(f"got {cases=}")
+    cases_human_readable = cases_to_human_readable(cases)
+    return CommandResults(
+        readable_output=cases_human_readable,
+        outputs_prefix="CrowdStrike.Case",
+        outputs_key_field="id",
+        outputs=cases,
+    )
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -8135,6 +8183,8 @@ def main():  # pragma: no cover
             return_results(list_detection_summaries_command())
         elif command == "cs-falcon-list-incident-summaries":
             return_results(list_incident_summaries_command())
+        elif command == "cs-falcon-list-case-summaries":
+            return_results(list_case_summaries_command())
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":

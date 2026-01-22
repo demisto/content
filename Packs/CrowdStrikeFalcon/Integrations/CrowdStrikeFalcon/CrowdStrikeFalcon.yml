@@ -2279,6 +2279,41 @@ script:
       description: The incident score.
       type: Number
   - arguments:
+    - description: A comma-separated list of case IDs.
+      isArray: true
+      name: ids
+      required: true
+    description: Lists case summaries.
+    name: cs-falcon-list-case-summaries
+    outputs:
+    - contextPath: CrowdStrike.Case.id
+      description: The ID of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.name
+      description: The name of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.created_timestamp
+      description: The datetime the case was created.
+      type: Date
+    - contextPath: CrowdStrike.Case.status
+      description: The status of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.version
+      description: The version of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.description
+      description: The description of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.assigned_to
+      description: The name of the user assigned to the case.
+      type: String
+    - contextPath: CrowdStrike.Case.tags
+      description: The tags of the case.
+      type: String
+  - arguments:
     - description: The endpoint ID.
       name: id
     - default: true
