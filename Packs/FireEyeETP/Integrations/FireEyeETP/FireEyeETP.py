@@ -13,7 +13,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import requests
 import urllib3
 
@@ -1050,7 +1050,7 @@ def fetch_incidents():
 
     # The start time does not change, progress happens using the pagination token.
     start_time = parse_date_range(FETCH_TIME)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
-    now_utc = datetime.now(timezone.utc).strftime(ISO_FORMAT)
+    now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
     response_1 = get_alerts_request_v2(

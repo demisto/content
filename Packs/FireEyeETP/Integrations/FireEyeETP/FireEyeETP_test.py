@@ -451,9 +451,11 @@ def test_validate_authentication_params_parametrized(
     else:
         assert validate_authentication_params() == expected_result
 
+
 def test_convert_to_demisto_severity():
     from FireEyeETP import convert_to_demisto_severity
     from CommonServerPython import IncidentSeverity
+
     assert convert_to_demisto_severity("crit") == IncidentSeverity.CRITICAL
     assert convert_to_demisto_severity("majr") == IncidentSeverity.HIGH
     assert convert_to_demisto_severity("minr") == IncidentSeverity.LOW
@@ -462,6 +464,7 @@ def test_convert_to_demisto_severity():
 
 def test_get_search_alert_summary_v2():
     from FireEyeETP import get_search_alert_summary_v2
+
     alert = {
         "id": "1",
         "sha256": "s",
@@ -471,7 +474,7 @@ def test_get_search_alert_summary_v2():
         "report_id": "r",
         "alert_date": "date",
         "malware": [{"name": "mn", "stype": "ms"}, {"name": "mn2", "stype": "ms2"}],
-        "email_status": "es"
+        "email_status": "es",
     }
     res = get_search_alert_summary_v2(alert)
     assert res["Alert ID"] == "1"
@@ -481,6 +484,7 @@ def test_get_search_alert_summary_v2():
 
 def test_get_single_alert_summary_v2():
     from FireEyeETP import get_single_alert_summary_v2
+
     alert = {
         "id": "1",
         "domain": "d",
@@ -490,12 +494,7 @@ def test_get_single_alert_summary_v2():
         "report_id": "r",
         "alert_date": "ad",
         "product": "p",
-        "alert": {
-            "occurred": "o",
-            "name": "n",
-            "attack-time": "at",
-            "severity": "s"
-        }
+        "alert": {"occurred": "o", "name": "n", "attack-time": "at", "severity": "s"},
     }
     res = get_single_alert_summary_v2(alert)
     assert res["Alert ID"] == "1"
@@ -513,7 +512,7 @@ def test_get_alert_list_with_alert_id(mocker):
         - Ensure the correct CommandResults is returned
     """
     from FireEyeETP import get_alert_list
-    
+
     alert_data = {
         "id": "alert123",
         "domain": "example.com",
@@ -527,15 +526,15 @@ def test_get_alert_list_with_alert_id(mocker):
             "occurred": "2023-01-01T10:00:00Z",
             "name": "Test Alert",
             "attack-time": "2023-01-01T09:00:00Z",
-            "severity": "majr"
-        }
+            "severity": "majr",
+        },
     }
-    
+
     mocker.patch("FireEyeETP.demisto.args", return_value={"alert_id": "alert123"})
     mocker.patch("FireEyeETP.get_alert_request_v2", return_value=alert_data)
-    
+
     result = get_alert_list()
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "FireEyeETP.Alerts"
     assert result.outputs_key_field == "id"
@@ -553,7 +552,7 @@ def test_get_alert_list_without_alert_id(mocker):
         - Ensure the correct CommandResults is returned with multiple alerts
     """
     from FireEyeETP import get_alert_list
-    
+
     search_response = {
         "data": [
             {
@@ -565,7 +564,7 @@ def test_get_alert_list_without_alert_id(mocker):
                 "report_id": "r1",
                 "alert_date": "2023-01-01",
                 "malware": [{"name": "malware1", "stype": "type1"}],
-                "email_status": "delivered"
+                "email_status": "delivered",
             },
             {
                 "id": "alert2",
@@ -576,16 +575,16 @@ def test_get_alert_list_without_alert_id(mocker):
                 "report_id": "r2",
                 "alert_date": "2023-01-02",
                 "malware": [{"name": "malware2", "stype": "type2"}],
-                "email_status": "quarantined"
-            }
+                "email_status": "quarantined",
+            },
         ]
     }
-    
+
     mocker.patch("FireEyeETP.demisto.args", return_value={"limit": "10", "domain": "example.com"})
     mocker.patch("FireEyeETP.get_alerts_request_v2", return_value=search_response)
-    
+
     result = get_alert_list()
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "FireEyeETP.Alerts"
     assert result.outputs_key_field == "id"
