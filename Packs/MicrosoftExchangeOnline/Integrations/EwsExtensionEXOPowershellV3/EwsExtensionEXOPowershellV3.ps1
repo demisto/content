@@ -228,12 +228,19 @@ class ExchangeOnlinePowershellV3Client
     }
     CreateSession()
     {
+        $Demisto.Debug("Attempting to create Exchange Online session for AppID: $($this.app_id) and Org: $($this.organization)")
         $cmd_params = @{
             "AppID" = $this.app_id
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+        try {
+            Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:Continue -ErrorAction:Stop | Out-Null
+            $Demisto.Debug("Successfully connected to Exchange Online.")
+        } catch {
+            $Demisto.Error("Failed to connect to Exchange Online: $($_.Exception.Message)")
+            throw $_
+        }
     }
     DisconnectSession()
     {
@@ -393,9 +400,19 @@ class ExchangeOnlinePowershellV3Client
             $cmd_params.Identity = $identity
         }
         $this.CreateSession()
-        $results = Get-EXOMailboxPermission @cmd_params
-        $this.DisconnectSession()
-        return $results
+        $Demisto.Debug("Executing Get-EXOMailboxPermission for identity: $identity")
+        try {
+            $results = Get-EXOMailboxPermission @cmd_params -ErrorAction Stop
+            return $results
+        } catch {
+            $Demisto.Error("Get-EXOMailboxPermission failed. Exception: $($_.Exception.Message)")
+            if ($_.Exception.InnerException) {
+                $Demisto.Error("Inner Exception: $($_.Exception.InnerException.Message)")
+            }
+            throw $_
+        } finally {
+            $this.DisconnectSession()
+        }
 
         <#
         .DESCRIPTION
@@ -1998,6 +2015,7 @@ function GetEXOMailBoxPermissionCommand
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
+    $Demisto.Debug("GetEXOMailBoxPermissionCommand called for identity: $identity")
     $raw_response = $client.GetEXOMailBoxPermission($identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
