@@ -1477,7 +1477,6 @@ script:
     - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       name: document_password
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Deprecated, please use network_settings instead.
       deprecated: true
       name: enable_tor

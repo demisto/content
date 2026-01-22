@@ -1603,7 +1603,7 @@ def validate_command_args(command: str, args: dict) -> None:
         if "environment_id" not in args:
             raise Exception("environment_id argument is a mandatory for cs-fx-submit-url command")
         if "url" not in args:
-            raise Exception("sha256 argument is a mandatory for cs-fx-submit-url command")
+            raise Exception("url argument is a mandatory for cs-fx-submit-url command")
 
 
 def remove_polling_related_args(args: dict) -> None:
