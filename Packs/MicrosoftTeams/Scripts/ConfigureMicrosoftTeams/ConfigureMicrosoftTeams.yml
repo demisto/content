@@ -1,0 +1,48 @@
+args:
+- description: The Azure AD Tenant ID.
+  name: tenant_id
+- description: The Azure AD Application (Client) ID.
+  name: client_id
+- description: The Azure AD Application Client Secret.
+  name: client_secret
+  secret: true
+- description: The Microsoft Teams Team ID where the bot will be installed.
+  name: team_id
+- description: The Bot Application ID to install in the team.
+  name: bot_app_id
+- description: The name of the Microsoft Teams integration instance to configure.
+  name: instance_name
+  defaultValue: MS_Teams_Instance
+comment: |-
+  Configures Microsoft Teams integration by refreshing the bot installation in a team and setting up the XSOAR integration instance.
+  This script performs the following actions:
+  1. Obtains an access token from Microsoft Graph API
+  2. Searches for existing bot installation in the specified team
+  3. Removes the bot if already installed
+  4. Reinstalls the bot in the team
+  5. Configures the Microsoft Teams integration instance in XSOAR
+commonfields:
+  id: ConfigureMicrosoftTeams
+  version: -1
+name: ConfigureMicrosoftTeams
+outputs:
+- contextPath: ConfigureMicrosoftTeams.Status
+  description: The status of the configuration operation.
+  type: String
+- contextPath: ConfigureMicrosoftTeams.TeamID
+  description: The Team ID where the bot was installed.
+  type: String
+- contextPath: ConfigureMicrosoftTeams.InstanceName
+  description: The name of the configured integration instance.
+  type: String
+script: '-'
+tags:
+- microsoftteams
+- configuration
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.12.6204436
+subtype: python3
+fromversion: 5.0.0
+tests:
+- No test

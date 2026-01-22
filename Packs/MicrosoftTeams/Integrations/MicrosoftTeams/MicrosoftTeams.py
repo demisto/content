@@ -3567,6 +3567,122 @@ def insufficient_permissions_error_handler(auth_type: str = AUTH_TYPE) -> str:
     return "\n".join(error_message)
 
 
+def microsoft_teams_configuration_command():
+    """
+    Configures Microsoft Teams bot installation and integration settings.
+    """
+    def get_graph_token(tenant_id, client_id, client_secret):
+        """Get Access Token for Graph API with logging"""
+        print(f"Attempting to get Graph API token for Tenant: {tenant_id}")
+        auth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        payload = {
+            'client_id': client_id,
+            'scope': 'https://graph.microsoft.com/.default',
+            'client_secret': client_secret,
+            'grant_type': 'client_credentials'
+        }
+        
+        try:
+            res = requests.post(auth_url, data=payload)
+            res.raise_for_status()
+            print("Graph API token obtained successfully.")
+            return res.json().get('access_token')
+        except Exception as e:
+            print(f"Failed to obtain token. Error: {str(e)}")
+            raise
+
+    def refresh_bot_installation(token, team_id, bot_app_id):
+        """Manage bot: search, remove and reinstall"""
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+        
+        # 1. Search for the application
+        print(f"Searching for bot {bot_app_id} in team {team_id}...")
+        list_url = f"https://graph.microsoft.com/v1.0/teams/{team_id}/installedApps?$expand=teamsApp"
+        
+        res = requests.get(list_url, headers=headers)
+        res.raise_for_status()
+        installed_apps = res.json()
+        
+        installation_id = None
+        for app in installed_apps.get('value', []):
+            if app.get('teamsApp', {}).get('id') == bot_app_id:
+                installation_id = app.get('id')
+                break
+
+        # 2. Remove if previous installation found
+        if installation_id:
+            print(f"Found existing installation (ID: {installation_id}). Removing it...")
+            delete_url = f"https://graph.microsoft.com/v1.0/teams/{team_id}/installedApps/{installation_id}"
+            requests.delete(delete_url, headers=headers)
+            
+            print("Waiting 5 seconds for Microsoft synchronization...")
+            time.sleep(5)
+        else:
+            print("Bot was not found in the team. Proceeding to fresh installation.")
+
+        # 3. Reinstall
+        print(f"Installing bot {bot_app_id} to team {team_id}...")
+        add_url = f"https://graph.microsoft.com/v1.0/teams/{team_id}/installedApps"
+        payload = {
+            "teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}"
+        }
+        add_res = requests.post(add_url, headers=headers, json=payload)
+        
+        if add_res.status_code == 201:
+            print("Bot installed successfully via Graph API.")
+        else:
+            print(f"Installation response: {add_res.text}")
+            add_res.raise_for_status()
+
+    args = demisto.args()
+    tenant_id = args.get('tenant_id')
+    client_id = args.get('client_id')
+    client_secret = args.get('client_secret')
+    team_id = args.get('team_id')
+    bot_app_id = args.get('bot_app_id')
+    instance_name = args.get('instance_name', 'MS_Teams_Instance_hezi')
+
+    print("Starting configuration script...")
+
+    try:
+        # Step 1: Refresh bot in Teams
+        token = get_graph_token(tenant_id, client_id, client_secret)
+        refresh_bot_installation(token, team_id, bot_app_id)
+        
+        # Step 2: Configure integration in XSOAR
+        print(f"Preparing to execute setIntegration for: {instance_name}")
+        integration_params = {
+            "tenant_id": tenant_id,
+            "auth_id": client_id,
+            "enc_key": client_secret,
+            "is_all_redirect_url": True,
+            "confirm_auth": True
+        }
+
+        # Execute internal command
+        res = demisto.executeCommand("setIntegration", {
+            "name": "ms-teams",
+            "instance_name": instance_name,
+            "configuration": integration_params,
+            "enabled": "true"
+        })
+
+        if is_error(res):
+            error_msg = get_error(res)
+            print(f"setIntegration failed: {error_msg}")
+            return_error(f"Error setting integration: {error_msg}")
+
+        print("setIntegration executed successfully.")
+        return_results(f"Successfully refreshed Bot in team {team_id} and configured instance {instance_name}")
+
+    except Exception as e:
+        print(f"Exception occurred: {str(e)}")
+        return_error(f"Failed to complete configuration: {str(e)}")
+
+
 def main():  # pragma: no cover
     """COMMANDS MANAGER / SWITCH PANEL"""
     demisto.debug("Main started...")
@@ -3594,6 +3710,7 @@ def main():  # pragma: no cover
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
+        "microsoft-teams-configuration": microsoft_teams_configuration_command,
     }
 
     commands_auth_code: dict = {

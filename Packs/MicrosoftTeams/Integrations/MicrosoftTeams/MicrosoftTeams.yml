@@ -802,7 +802,7 @@ script:
       name: channel
       prettyname: Channel
       required: true
-    - description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}".'
+    - description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: "${issue.details}".'
       name: message
       prettyname: Message
       required: true
@@ -816,7 +816,36 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
-  dockerimage: demisto/teams:1.0.0.6091526
+  - arguments:
+    - description: The Azure tenant ID.
+      name: tenant_id
+    - description: The Azure client ID (application ID).
+      name: client_id
+    - description: The Azure client secret.
+      name: client_secret
+    - description: The Microsoft Teams team ID.
+      name: team_id
+    - description: The bot application ID.
+      name: bot_app_id
+    - description: The name for the Microsoft Teams integration instance.
+      name: instance_name
+      defaultValue: MS_Teams_Instance
+    description: Configures Microsoft Teams integration by executing the ConfigureMicrosoftTeams script with the provided parameters.
+    name: microsoft-teams-configuration
+    outputs:
+    - contextPath: MicrosoftTeams.Configuration.Status
+      description: Configuration status.
+      type: String
+    - contextPath: MicrosoftTeams.Configuration.TeamID
+      description: The configured team ID.
+      type: String
+    - contextPath: MicrosoftTeams.Configuration.InstanceName
+      description: The configured instance name.
+      type: String
+    - contextPath: MicrosoftTeams.Configuration.Message
+      description: Configuration result message.
+      type: String
+  dockerimage: demisto/teams:1.0.0.4835986
   longRunning: true
   longRunningPort: true
   script: ''
