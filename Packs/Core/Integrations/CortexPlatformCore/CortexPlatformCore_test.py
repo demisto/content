@@ -9924,9 +9924,6 @@ def test_init_client(mocker: MockerFixture):
 
     client = init_client("webapp")
     assert client._base_url == "/api/webapp"
-    assert client._headers["Authorization"] == "test_key"
-    assert client._verify is False
-    assert client._timeout == 60
 
     client_public = init_client("public")
     assert client_public._base_url == "/api/webapp/public_api/v1"

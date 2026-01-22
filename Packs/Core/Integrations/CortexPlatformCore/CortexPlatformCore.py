@@ -1957,11 +1957,11 @@ def get_cases_command(client, args):
     ]
 
     if (
-        returned_count == 1 and data[0].get("issue_count", 0) > 1
+        returned_count == 1 and data[0].get("issue_count", 0) > 1 # type: ignore
     ):  # AI summary supported in cases of a single case query with more than one issue
         case_id = data[0].get("case_id")
         try:  # if functionality isn't supported exception is raised and should be handled
-            response = client.get_case_ai_summary(case_id)
+            response = client.get_case_ai_summary(int(case_id))
             if response:
                 reply = response.get("reply", {})
                 if case_description := reply.get("case_description"):
