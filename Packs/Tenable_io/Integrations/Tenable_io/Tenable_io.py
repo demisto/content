@@ -123,8 +123,8 @@ VENDOR = "tenable"
 PRODUCT = "io"
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
-MAX_CHUNKS_PER_FETCH = 8
-MAX_VULNS_CHUNKS_PER_FETCH = 8
+MAX_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
+MAX_VULNS_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
@@ -766,8 +766,13 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):  # pylin
 
 
 def test_module(client: Client, params):  # pylint: disable=W9014
-    if int(params.get("assetsFetchInterval")) < 60:
-        raise DemistoException("Assets and vulnerabilities fetch Interval is supposed to be 1 hour minimum.")
+    # Use default of 720 minutes (12 hours) if assetsFetchInterval is not set or empty
+    # This matches the defaultvalue in the YML configuration
+    assets_fetch_interval = params.get("assetsFetchInterval") or MIN_ASSETS_INTERVAL
+    if int(assets_fetch_interval) < MIN_ASSETS_INTERVAL:
+        raise DemistoException(
+            f"Assets and vulnerabilities fetch Interval is supposed to be {MIN_ASSETS_INTERVAL} minutes (1 hour) minimum."
+        )
     client.list_scan_filters()
     return "ok"
 
@@ -2064,7 +2069,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 assets = run_assets_fetch(client, assets_last_run)
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
             if assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks") or not (
-                assets_last_run.get("assets_export_uuid") or assets_last_run.get("assets_available_chunks")
+                assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks")
             ):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
@@ -2073,19 +2078,21 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
-            # Get snapshot_id and determine if we're still fetching (has more chunks or export jobs pending)
+            # Get snapshot_id and determine if we're still fetching assets
+            # Note: items_count is for the assets snapshot only, not vulnerabilities
             snapshot_id = assets_last_run.get("snapshot_id", str(round(time.time() * 1000)))
             total_assets = assets_last_run.get("total_assets", len(assets))
-            has_more_data = bool(
+
+            # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
+            # Vulnerabilities are separate and don't affect the assets snapshot completion
+            assets_fetch_in_progress = bool(
                 assets_last_run.get("assets_available_chunks")
                 or assets_last_run.get("assets_export_uuid")
-                or assets_last_run.get("vulns_available_chunks")
-                or assets_last_run.get("vuln_export_uuid")
             )
 
-            # items_count: Set to 1 if not done pulling to signal snapshot is incomplete
-            # Set to actual count when done to signal snapshot is complete
-            items_count = 1 if has_more_data else total_assets
+            # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
+            # Set to actual count when assets are done to signal snapshot is complete
+            items_count = 1 if assets_fetch_in_progress else total_assets
 
             if assets:
                 demisto.debug(
