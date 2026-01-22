@@ -24,7 +24,7 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6391686
 fromversion: 8.13.0
-isInternal: true
+isInternal: false
 tests:
 - No tests (auto formatted)
 marketplaces:
