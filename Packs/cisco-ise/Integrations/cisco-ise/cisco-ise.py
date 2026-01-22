@@ -405,9 +405,7 @@ def update_endpoint_custom_attribute_command():
         if len(updated_fields_dict_list) > 0:
             updated_fields_string = " the new custom fields are: " + json.dumps(updated_fields_dict_list[0].get("newValue"))
         else:
-            updated_fields_string = (
-                ", but the fields that you've tried to update already had that specific value or do not exist"
-            )
+            updated_fields_string = ", but the fields that you've tried to update already had that specific value or do not exist"
         demisto.results(f"Successfully updated endpoint {endpoint_id + updated_fields_string}")
 
     except Exception as e:

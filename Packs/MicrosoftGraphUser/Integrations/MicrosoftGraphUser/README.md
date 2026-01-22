@@ -888,7 +888,8 @@ There is no context output for this command.
 Forces a user to reset their password the next time they log in.
 Note that this action does not terminate the user’s current session.
 If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
-This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All and User-PasswordProfile.ReadWrite.All delegated permissions. For further info, see https://learn.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0&tabs=http#example-3-update-the-passwordprofile-of-a-user-and-reset-their-password
+Furthermore, the signed in user must have a higher privileged administrator role than the user who's password is being reset. The admin hierarchy table can be viewed here: https://learn.microsoft.com/en-us/graph/api/resources/users?view=graph-rest-1.0#who-can-reset-passwords
 
 #### Base Command
 
@@ -903,3 +904,90 @@ This operation is supported only when using a self-deployed app flow with the Di
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-get-groups
+
+***
+Retrieves the groups a user is part of.
+
+#### Base Command
+
+`msgraph-user-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUserGroups.ID | String | The user ID. |
+| MSGraphUserGroups.Groups.Classification | String | Value used to classify data types in your groups. |
+| MSGraphUserGroups.Groups.@Odata.Type | String | A string value that can be used to classify the user's groups. |
+| MSGraphUserGroups.Groups.CreatedDateTime | String | Group creation date and time. |
+| MSGraphUserGroups.Groups.CreationOptions | String | Group creation options. |
+| MSGraphUserGroups.Groups.DeletedDateTime | String | Group deletion date and time. |
+| MSGraphUserGroups.Groups.Description | String | Group description string. |
+| MSGraphUserGroups.Groups.DisplayName | String | Group display name. |
+| MSGraphUserGroups.Groups.ExpirationDateTime | String | Group expiration date and time. |
+| MSGraphUserGroups.Groups.GroupTypes | String | The types assigned to the group. |
+| MSGraphUserGroups.Groups.ID | String | Group id. |
+| MSGraphUserGroups.Groups.IsAssignableToRole | Bool | Indicates whether the group can be assigned to roles. |
+| MSGraphUserGroups.Groups.Mail | String | Group associated mail. |
+| MSGraphUserGroups.Groups.MailEnabled | Bool | Indicates whether the group has mail enabled. |
+| MSGraphUserGroups.Groups.MailNickname | String | Mail nickname of the group. |
+| MSGraphUserGroups.Groups.MembershipRule | String | Membership rule applied to the group. |
+| MSGraphUserGroups.Groups.MembershipRuleProcessingState | String | Processing state of the group’s membership rule. |
+| MSGraphUserGroups.Groups.OnPremisesDomainName | String | On-premises domain name associated with the group. |
+| MSGraphUserGroups.Groups.OnPremisesLastSyncDateTime | String | Date and time when the group was last synchronized from on-premises. |
+| MSGraphUserGroups.Groups.OnPremisesNetBiosName | String | On-premises NetBIOS name of the group. |
+| MSGraphUserGroups.Groups.OnPremisesProvisioningErrors | String | Errors encountered during on-premises provisioning of the group. |
+| MSGraphUserGroups.Groups.OnPremisesSamAccountName | String | SAM account name of the group in on-premises Active Directory. |
+| MSGraphUserGroups.Groups.OnPremisesSecurityIdentifier | String | Security identifier \(SID\) of the group in on-premises Active Directory. |
+| MSGraphUserGroups.Groups.OnPremisesSyncEnabled | String | Indicates whether the group is synchronized from on-premises. |
+| MSGraphUserGroups.Groups.PreferredDataLocation | String | Preferred geographic location for the group’s data. |
+| MSGraphUserGroups.Groups.PreferredLanguage | String | Preferred language for the group. |
+| MSGraphUserGroups.Groups.ProxyAddresses | String | Email addresses associated with the group. |
+| MSGraphUserGroups.Groups.RenewedDateTime | String | Date and time the group was last renewed. |
+| MSGraphUserGroups.Groups.ResourceBehaviorOptions | String | Options defining the group’s behavior as a resource. |
+| MSGraphUserGroups.Groups.ResourceProvisioningOptions | String | Options used for provisioning the group as a resource. |
+| MSGraphUserGroups.Groups.SecurityEnabled | Bool | Indicates whether the group is security-enabled. |
+| MSGraphUserGroups.Groups.SecurityIdentifier | String | Security identifier of the group. |
+| MSGraphUserGroups.Groups.ServiceProvisioningErrors | String | Errors encountered during service provisioning of the group. |
+| MSGraphUserGroups.Groups.Theme | String | Theme associated with the group. |
+| MSGraphUserGroups.Groups.UniqueName | String | Unique name of the group. |
+| MSGraphUserGroups.Groups.Visibility | String | Groups visibility. |
+| MSGraphUserGroups.Groups.WellKnownObject | String | Indicates if the group is a well-known system object. |
+
+### msgraph-user-get-auth-methods
+
+***
+Retrieve a list of authentication methods registered to a user.
+
+#### Base Command
+
+`msgraph-user-get-auth-methods`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUserAuthMethods.ID | String | The user ID. |
+| MSGraphUserAuthMethods.Methods.CreatedDateTime | String | Authentication method's creation date and time. |
+| MSGraphUserAuthMethods.Methods.ID | String | The unique identifier for the authentication method. |
+| MSGraphUserAuthMethods.Methods.@Odata.Type | String | The type of the authentication method. |
+| MSGraphUserAuthMethods.Methods.Password | String | The password associated with the authentication method, if applicable. |
+| MSGraphUserAuthMethods.Methods.DisplayName | String | Authentication methods displayName. |
+| MSGraphUserAuthMethods.Methods.DeviceTag | String | The device tag associated with the authentication method. |
+| MSGraphUserAuthMethods.Methods.IsUsable | String | Indicates whether the authentication method is currently usable. |
+| MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. |
+| MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. |

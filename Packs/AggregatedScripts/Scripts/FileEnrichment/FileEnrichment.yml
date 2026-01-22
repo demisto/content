@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
+comment: 'Enriches File indicators with reputation data from multiple integrations and outputs a consolidated FileEnrichment object. This script exclusively supports indicators of type File and will automatically create the indicator in TIM if it is not already exists. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
 commonfields:
   id: file-enrichment
   version: -1
@@ -95,8 +95,11 @@ outputs:
   description: The TIM score of the URL.
   type: Number
 - contextPath: FileEnrichment.Status
-  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
-  type: String
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
+  type: string
+- contextPath: FileEnrichment.Message
+  description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
+  type: string
 - contextPath: FileEnrichment.ModifiedTime
   description: The time the indicator was last modified.
   type: Date
@@ -312,7 +315,7 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
-dockerimage: demisto/python3:3.12.12.5490952
-fromversion: 6.10.0
+dockerimage: demisto/python3:3.12.12.6204436
+fromversion: 8.0.0
 tests:
 - FileEnrichment - Test
