@@ -28,7 +28,6 @@ alter
 	xdm.event.outcome_reason = description,
 	xdm.event.outcome = if(description ~= "response code 200", XDM_CONST.OUTCOME_SUCCESS, 
 						   description ~= "Cannot login", XDM_CONST.OUTCOME_FAILED),
-	xdm.event.id = event_id,
 	xdm.source.user.username = username,
 	xdm.source.ipv4 = if(is_ipv4(target_ip), target_ip),
 	xdm.source.host.ipv4_public_addresses = if(
