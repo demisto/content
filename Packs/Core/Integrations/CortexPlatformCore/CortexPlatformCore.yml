@@ -3317,9 +3317,30 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
-      - contextPath: GenericXQLQuery.query_limit_modified
-        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
-        type: String
+    - name: core-generic-api-call
+      arguments:
+      - description: Name of the API (currently only wfReportIncorrectVerdict is supported).
+        name: name
+      - description: URL query arguments to pass as a JSON string. For example, {"key":"value"}.
+        name: params
+      - description: POST data as a string. Make sure to use json.dumps if passing JSON data.
+        name: data
+      - description: Headers to pass as a JSON string. For example, {"key":"value"}.
+        name: headers
+      - description: HTTP method to use (GET, POST, PUT, DELETE, etc.).
+        name: method
+        required: true
+      - description: Path to append to the base URL.
+        name: path
+        required: true
+      - description: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted.
+        name: timeout
+      - description: The type of the response. Should be None unless the response value is binary, then it should be 'bin'.
+        name: response_data_type
+      description: |-
+        Special API call to internal XDR API.
+        This command provides direct access to the demisto._apiCall function with all its parameters.
+      outputs: []
   runonce: false
   script: "-"
   subtype: python3
