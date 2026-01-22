@@ -6,7 +6,6 @@ marketplaces:
 - platform
 - xpanse
 supportedModules:
-- ENT_PLUS
 - cloud
 - cloud_runtime_security
 - xsiam

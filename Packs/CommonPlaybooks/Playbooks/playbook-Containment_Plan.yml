@@ -1357,7 +1357,6 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- ENT_PLUS
 - cloud
 - cloud_runtime_security
 - xsiam

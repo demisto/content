@@ -1585,5 +1585,4 @@ marketplaces:
 - platform
 fromversion: 6.6.0
 supportedModules:
-- ENT_PLUS
 - xsiam

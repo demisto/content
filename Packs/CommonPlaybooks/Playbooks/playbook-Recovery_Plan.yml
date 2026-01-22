@@ -278,7 +278,6 @@ marketplaces:
 - xpanse
 fromversion: 6.6.0
 supportedModules:
-- ENT_PLUS
 - cloud
 - cloud_runtime_security
 - xsiam

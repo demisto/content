@@ -922,7 +922,6 @@ fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- ENT_PLUS
 - cloud
 - cloud_runtime_security
 - xsiam
