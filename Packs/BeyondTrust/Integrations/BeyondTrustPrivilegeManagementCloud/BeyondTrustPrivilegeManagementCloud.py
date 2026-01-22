@@ -9,6 +9,7 @@ VENDOR = "beyondtrust"
 PRODUCT = "pm_cloud"
 DEFAULT_LIMIT = 1000
 DEFAULT_PAGE_SIZE = 200
+INTEGRATION_NAME = "BeyondTrust PM Cloud DEBUGGING"
 
 """ CLIENT CLASS """
 
@@ -32,6 +33,12 @@ class Client(BaseClient):
 
     def get_token(self):
         """Retrieves the access token from the service."""
+        demisto.debug(f"{INTEGRATION_NAME}: Attempting to get OAuth token")
+        demisto.debug(f"{INTEGRATION_NAME}: Base URL: {self._base_url}")
+        demisto.debug(f"{INTEGRATION_NAME}: Client ID length: {len(self.client_id) if self.client_id else 0}")
+        demisto.debug(f"{INTEGRATION_NAME}: Client Secret length: {len(self.client_secret) if self.client_secret else 0}")
+        demisto.debug(f"{INTEGRATION_NAME}: Client ID (first 4 chars): {self.client_id[:4] if self.client_id else 'N/A'}")
+
         data = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         # The token endpoint is /oauth/connect/token relative to the base URL, but the base URL for API calls
@@ -40,9 +47,18 @@ class Client(BaseClient):
         # https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/management-api/v3/...
         # So we can use the base URL.
         token_url = "/oauth/connect/token"
+        full_url = f"{self._base_url}{token_url}"
+        demisto.debug(f"{INTEGRATION_NAME}: Full token URL: {full_url}")
 
-        response = self._http_request(method="POST", url_suffix=token_url, data=data, headers=headers, resp_type="json")
-        return response.get("access_token")
+        try:
+            response = self._http_request(
+                method="POST", url_suffix=token_url, data=data, headers=headers, resp_type="json"
+            )
+            demisto.debug(f"{INTEGRATION_NAME}: Token request successful")
+            return response.get("access_token")
+        except Exception as e:
+            demisto.debug(f"{INTEGRATION_NAME}: Token request failed with error: {str(e)}")
+            raise
 
     def _http_request(  # type: ignore[override]
         self,
@@ -56,7 +72,7 @@ class Client(BaseClient):
         **kwargs,
     ) -> Any:
         """Wrapper for http_request to handle authentication and execution."""
-        demisto.debug(f"Sending request: method={method}, url_suffix={url_suffix}, params={params}")
+        demisto.debug(f"{INTEGRATION_NAME}: Sending request: method={method}, url_suffix={url_suffix}, params={params}")
         if not headers:
             headers = {}
 
@@ -87,7 +103,7 @@ class Client(BaseClient):
             dict: The response from the service.
         """
         params = {"StartDate": start_date, "RecordSize": limit}
-        demisto.debug(f"Getting events with params: {params}")
+        demisto.debug(f"{INTEGRATION_NAME}: Getting events with params: {params}")
         return self._http_request(method="GET", url_suffix="/management-api/v3/Events/FromStartDate", params=params)
 
     def get_audit_activity(
@@ -114,7 +130,7 @@ class Client(BaseClient):
         if filter_created_selection_mode:
             params["Filter.Created.SelectionMode"] = filter_created_selection_mode
 
-        demisto.debug(f"Getting audit activity with params: {params}")
+        demisto.debug(f"{INTEGRATION_NAME}: Getting audit activity with params: {params}")
         return self._http_request(method="GET", url_suffix="/management-api/v3/ActivityAudits/Details", params=params)
 
 
@@ -226,7 +242,10 @@ def fetch_pm_events(
     Returns:
         tuple[dict, list[dict]]: The updated run context and the fetched events.
     """
-    demisto.debug(f"Starting fetch_pm_events. last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}")
+    demisto.debug(
+        f"{INTEGRATION_NAME}: Starting fetch_pm_events. "
+        f"last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}"
+    )
     next_run = last_run.copy()
     last_event_time_str = last_run.get("last_event_time")
 
@@ -240,11 +259,11 @@ def fetch_pm_events(
 
     response = client.get_events(start_date_str, max_fetch)
     fetched_events = response.get("events", [])
-    demisto.debug(f"Fetched {len(fetched_events)} PM events.")
+    demisto.debug(f"{INTEGRATION_NAME}: Fetched {len(fetched_events)} PM events.")
     if fetched_events:
-        demisto.debug(f"Sample PM event (first): {fetched_events[0]}")
+        demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (first): {fetched_events[0]}")
         if len(fetched_events) > 1:
-            demisto.debug(f"Sample PM event (last): {fetched_events[-1]}")
+            demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (last): {fetched_events[-1]}")
 
     for event in fetched_events:
         # Add fields for XSIAM
@@ -274,7 +293,10 @@ def fetch_activity_audits(
     Returns:
         tuple[dict, list[dict]]: The updated run context and the fetched audit events.
     """
-    demisto.debug(f"Starting fetch_activity_audits. last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}")
+    demisto.debug(
+        f"{INTEGRATION_NAME}: Starting fetch_activity_audits. "
+        f"last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}"
+    )
     next_run = last_run.copy()
     last_audit_time_str = last_run.get("last_audit_time")
 
@@ -303,7 +325,7 @@ def fetch_activity_audits(
 
         current_page_size = min(DEFAULT_PAGE_SIZE, remaining_limit)
 
-        demisto.debug(f"Fetching page {page_number} of audits. Page size: {current_page_size}")
+        demisto.debug(f"{INTEGRATION_NAME}: Fetching page {page_number} of audits. Page size: {current_page_size}")
         response = client.get_audit_activity(
             page_size=current_page_size,
             page_number=page_number,
@@ -324,9 +346,12 @@ def fetch_activity_audits(
 
         fetched_audits_list.extend(fetched_audits)
         total_fetched_audits += len(fetched_audits)
-        demisto.debug(f"Fetched {len(fetched_audits)} audits in this page. Total so far: {total_fetched_audits}")
+        demisto.debug(
+            f"{INTEGRATION_NAME}: Fetched {len(fetched_audits)} audits in this page. "
+            f"Total so far: {total_fetched_audits}"
+        )
         if fetched_audits:
-            demisto.debug(f"Sample audit from page {page_number} (first): {fetched_audits[0]}")
+            demisto.debug(f"{INTEGRATION_NAME}: Sample audit from page {page_number} (first): {fetched_audits[0]}")
 
         # Check if we have more pages
         # The response has "pageCount" and "totalRecordCount"
@@ -335,11 +360,11 @@ def fetch_activity_audits(
 
         page_number += 1
 
-    demisto.debug(f"Finished fetching activity audits. Total fetched: {total_fetched_audits}")
+    demisto.debug(f"{INTEGRATION_NAME}: Finished fetching activity audits. Total fetched: {total_fetched_audits}")
     if fetched_audits_list:
-        demisto.debug(f"Sample audit (first overall): {fetched_audits_list[0]}")
+        demisto.debug(f"{INTEGRATION_NAME}: Sample audit (first overall): {fetched_audits_list[0]}")
         if len(fetched_audits_list) > 1:
-            demisto.debug(f"Sample audit (last overall): {fetched_audits_list[-1]}")
+            demisto.debug(f"{INTEGRATION_NAME}: Sample audit (last overall): {fetched_audits_list[-1]}")
 
     # Store the fetch end time as the next start time to ensure continuous coverage
     next_run["last_audit_time"] = fetch_end_time.strftime(DATE_FORMAT)
@@ -365,7 +390,7 @@ def fetch_events(
     Returns:
         tuple[dict, list[dict]]: The next run context and the fetched events.
     """
-    demisto.debug(f"Starting fetch_events. events_types_to_fetch={events_types_to_fetch}")
+    demisto.debug(f"{INTEGRATION_NAME}: Starting fetch_events. events_types_to_fetch={events_types_to_fetch}")
     events: list[dict] = []
     next_run = last_run.copy()
 
@@ -425,16 +450,16 @@ def main():
             deduped_events = {get_dedup_key(event): event for event in events}
             final_events = list(deduped_events.values())
 
-            demisto.debug(f"Total events before dedup: {len(events)}, after dedup: {len(final_events)}")
+            demisto.debug(f"{INTEGRATION_NAME}: Total events before dedup: {len(events)}, after dedup: {len(final_events)}")
             if final_events:
-                demisto.debug(f"Sample final event (first): {final_events[0]}")
+                demisto.debug(f"{INTEGRATION_NAME}: Sample final event (first): {final_events[0]}")
                 if len(final_events) > 1:
-                    demisto.debug(f"Sample final event (last): {final_events[-1]}")
-            demisto.debug(f"Next run state: {next_run}")
+                    demisto.debug(f"{INTEGRATION_NAME}: Sample final event (last): {final_events[-1]}")
+            demisto.debug(f"{INTEGRATION_NAME}: Next run state: {next_run}")
 
             # Send events to XSIAM
             send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=final_events)
-            demisto.debug(f"Successfully sent {len(final_events)} events to XSIAM.")
+            demisto.debug(f"{INTEGRATION_NAME}: Successfully sent {len(final_events)} events to XSIAM.")
             demisto.setLastRun(next_run)
 
     except Exception as e:
