@@ -175,7 +175,7 @@ script:
       description: pass/fail verdict for PV.
     - contextPath: FireEyeETP.Message.id
       description: Message ID.
-    description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+    description: Search for messages that include specified message attributes that are accessible in the ETP portal.
   - name: fireeye-etp-get-message
     arguments:
     - name: message_id
@@ -272,16 +272,20 @@ script:
   - name: fireeye-etp-list-alerts
     arguments:
     - name: alert_id
+      description: The alert ID.
     - name: date_from
       description: Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now").
     - name: date_to
       description: Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now").
     - name: domain
       isArray: true
+      description: List of domain names.
     - name: domain_group
       isArray: true
+      description: 	List of domain groups names.
     - name: email_header_subject
       isArray: true
+      description: List of message subject headers.
     - name: is_read
       auto: PREDEFINED
       predefined:
@@ -294,20 +298,27 @@ script:
       - 'False'
     - name: malwarename
       isArray: true
+      description: List of malware names.
     - name: malwarestype
       isArray: true
+      description: List of malware types.
     - name: md5
       isArray: true
+      description: List of md5.
     - name: mta_msg_id
       isArray: true
+      description: List of mta_msg_id.
     - name: traffic_type
       auto: PREDEFINED
       predefined:
       - inbound
       - outbound
+      description: 'Traffic type defaults to inbound. To handle outbound traffic, set the traffic_type parameter to outbound. Possible values are: inbound, outbound.'
     - name: verdict
       isArray: true
+      description: List of verdicts.
     - name: limit
+      description: 'Number of alerts to include in response. Valid range: 1-200.'
     outputs:
     - contextPath: FireEyeETP.Alerts.domain
     - contextPath: FireEyeETP.Alerts.report_id
