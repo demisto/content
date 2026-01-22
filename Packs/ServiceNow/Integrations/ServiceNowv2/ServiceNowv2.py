@@ -1,3 +1,7 @@
+from dataclasses import dataclass
+
+from typing import Optional
+
 import mimetypes
 import re
 from collections.abc import Callable, Iterable
@@ -67,15 +71,59 @@ TICKET_STATES = {
     SIR_INCIDENT: {"3": "Closed", "7": "Cancelled", "10": "Draft", "16": "Analysis", "18": "Contain", "19": "Eradicate"},
 }
 
-TICKET_TYPE_TO_CLOSED_STATE = {
-    INCIDENT: "7",
-    "problem": "4",
-    "change_request": "3",
-    "sc_task": "3",
-    "sc_request": "3",
-    "sc_req_item": "3",
-    SIR_INCIDENT: "3",
+
+
+# These ticket types are closed by changing their state.
+TICKET_CLOSURE_STATES = {
+    "incident": {
+        "closed": "7",
+        "resolved": "6",
+    },
+    SIR_INCIDENT: {
+        "closed": "3",
+        "resolved": "3",
+    },
+    "sc_req_item": {
+        "closed": "3",
+        "resolved": "3",
+    },
+    "sc_task": {
+        "closed": "3",
+        "resolved": "3",
+    },
+    "sc_request": {
+        "closed": "3",
+        "resolved": "3",
+    },
+    "problem": {
+        "closed": "107",
+        "resolved": "106",
+    },
+
+    "change_request": {
+        "closed": "3",
+        "resolved": "3",
+    },
 }
+
+# Required fields for closure by ticket type
+REQUIRED_FIELDS_FOR_UPDATE = {
+    "incident": {"state" : {"7" : ["close_code", "close_notes"] , "6" : [ "close_code", "close_notes"]}}
+}
+
+# Default values (only used if user doesn't provide)
+DEFAULT_REQUIRED_FIELDS_FOR_UPDATE = {
+    "incident": {"state" : {"7" : {
+        "close_code": "Resolved by Cortex XSOAR",
+        "close_notes": "Ticket closed via Cortex XSOAR mirroring.",
+    }, "6" :
+        {
+            "close_code": "Resolved by Cortex XSOAR",
+            "close_notes": "Ticket closed via Cortex XSOAR mirroring.",
+        }
+    }},
+}
+
 
 TICKET_APPROVAL = {
     "sc_req_item": {
@@ -485,6 +533,28 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = "
             ticket_fields[arg] = template_name[arg]
 
     return ticket_fields
+
+def set_required_fields(data, table_name):
+    required_fields_mapping = REQUIRED_FIELDS_FOR_UPDATE.get(table_name , {})
+    default_field_values_mapping = DEFAULT_REQUIRED_FIELDS_FOR_UPDATE.get(table_name, {})
+
+    if not required_fields_mapping:
+        return
+    for field in list(data.keys()):
+        # Get required fields for this ticket type
+        field_value = data.get(field)
+        required_fields = required_fields_mapping.get(field).get(field_value)
+        default_required_fields_values = default_field_values_mapping.get(field).get(field_value)
+        # Add required fields with defaults if not provided by user
+        for required_field in required_fields:
+            if required_field not in data:
+                # Get default value for this field
+                if required_field in default_required_fields_values:
+                    data[required_field] = default_required_fields_values[required_field]
+                    demisto.debug(f"Added default value for required field '{required_field}': {default_required_fields_values[required_field]}")
+                else:
+                    demisto.debug(f"Warning: Required field '{required_field}' has no default value and was not provided by user")
+
 
 
 def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
@@ -1052,9 +1122,11 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
+        set_required_fields(fields, table_name)
         body = generate_body(fields, custom_fields)
         query_params = {"sysparm_input_display_value": input_display_value}
-        return self.send_request(f"table/{table_name}/{record_id}", "PATCH", params=query_params, body=body)
+        demisto.debug(f"servicenow update  - {body} {table_name} {record_id}")
+        # return self.send_request(f"table/{table_name}/{record_id}", "PATCH", params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}, input_display_value: bool = False):
         """Creates a ticket or a record by sending a POST request.
@@ -1350,6 +1422,7 @@ def get_ticket_command(client: Client, args: dict):
     }
     entries.append(entry)
     return entries
+
 
 
 def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, bool]:
@@ -3168,177 +3241,6 @@ def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemote
     return parsed_args
 
 
-def add_default_closure_fields_to_delta(
-    delta: dict,
-    close_code: str = "Resolved by caller",
-    close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
-):
-    """
-    Modifies the delta dictionary by adding default values for the state, close_code and close_notes keys if they are missing.
-
-    Args:
-        delta: The delta dictionary to be modified.
-        state: The state to be used if the state key is missing in the delta dictionary.
-        close_code: The close code to be used if the close_code key is missing in the delta dictionary.
-        Defaults to "Resolved by caller".
-        close_notes: The close notes to be used if the close_notes key is missing in the delta dictionary.
-         Defaults to "This is the resolution note required by ServiceNow to move the incident to the Resolved state.".
-
-    Returns:
-        The modified delta dictionary.
-    """
-    delta.setdefault("close_code", close_code)
-    delta.setdefault("close_notes", close_notes)
-    return delta
-
-
-def set_state_according_to_closure_case_and_ticket_type(
-    parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
-) -> UpdateRemoteSystemArgs:
-    """
-    Pre-process the parsed arguments to close an incident.
-
-    Args:
-        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
-        closure_case (str): The case to close the incident. Can be "closed" or "resolved".
-        ticket_type (str): The type of the ticket.
-        close_custom_state (str): The custom state to use if given.
-
-    Returns:
-        UpdateRemoteSystemArgs: The pre-processed parsed arguments.
-    """
-    if parsed_args.inc_status == IncidentStatus.DONE:
-        demisto.debug("Modifying incident status by closure case")
-        if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
-            demisto.debug("Setting state to 3 for sc_task, sc_req_item, SIR_INCIDENT and closing case.")
-            parsed_args.delta["state"] = "3"
-        # These ticket types are closed by changing their state.
-        if closure_case == "closed" and ticket_type == INCIDENT:
-            demisto.debug("Setting state to 7 for incident and closing case closed.")
-            parsed_args.delta["state"] = "7"  # Closing incident ticket.
-        elif closure_case == "resolved" and ticket_type == INCIDENT:
-            demisto.debug("Setting state to 6 for incident and closing case resolved.")
-            parsed_args.delta["state"] = "6"  # resolving incident ticket.
-        if close_custom_state:  # Closing by custom state
-            demisto.debug(f"Closing by custom state = {close_custom_state}")
-            parsed_args.delta["state"] = close_custom_state
-    return parsed_args
-
-
-def update_incident_closure_fields(
-    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
-) -> dict:
-    """
-    Handle closing fields of an incident.
-
-    If the ticket type is not incident and the closing state is "7 - Closed" and no custom state is given,
-    convert the closing state to the right one to close the ticket/incident via XSOAR.
-
-    Args:
-        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
-        fields (dict): The fields to update.
-        ticket_type (str): The type of the ticket.
-        is_custom_close (Optional[str]):  Whether the incident is closed by a custom state.
-
-    Returns:
-        dict: The fields to update, excluding "closed_at" and "resolved_at".
-    """
-    if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
-        fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-
-    excluded_fields = {"closed_at", "resolved_at"}
-    return {key: val for key, val in fields.items() if key not in excluded_fields}
-
-
-def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ticket_type: str) -> dict:
-    """
-    When the user specifies a custom state that does not exist, this function is called.
-    It will send a second request to the server with the default closed state.
-
-    Args:
-        client (Client): The client to use.
-        fields (dict): The fields to update.
-        ticket_id (str): The ID of the ticket to update.
-        ticket_type (str): The type of the ticket to update.
-
-    Returns:
-        dict: The result of the update request.
-    """
-
-    fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-    demisto.debug(
-        f"Given custom state doesn't exist - Sending second update request to server with "
-        f"default closed state: {ticket_type}, {ticket_id}, {fields}"
-    )
-    result = client.update(ticket_type, ticket_id, fields)
-    return result
-
-
-def set_default_fields(
-    parsed_args: UpdateRemoteSystemArgs, ticket_type: str, close_custom_state: Optional[str]
-) -> UpdateRemoteSystemArgs:
-    """
-    Set default closure fields of an incident if missing.
-
-    If the incident state is 7 (closed) or 6 (resolved), or the custom state is given and the ticket type is incident,
-    add default values for the close_code and close_notes fields
-    if they are missing in the delta dictionary.
-
-    Args:
-        parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
-        ticket_type(str): The type of the ticket to update.
-        close_custom_state (Optional[str]): The custom state to use when closing the ticket.
-
-    Returns:
-        UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
-    """
-    state = parsed_args.delta.get("state")
-    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
-        demisto.debug(
-            f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
-            f"closure fields if missing"
-        )
-        parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
-    return parsed_args
-
-
-def update_remote_system_on_incident_change(
-    client: Client,
-    parsed_args: UpdateRemoteSystemArgs,
-    ticket_type: str,
-    closure_case: str,
-    close_custom_state: Optional[str],
-    ticket_id: str,
-):
-    """
-    Update a ServiceNow ticket based on the delta received from XSOAR.
-
-    Args:
-        client: The ServiceNow client to use.
-        parsed_args: The parsed arguments, containing the delta and other information.
-        ticket_type: The type of ticket to update.
-        closure_case: How to close the ticket (e.g. "closed", "resolved", etc.).
-        close_custom_state: The custom state to use when closing the ticket.
-        ticket_id: The ID of the ticket to update.
-    """
-    is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
-    demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-    parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
-    parsed_args = set_default_fields(parsed_args, ticket_type, close_custom_state)
-    fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
-    demisto.debug(f"all fields= {fields}")
-    if closure_case:
-        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
-    demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
-    result = client.update(ticket_type, ticket_id, fields)
-
-    # Handle case of custom state doesn't exist, reverting to the original close state
-    if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
-        result = handle_missing_custom_state(client, fields, ticket_id, ticket_type)
-
-    demisto.info(f"Ticket Update result {result}")
-
-
 def update_remote_system_with_entries(client, entries, params, ticket_id, ticket_type):
     """
     Updates the remote system with the provided entries by mirroring files and adding comments or work notes.
@@ -3395,54 +3297,190 @@ def update_remote_system_with_entries(client, entries, params, ticket_id, ticket
             client.add_comment(ticket_id, ticket_type, key, text)
 
 
+
+
+@dataclass
+class TicketClosureManager:
+    """Manages ticket closure logic with clear separation of concerns."""
+    ticket_type: str
+    closure_method: Optional[str]  # "closed", "resolved", or None
+    custom_close_state: Optional[str]
+
+    @staticmethod
+    def get_closure_case(params: dict[str, Any]) -> Optional[str]:
+        """
+        Determine the closure method for ServiceNow tickets based on integration parameters.
+
+        This function handles backward compatibility between the legacy 'close_ticket' parameter
+        and the newer 'close_ticket_multiple_options' parameter.
+
+        **Parameter Priority:**
+        1. `close_ticket_multiple_options` (newer parameter) - takes precedence if set
+        2. `close_ticket` (legacy parameter) - used if newer parameter is not set
+        3. None - if neither parameter is configured
+
+        **Supported Closure Methods:**
+        - "closed" - Close the ticket with state "7" (for incidents) or equivalent for other ticket types
+        - "resolved" - Resolve the ticket with state "6" (for incidents) or equivalent for other ticket types
+        - None - No automatic closure (manual closure only)
+
+        **Integration Parameters:**
+        - `close_ticket_multiple_options`: Dropdown with options ["None", "closed", "resolved"]
+          - Default: "None" (string, not Python None)
+          - When set to "None" (string), no automatic closure occurs
+        - `close_ticket`: Legacy boolean checkbox
+          - True = use "closed" method
+          - False/not set = no automatic closure
+        """
+        # Priority 1: Check newer 'close_ticket_multiple_options' parameter
+        # Note: Default value is string "None"
+        close_multiple = params.get("close_ticket_multiple_options")
+        if close_multiple and close_multiple != "None":
+            return close_multiple
+
+        # Priority 2: Check legacy 'close_ticket' boolean parameter
+        elif params.get("close_ticket"):
+            return "closed"
+
+        # Priority 3: No closure method configured
+        else:
+            return None
+
+    @classmethod
+    def from_params(cls, ticket_type: str, params: dict[str, Any], custom_state: Optional[str] = None):
+        """Factory method to initialize the class using the closure logic."""
+        method = cls.get_closure_case(params)
+        return cls(
+            ticket_type=ticket_type,
+            closure_method=method,
+            custom_close_state=params.get("close_custom_state")
+        )
+
+    def determine_target_state(self) -> str:
+        """
+        Determine the target state based on ticket type and closure method.
+
+        Returns:
+            State code (e.g., "7", "6", "3")
+        """
+
+        # Priority 1: Custom close state from integration params
+        if self.custom_close_state:
+            demisto.debug(f"Using custom close state: {self.custom_close_state}")
+            return self.custom_close_state
+        
+        # Priority 2: Determine state based on closure method and ticket type
+        ticket_type = self.ticket_type
+        closure_method = self.closure_method or "closed"  # Default to "closed"
+        
+        # Get the state mapping for this ticket type
+        ticket_states = TICKET_CLOSURE_STATES.get(ticket_type, {})
+        target_state = ticket_states.get(closure_method)
+        
+        if not target_state:
+            demisto.error(f"Closure method '{closure_method}' not found for {ticket_type}, using default closed state: {target_state}")
+        else:
+            demisto.debug(f"Determined target state for {ticket_type} with method '{closure_method}': {target_state}")
+        
+        return target_state
+
+    def build_closure_fields(self, data) -> dict:
+        """
+        Build the complete set of fields needed for closure.
+
+        Priority:
+        1. User-provided fields (from mapper/delta)
+        2. Required fields with sensible defaults
+        3. Ticket-type-specific requirements
+
+        Returns:
+            Dictionary of fields to update
+        """
+        fields = {}
+        
+        # Start with user-provided fields (highest priority)
+        fields.update(data)
+
+        # Determine and set the target state
+        if not fields.get("state"):
+            target_state = self.determine_target_state()
+            if target_state:
+                fields["state"] = target_state
+        return fields
+
+    def verify_closure(self, client, result, user_delta, ticket_id):
+        if self.custom_close_state and demisto.get(result, "result.state") != self.custom_close_state:
+            self.custom_close_state = None
+            demisto.debug(
+                f"Given custom state doesn't exist - Sending second update request to server with "
+                f"default closed state."
+            )
+            self.apply_closure(client, user_delta, ticket_id)
+
+
+    def apply_closure(self, client, user_delta, ticket_id) -> dict:
+        """
+        Main entry point: validate, determine state, build fields.
+
+        Returns:
+            Complete fields dictionary ready for client.update()
+        """
+        demisto.debug(f"Applying closure for ticket {ticket_id} (type: {self.ticket_type})")
+
+        # Build the complete set of closure fields
+        closure_fields = self.build_closure_fields(user_delta)
+        
+        # Convert fields using get_ticket_fields to handle field mapping
+        # This ensures proper conversion of display values to actual values
+        mapped_fields = get_ticket_fields(closure_fields, ticket_type=self.ticket_type)
+        for field in ["closed_at", "resolved_at"]:
+            mapped_fields.pop(field, None)
+        demisto.debug(f"Final mapped closure fields: {mapped_fields}")
+        demisto.debug(f"Sending update request: {self.ticket_type}, {ticket_id}, {mapped_fields}")
+        result = client.update(self.ticket_type, ticket_id, mapped_fields)
+        demisto.info(f"Ticket update result: {result}")
+        return result
+
+    def close(self,client, user_delta, ticket_id):
+        if not self.closure_method:
+            return
+        result = self.apply_closure(client, user_delta, ticket_id)
+        self.verify_closure(client, result, user_delta, ticket_id)
+
+
 def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
-    Args:
-        client:  XSOAR Client to use.
-        args:
-            args['data']: the data to send to the remote system
-            args['entries']: the entries to send to the remote system
-            args['incident_changed']: boolean telling us if the local incident indeed changed or not
-            args['remote_incident_id']: the remote incident id
-        params:
-            entry_tags: the tags to pass to the entries (to separate between comments and work_notes)
 
-    Returns: The remote incident id - ticket_id
-
+    REFACTORED: Now uses TicketClosureManager for clear, testable closure logic.
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     parsed_args = pre_process_parsed_args(parsed_args)
+
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
 
-    closure_case = get_closure_case(params)
-    demisto.debug(f"closure case= {closure_case}")
-    close_custom_state = params.get("close_custom_state", None)
-    demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
-
+    # Handle incident changes (including closure)
     if parsed_args.incident_changed:
-        update_remote_system_on_incident_change(client, parsed_args, ticket_type, closure_case, close_custom_state, ticket_id)
-    entries = parsed_args.entries
-    if entries:
-        update_remote_system_with_entries(client, entries, params, ticket_id, ticket_type)
+        closure_mgr = TicketClosureManager.from_params(ticket_type, params)
+        # Check if this is a closure operation
+        if  parsed_args.inc_status == IncidentStatus.DONE:
+            closure_mgr.close(client, parsed_args.delta, ticket_id)
+
+        else:
+            # Regular update (not closing)
+            fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
+            demisto.debug(f"Sending update request: {ticket_type}, {ticket_id}, {fields}")
+            result = client.update(ticket_type, ticket_id, fields)
+            demisto.info(f"Ticket update result: {result}")
+
+    # Handle entries (comments, files)
+    if parsed_args.entries:
+        update_remote_system_with_entries(client, parsed_args.entries, params, ticket_id, ticket_type)
+
     return ticket_id
 
 
-def get_closure_case(params: dict[str, Any]):
-    """
-    return the right incident closing states according to old and new close_ticket integration param.
-    Args:
-        params: the integration params dict.
-
-    Returns: None if no closure method is specified. otherwise returns (str) The right closure method.
-    """
-    if params.get("close_ticket_multiple_options") != "None":
-        return params.get("close_ticket_multiple_options")
-    elif params.get("close_ticket"):
-        return "closed"
-    else:
-        return None
 
 
 def is_entry_type_mirror_supported(entry_type):
