@@ -1637,7 +1637,7 @@
 					"simple": "notification.created_date"
 				},
 				"severity": {
-					"simple": "notification.rule_priority"
+					"simple": "severity"
 				},
                 "CrowdStrike Falcon At Accounts": {
 					"simple": "details.iocs.at_accounts"

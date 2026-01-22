@@ -2739,7 +2739,6 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     :rtype: ``dict`` or ``None``
     """
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
-    # 1. Status Change Check and Mapping
     if "status" in delta:
         if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
             new_recon_status = "closed-true-positive"
@@ -2748,14 +2747,6 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
         else:
             demisto.debug(f"Recon-Log XSOAR status {inc_status} does not require Recon Notification status update.")
             return None
-        
-        # in case we need more iincident info
-        
-        # notification_full_details = get_recon_notifications_detailed([remote_id])
-        # if not notification_full_details:
-        #     raise DemistoException(f"No Recon notification found for ID: {remote_id}")
-
-        # 2. Build the PATCH Request Payload
         request_payload = {"id": remote_id, "status": new_recon_status}
         demisto.debug(f"Recon-Log Attempting to PATCH Recon Notification {remote_id} with status: {new_recon_status}")
         try:
@@ -2763,7 +2754,6 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
             return raw_response
         except Exception as e:
             demisto.error(f"Recon-Log API PATCH call failed for Recon Notification {remote_id}. Error: {e!s}")
-            # Raising the exception to propagate the failure to the mirroring logic
             raise Exception(f"Failed to update Recon Notification {remote_id}. Error: {e!s}")
 
     return None
@@ -2777,8 +2767,9 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
     :param last_update_timestamp: The last update timestamp.
     :return: A list of modified Recon notification IDs.
     """
-    mirror_status_filter = (f"status:['in-progress','closed-false-positive','closed-true-positive']"
-                            f"+updated_date:>'{last_update_timestamp}'")
+    mirror_status_filter = (
+        f"status:['in-progress','closed-false-positive','closed-true-positive']+updated_date:>'{last_update_timestamp}'"
+    )
     demisto.debug(f"Recon-Log get_modified_recon_ids filter: {mirror_status_filter}")
 
     try:
@@ -3663,7 +3654,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug(f"Recon-Log CrowdStrikeFalconMsg: Current Recon Notifications last_run object: {recon_last_run}")
 
         fetched_recon_notifications, recon_last_run = fetch_recon_incidents(recon_last_run)
-        # dont push the Recom incident to the machin
         items.extend(fetched_recon_notifications)
 
     # Assign each sub last_run info per type at its proper index
@@ -4090,11 +4080,19 @@ def recon_notification_to_incident(recon_notification: dict[str, Any], incident_
     incident_metadata = assign_params(
         mirror_direction=MIRROR_DIRECTION, mirror_instance=INTEGRATION_INSTANCE, incident_type=incident_type
     )
+    severity_map = {
+        "low": IncidentSeverity.LOW,
+        "medium": IncidentSeverity.MEDIUM,
+        "high": IncidentSeverity.HIGH,
+        "critical": IncidentSeverity.CRITICAL,
+        "unknown": IncidentSeverity.UNKNOWN,
+    }
+    raw_severity = dict_safe_get(recon_notification, ["notification", "rule_priority"], "unknown")
 
     incident_context = {
         "name": recon_notification.get("id"),
         "occurred": dict_safe_get(recon_notification, ["notification", "created_date"], ""),
-        "severity": dict_safe_get(recon_notification, ["notification", "rule_priority"], ""),
+        "severity": severity_map.get(str(raw_severity)),
         "rawJSON": json.dumps(recon_notification | incident_metadata),
     }
     return incident_context
