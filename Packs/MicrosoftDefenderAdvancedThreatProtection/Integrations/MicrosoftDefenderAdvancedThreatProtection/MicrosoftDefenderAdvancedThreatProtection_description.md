@@ -1,51 +1,50 @@
 ### Deprecation Note: 
-`Fetch incidents` is deprecated. Use the `Microsoft Graph Security`integration instead.
+`Fetch incidents` is deprecated. Use the `Microsoft Graph Security` integration instead in order to fetch incidents.
 
 # Authentication
 
-Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+You can use the following methods to authenticate Microsoft Defender for Endpoint:
 
-Two application authentication methods are available:
- * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
- * [Self-Deployed Application (via Microsoft Entra ID)](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+- Cortex XSOAR app
+- Client Credentials Flow
+- Authorization Code Flow
+- Azure Managed Identities
 
-Depending on the authentication method that you use, the integration parameters might change.
+Choose the desired flow under the "Authentication Flow" parameter.
 
-## Cortex XSOAR App
+### Authentication Using Cortex XSOAR app
 
-To allow access to Microsoft Defender Advanced Threat Protection, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
-After authorizing the Cortex XSOAR app, you will get an *ID*, *Token*, and *Key*, which you then need to insert in the integration instance settings corresponding fields.
+To use the **Cortex XSOAR application** and allow Cortex XSOAR/XSIAM access to Microsoft Defender For Endpoint an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-defender-atp)**.
+After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
+If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
-## Self-deployed Azure App
+For more information, refer to this [documentation](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application).
 
-There are two different authentication methods for self-deployed configuration:
-- [Client Credentials flow (Application Permissions)](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
-- [Authorization Code flow (Delegated Permissions)](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 
-**Note**: When using the Authorization Code flow, make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+### Authentication Using Client Credentials Flow
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add an app registration, refer to steps 1-6 under the **Self-deployed Azure Application** section of the integration documentation [here](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection#self-deployed-azure-application).
+Use the [client credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=Client%20Credentials%20Flow%23)
+to link Microsoft Defender For Endpoint with Cortex XSOAR/XSIAM.
 
-Select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type.
+For this flow you must use a self-deployed application. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
-#### Authentication Using the Authorization Code Flow (Delegated Permissions)
+After creating your application with the required permissions,
+create an instance of Microsoft Defender For Endpoint in your XSOAR/XSIAM environment.
+Then follow the steps under the Client Credentials Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
 
-- In the *ID* field, enter the application (client) ID.
-- In the *Key* field, enter the client secret.
-- In the *Token* field, enter the directory (tenant) ID.
-- In the *Authentication Type* field, select the **Authorization Code** option.
-- In the *Application Redirect URI* field, enter the application redirect URI.
-- Save the instance.
-- Run the `!microsoft-atp-generate-login-url` command in the War Room and follow the instructions.
+### Authentication Using Authorization Code Flow
 
-#### Authentication Using the Client Credentials Flow (Application Permissions)
+Use the [authorization code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR)
+to link Microsoft Defender For Endpoint with Cortex XSOAR/XSIAM.
 
-- In the *ID* field, enter the application (client) ID.
-- In the *Key* field, enter the client secret.
-- In the *Token* field, enter the directory (tenant) ID.
-- In the *Authentication Type* field, select the **Client Credentials** option.
-- Click **Test** to verify correct configuration.
-- Save the instance.
+For this flow you must use a self-deployed application. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
+
+After creating your application with the required permissions,
+create an instance of Microsoft Defender For Endpoint in your XSOAR/XSIAM environment.
+Then follow the steps under the Authorization Code Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
+
 
 ## Azure Managed Identities
 

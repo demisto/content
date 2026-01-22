@@ -14,10 +14,15 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
 ## Authentication
 
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
-*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
+You can use the following methods to authenticate Microsoft Graph Security:
 
-When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
+- Cortex XSOAR app
+- Authorization Code Flow
+- Client Credentials Flow
+- Azure Managed Identities
+
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
+*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated` permission type.
 
 ## Important Notes
 

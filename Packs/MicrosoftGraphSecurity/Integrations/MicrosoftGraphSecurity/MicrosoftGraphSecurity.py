@@ -87,13 +87,14 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, proxy, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
+    def __init__(self, tenant_id, proxy, grant_type, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
+            grant_type=grant_type,
             tenant_id=tenant_id,
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
             managed_identities_resource_uri=Resources.graph,
-            command_prefix=APP_NAME,
+            command_prefix="msg",
             **kwargs,
         )
         if api_version == API_V1:
@@ -2134,6 +2135,10 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     return command_results
 
 
+def test_module(client: MsGraphClient):
+    return client.ms_client.main_test_module()
+
+
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
@@ -2145,7 +2150,10 @@ def main():
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
-    self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
+    auth_flow = get_auth_type_flow(params.get("auth_flow"))
+    self_deployed: bool = (
+        (is_self_deployed_flow(auth_flow)) or (params.get("self_deployed", False)) or (managed_identities_client_id is not None)
+    )
     api_version: str = params.get("api_version", API_V2)
     azure_cloud = get_azure_cloud(params, "MicrosoftGraphSecurity")
 
@@ -2159,7 +2167,6 @@ def main():
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
 
     commands = {
-        "test-module": test_function,
         "msg-auth-test": test_auth_code_command,
         "msg-search-alerts": search_alerts_command,
         "msg-get-alert-details": get_alert_details_command,
@@ -2201,8 +2208,7 @@ def main():
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
-
+        grant_type = auth_flow if auth_flow else AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_code=auth_code,
@@ -2238,6 +2244,8 @@ def main():
                 service_sources=fetch_service_sources,
             )
             demisto.incidents(incidents)
+        elif command == "test-module":
+            return_results(test_module(client))
         elif command == "msg-create-mail-assessment-request":
             return_results(create_mail_assessment_request_command(args, client))
         elif command == "msg-create-email-file-assessment-request":
@@ -2266,7 +2274,7 @@ def main():
                 return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command.\nError:\n{err}\nTraceback:{traceback.format_exc()}")
+        return_error(f"Failed to execute {command} command.\nError:\n{err}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

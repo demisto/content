@@ -1227,6 +1227,7 @@ class MsClient:
         verify,
         proxy,
         self_deployed,
+        grant_type,
         alert_severities_to_fetch,
         alert_status_to_fetch,
         alert_time_to_fetch,
@@ -1241,15 +1242,13 @@ class MsClient:
         alert_detectionsource_to_fetch: str | None = None,
     ):
         self.endpoint_type = endpoint_type
-        if auth_type == "Authorization Code":
-            token_retrieval_url = urljoin(
+        token_retrieval_url = (
+            urljoin(
                 MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type), "/organizations/oauth2/v2.0/token"
             )
-            grant_type = AUTHORIZATION_CODE
-        else:
-            token_retrieval_url = None
-            grant_type = None
-
+            if auth_type == "Authorization Code"
+            else None
+        )
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
@@ -5186,8 +5185,12 @@ def cover_up_command(client, args):  # pragma: no cover
     )
 
 
-def test_module(client: MsClient):
+def test_connection(client: MsClient):
     client.ms_client.http_request(method="GET", url_suffix="/alerts", params={"$top": "1"}, overwrite_rate_limit_retry=True)
+
+
+def test_module(client: MsClient):
+    client.ms_client.main_test_module()
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -6325,7 +6328,13 @@ def main():  # pragma: no cover
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
-    self_deployed: bool = params.get("self_deployed", False)
+    auth_type = params.get("auth_flow", "Client Credentials")
+    grant_type = get_auth_type_flow(auth_type)
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = (
+        is_self_deployed_flow(auth_type) or params.get("self_deployed", False) or managed_identities_client_id is not None
+    )
+    demisto.debug(f"Using flow {grant_type=} which is {self_deployed=}")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     alert_detectionsource_to_fetch = params.get("fetch_detectionsource")
@@ -6335,36 +6344,33 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get("max_fetch", 50))
     fetch_evidence = argToBoolean(params.get("fetch_evidence", False))
     last_run = demisto.getLastRun()
-    auth_type = params.get("auth_type", "Client Credentials")
     auth_code = params.get("auth_code", {}).get("password", "")
     redirect_uri = params.get("redirect_uri", "")
-    managed_identities_client_id = get_azure_managed_identities_client_id(params)
-    self_deployed = self_deployed or managed_identities_client_id is not None
 
     endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc)
 
     base_url: str = urljoin(params_url, "/api")
 
-    if not managed_identities_client_id:
-        if not self_deployed and not enc_key:
-            raise DemistoException(
-                "Key must be provided. For further information see "
-                "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
-            )
-        elif not enc_key and (not certificate_thumbprint or not private_key):
-            raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
-        if not auth_id:
-            raise Exception("Authentication ID must be provided.")
-        if not tenant_id:
-            raise Exception("Tenant ID must be provided.")
-        if auth_code:
-            if redirect_uri and not self_deployed:
-                raise Exception("In order to use Authorization Code, set Self Deployed: True.")
-            if not redirect_uri:
-                raise Exception(
-                    "In order to use Authorization Code auth flow, you should set: "
-                    '"Application redirect URI", "Authorization code" and "Self Deployed=True".'
-                )
+    # if not managed_identities_client_id:
+    #     if not self_deployed and not enc_key:
+    #         raise DemistoException(
+    #             "Key must be provided. For further information see "
+    #             "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
+    #         )
+    #     elif not enc_key and (not certificate_thumbprint or not private_key):
+    #         raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
+    #     if not auth_id:
+    #         raise Exception("ID must be provided.")
+    #     if not tenant_id:
+    #         raise Exception("Tenant ID must be provided.")
+    #     if auth_code:
+    #         if redirect_uri and not self_deployed:
+    #             raise Exception("In order to use Authorization Code, set Self Deployed: True.")
+    #         if not redirect_uri:
+    #             raise Exception(
+    #                 "In order to use Authorization Code auth flow, you should set: "
+    #                 '"Application redirect URI", "Authorization code" and "Self Deployed=True".'
+    #             )
 
     command = demisto.command()
     args = demisto.args()
@@ -6379,6 +6385,7 @@ def main():  # pragma: no cover
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
+            grant_type=grant_type,
             alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch,
             alert_time_to_fetch=alert_time_to_fetch,
@@ -6393,16 +6400,11 @@ def main():  # pragma: no cover
             alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
         )
         if command == "test-module":
-            if auth_type == "Authorization Code":
-                raise Exception(
-                    "Test-module is not available when using Authentication-code auth flow. "
-                    "Please use `!microsoft-atp-test` command to test the connection"
-                )
             test_module(client)
             demisto.results("ok")
 
         elif command == "microsoft-atp-test":
-            test_module(client)
+            test_connection(client)
             return_results("✅ Success!")
 
         elif command == "fetch-incidents":

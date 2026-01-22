@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection
+  id: Microsoft Defender Advanced Threat Protection - Noy
   version: -1
 configuration:
 - defaultvalue: Worldwide
@@ -23,7 +23,18 @@ configuration:
   - US GCC-High
   - DoD
   - Custom
-  advanced: true
+  required: false
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_flow
+  defaultvalue: Client Credentials
+  options:
+    - Cortex App
+    - Authorization Code
+    - Client Credentials
+    - Azure Managed Identities
+  type: 15
+  section: Connect
   required: false
 - displaypassword: ID
   name: _auth_id_encrypted
@@ -37,56 +48,24 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-- display: ID
-  name: _auth_id
-  type: 0
-  section: Connect
-  required: false
-  hidden: true
-- display: Token
-  name: _tenant_id
-  type: 0
-  section: Connect
-  required: false
-  hidden: true
 - displaypassword: Key
   section: Connect
   name: credentials
   type: 9
   hiddenusername: true
   required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
+  section: Connect
+  advanced: false
+  required: false
+  hidden: true
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
-  section: Connect
-  advanced: true
-  required: false
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
-  type: 4
-  hidden: true
-  section: Connect
-  advanced: true
-  required: false
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  name: private_key
-  type: 14
-  hidden: true
-  section: Connect
-  advanced: true
-  required: false
-- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
-  display: Authentication Type
-  name: auth_type
-  defaultvalue: Client Credentials
-  options:
-  - Authorization Code
-  - Client Credentials
-  - Azure Managed Identities
-  type: 15
   section: Connect
   advanced: true
   required: false
@@ -111,6 +90,19 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
   required: false
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -137,6 +129,14 @@ configuration:
   name: incidentType
   type: 13
   section: Connect
+  required: false
+- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
+  name: url
+  type: 0
+  section: Connect
+  advanced: true
+  defaultvalue:
+  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   required: false
 - defaultvalue: New
   display: 'Status for fetching alerts as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
@@ -184,37 +184,10 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
-  name: url
-  type: 0
-  section: Connect
-  advanced: true
-  defaultvalue:
-  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure Application
-  name: self_deployed
-  type: 8
-  section: Connect
-  advanced: false
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
 - display: Fetch alert evidence
   name: fetch_evidence
   type: 8
   section: Collect
-  advanced: true
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  section: Connect
   advanced: true
   required: false
 - defaultvalue: '3 days'
@@ -222,6 +195,49 @@ configuration:
   name: first_fetch_timestamp
   type: 0
   section: Collect
+  required: false
+# Hidden params
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  hidden: true
+  section: Connect
+  advanced: true
+  required: false
+- display: Token
+  name: _tenant_id
+  type: 0
+  section: Connect
+  required: false
+  hidden: true
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  type: 14
+  hidden: true
+  section: Connect
+  advanced: true
+  required: false
+- display: ID
+  name: _auth_id
+  type: 0
+  section: Connect
+  required: false
+  hidden: true
+- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
+  name: tenant_id
+  type: 4
+  hidden: true
+  section: Connect
+  advanced: true
+  required: false
+- display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
+  name: enc_key
+  type: 4
+  hidden: true
+  section: Connect
+  advanced: true
   required: false
 - display: Using Microsoft GCC? (Deprecated)
   name: is_gcc
@@ -238,23 +254,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
-  name: tenant_id
-  type: 4
-  hidden: true
-  section: Connect
-  advanced: true
-  required: false
-- display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
-  name: enc_key
-  type: 4
-  hidden: true
-  section: Connect
-  advanced: true
-  required: false
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-display: Microsoft Defender for Endpoint
-name: Microsoft Defender Advanced Threat Protection
+display: Microsoft Defender for Endpoint - Noy
+name: Microsoft Defender Advanced Threat Protection - Noy
 script:
   commands:
   - description: Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.

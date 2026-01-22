@@ -66,6 +66,7 @@ class Client:
         tenant_id: str = None,
         enc_key: str = None,
         client_credentials: bool = False,
+        auth_flow: str = None,
         certificate_thumbprint: Optional[str] = None,
         private_key: Optional[str] = None,
         managed_identities_client_id: Optional[str] = None,
@@ -76,7 +77,8 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.client_credentials = client_credentials
+        auth_type = get_auth_type_flow(auth_flow)
+        grant_type = auth_type or (CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE)
         client_args = assign_params(
             base_url=base_url,
             verify=verify,
@@ -87,10 +89,10 @@ class Client:
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
-            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+            grant_type=grant_type,
             # used for device code flow
-            resource="https://api.security.microsoft.com" if not client_credentials else None,
-            token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not client_credentials else None,
+            resource="https://api.security.microsoft.com" if not (grant_type == CLIENT_CREDENTIALS) else None,
+            token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not (grant_type == CLIENT_CREDENTIALS) else None,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
@@ -290,12 +292,13 @@ def test_context_for_token(client: Client) -> None:
         return
     if not (get_integration_context().get("access_token") or get_integration_context().get("current_refresh_token")):
         raise DemistoException(
-            "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
-            "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test"
+            "Please run !microsoft-365-defender-auth-start and "
+            "!microsoft-365-defender-auth-complete in order to create a token."
+            " Then you can check the connection using the !microsoft-365-defender-auth-test command."
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str | CommandResults:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -308,16 +311,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    if client.client_credentials:
-        raise DemistoException(
-            "When using a self-deployed configuration, run the !microsoft-365-defender-auth-test "
-            "command in order to test the connection"
-        )
-
-    test_connection(client)
-
+    client.ms_client.main_test_module()
     return "ok"
 
 
@@ -1172,6 +1166,7 @@ def main() -> None:
     client_credentials = params.get("client_credentials", False)
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier", "") or params.get("certificate_thumbprint", "")
+    auth_flow = params.get("auth_flow")
 
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password", "")) or params.get(
         "private_key", ""
@@ -1196,9 +1191,6 @@ def main() -> None:
     demisto.debug(f"{args=}, \n{mirroring_fields}")
 
     try:
-        if not managed_identities_client_id and not app_id:
-            raise Exception("Application ID must be provided.")
-
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
@@ -1207,12 +1199,12 @@ def main() -> None:
             tenant_id=tenant_id,
             enc_key=enc_key,
             client_credentials=client_credentials,
+            auth_flow=auth_flow,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
         )
         if demisto.command() == "test-module":
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == "microsoft-365-defender-auth-start":
