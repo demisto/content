@@ -288,8 +288,10 @@ script:
       description: List of message subject headers.
     - name: is_read
       type: boolean
+      description: is_read flag.
     - name: is_retro
       type: boolean
+      description: is_retro flag.
     - name: malwarename
       isArray: true
       description: List of malware names.

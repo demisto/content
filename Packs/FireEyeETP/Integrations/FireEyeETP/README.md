@@ -79,7 +79,6 @@ We support two different authentication methods depending on the endpoint domain
 
 ## Configure Trellix Email Security - Cloud in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Valid URLs \(US, EMEA, USGOV\): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com | True |
@@ -94,6 +93,7 @@ We support two different authentication methods depending on the endpoint domain
 | Max incidents per fetch | Input a value between 1-59. | False |
 | Incident type |  | False |
 | Alerts statuses to import | All alerts with a status specified here will be imported as incidents. | False |
+
 ## Fetched Incidents Data
 
 To use Fetch incidents:
@@ -129,43 +129,43 @@ Search for messages that include specified message attributes that are accessibl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_email | List of 'From' email-addresses, max limit of entries is 10. | Optional | 
-| from_email_not_in | List of 'From' email-addresses not to be included, max limit of entries is 10. | Optional | 
-| recipients | List of 'To'/'Cc' email-addresses, max limit of entries is 10. | Optional | 
-| recipients_not_in | list of 'To'/'Cc' email-addresses not to be included, max limit of entries is 10. . | Optional | 
-| subject | List of strings, max limit of entries is 10. | Optional | 
-| from_accepted_date_time |  The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'to_accepted_date_time'  as well to set the complete date range for the search. | Optional | 
-| to_accepted_date_time |  The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'from_accepted_date_time'  as well to set the complete date range for the search. | Optional | 
-| rejection_reason | List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). . | Optional | 
-| sender_ip | List of sender IP addresses, max limit of entries is 10. | Optional | 
-| status | List of email status values( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional | 
-| status_not_in | List of email status values not to include( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional | 
-| last_modified_date_time | Date corresponding to last modified date, along with one of the following operators: "&gt;", "&lt;", "&gt;=", "&lt;=".  E.g. use value "&lt;2017-10-24T18:00:00.000Z" to search for messages that were last modified after the specified time stamp. | Optional | 
-| domain | List of domain names. | Optional | 
-| has_attachments | Boolean value to indicate if the message has attachments. Possible values are: true, false. | Optional | 
-| max_message_size | The default value is 20kb and maximum value is 100kb. | Optional | 
+| from_email | List of 'From' email-addresses, max limit of entries is 10. | Optional |
+| from_email_not_in | List of 'From' email-addresses not to be included, max limit of entries is 10. | Optional |
+| recipients | List of 'To'/'Cc' email-addresses, max limit of entries is 10. | Optional |
+| recipients_not_in | list of 'To'/'Cc' email-addresses not to be included, max limit of entries is 10. . | Optional |
+| subject | List of strings, max limit of entries is 10. | Optional |
+| from_accepted_date_time |  The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'to_accepted_date_time'  as well to set the complete date range for the search. | Optional |
+| to_accepted_date_time |  The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'from_accepted_date_time'  as well to set the complete date range for the search. | Optional |
+| rejection_reason | List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). . | Optional |
+| sender_ip | List of sender IP addresses, max limit of entries is 10. | Optional |
+| status | List of email status values( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional |
+| status_not_in | List of email status values not to include( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional |
+| last_modified_date_time | Date corresponding to last modified date, along with one of the following operators: "&gt;", "&lt;", "&gt;=", "&lt;=".  E.g. use value "&lt;2017-10-24T18:00:00.000Z" to search for messages that were last modified after the specified time stamp. | Optional |
+| domain | List of domain names. | Optional |
+| has_attachments | Boolean value to indicate if the message has attachments. Possible values are: true, false. | Optional |
+| max_message_size | The default value is 20kb and maximum value is 100kb. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Message.acceptedDateTime | unknown | Message accepted date. | 
-| FireEyeETP.Message.countryCode | unknown | Sender country code. | 
-| FireEyeETP.Message.domain | unknown | Domain. | 
-| FireEyeETP.Message.emailSize | unknown | Email size in kb. | 
-| FireEyeETP.Message.lastModifiedDateTime | unknown | Message last modified date. | 
-| FireEyeETP.Message.recipientHeader | unknown | List of message recipients header \(includes the display name of the user\). | 
-| FireEyeETP.Message.recipients | unknown | List of message recipients. | 
-| FireEyeETP.Message.senderHeader | unknown | Message sender header \(includes the display name of the user\). | 
-| FireEyeETP.Message.sender | unknown | Message sender address. | 
-| FireEyeETP.Message.senderSMTP | unknown | Message sender SMTP. | 
-| FireEyeETP.Message.senderIP | unknown | Message sender IP. | 
-| FireEyeETP.Message.status | unknown | Message status. | 
-| FireEyeETP.Message.subject | unknown | Message subject. | 
-| FireEyeETP.Message.verdicts.AS | unknown | pass/fail verdict for AS. | 
-| FireEyeETP.Message.verdicts.AV | unknown | pass/fail verdict for AV. | 
-| FireEyeETP.Message.verdicts.AT | unknown | pass/fail verdict for AT. | 
-| FireEyeETP.Message.verdicts.PV | unknown | pass/fail verdict for PV. | 
+| FireEyeETP.Message.acceptedDateTime | unknown | Message accepted date. |
+| FireEyeETP.Message.countryCode | unknown | Sender country code. |
+| FireEyeETP.Message.domain | unknown | Domain. |
+| FireEyeETP.Message.emailSize | unknown | Email size in kb. |
+| FireEyeETP.Message.lastModifiedDateTime | unknown | Message last modified date. |
+| FireEyeETP.Message.recipientHeader | unknown | List of message recipients header \(includes the display name of the user\). |
+| FireEyeETP.Message.recipients | unknown | List of message recipients. |
+| FireEyeETP.Message.senderHeader | unknown | Message sender header \(includes the display name of the user\). |
+| FireEyeETP.Message.sender | unknown | Message sender address. |
+| FireEyeETP.Message.senderSMTP | unknown | Message sender SMTP. |
+| FireEyeETP.Message.senderIP | unknown | Message sender IP. |
+| FireEyeETP.Message.status | unknown | Message status. |
+| FireEyeETP.Message.subject | unknown | Message subject. |
+| FireEyeETP.Message.verdicts.AS | unknown | pass/fail verdict for AS. |
+| FireEyeETP.Message.verdicts.AV | unknown | pass/fail verdict for AV. |
+| FireEyeETP.Message.verdicts.AT | unknown | pass/fail verdict for AT. |
+| FireEyeETP.Message.verdicts.PV | unknown | pass/fail verdict for PV. |
 | FireEyeETP.Message.id | unknown | Message ID. |
 
 ##### Command example 1
@@ -244,29 +244,29 @@ Get the data of a specific message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The message ID. | Required | 
+| message_id | The message ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Message.acceptedDateTime | unknown | Message accepted date. | 
-| FireEyeETP.Message.countryCode | unknown | Sender country code. | 
-| FireEyeETP.Message.domain | unknown | Domain. | 
-| FireEyeETP.Message.emailSize | unknown | Email size in kb. | 
-| FireEyeETP.Message.lastModifiedDateTime | unknown | Message last modified date. | 
-| FireEyeETP.Message.recipientHeader | unknown | List of message recipients header \(includes the display name of the user\). | 
-| FireEyeETP.Message.recipients | unknown | List of message recipients. | 
-| FireEyeETP.Message.senderHeader | unknown | Message sender header \(includes the display name of the user\). | 
-| FireEyeETP.Message.sender | unknown | Message sender address. | 
-| FireEyeETP.Message.senderSMTP | unknown | Message sender SMTP. | 
-| FireEyeETP.Message.senderIP | unknown | Message sender IP. | 
-| FireEyeETP.Message.status | unknown | Message status. | 
-| FireEyeETP.Message.subject | unknown | Message subject. | 
-| FireEyeETP.Message.verdicts.AS | unknown | pass/fail verdict for AS. | 
-| FireEyeETP.Message.verdicts.AV | unknown | pass/fail verdict for AV. | 
-| FireEyeETP.Message.verdicts.AT | unknown | pass/fail verdict for AT. | 
-| FireEyeETP.Message.verdicts.PV | unknown | pass/fail verdict for PV. | 
+| FireEyeETP.Message.acceptedDateTime | unknown | Message accepted date. |
+| FireEyeETP.Message.countryCode | unknown | Sender country code. |
+| FireEyeETP.Message.domain | unknown | Domain. |
+| FireEyeETP.Message.emailSize | unknown | Email size in kb. |
+| FireEyeETP.Message.lastModifiedDateTime | unknown | Message last modified date. |
+| FireEyeETP.Message.recipientHeader | unknown | List of message recipients header \(includes the display name of the user\). |
+| FireEyeETP.Message.recipients | unknown | List of message recipients. |
+| FireEyeETP.Message.senderHeader | unknown | Message sender header \(includes the display name of the user\). |
+| FireEyeETP.Message.sender | unknown | Message sender address. |
+| FireEyeETP.Message.senderSMTP | unknown | Message sender SMTP. |
+| FireEyeETP.Message.senderIP | unknown | Message sender IP. |
+| FireEyeETP.Message.status | unknown | Message status. |
+| FireEyeETP.Message.subject | unknown | Message subject. |
+| FireEyeETP.Message.verdicts.AS | unknown | pass/fail verdict for AS. |
+| FireEyeETP.Message.verdicts.AV | unknown | pass/fail verdict for AV. |
+| FireEyeETP.Message.verdicts.AT | unknown | pass/fail verdict for AT. |
+| FireEyeETP.Message.verdicts.PV | unknown | pass/fail verdict for PV. |
 | FireEyeETP.Message.id | unknown | Message ID. |
 
 ##### Command example
@@ -290,30 +290,30 @@ Get summary format information about the alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID. | Optional | 
-| date_from | Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now"). | Optional | 
-| date_to | Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now"). | Optional | 
-| domain | List of domain names. | Optional | 
-| domain_group | List of domain groups names. | Optional | 
-| email_header_subject | List of message subject headers. | Optional | 
-| is_read | Possible values are: True, False. | Optional | 
-| is_retro | Possible values are: True, False. | Optional | 
-| malwarename | List of malware names. | Optional | 
-| malwarestype | List of malware types. | Optional | 
-| md5 | List of md5. | Optional | 
-| mta_msg_id | List of mta_msg_id. | Optional | 
-| traffic_type | Traffic type defaults to inbound. To handle outbound traffic, set the traffic_type parameter to outbound. Possible values are: inbound, outbound. | Optional | 
-| verdict | List of verdicts. | Optional | 
-| limit | Number of alerts to include in response. Valid range: 1-200. | Optional | 
+| alert_id | The alert ID. | Optional |
+| date_from | Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now"). | Optional |
+| date_to | Supports ISO format (e.g., 2025-09-02T06:45:01Z) or natural language ("7 days ago", "now"). | Optional |
+| domain | List of domain names. | Optional |
+| domain_group | List of domain groups names. | Optional |
+| email_header_subject | List of message subject headers. | Optional |
+| is_read | is_read flag. | Optional |
+| is_retro | is_retro flag. | Optional |
+| malwarename | List of malware names. | Optional |
+| malwarestype | List of malware types. | Optional |
+| md5 | List of md5. | Optional |
+| mta_msg_id | List of mta_msg_id. | Optional |
+| traffic_type | Traffic type defaults to inbound. To handle outbound traffic, set the traffic_type parameter to outbound. Possible values are: inbound, outbound. | Optional |
+| verdict | List of verdicts. | Optional |
+| limit | Number of alerts to include in response. Valid range: 1-200. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Alerts.domain | unknown |  | 
-| FireEyeETP.Alerts.report_id | unknown |  | 
-| FireEyeETP.Alerts.id | unknown |  | 
-| FireEyeETP.Alerts.alert_date | unknown |  | 
+| FireEyeETP.Alerts.domain | unknown | Domain. |
+| FireEyeETP.Alerts.report_id | unknown | Report_id. |
+| FireEyeETP.Alerts.id | unknown | The alert unique ID. |
+| FireEyeETP.Alerts.alert_date | unknown | The alert data. |
 
 ### fireeye-etp-download-alert-case-files
 
@@ -328,11 +328,12 @@ Downloads all case files of the alert specified by the alert ID, in a zip file. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID. | Required | 
+| alert_id | The alert ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-list-yara-rulesets
 
 ***
@@ -346,13 +347,13 @@ Fetch the list of YARA rulesets and return a list with all the rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Policy | unknown | The policy id. | 
+| FireEyeETP.Policy | unknown | The policy id. |
 
 ### fireeye-etp-download-yara-file
 
@@ -367,12 +368,13 @@ Downloads a YARA file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required | 
-| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required |
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-upload-yara-file
 
 ***
@@ -386,13 +388,14 @@ Update or replace the YARA rule file in the existing ruleset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required | 
-| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
-| entryID | Entry ID of yara file to upload. | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found in the URL of the ETP Policies). | Required |
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required |
+| entryID | Entry ID of yara file to upload. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-get-events-data
 
 ***
@@ -406,17 +409,17 @@ Returns all events of the alert by the alert ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Message ID of alert. | Required | 
+| message_id | Message ID of alert. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Events | unknown | The events of the alert. | 
-| FireEyeETP.Events.Delivered_msg | unknown | Display if event is delivered successfully or not. | 
-| FireEyeETP.Events.Delivered_status | unknown | The status of the message. | 
-| FireEyeETP.Events.InternetMessageId | unknown | The internet message ID of the alert. | 
-| FireEyeETP.Events.Logs | unknown | The logs of the alert. | 
+| FireEyeETP.Events | unknown | The events of the alert. |
+| FireEyeETP.Events.Delivered_msg | unknown | Display if event is delivered successfully or not. |
+| FireEyeETP.Events.Delivered_status | unknown | The status of the message. |
+| FireEyeETP.Events.InternetMessageId | unknown | The internet message ID of the alert. |
+| FireEyeETP.Events.Logs | unknown | The logs of the alert. |
 
 ### fireeye-etp-quarantine-release
 
@@ -431,7 +434,7 @@ Releases the email file present in the quarantine for the given email. Cloud mes
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The message ID. | Optional | 
+| message_id | The message ID. | Optional |
 
 #### Context Output
 
