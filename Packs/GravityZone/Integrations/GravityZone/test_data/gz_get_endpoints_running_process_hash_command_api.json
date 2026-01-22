@@ -1,0 +1,114 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "runPredefinedLiveSearchQuery",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "runPredefinedLiveSearchQuery",
+        "params": {
+          "endpoints": [],
+          "queryType": "QUERY_RUNNING_HASH",
+          "querySpecifics": {
+            "hash": "PROCESS_HASH"
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "69426a35cc0596b3d506e3dc"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "69426a35cc0596b3d506e3dc",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "error": {
+        "code": -32602,
+        "message": "Invalid params",
+        "data": {
+          "details": "No results found for the selected filters."
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "69426a35cc0596b3d506e3dc",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "error": {
+        "code": -32602,
+        "message": "Invalid params",
+        "data": {
+          "details": "No results found for the selected filters."
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "69426a35cc0596b3d506e3dc",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 1,
+        "page": 1,
+        "perPage": 5000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "_id": "69426a6e13c064502ed212f6",
+            "protectedEntityId": "ENDPOINT_ID",
+            "companyId": "COMPANY_ID",
+            "taskId": "69426a35cc0596b3d506e3dc",
+            "results": "{\"hostname\":\"ENDPOINT_NAME\",\"path\":\"C:\\\\Windows\\\\System32\\\\notepad.exe\"}"
+          }
+        ]
+      }
+    }
+  }
+]

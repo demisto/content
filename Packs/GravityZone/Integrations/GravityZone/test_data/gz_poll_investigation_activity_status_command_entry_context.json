@@ -1,0 +1,13 @@
+{
+    "GravityZone.Command.RunCommand(val.ActivityID && val.ActivityID == obj.ActivityID)": [
+        {
+            "ActivityID": "6943db6115457d24450196d3",
+            "ActivityType": "RunCommand",
+            "Status": "Success",
+            "EndpointID": "6942a43afe8d4e463ca5c197",
+            "ErrorCode": null,
+            "Command": "ls -1",
+            "Output": "investigation_2025-12-18_12-45-53.log\n"
+        }
+    ]
+}

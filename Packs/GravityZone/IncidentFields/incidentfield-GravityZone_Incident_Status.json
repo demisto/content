@@ -1,0 +1,34 @@
+{
+    "id": "incident_gravityzone_incident_status",
+    "version": -1,
+    "name": "GravityZone Incident Status",
+    "ownerOnly": false,
+    "description": "Indicates the status of the incident.",
+    "cliName": "gravityzoneincidentstatus",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GravityZone EDR",
+        "GravityZone XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 0,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

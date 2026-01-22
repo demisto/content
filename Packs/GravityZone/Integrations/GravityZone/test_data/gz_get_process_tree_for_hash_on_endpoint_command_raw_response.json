@@ -1,0 +1,9 @@
+[
+    {
+        "_id": "694268cae91975226b9f9945",
+        "companyId": "COMPANY_ID",
+        "protectedEntityId": "ENDPOINT_ID",
+        "results": "{\"cmdline\":\"C:\\\\WINDOWS\\\\Explorer.EXE\",\"parent\":\"5180\",\"path\":\"C:\\\\Windows\\\\explorer.exe\",\"pid\":\"5212\"}",
+        "taskId": "694268c5e6849749f7093318"
+    }
+]

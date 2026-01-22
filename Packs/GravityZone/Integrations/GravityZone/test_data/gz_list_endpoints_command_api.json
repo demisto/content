@@ -1,0 +1,158 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/companies",
+      "method": "getCompanyDetails",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getCompanyDetails",
+        "params": {},
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "type": 1,
+        "name": "COMPANY_NAME",
+        "id": "COMPANY_ID",
+        "address": "",
+        "phone": "",
+        "industry": 30,
+        "canBeManagedByAbove": true,
+        "enforce2FA": true,
+        "skip2FAPeriod": 90,
+        "isSuspended": false,
+        "createdAt": "2022-09-06T11:41:47",
+        "country": "RO",
+        "state": "N/A",
+        "contactPerson": {
+          "fullName": "COMPANY_NAME",
+          "email": "CONTACT_PERSON",
+          "phoneNumber": "",
+          "companyRole": "Security Enginner / Security Analyst"
+        },
+        "riskScore": {
+          "value": "18%",
+          "impact": "Low",
+          "misconfigurations": "95%",
+          "appVulnerabilities": "1%",
+          "humanRisks": "4%",
+          "industryModifier": "0%"
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/network",
+      "method": "getEndpointsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getEndpointsList",
+        "params": {
+          "parentId": "COMPANY_ID",
+          "page": 1,
+          "perPage": 100
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 4,
+        "page": 1,
+        "perPage": 100,
+        "pagesCount": 1,
+        "items": [
+          {
+            "id": "67c87017f3e11f09dc9143e8",
+            "name": "HOST_NAME",
+            "label": "",
+            "fqdn": "HOST_NAME",
+            "groupId": "GROUP_ID",
+            "isManaged": true,
+            "machineType": 2,
+            "operatingSystemVersion": "Windows 10 Pro",
+            "ip": "IP_158",
+            "macs": [
+              "005056b1ef97"
+            ],
+            "ssid": "",
+            "managedWithBest": true,
+            "policy": {
+              "id": "63171c4569cad087a809a316",
+              "name": "slozovan cu RS",
+              "applied": true
+            }
+          },
+          {
+            "id": "685e4b4170db527d0f254033",
+            "name": "sf-xdr-nsva",
+            "label": "",
+            "fqdn": "sf-xdr-nsva",
+            "groupId": "GROUP_ID",
+            "isManaged": true,
+            "machineType": 2,
+            "operatingSystemVersion": "Linux Ubuntu 24.04.2 LTS",
+            "ip": "IP_93",
+            "macs": [
+              "005056b1ca43"
+            ],
+            "ssid": "",
+            "policy": {
+              "id": "63171c4569cad087a809a316",
+              "name": "slozovan cu RS",
+              "applied": true
+            }
+          },
+          {
+            "id": "6940eb0b646e8e69399ce4a6",
+            "name": "TABK3SPKIJ4N",
+            "label": "",
+            "fqdn": "tabk3spkij4n",
+            "groupId": "GROUP_ID",
+            "isManaged": true,
+            "machineType": 2,
+            "operatingSystemVersion": "Windows 10 Enterprise",
+            "ip": "IP_214",
+            "macs": [
+              "005056b8f2b1"
+            ],
+            "ssid": "",
+            "managedWithBest": true,
+            "policy": {
+              "id": "63171c4569cad087a809a316",
+              "name": "slozovan cu RS",
+              "applied": true
+            }
+          },
+          {
+            "id": "ENDPOINT_ID",
+            "name": "ENDPOINT_NAME",
+            "label": "",
+            "fqdn": "ENDPOINT_FQDN",
+            "groupId": "GROUP_ID",
+            "isManaged": true,
+            "machineType": 2,
+            "operatingSystemVersion": "Windows 10 Pro",
+            "ip": "ENDPOINT_IP",
+            "macs": [
+              "ENDPOINT_MAC"
+            ],
+            "ssid": "",
+            "managedWithBest": true,
+            "policy": {
+              "id": "POLICY_ID",
+              "name": "POLICY_NAME",
+              "applied": true
+            }
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,104 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "startRetrieveInvestigationFileFromEndpoint",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "startRetrieveInvestigationFileFromEndpoint",
+        "params": {
+          "targetId": "6942a43afe8d4e463ca5c197",
+          "path": "/home/ENDPOINT_NAME/test.txt"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "69440329acf0744c57099502"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "69440329acf0744c57099502",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "pending"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "69440329acf0744c57099502",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "pending"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "69440329acf0744c57099502",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "success",
+        "url": "https://localhost/storage/investigationFiles/6944032a33847b0e0d069c58",
+        "bucket": "investigationFiles",
+        "fileId": "6944032a33847b0e0d069c58"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/storage/investigationFiles/6944032a33847b0e0d069c58",
+      "get": true
+    },
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"investigation_file_ENDPOINT_NAME_2025-12-18-15-35-37.tgz\""
+      },
+      "content": ""
+    }
+  }
+]

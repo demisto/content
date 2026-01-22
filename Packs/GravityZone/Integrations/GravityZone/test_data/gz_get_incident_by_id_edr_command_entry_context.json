@@ -1,0 +1,529 @@
+{
+    "GravityZone(true)": {
+        "Incident": {
+            "ID": "INCIDENT_ID_1",
+            "Number": 477,
+            "Type": "incident",
+            "Company": {
+                "Name": "COMPANY_NAME",
+                "ID": "COMPANY_ID"
+            },
+            "Severity": {
+                "Score": 33
+            },
+            "Status": 0,
+            "ActionTaken": "reported",
+            "Created": "2025-12-17T09:02:03+02:00",
+            "LastUpdated": "2025-12-17T09:02:03+02:00",
+            "LastProcessed": "2025-12-17T09:02:13+02:00",
+            "Permalink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+            "AssignedPriority": "unknown",
+            "AssignedUser": null,
+            "Notes": [],
+            "Alerts": [
+                {
+                    "Name": "RegSecurityDump",
+                    "Date": "2025-12-17T09:01:53+02:00",
+                    "DetectedBy": {
+                        "Name": "RegSecurityDump",
+                        "Class": "EDR Detection"
+                    },
+                    "Resources": [
+                        {
+                            "Pid": 1840,
+                            "ProcessPath": "c:\\windows\\system32\\reg.exe",
+                            "CommandLine": "path /y",
+                            "ParentPid": 11908,
+                            "User": "ENDPOINT_NAME\\ENDPOINT_NAME",
+                            "ProcessAccessPrivileges": "elevated",
+                            "ProcessIntegrityLevel": "high",
+                            "Type": "process"
+                        }
+                    ]
+                },
+                {
+                    "Name": "ExternalRemoteServices.RDP.Login",
+                    "Date": "2025-12-17T09:01:48+02:00",
+                    "DetectedBy": {
+                        "Name": "ExternalRemoteServices.RDP.Login",
+                        "Class": "EDR Detection"
+                    },
+                    "Resources": [
+                        {
+                            "Domain": "ENDPOINT_NAME",
+                            "Type": "network"
+                        }
+                    ]
+                },
+                {
+                    "Name": "WmicGenericDiscovery",
+                    "Date": "2025-12-16T15:20:18+02:00",
+                    "DetectedBy": {
+                        "Name": "WmicGenericDiscovery",
+                        "Class": "EDR Detection"
+                    },
+                    "Resources": [
+                        {
+                            "Pid": 0,
+                            "ProcessPath": "<system>",
+                            "CommandLine": "<did_not_receive>",
+                            "User": "NT AUTHORITY\\SYSTEM",
+                            "ProcessAccessPrivileges": "elevated",
+                            "ProcessIntegrityLevel": "system",
+                            "Type": "process"
+                        }
+                    ]
+                }
+            ],
+            "RawJSON": {
+                "incidentId": "INCIDENT_ID_1",
+                "incidentNumber": 477,
+                "status": "open",
+                "mainAction": "reported",
+                "created": "2025-12-17T09:02:03+02:00",
+                "lastUpdated": "2025-12-17T09:02:03+02:00",
+                "lastProcessed": "2025-12-17T09:02:13+02:00",
+                "severityScore": 33,
+                "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+                "assignee": null,
+                "priority": "unknown",
+                "attackTypes": [
+                    "Malware"
+                ],
+                "company": {
+                    "id": "COMPANY_ID",
+                    "name": "COMPANY_NAME"
+                },
+                "incidentType": "incident",
+                "details": {
+                    "detectionName": "RegSecurityDump",
+                    "counters": {
+                        "endpoints": 1,
+                        "files": 0,
+                        "processes": 2,
+                        "domains": 0,
+                        "registries": 0,
+                        "events": 6,
+                        "storages": 0
+                    },
+                    "computerId": "ENDPOINT_ID",
+                    "computerName": "ENDPOINT_NAME",
+                    "computerFqdn": "ENDPOINT_FQDN",
+                    "computerIp": "ENDPOINT_IP",
+                    "computerMacAddresses": [
+                        "ENDPOINT_MAC"
+                    ],
+                    "partOf": [],
+                    "alerts": [
+                        {
+                            "id": "694255755f5c8b75247c7ce8",
+                            "name": "RegSecurityDump",
+                            "date": "2025-12-17T09:01:53+02:00",
+                            "detectedBy": {
+                                "name": "RegSecurityDump",
+                                "class": "EDR Detection"
+                            },
+                            "resources": [
+                                {
+                                    "type": "process",
+                                    "details": {
+                                        "pid": 1840,
+                                        "processPath": "c:\\windows\\system32\\reg.exe",
+                                        "processPathSize": null,
+                                        "commandLine": "path /y",
+                                        "parentPid": 11908,
+                                        "parentProcessPath": null,
+                                        "parentProcessCmdline": null,
+                                        "parentProcessUser": null,
+                                        "user": "ENDPOINT_NAME\\ENDPOINT_NAME",
+                                        "loadedModule": null,
+                                        "loadedModulePid": null,
+                                        "processInjectionWriter": null,
+                                        "processInjectionWriterPid": null,
+                                        "processInjectionTarget": null,
+                                        "processInjectionTargetPid": null,
+                                        "processInjectionSizeofWrite": null,
+                                        "processAccessPrivileges": "elevated",
+                                        "parentProcessAccessPrivileges": null,
+                                        "processIntegrityLevel": "high",
+                                        "parentProcessIntegrityLevel": null,
+                                        "processPackerName": null
+                                    }
+                                }
+                            ],
+                            "extra": [
+                                {
+                                    "key": "extraInfo1",
+                                    "value": "\nProcess PE VersionInfo and Certification Information: \nOriginal File Name: reg.exe\nInternal Name: reg.exe\nMatched Identity: reg.exe\nFile Description: Registry Console Tool\nCompany Name: Microsoft Corporation\nFile Version: 10.0.19041.1 (WinBuild.160101.0800)\nProduct Name: MicrosoftR WindowsR Operating System\nProduct Version: 10.0.19041.1\nLegal Copyright: C Microsoft Corporation. All rights reserved.\nCertificate Serial: 330000038c385d5c2e7483ccfb00000000038c\nCertificate Signer: Microsoft Corporation\nCertificate Issuer: Microsoft Corporation\n\nWorking Directory: c:\\program files\\local\\endpoint security\\"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "694255755f5c8b75247c7ce6",
+                            "name": "ExternalRemoteServices.RDP.Login",
+                            "date": "2025-12-17T09:01:48+02:00",
+                            "detectedBy": {
+                                "name": "ExternalRemoteServices.RDP.Login",
+                                "class": "EDR Detection"
+                            },
+                            "resources": [
+                                {
+                                    "type": "network",
+                                    "details": {
+                                        "uri": null,
+                                        "protocol": null,
+                                        "port": null,
+                                        "streamType": null,
+                                        "statusCode": null,
+                                        "requestMethod": null,
+                                        "requesterMac": null,
+                                        "requesterIp": null,
+                                        "requesterSystemName": null,
+                                        "rawConnectionDestIp": null,
+                                        "rawConnectionSourceIp": null,
+                                        "rawConnectionDestPort": null,
+                                        "rawConnectionSourcePort": null,
+                                        "rawConnectionTransferedIn": null,
+                                        "rawConnectionTransferedOut": null,
+                                        "rawConnectionDirection": null,
+                                        "rawConnectionReferrer": null,
+                                        "rawConnectionFailStatus": null,
+                                        "rawConnectionGuestStatus": null,
+                                        "rawConnectionUser": null,
+                                        "rawConnectionLoginStatus": null,
+                                        "rawConnectionFilePath": null,
+                                        "domain": "ENDPOINT_NAME",
+                                        "smbFileName": null,
+                                        "smbTreeName": null,
+                                        "interface": null,
+                                        "expectedProtocol": null,
+                                        "rawConnectionProtocol": null,
+                                        "rawConnectionTransferredFile": null,
+                                        "rawConnectionTransferredFileType": null,
+                                        "rawConnectionTransferredFileSize": null,
+                                        "rawConnectionExpectedProtocol": null,
+                                        "rawConnectionAccessType": null,
+                                        "rawConnectionEncryptionType": null,
+                                        "rawConnectionInterface": null,
+                                        "rawConnectionServiceName": null,
+                                        "rawConnectionServicePath": null,
+                                        "httpConnectionMethod": null,
+                                        "httpConnectionHost": null,
+                                        "httpConnectionUri": null,
+                                        "httpConnectionResponseCode": null,
+                                        "httpConnectionReferrer": null,
+                                        "winrmConnectionUserAgent": null,
+                                        "winrmConnectionAuthorization": null,
+                                        "smbUser": null,
+                                        "smbHostName": null,
+                                        "smbDomainName": null,
+                                        "smbAccessType": null,
+                                        "smbAuthMethod": null,
+                                        "ldapDistinguishedName": null,
+                                        "ldapGroupDistinguishedName": null,
+                                        "local": null,
+                                        "mailAttachments": null
+                                    }
+                                }
+                            ],
+                            "extra": [
+                                {
+                                    "key": "extraInfo1",
+                                    "value": "Login Status: Ok\nLogin Type: Network\nAuthentication Package Name: NTLM\nLogon Id: 59917916\nIp Address: IP\nLogon Process Name: NtLmSsp\nUser: ENDPOINT_NAME\nUser Type: local"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "694255755f5c8b75247c7ce4",
+                            "name": "WmicGenericDiscovery",
+                            "date": "2025-12-16T15:20:18+02:00",
+                            "detectedBy": {
+                                "name": "WmicGenericDiscovery",
+                                "class": "EDR Detection"
+                            },
+                            "resources": [
+                                {
+                                    "type": "process",
+                                    "details": {
+                                        "pid": 0,
+                                        "processPath": "<system>",
+                                        "processPathSize": null,
+                                        "commandLine": "<did_not_receive>",
+                                        "parentPid": null,
+                                        "parentProcessPath": null,
+                                        "parentProcessCmdline": null,
+                                        "parentProcessUser": null,
+                                        "user": "NT AUTHORITY\\SYSTEM",
+                                        "loadedModule": null,
+                                        "loadedModulePid": null,
+                                        "processInjectionWriter": null,
+                                        "processInjectionWriterPid": null,
+                                        "processInjectionTarget": null,
+                                        "processInjectionTargetPid": null,
+                                        "processInjectionSizeofWrite": null,
+                                        "processAccessPrivileges": "elevated",
+                                        "parentProcessAccessPrivileges": null,
+                                        "processIntegrityLevel": "system",
+                                        "parentProcessIntegrityLevel": null,
+                                        "processPackerName": null
+                                    }
+                                }
+                            ],
+                            "extra": [
+                                {
+                                    "key": "wmiNewActivity",
+                                    "value": "Exec Query"
+                                },
+                                {
+                                    "key": "wmiNewActivityOperation",
+                                    "value": "Provider::ExecQuery - CIMWin32 : select __RELPATH, __RELPATH from Win32_Process"
+                                }
+                            ]
+                        }
+                    ],
+                    "nodes": [
+                        {
+                            "id": "694255755f5c8b75247c7ce9",
+                            "name": "<system>",
+                            "type": "process_execution",
+                            "details": {
+                                "file": {
+                                    "name": "<system>",
+                                    "path": "<system>",
+                                    "md5": null,
+                                    "sha256": null,
+                                    "size": 0,
+                                    "isExecutable": true
+                                },
+                                "process": {
+                                    "pid": 0,
+                                    "parent": {
+                                        "pid": 0,
+                                        "name": "<SYSTEM>",
+                                        "path": null
+                                    },
+                                    "commandLine": "<did_not_receive>",
+                                    "userId": null,
+                                    "userName": "NT AUTHORITY\\SYSTEM",
+                                    "date": "2025-12-16T14:05:30+02:00",
+                                    "name": "<system>"
+                                },
+                                "sandbox": null,
+                                "quarantine": null,
+                                "killProcess": null
+                            },
+                            "alertIds": [
+                                "694255755f5c8b75247c7ce6",
+                                "694255755f5c8b75247c7ce4"
+                            ]
+                        },
+                        {
+                            "id": "694255755f5c8b75247c7cea",
+                            "name": "reg.exe",
+                            "type": "process_execution",
+                            "details": {
+                                "file": {
+                                    "name": "reg.exe",
+                                    "path": "c:\\windows\\system32\\reg.exe",
+                                    "md5": "227f63e1d9008b36bdbcc4b397780be4",
+                                    "sha256": "sha",
+                                    "size": 77312,
+                                    "isExecutable": true
+                                },
+                                "process": {
+                                    "pid": 1840,
+                                    "parent": {
+                                        "pid": 0,
+                                        "name": "<SYSTEM>",
+                                        "path": null
+                                    },
+                                    "commandLine": "path /y",
+                                    "userId": null,
+                                    "userName": "ENDPOINT_NAME\\ENDPOINT_NAME",
+                                    "date": "2025-12-17T09:01:49+02:00",
+                                    "name": "reg.exe"
+                                },
+                                "sandbox": null,
+                                "quarantine": null,
+                                "killProcess": null
+                            },
+                            "alertIds": [
+                                "694255755f5c8b75247c7ce8"
+                            ]
+                        },
+                        {
+                            "id": "694255755f5c8b75247c7ceb",
+                            "name": "ENDPOINT_NAME",
+                            "type": "endpoint",
+                            "details": {
+                                "id": "ENDPOINT_ID",
+                                "name": "ENDPOINT_NAME",
+                                "hardwareId": "85e92742-2c08-11c7-4d19-247f7d61836c-ENDPOINT_MAC",
+                                "ip": "ENDPOINT_IP",
+                                "isContainer": false,
+                                "isContainerHost": false
+                            },
+                            "alertIds": []
+                        }
+                    ],
+                    "triggerNodeId": "694255755f5c8b75247c7cea",
+                    "transitions": [
+                        {
+                            "from": "694255755f5c8b75247c7ce9",
+                            "to": "694255755f5c8b75247c7cea",
+                            "date": "2025-12-16T14:05:30+02:00"
+                        },
+                        {
+                            "from": "694255755f5c8b75247c7ceb",
+                            "to": "694255755f5c8b75247c7ce9",
+                            "date": "2025-12-17T09:02:13+02:00"
+                        }
+                    ],
+                    "mitreTags": [
+                        {
+                            "category": "Execution",
+                            "techniques": [
+                                {
+                                    "name": "Windows Management Instrumentation",
+                                    "id": "T1047",
+                                    "subtechniques": []
+                                },
+                                {
+                                    "name": "Command and Scripting Interpreter",
+                                    "id": "T1059",
+                                    "subtechniques": []
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Persistence",
+                            "techniques": [
+                                {
+                                    "name": "External Remote Services",
+                                    "id": "T1133",
+                                    "subtechniques": []
+                                },
+                                {
+                                    "name": "Valid Accounts",
+                                    "id": "T1078",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Domain Accounts",
+                                            "id": "T1078.002"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Initial Access",
+                            "techniques": [
+                                {
+                                    "name": "External Remote Services",
+                                    "id": "T1133",
+                                    "subtechniques": []
+                                },
+                                {
+                                    "name": "Valid Accounts",
+                                    "id": "T1078",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Domain Accounts",
+                                            "id": "T1078.002"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Lateral Movement",
+                            "techniques": [
+                                {
+                                    "name": "Remote Services",
+                                    "id": "T1021",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Remote Desktop Protocol",
+                                            "id": "T1021.001"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Defense Evasion",
+                            "techniques": [
+                                {
+                                    "name": "Valid Accounts",
+                                    "id": "T1078",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Domain Accounts",
+                                            "id": "T1078.002"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Modify Registry",
+                                    "id": "T1112",
+                                    "subtechniques": []
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Privilege Escalation",
+                            "techniques": [
+                                {
+                                    "name": "Valid Accounts",
+                                    "id": "T1078",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Domain Accounts",
+                                            "id": "T1078.002"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Credential Access",
+                            "techniques": [
+                                {
+                                    "name": "OS Credential Dumping",
+                                    "id": "T1003",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Security Account Manager",
+                                            "id": "T1003.002"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Unsecured Credentials",
+                                    "id": "T1552",
+                                    "subtechniques": [
+                                        {
+                                            "name": "Credentials in Registry",
+                                            "id": "T1552.002"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "category": "Discovery",
+                            "techniques": [
+                                {
+                                    "name": "Query Registry",
+                                    "id": "T1012",
+                                    "subtechniques": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "notes": []
+            }
+        }
+    }
+}

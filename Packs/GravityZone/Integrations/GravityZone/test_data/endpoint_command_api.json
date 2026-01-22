@@ -1,0 +1,87 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/network",
+      "method": "getManagedEndpointDetails",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getManagedEndpointDetails",
+        "params": {
+          "endpointId": "ENDPOINT_ID",
+          "options": {
+            "includeScanLogs": true,
+            "returnProductOutdated": true,
+            "includeLastLoggedUsers": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "ENDPOINT_ID",
+        "name": "ENDPOINT_NAME",
+        "companyId": "COMPANY_ID",
+        "operatingSystem": "Windows 10 Pro",
+        "policy": {
+          "id": "POLICY_ID",
+          "name": "POLICY_NAME",
+          "applied": true
+        },
+        "ip": "ENDPOINT_IP",
+        "machineType": 2,
+        "malwareStatus": {
+          "detection": true,
+          "infected": false
+        },
+        "agent": {
+          "type": 3,
+          "productVersion": "7.9.29.589",
+          "engineVersion": "7.99984",
+          "lastUpdate": "2025-12-16T18:31:40",
+          "signatureOutdated": false,
+          "signatureUpdateDisabled": false,
+          "productUpdateDisabled": false,
+          "productOutdated": false,
+          "primaryEngine": 3,
+          "fallbackEngine": null,
+          "licensed": 1
+        },
+        "lastSeen": "2025-12-16T21:46:16",
+        "state": 1,
+        "group": {
+          "id": "GROUP_ID",
+          "name": "GROUP_NAME"
+        },
+        "modules": {
+          "antimalware": true,
+          "firewall": true,
+          "contentControl": true,
+          "powerUser": false,
+          "deviceControl": false,
+          "advancedThreatControl": true,
+          "applicationControl": false,
+          "encryption": false,
+          "networkAttackDefense": true,
+          "antiTampering": true,
+          "advancedAntiExploit": true,
+          "userControl": false,
+          "antiphishing": true,
+          "trafficScan": false,
+          "edrSensor": true,
+          "hyperDetect": true,
+          "patchManagement": true,
+          "remoteEnginesScanning": false,
+          "sandboxAnalyzer": false,
+          "riskManagement": false
+        },
+        "label": "",
+        "moveState": 0,
+        "managedWithBest": true,
+        "lastLoggedUsers": []
+      }
+    }
+  }
+]

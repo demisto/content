@@ -1,0 +1,37 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/internal",
+      "method": "getLiveSearchQueryTaskResult",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getLiveSearchQueryTaskResult",
+        "params": {
+          "taskId": "694266e8b349a87d10079634",
+          "page": 1,
+          "perPage": 5000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 1,
+        "page": 1,
+        "perPage": 5000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "_id": "69426726d56586ccac44691e",
+            "protectedEntityId": "ENDPOINT_ID",
+            "companyId": "COMPANY_ID",
+            "taskId": "694266e8b349a87d10079634",
+            "results": "{\"cmdline\":\"C:\\\\WINDOWS\\\\Explorer.EXE\",\"parent\":\"5180\",\"path\":\"C:\\\\Windows\\\\explorer.exe\",\"pid\":\"5212\"}"
+          }
+        ]
+      }
+    }
+  }
+]
