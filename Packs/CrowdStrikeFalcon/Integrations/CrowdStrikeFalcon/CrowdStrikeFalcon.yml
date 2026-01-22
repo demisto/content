@@ -61,6 +61,7 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  additionalinfo: Supported in Cortex XSOAR only.
   hidden:
   - marketplacev2
   - platform
@@ -71,7 +72,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Input a value between 1-500.
+  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
   - platform
@@ -151,6 +152,27 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM automated leads fetch query
+  name: automated_leads_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM cases fetch query
+  name: ngsiem_cases_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM incidents fetch query
+  name: ngsiem_incidents_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Recon filter query
   name: recon_fetch_query
   type: 0
@@ -158,6 +180,7 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -253,6 +276,9 @@ configuration:
   - OFP Detection
   - Third Party Detection
   - NGSIEM Detection
+  - NGSIEM Automated Lead
+  - NGSIEM Case
+  - NGSIEM Incident (XDR Alert)
   - Recon notifications
   hidden:
   - marketplacev2
@@ -296,6 +322,7 @@ configuration:
 - display: 'Incidents Fetch Interval'
   defaultvalue: '1'
   name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR only.
   type: 19
   section: Collect
   advanced: true
@@ -5197,7 +5224,7 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.5475267
+  dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
