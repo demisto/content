@@ -1859,6 +1859,19 @@ def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
     return full_cases
 
 
+def add_case_tags(case_id: str, tags: list[str]) -> dict:
+    """
+    Add tags to a case.
+    Args:
+        case_id: The ID of the case to add tags to.
+        tags: The list of tags to add.
+    Returns:
+        dict: The response from the API.
+    """
+    body = {"id": case_id, "tags": tags}
+    return http_request("POST", "/cases/entities/case-tags/v1", json=body)
+
+
 def get_detection_entities(incidents_ids: list):
     """
     Send a request to retrieve IDP/ODS/OFP and mobile detection entities.
@@ -5985,6 +5998,26 @@ def list_case_summaries_command():
     )
 
 
+def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Add tags to a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tags = argToList(args.get("tags"))
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tags:
+        raise ValueError("The 'tags' argument is required.")
+
+    add_case_tags(case_id, tags)
+    return CommandResults(readable_output="Tags were added successfully.")
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -8372,6 +8405,8 @@ def main():  # pragma: no cover
             fetch_assets_command()
         elif command == "cs-falcon-list-cnapp-alerts":
             return_results(list_cnapp_alerts_command(args=args))
+        elif command == "cs-falcon-add-case-tag":
+            return_results(add_case_tags_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:

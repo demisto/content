@@ -2314,6 +2314,16 @@ script:
       description: The tags of the case.
       type: String
   - arguments:
+    - description: A comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: true
+    - description: The id of the case the tags will be added to.
+      name: id
+      required: true
+    description: Adds tags to the specified case.
+    name: cs-falcon-add-case-tag
+  - arguments:
     - description: The endpoint ID.
       name: id
     - default: true

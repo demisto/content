@@ -8186,6 +8186,26 @@ class TestFetchAssetsFlow:
         )
         assert command_results_to_assert.outputs == expected_outputs
         assert command_results_to_assert.readable_output == expected_readable_outputs
+    
+    
+    def test_add_case_tags_command(requests_mock):
+        """
+        Given:
+            - Case ID and tags.
+        When:
+            - Running add_case_tags_command.
+        Then:
+            - Verify that the http_request is called with the correct arguments.
+            - Verify that the function returns the correct readable output.
+        """
+        from CrowdStrikeFalcon import add_case_tags_command
+    
+        requests_mock.post(f"{SERVER_URL}/cases/entities/case-tags/v1", json={})
+    
+        result = add_case_tags_command({"id": "case1", "tags": "tag1,tag2"})
+    
+        assert result.readable_output == "Tags were added successfully."
+        assert requests_mock.last_request.json() == {"id": "case1", "tags": ["tag1", "tag2"]}
 
 
 def test_fetch_endpoint_detections_builds_grouped_filter_arg(mocker: MockerFixture):
