@@ -147,6 +147,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: 'true'
+  display: Enabled AI assistant
+  name: enabled_ai_assistant
+  section: Collect
+  required: false
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0
@@ -532,6 +537,30 @@ script:
     - contextPath: Slack.Thread.ID
       description: The Slack thread ID.
       type: String
+  - arguments:
+    - name: channel_id
+      description: The ID of the Slack conversation thread where the response will be sent.
+      required: true
+    - name: thread_id
+      description: The timestamp (id) of the thread where the response will be sent.
+      required: true
+    - name: message
+      description: The response message to be sent from the agent.
+      required: true
+    - name: message_type
+      description: The type of message to be sent.
+      required: true
+    - name: completed
+      description: Whether the agent has completed the interaction.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: message_id
+      description: The type of message to be sent.
+    name: send-agent-response
+    description: Sends a response message from an agent within a specific thread in a Slack conversation.
+    outputs: []
   dockerimage: demisto/slackv3:1.0.0.5301537
   longRunning: true
   runonce: false
