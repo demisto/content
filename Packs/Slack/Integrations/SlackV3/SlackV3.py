@@ -122,6 +122,30 @@ class AgentixMessages:
     # Permission error
     NOT_AUTHORIZED = "You are not authorized to interact with the {bot_tag} in this thread."
 
+    # Agent selection UI texts
+    AGENT_SELECTION_PROMPT = "Please select an agent:"
+    AGENT_SELECTION_PLACEHOLDER = "Select an agent"
+    AGENT_SELECTION_CONFIRM_TITLE = "Confirm agent selection"
+    AGENT_SELECTION_CONFIRM_TEXT = "Are you sure you want to use this agent?"
+    AGENT_SELECTION_CONFIRM_BUTTON = "Yes, use this agent"
+    AGENT_SELECTION_DENY_BUTTON = "No, let me choose again"
+
+    # Approval UI texts
+    APPROVAL_HEADER = "⚠️ Sensitive action detected. Approval required"
+    APPROVAL_PROMPT = "*Should I proceed?*"
+    APPROVAL_PROCEED_BUTTON = "Proceed"
+    APPROVAL_CANCEL_BUTTON = "Cancel"
+    APPROVAL_CONFIRM_TITLE = "Are you sure?"
+    APPROVAL_CONFIRM_TEXT = "This action will be executed. Do you want to proceed?"
+    APPROVAL_CONFIRM_BUTTON = "Yes, proceed"
+    APPROVAL_DENY_BUTTON = "No, cancel"
+
+    # Feedback buttons texts
+    FEEDBACK_GOOD_BUTTON = "Good response"
+    FEEDBACK_BAD_BUTTON = "Bad response"
+    FEEDBACK_GOOD_ACCESSIBILITY = "Mark this response as good"
+    FEEDBACK_BAD_ACCESSIBILITY = "Mark this response as bad"
+
     @classmethod
     def format_message(cls, message_template: str, bot_id: str = "", locked_user: str = "") -> str:
         """
@@ -1542,7 +1566,7 @@ def is_agentix_interactive_response(actions: list) -> bool:
     """
     if actions:
         value = actions[0].get("value", "")
-        if value.startswith("agentix-sensitive-action-btn") or value.startswith("agentix-agent-selection"):
+        if value.startswith(("agentix-sensitive-action-btn", "agentix-agent-selection")):
             return True
     return False
 
@@ -3481,12 +3505,13 @@ def parse_md_table_to_slack_table(md_text):
 def process_text_part(text):
     """
     Processes non-table text.
-    Handles headers (#), lists (- or *), and paragraphs.
+    Handles headers (#), lists (- or * or numbered), and paragraphs.
     """
     sub_blocks = []
     lines = text.split("\n")
     current_paragraph = []
     current_list_items = []
+    current_list_style = "bullet"  # Can be "bullet" or "ordered"
 
     def flush_list():
         if current_list_items:
@@ -3496,7 +3521,7 @@ def process_text_part(text):
                     "elements": [
                         {
                             "type": "rich_text_list",
-                            "style": "bullet",
+                            "style": current_list_style,
                             "elements": [
                                 {"type": "rich_text_section", "elements": parse_to_rich_text_elements(item)}
                                 for item in current_list_items
@@ -3528,16 +3553,28 @@ def process_text_part(text):
             continue
 
         header_match = re.match(r"^(#{1,6})\s+(.+)", stripped_line)
-        list_match = re.match(r"^[-*]\s+(.+)", stripped_line)
+        bullet_list_match = re.match(r"^[-*]\s+(.+)", stripped_line)
+        numbered_list_match = re.match(r"^(\d+)\.\s+(.+)", stripped_line)
 
         if header_match:
             flush_paragraph()
             flush_list()
             header_content = header_match.group(2)
             sub_blocks.append({"type": "header", "text": {"type": "plain_text", "text": header_content, "emoji": True}})
-        elif list_match:
+        elif bullet_list_match:
             flush_paragraph()
-            current_list_items.append(list_match.group(1))
+            # Switch to bullet list if needed
+            if current_list_items and current_list_style != "bullet":
+                flush_list()
+            current_list_style = "bullet"
+            current_list_items.append(bullet_list_match.group(1))
+        elif numbered_list_match:
+            flush_paragraph()
+            # Switch to ordered list if needed
+            if current_list_items and current_list_style != "ordered":
+                flush_list()
+            current_list_style = "ordered"
+            current_list_items.append(numbered_list_match.group(2))
         else:
             if current_list_items:
                 flush_list()
@@ -3596,13 +3633,13 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
 
 def create_agent_selection_blocks(message: str) -> list:
     """
-    Creates Slack blocks for agent selection dropdown.
+    Creates Slack blocks for agent selection dropdown with confirmation dialog.
 
     Args:
         message: JSON string containing agent list
 
     Returns:
-        List of Slack blocks with agent dropdown
+        List of Slack blocks with agent dropdown and confirmation
     """
     try:
         agent_data = json.loads(message)
@@ -3620,15 +3657,21 @@ def create_agent_selection_blocks(message: str) -> list:
     ]
 
     return [
-        {"type": "section", "text": {"type": "mrkdwn", "text": "Please select an agent:"}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": AgentixMessages.AGENT_SELECTION_PROMPT}},
         {
             "type": "actions",
             "elements": [
                 {
                     "type": "static_select",
-                    "placeholder": {"type": "plain_text", "text": "Select an agent"},
+                    "placeholder": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_PLACEHOLDER},
                     "action_id": "agent_selection",
                     "options": dropdown_options,
+                    "confirm": {
+                        "title": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_TITLE},
+                        "text": {"type": "mrkdwn", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_TEXT},
+                        "confirm": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_BUTTON},
+                        "deny": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_DENY_BUTTON},
+                    },
                 }
             ],
         },
@@ -3652,14 +3695,14 @@ def get_feedback_buttons_block(message_id: str) -> dict:
                 "type": "feedback_buttons",
                 "action_id": f"agentix_feedback_{message_id}",
                 "positive_button": {
-                    "text": {"type": "plain_text", "text": "Good"},
+                    "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_GOOD_BUTTON},
                     "value": f"agentix-feedback-positive-{message_id}",
-                    "accessibility_label": "Mark this response as good",
+                    "accessibility_label": AgentixMessages.FEEDBACK_GOOD_ACCESSIBILITY,
                 },
                 "negative_button": {
-                    "text": {"type": "plain_text", "text": "Bad"},
+                    "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_BAD_BUTTON},
                     "value": f"agentix-feedback-negative-{message_id}",
-                    "accessibility_label": "Mark this response as bad",
+                    "accessibility_label": AgentixMessages.FEEDBACK_BAD_ACCESSIBILITY,
                 },
             }
         ],
@@ -3669,30 +3712,37 @@ def get_feedback_buttons_block(message_id: str) -> dict:
 def get_approval_buttons_block() -> list:
     """
     Creates approval UI blocks for sensitive actions with warning header and Proceed/Cancel buttons.
+    Includes confirmation dialog for extra safety.
 
     Returns:
-        List of Slack blocks with warning header and approval buttons in same row
+        List of Slack blocks with warning header and approval buttons with confirmation
     """
     return [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "⚠️ Sensitive action detected. Approval required", "emoji": True},
+            "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_HEADER, "emoji": True},
         },
         {"type": "divider"},
-        {"type": "section", "text": {"type": "mrkdwn", "text": "*Should I proceed?*"}},
+        {"type": "section", "text": {"type": "mrkdwn", "text": AgentixMessages.APPROVAL_PROMPT}},
         {
             "type": "actions",
             "elements": [
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Proceed"},
+                    "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_PROCEED_BUTTON},
                     "style": "primary",
                     "action_id": "yes_btn",
                     "value": "agentix-sensitive-action-btn-yes",
+                    "confirm": {
+                        "title": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CONFIRM_TITLE},
+                        "text": {"type": "mrkdwn", "text": AgentixMessages.APPROVAL_CONFIRM_TEXT},
+                        "confirm": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CONFIRM_BUTTON},
+                        "deny": {"type": "plain_text", "text": AgentixMessages.APPROVAL_DENY_BUTTON},
+                    },
                 },
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Cancel"},
+                    "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CANCEL_BUTTON},
                     "style": "danger",
                     "action_id": "no_btn",
                     "value": "agentix-sensitive-action-btn-no",

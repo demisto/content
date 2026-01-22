@@ -150,6 +150,7 @@ configuration:
 - defaultvalue: 'true'
   display: Enabled AI assistant
   name: enabled_ai_assistant
+  type: 8
   section: Collect
   required: false
 - display: Number of objects to return in each paginated call
