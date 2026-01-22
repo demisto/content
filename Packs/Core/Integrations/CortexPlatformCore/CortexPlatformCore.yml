@@ -3363,6 +3363,9 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
+      - contextPath: GenericXQLQuery.query_limit_modified
+        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
