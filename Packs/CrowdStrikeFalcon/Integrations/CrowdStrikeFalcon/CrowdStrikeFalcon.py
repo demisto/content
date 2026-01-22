@@ -1872,6 +1872,19 @@ def add_case_tags(case_id: str, tags: list[str]) -> dict:
     return http_request("POST", "/cases/entities/case-tags/v1", json=body)
 
 
+def delete_case_tags(case_id: str, tag: str) -> dict:
+    """
+    Delete a tag from a case.
+    Args:
+        case_id: The ID of the case to delete the tag from.
+        tag: The tag to delete.
+    Returns:
+        dict: The response from the API.
+    """
+    params = {"id": case_id, "tag": tag}
+    return http_request("DELETE", "/cases/entities/case-tags/v1", params=params)
+
+
 def get_detection_entities(incidents_ids: list):
     """
     Send a request to retrieve IDP/ODS/OFP and mobile detection entities.
@@ -6018,6 +6031,26 @@ def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output="Tags were added successfully.")
 
 
+def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a tag from a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tag = args.get("tag")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tag:
+        raise ValueError("The 'tag' argument is required.")
+
+    delete_case_tags(case_id, tag)
+    return CommandResults(readable_output="Tags were deleted successfully.")
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -8407,6 +8440,8 @@ def main():  # pragma: no cover
             return_results(list_cnapp_alerts_command(args=args))
         elif command == "cs-falcon-add-case-tag":
             return_results(add_case_tags_command(args))
+        elif command == "cs-falcon-delete-case-tag":
+            return_results(delete_case_tags_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:

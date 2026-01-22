@@ -2324,6 +2324,15 @@ script:
     description: Adds tags to the specified case.
     name: cs-falcon-add-case-tag
   - arguments:
+    - description: The id of the case the tags will be deleted from.
+      name: id
+      required: true
+    - description: The tag to delete.
+      name: tag
+      required: true
+    description: Deletes a tag from the specified case.
+    name: cs-falcon-delete-case-tag
+  - arguments:
     - description: The endpoint ID.
       name: id
     - default: true
