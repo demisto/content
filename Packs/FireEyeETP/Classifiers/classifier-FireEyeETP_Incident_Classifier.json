@@ -1,5 +1,5 @@
 {
-	"id": "FireEye ETP",
+	"id": "FireEye ETP Incident Classifier",
 	"name": "FireEye ETP Incident Classifier",
 	"description": "FireEye ETP Incident Classifier",
 	"defaultIncidentType": "Trellix incident",

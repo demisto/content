@@ -287,15 +287,9 @@ script:
       isArray: true
       description: List of message subject headers.
     - name: is_read
-      auto: PREDEFINED
-      predefined:
-      - 'True'
-      - 'False'
+      type: boolean
     - name: is_retro
-      auto: PREDEFINED
-      predefined:
-      - 'True'
-      - 'False'
+      type: boolean
     - name: malwarename
       isArray: true
       description: List of malware names.
@@ -321,9 +315,13 @@ script:
       description: 'Number of alerts to include in response. Valid range: 1-200.'
     outputs:
     - contextPath: FireEyeETP.Alerts.domain
+      description: Domain.
     - contextPath: FireEyeETP.Alerts.report_id
+      description: Report_id.
     - contextPath: FireEyeETP.Alerts.id
+      description: The alert unique ID.
     - contextPath: FireEyeETP.Alerts.alert_date
+      description: The alert data.
     description: 'Get summary format information about the alerts.'
   - name: fireeye-etp-get-alert
     arguments:
