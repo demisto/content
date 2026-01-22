@@ -14,7 +14,6 @@ import os
 import re
 import time
 from datetime import datetime, timezone
-
 import requests
 import urllib3
 
@@ -42,9 +41,11 @@ CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
 SCOPES = PARAMS.get(
     "oauth_scopes",
-    ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
-     "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
-     "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
+    (
+        "etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
+        "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
+        "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw"
+    ),
 ).strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
@@ -553,6 +554,7 @@ def get_message_command():
             "HumanReadable": "### Trellix Email Security - Cloud - Get Message \n no results",
         }
         demisto.results(entry)
+
 
 def get_search_alert_summary_v2(alert):
     return {

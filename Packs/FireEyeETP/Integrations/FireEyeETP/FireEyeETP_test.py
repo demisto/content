@@ -74,17 +74,9 @@ def test_fetch_incident_by_status_messages(mocker):
     """
     response_1 = {
         "meta": {"search_after": "token123", "size": 1},
-        "data": [
-            {
-                "id": "alert1",
-                "email_status": "delivered (retroactive)"
-            }
-        ],
+        "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}],
     }
-    response_2 = {
-        "id": "alert1",
-        "alert": {"occurred": "2023-02-09T19:34:17Z", "severity": "minr"}
-    }
+    response_2 = {"id": "alert1", "alert": {"occurred": "2023-02-09T19:34:17Z", "severity": "minr"}}
 
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
     mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
@@ -110,12 +102,7 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker):
     """
     response_1 = {
         "meta": {"search_after": "token123", "size": 1},
-        "data": [
-            {
-                "id": "alert1",
-                "email_status": "deleted"
-            }
-        ],
+        "data": [{"id": "alert1", "email_status": "deleted"}],
     }
 
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
@@ -140,10 +127,7 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker):
     """
     response_1 = {
         "meta": {"search_after": "token456", "size": 2},
-        "data": [
-            {"id": "alert1", "email_status": "delivered (retroactive)"},
-            {"id": "alert2", "email_status": "deleted"}
-        ],
+        "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}, {"id": "alert2", "email_status": "deleted"}],
     }
     response_alert1 = {"id": "alert1", "alert": {"occurred": "2023-02-09T19:34:17Z", "severity": "minr"}}
     response_alert2 = {"id": "alert2", "alert": {"occurred": "2023-02-09T19:34:18Z", "severity": "majr"}}
