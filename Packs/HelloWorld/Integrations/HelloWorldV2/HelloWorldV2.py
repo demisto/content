@@ -1,65 +1,65 @@
-from collections.abc import Awaitable
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from ContentClientApiModule import *  # noqa: F401
-
+# ruff: noqa: F401
 import asyncio
+import json
+
+from enum import Enum
+from typing import Any
+from collections.abc import Awaitable
+from pydantic import AnyUrl, Field, SecretStr, validator, root_validator
+
+import demistomock as demisto
+
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+from ContentClientApiModule import *
+from BaseContentApiModule import *
+
+# region Intro
 
 """Unified HelloWorldV2 Integration for Cortex XSOAR and XSIAM
 
-This integration is a good example on you can build a unified integration using
-Python 3. Follow the documentation links below and make sure that the
-integration follows the Code Conventions and passes the Linting phase.
+This integration demonstrates how to build a unified integration using Python 3. Follow the documentation links below
+and ensure that the integration follows the Code Conventions and passes the Linting phase.
 
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 
-When building an integration that is reusable, a lot of effort must be placed
-in the design. We recommend to fill a Design Document template, that allows you
-to capture Use Cases, Requirements and Inputs/Outputs.
+When building a reusable integration, significant effort must be placed in the design. We recommend filling out a
+Design Document template that allows you to capture Use Cases, Requirements, and Inputs/Outputs.
 
-Example Design document for the this Integration (HelloWorldV2):
+Example Design document for this Integration (HelloWorldV2):
 https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0
 
 
 HelloWorld API
 --------------
 
-The HelloWorld API is a simple API that shows a realistic use case for an
-integration.
+The HelloWorld API is a simple API that demonstrates a realistic use case for an integration.
 
 This API has a few basic functions, including:
 
-- Alerts - Returns mocked alerts and allows you to search based on
-a number of parameters, such as severity. It
-can also return a single alert by ID. This is used to create new alerts in
-XSOAR by using the `fetch-incidents` command, which is by default invoked
-every minute.
+- Alerts - Returns mocked alerts and allows you to search based on a number of parameters, such as severity. It can
+  also return a single alert by ID. This is used to create new alerts in XSOAR by using the `fetch-incidents` command,
+  which is invoked every minute by default.
 
-- Audits - Returns mocked records that capture user actions within the
-HelloWorld system.
+- IP Reputation - Returns a mock lookup response of the IP address given as well as a reputation score (from 0 to 100)
+  that is used to determine whether the entity is malicious. This endpoint is called by the reputation command `ip`
+  that runs automatically every time an indicator is extracted in Cortex. As a design best practice, it is important
+  to map and document the mapping between a score in the original API format (0 to 100 in this case) to a score in
+  Cortex format (0 to 3). This score is called `DBotScore`, and is returned in the context to allow automated handling
+  of indicators based on their reputation.
+  More information: https://xsoar.pan.dev/docs/integrations/dbot
 
-- IP Reputation - Returns a mock lookup response of the IP address given
-as well as a reputation score (from 0 to 100) that is used to determine whether
-the entity is malicious. This endpoint is called by reputation command  `ip`
-that is run automatically every time an indicator is extracted in Cortex.
-As a best practice of design, it is important to map and document the mapping
-between a score in the original API format (0 to 100 in this case) to a score
-in Cortex format (0 to 3). This score is called `DBotScore`, and is returned in the
-context to allow automated handling of indicators based on their reputation.
-More information: https://xsoar.pan.dev/docs/integrations/dbot
+- Create Note - Demonstrates how to run commands that do not return instant data. The API provides a command that
+  simulates creating a new entity in the API. This can be used for endpoints that take longer than a few seconds to
+  complete with the GenericPolling mechanism to implement the job polling loop. The results can be returned in JSON or
+  attachment file format.
+  Info on GenericPolling: https://xsoar.pan.dev/docs/playbooks/generic-polling
 
-- Create Note - Demonstrates how to run commands that are not returning instant data,
-the API provides a command simulates creating a new entity in the API.
-This can be used for endpoints that take longer than a few seconds to complete with the
-GenericPolling mechanism to implement the job polling loop. The results
-can be returned in JSON or attachment file format.
-Info on GenericPolling: https://xsoar.pan.dev/docs/playbooks/generic-polling
-
-This integration also has a `say-hello` command for backward compatibility,
-that doesn't connect to an API and just returns a `Hello {name}` string,
-where name is the input value provided.
+This integration also has a `say-hello` command for backward compatibility that does not connect to an API and just
+returns a `Hello {name}` string, where name is the input value provided.
 
 
 Integration File Structure
@@ -68,191 +68,156 @@ Integration File Structure
 An integration usually consists of the following parts:
 - Imports
 - Constants
-- Pydantic Models
+- Parameter Validation Model
 - Client Class
-- Helper Functions
-- Command Functions
-- Main Function
-- Entry Point
+- Argument Validation Models and Command Functions
+- Execution Configuration Class
+- Main Function and Entrypoint
 
 
 Imports
 -------
 
-Here you can import Python module you need for your integration. If you need
-a module that is not part of the default Docker images, you can add
-a custom one. More details: https://xsoar.pan.dev/docs/integrations/docker
+Here you can import Python modules you need for your integration. If you need a module that is not part of the default
+Docker images, you can add a custom one. More details: https://xsoar.pan.dev/docs/integrations/docker
 
 There are also internal imports that are used by integrations:
-- demistomock (imported as demisto): allows your code to work offline for
-testing. The actual `demisto` module is provided at runtime when the
-code runs on the tenant.
-- CommonServerPython.py: contains a set of helper functions, base classes
-and other useful components that will make your integration code easier
-to maintain.
-- CommonServerUserPython.py: includes a set of user defined commands that
-are specific to a tenant. Do not use it for integrations that
-are meant to be shared externally.
-- ContentClientApiModule: contains a high-performance async-first HTTP
-client for automation commands and event or incident fetching.
+- demistomock (imported as demisto): allows your code to work offline for testing. The actual `demisto` module is
+  provided at runtime when the code runs on the tenant.
+- CommonServerPython.py: contains a set of helper functions, base classes and other useful components that will make
+  your integration code easier to maintain.
+- CommonServerUserPython.py: includes a set of user-defined commands that are specific to a tenant. Do not use it for
+  integrations that are meant to be shared externally.
+- BaseContentApiModule: contains base classes and utilities for parameter validation, execution configuration, and
+  system capabilities detection.
+- ContentClientApiModule: contains a high-performance async-first HTTP client for automation commands and event or
+  incident fetching.
 
-These imports are automatically loaded at runtime within the script runner,
-so you shouldn't modify them
+These imports are automatically loaded at runtime within the script runner, so you shouldn't modify them.
 
 Constants
 ---------
 
-Usually some constants that do not require user parameters or inputs, such
-as the default API entry point for your service, or the maximum numbers of
-alerts to fetch every time.
+Usually some constants that do not require user parameters or inputs, such as the default API entry point for your
+service, or the maximum number of alerts to fetch every time.
 
-Use enums to group multiple possible values of a configuration parameter or
-a command argument.
+Use enums to group multiple possible values of a configuration parameter or a command argument.
 
 
+Parameter Validation Model
+--------------------------
 
-Define Pydantic models that inherit from `ContentBaseModel` and use them
-to parse, validate, and clean configuration parameters or command arguments.
+Define a Pydantic model that inherits from `BaseParams` to parse, validate, and clean integration configuration
+parameters. This model should include all parameters defined in the integration YML file, such as connection settings,
+fetch configuration, and advanced options.
 
 
 Client Class
 ------------
 
-We recommend to use a Client class to wrap all the code that needs to interact
-with your API. Moreover, we recommend, when possible, to inherit from the new
-`ContentClient` class, defined in `ContentClientApiModule.py`. This class already
-handles a lot of the work, such as system proxy settings, SSL certificate
-verification and exception handling for HTTP errors.
+We recommend using a Client class to wrap all the code that needs to interact with your API. Moreover, we recommend,
+when possible, to inherit from the new `ContentClient` class, defined in `ContentClientApiModule.py`. This class
+already handles a lot of the work, such as system proxy settings, SSL certificate verification, and exception handling
+for HTTP errors.
 
-Note that the Client class should NOT contain any Cortex tenant-specific code,
-i.e. it should not use anything in the `demisto` class (functions such as
-`demisto.args()` or `demisto.results()`) or even `return_results`, `return_error`,
-or `CommandResults`.
-You will use the Command Functions to handle inputs and outputs.
+Note that the Client class should NOT contain any Cortex tenant-specific code, i.e., it should not use anything in the
+`demisto` class (functions such as `demisto.args()` or `demisto.results()`) or even `return_results`, `return_error`,
+or `CommandResults`. You will use the Command Functions to handle inputs and outputs.
 
-When calling an API, use methods like `ContentClient.get`, and
-`ContentClient.post` and return the raw API response to the calling function
-(usually a Command function).
+When calling an API, use methods like `ContentClient.get` and `ContentClient.post` and return the raw API response to
+the calling function (usually a Command function).
 
 Ideally, there should be one client method per API endpoint.
 
-Look at the code and the commends of this specific class to better understand
-the implementation details.
+Look at the code and the comments of this specific class to better understand the implementation details.
 
 
-Helper Functions
-----------------
+Argument Validation Models and Command Functions
+-------------------------------------------------
 
-Helper functions are usually used as utility functions that are used by several
-command functions throughout your code. For example, formatting and creating
-events or incidents. Many helper functions are already defined in
-`CommonServerPython.py` and are often very handy.
+For each command, define a Pydantic model that inherits from `ContentBaseModel` to parse, validate, and clean command
+arguments. Then implement the corresponding command function that uses the validated arguments.
 
+Command functions perform the mapping between inputs and outputs to the Client class functions inputs and outputs. As a
+best practice, they should not contain calls to `demisto.args()`, `demisto.results()`, `return_error`, and
+`demisto.command()` as those should be handled through the `main()` function. However, in command functions, use
+`demisto` or `CommonServerPython.py` artifacts, such as `demisto.debug()` or the `CommandResults` class and the
+`Common.*` classes. Usually, one command function is used per command, in addition to `test-module`, and, if supported
+in the integration, `fetch-incidents`, `fetch-events`, and `fetch-indicators`. Each command function should invoke one
+specific function of the Client class.
 
-Command Functions
------------------
+Command functions, when invoked through a command, usually return data using the `CommandResults` class, which is then
+passed to `return_results()` in the `main()` function. `return_results()` is defined in `CommonServerPython.py` to
+return the data to the War Room. `return_results()` actually wraps `demisto.results()`. You should never use
+`demisto.results()` directly.
 
-Command functions perform the mapping between inputs and outputs to the
-Client class functions inputs and outputs. As a best practice, they should not
-contain calls to `demisto.args()`, `demisto.results()`, `return_error`
-and `demisto.command()` as those should be handled through the `main()` function.
-However, in command functions, use `demisto` or `CommonServerPython.py`
-artifacts, such as `demisto.debug()` or the `CommandResults` class and the
-`Common.*` classes.
-Usually, one command function is used per command, in addition to `test-module`,
-and, if supported in the integration, `fetch-incidents`, `fetch-events` and
-`fetch-indicators`. Each command function should invoke one specific function
-of the Client class.
+Sometimes you will need to return values in a format that is not compatible with `CommandResults` (for example files):
+in that case you must return a data structure that is then passed to `return_results()`.
 
-Command functions, when invoked through a command usually return data
-using the `CommandResults` class, that is then passed to `return_results()`
-in the `main()` function.
-`return_results()` is defined in `CommonServerPython.py` to return
-the data to war room. `return_results()` actually wraps `demisto.results()`.
-You should never use `demisto.results()` directly.
+In any case, you should never call `return_results()` directly from the command functions.
 
-Sometimes you will need to return values in a format that is not compatible
-with `CommandResults` (for example files): in that case you must return a
-data structure that is then pass passed to `return.results()`.
+When you create the CommandResults object in command functions, you usually pass some types of data:
 
-In any case you should never call `return_results()` directly from the
-command functions.
+- Human Readable: usually in Markdown format. This is what is presented to the analyst in the War Room. You can use
+  `tableToMarkdown()`, defined in `CommonServerPython.py`, to convert lists and dicts to Markdown and pass it to
+  `return_results()` using the `readable_output` argument, or the `return_results()` function will call
+  `tableToMarkdown()` automatically for you.
 
-When you use create the CommandResults object in command functions, you
-usually pass some types of data:
+- Context Output: this is the machine-readable data, JSON-based, that XSOAR can parse and manage in the Playbooks or
+  Incident's War Room. The Context Output fields should be defined in your integration YML file and are important
+  during the design phase. Make sure you define the format and follow best practices. You can use `demisto-sdk
+  json-to-outputs` to autogenerate the YML file outputs section. Context output is passed as the `outputs` argument in
+  `demisto_results()`, and the prefix (i.e., `HelloWorld.Alert`) is passed via the `outputs_prefix` argument.
 
-- Human Readable: usually in Markdown format. This is what is presented to the
-analyst in the War Room. You can use `tableToMarkdown()`, defined in
-`CommonServerPython.py`, to convert lists and dicts in Markdown and pass it
-to `return_results()` using the `readable_output` argument, or the
-`return_results()` function will call `tableToMarkdown()` automatically for
-you.
-
-- Context Output: this is the machine readable data, JSON based, that XSOAR can
-parse and manage in the Playbooks or Incident's War Room. The Context Output
-fields should be defined in your integration YML file and is important during
-the design phase. Make sure you define the format and follow best practices.
-You can use `demisto-sdk json-to-outputs` to autogenerate the YML file
-outputs section. Context output is passed as the `outputs` argument in `demisto_results()`,
-and the prefix (i.e. `HelloWorld.Alert`) is passed via the `outputs_prefix`
-argument.
-
-More information on Context Outputs, Standards, DBotScore and demisto-sdk:
+More information on Context Outputs, Standards, DBotScore, and demisto-sdk:
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/context-and-outputs
 https://xsoar.pan.dev/docs/integrations/context-standards
 https://xsoar.pan.dev/docs/integrations/dbot
 https://github.com/demisto/demisto-sdk/blob/master/demisto_sdk/commands/json_to_outputs/README.md
 
-Also, when you write data in the Context, you want to make sure that if you
-return updated information for an entity, to update it and not append to
-the list of entities (i.e. in HelloWorld you want to update the status of an
-existing `HelloWorld.Alert` in the context when you retrieve it, rather than
-adding a new one if you already retrieved it). To update data in the Context,
-you can define which is the key attribute to use, such as (using the example):
-`outputs_key_field='alert_id'`. This means that you are using the `alert_id`
-key to determine whether adding a new entry in the context or updating an
-existing one that has the same ID. You can look at the examples to understand
-how it works.
-More information here:
+Also, when you write data in the Context, you want to make sure that if you return updated information for an entity,
+to update it and not append to the list of entities (i.e., in HelloWorld you want to update the status of an existing
+`HelloWorld.Alert` in the context when you retrieve it, rather than adding a new one if you already retrieved it). To
+update data in the Context, you can define which is the key attribute to use, such as (using the example):
+`outputs_key_field='alert_id'`. This means that you are using the `alert_id` key to determine whether to add a new
+entry in the context or update an existing one that has the same ID. You can look at the examples to understand how it
+works. More information here:
 https://xsoar.pan.dev/docs/integrations/context-and-outputs
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/dt
 
-- Raw Output: this is usually the raw result from your API and is used for
-troubleshooting purposes or for invoking your command from Automation Scripts.
-If not specified, `return_results()` will use the same data as `outputs`.
+- Raw Output: this is usually the raw result from your API and is used for troubleshooting purposes or for invoking
+  your command from Automation Scripts. If not specified, `return_results()` will use the same data as `outputs`.
 
 
-Main Function
--------------
+Execution Configuration Class
+------------------------------
 
-The `main()` function takes care of reading the integration parameters via
-the `demisto.params()` function, initializes the Client class and checks the
-different options provided to `demisto.commands()`, to invoke the correct
-command function passing to it `demisto.args()` and returning the data to
-`return_results()`. If implemented, `main()` also invokes the function
-`fetch_incidents()`with the right parameters and passes the outputs to the
-`demisto.incidents()` function. `main()` also catches exceptions and
-returns an error message via `return_error()`.
+Define an Execution Configuration class that inherits from `BaseExecutionConfig` to provide a centralized entrypoint for
+the integration. This class holds the currently-executed command, configuration parameters, command arguments, and fetch
+last run state. It provides properties that return validated instances of the parameter and argument models, making it
+easy to access validated data throughout the integration. This pattern centralizes validation logic and provides type
+safety when accessing integration parameters and command arguments.
 
 
-Entry Point
------------
+Main Function and Entrypoint
+-----------------------------
 
-This is the integration code entry point. It checks whether the `__name__`
-variable is `__main__` , `__builtin__` (for Python 2) or `builtins` (for
+The `main()` function takes care of reading the integration parameters via the `demisto.params()` function, initializes
+the Client class, and checks the different options provided to `demisto.commands()` to invoke the correct command
+function, passing to it `demisto.args()` and returning the data to `return_results()`. If implemented, `main()` also
+invokes the function `fetch_incidents()` with the right parameters and passes the outputs to the `demisto.incidents()`
+function. `main()` also catches exceptions and returns an error message via `return_error()`.
+
+The entrypoint checks whether the `__name__` variable is `__main__`, `__builtin__` (for Python 2), or `builtins` (for
 Python 3) and then calls the `main()` function. Just keep this convention.
 
 """
-import json
-from enum import Enum
-from typing import Any
 
-from CommonServerUserPython import *
-from pydantic import AnyUrl, BaseModel, Field, SecretStr, validator, root_validator, Extra, ValidationError
+# endregion
 
-""" CONSTANTS """
+# region Constants
 
 MOCK_ALERT = (
     '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
@@ -291,14 +256,14 @@ class VulnerabilitiesDatasetConfigs(str, Enum):
 
 
 class FetchAssetsStages(str, Enum):
-    """HelloWorld sequential stages for fetching assets and vulnerabilities"""
+    """HelloWorld sequential stages for fetching assets and vulnerabilities."""
 
     ASSETS = "assets"
     VULNS = "vulnerabilities"
 
 
 class HelloWorldSeverity(str, Enum):
-    """Helloworld severity options matching the YML configuration parameter options."""
+    """HelloWorld severity options matching the YML configuration parameter options."""
 
     LOW = "low"
     MEDIUM = "medium"
@@ -307,8 +272,7 @@ class HelloWorldSeverity(str, Enum):
 
     @classmethod
     def all_values(cls) -> list[str]:
-        """
-        Get the string values of all enum members.
+        """Get the string values of all enum members.
 
         Returns:
             list[str]: The values of the enum class members.
@@ -347,113 +311,9 @@ DUMMY_VALID_API_KEY = "dummy-key"  # to mock API errors
 
 SYSTEM = SystemCapabilities()
 
+# endregion
 
-""" PYDANTIC MODELS """
-
-
-class ContentBaseModel(BaseModel):
-    """Base Pydantic model with user-friendly validation error formatting.
-
-    INTEGRATION DEVELOPER TIP:
-    This base class enhances Pydantic's default validation by:
-    1. Catching ValidationError exceptions
-    2. Formatting them in a user-friendly way
-    3. Raising `DemistoException` with clear error messages
-
-    All parameter and argument models should inherit from this class to provide
-    consistent, readable error messages to users when validation fails.
-    """
-
-    def __init__(self, **data):
-        try:
-            super().__init__(**data)
-        except ValidationError as e:
-            # Format errors in a user-friendly way
-            error_messages = []
-            for error in e.errors():
-                field = error["loc"][0] if error["loc"] else "unknown"
-                msg = error["msg"]
-                error_messages.append(f"- {field}: {msg}")
-
-            raise DemistoException("Invalid Inputs:\n" + "\n".join(error_messages)) from e
-
-    def __str__(self):
-        return str(self.dict(by_alias=True))
-
-    def __repr__(self):
-        return str(self.dict(by_alias=True))
-
-    class Config:
-        extra = Extra.ignore
-        allow_population_by_field_name = True
-
-
-class BaseParams(ContentBaseModel):
-    """Base class for integration parameters with common connection settings.
-
-    INTEGRATION DEVELOPER TIP:
-    This class provides common parameters that most integrations need:
-    - insecure: Whether to skip SSL certificate verification
-    - proxy: Whether to use system proxy settings
-    - verify: Computed property that returns the inverse of insecure
-
-    Your integration's parameter class should inherit from this to get these
-    common settings automatically.
-    """
-
-    insecure: bool = False
-    proxy: bool = False
-
-    @property
-    def verify(self) -> bool:
-        """Return SSL verification setting (inverse of insecure).
-
-        Returns:
-            bool: True if SSL certificates should be verified, False otherwise.
-        """
-        return not self.insecure
-
-
-class HelloWorldLastRun(ContentBaseModel):
-    """
-    State management for fetch-incidents and fetch-events commands to ensure no
-    data is missed or duplicated between invocations.
-    """
-
-    # The ID of the last fetched alert to use for offsetting.
-    id_offset: int = 0
-
-    def set(self):
-        """Save the current state for the next fetch-incidents or fetch-events execution."""
-        last_run = self.dict(by_alias=True)
-        demisto.debug(f"[Last Run] Setting {last_run=}.")
-        demisto.setLastRun(last_run)
-
-
-class HelloWorldAssetsLastRun(ContentBaseModel):
-    """
-    State management for fetch-assets command to ensure no data is missed or
-    duplicated between fetch invocations.
-    """
-
-    # Save the `stage` to denote the type of data to be fetched (assets or vulnerabilities)
-    stage: FetchAssetsStages = FetchAssetsStages.ASSETS
-    # The ID of the last fetched asset / vulnerability to use for offsetting.
-    id_offset: int = 0
-    # Keep a running total of fetched assets / vulnerabilities
-    cumulative_count: int = 0
-    # ID of snapshot in the dataset. Persist if ingestion is ongoing, reset once ingestion is done
-    snapshot_id: str | None = None
-    # `nextTrigger` instructs to the server when to trigger the next fetch invocation.
-    next_trigger_in_seconds: str | None = Field(default=None, alias="nextTrigger")
-    # `type` indicates to the server that the next fetch invocation is of type "assets" (1), rather than "events" (0)
-    trigger_type: int = Field(default=1, alias="type")
-
-    def set(self):
-        """Save the current state for the next fetch-assets execution."""
-        assets_last_run = self.dict(by_alias=True)
-        demisto.debug(f"[Assets Last Run] Setting {assets_last_run=}.")
-        demisto.setAssetsLastRun(assets_last_run)
+# region Parameters
 
 
 class Credentials(ContentBaseModel):
@@ -493,7 +353,7 @@ class HelloWorldParams(BaseParams):
 
     @validator("max_fetch", allow_reuse=True)
     def cap_max_fetch(cls, v: int):  # noqa: N805
-        """Cap max_fetch to prevent manage rate of data flow."""
+        """Cap max_fetch to manage rate of data flow."""
         max_fetch = cast(int, arg_to_number(v))
         max_fetch_cap = 100000 if SYSTEM.can_send_events else 200
 
@@ -503,257 +363,9 @@ class HelloWorldParams(BaseParams):
         return v
 
 
-class HelloworldSayHelloArgs(ContentBaseModel):
-    """Arguments for helloworld-say-hello command."""
+# endregion
 
-    name: str
-
-
-class HelloworldAlertListArgs(ContentBaseModel):
-    """Arguments for helloworld-alert-list command."""
-
-    alert_id: int | None = None
-    limit: int = 10
-    severity: HelloWorldSeverity | None = None
-
-    @root_validator(allow_reuse=True)
-    def check_alert_id_or_severity(cls, values: dict):  # noqa: N805
-        has_alert_id = bool(values.get("alert_id"))
-        has_severity = bool(values.get("severity"))
-
-        if not (has_alert_id ^ has_severity):
-            raise ValueError("Either 'alert_id' or 'severity' arguments need to be provided.")
-        return values
-
-
-class HelloworldAlertNoteCreateArgs(ContentBaseModel):
-    """Arguments for helloworld-alert-note-create command."""
-
-    alert_id: int
-    note_text: str
-
-    @validator("alert_id", allow_reuse=True)
-    def validate_alert_id(cls, v):  # noqa: N805
-        """Ensure alert_id is a valid positive integer."""
-        if v is None or v <= 0:
-            raise ValueError("[Args validation] Please provide a valid 'alert_id' argument (must be positive).")
-        return v
-
-
-class HelloWorldGetEventsArgs(ContentBaseModel):
-    """Arguments for helloworld-get-events command."""
-
-    severity: HelloWorldSeverity
-    offset: int = 0
-    limit: int = 10
-    should_push_events: bool = False
-
-    @validator("should_push_events", allow_reuse=True)
-    def validate_should_push_events(cls, v):  # noqa: N805
-        """Ensure alert_id is a valid positive integer."""
-        should_push_events = argToBoolean(v)
-        if should_push_events and not SYSTEM.can_send_events:
-            raise ValueError("[Args validation] 'should_push_events' is not supported on this tenant.")
-        return should_push_events
-
-
-class HelloWorldJobSubmitArgs(ContentBaseModel):
-    """Arguments for helloworld-job-submit command."""
-
-    interval_in_seconds: int = PollingDefaults.INTERVAL_SECONDS
-    timeout_in_seconds: int = PollingDefaults.TIMEOUT_SECONDS
-
-
-class HelloWorldJobPollArgs(ContentBaseModel):
-    """Arguments for helloworld-job-poll command."""
-
-    job_id: str
-    interval_in_seconds: int = PollingDefaults.INTERVAL_SECONDS
-    timeout_in_seconds: int = PollingDefaults.TIMEOUT_SECONDS
-
-
-class HelloWorldGetAssetsArgs(ContentBaseModel):
-    """Arguments for helloworld-get-assets command."""
-
-    limit: int = 10
-
-
-class HelloWorldGetVulnerabilitiesArgs(ContentBaseModel):
-    """Arguments for helloworld-get-vulnerabilities command."""
-
-    limit: int = 10
-
-
-class IpArgs(ContentBaseModel):
-    """Arguments for ip command."""
-
-    ip: str | list[str]  # Can be single IP or comma-separated list
-    threshold: int | None = None
-
-    @property
-    def ips(self):
-        """Returns list of IPs."""
-        # Reputation commands usually support multiple inputs (i.e. arrays), so
-        # they can be invoked once in Cortex. In case the API supports a single
-        # IP at a time, we will cycle this for all the members of the array.
-        # We use argToList(), implemented in CommonServerPython.py to automatically
-        # return a list of a single element even if the provided input is a scalar.
-        ips_list = argToList(self.ip) or []
-
-        valid_ips = []
-        invalid_ips = []
-        for ip in ips_list:
-            if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
-                invalid_ips.append(ip)
-                demisto.error(f"[Args validation] Invalid IP {ip=}, skipping")
-            else:
-                valid_ips.append(ip)
-        if not valid_ips:
-            raise ValueError(f"[Args validation] No valid IP(s) specified. Found invalid IPs: {', '.join(invalid_ips)}.")
-        return valid_ips
-
-
-class ExecutionConfig:
-    """Centralized entry point for the integration that holds command, params, args, and last_run.
-
-    This class encapsulates all the information needed to execute a command, including:
-    - command: The command being executed
-    - params: Integration parameters (validated via Pydantic)
-    - args: Command-specific arguments (different per command, validated via Pydantic)
-    - last_run: State from when the previous fetch ended (for fetch commands)
-    """
-
-    def __init__(self):
-        # INTEGRATION DEVELOPER TIP:
-        # Centralize all your `demisto` class usages in the `ExecutionConfig`
-        # class constructor and create an instance of the class *once* in the
-        # `main` function to avoid redundant system calls. Access the required
-        # configurations as validated and type-safe properties.
-        self._raw_command: str = demisto.command()
-        self._raw_params: dict = demisto.params()
-        self._raw_args: dict = demisto.args()
-        self._raw_last_run: dict = demisto.getLastRun() if self._raw_command in FETCH_COMMANDS else {}
-        self._raw_assets_last_run: dict = demisto.getAssetsLastRun() if self._raw_command == "fetch-assets" else {}
-
-    @property
-    def command(self) -> str:
-        """Get the current command being executed.
-
-        Returns:
-            str: The command name (e.g., 'test-module', 'ip', 'fetch-incidents').
-        """
-        return self._raw_command
-
-    @property
-    def params(self) -> HelloWorldParams:
-        """Get validated integration parameters.
-
-        Returns:
-            HelloWorldParams: Validated integration parameters with all configuration settings.
-        """
-        return HelloWorldParams(**self._raw_params)
-
-    @property
-    def ip_args(self) -> IpArgs:
-        """Get validated arguments for the ip command.
-
-        Returns:
-            IpArgs: Validated arguments containing IP addresses and threshold.
-        """
-        return IpArgs(**self._raw_args)
-
-    @property
-    def get_events_args(self) -> HelloWorldGetEventsArgs:
-        """Get validated arguments for the helloworld-get-events command.
-
-        Returns:
-            HelloWorldGetEventsArgs: Validated arguments containing limit, severity, start_time, and should_push_events.
-        """
-        return HelloWorldGetEventsArgs(**self._raw_args)
-
-    @property
-    def alert_list_args(self) -> HelloworldAlertListArgs:
-        """Get validated arguments for the helloworld-alert-list command.
-
-        Returns:
-            HelloworldAlertListArgs: Validated arguments containing alert_id, limit, and severity.
-        """
-        return HelloworldAlertListArgs(**self._raw_args)
-
-    @property
-    def alert_note_create_args(self) -> HelloworldAlertNoteCreateArgs:
-        """Get validated arguments for the helloworld-alert-note-create command.
-
-        Returns:
-            HelloworldAlertNoteCreateArgs: Validated arguments containing alert_id and note_text.
-        """
-        return HelloworldAlertNoteCreateArgs(**self._raw_args)
-
-    @property
-    def say_hello_args(self) -> HelloworldSayHelloArgs:
-        """Get validated arguments for the helloworld-say-hello command.
-
-        Returns:
-            HelloworldSayHelloArgs: Validated arguments containing name.
-        """
-        return HelloworldSayHelloArgs(**self._raw_args)
-
-    @property
-    def job_submit_args(self) -> HelloWorldJobSubmitArgs:
-        """Get validated arguments for the helloworld-job-submit command.
-
-        Returns:
-            HelloWorldJobSubmitArgs: Validated arguments containing polling interval and timeout.
-        """
-        return HelloWorldJobSubmitArgs(**self._raw_args)
-
-    @property
-    def job_poll_args(self) -> HelloWorldJobPollArgs:
-        """Get validated arguments for the helloworld-job-poll command.
-
-        Returns:
-            HelloWorldJobPollArgs: Validated arguments containing job_id, interval, and timeout.
-        """
-        return HelloWorldJobPollArgs(**self._raw_args)
-
-    @property
-    def get_assets_args(self) -> HelloWorldGetAssetsArgs:
-        """Get validated arguments for the helloworld-get-assets command.
-
-        Returns:
-            HelloWorldGetAssetsArgs: Validated arguments containing limit.
-        """
-        return HelloWorldGetAssetsArgs(**self._raw_args)
-
-    @property
-    def get_vulnerabilities_args(self) -> HelloWorldGetVulnerabilitiesArgs:
-        """Get validated arguments for the helloworld-get-vulnerabilities command.
-
-        Returns:
-            HelloWorldGetVulnerabilitiesArgs: Validated arguments containing limit.
-        """
-        return HelloWorldGetVulnerabilitiesArgs(**self._raw_args)
-
-    @property
-    def last_run(self) -> HelloWorldLastRun:
-        """Get the last_run state for fetch-incidents or fetch-events commands.
-
-        Returns:
-            HelloWorldLastRun: State from the previous fetch execution.
-        """
-        return HelloWorldLastRun(**self._raw_last_run)
-
-    @property
-    def assets_last_run(self) -> HelloWorldAssetsLastRun:
-        """Get the last_run state for fetch-assets command.
-
-        Returns:
-            HelloWorldAssetsLastRun: State from the previous fetch-assets execution.
-        """
-        return HelloWorldAssetsLastRun(**self._raw_last_run)
-
-
-""" CLIENT CLASS """
+# region Auth & Client
 
 
 class HelloWorldAuthHandler(APIKeyAuthHandler):
@@ -809,7 +421,7 @@ class HelloWorldClient(ContentClient):
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
-            client_name="HelloWorldClient",
+            client_name="HelloWorldV2Client",
             diagnostic_mode=is_debug_mode(),  # enable if commands are run with `debug-mode=true`
         )
 
@@ -1025,6 +637,7 @@ class HelloWorldClient(ContentClient):
 
         Args:
             limit (int): The number of assets to retrieve.
+            id_offset (int): The ID of the last fetched asset for pagination.
 
         Returns:
             dict[str, Any]: Dummy data of assets as it would be returned from the API.
@@ -1062,6 +675,7 @@ class HelloWorldClient(ContentClient):
 
         Args:
             limit (int): The number of vulnerabilities to retrieve.
+            id_offset (int): The ID of the last fetched vulnerability for pagination.
 
         Returns:
             dict[str, Any]: Dummy data of vulnerabilities as it would be returned from the API.
@@ -1115,187 +729,23 @@ class HelloWorldClient(ContentClient):
             demisto.debug(f"Failed to generate diagnostic report: {e}")
 
 
-""" HELPER FUNCTIONS """
+# endregion
 
-
-def generate_unix_timestamp() -> str:
-    return str(round(time.time() * 1000))
-
-
-def format_as_incidents(
-    alerts: list[dict[str, Any]],
-    id_field: str,
-    occurred_field: str,
-    severity_field: str,
-    custom_fields_mapping: dict | None = None,
-) -> list[dict[str, Any]]:
-    """Format alerts as XSOAR incident.
-
-    Args:
-        alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
-        id_field (str): The field name in the alert ID to use as part of the incident name.
-        occurred_field (str): The field name in the alert to use as the occurred time.
-        severity_field (str): The field name in the alert to use for severity.
-        custom_fields_mapping (dict | None): Optional mapping for custom fields.
-
-    Returns:
-        list[dict[str, Any]]: List of incidents formatted for XSOAR.
-    """
-    custom_fields_mapping = custom_fields_mapping or {}
-    return [
-        {
-            "name": f"XSOAR Test Alert #{alert[id_field]}",
-            "occurred": alert[occurred_field],
-            "rawJSON": json.dumps(alert),
-            "type": "Hello World Alert",  # Map to a specific XSOAR incident type
-            "severity": HelloWorldSeverity.convert_to_incident_severity(raw_severity=alert[severity_field]),
-            "CustomFields": {
-                field_name: demisto.get(custom_fields_mapping, field_value)
-                for field_name, field_value in custom_fields_mapping.items()
-            },
-        }
-        for alert in alerts
-    ]
-
-
-def format_as_events(
-    alerts: list[dict[str, Any]],
-    time_field: str,
-) -> list[dict[str, Any]]:
-    """Format alerts as XSIAM events.
-
-    Args:
-        alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
-        time_field (str): The field name in the audit to use as the event time.
-
-    Returns:
-        list[dict[str, Any]]: List of events formatted for XSIAM.
-    """
-    events: list[dict[str, Any]] = []
-    for alert in alerts:
-        event = alert.copy()
-        event_time = cast(datetime, arg_to_datetime(event[time_field]))
-        event[EventsDatasetConfigs.TIME_KEY.value] = event_time.strftime(EventsDatasetConfigs.TIME_FORMAT.value)
-        # Important to declare source log type, especially if multiple event types are fetched
-        event[EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] = "Alert"
-        events.append(event)
-    return events
-
-
-async def get_alert_list(
-    client: HelloWorldClient,
-    start_offset: int,
-    severity: HelloWorldSeverity,
-    limit: int,
-    should_push: bool,
-) -> list[dict]:
-    """Fetch raw alerts from the API in batches and optionally create XSOAR incidents or XSIAM events.
-
-    INTEGRATION DEVELOPER TIP:
-    This function fetches events from the API in batches. In when running on XSIAM, it uses asyncio to
-    concurrently fetch the next alerts batch while pushing the formatted events to XSIAM to improve
-    performance and scalability.
-
-    Args:
-        client (HelloWorldClient): HelloWorld client instance for API calls.
-        start_offset (int): Start time for fetching events.
-        limit (int): Maximum total number of events to fetch.
-        should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
-
-    Returns:
-        list[dict]: List of all raw alerts fetched.
-    """
-    demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_offset=}, and {limit=}.")
-
-    all_alerts: list[dict] = []
-    async_push_tasks: list[Awaitable] = []
-    offset: int = start_offset
-
-    while len(all_alerts) < limit:
-        remaining_alerts_count = limit - len(all_alerts)
-        batch_limit = min(500, remaining_alerts_count)
-        demisto.debug(f"[Get alert list] Request alerts batch using {offset=} and {batch_limit=}.")
-        alerts_batch = client.get_alert_list(limit=batch_limit, id_offset=offset, severity=severity)
-        all_alerts.extend(alerts_batch)
-        offset += len(alerts_batch)
-
-        if should_push:
-            if SYSTEM.can_send_events:
-                demisto.debug(
-                    f"[Get alert list] Creating asynchronous XSIAM events sending from {len(alerts_batch)} alerts batch."
-                )
-                async_push_tasks.append(asyncio.to_thread(create_events, alerts_batch))
-            else:
-                demisto.debug(
-                    f"[Get alert list] Calling synchronous XSOAR incidents creation flow from {len(alerts_batch)} alerts batch."
-                )
-                create_incidents(alerts_batch)
-
-        # If the number of returned alerts is less than the requested batch limit, no more new alerts are available for fetching
-        if len(alerts_batch) < batch_limit:
-            demisto.debug(f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking...")
-            break
-
-    if async_push_tasks:
-        demisto.debug(f"[Get alert list] Awaiting XSIAM events sending to finish for all {len(all_alerts)} alerts.")
-        await asyncio.gather(*async_push_tasks)
-
-    demisto.debug(
-        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, {start_offset=}, and {limit=}."
-    )
-    return all_alerts
-
-
-def create_events(alerts: list[dict]) -> None:
-    """Format alerts and send them to XSIAM.
-
-    Args:
-        audits (list[dict]): List of alert dictionaries from the API.
-
-    Returns:
-        None
-    """
-    demisto.debug(f"[Create events] Formatting and sending {len(alerts)} XSIAM events.")
-    events = format_as_events(alerts, time_field="date")
-    send_events_to_xsiam(
-        events=events,
-        vendor=EventsDatasetConfigs.VENDOR.value,
-        product=EventsDatasetConfigs.PRODUCT.value,
-        client_class=ContentClient,
-    )
-    demisto.debug(f"[Create events] Successfully sent {len(events)} XSIAM events.")
-
-
-def create_incidents(alerts: list[dict]) -> None:
-    """Format alerts as incidents and create them in XSOAR.
-
-    Args:
-        alerts (list[dict]): List of alert dictionaries from the API.
-
-    Returns:
-        None
-    """
-    demisto.debug(f"[Create incidents] Formatting and creating {len(alerts)} XSOAR incidents.")
-    incidents = format_as_incidents(alerts, id_field="id", occurred_field="date", severity_field="severity")
-    demisto.incidents(incidents)
-    demisto.debug(f"[Create incidents] Successfully created {len(incidents)} XSOAR incidents.")
-
-
-""" COMMAND FUNCTIONS """
+# region test-module
 
 
 def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
     """Test API connectivity and authentication.
 
-    When 'ok' is returned, it indicates the integration works as expected and the connection
-    to the service is successful. Raises exceptions if something goes wrong.
+    When 'ok' is returned, it indicates the integration works as expected and the connection to the
+    service is successful. Raises exceptions if something goes wrong.
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
         params (HelloWorldParams): Validated integration parameters containing configuration settings.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and fail the test.
+        str: 'ok' if test passed; anything else will raise an exception and fail the test.
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -1327,6 +777,17 @@ def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
 
     demisto.debug("[Testing] All tests passed.")
     return "ok"
+
+
+# endregion
+
+# region helloworld-say-hello
+
+
+class HelloworldSayHelloArgs(ContentBaseModel):
+    """Arguments for helloworld-say-hello command."""
+
+    name: str
 
 
 def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) -> CommandResults:
@@ -1369,6 +830,188 @@ def say_hello_command(client: HelloWorldClient, args: HelloworldSayHelloArgs) ->
     )
 
 
+# endregion
+
+# region fetch-incidents / fetch-events
+
+
+class HelloWorldLastRun(ContentBaseModel):
+    """State management for fetch-incidents and fetch-events commands.
+
+    Ensures no data is missed or duplicated between invocations.
+    """
+
+    # The ID of the last fetched alert to use for offsetting.
+    id_offset: int = 0
+
+    def set(self):
+        """Save the current state for the next fetch-incidents or fetch-events execution."""
+        last_run = self.dict(by_alias=True)
+        demisto.debug(f"[Last Run] Setting {last_run=}.")
+        demisto.setLastRun(last_run)
+
+
+def format_as_incidents(
+    alerts: list[dict[str, Any]],
+    id_field: str,
+    occurred_field: str,
+    severity_field: str,
+    custom_fields_mapping: dict | None = None,
+) -> list[dict[str, Any]]:
+    """Format alerts as XSOAR incidents.
+
+    Args:
+        alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
+        id_field (str): The field name in the alert to use as the incident ID.
+        occurred_field (str): The field name in the alert to use as the occurred time.
+        severity_field (str): The field name in the alert to use for severity.
+        custom_fields_mapping (dict | None): Optional mapping for custom fields.
+
+    Returns:
+        list[dict[str, Any]]: List of incidents formatted for XSOAR.
+    """
+    custom_fields_mapping = custom_fields_mapping or {}
+    return [
+        {
+            "name": f"XSOAR Test Alert #{alert[id_field]}",
+            "occurred": alert[occurred_field],
+            "rawJSON": json.dumps(alert),
+            "type": "Hello World Alert",  # Map to a specific XSOAR incident type
+            "severity": HelloWorldSeverity.convert_to_incident_severity(raw_severity=alert[severity_field]),
+            "CustomFields": {
+                field_name: demisto.get(custom_fields_mapping, field_value)
+                for field_name, field_value in custom_fields_mapping.items()
+            },
+        }
+        for alert in alerts
+    ]
+
+
+def create_incidents(alerts: list[dict]) -> None:
+    """Format alerts as incidents and create them in XSOAR.
+
+    Args:
+        alerts (list[dict]): List of alert dictionaries from the API.
+
+    Returns:
+        None
+    """
+    demisto.debug(f"[Create incidents] Formatting and creating {len(alerts)} XSOAR incidents.")
+    incidents = format_as_incidents(alerts, id_field="id", occurred_field="date", severity_field="severity")
+    demisto.incidents(incidents)
+    demisto.debug(f"[Create incidents] Successfully created {len(incidents)} XSOAR incidents.")
+
+
+def format_as_events(
+    alerts: list[dict[str, Any]],
+    time_field: str,
+) -> list[dict[str, Any]]:
+    """Format alerts as XSIAM events.
+
+    Args:
+        alerts (list[dict[str, Any]]): List of alert dictionaries from the API.
+        time_field (str): The field name in the audit to use as the event time.
+
+    Returns:
+        list[dict[str, Any]]: List of events formatted for XSIAM.
+    """
+    events: list[dict[str, Any]] = []
+    for alert in alerts:
+        event = alert.copy()
+        event_time = cast(datetime, arg_to_datetime(event[time_field]))
+        event[EventsDatasetConfigs.TIME_KEY.value] = event_time.strftime(EventsDatasetConfigs.TIME_FORMAT.value)
+        # Important to declare source log type, especially if multiple event types are fetched
+        event[EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] = "Alert"
+        events.append(event)
+    return events
+
+
+def create_events(alerts: list[dict]) -> None:
+    """Format alerts and send them to XSIAM.
+
+    Args:
+        alerts (list[dict]): List of alert dictionaries from the API.
+    """
+    demisto.debug(f"[Create events] Formatting and sending {len(alerts)} XSIAM events.")
+    events = format_as_events(alerts, time_field="date")
+    send_events_to_xsiam(
+        events=events,
+        vendor=EventsDatasetConfigs.VENDOR.value,
+        product=EventsDatasetConfigs.PRODUCT.value,
+        client_class=ContentClient,
+    )
+    demisto.debug(f"[Create events] Successfully sent {len(events)} XSIAM events.")
+
+
+async def get_alert_list(
+    client: HelloWorldClient,
+    start_offset: int,
+    severity: HelloWorldSeverity,
+    limit: int,
+    should_push: bool,
+) -> list[dict]:
+    """Fetch raw alerts from the API in batches and optionally create XSOAR incidents or XSIAM events.
+
+    INTEGRATION DEVELOPER TIP:
+    This function fetches events from the API in batches. When running on XSIAM, it uses asyncio to
+    concurrently fetch the next alerts batch while pushing the formatted events to XSIAM to improve
+    performance and scalability.
+
+    Args:
+        client (HelloWorldClient): HelloWorld client instance for API calls.
+        start_offset (int): Starting offset for fetching alerts.
+        severity (HelloWorldSeverity): Severity filter for alerts.
+        limit (int): Maximum total number of alerts to fetch.
+        should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
+
+    Returns:
+        list[dict]: List of all raw alerts fetched.
+    """
+    demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_offset=}, and {limit=}.")
+
+    all_alerts: list[dict] = []
+    async_push_tasks: list[Awaitable] = []
+    offset: int = start_offset
+
+    while len(all_alerts) < limit:
+        remaining_alerts_count = limit - len(all_alerts)
+        batch_limit = min(500, remaining_alerts_count)
+        demisto.debug(f"[Get alert list] Request alerts batch using {offset=} and {batch_limit=}.")
+        alerts_batch = client.get_alert_list(limit=batch_limit, id_offset=offset, severity=severity)
+        all_alerts.extend(alerts_batch)
+        offset += len(alerts_batch)
+
+        if should_push:
+            if SYSTEM.can_send_events:
+                demisto.debug(
+                    f"[Get alert list] Creating asynchronous XSIAM events sending from {len(alerts_batch)} alerts batch."
+                )
+                async_push_tasks.append(asyncio.to_thread(create_events, alerts_batch))
+            else:
+                demisto.debug(
+                    f"[Get alert list] Calling synchronous XSOAR incidents creation flow from {len(alerts_batch)} alerts batch."
+                )
+                create_incidents(alerts_batch)
+
+        # If the number of returned alerts is less than the requested batch limit, no more new alerts
+        # are available for fetching
+        if len(alerts_batch) < batch_limit:
+            demisto.debug(
+                f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking..."
+            )
+            break
+
+    if async_push_tasks:
+        demisto.debug(f"[Get alert list] Awaiting XSIAM events sending to finish for all {len(all_alerts)} alerts.")
+        await asyncio.gather(*async_push_tasks)
+
+    demisto.debug(
+        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, "
+        f"{start_offset=}, and {limit=}."
+    )
+    return all_alerts
+
+
 def fetch_alerts(
     client: HelloWorldClient,
     last_run: HelloWorldLastRun,
@@ -1405,6 +1048,49 @@ def fetch_alerts(
     return next_run
 
 
+# endregion
+
+# region fetch-assets
+
+
+class HelloWorldAssetsLastRun(ContentBaseModel):
+    """State management for fetch-assets command.
+
+    Ensures no data is missed or duplicated between fetch invocations.
+    """
+
+    # Save the `stage` to denote the type of data to be fetched (assets or vulnerabilities)
+    stage: FetchAssetsStages = FetchAssetsStages.ASSETS
+    # The ID of the last fetched asset/vulnerability to use for offsetting
+    id_offset: int = 0
+    # Keep a running total of fetched assets/vulnerabilities
+    cumulative_count: int = 0
+    # ID of snapshot in the dataset. Persist if ingestion is ongoing, reset once ingestion is done
+    snapshot_id: str | None = None
+    # `nextTrigger` instructs the server when to trigger the next fetch invocation
+    next_trigger_in_seconds: str | None = Field(default=None, alias="nextTrigger")
+    # `type` indicates to the server that the next fetch invocation is of type "assets" (1), not "events" (0)
+    trigger_type: int = Field(default=1, alias="type")
+
+    def set(self):
+        """Save the current state for the next fetch-assets execution."""
+        assets_last_run = self.dict(by_alias=True)
+        demisto.debug(f"[Assets Last Run] Setting {assets_last_run=}.")
+        demisto.setAssetsLastRun(assets_last_run)
+
+
+def generate_unix_timestamp() -> str:
+    """Generate the current Unix timestamp in milliseconds.
+
+    Used as `snapshot_id` in the assets/vulnerabilities datasets.
+
+    Returns:
+        str: The current time in milliseconds since the Unix epoch, rounded to the nearest integer
+             and converted to a string.
+    """
+    return str(round(time.time() * 1000))
+
+
 def fetch_assets(
     client: HelloWorldClient,
     last_run: HelloWorldAssetsLastRun,
@@ -1439,13 +1125,13 @@ def fetch_assets(
     current_data_type: str = current_fetch_stage.value
     current_offset: int = last_run.id_offset
     cumulative_count: int = last_run.cumulative_count
-    current_snapshot_id: str = (
-        last_run.snapshot_id or generate_unix_timestamp()
-    )  # Generate a new `snapshot_id` if starting fresh (first fetch)
+    # Generate a new `snapshot_id` if starting fresh (first fetch)
+    current_snapshot_id: str = last_run.snapshot_id or generate_unix_timestamp()
     batch_limit = 1000
 
     demisto.debug(
-        f"[Fetch assets] Starting to fetch with {current_fetch_stage=}, {current_offset=}, {cumulative_count=}, {current_snapshot_id=}."
+        f"[Fetch assets] Starting to fetch with {current_fetch_stage=}, {current_offset=}, "
+        f"{cumulative_count=}, {current_snapshot_id=}."
     )
 
     # Call the relevant client method based on the `current_fetch_stage`
@@ -1468,24 +1154,27 @@ def fetch_assets(
 
     batch_count = len(data)
     cumulative_count += batch_count
-    demisto.debug(f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}.")
+    demisto.debug(
+        f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}."
+    )
 
     # Determine how to send items to XSIAM vendor/product dataset based on pulled type
 
     # INTEGRATION DEVELOPER TIP:
     # Pay special attention to the variables used when calling `send_data_to_xsiam`:
     # If no more remaining data available to fetch:
-    #   - Report the actual (cumulative) count of items fetched to indicate to the server that pulling is complete (i.e. snapshot can be sealed)
-    #   - Update the integration instance heath status with the total count of pulled assets / vulnerabilities on the tenant UI
+    #   - Report the actual (cumulative) count of items fetched to indicate to the server that pulling is complete
+    #   - Update the integration instance heath status with the total count of pulled data on the tenant UI
     # Otherwise:
     #   - Report "1" items fetched to indicate to the server that pulling is ongoing (i.e. snapshot is not yet complete)
-    #   - Do *NOT* update the the integration instance heath status to avoid showing a partial / incorrect count of pulled assets / vulnerabilities
+    #   - Do *NOT* update the the integration instance heath status to avoid showing a partial count of pulled data
 
     reported_items_count = 1 if has_more else cumulative_count
     update_health_module = False if has_more else True
     if should_push:
         demisto.debug(
-            f"[Fetch assets] Starting to send {batch_count} {current_data_type} to XSIAM with {current_snapshot_id=} and {reported_items_count=}."
+            f"[Fetch assets] Starting to send {batch_count} {current_data_type} to XSIAM with "
+            f"{current_snapshot_id=} and {reported_items_count=}."
         )
         send_data_to_xsiam(
             data=data,
@@ -1494,11 +1183,12 @@ def fetch_assets(
             data_type=ASSETS,  # use "assets" data type even if pulling vulnerabilities
             items_count=reported_items_count,
             snapshot_id=current_snapshot_id,
-            should_update_health_module=update_health_module,  # Do not update health until all stages complete
+            should_update_health_module=update_health_module,  # Do not update health until all assets / vulnerabilities are fetched
             client_class=ContentClient,
         )
         demisto.debug(
-            f"[Fetch assets] Successfully sent {batch_count} {current_data_type} to XSIAM with {current_snapshot_id=} and {reported_items_count=}."
+            f"[Fetch assets] Successfully sent {batch_count} {current_data_type} to XSIAM with "
+            f"{current_snapshot_id=} and {reported_items_count=}."
         )
 
     # Determine next state based on `has_more` and `current_fetch_stage`
@@ -1520,20 +1210,24 @@ def fetch_assets(
         next_offset = current_offset + batch_count
         next_trigger_in_seconds = "1"
         demisto.debug(
-            f"[Fetch assets] More {current_data_type} available. Setting {next_offset=}, {next_fetch_stage=}, {next_trigger_in_seconds=}."
+            f"[Fetch assets] More {current_data_type} available. Setting {next_offset=}, "
+            f"{next_fetch_stage=}, {next_trigger_in_seconds=}."
         )
 
     else:
-        # Generate new snapshot ID and reset offset since no more remaining data to fetch as part of the current stage
+        # Generate new snapshot ID and reset offset since no more remaining data to fetch as part of
+        # the current stage
         next_snapshot_id = generate_unix_timestamp()
         next_offset = 0
         if current_fetch_stage is FetchAssetsStages.ASSETS:
-            # First stage (assets) finished, send immediate server trigger to move on to second stage (vulnerabilities)
+            # First stage (assets) finished, send immediate server trigger to move on to second stage
+            # (vulnerabilities)
             next_fetch_stage = FetchAssetsStages.VULNS
             next_trigger_in_seconds = "1"
 
         else:
-            # Second stage (vulnerabilities) finished, trigger first stage (assets) based on the configured assets fetch interval
+            # Second stage (vulnerabilities) finished, trigger first stage (assets) based on the
+            # configured assets fetch interval
             next_fetch_stage = FetchAssetsStages.ASSETS
             next_trigger_in_seconds = None
 
@@ -1545,9 +1239,45 @@ def fetch_assets(
         nextTrigger=next_trigger_in_seconds,
     )
 
-    demisto.debug(f"[Fetch assets] Completed. " f"Fetched {batch_count} {current_data_type}. " f"Set {assets_next_run=}.")
+    demisto.debug(
+        f"[Fetch assets] Completed. Fetched {batch_count} {current_data_type}. Set {assets_next_run=}."
+    )
 
     return assets_next_run
+
+
+# endregion
+
+# region ip reputation
+
+
+class IpArgs(ContentBaseModel):
+    """Arguments for ip command."""
+
+    ip: str | list[str]  # Can be single IP or comma-separated list
+    threshold: int | None = None
+
+    @property
+    def ips(self):
+        """Returns list of IPs."""
+        # Reputation commands usually support multiple inputs (i.e. arrays), so
+        # they can be invoked once in Cortex. In case the API supports a single
+        # IP at a time, we will cycle this for all the members of the array.
+        # We use argToList(), implemented in CommonServerPython.py to automatically
+        # return a list of a single element even if the provided input is a scalar.
+        ips_list = argToList(self.ip) or []
+
+        valid_ips = []
+        invalid_ips = []
+        for ip in ips_list:
+            if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
+                invalid_ips.append(ip)
+                demisto.error(f"[Args validation] Invalid IP {ip=}, skipping")
+            else:
+                valid_ips.append(ip)
+        if not valid_ips:
+            raise ValueError(f"[Args validation] No valid IP(s) specified. Found invalid IPs: {', '.join(invalid_ips)}.")
+        return valid_ips
 
 
 def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloWorldParams) -> list[CommandResults]:
@@ -1555,9 +1285,7 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
-        args (IpArgs): Validated command arguments containing:
-            - ip: A list of IPs or a single IP.
-            - threshold: Optional threshold to determine whether an IP is malicious.
+        args (IpArgs): Validated command arguments containing IP addresses and optional threshold.
         params (HelloWorldParams): Integration parameters containing default threshold and reliability.
 
     Returns:
@@ -1579,9 +1307,9 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
         ip_data = client.get_ip_reputation(ip)
         ip_data["ip"] = ip
 
-        # This is an example of creating relationships in reputation commands.
-        # We will create relationships between indicators only in case that the API returns information about
-        # the relationship between two indicators.
+        # This is an example of creating relationships in reputation commands. We will create
+        # relationships between indicators only in case that the API returns information about the
+        # relationship between two indicators.
         # See https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#relationships
 
         relationships_list = []
@@ -1681,6 +1409,28 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
     return command_results
 
 
+# endregion
+
+# region helloworld-alert-list
+
+
+class HelloworldAlertListArgs(ContentBaseModel):
+    """Arguments for helloworld-alert-list command."""
+
+    alert_id: int | None = None
+    limit: int = 10
+    severity: HelloWorldSeverity | None = None
+
+    @root_validator(allow_reuse=True)
+    def check_alert_id_or_severity(cls, values: dict):  # noqa: N805
+        has_alert_id = bool(values.get("alert_id"))
+        has_severity = bool(values.get("severity"))
+
+        if not (has_alert_id ^ has_severity):
+            raise ValueError("Either 'alert_id' or 'severity' arguments need to be provided.")
+        return values
+
+
 def alert_list_command(client: HelloWorldClient, args: HelloworldAlertListArgs) -> CommandResults:
     """Execute helloworld-alert-list command.
 
@@ -1716,15 +1466,38 @@ def alert_list_command(client: HelloWorldClient, args: HelloworldAlertListArgs) 
     )
 
 
+# endregion
+
+# region helloworld-get-events
+
+
+class HelloWorldGetEventsArgs(ContentBaseModel):
+    """Arguments for helloworld-get-events command."""
+
+    severity: HelloWorldSeverity
+    offset: int = 0
+    limit: int = 10
+    should_push_events: bool = False
+
+    @validator("should_push_events", allow_reuse=True)
+    def validate_should_push_events(cls, v):  # noqa: N805
+        """Ensure should_push_events is valid for the current tenant."""
+        should_push_events = argToBoolean(v)
+        if should_push_events and not SYSTEM.can_send_events:
+            raise ValueError("[Args validation] 'should_push_events' is not supported on this tenant.")
+        return should_push_events
+
+
 def get_events_command(client: HelloWorldClient, args: HelloWorldGetEventsArgs) -> CommandResults:
     """Execute helloworld-get-events command.
 
-    This demonstrates on-demand data collection, which is useful for commands
-    that need to retrieve datasets from APIs.
+    This demonstrates on-demand data collection, which is useful for commands that need to retrieve
+    datasets from APIs.
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
-        args (HelloWorldGetEventsArgs): Validated command arguments.
+        args (HelloWorldGetEventsArgs): Validated command arguments containing severity, offset, limit,
+                                        and should_push_events.
 
     Returns:
         CommandResults: CommandResults with collected events.
@@ -1740,6 +1513,25 @@ def get_events_command(client: HelloWorldClient, args: HelloWorldGetEventsArgs) 
 
     demisto.debug(f"[Get events] Fetched {len(events)} events")
     return CommandResults(readable_output=tableToMarkdown("HelloWorld Events", events))
+
+
+# endregion
+
+# region helloworld-alert-note-create
+
+
+class HelloworldAlertNoteCreateArgs(ContentBaseModel):
+    """Arguments for helloworld-alert-note-create command."""
+
+    alert_id: int
+    note_text: str
+
+    @validator("alert_id", allow_reuse=True)
+    def validate_alert_id(cls, v):  # noqa: N805
+        """Ensure alert_id is a valid positive integer."""
+        if v is None or v <= 0:
+            raise ValueError("[Args validation] Please provide a valid 'alert_id' argument (must be positive).")
+        return v
 
 
 def alert_note_create_command(client: HelloWorldClient, args: HelloworldAlertNoteCreateArgs) -> CommandResults:
@@ -1766,15 +1558,27 @@ def alert_note_create_command(client: HelloWorldClient, args: HelloworldAlertNot
     )
 
 
+# endregion
+
+# region helloworld-job-submit
+
+
+class HelloWorldJobSubmitArgs(ContentBaseModel):
+    """Arguments for helloworld-job-submit command."""
+
+    interval_in_seconds: int = PollingDefaults.INTERVAL_SECONDS
+    timeout_in_seconds: int = PollingDefaults.TIMEOUT_SECONDS
+
+
 def job_submit_command(client: HelloWorldClient, args: HelloWorldJobSubmitArgs) -> CommandResults:
     """Execute helloworld-job-submit command and initiate polling.
 
-    This command demonstrates the polling pattern for long-running operations.
-    It submits a job to the remote API and returns a ScheduledCommand to poll for completion.
+    This command demonstrates the polling pattern for long-running operations. It submits a job to
+    the remote API and returns a ScheduledCommand to poll for completion.
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
-        args (HelloWorldJobSubmitArgs): Validated command arguments containing polling parameters.
+        args (HelloWorldJobSubmitArgs): Validated command arguments containing polling interval and timeout.
 
     Returns:
         CommandResults: CommandResults with ScheduledCommand for polling.
@@ -1815,7 +1619,22 @@ def job_submit_command(client: HelloWorldClient, args: HelloWorldJobSubmitArgs) 
     )
 
 
-@polling_function(name="helloworld-job-poll", interval=PollingDefaults.INTERVAL_SECONDS, timeout=PollingDefaults.TIMEOUT_SECONDS)
+# endregion
+
+# region helloworld-job-poll
+
+
+class HelloWorldJobPollArgs(ContentBaseModel):
+    """Arguments for helloworld-job-poll command."""
+
+    job_id: str
+    interval_in_seconds: int = PollingDefaults.INTERVAL_SECONDS
+    timeout_in_seconds: int = PollingDefaults.TIMEOUT_SECONDS
+
+
+@polling_function(
+    name="helloworld-job-poll", interval=PollingDefaults.INTERVAL_SECONDS, timeout=PollingDefaults.TIMEOUT_SECONDS
+)
 def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClient) -> PollResult:
     """Poll the HelloWorld service for job status until complete.
 
@@ -1880,7 +1699,9 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
 
     # Job is still running - continue polling
     else:
-        demisto.debug(f"[Job polling] Job still running {job_id=} {status=}, scheduling next poll in {polling_interval}s")
+        demisto.debug(
+            f"[Job polling] Job still running {job_id=} {status=}, scheduling next poll in {polling_interval}s"
+        )
 
         readable = f"Scheduling next check in {polling_interval} seconds for {job_id=}."
         status_update = CommandResults(
@@ -1896,6 +1717,17 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
             continue_to_poll=True,
             partial_result=status_update,
         )
+
+
+# endregion
+
+# region helloworld-get-assets
+
+
+class HelloWorldGetAssetsArgs(ContentBaseModel):
+    """Arguments for helloworld-get-assets command."""
+
+    limit: int = 10
 
 
 def get_assets_command(client: HelloWorldClient, args: HelloWorldGetAssetsArgs) -> CommandResults:
@@ -1921,6 +1753,17 @@ def get_assets_command(client: HelloWorldClient, args: HelloWorldGetAssetsArgs) 
     return CommandResults(readable_output=readable_output)
 
 
+# endregion
+
+# region helloworld-get-vulnerabilities
+
+
+class HelloWorldGetVulnerabilitiesArgs(ContentBaseModel):
+    """Arguments for helloworld-get-vulnerabilities command."""
+
+    limit: int = 10
+
+
 def get_vulnerabilities_command(client: HelloWorldClient, args: HelloWorldGetVulnerabilitiesArgs) -> CommandResults:
     """Execute helloworld-get-vulnerabilities command.
 
@@ -1944,13 +1787,136 @@ def get_vulnerabilities_command(client: HelloWorldClient, args: HelloWorldGetVul
     return CommandResults(readable_output=readable_output)
 
 
-""" MAIN FUNCTION """
+# endregion
+
+# region ExecutionConfig
+
+
+class HelloWorldExecutionConfig(BaseExecutionConfig):
+    """Extends BaseExecutionConfig to leverage a centralized entrypoint.
+
+    Holds the currently-executed command, configuration parameters, command arguments, and fetch last
+    run state.
+    """
+
+    @property
+    def params(self) -> HelloWorldParams:
+        """Get validated integration parameters.
+
+        Returns:
+            HelloWorldParams: Validated integration parameters with all configuration settings.
+        """
+        return HelloWorldParams(**self._raw_params)
+
+    @property
+    def ip_args(self) -> IpArgs:
+        """Get validated arguments for the ip command.
+
+        Returns:
+            IpArgs: Validated arguments containing IP addresses and threshold.
+        """
+        return IpArgs(**self._raw_args)
+
+    @property
+    def get_events_args(self) -> HelloWorldGetEventsArgs:
+        """Get validated arguments for the helloworld-get-events command.
+
+        Returns:
+            HelloWorldGetEventsArgs: Validated arguments containing severity, offset, limit, and
+                                     should_push_events.
+        """
+        return HelloWorldGetEventsArgs(**self._raw_args)
+
+    @property
+    def alert_list_args(self) -> HelloworldAlertListArgs:
+        """Get validated arguments for the helloworld-alert-list command.
+
+        Returns:
+            HelloworldAlertListArgs: Validated arguments containing alert_id, limit, and severity.
+        """
+        return HelloworldAlertListArgs(**self._raw_args)
+
+    @property
+    def alert_note_create_args(self) -> HelloworldAlertNoteCreateArgs:
+        """Get validated arguments for the helloworld-alert-note-create command.
+
+        Returns:
+            HelloworldAlertNoteCreateArgs: Validated arguments containing alert_id and note_text.
+        """
+        return HelloworldAlertNoteCreateArgs(**self._raw_args)
+
+    @property
+    def say_hello_args(self) -> HelloworldSayHelloArgs:
+        """Get validated arguments for the helloworld-say-hello command.
+
+        Returns:
+            HelloworldSayHelloArgs: Validated arguments containing name.
+        """
+        return HelloworldSayHelloArgs(**self._raw_args)
+
+    @property
+    def job_submit_args(self) -> HelloWorldJobSubmitArgs:
+        """Get validated arguments for the helloworld-job-submit command.
+
+        Returns:
+            HelloWorldJobSubmitArgs: Validated arguments containing polling interval and timeout.
+        """
+        return HelloWorldJobSubmitArgs(**self._raw_args)
+
+    @property
+    def job_poll_args(self) -> HelloWorldJobPollArgs:
+        """Get validated arguments for the helloworld-job-poll command.
+
+        Returns:
+            HelloWorldJobPollArgs: Validated arguments containing job_id, interval, and timeout.
+        """
+        return HelloWorldJobPollArgs(**self._raw_args)
+
+    @property
+    def get_assets_args(self) -> HelloWorldGetAssetsArgs:
+        """Get validated arguments for the helloworld-get-assets command.
+
+        Returns:
+            HelloWorldGetAssetsArgs: Validated arguments containing limit.
+        """
+        return HelloWorldGetAssetsArgs(**self._raw_args)
+
+    @property
+    def get_vulnerabilities_args(self) -> HelloWorldGetVulnerabilitiesArgs:
+        """Get validated arguments for the helloworld-get-vulnerabilities command.
+
+        Returns:
+            HelloWorldGetVulnerabilitiesArgs: Validated arguments containing limit.
+        """
+        return HelloWorldGetVulnerabilitiesArgs(**self._raw_args)
+
+    @property
+    def last_run(self) -> HelloWorldLastRun:
+        """Get the last_run state for fetch-incidents or fetch-events commands.
+
+        Returns:
+            HelloWorldLastRun: State from the previous fetch execution.
+        """
+        return HelloWorldLastRun(**self._raw_last_run)
+
+    @property
+    def assets_last_run(self) -> HelloWorldAssetsLastRun:
+        """Get the last_run state for fetch-assets command.
+
+        Returns:
+            HelloWorldAssetsLastRun: State from the previous fetch-assets execution.
+        """
+        return HelloWorldAssetsLastRun(**self._raw_last_run)
+
+
+# endregion
+
+# region Main
 
 
 def main() -> None:  # pragma: no cover
     """Parse and validate configuration parameters and command arguments, then run commands."""
-    execution = ExecutionConfig()
-    params = execution.params
+    execution = HelloWorldExecutionConfig()
     command = execution.command
 
     # INTEGRATION DEVELOPER TIP
@@ -1962,6 +1928,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"[Main] Starting to execute {command=}.")
     client = None
     try:
+        params = execution.params
         client = HelloWorldClient(params)
 
         match execution.command:
@@ -2040,8 +2007,8 @@ def main() -> None:  # pragma: no cover
                 return_results(job_submit_command(client, args))
 
             case "helloworld-job-poll":
-                # Periodically polls the status of a process being executed on a remote host
-                # When the the process execution is done, the final result is returned and polling stops
+                # Periodically polls the status of a process being executed on a remote host.
+                # When the process execution is done, the final result is returned and polling stops.
                 args = execution.job_poll_args
                 # Run command, schedule next polling run, and return final result when complete
                 return_results(job_poll_command(args, client))
@@ -2060,7 +2027,7 @@ def main() -> None:  # pragma: no cover
             client.log_optional_diagnostic_report()
 
 
-""" ENTRY POINT """
-
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
+# endregion

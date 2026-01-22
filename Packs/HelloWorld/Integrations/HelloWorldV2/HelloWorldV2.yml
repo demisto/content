@@ -405,6 +405,7 @@ script:
   type: python
   dependson:
     ContentClientApiModule: ''
+    BaseContentApiModule: ''
 defaultclassifier: HelloWorld   # Incident classifier (if "fetch-incidents" is enabled)
 defaultmapperin: HelloWorld-mapper  # Incident field mapper (if "fetch-incidents" is enabled)
 supportlevelheader: xsoar

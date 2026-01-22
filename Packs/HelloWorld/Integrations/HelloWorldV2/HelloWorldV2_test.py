@@ -83,7 +83,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# ========== Credentials Model Tests ==========
+# region General - Credentials & Params Tests
 
 
 class TestCredentials:
@@ -125,9 +125,6 @@ class TestCredentials:
 
         with pytest.raises(DemistoException, match="password"):
             Credentials()  # type: ignore[call-arg]
-
-
-# ========== HelloWorldParams Model Tests ==========
 
 
 class TestHelloWorldParams:
@@ -270,7 +267,99 @@ class TestHelloWorldParams:
             )
 
 
-# ========== HelloworldSayHelloArgs Model Tests ==========
+# endregion
+
+# region test-module
+
+
+@pytest.mark.parametrize(
+    "is_fetch",
+    [
+        pytest.param(False, id="Fetching disabled"),
+        pytest.param(True, id="Fetching enabled"),
+    ],
+)
+def test_module_success(mocker: MockerFixture, is_fetch: bool):
+    """
+    Given:
+        - Valid client and params.
+        - is_fetch parameter set to True or False.
+    When:
+        - Running test_module.
+    Then:
+        - Assert client.say_hello is called once.
+        - Assert fetch_alerts is called once if is_fetch is True, not called if False.
+        - Assert "ok" is returned.
+    """
+    from HelloWorldV2 import test_module
+
+    # Create mock client
+    mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
+
+    # Mock fetch_alerts function
+    mock_fetch_alerts = mocker.patch("HelloWorldV2.fetch_alerts")
+
+    # Create params with is_fetch set accordingly
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+        is_fetch=is_fetch,
+        severity=HelloWorldSeverity.HIGH,
+    )
+    client = HelloWorldClient(params)
+
+    # Execute test_module
+    result = test_module(client, params)
+
+    # Assertions
+    assert result == "ok"
+    assert mock_client_say_hello.call_count == 1
+    assert mock_client_say_hello.call_args.kwargs == {"name": "Test"}
+
+    if is_fetch:
+        assert mock_fetch_alerts.call_count == 1
+        assert mock_fetch_alerts.call_args.kwargs == {
+            "max_fetch": 1,
+            "last_run": HelloWorldLastRun(),  # send empty / default last run object
+            "severity": params.severity,
+            "should_push": False,  # ensure push is disabled to prevent creating events during testing
+        }
+    else:
+        assert mock_fetch_alerts.call_count == 0
+
+
+def test_module_authentication_error(mocker: MockerFixture):
+    """
+    Given:
+        - Client that raises ContentClientAuthenticationError.
+    When:
+        - Running test_module.
+    Then:
+        - Assert appropriate error message is returned.
+    """
+    from HelloWorldV2 import test_module, ContentClientAuthenticationError
+
+    # Mock demisto functions
+    mocker.patch("HelloWorldV2.demisto.error")
+
+    # Create mock client that raises authentication error
+    mocker.patch.object(HelloWorldClient, "say_hello", side_effect=ContentClientAuthenticationError("Invalid API key"))
+
+    # Create params
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password="wrong-key"),
+        is_fetch=False,
+    )
+
+    with pytest.raises(DemistoException, match="Invalid Credentials. Please verify your API key."):
+        client = HelloWorldClient(params)
+        test_module(client, params)
+
+
+# endregion
+
+# region helloworld-say-hello
 
 
 class TestHelloworldSayHelloArgs:
@@ -312,218 +401,121 @@ class TestHelloworldSayHelloArgs:
             HelloworldSayHelloArgs()  # type: ignore[call-arg]
 
 
-# ========== HelloworldAlertListArgs Model Tests ==========
+@pytest.mark.parametrize(
+    "name",
+    [
+        pytest.param("World", id="Simple name"),
+        pytest.param("John Doe", id="Name with space"),
+        pytest.param("José García", id="Name with accents"),
+    ],
+)
+def test_say_hello_command(mocker: MockerFixture, name: str):
+    """
+    Given:
+        - Valid client and args with different name values.
+    When:
+        - Running say_hello_command.
+    Then:
+        - Assert client.say_hello is called once with the provided name.
+        - Assert CommandResults is returned with correct readable_output and outputs.
+    """
+    from HelloWorldV2 import say_hello_command, HelloworldSayHelloArgs
 
-
-class TestHelloworldAlertListArgs:
-    @pytest.mark.parametrize(
-        "alert_id,severity",
-        [
-            pytest.param(123, None, id="With alert_id only"),
-            pytest.param(None, "high", id="With severity only"),
-        ],
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
     )
-    def test_alert_list_args_valid_combinations(self, alert_id, severity):
-        """
-        Given:
-            - Either alert_id or severity (but not both).
-        When:
-            - Initializing HelloworldAlertListArgs.
-        Then:
-            - Assert model is created successfully.
-        """
-        from HelloWorldV2 import HelloworldAlertListArgs
+    client = HelloWorldClient(params)
 
-        args = HelloworldAlertListArgs(alert_id=alert_id, severity=severity)
-        assert args.alert_id == alert_id
-        assert args.severity == severity
+    # Mock client.say_hello
+    expected_response = f"Hello {name}"
+    mock_say_hello = mocker.patch.object(client, "say_hello", return_value=expected_response)
 
-    @pytest.mark.parametrize(
-        "alert_id,severity",
-        [
-            pytest.param(None, None, id="Neither provided"),
-            pytest.param(123, "high", id="Both provided"),
-        ],
+    # Create args
+    args = HelloworldSayHelloArgs(name=name)
+
+    # Execute command
+    result = say_hello_command(client, args)
+
+    # Assertions
+    assert mock_say_hello.call_count == 1
+    assert mock_say_hello.call_args.kwargs == {"name": name}
+
+    # Verify CommandResults
+    assert result.readable_output == f"## {expected_response}"
+    assert result.outputs == {"name": name}
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Hello"
+
+
+# endregion
+
+# region fetch-incidents / fetch-events
+
+
+def test_create_events(mocker: MockerFixture):
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running create_events.
+    Then:
+        - Assert format_as_events is called once with correct parameters.
+        - Assert send_events_to_xsiam is called once with formatted events.
+    """
+    from HelloWorldV2 import create_events, format_as_events, EventsDatasetConfigs
+
+    # Load mock alert data
+    mock_alerts = util_load_json("test_data/alert_events.json")
+    expected_formatted_events = format_as_events(mock_alerts, time_field="date")
+    mock_send_events = mocker.patch("HelloWorldV2.send_events_to_xsiam")
+
+    # Execute function
+    create_events(mock_alerts)
+
+    assert mock_send_events.call_count == 1
+    assert mock_send_events.call_args.kwargs == {
+        "events": expected_formatted_events,
+        "vendor": EventsDatasetConfigs.VENDOR.value,
+        "product": EventsDatasetConfigs.PRODUCT.value,
+        "client_class": ContentClient,
+    }
+
+
+def test_create_incidents(mocker: MockerFixture):
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running create_incidents.
+    Then:
+        - Assert format_as_incidents is called once with correct parameters.
+        - Assert demisto.incidents is called once with formatted incidents.
+    """
+    from HelloWorldV2 import create_incidents, format_as_incidents
+
+    # Load mock alert data
+    mock_alerts = util_load_json("test_data/alert_events.json")
+
+    # Mock formatted incidents
+    expected_formatted_incidents = format_as_incidents(
+        mock_alerts, id_field="id", occurred_field="date", severity_field="severity"
     )
-    def test_alert_list_args_invalid_combinations(self, alert_id, severity):
-        """
-        Given:
-            - Either both alert_id and severity, or neither.
-        When:
-            - Initializing HelloworldAlertListArgs.
-        Then:
-            - Assert DemistoException is raised with appropriate message.
-        """
-        from HelloWorldV2 import HelloworldAlertListArgs
 
-        with pytest.raises(DemistoException, match="Either 'alert_id' or 'severity' arguments need to be provided."):
-            HelloworldAlertListArgs(alert_id=alert_id, severity=severity)
+    # Mock helper functions
+    mock_demisto_incidents = mocker.patch("HelloWorldV2.demisto.incidents")
+
+    # Execute function
+    create_incidents(mock_alerts)
+
+    # Assertions
+    assert mock_demisto_incidents.call_count == 1
+    assert mock_demisto_incidents.call_args.args[0] == expected_formatted_incidents
 
 
-# ========== HelloworldAlertNoteCreateArgs Model Tests ==========
+# endregion
 
-
-class TestHelloworldAlertNoteCreateArgs:
-    @pytest.mark.parametrize(
-        "alert_id,note_text",
-        [
-            pytest.param(1, "Simple note", id="Simple note"),
-            pytest.param(999, "Note with special chars: !@#$%", id="Special chars"),
-            pytest.param(42, "Very long note " * 50, id="Long note"),
-        ],
-    )
-    def test_alert_note_create_args_valid(self, alert_id, note_text):
-        """
-        Given:
-            - A positive alert_id and note_text.
-        When:
-            - Initializing HelloworldAlertNoteCreateArgs.
-        Then:
-            - Assert model is created successfully.
-        """
-        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
-
-        args = HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text=note_text)
-        assert args.alert_id == alert_id
-        assert args.note_text == note_text
-
-    @pytest.mark.parametrize(
-        "alert_id",
-        [
-            pytest.param(0, id="Zero alert_id"),
-            pytest.param(-1, id="Negative alert_id"),
-            pytest.param(-999, id="Large negative alert_id"),
-        ],
-    )
-    def test_alert_note_create_args_invalid_alert_id(self, alert_id):
-        """
-        Given:
-            - A non-positive alert_id.
-        When:
-            - Initializing HelloworldAlertNoteCreateArgs.
-        Then:
-            - Assert DemistoException is raised.
-        """
-        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
-
-        with pytest.raises(DemistoException, match="Please provide a valid 'alert_id' argument"):
-            HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text="Test note")
-
-    def test_alert_note_create_args_missing_note_text(self):
-        """
-        Given:
-            - No note_text provided.
-        When:
-            - Initializing HelloworldAlertNoteCreateArgs.
-        Then:
-            - Assert DemistoException is raised.
-        """
-        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
-
-        with pytest.raises(DemistoException, match="note_text"):
-            HelloworldAlertNoteCreateArgs(alert_id=1)  # type: ignore[call-arg]
-
-
-# ========== HelloWorldGetEventsArgs Model Tests ==========
-
-
-class TestHelloWorldGetEventsArgs:
-    @pytest.mark.parametrize(
-        "limit,should_push_events",
-        [
-            pytest.param(10, False, id="Defaults"),
-            pytest.param(100, True, id="With limit and push"),
-            pytest.param(50, False, id="With limit no push"),
-        ],
-    )
-    def test_get_events_args_valid(self, mocker: MockerFixture, limit: int, should_push_events: bool):
-        """
-        Given:
-            - Optional limit and should_push_events values.
-        When:
-            - Initializing HelloWorldGetEventsArgs.
-        Then:
-            - Assert model is created successfully with correct values.
-        """
-        from HelloWorldV2 import HelloWorldGetEventsArgs
-
-        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
-
-        args = HelloWorldGetEventsArgs(limit=limit, severity=HelloWorldSeverity.HIGH, should_push_events=should_push_events)
-        assert args.limit == limit
-        assert args.should_push_events == should_push_events
-
-
-# ========== HelloWorldJobSubmitArgs Model Tests ==========
-
-
-class TestHelloWorldJobSubmitArgs:
-    @pytest.mark.parametrize(
-        "interval,timeout",
-        [
-            pytest.param(30, 600, id="Defaults"),
-            pytest.param("30", "300", id="String numbers"),
-        ],
-    )
-    def test_job_submit_args_valid(self, interval, timeout):
-        """
-        Given:
-            - Optional interval_in_seconds and timeout_in_seconds values.
-        When:
-            - Initializing HelloWorldJobSubmitArgs.
-        Then:
-            - Assert model is created successfully.
-            - Assert values are converted to integers.
-        """
-        from HelloWorldV2 import HelloWorldJobSubmitArgs
-
-        args = HelloWorldJobSubmitArgs(interval_in_seconds=interval, timeout_in_seconds=timeout)
-        assert isinstance(args.interval_in_seconds, int)
-        assert isinstance(args.timeout_in_seconds, int)
-
-
-# ========== HelloWorldJobPollArgs Model Tests ==========
-
-
-class TestHelloWorldJobPollArgs:
-    @pytest.mark.parametrize(
-        "job_id",
-        [
-            pytest.param("abc-123", id="Alphanumeric ID"),
-            pytest.param("job_12345", id="Underscore ID"),
-            pytest.param("550e8400-e29b-41d4-a716-446655440000", id="UUID ID"),
-        ],
-    )
-    def test_job_poll_args_valid_job_ids(self, job_id):
-        """
-        Given:
-            - A valid job_id string.
-        When:
-            - Initializing HelloWorldJobPollArgs.
-        Then:
-            - Assert model is created successfully.
-        """
-        from HelloWorldV2 import HelloWorldJobPollArgs
-
-        args = HelloWorldJobPollArgs(job_id=job_id)
-        assert args.job_id == job_id
-
-    def test_job_poll_args_missing_job_id(self):
-        """
-        Given:
-            - No job_id provided.
-        When:
-            - Initializing HelloWorldJobPollArgs.
-        Then:
-            - Assert DemistoException is raised.
-        """
-        from HelloWorldV2 import HelloWorldJobPollArgs
-
-        with pytest.raises(DemistoException, match="job_id"):
-            HelloWorldJobPollArgs()  # type: ignore[call-arg]
-
-
-# ========== IpArgs Model Tests ==========
+# region ip reputation
 
 
 class TestIpArgs:
@@ -587,138 +579,6 @@ class TestIpArgs:
         args = IpArgs(ip=["not-an-ip", "also-invalid"])
         with pytest.raises(ValueError):
             _ = args.ips
-
-
-@pytest.mark.parametrize(
-    "is_fetch",
-    [
-        pytest.param(False, id="Fetching disabled"),
-        pytest.param(True, id="Fetching enabled"),
-    ],
-)
-def test_module_success(mocker: MockerFixture, is_fetch: bool):
-    """
-    Given:
-        - Valid client and params.
-        - is_fetch parameter set to True or False.
-    When:
-        - Running test_module.
-    Then:
-        - Assert client.say_hello is called once.
-        - Assert fetch_alerts is called once if is_fetch is True, not called if False.
-        - Assert "ok" is returned.
-    """
-    from HelloWorldV2 import test_module
-
-    # Create mock client
-    mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
-
-    # Mock fetch_alerts function
-    mock_fetch_alerts = mocker.patch("HelloWorldV2.fetch_alerts")
-
-    # Create params with is_fetch set accordingly
-    params = HelloWorldParams(
-        url="https://api.example.com",
-        credentials=Credentials(password=DUMMY_VALID_API_KEY),
-        is_fetch=is_fetch,
-        severity=HelloWorldSeverity.HIGH,
-    )
-    client = HelloWorldClient(params)
-
-    # Execute test_module
-    result = test_module(client, params)
-
-    # Assertions
-    assert result == "ok"
-    assert mock_client_say_hello.call_count == 1
-    assert mock_client_say_hello.call_args.kwargs == {"name": "Test"}
-
-    if is_fetch:
-        assert mock_fetch_alerts.call_count == 1
-        assert mock_fetch_alerts.call_args.kwargs == {
-            "client": client,
-            "max_fetch": 1,
-            "last_run": HelloWorldLastRun(),
-            "severity": params.severity,
-        }
-    else:
-        assert mock_fetch_alerts.call_count == 0
-
-
-def test_module_authentication_error(mocker: MockerFixture):
-    """
-    Given:
-        - Client that raises ContentClientAuthenticationError.
-    When:
-        - Running test_module.
-    Then:
-        - Assert appropriate error message is returned.
-    """
-    from HelloWorldV2 import test_module, ContentClientAuthenticationError
-
-    # Mock demisto functions
-    mocker.patch("HelloWorldV2.demisto.error")
-
-    # Create mock client that raises authentication error
-    mocker.patch.object(HelloWorldClient, "say_hello", side_effect=ContentClientAuthenticationError("Invalid API key"))
-
-    # Create params
-    params = HelloWorldParams(
-        url="https://api.example.com",
-        credentials=Credentials(password="wrong-key"),
-        is_fetch=False,
-    )
-
-    with pytest.raises(DemistoException, match="Invalid Credentials. Please verify your API key."):
-        client = HelloWorldClient(params)
-        test_module(client, params)
-
-
-@pytest.mark.parametrize(
-    "name",
-    [
-        pytest.param("World", id="Simple name"),
-        pytest.param("John Doe", id="Name with space"),
-        pytest.param("José García", id="Name with accents"),
-    ],
-)
-def test_say_hello_command(mocker: MockerFixture, name: str):
-    """
-    Given:
-        - Valid client and args with different name values.
-    When:
-        - Running say_hello_command.
-    Then:
-        - Assert client.say_hello is called once with the provided name.
-        - Assert CommandResults is returned with correct readable_output and outputs.
-    """
-    from HelloWorldV2 import say_hello_command, HelloworldSayHelloArgs
-
-    # Create params and client
-    params = HelloWorldParams(
-        url="https://api.example.com",
-        credentials=Credentials(password=DUMMY_VALID_API_KEY),
-    )
-    client = HelloWorldClient(params)
-
-    # Mock client.say_hello
-    expected_response = f"Hello {name}"
-    mock_say_hello = mocker.patch.object(client, "say_hello", return_value=expected_response)
-
-    # Create args
-    args = HelloworldSayHelloArgs(name=name)
-
-    # Execute command
-    result = say_hello_command(client, args)
-
-    # Assertions
-    assert mock_say_hello.call_count == 1
-    assert mock_say_hello.call_args.kwargs == {"name": name}
-
-    # Verify CommandResults
-    assert result.readable_output == f"## {expected_response}"
-    assert result.outputs == {"name": name}
-    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Hello"
 
 
 @pytest.mark.parametrize(
@@ -943,6 +803,165 @@ def test_ip_reputation_command_threshold_override(mocker: MockerFixture):
     assert result.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
 
 
+# endregion
+
+# region helloworld-alert-list
+
+
+class TestHelloworldAlertListArgs:
+    @pytest.mark.parametrize(
+        "alert_id,severity",
+        [
+            pytest.param(123, None, id="With alert_id only"),
+            pytest.param(None, "high", id="With severity only"),
+        ],
+    )
+    def test_alert_list_args_valid_combinations(self, alert_id, severity):
+        """
+        Given:
+            - Either alert_id or severity (but not both).
+        When:
+            - Initializing HelloworldAlertListArgs.
+        Then:
+            - Assert model is created successfully.
+        """
+        from HelloWorldV2 import HelloworldAlertListArgs
+
+        args = HelloworldAlertListArgs(alert_id=alert_id, severity=severity)
+        assert args.alert_id == alert_id
+        assert args.severity == severity
+
+    @pytest.mark.parametrize(
+        "alert_id,severity",
+        [
+            pytest.param(None, None, id="Neither provided"),
+            pytest.param(123, "high", id="Both provided"),
+        ],
+    )
+    def test_alert_list_args_invalid_combinations(self, alert_id, severity):
+        """
+        Given:
+            - Either both alert_id and severity, or neither.
+        When:
+            - Initializing HelloworldAlertListArgs.
+        Then:
+            - Assert DemistoException is raised with appropriate message.
+        """
+        from HelloWorldV2 import HelloworldAlertListArgs
+
+        with pytest.raises(DemistoException, match="Either 'alert_id' or 'severity' arguments need to be provided."):
+            HelloworldAlertListArgs(alert_id=alert_id, severity=severity)
+
+
+@pytest.mark.parametrize(
+    "alert_id,severity,limit,expected_method",
+    [
+        pytest.param(123, None, 10, "get_alert", id="With alert_id"),
+        pytest.param(None, HelloWorldSeverity.HIGH, 10, "get_alert_list", id="With severity"),
+    ],
+)
+def test_alert_list_command(
+    mocker: MockerFixture, alert_id: int | None, severity: HelloWorldSeverity | None, limit: int, expected_method: str
+):
+    """
+    Given:
+        - Valid client and args with either alert_id or severity.
+    When:
+        - Running alert_list_command.
+    Then:
+        - Assert correct client method is called (get_alert for alert_id, get_alert_list for severity).
+        - Assert tableToMarkdown is called with correct args.
+        - Assert CommandResults is returned with correct outputs.
+    """
+    from HelloWorldV2 import alert_list_command, HelloworldAlertListArgs
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alert data
+    mock_alert = {
+        "id": alert_id or 1,
+        "severity": severity.value if severity else "high",
+        "user": "test@example.com",
+        "action": "Testing",
+        "date": "2026-01-15T00:00:00",
+        "status": "Success",
+    }
+
+    # Mock the appropriate client method
+    if expected_method == "get_alert":
+        mock_get_alert = mocker.patch.object(client, "get_alert", return_value=mock_alert)
+        mock_get_alert_list = mocker.patch.object(client, "get_alert_list")
+    else:  # get_alert_list
+        mock_get_alert = mocker.patch.object(client, "get_alert")
+        mock_get_alert_list = mocker.patch.object(client, "get_alert_list", return_value=[mock_alert])
+
+    # Mock tableToMarkdown
+    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
+
+    # Create args
+    args = HelloworldAlertListArgs(alert_id=alert_id, severity=severity, limit=limit)
+
+    # Execute command
+    result = alert_list_command(client, args)
+
+    # Assertions - verify correct method was called
+    if expected_method == "get_alert":
+        assert mock_get_alert.call_count == 1
+        assert mock_get_alert.call_args.args == (alert_id,)
+        assert mock_get_alert_list.call_count == 0
+    else:  # get_alert_list
+        assert mock_get_alert_list.call_count == 1
+        assert mock_get_alert_list.call_args.kwargs == {"limit": limit, "severity": severity}
+        assert mock_get_alert.call_count == 0
+
+    # Verify tableToMarkdown was called
+    assert mock_table_to_markdown.call_count == 1
+    assert mock_table_to_markdown.call_args.args[0] == "Items List (Sample Data)"
+    assert isinstance(mock_table_to_markdown.call_args.args[1], list)
+
+    # Verify CommandResults
+    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Alert"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, list)
+
+
+# endregion
+
+# region helloworld-get-events
+
+
+class TestHelloWorldGetEventsArgs:
+    @pytest.mark.parametrize(
+        "limit,should_push_events",
+        [
+            pytest.param(10, False, id="Defaults"),
+            pytest.param(100, True, id="With limit and push"),
+            pytest.param(50, False, id="With limit no push"),
+        ],
+    )
+    def test_get_events_args_valid(self, mocker: MockerFixture, limit: int, should_push_events: bool):
+        """
+        Given:
+            - Optional limit and should_push_events values.
+        When:
+            - Initializing HelloWorldGetEventsArgs.
+        Then:
+            - Assert model is created successfully with correct values.
+        """
+        from HelloWorldV2 import HelloWorldGetEventsArgs
+
+        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
+
+        args = HelloWorldGetEventsArgs(limit=limit, severity=HelloWorldSeverity.HIGH, should_push_events=should_push_events)
+        assert args.limit == limit
+        assert args.should_push_events == should_push_events
+
+
 def test_get_events_command(mocker: MockerFixture):
     """
     Given:
@@ -989,6 +1008,72 @@ def test_get_events_command(mocker: MockerFixture):
     assert mock_table_to_markdown.call_args.args == ("HelloWorld Events", mock_events)
 
 
+# endregion
+
+# region helloworld-alert-note-create
+
+
+class TestHelloworldAlertNoteCreateArgs:
+    @pytest.mark.parametrize(
+        "alert_id,note_text",
+        [
+            pytest.param(1, "Simple note", id="Simple note"),
+            pytest.param(999, "Note with special chars: !@#$%", id="Special chars"),
+            pytest.param(42, "Very long note " * 50, id="Long note"),
+        ],
+    )
+    def test_alert_note_create_args_valid(self, alert_id, note_text):
+        """
+        Given:
+            - A positive alert_id and note_text.
+        When:
+            - Initializing HelloworldAlertNoteCreateArgs.
+        Then:
+            - Assert model is created successfully.
+        """
+        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
+
+        args = HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text=note_text)
+        assert args.alert_id == alert_id
+        assert args.note_text == note_text
+
+    @pytest.mark.parametrize(
+        "alert_id",
+        [
+            pytest.param(0, id="Zero alert_id"),
+            pytest.param(-1, id="Negative alert_id"),
+            pytest.param(-999, id="Large negative alert_id"),
+        ],
+    )
+    def test_alert_note_create_args_invalid_alert_id(self, alert_id):
+        """
+        Given:
+            - A non-positive alert_id.
+        When:
+            - Initializing HelloworldAlertNoteCreateArgs.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
+
+        with pytest.raises(DemistoException, match="Please provide a valid 'alert_id' argument"):
+            HelloworldAlertNoteCreateArgs(alert_id=alert_id, note_text="Test note")
+
+    def test_alert_note_create_args_missing_note_text(self):
+        """
+        Given:
+            - No note_text provided.
+        When:
+            - Initializing HelloworldAlertNoteCreateArgs.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from HelloWorldV2 import HelloworldAlertNoteCreateArgs
+
+        with pytest.raises(DemistoException, match="note_text"):
+            HelloworldAlertNoteCreateArgs(alert_id=1)  # type: ignore[call-arg]
+
+
 def test_alert_note_create_command(mocker: MockerFixture):
     """
     Given:
@@ -1031,6 +1116,36 @@ def test_alert_note_create_command(mocker: MockerFixture):
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.readable_output == "Note was created successfully."
+
+
+# endregion
+
+# region helloworld-job-submit
+
+
+class TestHelloWorldJobSubmitArgs:
+    @pytest.mark.parametrize(
+        "interval,timeout",
+        [
+            pytest.param(30, 600, id="Defaults"),
+            pytest.param("30", "300", id="String numbers"),
+        ],
+    )
+    def test_job_submit_args_valid(self, interval, timeout):
+        """
+        Given:
+            - Optional interval_in_seconds and timeout_in_seconds values.
+        When:
+            - Initializing HelloWorldJobSubmitArgs.
+        Then:
+            - Assert model is created successfully.
+            - Assert values are converted to integers.
+        """
+        from HelloWorldV2 import HelloWorldJobSubmitArgs
+
+        args = HelloWorldJobSubmitArgs(interval_in_seconds=interval, timeout_in_seconds=timeout)
+        assert isinstance(args.interval_in_seconds, int)
+        assert isinstance(args.timeout_in_seconds, int)
 
 
 def test_job_submit_command(mocker: MockerFixture):
@@ -1086,6 +1201,49 @@ def test_job_submit_command(mocker: MockerFixture):
         "interval_in_seconds": interval_in_seconds,
         "timeout_in_seconds": timeout_in_seconds,
     }
+
+
+# endregion
+
+# region helloworld-job-poll
+
+
+class TestHelloWorldJobPollArgs:
+    @pytest.mark.parametrize(
+        "job_id",
+        [
+            pytest.param("abc-123", id="Alphanumeric ID"),
+            pytest.param("job_12345", id="Underscore ID"),
+            pytest.param("550e8400-e29b-41d4-a716-446655440000", id="UUID ID"),
+        ],
+    )
+    def test_job_poll_args_valid_job_ids(self, job_id):
+        """
+        Given:
+            - A valid job_id string.
+        When:
+            - Initializing HelloWorldJobPollArgs.
+        Then:
+            - Assert model is created successfully.
+        """
+        from HelloWorldV2 import HelloWorldJobPollArgs
+
+        args = HelloWorldJobPollArgs(job_id=job_id)
+        assert args.job_id == job_id
+
+    def test_job_poll_args_missing_job_id(self):
+        """
+        Given:
+            - No job_id provided.
+        When:
+            - Initializing HelloWorldJobPollArgs.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from HelloWorldV2 import HelloWorldJobPollArgs
+
+        with pytest.raises(DemistoException, match="job_id"):
+            HelloWorldJobPollArgs()  # type: ignore[call-arg]
 
 
 def test_job_poll_command_complete(mocker: MockerFixture):
@@ -1187,141 +1345,9 @@ def test_job_poll_command_in_progress(mocker: MockerFixture):
     assert result is None
 
 
-@pytest.mark.parametrize(
-    "alert_id,severity,limit,expected_method",
-    [
-        pytest.param(123, None, 10, "get_alert", id="With alert_id"),
-        pytest.param(None, HelloWorldSeverity.HIGH, 10, "get_alert_list", id="With severity"),
-    ],
-)
-def test_alert_list_command(
-    mocker: MockerFixture, alert_id: int | None, severity: HelloWorldSeverity | None, limit: int, expected_method: str
-):
-    """
-    Given:
-        - Valid client and args with either alert_id or severity.
-    When:
-        - Running alert_list_command.
-    Then:
-        - Assert correct client method is called (get_alert for alert_id, get_alert_list for severity).
-        - Assert tableToMarkdown is called with correct args.
-        - Assert CommandResults is returned with correct outputs.
-    """
-    from HelloWorldV2 import alert_list_command, HelloworldAlertListArgs
+# endregion
 
-    # Create params and client
-    params = HelloWorldParams(
-        url="https://api.example.com",
-        credentials=Credentials(password=DUMMY_VALID_API_KEY),
-    )
-    client = HelloWorldClient(params)
-
-    # Mock alert data
-    mock_alert = {
-        "id": alert_id or 1,
-        "severity": severity.value if severity else "high",
-        "user": "test@example.com",
-        "action": "Testing",
-        "date": "2026-01-15T00:00:00",
-        "status": "Success",
-    }
-
-    # Mock the appropriate client method
-    if expected_method == "get_alert":
-        mock_get_alert = mocker.patch.object(client, "get_alert", return_value=mock_alert)
-        mock_get_alert_list = mocker.patch.object(client, "get_alert_list")
-    else:  # get_alert_list
-        mock_get_alert = mocker.patch.object(client, "get_alert")
-        mock_get_alert_list = mocker.patch.object(client, "get_alert_list", return_value=[mock_alert])
-
-    # Mock tableToMarkdown
-    mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
-
-    # Create args
-    args = HelloworldAlertListArgs(alert_id=alert_id, severity=severity, limit=limit)
-
-    # Execute command
-    result = alert_list_command(client, args)
-
-    # Assertions - verify correct method was called
-    if expected_method == "get_alert":
-        assert mock_get_alert.call_count == 1
-        assert mock_get_alert.call_args.args == (alert_id,)
-        assert mock_get_alert_list.call_count == 0
-    else:  # get_alert_list
-        assert mock_get_alert_list.call_count == 1
-        assert mock_get_alert_list.call_args.kwargs == {"limit": limit, "severity": severity}
-        assert mock_get_alert.call_count == 0
-
-    # Verify tableToMarkdown was called
-    assert mock_table_to_markdown.call_count == 1
-    assert mock_table_to_markdown.call_args.args[0] == "Items List (Sample Data)"
-    assert isinstance(mock_table_to_markdown.call_args.args[1], list)
-
-    # Verify CommandResults
-    assert result.outputs_prefix == f"{BASE_CONTEXT_OUTPUT_PREFIX}.Alert"
-    assert result.outputs_key_field == "id"
-    assert isinstance(result.outputs, list)
-
-
-def test_create_events(mocker: MockerFixture):
-    """
-    Given:
-        - List of alert dictionaries.
-    When:
-        - Running create_events.
-    Then:
-        - Assert format_as_events is called once with correct parameters.
-        - Assert send_events_to_xsiam is called once with formatted events.
-    """
-    from HelloWorldV2 import create_events, format_as_events, EventsDatasetConfigs
-
-    # Load mock alert data
-    mock_alerts = util_load_json("test_data/alert_events.json")
-    expected_formatted_events = format_as_events(mock_alerts, time_field="date")
-    mock_send_events = mocker.patch("HelloWorldV2.send_events_to_xsiam")
-
-    # Execute function
-    create_events(mock_alerts)
-
-    assert mock_send_events.call_count == 1
-    assert mock_send_events.call_args.kwargs == {
-        "events": expected_formatted_events,
-        "vendor": EventsDatasetConfigs.VENDOR.value,
-        "product": EventsDatasetConfigs.PRODUCT.value,
-        "client_class": ContentClient,
-    }
-
-
-def test_create_incidents(mocker: MockerFixture):
-    """
-    Given:
-        - List of alert dictionaries.
-    When:
-        - Running create_incidents.
-    Then:
-        - Assert format_as_incidents is called once with correct parameters.
-        - Assert demisto.incidents is called once with formatted incidents.
-    """
-    from HelloWorldV2 import create_incidents, format_as_incidents
-
-    # Load mock alert data
-    mock_alerts = util_load_json("test_data/alert_events.json")
-
-    # Mock formatted incidents
-    expected_formatted_incidents = format_as_incidents(
-        mock_alerts, id_field="id", occurred_field="date", severity_field="severity"
-    )
-
-    # Mock helper functions
-    mock_demisto_incidents = mocker.patch("HelloWorldV2.demisto.incidents")
-
-    # Execute function
-    create_incidents(mock_alerts)
-
-    # Assertions
-    assert mock_demisto_incidents.call_count == 1
-    assert mock_demisto_incidents.call_args.args[0] == expected_formatted_incidents
+# region helloworld-get-assets
 
 
 def test_get_assets_command(mocker: MockerFixture):
@@ -1373,6 +1399,11 @@ def test_get_assets_command(mocker: MockerFixture):
     assert result.readable_output == "Mocked table"
 
 
+# endregion
+
+# region helloworld-get-vulnerabilities
+
+
 def test_get_vulnerabilities_command(mocker: MockerFixture):
     """
     Given:
@@ -1420,3 +1451,6 @@ def test_get_vulnerabilities_command(mocker: MockerFixture):
 
     # Verify CommandResults
     assert result.readable_output == "Mocked table"
+
+
+# endregion

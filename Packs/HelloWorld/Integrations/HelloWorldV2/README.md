@@ -47,7 +47,7 @@ Hello command - prints hello to anyone.
 
 #### Command example
 
-```!helloworld-say-hello name="Hello Dbot"```
+```!helloworld-say-hello name="Dbot"```
 
 #### Context Example
 
@@ -497,539 +497,355 @@ There is no context output for this command.
 
 ## Developer Guide
 
-This section documents the key architectural patterns and code features in HelloWorldV2 that demonstrate best practices for building robust Cortex XSOAR/XSIAM integrations.
+This section documents the key architectural patterns and code features in Hello World v2 and provides guidelines for building robust Cortex integrations.
 
-### Table of Contents
+### Key Patterns and Features
 
-- [Key Features](#key-features)
-- [Architecture Overview](#architecture-overview)
-- [Pydantic Models for Validation](#pydantic-models-for-validation)
-- [ExecutionConfig Pattern](#executionconfig-pattern)
-- [Last Run State Management](#last-run-state-management)
-- [Severity Mapping](#severity-mapping)
-- [Logging Best Practices](#logging-best-practices)
-- [Command Implementation Patterns](#command-implementation-patterns)
-- [Complete Integration Example](#complete-integration-example)
+| **Feature** | **Description** |
+| --- | --- |
+| Robust User Input Validation | Type-safe configuration parameter and command argument validation with user-friendly error messages. |
+| Modern API Client | Uses the `ContentClient`, which provides enhanced reliability, observability, and developer experience features. |
+| Polling / Scheduled Commands | Commands that can schedule the future execution of other commands; suitable for periodically checking the status of a long-running external process or asynchronous task. |
+| Centralized Execution Configuration | A centralized object for commands, configuration params, command arguments, and fetch last run state to minimize redundant system calls. |
+| Dual Fetch Incidents / Events Support | A Unified flow for fetching Cortex XSOAR incidents and Cortex XSIAM events. |
+| Fetch Assets and Vulnerabilities Support | A flow for fetching a current snapshot of an environment's resources and vulnerabilities in Cortex XSIAM. |
+| Structured Logging | A consistent, prefix-based Python f-string format that captures specific variable context, ensuring messages are easily searchable and facilitate efficient debugging of the execution flow. |
 
----
+### How to Build an Integration
 
-## Key Features
+Below is a step-by-step guide on how to build an integration that implements a basic automation command and fetch flow.
 
-| Feature | Description |
-|---------|-------------|
-| **Pydantic Validation** | Type-safe parameter and argument validation with user-friendly error messages |
-| **ExecutionConfig Pattern** | Centralized entry point management for command, params, args, and state |
-| **Property-Based Args** | Type-safe command argument access via dedicated properties |
-| **Dual Fetch Support** | Separate implementations for XSOAR incidents and XSIAM events |
-| **State Management** | Robust last_run handling with dedicated classes for each fetch type |
-| **Severity Mapping** | Enum-based severity conversion with clear documentation |
-| **Structured Logging** | Consistent logging format with contextual information |
-| **Generic Polling** | Built-in support for long-running operations |
+1. [Import the Required Modules](#1-import-the-required-modules)
+2. [Define a Configuration Parameters Validation Model](#2-define-a-configuration-parameters-validation-model)
+3. [Create an API Client Class](#3-create-an-api-client-class)
+4. [Implement Standard Automation Command Pattern](#4-implement-standard-automation-command-pattern)
+5. [Implement Standard Fetch Flow Pattern](#5-implement-standard-fetch-flow-pattern)
+6. [Setup Execution Configuration](#6-setup-execution-configuration)
+7. [Define the Main Function](#7-define-the-main-function)
 
----
+#### 1. Import the Required Modules
 
-## Architecture Overview
-
-HelloWorldV2 follows a layered architecture:
-
-```
-┌─────────────────────────────────────────────────────┐
-│                 main() Function                     │
-│  - Initializes ExecutionConfig                      │
-│  - Initializes HelloWorldClient                     │
-│  - Routes to command functions                      │
-└─────────────────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────┐
-│             ExecutionConfig Class                   │
-│  - Holds command, params, args, last_run            │
-│  - Provides type-safe property access               │
-│  - Validates inputs via Pydantic models             │
-└─────────────────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────┐
-│               Command Functions                     │
-│  - Access args via ExecutionConfig properties       │
-│  - Call HelloWorldClient methods                    │
-│  - Return CommandResults                            │
-└─────────────────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────┐
-│             HelloWorldClient Class                  │
-│  - Inherits from ContentClient                      │
-│  - Implements API calls                             │
-│  - Returns raw data (no integration logic)          │
-└─────────────────────────────────────────────────────┘
-```
-
----
-
-## Pydantic Models for Validation
-
-HelloWorldV2 uses Pydantic for robust input validation with user-friendly error messages.
-
-You can use an AI agent to automatically generate models from the YML file.
-
-### Parameter Model Example
+At the top of the integration code file, import the required modules. This can include built-in Python modules such as `enum`, `typing`, and `asyncio`, as well as Content-related imports such as `CommonServerPython` and `ContentClientApiModule`.
 
 ```python
-class HelloWorldParams(BaseParams):
+# Use enumerations to group related constants or define all possible values of configuration parameter or command argument
+# For example, severity values: critical, high, moderate, low, unknown
+from enum import Enum
+
+# Use `typing` and/or `collections.abc` for defining attribute types in validation models and for type hinting.
+from typing import Any
+from collections.abc import Awaitable
+
+# Import `CommonServerPython` and `demisto` class, which contain many useful helper and utility functions
+from CommonServerPython import *
+import demistomock as demisto
+
+# Optionally use `CommonServerUserPython` (for custom integrations) to override constants, functions, and classes defined in `CommonServerPython`
+from CommonServerUserPython import *
+
+# Import `ContentClientApiModule` to use the new `ContentClient` class, which contains improved error handling, thread safety, and authentication handling.
+from ContentClientApiModule import *
+
+# Add any other required imports depending on your code
+from datetime import datetime, UTC, timedelta
+```
+
+#### 2. Define a Configuration Parameters Validation Model
+
+Define the schema that corresponds to the configuration parameters in the integration YML file.  
+Use Pydantic classes that inherit from `ContentBaseModel` (or its subclasses like `BaseParams`) for robust input validation with user-friendly error messages.
+
+You can use an AI agent to automatically generate models from the configuration parameters defined in the integration YML file.
+
+```python
+class Credentials(ContentBaseModel):
+    """Credentials model for API authentication."""
+
+    username: str
+    password: SecretStr
+
+
+class MyIntegrationParams(BaseParams):
     """Integration parameters with validation.
     
     Attributes:
         url: API base URL (trailing slash removed automatically).
-        api_key: API authentication key (stored securely).
-        max_incidents_fetch: Maximum incidents per fetch for XSOAR (default: 10).
-        max_events_fetch: Maximum events per fetch for XSIAM (default: 1000).
-        severity: Alert severity filter for fetch-incidents.
+        credentials: Username and password for API Authentication.
+        max_fetch: Maximum incidents per fetch.
     """
-    
-    url: str
-    api_key: Credentials  # Assume `Credentials` Pydantic model already defined in the code
-    max_incidents_fetch: int = 10
-    max_events_fetch: int = 1000
-    severity: HelloWorldSeverity = HelloWorldSeverity.LOW
-    
-    @validator('url')
-    def clean_url(cls, v):
+    # `proxy` and `insecure` are already defined in `BaseParams`
+    url: AnyUrl
+    credentials: Credentials
+    # Ensure attribute name matches the param `name` field value in the YML
+    # To follow Python "snake_case" format, use an `alias` value for mapping to the `camelCase` param name in the YML
+    is_fetch: bool | None = Field(default=False, alias="isFetch")  # corresponds to "Fetch incidents" checkbox
+    first_fetch: str  = "1 week"
+    max_fetch: int = 50
+
+    @property
+    def first_fetch_datetime(self) -> datetime:
+        """Cast first fetch to a datetime object."""
+        return arg_to_datetime(self.first_fetch) or (datetime.now(tz=UTC) - timedelta(weeks=1))
+
+    @validator('url', reuse=True)
+    def clean_url(cls, v) -> str:
         """Remove trailing slash from URL."""
         return v.rstrip('/')
+    
+    @validator('max_fetch', reuse=True)
+    def validate_max_fetch(cls, v) -> int:
+        """Check that max fetch is not above the permitted value."""
+        max_fetch = arg_to_number(v)
+        if max_fetch > 1000:
+            raise ValueError("The maximum number of incidents per fetch must not be greater than 1000.")
+        return max_fetch
 ```
 
-### Argument Model Example
+#### 3. Create an API Client Class
+
+Create a `MyIntegrationClient` class that inherits from `ContentClient` to leverage built-in retry logic, rate limit handling, authentication, and thread safety.
+
+For authentication, define a custom `AuthHandler` if needed or use any of the included ones in `ContentClientApiModule` such as `APIKeyAuthHandler`, `BearerTokenAuthHandler`, or `BasicAuthHandler`.
 
 ```python
-class HelloWorldAlertListArgs(BaseArgs):
-    """Arguments for helloworld-alert-list command.
+# Example client class that inherits from ContentClient and adds two integration-specific methods
+
+class MyIntegrationClient(ContentClient):
+
+    def __init__(self, params: HelloWorldParams):
+        """Initialize client with ContentClient capabilities.
+
+        Args:
+            params (MyIntegrationParams): Validated integration configuration parameters.
+        """
+        credentials: Credentials = params.credentials
+        super().__init__(
+            base_url=params.url,
+            verify=params.verify,
+            proxy=params.proxy,
+            auth_handler=BasicAuthHandler(username=credentials.username, password=credentials.password),
+            client_name="MyIntegrationClient",
+            diagnostic_mode=is_debug_mode(),  # enable if commands are run with `debug-mode=true`
+        )
+
+    def get_item_by_id(self, item_id: int) -> dict[str, Any]:
+        """Get an item in MyIntegration by its ID.
+
+        Args:
+            item_id (int): Item ID.
+
+        Returns:
+            dict[str, Any]: Item dictionary.
+        """
+        endpoint = f"api/items/{item_id}"
+        return self.get(endpoint)  # JSON response bodies are decoded by default
+
+    def get_items_list(self, limit: int, start_time: str | None = None) -> list[dict]:
+        """Get a list of items in MyIntegration up to the limit.
+
+        Args:
+            limit (int): Maximum number of items to return.
+            start_time (str | None): Optional start time in ISO 8601 format.
+
+        Returns:
+            list[dict]: List of items.
+        """
+        endpoint = "api/items"
+        query_params = assign_params(limit=limit, start_time=start_time)  # use `assign_params` to remove empty values
+        return self.get(endpoint, params=query_params)
+```
+
+#### 4. Implement Standard Automation Command Pattern
+
+Define an arguments validation model and a command function for each command. Define additional (helper) functions if needed.
+
+You can use an AI agent to automatically generate models from the command arguments defined in the integration YML file.
+
+The code snippet below demonstrates how to implement a ***basic*** automation command.
+
+See the following references for example implementations of more complex commands:
+
+| **Type** | **Example** |
+| --- | --- |
+| [Polling / scheduled command](https://xsoar.pan.dev/docs/integrations/scheduled-commands) | `helloworld-job-poll` command in Hello World v2 |
+| [Generic reputation command](https://xsoar.pan.dev/docs/integrations/generic-commands-reputation) | `ip` command in Hello World v2 |
+
+```python
+# Basic automation command example implementation
+
+class MyIntegrationItemListArgs(BaseArgs):
+    """Arguments for `my-integration-item-list` command.
     
     Attributes:
-        alert_id: Optional alert ID to retrieve.
-        limit: Maximum number of alerts to return (default: 10).
-        severity: Optional severity filter.
+        item_id: Optional item ID to retrieve.
+        limit: Maximum number of items to retrieve (default: 10).
     """
-    
-    alert_id: int | None = None
+    item_id: int | None = None
     limit: int = 10
-    severity: HelloWorldSeverity | None = None
-```
 
-### Usage in Commands
 
-```python
-def alert_list_command(client: Client, args: HelloWorldAlertListArgs) -> CommandResults:
-    # Args are already validated and type-safe
-    if args.alert_id:
-        alerts = client.get_alert(args.alert_id)
+def my_integration_item_list_command(client: MyIntegrationClient, args: MyIntegrationItemListArgs) -> CommandResults:
+    """Run `my-integration-item-list` command logic.
+
+    Args:
+        client (MyIntegrationClient): An initialized API client instance.
+        args (MyIntegrationItemListArgs): Validated command arguments.
+
+    Returns:
+        CommandResults: Command results containing context and human-readable outputs.
+    """
+
+    if args.item_id:
+        items = client.get_item_by_id(item_id=args.item_id)
     else:
-        alerts = client.get_alert_list(
-            limit=args.limit,
-            severity=args.severity.value if args.severity else None
-        )
-    
+        items = client.get_items_list(limit=args.limit)
+
     return CommandResults(
-        outputs_prefix="HelloWorld.Alert",
-        outputs_key_field="id",
-        outputs=alerts
+        outputs_prefix="MyIntegration.Item",  # Context output prefix
+        outputs_key_field="id",  # Objects under the defined prefix will be deduplicated according to this field value
+        outputs=items,  # The items to return to the context output
+        readable_output=tableToMarkDown("My Integration Items", items),  # Human-readable entry to return to the war room
     )
 ```
 
----
+#### 5. Implement Standard Fetch Flow Pattern
 
-## ExecutionConfig Pattern
+The code snippet below demonstrates how to implement a ***basic*** `fetch-incidents` flow.
 
-The `ExecutionConfig` class centralizes command execution context, prevents redundant system calls (via the `demisto` class), and provides type-safe access to configuration parameters, command arguments, and fetch last run state.
+See the following references for example implementations of more complex fetch flows:
 
-### Core Concept
+| **Type** | **Example** |
+| --- | --- |
+| Unified Cortex XSOAR fetch incidents and Cortex XSIAM fetch events | `fetch-incidents` and `fetch-events` commands, respectively, in Hello World v2 |
+| Cortex XSIAM fetch assets flow | `fetch-assets` command in Hello World v2 |
+| Fetch indicators | `fetch-indicators` command in Hello World Feed |
 
 ```python
-class ExecutionConfig:
-    """Centralized execution configuration for command handling.
+# Basic fetch-incidents example implementation
+
+class MyIntegrationLastRun(BaseLastRun):
+    """State management for fetch-incidents.
+    
     Attributes:
-        command: The command being executed.
-        params: Raw configuration parameters.
-        args: Raw command arguments dictionary.
-        last_run: Raw state from previous fetch.
+        start_time: ISO 8601 timestamp of the last fetched item.
+        last_item_ids: List of item IDs from the last fetch time to prevent duplicates.
     """
+    start_time: str | None = None
+    last_item_ids: list[int] = []
+
+
+def fetch_incidents(
+    client: MyIntegrationClient,
+    last_run: MyIntegrationLastRun,
+    max_fetch: int,
+    first_fetch_datetime: datetime,
+) -> MyIntegrationLastRun:
+    """Fetch new items as incidents.
+
+    Args:
+        client (MyIntegrationClient): An initialized API client instance.
+        last_run (MyIntegrationLastRun): Last run state from previous fetch invocation.
+        max_fetch (int): Maximum number of incidents to fetch.
+        first_fetch_datetime (datetime): Date from which to start fetching incidents.
+    """
+    default_batch_limit: int = 100
+    start_time: str = last_run.start_time or first_fetch_datetime.isoformat()
+    last_item_ids: list[int] = last_run.last_item_ids
+
+    unique_items: list[dict] = []
+
+    while len(unique_items) < max_fetch:
+        # Send requests in batches to avoid exceeding the API's maximum `limit` value
+        remaining_count = max_fetch - len(unique_items)
+        batch_limit = min(default_batch_limit, remaining_count)
+        items = client.get_items_list(limit=batch_limit, start_time=start_time)
+
+        # Deduplication logic
+        for item in items:
+            if item["id"] in last_item_ids:
+                continue
+            unique_items.append(item)
     
-    def __init__(self):
-        self._command: str = demisto.command()
-        self._params: dict = demisto.params()
-        self._args: dict = demisto.args()
-        self._last_run: dict = demisto.getLastRun()
+    if unique_items:
+        start_time = unique_items[-1]["time"]
+        last_item_ids = [item["id"] for item in unique_items if item["time"] == start_time]
+    
+        # Formatting and incident creation logic
+        incidents = format_as_incidents(unique_items)
+        demisto.createIncidents(incidents)  # create incidents
+
+    return MyIntegrationLastRun(start_time=start_time, last_item_ids=last_item_ids)
 ```
 
-### Property-Based Argument Access
+#### 6. Setup Execution Configuration
 
-Each command has a dedicated property that returns validated arguments:
+Inherits from the `BaseExecutionConfig` class in `BaseContentApiModule` to centralize command execution context, prevent redundant system calls (via the `demisto` class), and provide type-safe access to configuration parameters, command arguments, and fetch last run state.
 
 ```python
-    @property
-    def alert_list_args(self) -> HelloWorldAlertListArgs:
-        """Get validated arguments for helloworld-alert-list command."""
-        return HelloWorldAlertListArgs.get(**self.args)
+class MyIntegrationExecutionConfig(BaseExecutionConfig):
 
     @property
-    def ip_args(self) -> HelloWorldIPArgs:
-        """Get validated arguments for ip command."""
-        return HelloWorldIPArgs.get(**self.args)
+    def params(self) -> MyIntegrationItemListArgs:
+        return MyIntegrationItemListArgs(**self._raw_params)
 
     @property
-    def get_events_args(self) -> HelloWorldGetEventsArgs:
-        """Get validated arguments for helloworld-get-events command."""
-        return HelloWorldGetEventsArgs.get(**self.args)
+    def item_list_args(self) -> MyIntegrationItemListArgs:
+        """Get validated arguments for `my-integration-item-list` command."""
+        return MyIntegrationItemListArgs.get(**self._raw_args)
+
+    @property
+    def last_run(self) -> MyIntegrationLastRun:
+        """Get validated last run object for `fetch-incidents` flow."""
+        return MyIntegrationLastRun(**self._raw_last_run)
 ```
 
-Similarly, for command, configuration parameter, and fetch last run state:
+#### 7. Define the Main Function
 
-```python
-    @property
-    def command(self) -> str:
-        """Get called command name."""
-        return self._command
+Define and implement a `main()` function, which would serve as the entrypoint into the integration logic.
 
-    @property
-    def params(self) -> HelloWorldParams:
-        """Get validated params."""
-        return HelloWorldParams(**self._params)
-    
-    @property
-    def events_last_run(self) -> HelloWorldEventsLastRun:
-        """Get validated fetch last run object."""
-        return HelloWorldEventsLastRun(**self._last_run)
-```
-
-### Benefits
-
-1. **Type Safety**: Arguments are validated and typed
-2. **Centralization**: All execution context in one place
-3. **Reusability**: Easy to pass to command functions
-4. **Testability**: Simple to mock for unit tests
-5. **Discoverability**: IDE autocomplete for all properties
-
-### Usage Example
+This function should initialize the Execution Configuration and API Client classes and route to the implemented command functions.
 
 ```python
 def main():
     execution = ExecutionConfig()
-    params: HelloWorldParams = execution.params
-    client = HelloWorldClient(params)
-    
-    # Route to command
-    if command == "helloworld-alert-list":
-        args = execution.alert_list_args
-        return_results(alert_list_command(client, args))
-    elif command == "ip":
-        args = execution.ip_args
-        return_results(ip_reputation_command(client, args))
-```
+    command: str = execution.command
+    client = None
 
----
-
-## Last Run State Management
-
-HelloWorldV2 uses dedicated classes for managing fetch state, ensuring type safety and clear structure.
-
-### Events Last Run (Cortex XSIAM)
-
-```python
-class HelloWorldEventsLastRun(BaseLastRun):
-    """State management for fetch-events (XSIAM).
-    
-    Attributes:
-        audit_start_time: ISO 8601 timestamp of the last fetched event.
-        last_audit_ids: List of event IDs from the last fetch time to prevent duplicates.
-    """
-    audit_start_time: str = "1 minute"  # by default, start fetching events from the last minute
-    last_audit_ids: list = []
-```
-
-### Incidents Last Run (Cortex XSOAR)
-
-```python
-class HelloWorldIncidentsLastRun(BaseLastRun):
-    """State management for fetch-incidents (XSOAR).
-    
-    Attributes:
-        alert_start_id: The ID of the last fetched alert.
-    """
-    alert_start_id: int = 0
-```
-
-### Usage in Fetch Commands
-
-```python
-def fetch_incidents(client: Client, last_run: HelloWorldIncidentsLastRun, max_fetch: int, severity: HelloWorldSeverity) -> tuple[dict, list[dict]]:
-    """Fetch incidents for XSOAR."""
-    # Fetch new alerts
-    alerts = client.get_alert_list_for_fetch(
-        limit=max_fetch,
-        last_id=last_run.alert_start_id,
-        severity=severity.value,
-    )
-    
-    # Process alerts into incidents
-    incidents = format_as_incidents(alerts)
-    # Create incidents
-    demisto.createIncidents(incidents)
-    # Update last run
-    last_run.alert_start_id = max(alerts, key=lambda alert: alert["id"])["id"]
-    last_run.set()
-    return
-```
-
----
-
-## Logging Best Practices
-
-HelloWorldV2 uses consistent, structured logging throughout the codebase.
-
-### Logging Format
-
-All log message are Python f-strings that follow the pattern:
-
-```python
-demisto.debug(f"[PREFIX] Message {variable=}.")
-```
-
-### Examples
-
-```python
-# In fetch_incidents
-demisto.debug(f"[Main] Starting fetch-incidents with {max_results=}, {severity=}")
-demisto.debug(f"[Client] Fetched {len(alerts)} alerts from API")
-demisto.debug(f"[Deduplication] Found {num_duplicates} duplicate alerts to skip")
-demisto.debug(f"[Formatting] Returning {len(incidents)} incidents")
-```
-
-### Benefits
-
-1. **Searchability**: Easy to grep logs with a specific prefix
-2. **Context**: Variable names and values clearly shown
-3. **Debugging**: Trace execution flow through logs
-4. **Consistency**: Same format across all log statements
-
----
-
-## Command Implementation Patterns
-
-### Standard Command Pattern
-
-```python
-def command_name_command(client: Client, args: IntegrationNameCommandArgs) -> CommandResults:
-    """Command description.
-    
-    Args:
-        client: ServiceName API client.
-        args: Validated command arguments.
-        
-    Returns:
-        CommandResults with outputs and readable output.
-    """
-    # 2. Call client method
-    data = client.api_method(
-        param1=args.param1,
-        param2=args.param2
-    )
-    
-    # 3. Return results
-    return CommandResults(
-        outputs_prefix="IntegrationName.Entity",  # prefix of context outputs
-        outputs_key_field="id",  # for deduplicating context outputs under the same prefix
-        outputs=data,  # context outputs
-        readable_output=tableToMarkdown("Title", data)  # human-readable output appearing in playground / war room
-    )
-```
-
-### Fetch Pattern (Incidents)
-
-```python
-def fetch_incidents(
-    client: Client,
-    config: ExecutionConfig
-) -> tuple[dict, list[dict]]:
-    """Fetch incidents for XSOAR.
-    
-    Args:
-        client: HelloWorld API client.
-        config: Execution configuration.
-        
-    Returns:
-        Tuple of (next_run, incidents).
-    """
-    # 1. Restore state
-    last_run = HelloWorldIncidentsLastRun.get(config.last_run)
-    
-    # 2. Fetch data
-    alerts = client.get_alert_list_for_fetch(
-        limit=config.params.max_incidents_fetch,
-        last_id=last_run.alert_start_id,
-        severity=config.params.severity.value
-    )
-    
-    # 3. Process into incidents
-    incidents = []
-    for alert in alerts:
-        incidents.append({
-            "name": alert["name"],
-            "occurred": alert["date"],
-            "severity": HelloWorldSeverity.convert_to_incident_severity(alert["severity"]),
-            "rawJSON": json.dumps(alert)
-        })
-        last_run.alert_start_id = max(last_run.alert_start_id, alert["id"])
-    
-    # 4. Return state and incidents
-    return last_run.set(), incidents
-```
-
-### Fetch Pattern (Events)
-
-```python
-def fetch_events(
-    client: Client,
-    config: ExecutionConfig
-) -> tuple[dict, list[dict]]:
-    """Fetch events for XSIAM.
-    
-    Args:
-        client: HelloWorld API client.
-        config: Execution configuration.
-        
-    Returns:
-        Tuple of (next_run, events).
-    """
-    # 1. Restore state
-    last_run = HelloWorldEventsLastRun.get(config.last_run)
-    
-    # 2. Determine start time
-    if last_run.audit_start_time:
-        start_time = dateparser.parse(last_run.audit_start_time)
-    else:
-        start_time = dateparser.parse("1 hour ago")
-    
-    # 3. Fetch events
-    events = client.get_audit_list_for_fetch(
-        limit=config.params.max_events_fetch,
-        start_time=start_time,
-        last_ids=last_run.last_audit_ids
-    )
-    
-    # 4. Deduplicate
-    events, num_dups = dedup_by_ids(events, last_run.last_audit_ids)
-    
-    # 5. Update state
-    if events:
-        last_event_time = events[-1]["timestamp"]
-        last_run.audit_start_time = last_event_time
-        last_run.last_audit_ids = [
-            e["id"] for e in events if e["timestamp"] == last_event_time
-        ]
-    
-    # 6. Return state and events
-    return last_run.set(), events
-```
-
----
-
-## Complete Integration Example
-
-Here's how all the patterns come together in the `main()` function:
-
-```python
-def main() -> None:
-    """Main function - parses params and routes commands."""
-    
-    # 1. Get raw inputs
-    params = demisto.params()
-    args = demisto.args()
-    command = demisto.command()
-    
     try:
-        # 2. Validate parameters
-        validated_params = HelloWorldParams.get(params)
-        
-        # 3. Validate API key
-        if validated_params.api_key:
-            validate_api_key(validated_params.api_key.get_secret_value())
-        
-        # 4. Create client
-        client = Client(
-            base_url=validated_params.url,
-            verify=validated_params.verify,
-            proxy=validated_params.proxy,
-            headers={"Authorization": f"Token {validated_params.api_key.get_secret_value()}"}
-        )
-        
-        # 5. Create execution config
-        config = ExecutionConfig(
-            command=command,
-            params=validated_params,
-            args=args,
-            last_run=demisto.getLastRun()
-        )
-        
-        # 6. Route to command
-        demisto.debug(f"[HelloWorld] Executing {command=}")
-        
+        params: MyIntegrationParams = execution.params
+        client = MyIntegrationClient(params)
+
+        # Ensure the integration implements connection / configuration testing logic
         if command == "test-module":
-            return_results(test_module(client, config))
-            
+            return_results(my_integration_test_module(client, params))
+        
+        # Route to automation command
+        elif command == "my-integration-item-list":
+            args = execution.item_list_args
+            return_results(my_integration_item_list_command(client, args))
+        
         elif command == "fetch-incidents":
-            next_run, incidents = fetch_incidents(client, config)
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            
-        elif command == "fetch-events":
-            next_run, events = fetch_events(client, config)
-            demisto.setLastRun(next_run)
-            send_events_to_xsiam(events, vendor="HelloWorld", product="API")
-            
-        elif command == "helloworld-say-hello":
-            return_results(say_hello_command(client, config))
-            
-        elif command == "helloworld-alert-list":
-            return_results(alert_list_command(client, config))
-            
-        elif command == "helloworld-alert-note-create":
-            return_results(alert_note_create_command(client, config))
-            
-        elif command == "ip":
-            return_results(ip_reputation_command(client, config))
-            
-        elif command == "helloworld-get-events":
-            return_results(get_events_command(client, config))
-            
-        elif command == "helloworld-job-submit":
-            return_results(job_submit_command(client, config))
-            
-        elif command == "helloworld-job-poll":
-            return_results(job_poll_command(client, config))
-            
+            last_run = execution.last_run
+            next_run = fetch_incidents(client, last_run, max_fetch=params.max_fetch, first_fetch_datetime=params.first_fetch_datetime)
+            next_run.set()
+
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-            
+
+    # Log exceptions and return errors
     except Exception as e:
-        demisto.error(f"[HelloWorld] Failed to execute {command}: {str(e)}")
+        demisto.error(f"[Main] Failed to execute {command=}: {str(e)}. {traceback.format_exc()}")
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    
+    finally:
+        demisto.debug(f"[Main] Generating diagnostic report after executing {command=}.")
+        if client:
+            client.log_optional_diagnostic_report()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
 ```
-
-### Key Takeaways
-
-1. **Validation First**: Validate all inputs before processing and inherit from `ContentBaseModel` to ensure clearly-presented validation errors.
-2. **Centralized Config**: Use `ExecutionConfig` to centralize command execution context and to prevent unnecessary `demisto` system calls.
-3. **Type Safety**: Leverage Pydantic 1.10 for type-safe configuration parameters, command arguments, and fetch last run state.
-4. **Clear Routing**: Simple `if`/`elif` chain, `match-case` statement, or a mapping `dict` for clear and legible command routing in the `main` function.
-5. **Consistent Logging**: Log at key points with consistent Python f-string format. Use log prefixes to aid with log querying.
-6. **Error Handling**: Catch all exceptions and return user-friendly errors with diagnostic messages if possible.
-7. **Separation of Concerns**: Client handles API calls and returns raw responses, commands functions handle integration-specific logic.
-
----
 
 ## Additional Resources
 
