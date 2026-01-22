@@ -8438,3 +8438,65 @@ def test_fetch_ngsiem_cases(mocker):
     assert cases[0]["name"] == "ngsiem_case ID: case1"
     assert cases[0]["severity"] == "High"
     assert last_run == {"offset": 1}
+
+
+def test_list_case_summaries_command_no_given_ids(mocker):
+    """
+    Test list_case_summaries_command without ids arg
+    Given
+     - No arguments given, as is
+    When
+     - The user is running list_case_summaries_command with no ids
+    Then
+     - Function is executed properly and returns no cases found message
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    mocker.patch.object(demisto, "args", return_value={})
+
+    result = list_case_summaries_command()
+
+    assert result.readable_output == "No cases were found."
+
+
+def test_list_case_summaries_command_with_given_ids(requests_mock, mocker):
+    """
+    Test list_case_summaries_command with ids arg
+    Given
+     - ids
+    When
+     - The user is running list_case_summaries_command with ids
+    Then
+     - Function is executed properly and get_cases_entities func was called
+    """
+    from CrowdStrikeFalcon import list_case_summaries_command
+
+    entity_response = {
+        "errors": [],
+        "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
+        "resources": [
+            {
+                "assigned_to_name": "Test with ids",
+                "cid": "string",
+                "created_time": "2022-02-21T16:36:57.759Z",
+                "description": "string",
+                "id": "case_id_1",
+                "status": "new",
+                "severity": "High",
+                "tags": ["tag1"],
+                "version": "1",
+            }
+        ],
+    }
+
+    requests_mock.post(
+        f"{SERVER_URL}/cases/entities/cases/v2",
+        json=entity_response,
+        status_code=200,
+    )
+    mocker.patch.object(demisto, "args", return_value={"ids": "case_id_1"})
+
+    outputs = list_case_summaries_command().outputs
+
+    assert outputs[0]["assigned_to_name"] == "Test with ids"
+    assert outputs[0]["id"] == "case_id_1"
