@@ -1223,7 +1223,6 @@ script:
     name: o365-sc-case-hold-policy-set
   - name: o365-sc-email-security-search-and-delete-email-office-365-quick-action
     prettyname: "[Email Security] Search And Delete Email - Office 365"
-    hidden: true
     quickaction: true
     polling: true
     description: Deletes an email for all recipients.
