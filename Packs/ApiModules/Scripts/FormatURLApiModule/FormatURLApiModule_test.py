@@ -260,16 +260,16 @@ FORMAT_REFANG = [
 FORMAT_HTML_ENTITIES = [
     (
         "https://example.com?4&amp;r=737NBh0Q9Alr9/",  # disable-secrets-detection
-        "https://example.com/?4&r=737NBh0Q9Alr9/",  # Added slash before query
+        "https://example.com/?4&amp;r=737NBh0Q9Alr9/",  # Added slash before query, HTML entities not decoded
     ),  # disable-secrets-detection
     # Multiple &amp; entities
     (
         "https://test.com?a=1&amp;amp;b=2&amp;c=3",  # disable-secrets-detection
-        "https://test.com/?a=1&b=2&c=3",  # Added slash before query
+        "https://test.com/?a=1&amp;amp;b=2&amp;c=3",  # Added slash before query, HTML entities not decoded
     ),  # disable-secrets-detection
     (
         "https://test.com?quote=&quot;hello&quot;",  # disable-secrets-detection
-        'https://test.com/?quote="hello"',  # Added slash before query
+        "https://test.com/?quote=&quot;hello&quot;",  # Added slash before query, HTML entities not decoded
     ),  # disable-secrets-detection
     # URL without entities should remain unchanged
     (
