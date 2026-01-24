@@ -281,7 +281,7 @@ script:
       description: List of domain names.
     - name: domain_group
       isArray: true
-      description: 	List of domain groups names.
+      description: List of domain groups names.
     - name: email_header_subject
       isArray: true
       description: List of message subject headers.
