@@ -338,10 +338,6 @@ class URLCheck:
             self.output = self.output.replace(host, ip.exploded)
         self.url.hostname = str(parsed_ip)
 
-        # Add forward slash before query or fragment if missing
-        if index < len(self.modified_url) and self.modified_url[index] in ("?", "#"):
-            self.output += "/"
-
         self.check_done(index)
 
     def port_check(self):
@@ -362,10 +358,6 @@ class URLCheck:
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         self.url.port = port
-        
-        # Add forward slash before query or fragment if missing
-        if index < len(self.modified_url) and self.modified_url[index] in ("?", "#"):
-            self.output += "/"
         
         self.check_done(index)
 
@@ -394,6 +386,11 @@ class URLCheck:
             self.fragment = True
 
         self.output += path
+        
+        # Add forward slash before query or fragment if path is empty and output doesn't end with /
+        if not path and not self.output.endswith("/") and self.modified_url[index] in ("?", "#"):
+            self.output += "/"
+        
         self.output += self.modified_url[index]
         index += 1
         self.base = index
