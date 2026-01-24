@@ -1,7 +1,5 @@
-import html
 import ipaddress
 import string
-import urllib.parse
 from base64 import urlsafe_b64decode
 from re import Match
 
@@ -727,7 +725,6 @@ class URLFormatter:
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
-        url = self.decode_html_entities(url)
         url = self.correct_and_refang_url(url)
 
         try:
@@ -803,41 +800,6 @@ class URLFormatter:
                 return result
             except Exception:
                 return urllib.parse.unquote(url[1])
-
-    @staticmethod
-    def decode_html_entities(url: str) -> str:
-        """
-        Decodes HTML entities in URLs extracted from HTML content.
-
-        This fixes issues where URLs extracted from HTML contain HTML entities
-        (e.g., &amp;, &lt;, &gt;, &quot;) that enrichment integrations cannot process.
-        The function iteratively decodes to handle multiple levels of encoding.
-
-        Args:
-            url: The URL potentially containing HTML entities
-
-        Returns:
-            URL with HTML entities decoded
-
-        Example:
-            &amp; -> &
-            &amp;amp; -> & (double-encoded)
-            &lt; -> <
-            &gt; -> >
-            &quot; -> "
-        """
-        if "&" not in url:
-            return url
-
-        # Decode iteratively to handle multiple levels of encoding (e.g., &amp;amp; -> &)
-        while "&" in url:
-            unescaped = html.unescape(url)
-            if unescaped == url:
-                # No more entities to decode
-                break
-            url = unescaped
-
-        return url
 
     @staticmethod
     def correct_and_refang_url(url: str) -> str:
