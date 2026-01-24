@@ -1,7 +1,7 @@
 {
-	"id": "FireEye ETP Incident Classifier",
-	"name": "FireEye ETP Incident Classifier",
-	"description": "FireEye ETP Incident Classifier",
+	"id": "Trellix Incident Classifier",
+	"name": "Trellix Incident Classifier",
+	"description": "Trellix Incident Classifier",
 	"defaultIncidentType": "Trellix incident",
 	"keyTypeMap": {
         "trellix_alerts": "Trellix incident"

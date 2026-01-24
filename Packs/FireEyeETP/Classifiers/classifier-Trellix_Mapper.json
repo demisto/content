@@ -1,7 +1,7 @@
 {
-    "description": "FireEyeETP Mapper for alerts",
+    "description": "Trellix Mapper for alerts",
     "feed": false,
-    "id": "FireEyeETPMapper",
+    "id": "TrellixMapper",
     "mapping": {
         "Trellix incident": {
 			"dontMapEventToLabels": false,
@@ -54,7 +54,7 @@
             }
         }
     },
-    "name": "FireEyeETPMapper",
+    "name": "TrellixMapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"

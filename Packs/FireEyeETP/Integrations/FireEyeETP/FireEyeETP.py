@@ -926,10 +926,11 @@ def get_alerts_entry(args):
         start_time = parse_date_range(start_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
     if end_time and not is_iso_utc(end_time):
         end_time = parse_date_range(end_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+    if start_time and not end_time:
+        end_time = datetime.now(UTC).strftime(ISO_FORMAT)
 
     response = get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
-
-    alerts = response.get("data", [])
+    alerts = response.get("data") or []
     sub_alerts = [get_search_alert_summary_v2(alert) for alert in alerts]
     readable_output = tableToMarkdown("Trellix Email Security - Cloud - Get Alerts", sub_alerts)
 
@@ -1036,12 +1037,16 @@ def parse_alert_to_incident(response_1, response_2):
     occurred = occurred.strftime(ISO_FORMAT) if occurred else None
 
     severity = response_2.get("alert", {}).get("severity")
+    uuid = response_2.get("alert", {}).get("uuid")
+    attack_time = response_2.get("alert", {}).get("attack-time")
     return {
         "name": response_2.get("id", ""),
         "occurred": occurred,
         "severity": convert_to_demisto_severity(severity),
         "rawJSON": json.dumps(response_2),
         "incident_type": ALERT_INCIDENT_TYPE_NAME,
+        "uuid": uuid,
+        "attack-time": attack_time,
     }
 
 

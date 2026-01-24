@@ -69,7 +69,6 @@ configuration:
   name: incidents_per_fetch
   type: 0
   section: Collect
-  advanced: true
   required: false
   defaultvalue: '59'
   additionalinfo: Input a value between 1-59.
