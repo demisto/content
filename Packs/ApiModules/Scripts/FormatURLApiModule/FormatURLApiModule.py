@@ -1,5 +1,6 @@
 import ipaddress
 import string
+import urllib.parse
 from base64 import urlsafe_b64decode
 from re import Match
 
