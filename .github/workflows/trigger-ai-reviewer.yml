@@ -8,7 +8,7 @@ on:
 
 env:
   IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
-  ALLOWED_COMMANDS: '["@content-bot start review", "@content-bot re-review"]'
+  ALLOWED_COMMANDS: '["@content-bot start review", "@content-bot re-reviewv"]'
 
 jobs:
   trigger-ai-review:
