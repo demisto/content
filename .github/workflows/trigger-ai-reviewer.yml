@@ -26,6 +26,8 @@ jobs:
           
       - name: Trigger AI Review
         env:
+          REPO: "${{ github.repository }}"
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
           COMMENT_ID: ${{ github.event.comment.id }}
           TRIGGER_TYPE: ${{ github.event_name }}
