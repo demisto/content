@@ -22,7 +22,8 @@ jobs:
        github.event.issue.pull_request &&
        (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
        !contains(fromJson('["content-bot", "xsoar-bot", "dependabot"]'), github.event.comment.user.login) &&
-       contains(fromJson('["@content-bot start review", "@content-bot re-review"]'), github.event.comment.body)) ||
+       (contains(github.event.comment.body, '@content-bot start review') || 
+        contains(github.event.comment.body, '@content-bot re-review'))) ||
       (github.event_name == 'pull_request' &&
        github.event.requested_reviewer.login == 'content-bot')
     steps:
