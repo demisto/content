@@ -1238,12 +1238,12 @@ def extract_user_and_factor_id_from_url(url: str) -> tuple[str, str]:
         tuple[str, str]: The user ID and Factor ID.
     """
     parsed_url = urlparse(url)
-    path_parts = parsed_url.path.split('/')
+    path_parts = parsed_url.path.split("/")
     # Example for url: https://example.okta.com/api/v1/users/user-id/factors/factor-id
     # path_parts: ['', 'api', 'v1', 'users', 'user-id', 'factors', 'factor-id']
     try:
-        user_id = path_parts[path_parts.index('users') + 1]
-        factor_id = path_parts[path_parts.index('factors') + 1]
+        user_id = path_parts[path_parts.index("users") + 1]
+        factor_id = path_parts[path_parts.index("factors") + 1]
         return user_id, factor_id
     except (ValueError, IndexError):
         raise DemistoException(f"Could not extract user ID and Factor ID from the polling URL: {url}")
