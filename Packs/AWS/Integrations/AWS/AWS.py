@@ -3218,8 +3218,10 @@ class EC2:
         if restorable_by_user_ids := args.get("restorable_by_user_ids"):
             kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
 
-        pagination_kwargs = build_pagination_kwargs(args)
-        kwargs.update(pagination_kwargs)
+        if not snapshot_ids:
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
+
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing snapshots with parameters: {kwargs}")
 
