@@ -1142,23 +1142,26 @@ def integration_health():
 
 def validate_auth_header(headers: dict) -> bool:
     """
-    Validated authorization header provided in the bot activity object
+    Validates authorization header provided in the bot activity object.
+    Uses fail-close approach: returns True ONLY if ALL validations pass.
     :param headers: Bot activity headers
     :return: True if authorized, else False
     """
     parts: list = headers.get("Authorization", "").split(" ")
     if len(parts) != 2:
         return False
-    scehma: str = parts[0]
+    schema: str = parts[0]
     jwt_token: str = parts[1]
-    if scehma != "Bearer" or not jwt_token:
+    if schema != "Bearer" or not jwt_token:
         demisto.info("Authorization header validation - failed to verify schema")
         return False
 
+    # Early issuer check (performance optimization - fail fast on obviously invalid tokens)
+    # Note: This is checked again after signature verification for security
     decoded_payload: dict = jwt.decode(jwt=jwt_token, options={"verify_signature": False})
     issuer: str = decoded_payload.get("iss", "")
     if issuer != "https://api.botframework.com":
-        demisto.info("Authorization header validation - failed to verify issuer")
+        demisto.info("Authorization header validation - failed to verify issuer (pre-check)")
         return False
 
     integration_context: dict = get_integration_context()
@@ -1220,29 +1223,60 @@ def validate_auth_header(headers: dict) -> bool:
     public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
     public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
 
+    # Enable comprehensive JWT validation (defense-in-depth)
     options = {
-        "verify_aud": False,
+        "verify_aud": True,
         "verify_exp": True,
+        "verify_iss": True,
         "verify_signature": True,
     }
     try:
-        decoded_payload = jwt.decode(jwt_token, public_key, algorithms=["RS256"], options=options)
+        decoded_payload = jwt.decode(
+            jwt_token, public_key, algorithms=["RS256"], options=options, audience=BOT_ID, issuer="https://api.botframework.com"
+        )
     except jwt.InvalidSignatureError:
         demisto.info("Authorization header validation - JWT signature verification failed")
+        return False
+    except jwt.ExpiredSignatureError:
+        demisto.info("Authorization header validation - JWT token has expired")
+        return False
+    except jwt.InvalidAudienceError:
+        demisto.info(f"Authorization header validation - Invalid audience claim (expected: {BOT_ID})")
+        return False
+    except jwt.InvalidIssuerError:
+        demisto.info("Authorization header validation - Invalid issuer claim (expected: https://api.botframework.com)")
         return False
     except jwt.PyJWTError as e:
         demisto.info(f"Authorization header validation - JWT validation error: {e}")
         return False
 
+    # Explicit fail-close validation (defense-in-depth)
+    # Even though PyJWT validates these, we explicitly check as a second layer of security
     audience_claim: str = decoded_payload.get("aud", "")
-    if audience_claim != BOT_ID:
-        demisto.debug(f"failed to verify audience_claim: {audience_claim} with BOT_ID: {BOT_ID}.")
-        demisto.info("Authorization header validation - failed to verify audience_claim")
-        return False
+    issuer_claim: str = decoded_payload.get("iss", "")
+    expiration: int = decoded_payload.get("exp", 0)
+    current_time: int = int(time.time())
 
-    integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
-    set_integration_context(integration_context)
-    return True
+    # Fail-close: ALL conditions must be satisfied for token to be valid
+    if audience_claim == BOT_ID and issuer_claim == "https://api.botframework.com" and current_time < expiration:
+        # All validations passed - token is valid
+        integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
+        set_integration_context(integration_context)
+        demisto.debug(
+            f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}, "
+            f"exp={expiration}, current_time={current_time}, time_remaining={expiration - current_time}s"
+        )
+        return True
+
+    # Explicit failure - log details for security auditing
+    demisto.info(
+        f"JWT validation failed (fail-close check) - "
+        f"audience: expected={BOT_ID}, actual={audience_claim}, match={audience_claim == BOT_ID} | "
+        f"issuer: expected='https://api.botframework.com', actual={issuer_claim}, "
+        f"match={issuer_claim == 'https://api.botframework.com'} | "
+        f"expiration: current_time={current_time}, token_exp={expiration}, valid={current_time < expiration}"
+    )
+    return False
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
