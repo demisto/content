@@ -37,6 +37,7 @@ jobs:
             PR_NUMBER="${{ github.event.issue.number }}"
           elif [[ "$TRIGGER_TYPE" == "pull_request" ]]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
+          fi
           echo "$PR_NUMBER"
 
           git config --global user.email "bot@demisto.com"
