@@ -2577,7 +2577,7 @@ Get a list of the ediscoveryHoldPolicy objects and their properties.
 ### msg-export-result-ediscovery-data
 
 ***
-Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate.
+Export results from an estimated ediscoverySearch. For details, see [Manage a collection estimate](https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
 
 #### Base Command
 

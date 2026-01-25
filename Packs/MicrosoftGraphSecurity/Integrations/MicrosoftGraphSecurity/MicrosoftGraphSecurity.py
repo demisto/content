@@ -320,12 +320,11 @@ class MsGraphClient:
             The created hold policy object.
         """
         url = f"security/cases/ediscoveryCases/{case_id}/legalHolds"
-        body = {
-            "displayName": display_name,
-            "description": description,
-            "contentQuery": content_query,
-        }
-        remove_nulls_from_dictionary(body)
+        body = assign_params(
+            displayName=display_name,
+            description=description,
+            contentQuery=content_query,
+        )
         return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body)
 
     def delete_ediscovery_case_hold_policy(
@@ -371,11 +370,10 @@ class MsGraphClient:
             None.
         """
         url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
-        body = {
-            "description": description,
-            "contentQuery": content_query,
-        }
-        remove_nulls_from_dictionary(body)
+        body = assign_params(
+            description=description,
+            contentQuery=content_query,
+        )
         self.ms_client.http_request(
             ok_codes=[204],
             method="PATCH",
@@ -492,17 +490,16 @@ class MsGraphClient:
             HTTP response object for the export request.
         """
         url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/exportResult"
-        body = {
-            "additionalOptions": additional_options,
-            "exportCriteria": export_criteria,
-            "exportFormat": export_format,
-            "cloudAttachmentVersion": cloud_attachment_version,
-            "description": description,
-            "displayName": display_name,
-            "documentVersion": document_version,
-            "exportLocation": export_location,
-        }
-        remove_nulls_from_dictionary(body)
+        body = assign_params(
+            additionalOptions=additional_options,
+            exportCriteria=export_criteria,
+            exportFormat=export_format,
+            cloudAttachmentVersion=cloud_attachment_version,
+            description=description,
+            displayName=display_name,
+            documentVersion=document_version,
+            exportLocation=export_location,
+        )
         headers = {"Prefer": "include-unknown-enum-members"}
         return self.ms_client.http_request(
             method="POST",
@@ -1803,7 +1800,7 @@ def create_ediscovery_case_hold_policy_command(
         args.get("content_query"),
     )
     human_readable = tableToMarkdown(
-        name="Results",
+        name="Created eDiscovery Hold Policy",
         t={
             "Display Name": raw_resp.get("displayName"),
             "Id": raw_resp.get("id"),
@@ -1863,7 +1860,7 @@ def update_ediscovery_case_policy_command(
     description = args.get("description")
     content_query = args.get("content_query")
 
-    if description is None and content_query is None:
+    if not description and not content_query:
         raise DemistoException("Please provide at least one field to update: description and/or content_query.")
 
     try:
@@ -1909,14 +1906,14 @@ def list_ediscovery_case_hold_policy_command(
     """
     case_id = args.get("case_id")
     hold_policy_id = args.get("hold_policy_id")
-    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit"))
+    limit = None if argToBoolean(args.get("all_results",50)) else int(args.get("limit"))
 
     if hold_policy_id:
         raw_res = client.get_ediscovery_case_hold_policy(case_id, hold_policy_id)
         hold_list = [raw_res]
     else:
         raw_res = client.list_ediscovery_case_hold_policy(case_id, limit)
-        hold_list = raw_res.get("value")
+        hold_list = raw_res.get("value", [])
 
     demisto.debug(f"returned {len(hold_list)} results from the api")
 
@@ -1933,7 +1930,7 @@ def list_ediscovery_case_hold_policy_command(
         outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
         outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(hold) for hold in hold_list],
-        readable_output=tableToMarkdown(name="Results", t=hr),
+        readable_output=tableToMarkdown(name="eDiscovery Case Hold Policies", t=hr),
         raw_response=raw_res,
     )
 
@@ -1954,14 +1951,14 @@ def list_case_operation_command(
     """
     case_id = args.get("case_id")
     operation_id = args.get("operation_id")
-    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit"))
+    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit", 50))
 
     if operation_id:
         raw_res = client.get_case_operation(case_id, operation_id)
         operation_list = [raw_res]
     else:
         raw_res = client.list_case_operation(case_id, limit)
-        operation_list = raw_res.get("value")
+        operation_list = raw_res.get("value", [])
 
     demisto.debug(f"returned {len(operation_list)} results from the api")
     hr = [
@@ -1984,7 +1981,7 @@ def list_case_operation_command(
         outputs_key_field="ID",
         outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
         readable_output=tableToMarkdown(
-            name="Results", headers=["ID", "Action", "Status", "Created By", "Link to download a file"], t=hr, removeNull=True
+            name="eDiscovery Case Operations", headers=["ID", "Action", "Status", "Created By", "Link to download a file"], t=hr, removeNull=True
         ),
         raw_response=raw_res,
     )
