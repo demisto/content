@@ -27,14 +27,17 @@ jobs:
       - name: Trigger AI Review
         env:
           REPO: "${{ github.repository }}"
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
           COMMENT_ID: ${{ github.event.comment.id }}
           TRIGGER_TYPE: ${{ github.event_name }}
         run: |
           echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
-          echo "$PR_NUMBER"
           echo "$REPO"
+          if [[ "$TRIGGER_TYPE" == "issue_comment" ]]; then
+            PR_NUMBER="${{ github.event.issue.number }}"
+          elif [[ "$TRIGGER_TYPE" == "pull_request" ]]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          echo "$PR_NUMBER"
 
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
