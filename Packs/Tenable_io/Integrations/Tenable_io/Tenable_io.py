@@ -541,6 +541,20 @@ def get_timestamp(timestamp):  # pylint: disable=W9014
     return time.mktime(timestamp.timetuple())
 
 
+def generate_snapshot_id() -> str:
+    """
+    Generate a unique snapshot ID for XSIAM dataset snapshots.
+
+    Uses current timestamp in milliseconds to ensure uniqueness across fetch cycles.
+    This ID is used to group assets/vulnerabilities that belong to the same snapshot,
+    allowing XSIAM to properly track complete vs incomplete snapshots.
+
+    Returns:
+        str: A unique snapshot ID based on current timestamp in milliseconds.
+    """
+    return str(round(time.time() * 1000))
+
+
 def generate_export_uuid(client: Client, last_run):  # pylint: disable=W9014
     """
     Generate a job export uuid in order to fetch vulnerabilities.
@@ -558,7 +572,7 @@ def generate_export_uuid(client: Client, last_run):  # pylint: disable=W9014
     demisto.info(f"vulnerabilities export uuid is {export_uuid}")
     # Ensure snapshot_id exists (should already be set by generate_assets_export_uuid)
     if "snapshot_id" not in last_run:
-        snapshot_id = str(round(time.time() * 1000))
+        snapshot_id = generate_snapshot_id()
         demisto.debug(f"Generated new snapshot_id for vulnerabilities: {snapshot_id}")
         last_run["snapshot_id"] = snapshot_id
     last_run.update({"vuln_export_uuid": export_uuid})
@@ -582,7 +596,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run):  # pylint: dis
     demisto.debug(f"assets export uuid is {export_uuid}")
 
     # Generate a new snapshot_id for this fetch cycle (used for XSIAM dataset snapshots)
-    snapshot_id = str(round(time.time() * 1000))
+    snapshot_id = generate_snapshot_id()
     demisto.debug(f"Generated new snapshot_id: {snapshot_id}")
 
     assets_last_run.update({"assets_export_uuid": export_uuid, "snapshot_id": snapshot_id, "total_assets": 0})
@@ -627,7 +641,7 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
             fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
             # Generate a new snapshot_id when resetting the fetch
-            snapshot_id = str(round(time.time() * 1000))
+            snapshot_id = generate_snapshot_id()
             assets_last_run.update({
                 "assets_export_uuid": export_uuid,
                 "snapshot_id": snapshot_id,
@@ -643,9 +657,8 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     # Reset retry count on successful chunk download
     assets_last_run.pop("assets_404_retry_count", None)
 
-    # Update cumulative asset count
-    total_assets = assets_last_run.get("total_assets", 0) + len(assets)
-    assets_last_run["total_assets"] = total_assets
+    # Note: total_assets counter is updated in main() after successful send_data_to_xsiam()
+    # to ensure the counter only reflects assets that were actually sent to XSIAM
 
     if updated_stored_chunks:
         assets_last_run.update(
@@ -698,7 +711,7 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
                 last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             )
             # Generate a new snapshot_id when resetting the fetch
-            snapshot_id = str(round(time.time() * 1000))
+            snapshot_id = generate_snapshot_id()
             assets_last_run.update({
                 "vuln_export_uuid": export_uuid,
                 "snapshot_id": snapshot_id,
@@ -1829,7 +1842,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     demisto.debug(f"got {len(audit_logs_from_api)} events from api")
 
     if last_index_fetched < len(audit_logs_from_api):
-        audit_logs.extend(audit_logs_from_api[last_index_fetched : last_index_fetched + limit])
+        audit_logs.extend(audit_logs_from_api[last_index_fetched: last_index_fetched + limit])
 
     for audit_log in audit_logs:
         audit_log["_time"] = audit_log.get("received") or audit_log.get("indexed")
@@ -2080,7 +2093,9 @@ def main():  # pragma: no cover   # pylint: disable=W9018
 
             # Get snapshot_id and determine if we're still fetching assets
             # Note: items_count is for the assets snapshot only, not vulnerabilities
-            snapshot_id = assets_last_run.get("snapshot_id", str(round(time.time() * 1000)))
+            # Fallback to generate_snapshot_id() if not in last_run - this handles edge cases
+            # where the fetch cycle starts without a stored snapshot_id (e.g., first run or reset)
+            snapshot_id = assets_last_run.get("snapshot_id", generate_snapshot_id())
             total_assets = assets_last_run.get("total_assets", len(assets))
 
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
@@ -2106,8 +2121,16 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     data_type="assets",
                     snapshot_id=snapshot_id,
                     items_count=str(items_count),
+                    # Disable automatic health module update here because we update it separately
+                    # below with the cumulative total_assets count across all fetch cycles,
+                    # rather than just the count from this single batch
                     should_update_health_module=False,
                 )
+                # Update cumulative asset count AFTER successful send_data_to_xsiam()
+                # This ensures the counter only reflects assets that were actually sent to XSIAM
+                total_assets = assets_last_run.get("total_assets", 0) + len(assets)
+                assets_last_run["total_assets"] = total_assets
+                demisto.setAssetsLastRun(assets_last_run)
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
