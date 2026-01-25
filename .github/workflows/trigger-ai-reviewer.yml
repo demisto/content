@@ -1,6 +1,7 @@
 name: Trigger AI Reviewer
 
 on:
+  workflow_dispatch:
   issue_comment:
     types: [created]
   pull_request:
