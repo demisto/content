@@ -765,14 +765,19 @@ def verify_mfa_status_command(client: Client, args: dict):
         args (dict): The command arguments
     """
     polling_url = args.get("polling_url", "")
+    user_id, factor_id = extract_user_and_factor_id_from_url(polling_url)
 
     raw_response = client.get_push_factor_status(polling_url)
     status = raw_response.get("factorResult")
     outputs = {
-        "Okta.FactorResult(val.ID && val.ID === obj.ID)": {"ID": raw_response.get("id"), "factorResult": status},
+        "Okta.FactorResult(val.ID && val.ID === obj.ID)": {
+            "ID": factor_id,
+            "factorResult": status,
+            "UserID": user_id,
+        },
         "Okta.Metadata(true)": client.request_metadata,
     }
-    readable_output = f"The status of the push factor is {status}"
+    readable_output = f"The status of the push factor challenge is {status}"
     return (readable_output, outputs, raw_response)
 
 
@@ -1221,6 +1226,27 @@ def delete_limit_param(url):
     query_dict = parse_qs(parsed_url.query)
     query_dict.pop("limit")
     return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
+
+
+def extract_user_and_factor_id_from_url(url: str) -> tuple[str, str]:
+    """Extracts the user ID and Factor ID from the polling url.
+
+    Args:
+        url (str): The polling url.
+
+    Returns:
+        tuple[str, str]: The user ID and Factor ID.
+    """
+    parsed_url = urlparse(url)
+    path_parts = parsed_url.path.split('/')
+    # Example for url: https://example.okta.com/api/v1/users/user-id/factors/factor-id
+    # path_parts: ['', 'api', 'v1', 'users', 'user-id', 'factors', 'factor-id']
+    try:
+        user_id = path_parts[path_parts.index('users') + 1]
+        factor_id = path_parts[path_parts.index('factors') + 1]
+        return user_id, factor_id
+    except (ValueError, IndexError):
+        raise DemistoException(f"Could not extract user ID and Factor ID from the polling URL: {url}")
 
 
 def main():
