@@ -1,7 +1,6 @@
 name: Trigger AI Reviewer
 
 on:
-  push:
   issue_comment:
     types: [created]
   pull_request:
@@ -42,11 +41,6 @@ jobs:
             PR_NUMBER="${{ github.event.issue.number }}"
           elif [[ "$TRIGGER_TYPE" == "pull_request" ]]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
-          else
-            # FALLBACK FOR TESTING (PUSH EVENT)
-            # We hardcode the PR number because 'push' events don't have one!
-            echo "⚠️ Testing via PUSH. Using hardcoded PR number."
-            PR_NUMBER="42799"  # <--- REPLACE THIS with your actual PR number
           fi
           echo "$PR_NUMBER"
 
