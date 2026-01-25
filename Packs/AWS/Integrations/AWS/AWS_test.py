@@ -7825,8 +7825,9 @@ def test_ec2_describe_snapshots_command_success(mocker):
 
     result = EC2.describe_snapshots_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.Snapshots"
-    assert result.outputs[0]["SnapshotId"] == "snap-12345678"
+    snapshots_key = "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)"
+    assert snapshots_key in result.outputs
+    assert result.outputs[snapshots_key][0]["SnapshotId"] == "snap-12345678"
     assert "AWS EC2 Snapshots" in result.readable_output
 
 
@@ -7864,8 +7865,10 @@ def test_ec2_describe_snapshots_command_with_filters(mocker):
 
     result = EC2.describe_snapshots_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["Encrypted"] is True
+    snapshots_key = "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)"
+    assert snapshots_key in result.outputs
+    assert len(result.outputs[snapshots_key]) == 1
+    assert result.outputs[snapshots_key][0]["Encrypted"] is True
     mock_client.describe_snapshots.assert_called_once()
 
 

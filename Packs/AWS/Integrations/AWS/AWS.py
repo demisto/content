@@ -3254,7 +3254,7 @@ class EC2:
 
         outputs = {
             "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)": snapshots,
-            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")}
+            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")},
         }
 
         return CommandResults(
