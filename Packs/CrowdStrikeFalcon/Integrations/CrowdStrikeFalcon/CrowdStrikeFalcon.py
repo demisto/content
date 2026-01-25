@@ -6011,6 +6011,50 @@ def list_case_summaries_command():
     )
 
 
+def get_evidences_for_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Get evidences for a specific case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    cases = get_cases_entities([case_id])
+    if not cases:
+        return CommandResults(readable_output=f"No case found with id {case_id}")
+
+    case = cases[0]
+    evidence = case.get("evidence", {})
+
+    # Prepare Human Readable output
+    alerts = [record.get("selector", {}).get("id") for record in evidence.get("alerts", {}).get("records", [])]
+    events = [record.get("selector", {}).get("id") for record in evidence.get("events", {}).get("records", [])]
+    leads = [record.get("selector", {}).get("id") for record in evidence.get("leads", {}).get("records", [])]
+
+    readable_output = [{
+        "Case Id": case.get("id"),
+        "Case Alerts": alerts,
+        "Case Events": events,
+        "Case Leads": leads
+    }]
+    markdown_output = tableToMarkdown(
+        "Case Evidences",
+        readable_output,
+        headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"],
+        removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CaseEvidence",
+        outputs=evidence,
+        readable_output=markdown_output,
+        raw_response=case
+    )
+
+
 def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
     """
     Add tags to a case.
@@ -8251,6 +8295,8 @@ def main():  # pragma: no cover
             return_results(list_incident_summaries_command())
         elif command == "cs-falcon-list-case-summaries":
             return_results(list_case_summaries_command())
+        elif command == "cs-falcon-get-evidences-for-case":
+            return_results(get_evidences_for_case_command(args))
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":

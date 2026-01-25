@@ -8540,4 +8540,25 @@ def test_delete_case_tags_command(requests_mock):
     assert result.readable_output == "Tags were deleted successfully."
     assert requests_mock.last_request.qs["id"] == ["case1"]
     assert requests_mock.last_request.qs["tag"] == ["tag1"]
+
+
+def test_get_evidences_for_case_command(requests_mock, mocker):
+    """
+    Given:
+        - Case ID.
+    When:
+        - Running get_evidences_for_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import get_evidences_for_case_command
+
+    response_data = load_json("test_data/get_evidences_for_case_response.json")
+    requests_mock.post(f"{SERVER_URL}/cases/entities/cases/v2", json=response_data)
+    mocker.patch.object(demisto, "args", return_value={"id": "case_id_1"})
+
+    result = get_evidences_for_case_command({"id": "case_id_1"})
+    
+    assert result.outputs == response_data["resources"][0]["evidence"]
     
