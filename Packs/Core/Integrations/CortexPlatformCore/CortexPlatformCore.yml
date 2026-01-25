@@ -3294,6 +3294,9 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
+      - contextPath: GenericXQLQuery.query_limit_modified
+        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
+        type: String
     - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.
           isArray: false
