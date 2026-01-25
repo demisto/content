@@ -45,7 +45,7 @@ jobs:
           fi
           echo "$PR_NUMBER"
 
-          git config --global user.email "bot@demisto.com"
+          git config --global user.email "devtestdemisto@paloaltonetworks.com"
           git config --global user.name "Content Bot"
           
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
