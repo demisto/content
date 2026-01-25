@@ -2781,7 +2781,7 @@ def main():  # pragma: no cover
         "gmail-forwarding-address-add": forwarding_address_add_command,
     }
     command = demisto.command()
-    demisto.debug(f"GMAIL: command is {command},")
+    demisto.debug(f"GMAIL: command is {command}")
     try:
         if command == "test-module":
             list_users(ADMIN_EMAIL.split("@")[1])
