@@ -3338,8 +3338,8 @@ class EC2:
             "MaxAttempts": int(args.get("waiter_max_attempts", "40")),
         }
 
-        print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
 
         waiter = client.get_waiter("snapshot_completed")
         waiter.wait(WaiterConfig=waiter_config, **kwargs)
