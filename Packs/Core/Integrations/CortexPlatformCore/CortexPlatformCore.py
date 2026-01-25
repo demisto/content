@@ -7,8 +7,6 @@ import dateparser
 from enum import Enum
 import copy
 
-from Packs.CrowdStrikeFalcon.Scripts.Cspresentparentprocess.Cspresentparentprocess_test import raw_response
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -4416,7 +4414,6 @@ def get_case_grouping_graph(client, args):
     reply = response.get('reply', {})
     return CommandResults(
         outputs_prefix='Core.CaseGroupingGraph',
-        outputs_key_field='summary',
         outputs=reply,
         readable_output=reply,
         raw_response = reply,
