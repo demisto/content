@@ -211,6 +211,28 @@ class JiraCloudOAuthClient(AtlassianOAuthClient):
         ]
 
 
+class ConfluenceCloudOAuthClient(AtlassianOAuthClient):
+    """OAuth client specifically for Confluence Cloud instances."""
+
+    def get_oauth_scopes(self) -> list[str]:
+        """
+        Return the OAuth scopes required for Confluence Cloud.
+        
+        Returns:
+            List of required OAuth scopes
+        """
+        return [
+            "read:audit-log:confluence",
+            "read:confluence-content.all",
+            "read:confluence-space.summary",
+            "read:confluence-user",
+            "read:confluence-groups",
+            "write:confluence-content",
+            "write:confluence-space",
+            "offline_access",  # For refresh token
+        ]
+
+
 class JiraOnPremOAuthClient(AtlassianOAuthClient):
     """OAuth client specifically for Jira On-Prem/Data Center instances."""
 
@@ -381,16 +403,26 @@ def create_atlassian_oauth_client(
     """
     if cloud_id:
         # Cloud instance
-        return JiraCloudOAuthClient(
-            client_id=client_id,
-            client_secret=client_secret,
-            callback_url=callback_url,
-            cloud_id=cloud_id,
-            verify=verify,
-            proxy=proxy,
-        )
+        if product.lower() == "confluence":
+            return ConfluenceCloudOAuthClient(
+                client_id=client_id,
+                client_secret=client_secret,
+                callback_url=callback_url,
+                cloud_id=cloud_id,
+                verify=verify,
+                proxy=proxy,
+            )
+        else:
+            return JiraCloudOAuthClient(
+                client_id=client_id,
+                client_secret=client_secret,
+                callback_url=callback_url,
+                cloud_id=cloud_id,
+                verify=verify,
+                proxy=proxy,
+            )
     else:
-        # On-Prem instance
+        # On-Prem instance (currently only Jira is supported)
         return JiraOnPremOAuthClient(
             client_id=client_id,
             client_secret=client_secret,
