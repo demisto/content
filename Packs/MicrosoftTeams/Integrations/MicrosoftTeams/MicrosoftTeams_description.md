@@ -28,7 +28,8 @@ In order to use the following commands, you must use the **Authorization Code fl
   - ***microsoft-teams-chat-member-list***
   - ***microsoft-teams-chat-message-list***
   - ***microsoft-teams-chat-update***
-  - ***microsoft-teams-list-messages***
+
+***microsoft-teams-list-messages*** supports **Client Credentials flow** only when retrieving messages from a channel. Retrieving messages from a chat requires **Authorization Code flow**.
 
 
 **Notes:** 

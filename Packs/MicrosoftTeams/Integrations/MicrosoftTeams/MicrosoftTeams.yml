@@ -709,7 +709,7 @@ script:
       type: String
   - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat.
-      name: chat
+      name: conversation_id
       required: true
     - description: The channel's team. Required if specifying a channel name in the chat argument.
       name: team_name

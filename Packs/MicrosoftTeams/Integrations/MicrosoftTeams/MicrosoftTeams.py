@@ -261,7 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
-        "microsoft-teams-list-messages": [],
+        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -1933,23 +1933,39 @@ def resolve_chat_or_channel(
     Raises:
         ValueError if channel is intended but team is missing.
     """
-    # First, try to resolve as chat
+    # First, try to resolve as channel if team_name is provided
+    if team_name:
+        try:
+            team_id = get_team_aad_id(team_name)
+            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+            demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
+            return "channel", channel_id
+        except Exception:
+            pass
+
+    # If not channel, try to resolve as chat
     try:
-        chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
-        if chat_id:
-            demisto.debug(f"Resolved {chat_or_channel} as chat.")
-            return "chat", chat_id
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            # Client Credentials flow cannot resolve chats, so we skip this check
+            # unless we want to explicitly fail fast, but the requirement is to check channel first.
+            # However, get_chat_id_and_type might fail or return nothing useful in this flow for chats.
+            # The user feedback implies we should check auth type BEFORE calling get_chat_id_and_type
+            pass
+        else:
+            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+            if chat_id:
+                demisto.debug(f"Resolved {chat_or_channel} as chat.")
+                return "chat", chat_id
     except Exception:
         pass
 
-    # If not chat, must be channel → requires team
+    error_message = "Failed to find chat or channel."
     if not team_name:
-        raise ValueError("Failed to find chat. If you are trying to get messages from a channel, please provide the 'team_name'.")
+        error_message += " If you are trying to get messages from a channel, please provide the 'team_name'."
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
 
-    team_id = get_team_aad_id(team_name)
-    channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
-    demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
-    return "channel", channel_id
+    raise ValueError(error_message)
 
 
 def fetch_chat_messages(
@@ -1988,7 +2004,7 @@ def list_messages_command():
     Retrieve the list of messages in a chat or channel.
     """
     args = demisto.args()
-    chat_or_channel = args.get("chat", "")
+    chat_or_channel = args.get("conversation_id", "")
     team_name = args.get("team_name", "")
     message_id = args.get("message_id", "")
     next_link = args.get("next_link", "")
@@ -3739,6 +3755,7 @@ def main():  # pragma: no cover
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
+        "microsoft-teams-list-messages": list_messages_command,
     }
 
     commands_auth_code: dict = {
@@ -3749,7 +3766,6 @@ def main():  # pragma: no cover
         "microsoft-teams-chat-list": chat_list_command,
         "microsoft-teams-chat-member-list": chat_member_list_command,
         "microsoft-teams-chat-message-list": chat_message_list_command,
-        "microsoft-teams-list-messages": list_messages_command,
         "microsoft-teams-chat-update": chat_update_command,
     }
 
