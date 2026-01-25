@@ -1337,5 +1337,5 @@ def test_verify_mfa_status_command(mocker):
 
     assert "The status of the push factor challenge is SUCCESS" in readable
     assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("factorResult") == "SUCCESS"
-    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("ID") == "TransactionID"
+    assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("ID") == "FactorID"
     assert raw_response == mock_response
