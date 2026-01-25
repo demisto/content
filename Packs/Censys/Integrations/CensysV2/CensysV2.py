@@ -201,13 +201,17 @@ def get_dbot_score(params: dict, result_labels: list):
     suspicious_threshold = arg_to_number(params.get("suspicious_labels_threshold")) or 0
     num_malicious = len(malicious_labels.intersection(result_labels))
     if num_malicious >= malicious_threshold and num_malicious > 0:
-        return Common.DBotScore.BAD
+        matched_labels = sorted(malicious_labels.intersection(result_labels))
+        description = f"Matched malicious labels: {', '.join(matched_labels)}"
+        return Common.DBotScore.BAD, description
 
     num_suspicious = len(suspicious_labels.intersection(result_labels))
     if num_suspicious >= suspicious_threshold and num_suspicious > 0:
-        return Common.DBotScore.SUSPICIOUS
+        matched_labels = sorted(suspicious_labels.intersection(result_labels))
+        description = f"Matched suspicious labels: {', '.join(matched_labels)}"
+        return Common.DBotScore.SUSPICIOUS, description
 
-    return Common.DBotScore.NONE
+    return Common.DBotScore.NONE, None
 
 
 """ COMMAND FUNCTIONS """
@@ -279,11 +283,13 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         params = demisto.params()
         labels = list({label.get("value") for label in resource.get("labels", [])})
+        score, malicious_description = get_dbot_score(params, labels)
         dbot_score = Common.DBotScore(
             indicator=query,
             indicator_type=DBotScoreType.IP,
             integration_name="Censys",
-            score=get_dbot_score(params, labels),
+            score=score,
+            malicious_description=malicious_description,
             reliability=params.get("integration_reliability"),
         )
         indicator = Common.IP(
@@ -371,8 +377,6 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
                     "Name": demisto.get(resource, "autonomous_system.name"),
                 }
             )
-        # headers = ["IP", "Name", "Description", "ASN", "Location Country code", "Registered Country Code", "Services"]
-        # human_readable = tableToMarkdown(f'Search results for query "{query}"', hr_contents, headers, removeNull=True)
         human_readable = tableToMarkdown(f'Search results for query "{query}"', hr_contents, removeNull=True)
         return CommandResults(
             readable_output=human_readable,
@@ -492,21 +496,27 @@ def ip_command(client: Client, args: dict, params: dict):
         # Send all IPs in a single API call with pagination
         raw_response = censys_search_with_pagination(client, query, fields=fields)
         hits = raw_response.get("result", {}).get("hits")
-        if not hits or not isinstance(hits, list):
+        if hits is None or not isinstance(hits, list):
             error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
             raise ValueError(error_msg)
+
+        # Track which IPs were found
+        found_ips = set()
 
         # Process each hit from the response
         for hit in hits:
             # Extract resource from host_v1 wrapper
             resource = demisto.get(hit, "host_v1.resource", {})
             ip = resource.get("ip")
+            found_ips.add(ip)
             labels = list({label.get("value") for label in resource.get("labels", [])})
+            score, malicious_description = get_dbot_score(params, labels)
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name="Censys",
-                score=get_dbot_score(params, labels),
+                score=score,
+                malicious_description=malicious_description,
                 reliability=params.get("integration_reliability"),
             )
             content = {
@@ -543,6 +553,12 @@ def ip_command(client: Client, args: dict, params: dict):
             )
             execution_metrics.success += 1
 
+        # Report IPs that were not found
+        for ip in ips:
+            if ip not in found_ips:
+                demisto.debug(f"ip_command: IP {ip} not found in search results")
+                results.append(CommandResults(readable_output=f"No results found for IP: {ip}"))
+
     except Exception as e:
         # Handle exceptions for the entire batch
         handle_exceptions(e, results, execution_metrics, ", ".join(ips))
@@ -569,9 +585,12 @@ def domain_command(client: Client, args: dict, params: dict):
         raw_response = censys_search_with_pagination(client, query)
         response = raw_response.get("result", {})
         hits = response.get("hits")
-        if not hits or not isinstance(hits, list):
+        if hits is None or not isinstance(hits, list):
             error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
             raise ValueError(error_msg)
+
+        # Track which domains were found
+        found_domains = set()
 
         # Group hits by domain (based on dns.names field)
         domain_hits: dict[str, list] = {domain: [] for domain in domains}
@@ -582,6 +601,7 @@ def domain_command(client: Client, args: dict, params: dict):
             for domain in domains:
                 if domain in dns_names:
                     domain_hits[domain].append(hit)
+                    found_domains.add(domain)
 
         # Create results for each domain
         for domain in domains:
@@ -589,6 +609,7 @@ def domain_command(client: Client, args: dict, params: dict):
 
             if not hits_for_domain:
                 # No results for this domain
+                demisto.debug(f"domain_command: domain {domain} not found in search results")
                 results.append(CommandResults(readable_output=f"No results found for domain: {domain}"))
                 continue
 
@@ -616,11 +637,13 @@ def domain_command(client: Client, args: dict, params: dict):
                 all_labels.extend([label.get("value") for label in res.get("labels", [])])
             all_labels = list(set(all_labels))
 
+            score, malicious_description = get_dbot_score(params, all_labels)
             dbot_score = Common.DBotScore(
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name="Censys",
-                score=get_dbot_score(params, all_labels),
+                score=score,
+                malicious_description=malicious_description,
                 reliability=params.get("integration_reliability"),
             )
             indicator = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)

@@ -8,9 +8,9 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
+| Server URL | Please add a description for the Server URL parameter, Default is https://api.platform.censys.io  | True |
 | API Token | Personal Access Token from Censys Platform | True |
-| Organization ID |  | True |
+| Organization ID | The unique identifier for your Censys organization | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Determine IP score by labels (for paid subscribers) | Censys API provides reputation data exclusively to paid subscribers. <br/>When set to True, the integration will use labels to determine the IP score.  | False |
@@ -471,10 +471,10 @@ Return previews of hosts matching a specified search query or a list of certific
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required |
-| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). (Applies for the host search.). Default is 50. | Optional |
+| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. | Optional |
 | limit | The number of results to return. Default is 50. | Optional |
 | index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required |
-| fields | The fields to return. (Applies for the certificates search.). | Optional |
+| fields | The fields to return. (Applies for the certificates search). | Optional |
 
 #### Context Output
 

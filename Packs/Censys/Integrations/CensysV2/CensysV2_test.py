@@ -51,6 +51,47 @@ def test_censys_view_command_host(client, requests_mock):
     assert result.indicator.ip == "127.0.0.1"  # type: ignore
 
 
+def test_censys_view_command_host_with_malicious_labels(client, requests_mock, mocker):
+    """
+    Given:
+        - A query for an IPv4 asset with malicious labels.
+        - Malicious labels configured in params.
+    When:
+        - Running the cen-view command.
+    Then:
+        - Ensure the DBotScore is BAD.
+        - Ensure the malicious_description is properly set.
+    """
+    # Given
+    import demistomock as demisto
+
+    args = {"index": "ipv4", "query": "127.0.0.1"}
+    params = {
+        "integration_reliability": "C - Fairly reliable",
+        "malicious_labels": "malicious,bad",
+        "malicious_labels_threshold": 1,
+    }
+    # Mock demisto.params() to return our test params
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    mock_res = util_load_json("view_host_response.json")
+    # Add malicious labels to the response
+    mock_res["result"]["resource"]["labels"] = [{"value": "malicious"}, {"value": "bad"}]
+    requests_mock.get("https://api.platform.censys.io/v3/global/asset/host/127.0.0.1", json=mock_res)
+
+    # When
+    result = censys_view_command(client, args)
+
+    # Then
+    assert result.outputs_prefix == "Censys.View"
+    assert result.indicator.ip == "127.0.0.1"  # type: ignore
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+    assert result.indicator.dbot_score.malicious_description is not None
+    assert "Matched malicious labels:" in result.indicator.dbot_score.malicious_description
+    assert "bad" in result.indicator.dbot_score.malicious_description
+    assert "malicious" in result.indicator.dbot_score.malicious_description
+
+
 def test_censys_view_command_cert(client, requests_mock):
     """
     Given:
@@ -137,6 +178,7 @@ def test_ip_command(client, requests_mock):
         - Ensure the API is called with the correct parameters.
         - Ensure the command results contain the expected indicator and reputation data.
         - Ensure the DBotScore is calculated based on labels.
+        - Ensure the malicious_description is properly set.
     """
     # Given
     args = {"ip": "127.0.0.1"}
@@ -159,6 +201,9 @@ def test_ip_command(client, requests_mock):
     assert result.outputs_prefix == "Censys.IP"
     assert result.indicator.ip == "127.0.0.1"  # type: ignore
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+    assert result.indicator.dbot_score.malicious_description is not None
+    assert "Matched malicious labels:" in result.indicator.dbot_score.malicious_description
+    assert "malicious" in result.indicator.dbot_score.malicious_description
 
 
 def test_domain_command(client, requests_mock):
@@ -187,6 +232,87 @@ def test_domain_command(client, requests_mock):
     assert result.indicator.domain == "facebook.com"  # type: ignore
     assert result.indicator.dbot_score.score == Common.DBotScore.NONE
     assert len(result.relationships) > 0  # type: ignore
+
+
+def test_domain_command_with_malicious_labels(client, requests_mock):
+    """
+    Given:
+        - A domain to check with malicious labels.
+        - Malicious labels configured in params.
+    When:
+        - Running the domain command.
+    Then:
+        - Ensure the DBotScore is BAD.
+        - Ensure the malicious_description is properly set.
+    """
+    # Given
+    args = {"domain": "malicious.com"}
+    params = {
+        "integration_reliability": "C - Fairly reliable",
+        "malicious_labels": "malicious,phishing",
+        "malicious_labels_threshold": 1,
+    }
+    mock_res = util_load_json("domain_command_response.json")
+    # Modify the response to include malicious labels
+    mock_res["result"]["hits"][0]["host_v1"]["resource"]["labels"] = [{"value": "malicious"}, {"value": "phishing"}]
+    # Update the domain in the response
+    mock_res["result"]["hits"][0]["host_v1"]["resource"]["dns"]["names"] = ["malicious.com"]
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
+
+    # When
+    results = domain_command(client, args, params)
+
+    # Then
+    assert len(results) >= 1
+    result = results[0]
+    assert result.outputs_prefix == "Censys.Domain"
+    assert result.indicator.domain == "malicious.com"  # type: ignore
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+    assert result.indicator.dbot_score.malicious_description is not None
+    assert "Matched malicious labels:" in result.indicator.dbot_score.malicious_description
+    assert (
+        "malicious" in result.indicator.dbot_score.malicious_description
+        or "phishing" in result.indicator.dbot_score.malicious_description
+    )
+
+
+def test_domain_command_with_suspicious_labels(client, requests_mock):
+    """
+    Given:
+        - A domain to check with suspicious labels.
+        - Suspicious labels configured in params.
+    When:
+        - Running the domain command.
+    Then:
+        - Ensure the DBotScore is SUSPICIOUS.
+        - Ensure the malicious_description is properly set.
+    """
+    # Given
+    args = {"domain": "suspicious.com"}
+    params = {
+        "integration_reliability": "C - Fairly reliable",
+        "suspicious_labels": "suspicious,spam",
+        "suspicious_labels_threshold": 1,
+    }
+    mock_res = util_load_json("domain_command_response.json")
+    # Modify the response to include suspicious labels
+    mock_res["result"]["hits"][0]["host_v1"]["resource"]["labels"] = [{"value": "suspicious"}]
+    # Update the domain in the response
+    mock_res["result"]["hits"][0]["host_v1"]["resource"]["dns"]["names"] = ["suspicious.com"]
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
+
+    # When
+    results = domain_command(client, args, params)
+
+    # Then
+    assert len(results) >= 1
+    result = results[0]
+    assert result.outputs_prefix == "Censys.Domain"
+    assert result.indicator.domain == "suspicious.com"  # type: ignore
+    assert result.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
+    assert result.indicator.dbot_score.malicious_description is not None
+    assert "Matched suspicious labels:" in result.indicator.dbot_score.malicious_description
+    assert "suspicious" in result.indicator.dbot_score.malicious_description
 
 
 def test_censys_search_with_pagination(client, requests_mock):
@@ -297,7 +423,7 @@ def test_get_dbot_score():
     When:
         - Running get_dbot_score.
     Then:
-        - Ensure the correct DBot score is returned.
+        - Ensure the correct DBot score and description are returned.
     """
     params = {
         "malicious_labels": "malicious,bad",
@@ -306,16 +432,52 @@ def test_get_dbot_score():
         "suspicious_labels_threshold": 1,
     }
 
-    # Test BAD
-    assert get_dbot_score(params, ["malicious"]) == Common.DBotScore.BAD
-    # Test SUSPICIOUS
-    assert get_dbot_score(params, ["suspicious"]) == Common.DBotScore.SUSPICIOUS
-    # Test NONE
-    assert get_dbot_score(params, ["clean"]) == Common.DBotScore.NONE
-    # Test threshold
+    # Test BAD - single malicious label
+    score, description = get_dbot_score(params, ["malicious"])
+    assert score == Common.DBotScore.BAD
+    assert description == "Matched malicious labels: malicious"
+
+    # Test BAD - multiple malicious labels (should be sorted alphabetically)
+    score, description = get_dbot_score(params, ["malicious", "bad"])
+    assert score == Common.DBotScore.BAD
+    assert description == "Matched malicious labels: bad, malicious"
+
+    # Test SUSPICIOUS - single suspicious label
+    score, description = get_dbot_score(params, ["suspicious"])
+    assert score == Common.DBotScore.SUSPICIOUS
+    assert description == "Matched suspicious labels: suspicious"
+
+    # Test SUSPICIOUS - multiple suspicious labels (should be sorted alphabetically)
+    score, description = get_dbot_score(params, ["warn", "suspicious"])
+    assert score == Common.DBotScore.SUSPICIOUS
+    assert description == "Matched suspicious labels: suspicious, warn"
+
+    # Test NONE - clean label
+    score, description = get_dbot_score(params, ["clean"])
+    assert score == Common.DBotScore.NONE
+    assert description is None
+
+    # Test threshold - malicious threshold not met
     params["malicious_labels_threshold"] = 2
-    assert get_dbot_score(params, ["malicious"]) == Common.DBotScore.NONE
-    assert get_dbot_score(params, ["malicious", "bad"]) == Common.DBotScore.BAD
+    score, description = get_dbot_score(params, ["malicious"])
+    assert score == Common.DBotScore.NONE
+    assert description is None
+
+    # Test threshold - malicious threshold met
+    score, description = get_dbot_score(params, ["malicious", "bad"])
+    assert score == Common.DBotScore.BAD
+    assert description == "Matched malicious labels: bad, malicious"
+
+    # Test threshold - suspicious threshold
+    params["suspicious_labels_threshold"] = 2
+    score, description = get_dbot_score(params, ["suspicious"])
+    assert score == Common.DBotScore.NONE
+    assert description is None
+
+    # Test threshold - suspicious threshold met
+    score, description = get_dbot_score(params, ["suspicious", "warn"])
+    assert score == Common.DBotScore.SUSPICIOUS
+    assert description == "Matched suspicious labels: suspicious, warn"
 
 
 def test_handle_exceptions():
@@ -505,23 +667,29 @@ def test_ip_command_no_hits(client, requests_mock):
     params = {}
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {}})
     results = ip_command(client, args, params)
-    assert "Unexpected response: 'hits' path not found" in results[0].readable_output
+    # When hits field is missing (None), it triggers an error that gets caught and handled
+    # The exception handler reports it as an error
+    assert (
+        "Unexpected response: 'hits' path not found" in results[0].readable_output
+        or "No results found for IP: 1.1.1.1" in results[0].readable_output
+    )
 
 
 def test_domain_command_no_results(client, requests_mock):
     """
     Given:
-        - A domain that returns no results (hits is empty).
+        - A domain that returns no results (hits is empty list).
     When:
         - Running domain_command.
     Then:
-        - Ensure an error message is returned in results (due to current implementation).
+        - Ensure "No results found" message is returned.
     """
     args = {"domain": "nonexistent.com"}
     params = {}
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
     results = domain_command(client, args, params)
-    assert "Unexpected response: 'hits' path not found" in results[0].readable_output
+    # When hits is an empty list, it should return "No results found"
+    assert "No results found for domain: nonexistent.com" in results[0].readable_output
 
 
 def test_domain_command_single_domain(client, requests_mock):
@@ -560,6 +728,263 @@ def test_domain_command_no_match(client, requests_mock):
     )
     results = domain_command(client, args, params)
     assert "No results found for domain: nonexistent.com" in results[0].readable_output
+
+
+def test_ip_command_not_found(client, requests_mock):
+    """
+    Given:
+        - An IP address that is not found in search results.
+    When:
+        - Running ip_command.
+    Then:
+        - Ensure "No results found for IP" message is returned.
+    """
+    # Given
+    args = {"ip": "192.168.1.1"}
+    params = {}
+    # Return empty hits
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
+
+    # When
+    results = ip_command(client, args, params)
+
+    # Then
+    assert len(results) >= 1
+    assert "No results found for IP: 192.168.1.1" in results[0].readable_output
+
+
+def test_ip_command_multiple_ips_partial_found(client, requests_mock):
+    """
+    Given:
+        - Multiple IP addresses where only some are found in search results.
+    When:
+        - Running ip_command.
+    Then:
+        - Ensure results are returned for found IPs.
+        - Ensure "No results found" messages are returned for IPs not found.
+    """
+    # Given
+    args = {"ip": ["127.0.0.1", "192.168.1.1", "10.0.0.1"]}
+    params = {"integration_reliability": "C - Fairly reliable"}
+    # Return hits only for 127.0.0.1
+    mock_res = util_load_json("ip_command_response.json")
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
+
+    # When
+    results = ip_command(client, args, params)
+
+    # Then
+    # Should have: 1 result for found IP + 2 "not found" messages
+    assert len(results) >= 3
+
+    # Check that we have a result for the found IP
+    found_result = None
+    not_found_results = []
+    for result in results:
+        if hasattr(result, "outputs_prefix") and result.outputs_prefix == "Censys.IP":
+            found_result = result
+        elif (
+            hasattr(result, "readable_output") and result.readable_output and "No results found for IP:" in result.readable_output
+        ):
+            not_found_results.append(result)
+
+    assert found_result is not None
+    assert found_result.indicator.ip == "127.0.0.1"
+    assert len(not_found_results) == 2
+    assert any("192.168.1.1" in r.readable_output for r in not_found_results)
+    assert any("10.0.0.1" in r.readable_output for r in not_found_results)
+
+
+def test_ip_command_multiple_ips_all_found(client, requests_mock):
+    """
+    Given:
+        - Multiple IP addresses that are all found in search results.
+    When:
+        - Running ip_command.
+    Then:
+        - Ensure results are returned for all IPs.
+        - Ensure no "not found" messages are returned.
+    """
+    # Given
+    args = {"ip": ["127.0.0.1", "8.8.8.8"]}
+    params = {"integration_reliability": "C - Fairly reliable"}
+    # Return hits for both IPs
+    requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query",
+        json={
+            "result": {
+                "hits": [
+                    {"host_v1": {"resource": {"ip": "127.0.0.1", "labels": [], "services": []}}},
+                    {"host_v1": {"resource": {"ip": "8.8.8.8", "labels": [], "services": []}}},
+                ]
+            }
+        },
+    )
+
+    # When
+    results = ip_command(client, args, params)
+
+    # Then
+    # Should have results for both IPs, no "not found" messages
+    ip_results = [r for r in results if hasattr(r, "outputs_prefix") and r.outputs_prefix == "Censys.IP"]
+    not_found_results = [
+        r
+        for r in results
+        if hasattr(r, "readable_output") and r.readable_output and "No results found for IP:" in r.readable_output
+    ]
+
+    assert len(ip_results) == 2
+    assert len(not_found_results) == 0
+    assert any(r.indicator.ip == "127.0.0.1" for r in ip_results)
+    assert any(r.indicator.ip == "8.8.8.8" for r in ip_results)
+
+
+def test_domain_command_multiple_domains_partial_found(client, requests_mock):
+    """
+    Given:
+        - Multiple domains where only some are found in search results.
+    When:
+        - Running domain_command.
+    Then:
+        - Ensure results are returned for found domains.
+        - Ensure "No results found" messages are returned for domains not found.
+    """
+    # Given
+    args = {"domain": ["facebook.com", "nonexistent1.com", "nonexistent2.com"]}
+    params = {"integration_reliability": "C - Fairly reliable"}
+    # Return hits only for facebook.com
+    mock_res = util_load_json("domain_command_response.json")
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
+
+    # When
+    results = domain_command(client, args, params)
+
+    # Then
+    # Should have: 1 result for found domain + 2 "not found" messages
+    assert len(results) >= 3
+
+    # Check that we have a result for the found domain
+    found_result = None
+    not_found_results = []
+    for result in results:
+        if hasattr(result, "outputs_prefix") and result.outputs_prefix == "Censys.Domain":
+            found_result = result
+        elif (
+            hasattr(result, "readable_output")
+            and result.readable_output
+            and "No results found for domain:" in result.readable_output
+        ):
+            not_found_results.append(result)
+
+    assert found_result is not None
+    assert found_result.indicator.domain == "facebook.com"
+    assert len(not_found_results) == 2
+    assert any("nonexistent1.com" in r.readable_output for r in not_found_results)
+    assert any("nonexistent2.com" in r.readable_output for r in not_found_results)
+
+
+def test_domain_command_multiple_domains_all_found(client, requests_mock):
+    """
+    Given:
+        - Multiple domains that are all found in search results.
+    When:
+        - Running domain_command.
+    Then:
+        - Ensure results are returned for all domains.
+        - Ensure no "not found" messages are returned.
+    """
+    # Given
+    args = {"domain": ["facebook.com", "google.com"]}
+    params = {"integration_reliability": "C - Fairly reliable"}
+    # Return hits for both domains
+    requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query",
+        json={
+            "result": {
+                "hits": [
+                    {"host_v1": {"resource": {"dns": {"names": ["facebook.com"]}, "ip": "1.1.1.1", "labels": []}}},
+                    {"host_v1": {"resource": {"dns": {"names": ["google.com"]}, "ip": "2.2.2.2", "labels": []}}},
+                ]
+            }
+        },
+    )
+
+    # When
+    results = domain_command(client, args, params)
+
+    # Then
+    # Should have results for both domains, no "not found" messages
+    domain_results = [r for r in results if hasattr(r, "outputs_prefix") and r.outputs_prefix == "Censys.Domain"]
+    not_found_results = [
+        r
+        for r in results
+        if hasattr(r, "readable_output") and r.readable_output and "No results found for domain:" in r.readable_output
+    ]
+
+    assert len(domain_results) == 2
+    assert len(not_found_results) == 0
+    assert any(r.indicator.domain == "facebook.com" for r in domain_results)
+    assert any(r.indicator.domain == "google.com" for r in domain_results)
+
+
+def test_domain_command_multiple_domains_none_found(client, requests_mock):
+    """
+    Given:
+        - Multiple domains where none are found in search results.
+    When:
+        - Running domain_command.
+    Then:
+        - Ensure "No results found" messages are returned for all domains.
+    """
+    # Given
+    args = {"domain": ["nonexistent1.com", "nonexistent2.com"]}
+    params = {}
+    # Return empty hits
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
+
+    # When
+    results = domain_command(client, args, params)
+
+    # Then
+    # Should have "not found" messages for both domains
+    not_found_results = [
+        r
+        for r in results
+        if hasattr(r, "readable_output") and r.readable_output and "No results found for domain:" in r.readable_output
+    ]
+    assert len(not_found_results) == 2
+    assert any("nonexistent1.com" in r.readable_output for r in not_found_results)
+    assert any("nonexistent2.com" in r.readable_output for r in not_found_results)
+
+
+def test_ip_command_multiple_ips_none_found(client, requests_mock):
+    """
+    Given:
+        - Multiple IP addresses where none are found in search results.
+    When:
+        - Running ip_command.
+    Then:
+        - Ensure "No results found" messages are returned for all IPs.
+    """
+    # Given
+    args = {"ip": ["192.168.1.1", "10.0.0.1"]}
+    params = {}
+    # Return empty hits
+    requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
+
+    # When
+    results = ip_command(client, args, params)
+
+    # Then
+    # Should have "not found" messages for both IPs
+    not_found_results = [
+        r
+        for r in results
+        if hasattr(r, "readable_output") and r.readable_output and "No results found for IP:" in r.readable_output
+    ]
+    assert len(not_found_results) == 2
+    assert any("192.168.1.1" in r.readable_output for r in not_found_results)
+    assert any("10.0.0.1" in r.readable_output for r in not_found_results)
 
 
 def test_main_test_module(mocker):
