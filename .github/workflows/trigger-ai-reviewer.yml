@@ -4,7 +4,7 @@ on:
   issue_comment:
     types: [created]
   pull_request:
-    types: [review_requested]
+    types: [edited, review_requested]
 
 jobs:
   trigger-ai-review:
