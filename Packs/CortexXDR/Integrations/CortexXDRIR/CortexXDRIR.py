@@ -425,6 +425,39 @@ class Client(CoreClient):
 
         return reply.get("reply")
 
+    def get_api_keys(self, request_data: dict):
+        """
+        Gets a list of existing API keys.
+        Args:
+            request_data (dict): The request data
+        Returns:
+            list: A list of API keys.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/api_keys/get_api_keys/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def delete_api_keys(self, request_data: dict):
+        """
+        Deletes the specified API keys.
+        Args:
+            request_data (dict): List of API key IDs to delete.
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/api_keys/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
     def get_tenant_info(self):
         reply = self._http_request(
             method="POST",
@@ -1496,6 +1529,72 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
 
 
+def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-existing-API-keys
+    Gets a list of existing API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    roles_list = argToList(args.get("role", []))
+    expires_before = (
+        arg_to_timestamp(args.get("expires_before"), arg_name="expires_before") if args.get("expires_before") else None
+    )
+    expires_after = arg_to_timestamp(args.get("expires_after"), arg_name="expires_after") if args.get("expires_after") else None
+
+    filters = []
+
+    if api_ids:
+        filters.append({"field": "id", "operator": "in", "value": api_ids})
+
+    if roles_list:
+        filters.append({"field": "roles", "operator": "contains", "value": roles_list})
+
+    if expires_before:
+        filters.append({"field": "expiration", "operator": "lte", "value": expires_before})
+
+    if expires_after:
+        filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
+
+    api_keys = client.get_api_keys({"filters": filters})
+    readable_output = tableToMarkdown(
+        name="API Keys",
+        t=api_keys,
+        headers=["id", "roles", "created_by", "creation_time", "expiration", "comment"],
+        date_fields=["creation_time", "expiration"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.APIKeyData",
+        outputs=api_keys,
+        outputs_key_field="id",
+        raw_response=api_keys,
+    )
+
+
+def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+    Deletes the specified API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_ids}]}
+    client.delete_api_keys(request_data=request_data)
+    return CommandResults(readable_output="API Keys deleted successfully.")
+
+
 def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Returns a list of assets.
@@ -2269,6 +2368,12 @@ def main():  # pragma: no cover
 
         elif command == "xdr-update-alert":
             return_results(update_alerts_in_xdr_command(client, args))
+
+        elif command == "xdr-api-key-list":
+            return_results(api_key_list_command(client, args))
+
+        elif command == "xdr-api-key-delete":
+            return_results(api_key_delete_command(client, args))
 
     except Exception as err:
         return_error(str(err))
