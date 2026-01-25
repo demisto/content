@@ -3220,7 +3220,6 @@ class EC2:
 
         pagination_kwargs = build_pagination_kwargs(args)
         kwargs.update(pagination_kwargs)
-
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing snapshots with parameters: {kwargs}")
 
@@ -3251,10 +3250,13 @@ class EC2:
             removeNull=True,
         )
 
+        outputs = {
+            "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)": snapshots,
+            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")}
+        }
+
         return CommandResults(
-            outputs_prefix="AWS.EC2.Snapshots",
-            outputs_key_field="SnapshotId",
-            outputs=snapshots,
+            outputs=outputs,
             readable_output=readable_output,
             raw_response=response,
         )
@@ -3300,10 +3302,7 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        snapshot_id = response.get("SnapshotId")
-        region = args.get("region")
-        outputs = {"SnapshotId": snapshot_id, "Region": region}
-
+        outputs = {"SnapshotId": response.get("SnapshotId"), "Region": args.get("region")}
         readable_output = tableToMarkdown("AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True)
 
         return CommandResults(
