@@ -839,6 +839,8 @@ def test_fetch_assets(requests_mock):
         - Verify export uuid being updated in the integration context
         - Verify snapshot_id is generated for XSIAM dataset snapshots
         - Verify assets returned and finished flag is up.
+        - Note: total_assets counter is updated in main() after send_data_to_xsiam(),
+          not in handle_assets_chunks(), to ensure counter only reflects successfully sent assets.
     """
     from Tenable_io import Client, generate_assets_export_uuid, get_asset_export_job_status, handle_assets_chunks
 
@@ -861,8 +863,9 @@ def test_fetch_assets(requests_mock):
     assets, last_run = handle_assets_chunks(client, last_run)
 
     assert len(assets) == 2
-    # Verify total_assets is updated
-    assert last_run.get("total_assets") == 2
+    # total_assets is NOT updated here - it's updated in main() after send_data_to_xsiam()
+    # This ensures the counter only reflects assets that were actually sent to XSIAM
+    assert last_run.get("total_assets") == 0
     # Verify snapshot_id is preserved across chunk handling
     assert last_run.get("snapshot_id") == original_snapshot_id
 
@@ -893,6 +896,8 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
         - Verify that new export uuid was generated.
         - lastrun object was updated.
         - Verify snapshot_id is regenerated when export uuid is regenerated.
+        - Note: total_assets counter is updated in main() after send_data_to_xsiam(),
+          not in handle_assets_chunks(), to ensure counter only reflects successfully sent assets.
     """
     from Tenable_io import Client, handle_assets_chunks
 
@@ -925,8 +930,9 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
     else:
         # When assets are successfully fetched, snapshot_id should be preserved
         assert new_last_run.get("snapshot_id") == original_snapshot_id
-        # total_assets should be updated with the count of fetched assets
-        assert new_last_run.get("total_assets") == len(expected_assets)
+        # total_assets is NOT updated here - it's updated in main() after send_data_to_xsiam()
+        # This ensures the counter only reflects assets that were actually sent to XSIAM
+        assert new_last_run.get("total_assets") == 0
 
 
 @pytest.mark.parametrize(

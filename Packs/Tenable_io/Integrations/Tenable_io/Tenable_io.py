@@ -635,19 +635,20 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
                 return [], assets_last_run
 
             demisto.info(
-                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). "
-                "Generating new export uuid to start new fetch."
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
             )
             fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
             # Generate a new snapshot_id when resetting the fetch
             snapshot_id = generate_snapshot_id()
-            assets_last_run.update({
-                "assets_export_uuid": export_uuid,
-                "snapshot_id": snapshot_id,
-                "total_assets": 0,
-                "assets_404_retry_count": retry_count
-            })
+            assets_last_run.update(
+                {
+                    "assets_export_uuid": export_uuid,
+                    "snapshot_id": snapshot_id,
+                    "total_assets": 0,
+                    "assets_404_retry_count": retry_count,
+                }
+            )
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("assets_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
@@ -703,21 +704,21 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
                 return [], assets_last_run
 
             demisto.info(
-                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). "
-                "Generating new export uuid to start new fetch."
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
             )
             export_uuid = client.get_vuln_export_uuid(
-                num_assets=ASSETS_NUMBER,
-                last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
+                num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             )
             # Generate a new snapshot_id when resetting the fetch
             snapshot_id = generate_snapshot_id()
-            assets_last_run.update({
-                "vuln_export_uuid": export_uuid,
-                "snapshot_id": snapshot_id,
-                "total_assets": 0,
-                "vulns_404_retry_count": retry_count
-            })
+            assets_last_run.update(
+                {
+                    "vuln_export_uuid": export_uuid,
+                    "snapshot_id": snapshot_id,
+                    "total_assets": 0,
+                    "vulns_404_retry_count": retry_count,
+                }
+            )
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("vulns_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
@@ -1842,7 +1843,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     demisto.debug(f"got {len(audit_logs_from_api)} events from api")
 
     if last_index_fetched < len(audit_logs_from_api):
-        audit_logs.extend(audit_logs_from_api[last_index_fetched: last_index_fetched + limit])
+        audit_logs.extend(audit_logs_from_api[last_index_fetched : last_index_fetched + limit])
 
     for audit_log in audit_logs:
         audit_log["_time"] = audit_log.get("received") or audit_log.get("indexed")
@@ -2076,13 +2077,17 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle (no ongoing exports)
-            if assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks") or not (
-                assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks")
+            if (
+                assets_last_run_copy.get("assets_export_uuid")
+                or assets_last_run_copy.get("assets_available_chunks")
+                or not (assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks"))
             ):
                 assets = run_assets_fetch(client, assets_last_run)
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
-            if assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks") or not (
-                assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks")
+            if (
+                assets_last_run_copy.get("vuln_export_uuid")
+                or assets_last_run_copy.get("vulns_available_chunks")
+                or not (assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks"))
             ):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
@@ -2101,8 +2106,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
             # Vulnerabilities are separate and don't affect the assets snapshot completion
             assets_fetch_in_progress = bool(
-                assets_last_run.get("assets_available_chunks")
-                or assets_last_run.get("assets_export_uuid")
+                assets_last_run.get("assets_available_chunks") or assets_last_run.get("assets_export_uuid")
             )
 
             # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
