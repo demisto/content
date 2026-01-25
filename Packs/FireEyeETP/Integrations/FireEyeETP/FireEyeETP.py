@@ -1037,16 +1037,12 @@ def parse_alert_to_incident(response_1, response_2):
     occurred = occurred.strftime(ISO_FORMAT) if occurred else None
 
     severity = response_2.get("alert", {}).get("severity")
-    uuid = response_2.get("alert", {}).get("uuid")
-    attack_time = response_2.get("alert", {}).get("attack-time")
     return {
         "name": response_2.get("id", ""),
         "occurred": occurred,
         "severity": convert_to_demisto_severity(severity),
         "rawJSON": json.dumps(response_2),
         "incident_type": ALERT_INCIDENT_TYPE_NAME,
-        "uuid": uuid,
-        "attack-time": attack_time,
     }
 
 

@@ -28,29 +28,17 @@
                     "simple": "occurred"
                 },
                 "Alert Name": {
-                    "simple": "name"
+                    "simple": "alert.name"
                 },
                 "UUID": {
-                    "simple": "uuid"
+                    "simple": "alert.uuid"
                 },
                 "Alert Attack Time": {
-					"simple": "attack-time"
+					"simple": "alert.attack-time"
 				},
 				"severity": {
 					"simple": "severity"
-				},
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
-                "IncomingMirrorError": {
-                    "simple": "in_mirror_error"
-                }
+				}
             }
         }
     },
