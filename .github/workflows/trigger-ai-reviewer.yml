@@ -51,6 +51,6 @@ jobs:
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
           git commit --allow-empty -m "Trigger AI Reviewer"
 
-          git push
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}.git" "$PR_BRANCH"
       
      
