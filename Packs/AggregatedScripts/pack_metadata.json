@@ -42,6 +42,7 @@
         "xsiam",
         "edr",
         "cloud_runtime_security",
-        "cloud"
+        "cloud",
+        "cloud_posture"
     ]
 }
