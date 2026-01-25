@@ -996,9 +996,7 @@ async def get_alert_list(
         # If the number of returned alerts is less than the requested batch limit, no more new alerts
         # are available for fetching
         if len(alerts_batch) < batch_limit:
-            demisto.debug(
-                f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking..."
-            )
+            demisto.debug(f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking...")
             break
 
     if async_push_tasks:
@@ -1006,8 +1004,7 @@ async def get_alert_list(
         await asyncio.gather(*async_push_tasks)
 
     demisto.debug(
-        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, "
-        f"{start_offset=}, and {limit=}."
+        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, {start_offset=}, and {limit=}."
     )
     return all_alerts
 
@@ -1154,9 +1151,7 @@ def fetch_assets(
 
     batch_count = len(data)
     cumulative_count += batch_count
-    demisto.debug(
-        f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}."
-    )
+    demisto.debug(f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}.")
 
     # Determine how to send items to XSIAM vendor/product dataset based on pulled type
 
@@ -1239,9 +1234,7 @@ def fetch_assets(
         nextTrigger=next_trigger_in_seconds,
     )
 
-    demisto.debug(
-        f"[Fetch assets] Completed. Fetched {batch_count} {current_data_type}. Set {assets_next_run=}."
-    )
+    demisto.debug(f"[Fetch assets] Completed. Fetched {batch_count} {current_data_type}. Set {assets_next_run=}.")
 
     return assets_next_run
 
@@ -1633,7 +1626,9 @@ class HelloWorldJobPollArgs(ContentBaseModel):
 
 
 @polling_function(
-    name="helloworld-job-poll", interval=PollingDefaults.INTERVAL_SECONDS, timeout=PollingDefaults.TIMEOUT_SECONDS
+    name="helloworld-job-poll",
+    interval=PollingDefaults.INTERVAL_SECONDS,
+    timeout=PollingDefaults.TIMEOUT_SECONDS,
 )
 def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClient) -> PollResult:
     """Poll the HelloWorld service for job status until complete.
@@ -1699,9 +1694,7 @@ def job_poll_command(args: HelloWorldJobPollArgs | dict, client: HelloWorldClien
 
     # Job is still running - continue polling
     else:
-        demisto.debug(
-            f"[Job polling] Job still running {job_id=} {status=}, scheduling next poll in {polling_interval}s"
-        )
+        demisto.debug(f"[Job polling] Job still running {job_id=} {status=}, scheduling next poll in {polling_interval}s")
 
         readable = f"Scheduling next check in {polling_interval} seconds for {job_id=}."
         status_update = CommandResults(
