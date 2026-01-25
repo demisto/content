@@ -19,13 +19,11 @@ jobs:
       pull-requests: write
       issues: write
     if: >-
-      # Review request via PR commented command.
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
        (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
        !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
        contains(fromJson(env.ALLOWED_COMMANDS), github.event.comment.body)) ||
-       # Review request via GH UI button 
       (github.event_name == 'pull_request' &&
        github.event.requested_reviewer.login == 'content-bot')
     steps:
