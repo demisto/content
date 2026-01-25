@@ -7,9 +7,6 @@ on:
   pull_request:
     types: [review_requested]
 
-env:
-  IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
-
 jobs:
   trigger-ai-review:
     runs-on: ubuntu-latest
