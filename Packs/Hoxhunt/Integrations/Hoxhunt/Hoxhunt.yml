@@ -4,6 +4,7 @@ commonfields:
 name: Hoxhunt
 display: Hoxhunt (Deprecated)
 category: Email
+provider: Hoxhunt
 description: "Deprecated. Use Hoxhunt V2 instead."
 configuration:
 - display: Server URL (e.g. https://api.hoxhunt.com/graphql-external)

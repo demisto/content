@@ -15,7 +15,7 @@
                                 "title": "Command execution errors per integration category",
                                 "width": 33.333333333333336,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics\n| filter is_error = true\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as error_count by category\n| sort desc error_count\n| view graph type = pie xaxis = category yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter is_error = true\n| filter type = \"integration\"\n| filter category != null and category != \"\"\n| comp count() as error_count by category\n| sort desc error_count\n| view graph type = pie xaxis = category yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -47,7 +47,7 @@
                                 "title": "Command execution errors per instance",
                                 "width": 33.29688354291963,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter instance != null and instance != \"\"\n| comp count() as error_count by instance\n| sort desc error_count\n| view graph type = pie xaxis = instance yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter instance != null and instance != \"\"\n| comp count() as error_count by instance\n| sort desc error_count\n| view graph type = pie xaxis = instance yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -76,10 +76,10 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command execution errors",
+                                "title": "Command execution errors breakdown",
                                 "width": 33.406232914160746,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| view graph type = pie xaxis = name yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| view graph type = pie xaxis = name yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -116,27 +116,34 @@
                                 "title": "Command execution errors",
                                 "width": 25,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| bin _time span = 1d\n| comp count() as error_count by _time\n| view graph type = single subtype = trend xaxis = _time yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "single",
                                     "commands": [
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "subtype",
-                                                "value": "standard"
-                                            }
-                                        },
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "yaxis",
-                                                "value": "error_count"
-                                            }
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "subtype",
+                                        "value": "trend"
                                         }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "xaxis",
+                                        "value": "_time"
+                                        }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "yaxis",
+                                        "value": "error_count"
+                                        }
+                                    }
                                     ]
                                 }
                             }
@@ -148,7 +155,7 @@
                                 "title": "Manual command execution errors",
                                 "width": 25,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter is_manual = true\n| filter type = \"integration\"\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| limit 5\n| view graph type = line xaxis = name yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter is_manual = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| limit 5\n| view graph type = column xaxis = name yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -179,7 +186,7 @@
                                 "type": "Custom XQL",
                                 "title": "Errors by issue type per command (Top 5)",
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter api_response_type != null\n| alter command = name\n| comp count() as total_errors by command, category \n| sort desc total_errors \n| limit 5\n| view graph type = column subtype = grouped xaxis = category yaxis = total_errors series = command ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| filter api_response_type != null\n| alter command = name\n| comp count() as total_errors by command, category \n| sort desc total_errors \n| limit 5\n| view graph type = column subtype = grouped xaxis = category yaxis = total_errors series = command ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -225,7 +232,7 @@
                                 "title": "Failed automation executions (Top 5)",
                                 "width": 25,
                                 "height": 511,
-                                "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter type = \"automation\"\n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -269,7 +276,7 @@
                                 "title": "Average runtime per command by instance (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
-                                "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter name != null and instance != null\n| comp avg(duration) as avg_runtime_secs by name, instance\n| sort desc avg_runtime_secs\n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs series = instance ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter name != null and instance != null\n| comp avg(duration) as avg_runtime_secs by name, instance\n| sort desc avg_runtime_secs\n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs series = instance ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -315,7 +322,7 @@
                                 "title": "Command average runtime per instance (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
-                                "phrase": "dataset = soar_execution_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter instance != null and instance != \"\"\n| comp avg(duration) as avg_runtime_secs by instance\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = instance yaxis = avg_runtime_secs ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter type = \"integration\"\n| filter duration != null\n| filter instance != null and instance != \"\"\n| comp avg(duration) as avg_runtime_secs by instance\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = instance yaxis = avg_runtime_secs ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
@@ -354,7 +361,7 @@
                                 "title": "Command average runtime per automation (Top 5)",
                                 "width": 33.333333333333336,
                                 "height": 435,
-                                "phrase": "dataset = soar_execution_metrics\n| filter type = \"automation\"\n| filter duration != null\n| filter name != null and name != \"\"\n| comp avg(duration) as avg_runtime_secs by name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs ",
+                                "phrase": "dataset = scripts_and_commands_metrics\n| filter type = \"automation\"\n| filter duration != null\n| filter name != null and name != \"\"\n| comp avg(duration) as avg_runtime_secs by name\n| sort desc avg_runtime_secs \n| limit 5\n| view graph type = column subtype = grouped xaxis = name yaxis = avg_runtime_secs ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
