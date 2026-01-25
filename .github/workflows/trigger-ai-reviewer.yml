@@ -33,6 +33,8 @@ jobs:
           TRIGGER_TYPE: ${{ github.event_name }}
         run: |
           echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
+          echo "$PR_NUMBER"
+          echo "$REPO"
 
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
