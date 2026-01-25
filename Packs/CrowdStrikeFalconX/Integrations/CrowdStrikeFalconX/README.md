@@ -175,7 +175,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | ids | This ia an internal argument used for the polling process, not to be used by the user.                                                                                                             | Optional |
 | interval_in_seconds | Interval in seconds between each poll. Default is 600.                                                                                                                                             | Optional |
 | system_time | Sets a custom time for the sandbox environment in the format HH:mm.                                                                                                                                | Optional |
-| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. Possible values are: default, tor, simulated, offline. | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. | Optional |
 
 #### Context Output
 
@@ -1919,7 +1919,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
 | ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional |
 | system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional |
-| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. Possible values are: default, tor, simulated, offline. | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. | Optional |
 
 #### Context Output
 
