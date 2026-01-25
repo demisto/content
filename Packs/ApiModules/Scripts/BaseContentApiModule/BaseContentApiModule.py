@@ -14,7 +14,7 @@ Classes:
 from pydantic import BaseModel, ValidationError, Extra
 
 import demistomock as demisto
-from CommonServerPython import DemistoException, FETCH_COMMANDS
+from CommonServerPython import *
 
 
 class ContentBaseModel(BaseModel):

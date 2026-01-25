@@ -846,7 +846,7 @@ class HelloWorldLastRun(ContentBaseModel):
 
     def set(self):
         """Save the current state for the next fetch-incidents or fetch-events execution."""
-        last_run = self.dict(by_alias=True)
+        last_run = json.loads(self.json(by_alias=True))  # Ensure last run a JSON serializable object
         demisto.debug(f"[Last Run] Setting {last_run=}.")
         demisto.setLastRun(last_run)
 
@@ -1071,7 +1071,7 @@ class HelloWorldAssetsLastRun(ContentBaseModel):
 
     def set(self):
         """Save the current state for the next fetch-assets execution."""
-        assets_last_run = self.dict(by_alias=True)
+        assets_last_run = json.loads(self.json(by_alias=True))  # Ensure last run a JSON serializable object
         demisto.debug(f"[Assets Last Run] Setting {assets_last_run=}.")
         demisto.setAssetsLastRun(assets_last_run)
 
@@ -1120,27 +1120,27 @@ def fetch_assets(
     """
     current_fetch_stage: FetchAssetsStages = last_run.stage
     current_data_type: str = current_fetch_stage.value
-    current_offset: int = last_run.id_offset
-    cumulative_count: int = last_run.cumulative_count
+    last_offset: int = last_run.id_offset
+    last_cumulative_count: int = last_run.cumulative_count
     # Generate a new `snapshot_id` if starting fresh (first fetch)
-    current_snapshot_id: str = last_run.snapshot_id or generate_unix_timestamp()
+    last_snapshot_id: str = last_run.snapshot_id or generate_unix_timestamp()
     batch_limit = 1000
 
     demisto.debug(
-        f"[Fetch assets] Starting to fetch with {current_fetch_stage=}, {current_offset=}, "
-        f"{cumulative_count=}, {current_snapshot_id=}."
+        f"[Fetch assets] Starting to fetch with {current_fetch_stage=}, {last_offset=}, "
+        f"{last_cumulative_count=}, {last_snapshot_id=}."
     )
 
     # Call the relevant client method based on the `current_fetch_stage`
     if current_fetch_stage is FetchAssetsStages.ASSETS:
-        demisto.debug(f"[Fetch assets] Fetching assets batch with {current_offset=} and {batch_limit=}.")
-        response = client.get_assets(limit=batch_limit, id_offset=current_offset)
+        demisto.debug(f"[Fetch assets] Fetching assets batch with {last_offset=} and {batch_limit=}.")
+        response = client.get_assets(limit=batch_limit, id_offset=last_offset)
         dataset_vendor = AssetsDatasetConfigs.VENDOR.value
         dataset_product = AssetsDatasetConfigs.PRODUCT.value
 
     else:
-        demisto.debug(f"[Fetch assets] Fetching vulnerabilities batch with {current_offset=} and {batch_limit=}.")
-        response = client.get_vulnerabilities(limit=batch_limit, id_offset=current_offset)
+        demisto.debug(f"[Fetch assets] Fetching vulnerabilities batch with {last_offset=} and {batch_limit=}.")
+        response = client.get_vulnerabilities(limit=batch_limit, id_offset=last_offset)
         dataset_vendor = VulnerabilitiesDatasetConfigs.VENDOR.value
         dataset_product = VulnerabilitiesDatasetConfigs.PRODUCT.value
 
@@ -1150,7 +1150,6 @@ def fetch_assets(
     has_more = response.get("has_more", False)
 
     batch_count = len(data)
-    cumulative_count += batch_count
     demisto.debug(f"[Fetch assets] Parsed raw response of {current_data_type} API. Got {batch_count} items, {has_more=}.")
 
     # Determine how to send items to XSIAM vendor/product dataset based on pulled type
@@ -1164,12 +1163,12 @@ def fetch_assets(
     #   - Report "1" items fetched to indicate to the server that pulling is ongoing (i.e. snapshot is not yet complete)
     #   - Do *NOT* update the the integration instance heath status to avoid showing a partial count of pulled data
 
-    reported_items_count = 1 if has_more else cumulative_count
+    reported_items_count = 1 if has_more else (last_cumulative_count + batch_count)
     update_health_module = False if has_more else True
     if should_push:
         demisto.debug(
             f"[Fetch assets] Starting to send {batch_count} {current_data_type} to XSIAM with "
-            f"{current_snapshot_id=} and {reported_items_count=}."
+            f"{last_snapshot_id=} and {reported_items_count=}."
         )
         send_data_to_xsiam(
             data=data,
@@ -1177,13 +1176,13 @@ def fetch_assets(
             product=dataset_product,
             data_type=ASSETS,  # use "assets" data type even if pulling vulnerabilities
             items_count=reported_items_count,
-            snapshot_id=current_snapshot_id,
+            snapshot_id=last_snapshot_id,
             should_update_health_module=update_health_module,  # Do not update health until all assets / vulnerabilities are fetched
             client_class=ContentClient,
         )
         demisto.debug(
             f"[Fetch assets] Successfully sent {batch_count} {current_data_type} to XSIAM with "
-            f"{current_snapshot_id=} and {reported_items_count=}."
+            f"{last_snapshot_id=} and {reported_items_count=}."
         )
 
     # Determine next state based on `has_more` and `current_fetch_stage`
@@ -1200,9 +1199,10 @@ def fetch_assets(
     #   - Reset the `offset` back to 0
     #   - Set `nextTrigger` = 1 *ONLY* if the `current_fetch_stage` is not the last one (vulnerabilities)
     if has_more:
-        next_snapshot_id = current_snapshot_id
+        next_snapshot_id = last_snapshot_id
         next_fetch_stage = current_fetch_stage
-        next_offset = current_offset + batch_count
+        next_offset = last_offset + batch_count
+        next_cumulative_count = last_cumulative_count + batch_count
         next_trigger_in_seconds = "1"
         demisto.debug(
             f"[Fetch assets] More {current_data_type} available. Setting {next_offset=}, "
@@ -1214,6 +1214,7 @@ def fetch_assets(
         # the current stage
         next_snapshot_id = generate_unix_timestamp()
         next_offset = 0
+        next_cumulative_count = 0
         if current_fetch_stage is FetchAssetsStages.ASSETS:
             # First stage (assets) finished, send immediate server trigger to move on to second stage
             # (vulnerabilities)
@@ -1229,7 +1230,7 @@ def fetch_assets(
     assets_next_run = HelloWorldAssetsLastRun(
         stage=next_fetch_stage,
         id_offset=next_offset,
-        cumulative_count=cumulative_count,
+        cumulative_count=next_cumulative_count,
         snapshot_id=next_snapshot_id,
         nextTrigger=next_trigger_in_seconds,
     )
@@ -1899,7 +1900,7 @@ class HelloWorldExecutionConfig(BaseExecutionConfig):
         Returns:
             HelloWorldAssetsLastRun: State from the previous fetch-assets execution.
         """
-        return HelloWorldAssetsLastRun(**self._raw_last_run)
+        return HelloWorldAssetsLastRun(**self._raw_assets_last_run)
 
 
 # endregion
