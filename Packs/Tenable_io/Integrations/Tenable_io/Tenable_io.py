@@ -2114,7 +2114,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
 
             # Update module health separately to show the number of assets pulled
-            if assets or not has_more_data:
+            if assets or not assets_fetch_in_progress:
                 demisto.updateModuleHealth({"assetsPulled": total_assets})
 
             demisto.info("Done Sending data to XSIAM.")
