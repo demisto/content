@@ -1,3 +1,5 @@
+import copy
+
 import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
@@ -4310,18 +4312,24 @@ class SSM:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        if response.get("Entries"):
+        if entries := response.get("Entries"):
             readable_output = tableToMarkdown(
                 f"The inventory entries of item {instance_id} with the type {type_name}",
-                response.get("Entries"),
+                entries,
                 headerTransform=pascalToSpace,
                 removeNull=True,
             )
 
+            outputs = copy.deepcopy(response)
+            if outputs.get("ResponseMetadata", {}):
+                del outputs["ResponseMetadata"]
+
+            outputs["EntriesNextPageToken"] = outputs.pop("NextToken") if response.get("NextToken") else None
+
             return CommandResults(
                 outputs_prefix="AWS.SSM.Inventory",
                 outputs_key_field="InstanceId",
-                outputs=response,
+                outputs=outputs,
                 readable_output=readable_output,
                 raw_response=response,
             )
@@ -4409,7 +4417,6 @@ class SSM:
                 outputs=command_response,
                 outputs_prefix="AWS.SSM.Command",
                 outputs_key_field="CommandId",
-                raw_response=response_command_run,
             ),
         )
 

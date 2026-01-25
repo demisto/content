@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime, date
 from http import HTTPStatus
@@ -7599,6 +7600,10 @@ def test_inventory_entries_list_command_success(mocker):
     }
     mock_client.list_inventory_entries.return_value = mock_response
 
+    expected_output = copy.deepcopy(mock_response)
+    expected_output["EntriesNextPageToken"] = None
+    del expected_output["ResponseMetadata"]
+
     args = {"instance_id": "i-12345", "type_name": "AWS:InstanceInformation"}
 
     result = SSM.inventory_entries_list_command(mock_client, args)
@@ -7606,7 +7611,7 @@ def test_inventory_entries_list_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "The inventory entries of item i-12345 with the type AWS:InstanceInformation" in result.readable_output
     assert result.outputs_prefix == "AWS.SSM.Inventory"
-    assert result.outputs == mock_response
+    assert result.outputs == expected_output
 
 
 def test_inventory_entries_list_command_no_entries(mocker):
