@@ -1316,3 +1316,48 @@ Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-temp-access-pass-method-list
+
+***
+Lists the Temporary Access Pass authentication methods registered to a user, or retrieves a specific method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-temp-access-pass-method-list`
+
+#### Input
+
+**Argument Name** | **Description** | **Required** |
+--- | --- | --- |
+user | User ID or userPrincipalName. | Required |
+method_id | The ID of a specific Temporary Access Pass authentication method to retrieve. | Optional |
+
+#### Context Output
+
+**Path** | **Type** | **Description** |
+--- | --- | --- |
+MSGraphUser.TempAccessPassAuthMethod.ID | String | The unique identifier of the Temporary Access Pass authentication method. |
+MSGraphUser.TempAccessPassAuthMethod.IsUsable | Bool | Indicates whether the authentication method is currently usable. |
+
+### msgraph-user-temp-access-pass-method-delete
+
+***
+Deletes a Temporary Access Pass authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-temp-access-pass-method-delete`
+
+#### Input
+
+**Argument Name** | **Description** | **Required** |
+--- | --- | --- |
+user | User ID or userPrincipalName. | Required |
+method_id | The ID of the Temporary Access Pass authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.

@@ -18,6 +18,41 @@ APP_NAME = "ms-graph-user"
 INVALID_USER_CHARS_REGEX = re.compile(r"[%&*+/=?`{|}]")
 API_VERSION: str = "v1.0"
 DEFAULT_LIMIT = 50
+AUTH_METHODS_FIELD_MAPPING = {
+    "OWNED_DEVICES": {
+        "id": "Device Id",
+        "deviceId": "Azure Device Registration Id",
+        "displayName": "Device Display Name",
+    },
+    "FIDO2": {
+        "id": "Authentication method ID",
+        "displayName": "The display name of the key",
+        "aaGuid": "Authenticator Attestation GUID",
+    },
+    "AUTHENTICATOR": {
+        "id": "Authentication method ID",
+        "displayName": "Device Name",
+        "phoneAppVersion": "Version of the Authenticator app",
+    },
+    "PHONE": {
+        "id": "Phone ID",
+        "phoneNumber": "Phone Number",
+        "phoneType": "Phone Type",
+        "smsSignInState": "Sms SignIn State",
+    },
+    "SOFTWARE_OATH": {
+        "id": "Authentication method ID",
+    },
+    "TEMP_ACCESS_PASS": {
+        "id": "Temporary Access Pass ID",
+        "isUsable": "Authentication method state",
+    },
+    "WINDOWS_HELLO": {
+        "id": "Windows Hello Method ID",
+        "displayName": "Display Name",
+        "keyStrength": "Method Key Strength",
+    },
+}
 
 
 def camel_case_to_readable(text):
@@ -1237,11 +1272,9 @@ def list_owned_device_command(client: MsGraphClient, args: dict) -> CommandResul
 
     if not devices_data:
         return CommandResults(readable_output=f"No owned devices found for user {user_id}.")
-
     devices_readable, devices_outputs = parse_outputs(devices_data)
-
     # Map the field names to custom headers for human readable output
-    field_mapping = {"id": "Device Id", "deviceId": "Azure Device Registration Id", "displayName": "Device Display Name"}
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("OWNED_DEVICES", {})
     devices_readable = map_auth_method_fields_to_readable(devices_data, field_mapping)
 
     headers = ["Device Id", "Azure Device Registration Id", "Device Display Name"]
@@ -1321,12 +1354,8 @@ def list_fido2_method_command(client: MsGraphClient, args: dict) -> CommandResul
 
     fido2_readable, fido2_outputs = parse_outputs(fido2_data)
 
-    field_mapping = {
-        "ID": "Authentication method ID",
-        "Display Name": "The display name of the key",
-        "Aa Guid": "Authenticator Attestation GUID",
-    }
-    fido2_readable = map_auth_method_fields_to_readable(fido2_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("FIDO2", {})
+    fido2_readable = map_auth_method_fields_to_readable(fido2_data, field_mapping)
 
     headers = ["Authentication method ID", "The display name of the key", "Authenticator Attestation GUID"]
 
@@ -1470,12 +1499,8 @@ def list_authenticator_method_command(client: MsGraphClient, args: dict) -> Comm
     authenticator_readable, authenticator_outputs = parse_outputs(authenticator_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {
-        "ID": "Authentication method ID",
-        "Display Name": "Device Name",
-        "Phone App Version": "Version of the Authenticator app",
-    }
-    authenticator_readable = map_auth_method_fields_to_readable(authenticator_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("AUTHENTICATOR", {})
+    authenticator_readable = map_auth_method_fields_to_readable(authenticator_data, field_mapping)
 
     headers = ["Authentication method ID", "Device Name", "Version of the Authenticator app"]
 
@@ -1556,8 +1581,8 @@ def list_phone_method_command(client: MsGraphClient, args: dict) -> CommandResul
     phone_readable, phone_outputs = parse_outputs(phone_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {"ID": "Phone ID", "Sms Sign In State": "Sms SignIn State"}
-    phone_readable = map_auth_method_fields_to_readable(phone_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("PHONE", {})
+    phone_readable = map_auth_method_fields_to_readable(phone_data, field_mapping)
 
     headers = ["Phone ID", "Phone Number", "Phone Type", "Sms SignIn State"]
 
@@ -1635,8 +1660,8 @@ def list_software_oath_method_command(client: MsGraphClient, args: dict) -> Comm
     software_oath_readable, software_oath_outputs = parse_outputs(software_oath_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {"ID": "Authentication method ID"}
-    software_oath_readable = map_auth_method_fields_to_readable(software_oath_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("SOFTWARE_OATH", {})
+    software_oath_readable = map_auth_method_fields_to_readable(software_oath_data, field_mapping)
 
     headers = ["Authentication method ID"]
 
@@ -1707,8 +1732,8 @@ def list_temp_access_pass_method_command(client: MsGraphClient, args: dict) -> C
     temp_access_pass_readable, temp_access_pass_outputs = parse_outputs(temp_access_pass_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {"id": "Temporary Access Pass ID", "isUsable": "Authentication method state"}
-    temp_access_pass_readable = map_auth_method_fields_to_readable(temp_access_pass_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("TEMP_ACCESS_PASS", {})
+    temp_access_pass_readable = map_auth_method_fields_to_readable(temp_access_pass_data, field_mapping)
 
     headers = ["Temporary Access Pass ID", "Authentication method state"]
 
@@ -1756,8 +1781,8 @@ def list_windows_hello_method_command(client: MsGraphClient, args: dict) -> Comm
     windows_hello_readable, windows_hello_outputs = parse_outputs(windows_hello_data)
 
     # Map the field names to custom headers for human readable output
-    field_mapping = {"ID": "Windows Hello Method ID", "Key Strength": "Method Key Strength"}
-    windows_hello_readable = map_auth_method_fields_to_readable(windows_hello_readable, field_mapping)
+    field_mapping = AUTH_METHODS_FIELD_MAPPING.get("WINDOWS_HELLO", {})
+    windows_hello_readable = map_auth_method_fields_to_readable(windows_hello_data, field_mapping)
 
     headers = ["Windows Hello Method ID", "Display Name", "Method Key Strength"]
 
@@ -1918,7 +1943,7 @@ def main():
         "msgraph-user-software-oath-method-list": list_software_oath_method_command,
         "msgraph-user-software-oath-method-delete": delete_software_oath_method_command,
         "msgraph-user-temp-access-pass-method-list": list_temp_access_pass_method_command,
-        "msgraph-user-temp-access-pass-method-delete": delete_tap_policy_command,
+        "msgraph-user-temp-access-pass-method-delete": delete_tap_policy_command,  # Points to an existing command due to design choices CIAC-12953  # noqa: E501
         "msgraph-user-windows-hello-method-list": list_windows_hello_method_command,
         "msgraph-user-windows-hello-method-delete": delete_windows_hello_method_command,
     }

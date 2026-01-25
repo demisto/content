@@ -1251,6 +1251,35 @@ script:
       Deletes a Windows Hello for Business authentication method from a user.
       Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
     name: msgraph-user-windows-hello-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Temporary Access Pass authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the Temporary Access Pass authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-temp-access-pass-method-list
+    outputs:
+    - contextPath: MSGraphUser.TempAccessPassAuthMethod.ID
+      description: The unique identifier of the Temporary Access Pass authentication method.
+      type: String
+    - contextPath: MSGraphUser.TempAccessPassAuthMethod.IsUsable
+      description: Indicates whether the authentication method is currently usable.
+      type: Bool
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Temporary Access Pass authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Temporary Access Pass authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-temp-access-pass-method-delete
   dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
