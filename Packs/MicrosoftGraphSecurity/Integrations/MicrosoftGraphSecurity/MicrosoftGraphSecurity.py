@@ -670,6 +670,7 @@ class MsGraphClient:
             headers={"X-AllowWithAADToken": "true"},
             full_url=download_url,
             resp_type="response",
+            scope="b26e684c-5068-4120-a679-64a5d2c909d9/.default"
         )
 
 
