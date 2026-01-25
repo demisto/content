@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Fortinet
 commonfields:
   id: Lacework
   version: -1
@@ -62,7 +63,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: Details
-      description: The scope of data to retrieve from Lacework for the specified Alert ID
+      description: The scope of data to retrieve from Lacework for the specified Alert ID.
       name: scope
       predefined:
       - Details
@@ -147,7 +148,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.
@@ -281,7 +282,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.
@@ -412,7 +413,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.
@@ -603,7 +604,7 @@ script:
       description: The ID of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.CATEGORY
-      description: The category of the recommendation
+      description: The category of the recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SERVICE
       description: The service associated with the recommendation.
@@ -696,9 +697,9 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z").
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z").
       name: end_time
     - description: An array of objects to add information to refine your search results.
       name: filters
@@ -710,84 +711,84 @@ script:
     name: lw-get-container-vulnerabilities
     outputs:
     - contextPath: Lacework.Vulnerability.Container.evalCtx.exception_props
-      description: The exception properties that were applied in the evaluation
+      description: The exception properties that were applied in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.image_info
-      description: The image information for the container scanned in the evaluation
+      description: The image information for the container scanned in the evaluation.
       type: Date
     - contextPath: Lacework.Vulnerability.Container.evalCtx.integration_props
-      description: The properties of the integration that performed the evaluation
+      description: The properties of the integration that performed the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.is_reeval
-      description: A boolean representing whether the evaluation was a re-evaluation
+      description: A boolean representing whether the evaluation was a re-evaluation.
       type: Boolean
     - contextPath: Lacework.Vulnerability.Container.evalCtx.request_source
-      description: The source of the evaluation request
+      description: The source of the evaluation request.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.scan_batch_id
-      description: The scan batch ID for the evaluation
+      description: The scan batch ID for the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.scan_request_props
-      description: The scan request properties for the evaluation
+      description: The scan request properties for the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.vuln_batch_id
-      description: The vulnerability batch ID for the evaluation
+      description: The vulnerability batch ID for the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.evalCtx.vuln_created_time
-      description: The time at which the vulnerability was created
+      description: The time at which the vulnerability was created.
       type: Date
     - contextPath: Lacework.Vulnerability.Container.featureKey.name
-      description: The name of the package identified in the evaluation
+      description: The name of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureKey.namespace
-      description: The namespace of the package identified in the evaluation
+      description: The namespace of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureKey.version
-      description: The version of the package identified in the evaluation
+      description: The version of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.feed
-      description: The type of data feed used in the evaluation
+      description: The type of data feed used in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.introduced_in
-      description: The Dockerfile command which introduced the vulnerability
+      description: The Dockerfile command which introduced the vulnerability.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.layer
-      description: The SHA256 hash of the layer which introduced the vulnerability
+      description: The SHA256 hash of the layer which introduced the vulnerability.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.src
-      description: The path within the container identifying the source of the vulnerability data
+      description: The path within the container identifying the source of the vulnerability data.
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.version_format
-      description: The format of the version data for the vulnerable package
+      description: The format of the version data for the vulnerable package.
       type: String
     - contextPath: Lacework.Vulnerability.Container.fixInfo.fix_available
-      description: An integer representing whether a fix is available for the vulnerability
+      description: An integer representing whether a fix is available for the vulnerability.
       type: Number
     - contextPath: Lacework.Vulnerability.Container.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and package
+      description: The version in which the vulnerability is fixed for the CVE and package.
       type: String
     - contextPath: Lacework.Vulnerability.Container.imageId
-      description: The image ID of the container identified in the evaluation
+      description: The image ID of the container identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.severity
-      description: The severity of the vulnerability identified in the evaluation
+      description: The severity of the vulnerability identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.startTime
-      description: The start time for the vulnerability evaluation
+      description: The start time for the vulnerability evaluation.
       type: Date
     - contextPath: Lacework.Vulnerability.Container.status
-      description: The status of the vulnerability identified in the evaluation
+      description: The status of the vulnerability identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Container.vulnId
       description: The vulnerability ID (CVE, ALAS, etc.)
       type: String
     - contextPath: Lacework.Vulnerability.Container.vulnHash
-      description: A unique hash of all data contained in the vulnerability
+      description: A unique hash of all data contained in the vulnerability.
       type: String
   - arguments:
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z").
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z").
       name: end_time
     - description: An array of objects to add information to refine your search results.
       name: filters
@@ -799,61 +800,61 @@ script:
     name: lw-get-host-vulnerabilities
     outputs:
     - contextPath: Lacework.Vulnerability.Host.cveProps.description
-      description: The CVE Properties description
+      description: The CVE Properties description.
       type: String
     - contextPath: Lacework.Vulnerability.Host.cveProps.link
-      description: The CVE Properties description URL
+      description: The CVE Properties description URL.
       type: String
     - contextPath: Lacework.Vulnerability.Host.endTime
-      description: The end time for the vulnerability evaluation period
+      description: The end time for the vulnerability evaluation period.
       type: Date
     - contextPath: Lacework.Vulnerability.Host.evalCtx.exception_props.status
-      description: The status of any exception properties for the evaluation
+      description: The status of any exception properties for the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.evalCtx.hostname
-      description: The hostname of the host assessed in the evaluation
+      description: The hostname of the host assessed in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.evalCtx.mc_eval_guid
-      description: The GUID for the evaluation
+      description: The GUID for the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.featureKey.name
-      description: The name of the package identified in the evaluation
+      description: The name of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.featureKey.namespace
-      description: The namespace of the package identified in the evaluation
+      description: The namespace of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.featureKey.package_active
-      description: An integer representing whether the package is Active on the host
+      description: An integer representing whether the package is Active on the host.
       type: Number
     - contextPath: Lacework.Vulnerability.Host.featureKey.version_installed
-      description: The version of the package identified in the evaluation
+      description: The version of the package identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.fixInfo.fix_available
-      description: An integer representing whether a fix is available for the vulnerability
+      description: An integer representing whether a fix is available for the vulnerability.
       type: String
     - contextPath: Lacework.Vulnerability.Host.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and package
+      description: The version in which the vulnerability is fixed for the CVE and package.
       type: String
     - contextPath: Lacework.Vulnerability.Host.machineTags
-      description: A string representing the machine tags in key/value pairs
+      description: A string representing the machine tags in key/value pairs.
       type: String
     - contextPath: Lacework.Vulnerability.Host.mid
-      description: The machine ID for the host identified in the evaluation
+      description: The machine ID for the host identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.severity
-      description: The severity of the vulnerability identified in the evaluation
+      description: The severity of the vulnerability identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.startTime
-      description: The start time for the vulnerability evaluation period
+      description: The start time for the vulnerability evaluation period.
       type: Date
     - contextPath: Lacework.Vulnerability.Host.status
-      description: The status of the vulnerability identified in the evaluation
+      description: The status of the vulnerability identified in the evaluation.
       type: String
     - contextPath: Lacework.Vulnerability.Host.vulnId
       description: The vulnerability ID (CVE, ALAS, etc.)
       type: String
     - contextPath: Lacework.Vulnerability.Host.vulnHash
-      description: A unique hash of all data contained in the vulnerability
+      description: A unique hash of all data contained in the vulnerability.
       type: String
   dockerimage: demisto/lacework:1.0.0.117192
   isfetch: true
