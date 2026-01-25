@@ -4047,7 +4047,6 @@ async def fetch_spotlight_assets():
             
             # Send this batch to XSIAM
             demisto.debug(f"Sending {len(vulnerabilities)} assets to XSIAM with {snapshot_id=}")
-            # TODO: Verify this is the correct send product and vendor
             send_data_to_xsiam(
                 data=vulnerabilities,
                 vendor=VENDOR,
@@ -4058,13 +4057,23 @@ async def fetch_spotlight_assets():
                 should_update_health_module=False,
             )
             
+            # Update state after sending batch to XSIAM
+            spotlight_state.cursor = new_after_token
+            spotlight_state.metadata = {
+                "snapshot_id": snapshot_id,
+                "total_fetched_until_now": total_fetched,
+                "unique_aids": list(unique_aids)
+            }
+            save_spotlight_state(context_store, integration_context, spotlight_state)
+            demisto.debug(f"Updated context after batch. Total: {total_fetched}, after_token={'present' if new_after_token else 'none'}")
+            
             # Check if more pages exist
             if not new_after_token:
                 # No more pages - we're done!
                 demisto.info(f"Completed full fetch. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
                 break
             
-            # More pages exist - update token and continue
+            # More pages exist - continue to next batch
             demisto.debug(f"More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
         
