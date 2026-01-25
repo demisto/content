@@ -1082,3 +1082,313 @@ def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_in
 
     assert check_and_remove_abuse(domain_info) == expected_output
     assert domain_info == expected_domain_info
+
+
+# Enhanced Error Handling Tests
+
+
+@pytest.mark.parametrize(
+    "exception, response_text, expected",
+    [
+        # Test HTTPRateLimitError detection
+        (ipwhois.exceptions.HTTPRateLimitError("Rate limit exceeded"), "", True),
+        # Test WhoisRateLimitError detection
+        (ipwhois.exceptions.WhoisRateLimitError("Rate limit exceeded"), "", True),
+        # Test WhoisRateLimit exception detection
+        (Whois.WhoisRateLimit("Rate limit exceeded"), "", True),
+        # Test rate limit pattern in response
+        (Exception("Some error"), "the WHOIS query quota for 1.2.3.4 has been exceeded", True),
+        # Test rate limit keywords in error message
+        (Exception("rate limit exceeded"), "", True),
+        (Exception("quota exceeded"), "", True),
+        (Exception("too many requests"), "", True),
+        (Exception("HTTP 429 error"), "", True),
+        # Test non-rate-limit errors
+        (Exception("Connection failed"), "", False),
+        (OSError("Connection refused"), "", False),
+    ],
+)
+def test_detect_rate_limit_error(exception, response_text, expected):
+    """
+    Test the detect_rate_limit_error function with various exception types and response texts.
+
+    Given:
+        - Various exception types and response texts
+
+    When:
+        - Calling detect_rate_limit_error
+
+    Then:
+        - Verify correct detection of rate limit errors
+    """
+    from Whois import detect_rate_limit_error
+
+    assert detect_rate_limit_error(exception, response_text) == expected
+
+
+@pytest.mark.parametrize(
+    "response_text, expected",
+    [
+        # Test terms of use detection
+        ("You may not access the .uk WHOIS or use any data from it except as permitted by the terms of use", True),
+        # Test access restriction detection
+        ("Access may be withdrawn or restricted at any time", True),
+        # Test query rate limit detection
+        ("exceeding query rate or volume limits", True),
+        # Test access restricted detection
+        ("Access restricted to authorized users only", True),
+        # Test non-restriction text
+        ("Normal WHOIS response with domain information", False),
+        ("", False),
+    ],
+)
+def test_detect_access_restriction_error(response_text, expected):
+    """
+    Test the detect_access_restriction_error function with various response texts.
+
+    Given:
+        - Various response texts containing access restriction messages
+
+    When:
+        - Calling detect_access_restriction_error
+
+    Then:
+        - Verify correct detection of access restriction errors
+    """
+    from Whois import detect_access_restriction_error
+
+    assert detect_access_restriction_error(response_text) == expected
+
+
+@pytest.mark.parametrize(
+    "exception, response_text, expected",
+    [
+        # Test PywhoisError with "not found" message
+        (Whois.PywhoisError("Domain not found"), "", True),
+        # Test PywhoisError with "no match" message
+        (Whois.PywhoisError("No match for domain"), "", True),
+        # Test PywhoisError with "no data found" message
+        (Whois.PywhoisError("No data found for this domain"), "", True),
+        # Test response text with "not found"
+        (Exception("Some error"), "Domain NOT FOUND in registry", True),
+        # Test response text with "no match"
+        (Exception("Some error"), "No match for the requested domain", True),
+        # Test non-not-found errors
+        (Exception("Connection failed"), "", False),
+        (Whois.PywhoisError("Connection timeout"), "", False),
+    ],
+)
+def test_detect_not_found_error(exception, response_text, expected):
+    """
+    Test the detect_not_found_error function with various exception types and response texts.
+
+    Given:
+        - Various exception types and response texts
+
+    When:
+        - Calling detect_not_found_error
+
+    Then:
+        - Verify correct detection of not found errors
+    """
+    from Whois import detect_not_found_error
+
+    assert detect_not_found_error(exception, response_text) == expected
+
+
+@pytest.mark.parametrize(
+    "exception, response_text, expected_error_type",
+    [
+        # Test rate limit detection (highest priority)
+        (ipwhois.exceptions.HTTPRateLimitError("Rate limit"), "", "rate_limit"),
+        # Test access restriction detection
+        (Exception("Error"), "You may not access the WHOIS data", "permission_denied"),
+        # Test not found detection
+        (Whois.PywhoisError("Domain not found"), "", "not_found"),
+        # Test invalid domain detection
+        (Whois.WhoisInvalidDomain("Invalid domain"), "", "invalid_input"),
+        # Test empty response detection
+        (Whois.WhoisEmptyResponse("Empty response"), "", "service_unavailable"),
+        # Test timeout detection
+        (socket.timeout("Connection timeout"), "", "timeout"),
+        # Test connection error detection
+        (OSError("Connection refused"), "", "connection_error"),
+        (OSError("Network error"), "", "connection_error"),
+        (socket.herror("Host error"), "", "connection_error"),
+        (socket.gaierror("Address error"), "", "connection_error"),
+        # Test HTTP lookup error detection
+        (ipwhois.exceptions.HTTPLookupError("HTTP error"), "", "connection_error"),
+        # Test blacklist error detection
+        (ipwhois.exceptions.BlacklistError("Blacklisted"), "", "permission_denied"),
+        # Test unknown error (should return None)
+        (ValueError("Some value error"), "", None),
+    ],
+)
+def test_get_error_type_from_exception(exception, response_text, expected_error_type):
+    """
+    Test the get_error_type_from_exception function with various exception types.
+
+    Given:
+        - Various exception types and response texts
+
+    When:
+        - Calling get_error_type_from_exception
+
+    Then:
+        - Verify correct error type is returned
+    """
+    from Whois import get_error_type_from_exception
+
+    result = get_error_type_from_exception(exception, response_text)
+
+    if expected_error_type is None:
+        assert result is None
+    else:
+        assert result == expected_error_type
+
+
+def test_ip_command_with_rate_limit_error(mocker: MockerFixture):
+    """
+    Test that ip_command properly handles rate limit errors with enhanced error handling.
+
+    Given:
+        - An IP address that triggers a rate limit error
+
+    When:
+        - Calling ip_command
+
+    Then:
+        - Verify error_type is set to RATE_LIMIT
+        - Verify custom_error_message contains SaaS context
+        - Verify include_suggestions is True
+    """
+    from CommonServerPython import IntegrationErrorType
+
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(demisto, "args", return_value={"ip": "1.2.3.4"})
+    mocker.patch.object(demisto, "params", return_value={"with_error": True})
+
+    # Mock get_whois_ip to raise HTTPRateLimitError
+    rate_limit_error = ipwhois.exceptions.HTTPRateLimitError("HTTP lookup failed. Rate limit exceeded")
+    rate_limit_error.url = "https://rdap.db.ripe.net/ip/1.2.3.4"
+    mocker.patch("Whois.get_whois_ip", side_effect=rate_limit_error)
+
+    results = ip_command(reliability=DBotScoreReliability.B, should_error=True)
+
+    # Should have 2 results: error result + metrics
+    assert len(results) == 2
+    error_result = results[0]
+
+    # Verify error handling parameters were set
+    assert error_result.error_type == IntegrationErrorType.RATE_LIMIT
+    assert error_result.include_suggestions is True
+    assert error_result.custom_error_message is not None
+    assert "SaaS environments" in error_result.custom_error_message
+    assert "share the same outbound IP" in error_result.custom_error_message
+
+
+def test_whois_command_with_access_restriction_error(mocker: MockerFixture):
+    """
+    Test that whois_command properly handles access restriction errors.
+
+    Given:
+        - A domain that triggers an access restriction error
+
+    When:
+        - Calling whois_command
+
+    Then:
+        - Verify error_type is set to PERMISSION_DENIED
+        - Verify custom_error_message contains TLD-specific guidance
+    """
+    from CommonServerPython import IntegrationErrorType
+    from whois.parser import PywhoisError
+
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(demisto, "args", return_value={"query": "example.uk"})
+    mocker.patch.object(demisto, "params", return_value={"with_error": False})
+    mocker.patch("Whois.get_domain_from_query", return_value="example.uk")
+
+    # Create exception with access restriction message
+    access_error = PywhoisError(
+        "You may not access the .uk WHOIS or use any data from it except as permitted by the terms of use"
+    )
+    mocker.patch("Whois.get_whois", side_effect=access_error)
+
+    results = whois_command(reliability=DBotScoreReliability.B)
+
+    # Should have 2 results: error result + metrics
+    assert len(results) == 2
+    error_result = results[0]
+
+    # Verify error handling parameters were set
+    assert error_result.error_type == IntegrationErrorType.PERMISSION_DENIED
+    assert error_result.include_suggestions is True
+    assert error_result.custom_error_message is not None
+    assert ".uk WHOIS data is restricted" in error_result.custom_error_message
+
+
+def test_domain_command_with_not_found_error(mocker: MockerFixture):
+    """
+    Test that domain_command properly handles domain not found errors.
+
+    Given:
+        - A domain that doesn't exist
+
+    When:
+        - Calling domain_command
+
+    Then:
+        - Verify error_type is set to NOT_FOUND
+    """
+    from CommonServerPython import IntegrationErrorType
+    from whois.parser import PywhoisError
+
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(demisto, "args", return_value={"domain": "nonexistent123456.com"})
+    mocker.patch.object(demisto, "params", return_value={"with_error": False})
+
+    # Create exception with "not found" message
+    not_found_error = PywhoisError("No match for domain nonexistent123456.com")
+    mocker.patch("Whois.get_whois", side_effect=not_found_error)
+
+    results = domain_command(reliability=DBotScoreReliability.B)
+
+    # Should have 2 results: error result + metrics
+    assert len(results) == 2
+    error_result = results[0]
+
+    # Verify error type is set correctly
+    assert error_result.error_type == IntegrationErrorType.NOT_FOUND
+
+
+def test_test_command_with_enhanced_rate_limit_handling(mocker: MockerFixture):
+    """
+    Test that test_command uses enhanced error handling for rate limits.
+
+    Given:
+        - A whois result containing rate limit pattern
+
+    When:
+        - Calling test_command
+
+    Then:
+        - Verify it returns a string message instead of raising exception
+        - Verify the message mentions rate limiting
+    """
+    # Mock whois result with rate limit message
+    mock_whois_result = {
+        "raw": ["Error for 'google.co.uk'. the WHOIS query quota for 35.225.156.101 has been exceeded"],
+        "nameservers": [],
+    }
+
+    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
+    mocker.patch.object(demisto, "debug")
+
+    from Whois import test_command
+
+    result = test_command()
+
+    # Should return a string message, not raise an exception
+    assert isinstance(result, str)
+    assert "rate limiting" in result.lower()
