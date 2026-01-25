@@ -1,6 +1,7 @@
 name: Trigger AI Reviewer
 
 on:
+  push:
   issue_comment:
     types: [created]
   pull_request:
