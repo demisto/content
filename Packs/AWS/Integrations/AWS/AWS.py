@@ -3305,6 +3305,9 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = {"SnapshotId": response.get("SnapshotId"), "Region": args.get("region")}
+        if tags := response.get("Tags"):
+            outputs["Tags"] = tags
+
         readable_output = tableToMarkdown("AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True)
 
         return CommandResults(
