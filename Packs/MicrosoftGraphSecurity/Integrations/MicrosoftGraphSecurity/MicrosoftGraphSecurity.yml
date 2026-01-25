@@ -2867,6 +2867,15 @@ script:
       - 'false'
       defaultValue: 'false'
       auto: PREDEFINED
+    - description: Download the report when an export file link is available.
+      name: ediscovery-export-file
+      isArray: false
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      auto: PREDEFINED
     description: Get a list of the caseOperation objects and their properties.
     name: msg-list-case-operation
     outputs:
@@ -3078,66 +3087,6 @@ script:
       - nonresponsiveLocations
     description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
     name: msg-export-result-ediscovery-data
-  - arguments:
-    - name: case_id
-      required: true
-      description: The eDiscovery case ID.
-    - name: operation_id
-      required: true
-      description: The export operation ID returned in the Location header from the exportResult response.
-    name: msg-download-ediscovery-export-file
-    description: |
-      Downloads the exported eDiscovery results file for the specified case operation and returns it as a War Room file entry.
-      If the export is still being generated, retry the command after the operation completes.
-    outputs:
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.CaseId
-      description: The eDiscovery case ID.
-      type: String
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.OperationId
-      description: The export operation ID.
-      type: String
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.Status
-      description: The operation status (e.g., notStarted, running, succeeded, failed).
-      type: String
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.FileName
-      description: The name of the exported file (if returned by the API).
-      type: String
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.FileSize
-      description: The size of the exported file in bytes (if returned by the API).
-      type: Number
-    - contextPath: MicrosoftGraphSecurity.EdiscoveryExportFile.DownloadUrl
-      description: The download URL for the exported file (if returned by the API).
-      type: String
-    - contextPath: File.Size
-      description: The size of the file.
-      type: Number
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
-      type: String
-    - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The entry ID of the file.
-      type: String
-    - contextPath: File.Info
-      description: File information.
-      type: String
-    - contextPath: File.Type
-      description: The file type.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.Extension
-      description: The file extension.
-      type: String
   dockerimage: demisto/crypto:1.0.0.6308375
   isfetch: true
   runonce: false

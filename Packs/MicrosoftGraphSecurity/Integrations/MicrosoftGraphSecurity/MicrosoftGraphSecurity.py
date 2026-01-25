@@ -662,6 +662,15 @@ class MsGraphClient:
             method="PATCH", url_suffix=f"security/incidents/{incident_id}", json_data=body, timeout=timeout
         )
         return updated_incident
+    
+    
+    def download_export_file(self, download_url: str):
+        return self.ms_client.http_request(
+            method="GET",
+            headers={"X-AllowWithAADToken": "true"},
+            full_url=download_url,
+            resp_type="response",
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -1938,53 +1947,127 @@ def list_ediscovery_case_hold_policy_command(
 def list_case_operation_command(
     client: MsGraphClient,
     args,
-) -> CommandResults:
+) -> CommandResults | list[dict | CommandResults]:
     """
     List or retrieve operations for an eDiscovery case.
-
-    Args:
-        client: Microsoft Graph client.
-        args: Command arguments.
-
-    Returns:
-        CommandResults containing case operation data.
+    Optionally downloads the export file when operation_id is provided and ediscovery-export-file=true.
     """
     case_id = args.get("case_id")
     operation_id = args.get("operation_id")
-    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit", 50))
+
+    ediscovery_export_file = argToBoolean(args.get("ediscovery-export-file", "false"))
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = None if all_results else int(args.get("limit", 50))
+
+    file_result = None
 
     if operation_id:
         raw_res = client.get_case_operation(case_id, operation_id)
-        operation_list = [raw_res]
+        operation_list = [raw_res] if isinstance(raw_res, dict) else []
+        if ediscovery_export_file and operation_list:
+            file_result = _download_operation_export_file(client, operation_list[0])
     else:
         raw_res = client.list_case_operation(case_id, limit)
-        operation_list = raw_res.get("value", [])
+        operation_list = raw_res.get("value") or []
+        if isinstance(operation_list, dict):
+            operation_list = [operation_list]
 
     demisto.debug(f"returned {len(operation_list)} results from the api")
+
     hr = [
         {
-            "ID": operation.get("id"),
-            "Action": operation.get("action"),
-            "Status": operation.get("status"),
-            "Created By": operation.get("createdBy"),
-            "Link to download a file": (
-                m
-                if isinstance(m := operation.get("exportFileMetadata"), dict)
-                else (m[0] if isinstance(m, list) and m and isinstance(m[0], dict) else {})
-            ).get("downloadUrl"),
+            "ID": op.get("id"),
+            "Action": op.get("action"),
+            "Status": op.get("status"),
+            "Created By": op.get("createdBy"),
+            "Link to download a file": _extract_export_download_url(op),
         }
-        for operation in operation_list
+        for op in operation_list
     ]
 
-    return CommandResults(
+    command_result = CommandResults(
         outputs_prefix="MsGraph.eDiscoveryCase.Operation",
         outputs_key_field="ID",
-        outputs=[capitalize_dict_keys_first_letter(operation) for operation in operation_list],
+        outputs=[capitalize_dict_keys_first_letter(op) for op in operation_list],
         readable_output=tableToMarkdown(
-            name="eDiscovery Case Operations", headers=["ID", "Action", "Status", "Created By", "Link to download a file"], t=hr, removeNull=True
+            name="eDiscovery Case Operations",
+            t=hr,
+            headers=["ID", "Action", "Status", "Created By", "Link to download a file"],
+            removeNull=True,
         ),
         raw_response=raw_res,
     )
+
+    return [file_result, command_result] if file_result else command_result
+
+
+def _extract_export_download_url(operation: dict) -> str | None:
+    """
+    exportFileMetadata can be a dict or a list of dicts (sometimes).
+    Return downloadUrl if present.
+    """
+    meta = operation.get("exportFileMetadata")
+
+    if isinstance(meta, dict):
+        return meta.get("downloadUrl")
+    if isinstance(meta, list) and meta and isinstance(meta[0], dict):
+        return meta[0].get("downloadUrl")
+
+    return None
+
+
+def _extract_filename_from_headers(headers: dict, default: str = "ediscovery_export") -> str:
+    """
+    Tries Content-Disposition: filename= and filename*= (RFC 5987).
+    """
+    cd = headers.get("Content-Disposition") or headers.get("content-disposition") or ""
+    if not cd:
+        return default
+
+    # filename*=UTF-8''something.zip
+    m = re.search(r"filename\*\s*=\s*([^;]+)", cd, flags=re.IGNORECASE)
+    if m:
+        value = m.group(1).strip().strip('"')
+        # common pattern: UTF-8''encoded
+        if "''" in value:
+            value = value.split("''", 1)[1]
+        try:
+            return unquote(value) or default
+        except Exception:
+            return value or default
+
+    # filename="something.zip" OR filename=something.zip
+    m = re.search(r'filename\s*=\s*"?([^";]+)"?', cd, flags=re.IGNORECASE)
+    if m:
+        return m.group(1).strip() or default
+
+    return default
+
+
+def _download_operation_export_file(client: MsGraphClient, operation: dict) -> dict:
+    """
+    Returns a fileResult entry for the operation export file.
+    Raises a clear error if can't download.
+    """
+    download_url = _extract_export_download_url(operation)
+    if not download_url or not isinstance(download_url, str):
+        raise DemistoException(
+            "No export file download URL was found for this operation. "
+            "Make sure the operation is completed and includes exportFileMetadata.downloadUrl."
+        )
+
+    res = client.download_export_file(download_url)
+    if not getattr(res, "ok", False):
+        # Try to surface error text safely
+        text = getattr(res, "text", "") or ""
+        raise DemistoException(f"Failed to download export file. HTTP {res.status_code}. {text[:500]}")
+
+    filename = _extract_filename_from_headers(getattr(res, "headers", {}) or {})
+    file_bytes = getattr(res, "content", b"") or b""
+    if not file_bytes:
+        raise DemistoException("Downloaded export file is empty.")
+
+    return fileResult(filename=filename, data=file_bytes)
 
 
 def export_result_ediscovery_data_command(
