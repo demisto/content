@@ -3309,6 +3309,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
 
             execution = increment_metric(execution_metrics=execution, mapping=ipwhois_exception_mapping, caught_exception=type(e))
 
+            is_rate_limit = isinstance(e, (ipwhois.exceptions.HTTPRateLimitError, ipwhois.exceptions.WhoisRateLimitError))
             if should_error:
                 results.append(
                     CommandResults(
@@ -3317,6 +3318,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
                         outputs=output,
                         entry_type=EntryType.ERROR,
                         readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}",
+                        is_rate_limit=is_rate_limit,
                     )
                 )
             else:
@@ -3327,6 +3329,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
                         outputs=output,
                         entry_type=EntryType.WARNING,
                         readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}",
+                        is_rate_limit=is_rate_limit,
                     )
                 )
 
@@ -3372,12 +3375,14 @@ def whois_command(reliability: str) -> List[CommandResults]:
                 json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
                 context_res.update({"Whois(val.query==obj.query)": json.loads(json_res)})
 
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(whois_result), re.IGNORECASE) is not None
             result = CommandResults(
                 outputs=context_res,
                 entry_type=EntryType.NOTE,
                 content_format=EntryFormat.MARKDOWN,
                 readable_output=tableToMarkdown("Whois results for {}".format(domain), md),
                 raw_response=str(whois_result),
+                is_rate_limit=is_rate_limit,
             )
 
             results.append(result)
@@ -3396,6 +3401,7 @@ def whois_command(reliability: str) -> List[CommandResults]:
                 outputPaths["domain"]: {"Name": domain, "Whois": {"QueryStatus": f"Failed whois lookup: {e}"}},
             }
 
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(e), re.IGNORECASE) is not None
             results.append(
                 CommandResults(
                     outputs=output,
@@ -3403,6 +3409,7 @@ def whois_command(reliability: str) -> List[CommandResults]:
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    is_rate_limit=is_rate_limit,
                 )
             )
 
@@ -3440,12 +3447,14 @@ def domain_command(reliability: str) -> List[CommandResults]:
             context_res.update(dbot_score)
             context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
 
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(whois_result), re.IGNORECASE) is not None
             result = CommandResults(
                 outputs=context_res,
                 entry_type=EntryType.NOTE,
                 content_format=EntryFormat.MARKDOWN,
                 readable_output=tableToMarkdown("Whois results for {}".format(domain), md),
                 raw_response=str(whois_result),
+                is_rate_limit=is_rate_limit,
             )
 
             results.append(result)
@@ -3464,6 +3473,7 @@ def domain_command(reliability: str) -> List[CommandResults]:
                 outputPaths["domain"]: {"Name": domain, "Whois": {"QueryStatus": f"Failed domain lookup: {e}"}},
             }
 
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(e), re.IGNORECASE) is not None
             results.append(
                 CommandResults(
                     outputs=output,
@@ -3471,6 +3481,7 @@ def domain_command(reliability: str) -> List[CommandResults]:
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    is_rate_limit=is_rate_limit,
                 )
             )
 
@@ -3490,7 +3501,7 @@ def test_command():
         whois_result_str = str(whois_result)
         if re.search(RATE_LIMIT_PATTERN, whois_result_str):
             raise WhoisRateLimit(
-                "Test completed but encountered rate limiting. Consider using an engine to avoid IP-based rate limits. For more info see: https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues",
+                f"{GENERAL_RATE_LIMIT_MESSAGE} For more info see: {GENERAL_RATE_LIMIT_DOCS_LINK}",
                 response=whois_result,
             )
     except Exception as e:
@@ -3741,6 +3752,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                 "Emails",
                 "Whois_server",
             ]
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(domain_data), re.IGNORECASE) is not None
             results.append(
                 CommandResults(
                     outputs=whois_res,
@@ -3751,6 +3763,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                         removeNull=True,
                     ),
                     raw_response=dict(domain_data),
+                    is_rate_limit=is_rate_limit,
                 )
             )
         except (
@@ -3771,6 +3784,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                     "WHOIS": {"QueryStatus": f"Failed domain lookup: {e}"},
                 },
             }
+            is_rate_limit = re.search(RATE_LIMIT_PATTERN, str(e), re.IGNORECASE) is not None
             results.append(
                 CommandResults(
                     outputs=output,
@@ -3778,6 +3792,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                     f" was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
                     raw_response=str(e),
+                    is_rate_limit=is_rate_limit,
                 )
             )
     return append_metrics(execution_metrics=execution_metrics, results=results)
