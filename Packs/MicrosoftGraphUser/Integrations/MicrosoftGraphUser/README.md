@@ -997,7 +997,7 @@ Retrieve a list of authentication methods registered to a user.
 ***
 Lists the devices that are owned by the user.
 Permission:User.Read.All, Directory.Read.All - Delegated
-Note: When using the Xsoar app, this command will only show partial data. for the full data, use a self-deployed Azure app with the correct permissions.
+Note: When using the XSOAR app, this command returns partial data. To retrieve full data, use a self-deployed Azure app with the appropriate permissions.
 
 #### Base Command
 

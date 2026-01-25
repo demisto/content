@@ -1002,7 +1002,7 @@ script:
       description: The profile type of the device.
       type: String
     - contextPath: MSGraphUser.OwnedDevice.CreatedDateTime
-      description: The date and time when the device was created.
+      description: The date and time the device was created.
       type: String
     - contextPath: MSGraphUser.OwnedDevice.ApproximateLastSignInDateTime
       description: The approximate date and time of the last sign-in.
@@ -1036,7 +1036,7 @@ script:
       name: method_id
       required: false
     description: |-
-      Lists the FIDO2 authentication methods registered to a user, or retrieves a specific FIDO2 method by ID.
+      Lists the FIDO2 authentication methods registered to a user or retrieves a specific method by ID.
       Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All
     name: msgraph-user-fido2-method-list
     outputs:
