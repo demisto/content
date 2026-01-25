@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
+      pull-requests: write
+      issues: write
     if: >-
       # Review request via PR commented command.
       (github.event_name == 'issue_comment' &&
