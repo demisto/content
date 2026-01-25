@@ -859,7 +859,8 @@ script:
       Forces a user to reset their password the next time they log in.
       Note that this action does not terminate the user’s current session.
       If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
-      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All and User-PasswordProfile.ReadWrite.All delegated permissions. For further info, see https://learn.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0&tabs=http#example-3-update-the-passwordprofile-of-a-user-and-reset-their-password
+      Furthermore, the signed in user must have a higher privileged administrator role than the user who's password is being reset. The admin hierarchy table can be viewed here: https://learn.microsoft.com/en-us/graph/api/resources/users?view=graph-rest-1.0#who-can-reset-passwords
     name: msgraph-user-force-reset-password
     prettyname: Force Reset Password [EntraID]
     quickaction: false
