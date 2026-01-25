@@ -20,7 +20,7 @@ jobs:
     if: >-
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
-       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER' || github.event.comment.author_association == 'COLLABORATOR') &&
+       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER' &&
        !contains(fromJson('["content-bot", "xsoar-bot", "dependabot"]'), github.event.comment.user.login) &&
        (contains(github.event.comment.body, '@content-bot start review') || 
         contains(github.event.comment.body, '@content-bot re-review'))) ||
