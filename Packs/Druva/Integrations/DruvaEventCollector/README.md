@@ -15,6 +15,7 @@ This is the Druva event collector integration for Cortex XSIAM.
 ### Additional Information
 
 - **The maximum number of events per fetch**: The default value is 10,000. The API only returns up to 500 events at a time without limiting capabilities, so it is best to enter this parameter in multiples of 500.
+- **Resetting event fetching**: Note that resetting the event fetching (clearing the integration context) will cause duplicate events to be fetched, as the integration will restart the fetch process from the beginning.
 
 ## Commands
 
