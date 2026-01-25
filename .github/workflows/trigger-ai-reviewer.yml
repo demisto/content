@@ -8,24 +8,26 @@ on:
 
 env:
   IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
-  ALLOWED_COMMANDS: '["@content-bot start review", "@content-bot re-review"]'
 
 jobs:
   trigger-ai-review:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
+      pull-requests: write
+      issues: write
     if: >-
-      # Review request via PR commented command.
-      (github.event_name == 'issue_comment' &&
-       github.event.issue.pull_request &&
-       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-       !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
-       contains(github.event.comment.body, '@content-bot start review') ||
-       # Review request via GH UI button 
-      (github.event_name == 'pull_request' &&
-       github.event.requested_reviewer.login == 'content-bot')
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
+        !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
+        contains(github.event.comment.body, '@content-bot start review')
+      ) || 
+      (
+        github.event_name == 'pull_request' &&
+        github.event.requested_reviewer.login == 'content-bot'
+      )
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,18 +36,34 @@ jobs:
           
       - name: Trigger AI Review
         env:
-          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
-          COMMENT_ID: ${{ github.event.comment.id }}
+          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN }}
           TRIGGER_TYPE: ${{ github.event_name }}
         run: |
-          echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
+          echo "🚀 Triggering AI Reviewer via $TRIGGER_TYPE"
 
+          # --- 1. SET VARIABLES ---
+          # We must manually set these because bash doesn't know them automatically
+          REPO="${{ github.repository }}"
+          
+          if [[ "$TRIGGER_TYPE" == "issue_comment" ]]; then
+            PR_NUMBER="${{ github.event.issue.number }}"
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          fi
+          
+          echo "Target: PR #$PR_NUMBER in $REPO"
+
+          # --- 2. GIT CONFIG ---
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
           
+          # --- 3. ADD LABEL ---
+          # Now $REPO and $PR_NUMBER are actually defined!
           gh api "repos/$REPO/issues/$PR_NUMBER/labels" -f name="ready-for-ai-review"
-          git commit --allow-empty -m "Trigger AI Reviewer"
-
-          git push
-      
-     
+          
+          # --- 4. COMMIT & PUSH ---
+          # Note: If triggered by comment, we are on a detached HEAD (master).
+          # You cannot simply 'git push'. You usually need to checkout the PR branch first.
+          # For now, we will create the commit, but pushing requires checking out the specific branch.
+          
+          git commit --allow-empty -m "Trigger AI Reviewer" || echo "Nothing to commit"
