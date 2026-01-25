@@ -457,14 +457,16 @@ def test_query_command_with_datetime_format(mocker):
     dt = datetime.datetime(2023, 1, 30, 12, 0, 0)
     mock_row = {"time": dt}
     mocker.patch.object(GoogleBigQuery, "get_query_results", return_value=[mock_row])
-    mocker.patch.object(demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false", "datetime_format": "%Y-%m-%d"})
+    mocker.patch.object(
+        demisto, "args", return_value={"query": "SELECT 1", "dry_run": "false", "datetime_format": "%Y-%m-%d %H:%M:%S"}
+    )
     return_outputs_mock = mocker.patch("GoogleBigQuery.return_outputs")
 
     query_command("SELECT 1")
 
     assert return_outputs_mock.call_count == 1
     _, kwargs = return_outputs_mock.call_args
-    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Time"] == "2023-01-30"
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Time"] == "2023-01-30 12:00:00"
 
 
 def test_query_command_with_date_only_format(mocker):
@@ -493,4 +495,4 @@ def test_query_command_with_date_only_format(mocker):
 
     assert return_outputs_mock.call_count == 1
     _, kwargs = return_outputs_mock.call_args
-    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Date"] == "01/30/2023"
+    assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Date"] == "2023-01-30"

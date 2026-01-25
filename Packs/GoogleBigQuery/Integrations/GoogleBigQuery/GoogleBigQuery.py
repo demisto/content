@@ -215,7 +215,7 @@ def query_command(query_to_run=None):
     else:
         context_key_format = args.get("context_key_format", "")
         datetime_format = args.get("datetime_format", "%m/%d/%Y %H:%M:%S")
-        date_only_format = args.get("datetime_format", "%m/%d/%Y")
+        date_only_format = args.get("date_only_format", "%m/%d/%Y")
         demisto.debug(f"{context_key_format=}, {datetime_format=}, {date_only_format=}")
         for row in query_results:
             if context_key_format == "underscore":
