@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
+from ContentClientApiModule import *
 
 """ IMPORTS """
 import base64
@@ -12,7 +13,7 @@ from threading import Timer
 from typing import Any
 
 import requests
-
+import asyncio
 # Disable insecure warnings
 import urllib3
 from gql import Client, gql
@@ -3845,7 +3846,288 @@ def get_cnapp_assets():
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
-def fetch_assets_command():
+def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
+    """
+    Create and configure ContentClient for Spotlight API with OAuth2 authentication.
+    
+    Args:
+        context_store: Context store for token and state persistence
+        
+    Returns:
+        Configured ContentClient instance
+    """
+    return ContentClient(
+        base_url=SERVER,
+        verify=USE_SSL,
+        proxy=PROXY,
+        
+        # OAuth2 authentication with token persistence
+        auth_handler=OAuth2ClientCredentialsHandler(
+            token_url=f"{SERVER}/oauth2/token",
+            client_id=CLIENT_ID,
+            client_secret=SECRET,
+            context_store=context_store
+        ),
+        
+        # Retry policy for transient failures
+        retry_policy=RetryPolicy(
+            max_attempts=5,
+            initial_delay=1.0,
+            multiplier=2.0,
+            max_delay=60.0,
+            jitter=0.2
+        ),
+        
+        # Rate limiting
+        rate_limiter=RateLimitPolicy(
+            rate_per_second=10.0,
+            burst=20
+        ),
+        
+        # Circuit breaker for fault tolerance
+        circuit_breaker=CircuitBreakerPolicy(
+            failure_threshold=5,
+            recovery_timeout=60.0
+        ),
+        
+        # Enable diagnostics
+        diagnostic_mode=True,
+        client_name="CrowdStrikeSpotlight",
+        timeout=60.0
+    )
+
+
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set]:
+    """
+    Load Spotlight state from integration context.
+    
+    Args:
+        context_store: Context store for reading integration context
+        
+    Returns:
+        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids)
+    """
+    # Read entire integration context (preserves all existing keys)
+    integration_context = context_store.read()
+    demisto.debug(f"Loaded integration context with keys: {list(integration_context.keys())}")
+    
+    # Get Spotlight-specific state
+    spotlight_state_dict = integration_context.get("spotlight_assets", {})
+    spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
+    
+    # Extract state variables
+    snapshot_id = spotlight_state.metadata.get("snapshot_id", str(round(time.time() * 1000)))
+    total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
+    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    
+    demisto.debug(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+                  f"unique_aids_count={len(unique_aids)}, after_token={spotlight_state.cursor}")
+    
+    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids
+
+
+def save_spotlight_state(
+    context_store: ContentClientContextStore,
+    integration_context: dict,
+    spotlight_state: ContentClientState
+) -> None:
+    """
+    Save Spotlight state to integration context without breaking other keys.
+    
+    Args:
+        context_store: Context store for writing integration context
+        integration_context: Full integration context dict (preserves all keys)
+        spotlight_state: Spotlight state object to save
+    """
+    # Update only the spotlight_assets key, preserving all other context
+    integration_context["spotlight_assets"] = spotlight_state.to_dict()
+    context_store.write(integration_context)
+    demisto.debug("Saved Spotlight state to integration context")
+
+
+async def fetch_spotlight_vulnerabilities_batch(
+    client: ContentClient,
+    after_token: str | None
+) -> tuple[list, dict]:
+    """
+    Fetch a single batch of Spotlight vulnerabilities.
+    
+    Args:
+        client: ContentClient instance
+        after_token: Pagination token (None for first request)
+        
+    Returns:
+        Tuple of (vulnerabilities_list, response_data)
+    """
+    # Build request parameters
+    # TODO: Not sure the pararms should look like that - verify the call.
+    params = {
+        "limit": 5000,
+        "filter": "status:['open','reopen']",
+        "facet": ["host_info", "cve"]
+    }
+    
+    # Add pagination token if provided
+    if after_token:
+        params["after"] = after_token
+    
+    demisto.debug(f"Fetching Spotlight batch with limit=5000, after_token={'present' if after_token else 'none'}")
+    
+    # Make ASYNC API request
+    response = await client._request(
+        method="GET",
+        url_suffix="/spotlight/combined/vulnerabilities/v1",
+        params=params
+    )
+    
+    # Parse JSON response
+    response_data = response.json()
+    vulnerabilities = response_data.get("resources", [])
+    
+    demisto.debug(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+    
+    return vulnerabilities, response_data
+
+
+def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
+    """
+    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Equivalent to JavaScript: const u_aid = [...new Set(aids)]
+    
+    Args:
+        vulnerabilities: List of vulnerability objects
+        existing_aids: Existing set of unique AIDs
+        
+    Returns:
+        Updated set of unique AIDs
+    """
+    # Extract AIDs from this batch
+    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+    
+    # Merge with existing
+    existing_aids.update(batch_aids)
+    
+    demisto.debug(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
+    
+    return existing_aids
+
+
+async def fetch_spotlight_assets():
+    """
+    Fetch ALL Spotlight vulnerabilities using ContentClient with async capabilities.
+    Continues fetching in batches of 5000 until no more pages exist.
+    Uses integration context for state persistence.
+    """
+    demisto.info("Starting Spotlight assets fetch execution.")
+    
+    # Create context store
+    context_store = ContentClientContextStore(namespace="CrowdStrikeFalcon")
+    
+    # Load state from integration context
+    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids = load_spotlight_state(context_store)
+    after_token = spotlight_state.cursor
+    
+    # Create client
+    client = create_spotlight_client(context_store)
+    
+    try:
+        # Fetch ALL pages in a loop until no more data
+        while True:
+            # Fetch one batch
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+            
+            # Extract unique AIDs from this batch
+            unique_aids = extract_unique_aids(vulnerabilities, unique_aids)
+            
+            # Update counters
+            total_fetched += len(vulnerabilities)
+            
+            # Get next pagination token
+            new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
+            
+            # Send this batch to XSIAM
+            demisto.debug(f"Sending {len(vulnerabilities)} assets to XSIAM with {snapshot_id=}")
+            # TODO: Verify this is the correct send product and vendor
+            send_data_to_xsiam(
+                data=vulnerabilities,
+                vendor=VENDOR,
+                product="Falcon_Spotlight",
+                data_type="assets",
+                snapshot_id=snapshot_id,
+                items_count=total_fetched if not new_after_token else 1,  # Final count or in-progress
+                should_update_health_module=False,
+            )
+            
+            # Check if more pages exist
+            if not new_after_token:
+                # No more pages - we're done!
+                demisto.info(f"Completed full fetch. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
+                break
+            
+            # More pages exist - update token and continue
+            demisto.debug(f"More pages available. Fetched so far: {total_fetched}")
+            after_token = new_after_token
+        
+        # Fetch completed successfully - reset state for next run
+        demisto.debug("Resetting Spotlight state after successful complete fetch")
+        spotlight_state.cursor = None
+        spotlight_state.metadata = {
+            "snapshot_id": "",
+            "total_fetched_until_now": 0,
+            "unique_aids": []
+        }
+        
+        # Save reset state to integration context
+        save_spotlight_state(context_store, integration_context, spotlight_state)
+        
+        # Update assets last run (reset for next snapshot)
+        demisto.setAssetsLastRun({
+            "snapshot_id": "",
+            "total_fetched_until_now": 0,
+        })
+        
+        # TODO: Think need to remove this
+        # Update health module with final count
+        demisto.updateModuleHealth({"assetsPulled": total_fetched})
+        
+        demisto.info(f"Finished Spotlight assets fetch. Total fetched: {total_fetched}, Unique hosts: {len(unique_aids)}")
+        
+    except ContentClientError as e:
+        demisto.error(f"ContentClient error during Spotlight fetch: {str(e)}")
+        diagnosis = client.diagnose_error(e)
+        demisto.error(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}")
+        
+        # Save current state for retry
+        spotlight_state.cursor = after_token
+        spotlight_state.metadata = {
+            "snapshot_id": snapshot_id,
+            "total_fetched_until_now": total_fetched,
+            "unique_aids": list(unique_aids)
+        }
+        save_spotlight_state(context_store, integration_context, spotlight_state)
+        
+        raise
+    
+    except Exception as e:
+        demisto.error(f"Unexpected error during Spotlight fetch: {str(e)}")
+        
+        # Save current state for retry
+        spotlight_state.cursor = after_token
+        spotlight_state.metadata = {
+            "snapshot_id": snapshot_id,
+            "total_fetched_until_now": total_fetched,
+            "unique_aids": list(unique_aids)
+        }
+        save_spotlight_state(context_store, integration_context, spotlight_state)
+        
+        raise
+    
+    finally:
+        # Clean up client resources
+        await client.aclose()
+
+
+def fetch_cnapp_assets():
     demisto.info("Strating fetch assets exeuction.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
@@ -3869,6 +4151,16 @@ def fetch_assets_command():
 
     demisto.info("Finished fetch assets exeuction.")
 
+def fetch_assets_command():
+    demisto.debug("Strating fetch assets exeuction.")
+    params = demisto.params()
+    fetch_assets_types = params.get("fetch_assets_type", "")
+
+    if "CNAPP Alerts" in fetch_assets_types:
+        fetch_cnapp_assets()
+
+    if "Spotlight" in fetch_assets_types:
+        asyncio.run(fetch_spotlight_assets())
 
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
