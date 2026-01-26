@@ -956,6 +956,22 @@ class Client(CoreClient):
             json_data={"case_id": case_id},
         )
 
+    def get_case_ai_summary(self, case_id: int) -> dict:
+        """
+        Retrieves AI-generated summary for a specific case ID.
+
+        Args:
+            case_id (int): The ID of the case to retrieve AI summary for.
+
+        Returns:
+            dict: API response containing case AI summary.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/cases/get_ai_case_details",
+            json_data={"case_id": case_id},
+        )
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
@@ -4403,6 +4419,63 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
+
+
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
+    if related_pb:
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
+
+
+def postprocess_case_resolution_statuses(client, response: dict):
+    response = copy.deepcopy(response)
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
+
+            all_items.append(task)
+
+    return all_items
+
+
+def get_case_resolution_statuses(client, args):
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
+
+
+def verify_platform_version(version: str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
 
 
 def main():  # pragma: no cover
