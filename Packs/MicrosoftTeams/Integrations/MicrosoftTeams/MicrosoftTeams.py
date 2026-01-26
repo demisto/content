@@ -1965,7 +1965,7 @@ def resolve_chat_or_channel(
     if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
         error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
 
-    raise ValueError(error_message)
+    raise DemistoException(error_message)
 
 
 def fetch_chat_messages(
