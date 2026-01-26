@@ -14,6 +14,8 @@ from typing import Any
 
 import requests
 import asyncio
+import aiohttp
+import gzip
 # Disable insecure warnings
 import urllib3
 from gql import Client, gql
@@ -4012,11 +4014,192 @@ def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
     return existing_aids
 
 
+async def spotlight_xsiam_api_call_async(
+    xsiam_url: str,
+    zipped_data: bytes,
+    headers: dict,
+    num_of_attempts: int,
+    data_type: str = "assets"
+) -> aiohttp.ClientResponse:
+    """
+    Send data to XSIAM asynchronously with retry logic.
+    Adapted from Rapid7_Nexpose.py lines 7705-7761.
+    """
+    status_code = None
+    attempt_num = 1
+    response = None
+    
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                urljoin(xsiam_url, "/logs/v1/xsiam"),
+                data=zipped_data,
+                headers=headers
+            ) as response:
+                try:
+                    response.raise_for_status()
+                    status_code = response.status
+                    
+                except aiohttp.ClientResponseError as e:
+                    if ok_codes and e.status in ok_codes:
+                        status_code = e.status
+                        if e.status == 429:
+                            await asyncio.sleep(1)
+                            attempt_num += 1
+                        continue
+                    else:
+                        header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
+                        demisto.error(header_msg)
+                        raise DemistoException(header_msg)
+        
+        if status_code == 429:
+            await asyncio.sleep(1)
+        attempt_num += 1
+    
+    return response
+
+
+def spotlight_send_data_to_xsiam_async(
+    data: list,
+    vendor: str,
+    product: str,
+    data_format: str = "json",
+    url_key: str = "url",
+    num_of_attempts: int = 3,
+    chunk_size: int = 2**20,
+    data_type: str = "assets",
+    should_update_health_module: bool = True,
+    send_events_asynchronously: bool = False,
+    snapshot_id: str = "",
+    items_count: int = 1,
+) -> list:
+    """
+    Send data to XSIAM with optional async mode.
+    Adapted from Rapid7_Nexpose.py lines 7631-7672.
+    """
+    params = demisto.params()
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+    
+    if not data:
+        demisto.debug(f"No {data_type} to send to XSIAM")
+        return []
+    
+    # Convert list to newline-separated JSON strings
+    if isinstance(data, list):
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+        data_str = "\n".join(data)
+    else:
+        data_str = data
+    
+    # Get XSIAM credentials
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    
+    # Build headers
+    headers = remove_empty_elements({
+        "authorization": xsiam_api_token,
+        "format": data_format,
+        "product": product,
+        "vendor": vendor,
+        "content-encoding": "gzip",
+        "collector-name": collector_name,
+        "instance-name": instance_name,
+        "final-reporting-device": params.get(url_key, ""),
+        "collector-type": "assets" if data_type == "assets" else "events",
+    })
+    
+    if data_type == "assets":
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["total-items-count"] = str(items_count)
+    
+    # Split into chunks
+    data_chunks = list(split_data_to_chunks(data_str, chunk_size))
+    
+    async def send_events_async(data_chunk: str) -> int:
+        chunk_size_val = len(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+        await spotlight_xsiam_api_call_async(
+            xsiam_url=xsiam_url,
+            zipped_data=zipped_data,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            data_type=data_type
+        )
+        return chunk_size_val
+    
+    if send_events_asynchronously:
+        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+        return tasks
+    else:
+        return []
+
+
+async def send_spotlight_batch_to_xsiam_and_save_context(
+    vulnerabilities: list,
+    snapshot_id: str,
+    items_count: int,
+    batch_number: int,
+    last_saved_batch_number: int,
+    context_store: ContentClientContextStore,
+    integration_context: dict,
+    spotlight_state: ContentClientState,
+) -> int:
+    """
+    Send batch to XSIAM, then save context ONLY if send succeeds.
+    Only saves if this is the latest batch (prevents out-of-order saves).
+    """
+    demisto.debug(f"[Batch {batch_number}] Sending {len(vulnerabilities)} vulnerabilities to XSIAM")
+    
+    try:
+        # 1. Send to XSIAM (returns list of async tasks)
+        tasks = spotlight_send_data_to_xsiam_async(
+            data=vulnerabilities,
+            vendor=VENDOR,
+            product="Falcon_Spotlight",
+            data_format="json",
+            url_key="url",
+            num_of_attempts=3,
+            chunk_size=2**20,
+            data_type="assets",
+            should_update_health_module=False,
+            send_events_asynchronously=True,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+        )
+        
+        # 2. Wait for all chunks to complete
+        await asyncio.gather(*tasks)
+        demisto.debug(f"[Batch {batch_number}] Successfully sent to XSIAM")
+        
+        # 3. Save context ONLY if this is the latest batch
+        if batch_number > last_saved_batch_number:
+            save_spotlight_state(context_store, integration_context, spotlight_state)
+            demisto.debug(f"[Batch {batch_number}] Context saved")
+            return batch_number
+        else:
+            demisto.debug(f"[Batch {batch_number}] Skipped save (batch {last_saved_batch_number} already saved)")
+            return last_saved_batch_number
+            
+    except Exception as e:
+        demisto.error(f"[Batch {batch_number}] Failed: {str(e)}")
+        raise
+
+
 async def fetch_spotlight_assets():
     """
     Fetch ALL Spotlight vulnerabilities using ContentClient with async capabilities.
     Continues fetching in batches of 5000 until no more pages exist.
     Uses integration context for state persistence.
+    Implements async fire-and-forget pattern for sending data to XSIAM.
     """
     demisto.info("Starting Spotlight assets fetch execution.")
     
@@ -4030,10 +4213,15 @@ async def fetch_spotlight_assets():
     # Create client
     client = create_spotlight_client(context_store)
     
+    # Track async send tasks and batch numbers
+    pending_tasks: set[asyncio.Task] = set()
+    batch_counter = 0
+    last_saved_batch_number = 0
+    
     try:
         # Fetch ALL pages in a loop until no more data
         while True:
-            # Fetch one batch
+            # Fetch one batch (SEQUENTIAL - must wait for pagination token)
             vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
             
             # Extract unique AIDs from this batch
@@ -4045,37 +4233,66 @@ async def fetch_spotlight_assets():
             # Get next pagination token
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
             
-            # Send this batch to XSIAM
-            demisto.debug(f"Sending {len(vulnerabilities)} assets to XSIAM with {snapshot_id=}")
-            send_data_to_xsiam(
-                data=vulnerabilities,
-                vendor=VENDOR,
-                product="Falcon_Spotlight",
-                data_type="assets",
-                snapshot_id=snapshot_id,
-                items_count=total_fetched if not new_after_token else 1,  # Final count or in-progress
-                should_update_health_module=False,
-            )
-            
-            # Update state after sending batch to XSIAM
+            # Update state BEFORE creating async task
+            batch_counter += 1
             spotlight_state.cursor = new_after_token
             spotlight_state.metadata = {
                 "snapshot_id": snapshot_id,
                 "total_fetched_until_now": total_fetched,
                 "unique_aids": list(unique_aids)
             }
-            save_spotlight_state(context_store, integration_context, spotlight_state)
-            demisto.debug(f"Updated context after batch. Total: {total_fetched}, after_token={'present' if new_after_token else 'none'}")
+            
+            # Create async task to send batch to XSIAM AND save context
+            # This is "fire and forget" - we don't wait for it to complete
+            task = asyncio.create_task(
+                send_spotlight_batch_to_xsiam_and_save_context(
+                    vulnerabilities=vulnerabilities,
+                    snapshot_id=snapshot_id,
+                    items_count=total_fetched if not new_after_token else 1,
+                    batch_number=batch_counter,
+                    last_saved_batch_number=last_saved_batch_number,
+                    context_store=context_store,
+                    integration_context=integration_context,
+                    spotlight_state=spotlight_state,
+                )
+            )
+            
+            # Track task and update last_saved_batch_number when task completes
+            def update_last_saved(future):
+                nonlocal last_saved_batch_number
+                try:
+                    last_saved_batch_number = future.result()
+                except Exception as e:
+                    demisto.error(f"Background task failed: {e}")
+                finally:
+                    pending_tasks.discard(future)
+            
+            pending_tasks.add(task)
+            task.add_done_callback(update_last_saved)
+            demisto.debug(f"Created background task for batch {batch_counter}")
             
             # Check if more pages exist
             if not new_after_token:
-                # No more pages - we're done!
-                demisto.info(f"Completed full fetch. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
+                # No more pages - we're done fetching!
+                demisto.info(f"Completed fetching. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
                 break
             
             # More pages exist - continue to next batch
             demisto.debug(f"More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
+        
+        # Wait for all pending send tasks to complete before cleanup
+        if pending_tasks:
+            demisto.info(f"Waiting for {len(pending_tasks)} background send tasks to complete")
+            results = await asyncio.gather(*pending_tasks, return_exceptions=True)
+            
+            # Check for errors
+            for res in results:
+                if isinstance(res, Exception):
+                    demisto.error(f"Background send task failed: {res}")
+                    raise res
+            
+            demisto.info("All background send tasks completed successfully")
         
         # Fetch completed successfully - reset state for next run
         demisto.debug("Resetting Spotlight state after successful complete fetch")
@@ -4090,7 +4307,6 @@ async def fetch_spotlight_assets():
         save_spotlight_state(context_store, integration_context, spotlight_state)
         
         # Update assets last run (reset for next snapshot)
-        # TODO: make sure that the last run is according to the correct key
         demisto.setAssetsLastRun({
             "snapshot_id": "",
             "total_fetched_until_now": 0,
