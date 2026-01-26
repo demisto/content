@@ -90,11 +90,12 @@ def test_read_binary_to_raw_decode_error(mocker):
     """
     args = {"input_encoding": "binary", "output_data_type": "raw"}
     mocker.patch("ReadFile.execute_command", return_value={"path": "./test_data/test_binary.bin"})
+    mocker.patch.object(demisto, "results")
 
-    with pytest.raises(Exception) as e:
-        read_file(args)
-        if not e:
-            pytest.fail()
+    read_file({})
+    results = demisto.results.call_args[0][0]
+
+    assert "\x01#Eg�" == results.get("Contents").get("FileData")
 
 
 def test_read_binary_to_base64(mocker):
