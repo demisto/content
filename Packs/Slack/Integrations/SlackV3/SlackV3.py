@@ -5,11 +5,27 @@ import ssl
 import threading
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
-from datetime import UTC
+from datetime import UTC, datetime
 import dateparser
 import aiohttp
 import demistomock as demisto  # noqa: F401
 import slack_sdk
+from slack_sdk.models.blocks import (
+    SectionBlock,
+    ActionsBlock,
+    HeaderBlock,
+    DividerBlock,
+    StaticSelectElement,
+    Option,
+    ConfirmObject,
+    ButtonElement,
+    PlainTextObject,
+    MarkdownTextObject,
+    ContextBlock,
+    RichTextBlock,
+    RichTextListElement,
+    RichTextSectionElement,
+)
 from CommonServerPython import *  # noqa: F401
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
@@ -1639,13 +1655,13 @@ async def handle_agentix_bot_mention(
     if response.ok:
         # Lock the conversation with initial status
         agentix[agentix_id_key] = {
-            "date": datetime.utcnow().isoformat(),
+            "date": thread_ts,
             "user": user_id,
             "message": text,
             "channel_id": channel_id,
             "thread_ts": thread_ts,
             "status": AgentixStatus.AWAITING_BACKEND_RESPONSE,
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": thread_ts,
         }
 
         # Get bot_id if not already in context
@@ -1728,7 +1744,7 @@ async def handle_agentix_action(
             # Update status
             agentix[agentix_id_key]["status"] = AgentixStatus.AWAITING_BACKEND_RESPONSE
             agentix[agentix_id_key]["selected_agent"] = selected_agent_id
-            agentix[agentix_id_key]["last_updated"] = datetime.utcnow().isoformat()
+            agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
 
             set_to_integration_context_with_retries({"agentix": agentix}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
@@ -1753,7 +1769,7 @@ async def handle_agentix_action(
             # Update status
             agentix[agentix_id_key]["status"] = AgentixStatus.AWAITING_BACKEND_RESPONSE
             agentix[agentix_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
-            agentix[agentix_id_key]["last_updated"] = datetime.utcnow().isoformat()
+            agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
 
             set_to_integration_context_with_retries({"agentix": agentix}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
@@ -2056,7 +2072,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if is_bot_mentioned or is_agentix_action:
                 # Get user details and prepare data
                 user = await get_user_details(user_id=user_id)
-                user_email = user.get("profile", {}).get("email", "")
+                user_email = user.get("profile", {}).get("email", "")  # type: ignore[call-overload]
                 channel_id = event.get("channel", "")
                 thread_ts = event.get("thread_ts", "") or event.get("ts", "")
 
@@ -2606,7 +2622,7 @@ def send_message_to_destinations(
     destinations: list,
     message: str,
     thread_id: str,
-    blocks: str = "",
+    blocks: str | list = "",
     attachments: list | None = None,
     ephemeral_message: bool = False,
     user_id: str = "",
@@ -2632,9 +2648,13 @@ def send_message_to_destinations(
     if message:
         clean_message = handle_tags_in_message_sync(message)
         body["text"] = clean_message
+
     if blocks:
-        block_list = json.loads(blocks, strict=False)
-        body["blocks"] = block_list
+        if isinstance(blocks, str):
+            body["blocks"] = json.loads(blocks, strict=False)
+        else:
+            body["blocks"] = blocks
+
     if attachments:
         body["attachments"] = attachments
     if thread_id:
@@ -3074,9 +3094,12 @@ def slack_edit_message():
     if message:
         clean_message = handle_tags_in_message_sync(message)
         body["text"] = clean_message
+
     if blocks:
-        block_list = json.loads(blocks, strict=False)
-        body["blocks"] = block_list
+        if isinstance(blocks, str):
+            body["blocks"] = json.loads(blocks, strict=False)
+        else:
+            body["blocks"] = blocks
     try:
         response = send_slack_request_sync(CLIENT, "chat.update", body=body)
 
@@ -3397,7 +3420,7 @@ def conversation_replies():
     )
 
 
-def parse_to_rich_text_elements(text):
+def parse_to_rich_text_elements(text: str) -> list[dict]:
     """
     Parses a string and returns a list of Slack rich_text element objects.
     Supports bold (**), italics (_), strikethrough (~~), inline code (`),
@@ -3410,7 +3433,7 @@ def parse_to_rich_text_elements(text):
     pattern = r'(\[.*?\]\(.*?\))|(https?://[^\s<>"]+)|(\*\*.*?\*\*)|(`[^`]+`)|((?<!\w)~~.*?~~(?!\w))|((?<!\w)__.*?__(?!\w))|((?<!\w)_.*?_(?!\w))'
     parts = re.split(pattern, text)
 
-    elements = []
+    elements: list[dict] = []
     for part in parts:
         if not part:
             continue
@@ -3457,7 +3480,7 @@ def parse_to_rich_text_elements(text):
     return elements if elements else [{"type": "text", "text": " "}]
 
 
-def create_rich_cell(text):
+def create_rich_cell(text: str) -> dict:
     """
     Helper to wrap rich elements into the cell structure for tables.
     """
@@ -3467,10 +3490,10 @@ def create_rich_cell(text):
     if not has_rich_features:
         return {"type": "raw_text", "text": text if text else " "}
 
-    return {"type": "rich_text", "elements": [{"type": "rich_text_section", "elements": elements}]}
+    return RichTextSectionElement(elements=elements).to_dict()  # type: ignore[arg-type]
 
 
-def parse_md_table_to_slack_table(md_text):
+def parse_md_table_to_slack_table(md_text: str) -> dict | None:
     """
     Converts Markdown table to Slack 'table' block.
     """
@@ -3499,7 +3522,11 @@ def parse_md_table_to_slack_table(md_text):
     if not rows:
         return None
 
-    return {"type": "table", "column_settings": [{"is_wrapped": True}], "rows": rows}
+    return {
+        "type": "table",
+        "column_settings": [{"is_wrapped": True}],
+        "rows": rows,
+    }
 
 
 def process_text_part(text):
@@ -3509,26 +3536,24 @@ def process_text_part(text):
     """
     sub_blocks = []
     lines = text.split("\n")
-    current_paragraph = []
-    current_list_items = []
+    current_paragraph: list[str] = []
+    current_list_items: list[str] = []
     current_list_style = "bullet"  # Can be "bullet" or "ordered"
 
     def flush_list():
         if current_list_items:
             sub_blocks.append(
-                {
-                    "type": "rich_text",
-                    "elements": [
-                        {
-                            "type": "rich_text_list",
-                            "style": current_list_style,
-                            "elements": [
-                                {"type": "rich_text_section", "elements": parse_to_rich_text_elements(item)}
+                RichTextBlock(
+                    elements=[
+                        RichTextListElement(
+                            style=current_list_style,  # type: ignore[arg-type]
+                            elements=[
+                                RichTextSectionElement(elements=parse_to_rich_text_elements(item))  # type: ignore[arg-type]
                                 for item in current_list_items
                             ],
-                        }
-                    ],
-                }
+                        )
+                    ]
+                ).to_dict()
             )
             current_list_items.clear()
 
@@ -3537,10 +3562,11 @@ def process_text_part(text):
             para_text = "\n".join(current_paragraph).strip()
             if para_text:
                 sub_blocks.append(
-                    {
-                        "type": "rich_text",
-                        "elements": [{"type": "rich_text_section", "elements": parse_to_rich_text_elements(para_text)}],
-                    }
+                    RichTextBlock(
+                        elements=[
+                            RichTextSectionElement(elements=parse_to_rich_text_elements(para_text))  # type: ignore[arg-type]
+                        ]
+                    ).to_dict()
                 )
             current_paragraph.clear()
 
@@ -3622,8 +3648,7 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
             attachments = [
                 {
                     "color": "#D1D2D3",  # Light gray border for a subtle look
-                    "blocks": [{"type": "context", "elements": [{"type": "mrkdwn", "text": ":thought_balloon: *Plan*"}]}]
-                    + blocks,
+                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":thought_balloon: *Plan*")]).to_dict()] + blocks,
                 }
             ]
             return [], attachments
@@ -3649,32 +3674,34 @@ def create_agent_selection_blocks(message: str) -> list:
         agent_options = []
 
     dropdown_options = [
-        {
-            "text": {"type": "plain_text", "text": agent.get("name", agent.get("id", ""))},
-            "value": f"agentix-agent-selection-{agent.get('id', '')}",
-        }
+        Option(
+            text=PlainTextObject(text=agent.get("name", agent.get("id", ""))),
+            value=f"agentix-agent-selection-{agent.get('id', '')}",
+        )
         for agent in agent_options
     ]
 
+    if not dropdown_options:
+        demisto.debug("No agents found for selection, returning empty list of blocks")
+        return []
+
     return [
-        {"type": "section", "text": {"type": "mrkdwn", "text": AgentixMessages.AGENT_SELECTION_PROMPT}},
-        {
-            "type": "actions",
-            "elements": [
-                {
-                    "type": "static_select",
-                    "placeholder": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_PLACEHOLDER},
-                    "action_id": "agent_selection",
-                    "options": dropdown_options,
-                    "confirm": {
-                        "title": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_TITLE},
-                        "text": {"type": "mrkdwn", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_TEXT},
-                        "confirm": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_CONFIRM_BUTTON},
-                        "deny": {"type": "plain_text", "text": AgentixMessages.AGENT_SELECTION_DENY_BUTTON},
-                    },
-                }
+        SectionBlock(text=MarkdownTextObject(text=AgentixMessages.AGENT_SELECTION_PROMPT)).to_dict(),
+        ActionsBlock(
+            elements=[
+                StaticSelectElement(
+                    placeholder=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_PLACEHOLDER),
+                    action_id="agent_selection",
+                    options=dropdown_options,
+                    confirm=ConfirmObject(
+                        title=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_TITLE),
+                        text=MarkdownTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_TEXT),
+                        confirm=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_BUTTON),
+                        deny=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_DENY_BUTTON),
+                    ),
+                )
             ],
-        },
+        ).to_dict(),
     ]
 
 
@@ -3718,37 +3745,33 @@ def get_approval_buttons_block() -> list:
         List of Slack blocks with warning header and approval buttons with confirmation
     """
     return [
-        {
-            "type": "header",
-            "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_HEADER, "emoji": True},
-        },
-        {"type": "divider"},
-        {"type": "section", "text": {"type": "mrkdwn", "text": AgentixMessages.APPROVAL_PROMPT}},
-        {
-            "type": "actions",
-            "elements": [
-                {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_PROCEED_BUTTON},
-                    "style": "primary",
-                    "action_id": "yes_btn",
-                    "value": "agentix-sensitive-action-btn-yes",
-                    "confirm": {
-                        "title": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CONFIRM_TITLE},
-                        "text": {"type": "mrkdwn", "text": AgentixMessages.APPROVAL_CONFIRM_TEXT},
-                        "confirm": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CONFIRM_BUTTON},
-                        "deny": {"type": "plain_text", "text": AgentixMessages.APPROVAL_DENY_BUTTON},
-                    },
-                },
-                {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": AgentixMessages.APPROVAL_CANCEL_BUTTON},
-                    "style": "danger",
-                    "action_id": "no_btn",
-                    "value": "agentix-sensitive-action-btn-no",
-                },
+        HeaderBlock(
+            text=PlainTextObject(text=AgentixMessages.APPROVAL_HEADER, emoji=True),
+        ).to_dict(),
+        DividerBlock().to_dict(),
+        SectionBlock(text=MarkdownTextObject(text=AgentixMessages.APPROVAL_PROMPT)).to_dict(),
+        ActionsBlock(
+            elements=[
+                ButtonElement(
+                    text=PlainTextObject(text=AgentixMessages.APPROVAL_PROCEED_BUTTON),
+                    style="primary",
+                    action_id="yes_btn",
+                    value="agentix-sensitive-action-btn-yes",
+                    confirm=ConfirmObject(
+                        title=PlainTextObject(text=AgentixMessages.APPROVAL_CONFIRM_TITLE),
+                        text=MarkdownTextObject(text=AgentixMessages.APPROVAL_CONFIRM_TEXT),
+                        confirm=PlainTextObject(text=AgentixMessages.APPROVAL_CONFIRM_BUTTON),
+                        deny=PlainTextObject(text=AgentixMessages.APPROVAL_DENY_BUTTON),
+                    ),
+                ),
+                ButtonElement(
+                    text=PlainTextObject(text=AgentixMessages.APPROVAL_CANCEL_BUTTON),
+                    style="danger",
+                    action_id="no_btn",
+                    value="agentix-sensitive-action-btn-no",
+                ),
             ],
-        },
+        ).to_dict(),
     ]
 
 
@@ -3768,7 +3791,7 @@ def send_agent_response():
     """
     args = demisto.args()
     channel_id = args["channel_id"]
-    thread_ts = args["thread_id"]
+    thread_ts = str(args["thread_id"])
     message = args["message"]
     message_type = args["message_type"]
     message_id = args.get("message_id", "")
@@ -3777,6 +3800,8 @@ def send_agent_response():
     # Get current integration context
     integration_context = get_integration_context(SYNC_CONTEXT)
     agentix = integration_context.get("agentix", {})
+    if isinstance(agentix, str):
+        agentix = json.loads(agentix)
     agentix_id_key = f"{channel_id}_{thread_ts}"
 
     # Replace escaped characters with actual characters for proper Slack formatting
@@ -3807,7 +3832,7 @@ def send_agent_response():
             should_release_lock = completed
 
         # Add feedback buttons for these message types (always last)
-        if message_id:
+        if message_id and completed:
             blocks.append(get_feedback_buttons_block(message_id))
 
     elif message_type == "step":
@@ -3822,7 +3847,7 @@ def send_agent_response():
     # ========================================
     # Send message to Slack
     # ========================================
-    send_message_to_destinations([channel_id], "", thread_ts, json.dumps(blocks) if blocks else "", attachments)
+    send_message_to_destinations([channel_id], "", thread_ts, blocks if blocks else "", attachments)
 
     # ========================================
     # Update context based on message type
@@ -3836,7 +3861,7 @@ def send_agent_response():
         elif new_status:
             # Update status
             agentix[agentix_id_key]["status"] = new_status
-            agentix[agentix_id_key]["last_updated"] = datetime.utcnow().isoformat()
+            agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
             set_to_integration_context_with_retries({"agentix": agentix}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
             demisto.debug(f"Updated status for {agentix_id_key} to {new_status}")
 
