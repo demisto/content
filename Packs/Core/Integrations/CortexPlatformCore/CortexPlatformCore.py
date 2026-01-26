@@ -6,7 +6,6 @@ from CoreIRApiModule import *
 import dateparser
 import copy
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -4404,107 +4403,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
-
-
-def init_client(api_type: str) -> Client:
-    """
-    Initializes the Client for a specific API type.
-
-    Args:
-        api_type (str): The category of the API (e.g., 'public', 'webapp', 'data_platform', etc.)
-    """
-    params = demisto.params()
-
-    # Connection parameters
-    proxy = params.get("proxy", False)
-    verify_cert = not params.get("insecure", False)
-
-    try:
-        timeout = int(params.get("timeout", 120))
-    except (ValueError, TypeError):
-        timeout = 120
-
-    # Base URL Mapping logic based on api_type
-    webapp_root = "/api/webapp"
-
-    url_map = {
-        "webapp": webapp_root,
-        "public": f"{webapp_root}/public_api/v1",
-        "data_platform": f"{webapp_root}/data-platform",
-        "appsec": f"{webapp_root}/public_api/appsec",
-        "xsoar": "/xsoar",
-        "agents": f"{webapp_root}/agents",
-    }
-
-    # Fallback to public API if the type isn't recognized
-    client_url = url_map.get(api_type, url_map["public"])
-
-    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
-
-    return Client(
-        base_url=client_url,
-        proxy=proxy,
-        verify=verify_cert,
-        headers=headers,
-        timeout=timeout,
-    )
-
-
-def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
-    related_pb = pb_id_to_data.get(playbook.get("id"))
-    if related_pb:
-        playbook["name"] = related_pb.get("name")
-        playbook["description"] = related_pb.get("comment")
-
-
-def postprocess_case_resolution_statuses(client, response: dict):
-    response = copy.deepcopy(response)
-    pbs_metadata = client.get_playbooks_metadata() or []
-    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
-
-    all_items = []
-    categories = ["done", "inProgress", "pending", "recommended"]
-
-    for category in categories:
-        tasks = response.get(category, {}).get("caseTasks", [])
-        for task in tasks:
-            # Add category field to identify which list this came from
-            task["category"] = category
-            if category in ["done", "inProgress", "recommended"]:
-                task["itemType"] = "playbook"
-            else:
-                task["itemType"] = "playbookTask"
-
-            if category in ["done", "inProgress"]:
-                enhance_with_pb_details(pb_id_to_data, task)
-            elif category == "pending":
-                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
-                task["parentPlaybook"] = task.pop("parentdetails")
-
-            all_items.append(task)
-
-    return all_items
-
-
-def get_case_resolution_statuses(client, args):
-    case_ids = argToList(args.get("case_id"))
-    raw_responses = []
-    outputs = []
-    for case_id in case_ids:
-        response = client.get_case_resolution_statuses(case_id)
-        raw_responses.append(response)
-        outputs.append(postprocess_case_resolution_statuses(client, response))
-    return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
-        outputs_prefix="Core.CaseResolutionStatus",
-        outputs=outputs,
-        raw_response=raw_responses,
-    )
-
-
-def verify_platform_version(version: str = "8.13.0"):
-    if not is_demisto_version_ge(version):
-        raise DemistoException("This command is not available for this platform version")
 
 
 def main():  # pragma: no cover
