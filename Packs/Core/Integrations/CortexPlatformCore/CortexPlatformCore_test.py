@@ -9292,7 +9292,7 @@ def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
     mock_client.get_case_ai_summary.assert_called_once_with(12345)
     # Verify data was updated (result[1] is the CommandResults for the cases)
     assert result[1].outputs[0]["description"] == "AI Summary"
-    assert result[1].outputs[0]["name"] == "AI Name"
+    assert result[1].outputs[0]["case_name"] == "AI Name"
 
 
 def test_init_client(mocker: MockerFixture):
