@@ -399,7 +399,7 @@ call esxi_event_classification
     xdm.target.host.hostname = parsed_fields -> hostname,
     xdm.target.process.name = process_name,
     xdm.target.process.pid = to_integer(pid),
-    xdm.target.user.username = user_name,
+    xdm.source.user.username = user_name,
     xdm.target.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.target.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
     xdm.target.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
