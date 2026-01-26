@@ -107,18 +107,31 @@ outputs:
       IMPORTANT: total_filtered_assets must always be part of the response displayed to the user. This field must be accompanied by its definition: The total number of asset results in the system that match the filter criteria.
     type: Number
     name: Cas.Coverage.total_filtered_assets
+
   - underlyingoutputcontextpath: Cas.Coverage.number_returned_assets
     description: |
       IMPORTANT: number_returned_assets must always be part of the response displayed to the user. This field must be accompanied by its definition: The actual number of asset results returned in this specific execution.
     type: Number
     name: Cas.Coverage.number_returned_assets
+
   - underlyingoutputcontextpath: Cas.Coverage.Asset.asset_id
     description: The unique ID of the asset.
     type: String
     name: Cas.Coverage.Asset.asset_id
+
+  - name: Cas.Coverage.recommended_next_steps
+    underlyingoutputcontextpath: Cas.Coverage.recommended_next_steps
+    description: A list of suggested natural language follow-up queries or actions that guide the user in refining their coverage analysis. This field is offering the LLM or user contextually relevant options to drill down into the data.
+    type: Unknown
+
   - name: Cas.Coverage.coverage_percentage
     underlyingoutputcontextpath: Cas.Coverage.coverage_percentage
     description: The ASPM coverage percentage calculated from the scanner coverage histogram.
+    type: Number
+
+  - name: Cas.Coverage.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for vulnerabilities including not onboarded assets.
     type: Number
 
   - name: Cas.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
@@ -156,6 +169,11 @@ outputs:
     description: The percentage of assets scanned for vulnerabilities.
     type: Number
 
+  - name: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for vulnerabilities including not onboarded assets.
+    type: Number
+
   - name: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
     underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
     description: The number of assets where vulnerability scanning is enabled.
@@ -169,6 +187,11 @@ outputs:
   - name: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
     underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
     description: The percentage of assets scanned for code weaknesses.
+    type: Number
+
+  - name: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for code weaknesses including not onboarded assets.
     type: Number
 
   - name: Cas.Coverage.Metrics.is_scanned_by_code_weakness.enabled
@@ -186,6 +209,11 @@ outputs:
     description: The percentage of assets scanned for secrets.
     type: Number
 
+  - name: Cas.Coverage.Metrics.is_scanned_by_secrets.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_secrets.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for secrets including not onboarded assets.
+    type: Number
+
   - name: Cas.Coverage.Metrics.is_scanned_by_secrets.enabled
     underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_secrets.enabled
     description: The number of assets where secret scanning is enabled.
@@ -201,6 +229,11 @@ outputs:
     description: The percentage of assets scanned for infrastructure-as-code (IaC) issues.
     type: Number
 
+  - name: Cas.Coverage.Metrics.is_scanned_by_iac.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_iac.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for infrastructure-as-code (IaC) issues including not onboarded assets.
+    type: Number
+
   - name: Cas.Coverage.Metrics.is_scanned_by_iac.enabled
     underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_iac.enabled
     description: The number of assets where infrastructure-as-code (IaC) scanning is enabled.
@@ -214,6 +247,11 @@ outputs:
   - name: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
     underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
     description: The percentage of assets scanned for malware.
+    type: Number
+
+  - name: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_with_non_onboarded_percentage
+    underlyingoutputcontextpath: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_with_non_onboarded_percentage
+    description: The percentage of assets scanned for malware including not onboarded assets.
     type: Number
 
   - name: Cas.Coverage.Metrics.is_scanned_by_malware.enabled

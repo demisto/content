@@ -121,6 +121,12 @@ outputs:
 - contextPath: Cas.Coverage.coverage_percentage
   description: The ASPM coverage percentage calculated from the scanner coverage histogram.
   type: Number
+- contextPath: Cas.Coverage.coverage_with_non_onboarded_percentage
+  description: The ASPM coverage percentage calculated from the scanner coverage histogram including not onboarded assets.
+  type: Number
+- contextPath: Cas.Coverage.recommended_next_steps
+  description: A list of suggested natural language follow-up queries or actions that guide the user in refining their coverage analysis. This field is offering the LLM or user contextually relevant options to drill down into the data.
+  type: Array
 - contextPath: Cas.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
   description: The number of assets that are partially scanned according to ASPM coverage.
   type: Number
@@ -142,6 +148,9 @@ outputs:
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
   description: The percentage of assets scanned for vulnerabilities.
   type: Number
+- contextPath: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_with_non_onboarded_percentage
+  description: The percentage of assets scanned for vulnerabilities including not onboarded assets.
+  type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
   description: The number of assets where vulnerability scanning is enabled.
   type: Number
@@ -150,6 +159,9 @@ outputs:
   type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
   description: The percentage of assets scanned for code weaknesses.
+  type: Number
+- contextPath: Cas.Coverage.Metrics.is_scanned_by_code_weakness.coverage_with_non_onboarded_percentage
+  description: The percentage of assets scanned for code weaknesses including not onboarded assets.
   type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_code_weakness.enabled
   description: The number of assets where code weakness scanning is enabled.
@@ -160,6 +172,9 @@ outputs:
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
   description: The percentage of assets scanned for secrets.
   type: Number
+- contextPath: Cas.Coverage.Metrics.is_scanned_by_secrets.coverage_with_non_onboarded_percentage
+  description: The percentage of assets scanned for secrets including not onboarded assets.
+  type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_secrets.enabled
   description: The number of assets where secret scanning is enabled.
   type: Number
@@ -169,6 +184,9 @@ outputs:
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
   description: The percentage of assets scanned for infrastructure-as-code (IaC) issues.
   type: Number
+- contextPath: Cas.Coverage.Metrics.is_scanned_by_iac.coverage_with_non_onboarded_percentage
+  description: The percentage of assets scanned for infrastructure-as-code (IaC) issues including not onboarded assets.
+  type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_iac.enabled
   description: The number of assets where infrastructure-as-code (IaC) scanning is enabled.
   type: Number
@@ -177,6 +195,9 @@ outputs:
   type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
   description: The percentage of assets scanned for malware.
+  type: Number
+- contextPath: Cas.Coverage.Metrics.is_scanned_by_malware.coverage_with_non_onboarded_percentage
+  description: The percentage of assets scanned for malware including not onboarded assets.
   type: Number
 - contextPath: Cas.Coverage.Metrics.is_scanned_by_malware.enabled
   description: The number of assets where malware scanning is enabled.
