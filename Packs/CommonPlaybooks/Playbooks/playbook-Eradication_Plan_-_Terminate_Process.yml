@@ -854,3 +854,8 @@ fromversion: 6.6.0
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- cloud
+- cloud_runtime_security
+- xsiam
+- edr
