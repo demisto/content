@@ -360,7 +360,7 @@ script:
       name: max_polling_calls
       defaultValue: 10
     - auto: PREDEFINED
-      description: Should the command poll the status of the push factor or not.
+      description: Specifies whether the command should poll the status of the push factor.
       name: polling
       defaultValue: 'true'
       predefined:
@@ -393,7 +393,7 @@ script:
     - description: The url to poll.
       name: polling_url
       required: true
-    description: Check the status of the push factor mfa.
+    description: Checks the status of the push factor mfa.
     name: okta-verify-mfa-status
     outputs:
     - contextPath: Okta.FactorResult.ID
