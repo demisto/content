@@ -6871,14 +6871,8 @@ def test_modify_db_instance_command_success(mocker):
     """Test successful DB instance modification"""
     from AWS import RDS
 
-    args = {
-        "db_instance_identifier": "test-db",
-        "vpc_security_group_ids": "sg-123456789"
-    }
-    expected_args = {
-        "DBInstanceIdentifier": "test-db",
-        "VpcSecurityGroupIds": ["sg-123456789"]
-    }
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789"]}
 
     mock_client = mocker.Mock()
     mock_response = {
@@ -6889,17 +6883,14 @@ def test_modify_db_instance_command_success(mocker):
             "Engine": "mysql",
             "DBInstanceStatus": "modifying",
             "VpcSecurityGroups": [
-            {
-                'VpcSecurityGroupId': 'sg-123456789',
-                'Status': 'Status'
-            },
-        ]
-        }
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+            ],
+        },
     }
     mock_client.modify_db_instance.return_value = mock_response
-    
+
     result = RDS.modify_db_instance_command(mock_client, args)
-    
+
     assert "Successfully modified DB instance test-db" in result.readable_output
     assert result.outputs_prefix == "AWS.RDS.DBInstance"
     assert result.outputs["DBInstanceIdentifier"] == "test-db"
