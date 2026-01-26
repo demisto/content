@@ -36,23 +36,35 @@ jobs:
           TRIGGER_TYPE: ${{ github.event_name }}
         run: |
           echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
-          echo "$REPO"
+          
+          # --- 1. DETERMINE PR NUMBER ---
           if [[ "$TRIGGER_TYPE" == "issue_comment" ]]; then
             PR_NUMBER="${{ github.event.issue.number }}"
           elif [[ "$TRIGGER_TYPE" == "pull_request" ]]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
           fi
-          echo "$PR_NUMBER"
+          
+          # --- 2. CHECKOUT BRANCH ---
           PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
-          echo "$PR_BRANCH"
-          echo "Checkout to the branch $PR_BRANCH"
           git fetch origin "$PR_BRANCH"
           git checkout "$PR_BRANCH"
+
+          # --- 3. CONFIG USER ---
           git config --global user.email "devtestdemisto@paloaltonetworks.com"
           git config --global user.name "Content Bot"
           
+          # --- 4. EXECUTE ACTIONS ---
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
-          git commit --allow-empty -m "Trigger AI Reviewer"
+          
+          # We use --allow-empty because you confirmed it works locally.
+          # If this still fails, we will revert to touching a file.
+          git commit --allow-empty -m "Trigger AI Reviewer" || echo "Nothing to commit"
 
+          # --- 5. CRITICAL FIX: UNSET THE DEFAULT HEADER ---
+          # This deletes the default token config so Git MUST use your PAT.
+          git config --global --unset http.https://github.com/.extraheader || true
+
+          # --- 6. PUSH ---
+          echo "⬆️ Pushing to $PR_BRANCH using PAT..."
           git push "https://${GITHUB_TOKEN}@github.com/${REPO}.git" HEAD:refs/heads/"$PR_BRANCH"
      
