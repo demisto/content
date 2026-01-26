@@ -536,6 +536,8 @@ script:
       name: roleSessionDuration
     description: Removes the specified managed policy from the specified IAM Entity.
     name: aws-iam-detach-policy
+    compliantpolicies:
+    - Role Management
   - arguments:
     - description: The name of the user whose password you want to delete.
       name: userName
@@ -1105,6 +1107,8 @@ script:
     description: Creates a new version of the specified managed policy. To update a managed policy, you create a new policy version. A managed policy can have up to five versions. If the policy has five versions, you must delete an existing version using DeletePolicyVersion before you create a new version.  Optionally, you can set the new version as the policy's default version. The default version is the version that is in effect for the IAM users, groups, and roles to which the policy is attached.
     execution: true
     name: aws-iam-create-policy-version
+    compliantpolicies:
+    - Policy Updates
     outputs:
     - contextPath: AWS.IAM.Policies.Versions.Document
       description: The policy document.
@@ -1476,6 +1480,8 @@ script:
       required: true
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
     name: aws-iam-put-role-policy
+    compliantpolicies:
+    - Role Management
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
