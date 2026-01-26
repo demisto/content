@@ -8826,31 +8826,148 @@ def test_start_xql_query_platform(mocker):
     assert call_args[1]["ok_codes"] == [200]
 
 
-def test_start_xql_query_platform_adds_limit(mocker):
+def test_handle_xql_limit_adds_limit_when_missing():
     """
     Given:
-    - A query without a limit clause.
+    - A complex query without a limit clause, containing edge cases like:
+      - "limit" keyword inside comments (block and line comments)
+      - "limit" keyword inside quoted strings (single and double quotes)
+      - Field names containing "limit"
+      - Numeric values that could be confused with limit values
 
     When:
-    - Calling start_xql_query_platform function.
+    - Calling handle_xql_limit function with max_limit=1000.
 
     Then:
-    - Ensure a default limit is added.
+    - Ensure a default limit is added at the end of the query.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
     """
-    from CortexPlatformCore import start_xql_query_platform, Client
+    from CortexPlatformCore import handle_xql_limit
 
-    client = Client(base_url="", headers={})
-    query = "dataset = xdr_data | fields *"
-    timeframe = {"relativeTime": 86400000}
-    mock_execution_id = "test_execution_id_456"
+    MAX_LIMIT = 1000
+    query = """dataset = xdr_data
+// "limit 10" - this limit is in a line comment, should be ignored
+| filter action_process_command_line contains "echo | limit speed"
+| filter description = 'set limit 999 for testing'
+/*
+   Block comment with limit 500 inside.
+   This should also be ignored by the parser.
+*/
+| alter
+    my_limit_field = 5000,
+    rate_limit_threshold = 100
+| filter action_file_name ~= "limit.exe"
+| filter message != "limit 200 exceeded"
+| sort asc _time
+// Final comment mentioning limit 300"""
 
-    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
 
-    start_xql_query_platform(client, query, timeframe)
+    assert result == f"{query}\n| limit {MAX_LIMIT}"
 
-    call_args = mock_http_request.call_args
-    submitted_query = call_args[1]["json_data"]["query"]
-    assert "| limit 1000" in submitted_query
+
+def test_handle_xql_limit_valid_limits_unchanged():
+    """
+    Given:
+    - A complex query with valid limit clauses (within max_limit of 1000), containing edge cases like:
+      - Multiple limit clauses at different positions
+      - "limit" keyword inside comments and quotes (should be ignored)
+      - Limit values at boundary (exactly 1000)
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure the query is NOT modified since all limits are within the allowed maximum.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Starting the investigation
+   Note: limit 9999 in this comment should be ignored
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // filtering for processes, limit 8888 ignored
+| limit 500 /* This is a valid limit within max,
+    should NOT be modified!
+*/
+| filter description contains "limit 7777 test"
+| filter name = 'limit 6666 value'
+| sort desc _time
+| fields agent_hostname,
+         action_process_image_name,
+         action_process_command_line
+| limit 1000
+// End of query with limit 5555 in comment"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == query
+
+
+def test_handle_xql_limit_excessive_limits_modified():
+    """
+    Given:
+    - A complex query with multiple limit clauses that exceed max_limit (1000), containing edge cases like:
+      - Multiple excessive limits at different positions in the query
+      - "limit" keyword with excessive values inside comments and quotes (should be ignored)
+      - Mix of valid and excessive limits
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure ALL excessive limit values are replaced with max_limit (1000).
+    - Ensure valid limits (within max) are NOT modified.
+    - Ensure "limit" keywords inside comments and quotes are NOT modified.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit 5000 /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 2000 // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   3000 | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    expected_query = f"""/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit {MAX_LIMIT} /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit {MAX_LIMIT} // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   {MAX_LIMIT} | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == expected_query
 
 
 def test_get_xql_query_results_platform_success(mocker):
@@ -9174,3 +9291,109 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+def test_enhance_with_pb_details():
+    """
+    GIVEN:
+        - pb_id_to_data: A mapping of playbook IDs to their metadata (name and comment).
+        - playbook: A dictionary representing a playbook task, containing an 'id'.
+    WHEN:
+        - enhance_with_pb_details is called.
+    THEN:
+        - The playbook dictionary is updated with 'name' and 'description' from the metadata if the ID exists.
+    """
+    from CortexPlatformCore import enhance_with_pb_details
+
+    pb_id_to_data = {"pb1": {"name": "Playbook 1", "comment": "Comment 1"}, "pb2": {"name": "Playbook 2", "comment": "Comment 2"}}
+
+    # Case 1: ID exists in metadata
+    playbook1 = {"id": "pb1"}
+    enhance_with_pb_details(pb_id_to_data, playbook1)
+    assert playbook1["name"] == "Playbook 1"
+    assert playbook1["description"] == "Comment 1"
+
+    # Case 2: ID does not exist in metadata
+    playbook3 = {"id": "pb3", "name": "Original Name"}
+    enhance_with_pb_details(pb_id_to_data, playbook3)
+    assert playbook3["name"] == "Original Name"
+    assert "description" not in playbook3
+
+
+def test_postprocess_case_resolution_statuses(mocker):
+    """
+    GIVEN:
+        - A mocked client that returns playbook metadata.
+        - A response dictionary containing case tasks categorized by status.
+    WHEN:
+        - postprocess_case_resolution_statuses is called.
+    THEN:
+        - The tasks are correctly categorized, itemType is assigned, and playbook details are enhanced.
+    """
+    from CortexPlatformCore import postprocess_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
+        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"},
+    ]
+
+    response = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": [{"id": "pb2", "taskName": "Task 2"}]},
+        "pending": {"caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]},
+        "recommended": {"caseTasks": [{"id": "pb4", "taskName": "Task 4"}]},
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    assert len(result) == 4
+
+    # Verify "done" category
+    done_task = next(item for item in result if item["category"] == "done")
+    assert done_task["itemType"] == "playbook"
+    assert done_task["name"] == "Enhanced PB 1"
+    assert done_task["description"] == "Enhanced Comment 1"
+
+    # Verify "inProgress" category
+    in_progress_task = next(item for item in result if item["category"] == "inProgress")
+    assert in_progress_task["itemType"] == "playbook"
+    assert in_progress_task["name"] == "Enhanced PB 2"
+
+    # Verify "pending" category
+    pending_task = next(item for item in result if item["category"] == "pending")
+    assert pending_task["itemType"] == "playbookTask"
+    assert "parentdetails" not in pending_task
+    assert pending_task["parentPlaybook"]["name"] == "Enhanced PB 1"
+
+    # Verify "recommended" category
+    recommended_task = next(item for item in result if item["category"] == "recommended")
+    assert recommended_task["itemType"] == "playbook"
+    assert "name" not in recommended_task  # pb4 not in metadata
+
+
+def test_get_case_resolution_statuses_command(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with case IDs.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The client is called for each case ID, and CommandResults are returned with correct structure.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
+    mock_client.get_playbooks_metadata.return_value = []
+
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
+
+    args = {"case_id": "123,456"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Core.CaseResolutionStatus"
+    assert len(result.outputs) == 2
+    assert len(result.raw_response) == 2
+    assert mock_client.get_case_resolution_statuses.call_count == 2
