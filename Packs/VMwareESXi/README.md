@@ -5,6 +5,7 @@ This pack includes Cortex XSIAM content.
 * Pay attention: Timestamp parsing is available for UTC timezone in the following formats:
   * %Y-%m-%dT%H:%M:%SZ - UTC +00:00 format.  
   * %Y-%m-%dT%H:%M:%E3SZ - UTC +00:00 format with 3 digits of fractional precision.
+  * %Y-%m-%dT%H:%M:%E3S - UTC +00:00 format with 3 digits of fractional precision.
 
 ### Broker VM
 
