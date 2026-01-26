@@ -75,7 +75,7 @@ jobs:
           # --- 6. REAL COMMIT (To bypass empty-commit filters) ---
           date > .ai-review-trigger
           git add .ai-review-trigger
-          git commit -m "Trigger AI Reviewer [skip ci]" || echo "Nothing to commit"
+          git commit -m "Trigger AI Reviewer" --allow-empty
 
           # --- 7. PUSH ---
           # Now we can just push to origin, because origin IS the PAT.
