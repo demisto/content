@@ -58,11 +58,11 @@ jobs:
           git fetch origin "$PR_BRANCH"
           git checkout "$PR_BRANCH"
 
-          # 🔥 CRITICAL STEP: Remove the default token headers that block the push
+          # 🔥 Remove the default token headers that block the push
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config --global --unset-all http.https://github.com/.extraheader || true
 
-          # 🔥 CRITICAL STEP: Force 'origin' to use your PAT
+          # 🔥 Force 'origin' to use your PAT
           git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${REPO}.git"
 
           # --- 4. CONFIG USER ---
@@ -72,6 +72,7 @@ jobs:
           # --- 5. ACTION ---
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
 
+          # --- 6. EMPTY COMMIT ---
           git commit -m "Trigger AI Reviewer" --allow-empty
 
           # --- 7. PUSH ---
