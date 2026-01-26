@@ -1504,42 +1504,42 @@ Search for messages using filters across abnormal or quarantine sources.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source | Message source (abnormal or quarantine). Possible values are: abnormal, quarantine. | Required | 
-| tenant_ids | Comma-separated list of tenant IDs. | Optional | 
-| start_time | Start time for the search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Required | 
-| end_time | End time for the search in ISO 8601 format (e.g., 2024-01-31T23:59:59Z). | Required | 
-| subject | Filter by email subject. | Optional | 
-| sender_email | Filter by sender email address. | Optional | 
-| sender_name | Filter by sender name. | Optional | 
-| recipient_email | Filter by recipient email address. | Optional | 
-| recipient_name | Filter by recipient name. | Optional | 
-| attachment_name | Filter by attachment name. | Optional | 
-| attachment_md5_hash | Filter by attachment MD5 hash. | Optional | 
-| internet_message_id | Filter by internet message ID. | Optional | 
-| body_link | Filter by body link/URL. | Optional | 
-| sender_ip | Filter by sender IP address. | Optional | 
-| judgement | Filter by judgement status. Possible values are: attack, borderline, spam, graymail, safe. | Optional | 
-| use_sender_regex | Use regex for sender filtering (default false). Possible values are: true, false. | Optional | 
-| use_recipient_regex | Use regex for recipient filtering (default false). Possible values are: true, false. | Optional | 
-| show_graymail | Show graymail messages (default false). Possible values are: true, false. | Optional | 
-| page_number | Page number (default 1). | Optional | 
-| page_size | Page size (default 100, max 1000). | Optional | 
+| source | Message source (abnormal or quarantine). Possible values are: abnormal, quarantine. | Required |
+| tenant_ids | Comma-separated list of tenant IDs. | Optional |
+| start_time | Start time for the search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Required |
+| end_time | End time for the search in ISO 8601 format (e.g., 2024-01-31T23:59:59Z). | Required |
+| subject | Filter by email subject. | Optional |
+| sender_email | Filter by sender email address. | Optional |
+| sender_name | Filter by sender name. | Optional |
+| recipient_email | Filter by recipient email address. | Optional |
+| recipient_name | Filter by recipient name. | Optional |
+| attachment_name | Filter by attachment name. | Optional |
+| attachment_md5_hash | Filter by attachment MD5 hash. | Optional |
+| internet_message_id | Filter by internet message ID. | Optional |
+| body_link | Filter by body link/URL. | Optional |
+| sender_ip | Filter by sender IP address. | Optional |
+| judgement | Filter by judgement status. Possible values are: attack, borderline, spam, graymail, safe. | Optional |
+| use_sender_regex | Use regex for sender filtering (default false). Possible values are: true, false. | Optional |
+| use_recipient_regex | Use regex for recipient filtering (default false). Possible values are: true, false. | Optional |
+| show_graymail | Show graymail messages (default false). Possible values are: true, false. | Optional |
+| page_number | Page number (default 1). | Optional |
+| page_size | Page size (default 100, max 1000). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.MessageSearch.results | Unknown | List of messages matching the search criteria. | 
-| AbnormalSecurity.MessageSearch.results.abnormal_message_id | String | Abnormal message identifier. | 
-| AbnormalSecurity.MessageSearch.results.subject | String | Email subject. | 
-| AbnormalSecurity.MessageSearch.results.sender | String | Sender email address. | 
-| AbnormalSecurity.MessageSearch.results.mailbox_name | String | Mailbox name where the message was received. | 
-| AbnormalSecurity.MessageSearch.results.received_time | String | Time when message was received. | 
-| AbnormalSecurity.MessageSearch.results.decision_category | String | Decision category \(malicious, spam, safe, graymail\). | 
-| AbnormalSecurity.MessageSearch.results.judgement | String | Judgement status \(attack, borderline, spam, graymail, safe\). | 
-| AbnormalSecurity.MessageSearch.total | Number | Total number of messages found. | 
-| AbnormalSecurity.MessageSearch.pageNumber | Number | Current page number. | 
-| AbnormalSecurity.MessageSearch.nextPageNumber | Number | Next page number. | 
+| AbnormalSecurity.MessageSearch.results | Unknown | List of messages matching the search criteria. |
+| AbnormalSecurity.MessageSearch.results.abnormal_message_id | String | Abnormal message identifier. |
+| AbnormalSecurity.MessageSearch.results.subject | String | Email subject. |
+| AbnormalSecurity.MessageSearch.results.sender | String | Sender email address. |
+| AbnormalSecurity.MessageSearch.results.mailbox_name | String | Mailbox name where the message was received. |
+| AbnormalSecurity.MessageSearch.results.received_time | String | Time when message was received. |
+| AbnormalSecurity.MessageSearch.results.decision_category | String | Decision category \(malicious, spam, safe, graymail\). |
+| AbnormalSecurity.MessageSearch.results.judgement | String | Judgement status \(attack, borderline, spam, graymail, safe\). |
+| AbnormalSecurity.MessageSearch.total | Number | Total number of messages found. |
+| AbnormalSecurity.MessageSearch.pageNumber | Number | Current page number. |
+| AbnormalSecurity.MessageSearch.nextPageNumber | Number | Next page number. |
 
 ### abnormal-security-remediate-messages
 
@@ -1554,37 +1554,37 @@ Remediate messages by performing actions like delete, move, or submit to Detecti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to perform on messages. Possible values are: delete, move_to_inbox, submit_to_d360, reclassify. | Required | 
-| tenant_ids | Comma-separated list of tenant IDs. | Optional | 
-| source | Message source (abnormal or quarantine). Possible values are: abnormal, quarantine. | Required | 
-| remediation_reason | Reason for remediation. Possible values are: false_negative, misdirected, unsolicited, other, groups_remediation, quarantine_release. | Required | 
-| messages | JSON string containing array of message objects to remediate. Required if remediate_all is false. | Optional | 
-| remediate_all | Whether to remediate all messages matching search filters (default false). Possible values are: true, false. | Optional | 
-| target_folder | Target folder for move actions (e.g., "Deleted Items"). | Optional | 
-| submit_d360_case | Whether to submit a Detection360 case (default false). Possible values are: true, false. | Optional | 
-| start_time | Start time for search filters when remediate_all is true (ISO 8601 format). | Optional | 
-| end_time | End time for search filters when remediate_all is true (ISO 8601 format). | Optional | 
-| subject | Subject filter when remediate_all is true. | Optional | 
-| sender_email | Sender email filter when remediate_all is true. | Optional | 
-| sender_name | Sender name filter when remediate_all is true. | Optional | 
-| recipient_email | Recipient email filter when remediate_all is true. | Optional | 
-| recipient_name | Recipient name filter when remediate_all is true. | Optional | 
-| attachment_name | Attachment name filter when remediate_all is true. | Optional | 
-| attachment_md5_hash | Attachment MD5 hash filter when remediate_all is true. | Optional | 
-| internet_message_id | Internet message ID filter when remediate_all is true. | Optional | 
-| body_link | Body link/URL filter when remediate_all is true. | Optional | 
-| sender_ip | Sender IP address filter when remediate_all is true. | Optional | 
-| judgement | Judgement filter when remediate_all is true. Possible values are: attack, borderline, spam, graymail, safe. | Optional | 
-| use_sender_regex | Use regex for sender filtering when remediate_all is true (default false). Possible values are: true, false. | Optional | 
-| use_recipient_regex | Use regex for recipient filtering when remediate_all is true (default false). Possible values are: true, false. | Optional | 
-| show_graymail | Show graymail messages when remediate_all is true (default false). Possible values are: true, false. | Optional | 
+| action | Action to perform on messages. Possible values are: delete, move_to_inbox, submit_to_d360, reclassify. | Required |
+| tenant_ids | Comma-separated list of tenant IDs. | Optional |
+| source | Message source (abnormal or quarantine). Possible values are: abnormal, quarantine. | Required |
+| remediation_reason | Reason for remediation. Possible values are: false_negative, misdirected, unsolicited, other, groups_remediation, quarantine_release. | Required |
+| messages | JSON string containing array of message objects to remediate. Required if remediate_all is false. | Optional |
+| remediate_all | Whether to remediate all messages matching search filters (default false). Possible values are: true, false. | Optional |
+| target_folder | Target folder for move actions (e.g., "Deleted Items"). | Optional |
+| submit_d360_case | Whether to submit a Detection360 case (default false). Possible values are: true, false. | Optional |
+| start_time | Start time for search filters when remediate_all is true (ISO 8601 format). | Optional |
+| end_time | End time for search filters when remediate_all is true (ISO 8601 format). | Optional |
+| subject | Subject filter when remediate_all is true. | Optional |
+| sender_email | Sender email filter when remediate_all is true. | Optional |
+| sender_name | Sender name filter when remediate_all is true. | Optional |
+| recipient_email | Recipient email filter when remediate_all is true. | Optional |
+| recipient_name | Recipient name filter when remediate_all is true. | Optional |
+| attachment_name | Attachment name filter when remediate_all is true. | Optional |
+| attachment_md5_hash | Attachment MD5 hash filter when remediate_all is true. | Optional |
+| internet_message_id | Internet message ID filter when remediate_all is true. | Optional |
+| body_link | Body link/URL filter when remediate_all is true. | Optional |
+| sender_ip | Sender IP address filter when remediate_all is true. | Optional |
+| judgement | Judgement filter when remediate_all is true. Possible values are: attack, borderline, spam, graymail, safe. | Optional |
+| use_sender_regex | Use regex for sender filtering when remediate_all is true (default false). Possible values are: true, false. | Optional |
+| use_recipient_regex | Use regex for recipient filtering when remediate_all is true (default false). Possible values are: true, false. | Optional |
+| show_graymail | Show graymail messages when remediate_all is true (default false). Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.MessageRemediation.activity_log_id | Number | Activity log ID for tracking the remediation request. | 
-| AbnormalSecurity.MessageRemediation.metadata | Unknown | Metadata about the request. | 
+| AbnormalSecurity.MessageRemediation.activity_log_id | Number | Activity log ID for tracking the remediation request. |
+| AbnormalSecurity.MessageRemediation.metadata | Unknown | Metadata about the request. |
 
 ### abnormal-security-list-activities
 
@@ -1599,25 +1599,25 @@ Get a list of activity logs for message search and remediation operations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_ids | Comma-separated list of tenant IDs (will be sent as query parameters). | Optional | 
-| action | Filter by action type. Possible values are: search, remediation, csv_export. | Optional | 
-| page_number | Page number (default 1). | Optional | 
-| page_size | Page size (default 100, max 1000). | Optional | 
+| tenant_ids | Comma-separated list of tenant IDs (will be sent as query parameters). | Optional |
+| action | Filter by action type. Possible values are: search, remediation, csv_export. | Optional |
+| page_number | Page number (default 1). | Optional |
+| page_size | Page size (default 100, max 1000). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.Activities.activities | Unknown | List of activity logs. | 
-| AbnormalSecurity.Activities.activities.activity_id | Number | Activity log ID. | 
-| AbnormalSecurity.Activities.activities.action | String | Action type \(search, remediate, csv_export\). | 
-| AbnormalSecurity.Activities.activities.status | String | Activity status. | 
-| AbnormalSecurity.Activities.activities.performed_by | String | User who performed the action. | 
-| AbnormalSecurity.Activities.activities.timestamp | String | Timestamp of the activity. | 
-| AbnormalSecurity.Activities.activities.result_count | Number | Number of results from the activity. | 
-| AbnormalSecurity.Activities.total | Number | Total number of activities. | 
-| AbnormalSecurity.Activities.page | Number | Current page number. | 
-| AbnormalSecurity.Activities.size | Number | Page size. | 
+| AbnormalSecurity.Activities.activities | Unknown | List of activity logs. |
+| AbnormalSecurity.Activities.activities.activity_id | Number | Activity log ID. |
+| AbnormalSecurity.Activities.activities.action | String | Action type \(search, remediate, csv_export\). |
+| AbnormalSecurity.Activities.activities.status | String | Activity status. |
+| AbnormalSecurity.Activities.activities.performed_by | String | User who performed the action. |
+| AbnormalSecurity.Activities.activities.timestamp | String | Timestamp of the activity. |
+| AbnormalSecurity.Activities.activities.result_count | Number | Number of results from the activity. |
+| AbnormalSecurity.Activities.total | Number | Total number of activities. |
+| AbnormalSecurity.Activities.page | Number | Current page number. |
+| AbnormalSecurity.Activities.size | Number | Page size. |
 
 ### abnormal-security-get-activity-status
 
@@ -1632,22 +1632,22 @@ Get the status and details of a specific activity log entry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| activity_log_id | Activity log ID to get status for. | Required | 
-| page | Page number (default 1). | Optional | 
-| size | Page size (default 100, max 1000). | Optional | 
+| activity_log_id | Activity log ID to get status for. | Required |
+| page | Page number (default 1). | Optional |
+| size | Page size (default 100, max 1000). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ActivityStatus.activity_id | Number | Activity log ID. | 
-| AbnormalSecurity.ActivityStatus.action | String | Action type. | 
-| AbnormalSecurity.ActivityStatus.status | String | Activity status. | 
-| AbnormalSecurity.ActivityStatus.performed_by | String | User who performed the action. | 
-| AbnormalSecurity.ActivityStatus.timestamp | String | Timestamp of the activity. | 
-| AbnormalSecurity.ActivityStatus.result_count | Number | Number of results. | 
-| AbnormalSecurity.ActivityStatus.remediation_details | Unknown | Detailed remediation information for each message. | 
-| AbnormalSecurity.ActivityStatus.total | Number | Total number of remediation details. | 
+| AbnormalSecurity.ActivityStatus.activity_id | Number | Activity log ID. |
+| AbnormalSecurity.ActivityStatus.action | String | Action type. |
+| AbnormalSecurity.ActivityStatus.status | String | Activity status. |
+| AbnormalSecurity.ActivityStatus.performed_by | String | User who performed the action. |
+| AbnormalSecurity.ActivityStatus.timestamp | String | Timestamp of the activity. |
+| AbnormalSecurity.ActivityStatus.result_count | Number | Number of results. |
+| AbnormalSecurity.ActivityStatus.remediation_details | Unknown | Detailed remediation information for each message. |
+| AbnormalSecurity.ActivityStatus.total | Number | Total number of remediation details. |
 
 ### abnormal-security-download-message-attachment
 
@@ -1662,16 +1662,17 @@ Download an attachment from a message found in search results. All required para
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Abnormal message ID (can be negative). Obtained from message search results. | Required | 
-| attachment_name | Name of the attachment to download. Obtained from message search results attachments field. | Required | 
-| tenant_id | Tenant ID for the message. Obtained from message search results. | Required | 
-| raw_message_id | Cloud provider message ID (O365/GSuite). Obtained from message search results as raw_message_id. | Required | 
-| native_user_id | Cloud provider user ID. Obtained from message search results as native_user_id. | Required | 
-| recipient_mailbox | Mailbox email address. Obtained from message search results as mailbox_name. | Required | 
+| message_id | Abnormal message ID (can be negative). Obtained from message search results. | Required |
+| attachment_name | Name of the attachment to download. Obtained from message search results attachments field. | Required |
+| tenant_id | Tenant ID for the message. Obtained from message search results. | Required |
+| raw_message_id | Cloud provider message ID (O365/GSuite). Obtained from message search results as raw_message_id. | Required |
+| native_user_id | Cloud provider user ID. Obtained from message search results as native_user_id. | Required |
+| recipient_mailbox | Mailbox email address. Obtained from message search results as mailbox_name. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### abnormal-security-download-message-eml
 
 ***
@@ -1685,13 +1686,14 @@ Download a message in RFC822 EML format for forensic analysis. For quarantine me
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cloud_message_id | The cloud_message_id from search results (format abx:CloudMessage:...). Use the cloud_message_id field from message search results. | Required | 
-| quarantine_identity | Quarantine identifier (required only for quarantine messages). Obtained from quarantine_info.identity field in search results. | Optional | 
-| recipient_mailbox | Recipient email address (required only for quarantine messages). Obtained from mailbox_name field in search results. | Optional | 
+| cloud_message_id | The cloud_message_id from search results (format abx:CloudMessage:...). Use the cloud_message_id field from message search results. | Required |
+| quarantine_identity | Quarantine identifier (required only for quarantine messages). Obtained from quarantine_info.identity field in search results. | Optional |
+| recipient_mailbox | Recipient email address (required only for quarantine messages). Obtained from mailbox_name field in search results. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### abnormal-security-list-unanalyzed-abuse-mailbox-campaigns
 
 ---
