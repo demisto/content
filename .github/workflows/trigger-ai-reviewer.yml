@@ -71,10 +71,7 @@ jobs:
           
           # --- 5. ACTION ---
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
-          
-          # --- 6. REAL COMMIT (To bypass empty-commit filters) ---
-          date > .ai-review-trigger
-          git add .ai-review-trigger
+
           git commit -m "Trigger AI Reviewer" --allow-empty
 
           # --- 7. PUSH ---
