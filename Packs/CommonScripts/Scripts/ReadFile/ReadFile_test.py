@@ -189,7 +189,7 @@ def test_read_utf16be_to_json(mocker):
         "Type": 1,
         "ContentsFormat": "text",
         "Contents": {"FileData": {"a": "b"}},
-        "HumanReadable": "Read 10 bytes from file:\n" + str({"a": "b"}),
+        "HumanReadable": "Read 22 bytes from file:\n" + str({"a": "b"}),
         "EntryContext": {"FileData": {"a": "b"}},
     }
 
@@ -217,7 +217,7 @@ def test_read_utf16le_to_json(mocker):
         "Type": 1,
         "ContentsFormat": "text",
         "Contents": {"FileData": {"a": "b"}},
-        "HumanReadable": "Read 10 bytes from file:\n" + str({"a": "b"}),
+        "HumanReadable": "Read 22 bytes from file:\n" + str({"a": "b"}),
         "EntryContext": {"FileData": {"a": "b"}},
     }
 
@@ -505,7 +505,7 @@ def test_read_utf16be_to_json_with_meta(mocker):
         "Type": 1,
         "ContentsFormat": "json",
         "Contents": file_info,
-        "HumanReadable": "Read 10 bytes from file:\n" + str({"a": "b"}),
+        "HumanReadable": "Read 22 bytes from file:\n" + str({"a": "b"}),
         "EntryContext": {"ReadFile(obj.EntryID===val.EntryID)": file_info},
     }
 
@@ -547,7 +547,7 @@ def test_read_utf16le_to_json_with_meta(mocker):
         "Type": 1,
         "ContentsFormat": "json",
         "Contents": file_info,
-        "HumanReadable": "Read 10 bytes from file:\n" + str({"a": "b"}),
+        "HumanReadable": "Read 22 bytes from file:\n" + str({"a": "b"}),
         "EntryContext": {"ReadFile(obj.EntryID===val.EntryID)": file_info},
     }
 
