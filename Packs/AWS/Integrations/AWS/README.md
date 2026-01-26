@@ -2743,7 +2743,7 @@ There is no context output for this command.
 ### aws-ec2-instance-running-waiter
 
 ***
-Waits until EC2 instances are in the 'running' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max is waiter_max_attempts arg value attempts).
+Waits until the specified EC2 instances reach the 'running' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.```
 
 #### Base Command
 
