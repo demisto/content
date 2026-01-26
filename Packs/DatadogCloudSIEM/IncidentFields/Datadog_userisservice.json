@@ -2,7 +2,7 @@
     "id": "incident_datadogcloudsiemuserisservice",
     "version": -1,
     "modified": "2023-04-28T07:59:20.245516564+05:30",
-    "name": "DatadoDatadog Cloud SIEMg User Is Service",
+    "name": "Datadog Cloud SIEM User Is Service",
     "ownerOnly": false,
     "cliName": "datadogcloudsiemuserisservice",
     "type": "boolean",
