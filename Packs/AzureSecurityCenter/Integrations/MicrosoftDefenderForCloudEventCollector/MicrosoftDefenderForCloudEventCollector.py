@@ -123,8 +123,7 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     filtered_events = [
         event
         for event in events
-        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time
-        and event.get("id", "") not in dup_ids
+        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time and event.get("id", "") not in dup_ids
     ]
 
     demisto.debug(f"{LOG_PREFIX} Filtered {len(events)} events down to {len(filtered_events)} events.")
@@ -216,23 +215,17 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
 
     # Log event timestamps before sorting for debugging
     event_times = [
-        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
-        for event in events_list
+        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")} for event in events_list
     ]
     demisto.debug(f"{LOG_PREFIX} Event timestamps before sorting: {event_times}")
 
     # Sort events by startTimeUtc descending to ensure we get the newest event's timestamp
     # This prevents issues when the API returns events in an unexpected order
-    sorted_events = sorted(
-        events_list,
-        key=lambda x: x.get("properties", {}).get("startTimeUtc", ""),
-        reverse=True
-    )
+    sorted_events = sorted(events_list, key=lambda x: x.get("properties", {}).get("startTimeUtc", ""), reverse=True)
 
     # Log event timestamps after sorting for debugging
     sorted_event_times = [
-        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
-        for event in sorted_events
+        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")} for event in sorted_events
     ]
     demisto.debug(f"{LOG_PREFIX} Event timestamps after sorting: {sorted_event_times}")
 
