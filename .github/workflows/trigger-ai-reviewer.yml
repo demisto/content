@@ -43,13 +43,14 @@ jobs:
             PR_NUMBER="${{ github.event.pull_request.number }}"
           fi
           echo "$PR_NUMBER"
-
+          PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
+          git fetch origin "$PR_BRANCH"
+          git checkout "$PR_BRANCH"
           git config --global user.email "devtestdemisto@paloaltonetworks.com"
           git config --global user.name "Content Bot"
           
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
           git commit --allow-empty -m "Trigger AI Reviewer"
 
-          PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
           git push "https://${GITHUB_TOKEN}@github.com/${REPO}.git" HEAD:refs/heads/"$PR_BRANCH"
      
