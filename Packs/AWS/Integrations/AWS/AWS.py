@@ -3285,8 +3285,8 @@ class EC2:
             return CommandResults(readable_output="No Reserved Instances were found.")
 
         # Serialize datetime objects
-        response = serialize_response_with_datetime_encoding(reserved_instances)
-        reserved_instances = response.get("ReservedInstances", [])
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        reserved_instances = serialized_response.get("ReservedInstances", [])
 
         # Format output data
         readable_data = []
@@ -4944,6 +4944,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DisassociateAddress",
     "ec2:ReleaseAddress",
     "ec2:DescribeInstances",
+    "ec2:DescribeInstanceStatus",
     "ec2:DescribeSecurityGroups",
     "ec2:AuthorizeSecurityGroupEgress",
     "ec2:AuthorizeSecurityGroupIngress",

@@ -8138,20 +8138,8 @@ def test_ec2_describe_reserved_instances_command_success(mocker):
     from datetime import datetime
 
     mock_client = mocker.Mock()
-    serialized_instances = [
-        {
-            "ReservedInstancesId": "ri-1234567890abcdef0",
-            "InstanceType": "t3.micro",
-            "AvailabilityZone": "us-east-1a",
-            "Start": "2023-01-01T00:00:00",
-            "End": "2024-01-01T00:00:00",
-            "Duration": 31536000,
-            "InstanceCount": 1,
-            "State": "active",
-        }
-    ]
-
-    mock_client.describe_reserved_instances.return_value = {
+    
+    mock_response = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "ReservedInstances": [
             {
@@ -8167,14 +8155,39 @@ def test_ec2_describe_reserved_instances_command_success(mocker):
         ],
     }
 
-    # Mock serialize to return serialized list
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_instances)
+    serialized_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [
+            {
+                "ReservedInstancesId": "ri-1234567890abcdef0",
+                "InstanceType": "t3.micro",
+                "AvailabilityZone": "us-east-1a",
+                "Start": "2023-01-01T00:00:00",
+                "End": "2024-01-01T00:00:00",
+                "Duration": 31536000,
+                "InstanceCount": 1,
+                "State": "active",
+            }
+        ],
+    }
+
+    mock_client.describe_reserved_instances.return_value = mock_response
+
+    # Mock serialize to return serialized response with datetime strings
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_response)
 
     args = {"reserved_instance_ids": "ri-1234567890abcdef0", "region": "us-east-1"}
 
-    # The implementation has a bug - it calls .get() on a list, which will raise AttributeError
-    with pytest.raises(AttributeError):
-        EC2.describe_reserved_instances_command(mock_client, args)
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+    
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
+    assert result.outputs_key_field == "ReservedInstancesId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ReservedInstancesId"] == "ri-1234567890abcdef0"
+    assert result.outputs[0]["InstanceType"] == "t3.micro"
+    assert result.outputs[0]["State"] == "active"
+    assert "AWS EC2 Reserved Instances" in result.readable_output
 
 
 def test_ec2_describe_reserved_instances_command_with_filters(mocker):
@@ -8240,14 +8253,20 @@ def test_ec2_describe_reserved_instances_command_multiple_instances(mocker):
     mock_client = mocker.Mock()
     mock_client.describe_reserved_instances.return_value = mock_response
 
-    # Mock serialize to return the list (matching buggy behavior)
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response["ReservedInstances"])
+    # Mock serialize to return the full response with serialized data
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
 
     args = {"reserved_instance_ids": "ri-1234567890abcdef0, ri-0987654321fedcba0", "region": "us-east-1"}
 
-    # The buggy code will fail when trying to call .get() on a list
-    with pytest.raises(AttributeError):
-        EC2.describe_reserved_instances_command(mock_client, args)
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+    
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
+    assert result.outputs_key_field == "ReservedInstancesId"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ReservedInstancesId"] == "ri-1234567890abcdef0"
+    assert result.outputs[1]["ReservedInstancesId"] == "ri-0987654321fedcba0"
+    assert "AWS EC2 Reserved Instances" in result.readable_output
 
 
 def test_ec2_describe_reserved_instances_command_with_offering_type(mocker):

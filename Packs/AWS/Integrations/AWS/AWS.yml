@@ -7903,8 +7903,7 @@ script:
       isArray: true
 
   - name: aws-ec2-instance-running-waiter
-   description: Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`).
-
+    description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`)."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7961,8 +7960,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-status-ok-waiter
-description: Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
-
+    description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8083,7 +8081,7 @@ description: Waits until EC2 instance status checks pass. Checks every `waiter_d
       defaultValue: "40"
 
   - name: aws-ec2-instance-terminated-waiter
-description: Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+    description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8273,6 +8271,9 @@ description: Waits until the specified EC2 instances reach the 'terminated' stat
     - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
       description: The time the data was last updated.
       type: Date
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
 
   - name: aws-ec2-reserved-instances-describe
     description: Describes one or more of the Reserved Instances that you purchased.
