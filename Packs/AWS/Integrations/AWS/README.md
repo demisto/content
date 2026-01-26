@@ -2674,7 +2674,7 @@ There is no context output for this command.
 ### aws-ec2-instances-monitor
 
 ***
-Enables detailed monitoring for one or more running Amazon EC2 instances.
+Enables detailed monitoring on one or more running Amazon EC2 instances.
 
 #### Base Command
 
@@ -2698,7 +2698,7 @@ Enables detailed monitoring for one or more running Amazon EC2 instances.
 ### aws-ec2-instances-unmonitor
 
 ***
-Disables detailed monitoring for one or more running Amazon EC2 instances.
+Disables detailed monitoring on one or more running Amazon EC2 instances.
 
 #### Base Command
 
@@ -2767,7 +2767,7 @@ There is no context output for this command.
 ### aws-ec2-instance-status-ok-waiter
 
 ***
-Waits until EC2 instance status checks pass. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+Waits until the EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
 
 #### Base Command
 

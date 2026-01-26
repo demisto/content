@@ -3249,7 +3249,7 @@ class EC2:
     @staticmethod
     def describe_reserved_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
-        Describes one or more Reserved Instances that you purchased.
+        Describes one or more Reserved Instances.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service

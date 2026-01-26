@@ -7736,7 +7736,7 @@ script:
       required: false
 
   - name: aws-ec2-instances-monitor
-    description: Enables detailed monitoring for one or more running Amazon EC2 instances.
+    description: Enables detailed monitoring on one or more running Amazon EC2 instances.
     execution: true
     arguments:
     - name: account_id
@@ -7903,7 +7903,8 @@ script:
       isArray: true
 
   - name: aws-ec2-instance-running-waiter
-    description: Waits until EC2 instances are in the 'running' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max is waiter_max_attempts arg value attempts).
+   description: Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`).
+
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7960,7 +7961,8 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-status-ok-waiter
-    description: Waits until EC2 instance status checks pass. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+description: Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8010,7 +8012,7 @@ script:
     - name: filters
       description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
     - name: waiter_delay
-      description: The amount of time in seconds to wait between attempts. Default is 15.
+      description: The amount of time in seconds, to wait between attempts. Default is 15.
       defaultValue: "15"
     - name: waiter_max_attempts
       description: The maximum number of attempts to be made. Default is 40.
@@ -8024,7 +8026,7 @@ script:
       defaultValue: 'false'
 
   - name: aws-ec2-instance-stopped-waiter
-    description: Waits until EC2 instances are in the 'stopped' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+    description: Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8081,7 +8083,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-terminated-waiter
-    description: Waits until EC2 instances are in the 'terminated' state. Checks every waiter_delay arg value seconds until a successful state is reached (default max waiter_max_attempts arg value  attempts).
+description: Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
     arguments:
     - name: account_id
       description: The AWS account ID.
