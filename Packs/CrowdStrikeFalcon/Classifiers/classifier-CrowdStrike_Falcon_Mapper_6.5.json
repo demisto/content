@@ -1790,7 +1790,7 @@
 				"CrowdStrike Falcon Item author": {
 					"simple": "notification.item_author"
 				},
-				"CrowdStrike Falcon Item author id": {
+				"CrowdStrike Falcon Item Author id": {
 					"simple": "notification.item_author_id"
 				},
 				"CrowdStrike Falcon Item date": {
