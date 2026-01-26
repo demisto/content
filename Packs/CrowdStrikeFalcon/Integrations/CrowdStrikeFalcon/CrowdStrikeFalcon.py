@@ -2839,7 +2839,7 @@ def get_remote_recon_data(remote_incident_id: str):
     return mirrored_data, updated_object, RECON_NOTIFICATION
 
 
-def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, remote_incident_id: str) -> Dict[str, Any] | None:
+def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, remote_incident_id: str) -> str:
     """
     Updates the status of a CrowdStrike Falcon Recon Notification via PATCH API call (Mirror Out)
     using the generic http_request function.
@@ -2850,8 +2850,8 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     :param inc_status: The current status of the local XSOAR incident (0=Closed, 1=Active).
     :type remote_incident_id: ``str``
     :param remote_incident_id: The ID of the Recon Notification in CrowdStrike.
-    :return: The API response payload on success, or None if no relevant change found.
-    :rtype: ``dict`` or ``None``
+    :return: The API response payload on success, or empty string if no relevant change found.
+    :rtype: ``str``
     """
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     if "status" in delta:
@@ -2861,17 +2861,17 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
             new_recon_status = "in-progress"
         else:
             demisto.debug(f"Recon-Log XSOAR status {inc_status} does not require Recon Notification status update.")
-            return None
+            return ""
         request_payload = {"id": remote_id, "status": new_recon_status}
         demisto.debug(f"Recon-Log Attempting to PATCH Recon Notification {remote_id} with status: {new_recon_status}")
         try:
             raw_response = http_request(method="PATCH", url_suffix="/recon/entities/notifications/v1", data=request_payload)
-            return raw_response
+            return str(raw_response)
         except Exception as e:
             demisto.error(f"Recon-Log API PATCH call failed for Recon Notification {remote_id}. Error: {e!s}")
             raise Exception(f"Failed to update Recon Notification {remote_id}. Error: {e!s}")
 
-    return None
+    return ""
 
 
 def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
@@ -4330,6 +4330,7 @@ def recon_notifications_pagination(
         filter=filter, recon_offset=recon_offset, limit=min(MAX_FETCH_SIZE, fetch_limit), query=fetch_query
     )
     demisto.debug(f"Recon-Log Pagination results: {len(ids)=}, {offset=}")
+    full_notifications_deta = []
     if is_fetch:
         full_notifications_deta = get_recon_notifications_detailed(notification_ids=ids)
 
@@ -4470,7 +4471,7 @@ def get_current_fetch_data(
     last_date_key: str,
     next_token_key: str,
     last_fetched_ids_key: str,
-) -> tuple[list[str], str | None | int, str, str]:
+) -> tuple[list[str], str | None, str, str]:
     """Returns the last fetched ids, next token that will be used in current round, last date
     found in the last run object, and the first fetch timestamp.
 
