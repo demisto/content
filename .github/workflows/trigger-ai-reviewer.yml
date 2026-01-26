@@ -44,6 +44,8 @@ jobs:
           fi
           echo "$PR_NUMBER"
           PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
+          echo "$PR_BRANCH"
+          echo "Checkout to the branch $PR_BRANCH"
           git fetch origin "$PR_BRANCH"
           git checkout "$PR_BRANCH"
           git config --global user.email "devtestdemisto@paloaltonetworks.com"
