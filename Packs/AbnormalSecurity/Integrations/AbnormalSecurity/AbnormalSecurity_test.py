@@ -49,7 +49,7 @@ class MockResponse:
         self.text = str(data)
         self.status_code = status_code
         # Add content attribute for file downloads
-        self.content = data if isinstance(data, bytes) else str(data).encode('utf-8')
+        self.content = data if isinstance(data, bytes) else str(data).encode("utf-8")
 
 
 def util_load_json(path):
@@ -1400,10 +1400,7 @@ def test_get_activity_status_command_in_progress(mocker):
         "total": None,
         "pageNumber": None,
         "pageSize": None,
-        "metadata": {
-            "trace_id": "2b8009b3784f4b5aa92fa203d59196f5",
-            "response_time": "12.537802ms"
-        }
+        "metadata": {"trace_id": "2b8009b3784f4b5aa92fa203d59196f5", "response_time": "12.537802ms"},
     }
 
     client = mock_client(mocker, mock_response)

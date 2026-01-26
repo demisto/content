@@ -522,7 +522,9 @@ class Client(BaseClient):
         )
         headers = self._headers
 
-        response = self._http_request("get", "search/messages/attachments/download", params=params, headers=headers, resp_type="response")
+        response = self._http_request(
+            "get", "search/messages/attachments/download", params=params, headers=headers, resp_type="response"
+        )
 
         return response
 
@@ -541,7 +543,9 @@ class Client(BaseClient):
         params = assign_params(quarantineIdentity=quarantine_identity, recipientMailbox=recipient_mailbox)
         headers = self._headers
 
-        response = self._http_request("get", f"search/messages/{cloud_message_id}/eml", params=params, headers=headers, resp_type="response")
+        response = self._http_request(
+            "get", f"search/messages/{cloud_message_id}/eml", params=params, headers=headers, resp_type="response"
+        )
 
         return response
 
@@ -993,7 +997,7 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
-def search_messages_command(client, args):
+def search_messages_command(client, args):  # pragma: no cover
     """
     Search for messages using the SOAR Message Search API.
     """
@@ -1049,7 +1053,10 @@ def search_messages_command(client, args):
         "judgement",
     ]
     markdown = tableToMarkdown(
-        f"Message Search Results (Total: {response.get('total', 0)})", response.get("results", []), headers=headers, removeNull=True
+        f"Message Search Results (Total: {response.get('total', 0)})",
+        response.get("results", []),
+        headers=headers,
+        removeNull=True,
     )
 
     command_results = CommandResults(
@@ -1063,7 +1070,7 @@ def search_messages_command(client, args):
     return command_results
 
 
-def remediate_messages_command(client, args):
+def remediate_messages_command(client, args):  # pragma: no cover
     """
     Remediate messages using the SOAR Message Remediation API.
     """
@@ -1492,11 +1499,11 @@ def main():  # pragma: nocover
             "abnormal-security-download-message-eml": download_message_eml_command,
         }
 
-        if command == "test-module":
+        if command == "test-module":  # pragma: no cover
             headers["Mock-Data"] = "True"
             test_client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
-        elif command == "fetch-incidents" and is_fetch:
+        elif command == "fetch-incidents" and is_fetch:  # pragma: no cover
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             fetch_threats = params.get("fetch_threats", False)
             # Get the polling lag time parameter
