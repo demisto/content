@@ -52,17 +52,17 @@ jobs:
              exit 1
           fi
 
-          echo "✅ Target Branch: $PR_BRANCH"
+          echo "Target Branch: $PR_BRANCH"
 
           # --- 3. CHECKOUT & NUKE DEFAULT CONFIG ---
           git fetch origin "$PR_BRANCH"
           git checkout "$PR_BRANCH"
 
-          # 🔥 Remove the default token headers that block the push
+          # Remove the default token headers that block the push
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config --global --unset-all http.https://github.com/.extraheader || true
 
-          # 🔥 Force 'origin' to use your PAT
+          # Force 'origin' to use your PAT
           git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${REPO}.git"
 
           # --- 4. CONFIG USER ---
@@ -77,5 +77,5 @@ jobs:
 
           # --- 7. PUSH ---
           # Now we can just push to origin, because origin IS the PAT.
-          echo "⬆️ Pushing to $PR_BRANCH..."
+          echo "Pushing to $PR_BRANCH..."
           git push origin HEAD:refs/heads/"$PR_BRANCH"
