@@ -9291,3 +9291,109 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+def test_enhance_with_pb_details():
+    """
+    GIVEN:
+        - pb_id_to_data: A mapping of playbook IDs to their metadata (name and comment).
+        - playbook: A dictionary representing a playbook task, containing an 'id'.
+    WHEN:
+        - enhance_with_pb_details is called.
+    THEN:
+        - The playbook dictionary is updated with 'name' and 'description' from the metadata if the ID exists.
+    """
+    from CortexPlatformCore import enhance_with_pb_details
+
+    pb_id_to_data = {"pb1": {"name": "Playbook 1", "comment": "Comment 1"}, "pb2": {"name": "Playbook 2", "comment": "Comment 2"}}
+
+    # Case 1: ID exists in metadata
+    playbook1 = {"id": "pb1"}
+    enhance_with_pb_details(pb_id_to_data, playbook1)
+    assert playbook1["name"] == "Playbook 1"
+    assert playbook1["description"] == "Comment 1"
+
+    # Case 2: ID does not exist in metadata
+    playbook3 = {"id": "pb3", "name": "Original Name"}
+    enhance_with_pb_details(pb_id_to_data, playbook3)
+    assert playbook3["name"] == "Original Name"
+    assert "description" not in playbook3
+
+
+def test_postprocess_case_resolution_statuses(mocker):
+    """
+    GIVEN:
+        - A mocked client that returns playbook metadata.
+        - A response dictionary containing case tasks categorized by status.
+    WHEN:
+        - postprocess_case_resolution_statuses is called.
+    THEN:
+        - The tasks are correctly categorized, itemType is assigned, and playbook details are enhanced.
+    """
+    from CortexPlatformCore import postprocess_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
+        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"},
+    ]
+
+    response = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": [{"id": "pb2", "taskName": "Task 2"}]},
+        "pending": {"caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]},
+        "recommended": {"caseTasks": [{"id": "pb4", "taskName": "Task 4"}]},
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    assert len(result) == 4
+
+    # Verify "done" category
+    done_task = next(item for item in result if item["category"] == "done")
+    assert done_task["itemType"] == "playbook"
+    assert done_task["name"] == "Enhanced PB 1"
+    assert done_task["description"] == "Enhanced Comment 1"
+
+    # Verify "inProgress" category
+    in_progress_task = next(item for item in result if item["category"] == "inProgress")
+    assert in_progress_task["itemType"] == "playbook"
+    assert in_progress_task["name"] == "Enhanced PB 2"
+
+    # Verify "pending" category
+    pending_task = next(item for item in result if item["category"] == "pending")
+    assert pending_task["itemType"] == "playbookTask"
+    assert "parentdetails" not in pending_task
+    assert pending_task["parentPlaybook"]["name"] == "Enhanced PB 1"
+
+    # Verify "recommended" category
+    recommended_task = next(item for item in result if item["category"] == "recommended")
+    assert recommended_task["itemType"] == "playbook"
+    assert "name" not in recommended_task  # pb4 not in metadata
+
+
+def test_get_case_resolution_statuses_command(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with case IDs.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The client is called for each case ID, and CommandResults are returned with correct structure.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
+    mock_client.get_playbooks_metadata.return_value = []
+
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
+
+    args = {"case_id": "123,456"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Core.CaseResolutionStatus"
+    assert len(result.outputs) == 2
+    assert len(result.raw_response) == 2
+    assert mock_client.get_case_resolution_statuses.call_count == 2
