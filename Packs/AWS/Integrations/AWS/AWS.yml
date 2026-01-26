@@ -8287,7 +8287,7 @@ script:
       description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
     outputs:
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
-      description: The time stamp when the attachment initiated.
+      description: The timestamp when the attachment was initiated.
       type: date
     - contextPath: AWS.EC2.Volumes.Attachments.Device
       description: The device name.
@@ -8583,7 +8583,7 @@ script:
       required: false
     outputs:
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
-      description: The time stamp when the attachment initiated.
+      description: The timestamp when the attachment was initiated.
       type: date
     - contextPath: AWS.EC2.Volumes.Attachments.Device
       description: The device name.
@@ -8712,7 +8712,7 @@ script:
       description: The ID of the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
-      description: The time stamp when the attachment initiated.
+      description: The timestamp when the attachment was initiated.
       type: date
     - contextPath: AWS.EC2.Volumes.Attachments.Device
       description: The device name.
@@ -8803,7 +8803,7 @@ script:
       description: The ID of the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
-      description: The time stamp when the attachment initiated.
+      description: The timestamp when the attachment was initiated.
       type: date
     - contextPath: AWS.EC2.Volumes.Attachments.Device
       description: The device name.
@@ -8824,7 +8824,7 @@ script:
       description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
       type: string
     - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
-      description: The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached.
+      description: The AWS service principal that owns the instance to which the volume is attached.
       type: string
 
   - name: aws-ec2-volume-delete

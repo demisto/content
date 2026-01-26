@@ -2640,14 +2640,14 @@ Describes the specified EBS volumes or all of your EBS volumes.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The time stamp when the attachment initiated. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
 | AWS.EC2.Volumes.Attachments.Device | string | The device name. |
 | AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
 | AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
 | AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
 | AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
 | AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
-| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.CreateTime | date | The timestamp when volume creation was initiated. |
 | AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
 | AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
 | AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
@@ -2739,7 +2739,7 @@ Creates an EBS volume that can be attached to an instance in the same Availabili
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The time stamp when the attachment initiated. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
 | AWS.EC2.Volumes.Attachments.Device | string | The device name. |
 | AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
 | AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
@@ -2766,7 +2766,7 @@ Creates an EBS volume that can be attached to an instance in the same Availabili
 ### aws-ec2-volume-attach
 
 ***
-Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+Attaches an EBS volume to a running or stopped instance and makes it available to the instance using the specified device name.
 
 #### Base Command
 
@@ -2786,7 +2786,7 @@ Attaches an EBS volume to a running or stopped instance and exposes it to the in
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The time stamp when the attachment initiated. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
 | AWS.EC2.Volumes.Attachments.Device | string | The device name. |
 | AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
 | AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
@@ -2819,7 +2819,7 @@ Detaches an EBS volume from an instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The time stamp when the attachment initiated. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
 | AWS.EC2.Volumes.Attachments.Device | string | The device name. |
 | AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
 | AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
