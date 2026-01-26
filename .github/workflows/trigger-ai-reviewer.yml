@@ -51,5 +51,5 @@ jobs:
           git commit --allow-empty -m "Trigger AI Reviewer"
 
           PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
-          git push
+          git push origin HEAD:PR_BRANCH
      
