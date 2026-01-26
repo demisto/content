@@ -6148,233 +6148,299 @@ def test_normalize_key_without_prefix():
     assert normalize_key("some_xdm_field") == "some_xdm_field"
 
 
-class TestUpdateCaseCommand:
-    def test_update_case_command_with_unassigned_assignee(self, mocker):
+class TestCoreAddAssessmentProfileCommand:
+    def test_core_add_assessment_profile_command_success(self, mocker):
+        """Test successful assessment profile creation
+
+        Given: Mock client with valid standards and asset groups responses
+        When: core_add_assessment_profile_command is called with valid arguments
+        Then: Returns successful result with profile ID
         """
-        Given: A client and args with unassigned assignee
-        When: update_case_command is called
-        Then: The case is unassigned and result contains expected case data
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        # Mock compliance standards response
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        # Mock asset groups response
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        # Mock add assessment profile response
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        # Mock payload functions
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+            "day": "monday",
+            "time": "14:30",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        assert result.readable_output == "Assessment Profile profile-789 successfully added"
+        assert result.outputs_prefix == "Core.AssessmentProfile"
+        assert result.outputs_key_field == "assessment_profile_id"
+        assert result.outputs == "profile-789"
+
+    def test_core_add_assessment_profile_command_no_compliance_standards(self, mocker):
+        """Test when no compliance standards are found
+
+        Given: Mock client with empty standards response
+        When: core_add_assessment_profile_command is called with nonexistent standard
+        Then: Raises exception indicating no compliance standards found
         """
-        from CortexPlatformCore import update_case_command
+        from CortexPlatformCore import core_add_assessment_profile_command
 
-        client = mocker.Mock()
-        client.unassign_case = mocker.Mock()
-        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "open"})
-        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "open"})
-        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
+        mock_client = mocker.Mock()
 
-        args = {"case_id": "123", "assignee": "unassigned", "case_name": "Test Case"}
+        standards_response = {"reply": {"standards": []}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
 
-        result = update_case_command(client, args)
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No compliance standards found"))
 
-        client.unassign_case.assert_called_once_with("123")
-        assert result.outputs[0]["case_id"] == "123"
+        args = {"profile_name": "Test Profile", "standard_name": "Nonexistent Standard", "asset_group_name": "Test Group"}
 
-    def test_update_case_command_resolved_status_without_reason_raises_error(self):
+        with pytest.raises(Exception, match="No compliance standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_compliance_standards(self, mocker):
+        """Test when multiple compliance standards match
+
+        Given: Mock client with multiple standards that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous standard name
+        Then: Raises exception indicating multiple standards found
         """
-        Given: A client and args with resolved status but no resolve_reason
-        When: update_case_command is called
-        Then: A ValueError is raised requiring resolve reason
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {
+            "reply": {"standards": [{"id": "std-123", "name": "Test Standard 1"}, {"id": "std-456", "name": "Test Standard 2"}]}
+        }
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="Multiple standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_no_asset_groups(self, mocker):
+        """Test when no asset groups are found
+
+        Given: Mock client with valid standards but empty asset groups response
+        When: core_add_assessment_profile_command is called with nonexistent asset group
+        Then: Raises exception indicating no asset group found
         """
-        from CortexPlatformCore import update_case_command
+        from CortexPlatformCore import core_add_assessment_profile_command
 
-        client = Mock()
-        args = {"case_id": "123", "status": "resolved"}
+        mock_client = mocker.Mock()
 
-        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
-            update_case_command(client, args)
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
 
-    def test_update_case_command_resolved_status_with_invalid_reason_raises_error(self, mocker):
+        asset_groups_response = {"reply": {"data": []}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No asset group found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Nonexistent Group"}
+
+        with pytest.raises(Exception, match="No asset group found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_asset_groups(self, mocker):
+        """Test when multiple asset groups match
+
+        Given: Mock client with multiple asset groups that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous asset group name
+        Then: Raises exception indicating multiple asset groups found
         """
-        Given: A client and args with resolved status and invalid resolve_reason
-        When: update_case_command is called
-        Then: A ValueError is raised for invalid resolve reason
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group 1"},
+                    {"XDM.ASSET_GROUP.ID": "group-789", "XDM.ASSET_GROUP.NAME": "Test Group 2"},
+                ]
+            }
+        }
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple asset groups found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Test"}
+
+        with pytest.raises(Exception, match="Multiple asset groups found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_default_values(self, mocker):
+        """Test with default day and time values
+
+        Given: Mock client with valid responses and arguments without day/time specified
+        When: core_add_assessment_profile_command is called with minimal arguments
+        Then: Uses default values for day (sunday) and time (12:00) and returns successful result
         """
-        from CortexPlatformCore import update_case_command, CaseManagement
+        from CortexPlatformCore import core_add_assessment_profile_command
 
-        client = Mock()
-        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"valid_reason": True})
+        mock_client = mocker.Mock()
 
-        args = {"case_id": "123", "status": "resolved", "resolve_reason": "invalid_reason"}
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
 
-        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
-            update_case_command(client, args)
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
 
-    def test_update_case_command_resolve_fields_without_resolved_status_raises_error(self):
-        """
-        Given: A client and args with resolve fields but non-resolved status
-        When: update_case_command is called
-        Then: A ValueError is raised for invalid field combination
-        """
-        from CortexPlatformCore import update_case_command
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
 
-        client = Mock()
-        test_cases = [
-            {"case_id": "123", "resolve_reason": "duplicate", "status": "open"},
-            {"case_id": "123", "resolve_all_alerts": "true", "status": "open"},
-            {"case_id": "123", "resolved_comment": "test comment", "status": "open"},
-        ]
+        mock_create_payload = mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
 
-        for args in test_cases:
-            with pytest.raises(ValueError, match="In order to use resolve_reason, resolve_all_alerts, or resolved_comment"):
-                update_case_command(client, args)
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+        }
 
-    def test_update_case_command_invalid_status_raises_error(self, mocker):
-        """
-        Given: A client and args with invalid status
-        When: update_case_command is called
-        Then: A ValueError is raised for invalid status
-        """
-        from CortexPlatformCore import update_case_command, CaseManagement
+        result = core_add_assessment_profile_command(mock_client, args)
 
-        client = Mock()
-        mocker.patch.object(CaseManagement, "STATUS", {"open": 1, "closed": 2})
-
-        args = {"case_id": "123", "status": "invalid_status"}
-
-        with pytest.raises(ValueError, match="Invalid status 'invalid_status'. Valid statuses are"):
-            update_case_command(client, args)
-
-    def test_update_case_command_invalid_severity_raises_error(self, mocker):
-        """
-        Given: A client and args with invalid user_defined_severity
-        When: update_case_command is called
-        Then: A ValueError is raised for invalid severity
-        """
-        from CortexPlatformCore import update_case_command, CaseManagement
-
-        client = Mock()
-        mocker.patch.object(CaseManagement, "SEVERITY", {"low": 1, "high": 2})
-
-        args = {"case_id": "123", "user_defined_severity": "invalid_severity"}
-
-        with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'. Valid severities are"):
-            update_case_command(client, args)
-
-    def test_update_case_command_no_valid_parameters_raises_error(self, mocker):
-        """
-        Given: A client and args with no valid update parameters
-        When: update_case_command is called
-        Then: A ValueError is raised for missing update parameters
-        """
-        from CortexPlatformCore import update_case_command
-
-        client = Mock()
-        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary", side_effect=lambda d: d.clear())
-
-        args = {"case_id": "123"}
-
-        with pytest.raises(ValueError, match="No valid update parameters provided for case update"):
-            update_case_command(client, args)
-
-    def test_update_case_command_multiple_cases_success(self, mocker):
-        """
-        Given: A client and args with multiple case IDs
-        When: update_case_command is called
-        Then: All cases are successfully updated and results contain case data
-        """
-        from CortexPlatformCore import update_case_command, CaseManagement
-
-        client = mocker.Mock()
-        client.update_case = mocker.Mock(side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}])
-        mocker.patch(
-            "CortexPlatformCore.process_case_response",
-            side_effect=[{"case_id": "123", "status": "open"}, {"case_id": "456", "status": "open"}],
+        mock_create_payload.assert_called_with(
+            name="Test Profile",
+            description="Test Description",
+            standard_id="std-123",
+            asset_group_id="group-456",
+            day=None,
+            time="12:00",
+            report_type="ALL",
         )
-        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
-        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
+        assert result.outputs == "profile-789"
 
-        args = {"case_id": ["123", "456"], "status": "open", "case_name": "Updated Case"}
 
-        result = update_case_command(client, args)
+class TestCoreListComplianceStandardsCommand:
+    def test_core_list_compliance_standards_command_with_empty_args(self, mocker):
+        """Test list compliance standards command with empty arguments
 
-        assert len(result.outputs) == 2
-        assert result.outputs[0]["case_id"] == "123"
-        assert result.outputs[1]["case_id"] == "456"
-        assert client.update_case.call_count == 2
-
-    def test_update_case_command_with_custom_fields(self, mocker):
+        Given: A mock client and empty arguments
+        When: core_list_compliance_standards_command is called with empty args
+        Then: Returns proper response structure with correct counts
         """
-        Given: A client and args with custom fields
-        When: update_case_command is called
-        Then: The case is updated with custom fields and result contains case data
-        """
-        from CortexPlatformCore import update_case_command
+        from CortexPlatformCore import core_list_compliance_standards_command
 
         client = mocker.Mock()
-        client.update_case = mocker.Mock(return_value={"case_id": "123"})
-        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
-        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
-        mocker.patch("CortexPlatformCore.parse_custom_fields", return_value={"field1": "value1"})
-
-        args = {"case_id": "123", "custom_fields": ["field1:value1"], "case_name": "Test Case"}
-
-        result = update_case_command(client, args)
-
-        assert result.outputs[0]["case_id"] == "123"
-        client.update_case.assert_called_once()
-
-    def test_update_case_command_resolved_with_valid_reason(self, mocker):
-        """
-        Given: A client and args with resolved status and valid resolve reason
-        When: update_case_command is called
-        Then: The case is resolved successfully with all resolve fields
-        """
-        from CortexPlatformCore import update_case_command, CaseManagement
-
-        client = mocker.Mock()
-        client.update_case = mocker.Mock(return_value={"case_id": "123", "status": "resolved"})
-        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123", "status": "resolved"})
-        mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
-        mocker.patch.object(CaseManagement, "STATUS", {"resolved": 3})
-        mocker.patch.object(CaseManagement, "STATUS_RESOLVED_REASON", {"duplicate": True})
-
-        args = {
-            "case_id": "123",
-            "status": "resolved",
-            "resolve_reason": "duplicate",
-            "resolved_comment": "This is a duplicate case",
-            "resolve_all_alerts": "true",
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["label1", "label2"],
+                    }
+                ],
+                "result_count": 1,
+            }
         }
+        client.list_compliance_standards_command.return_value = mock_response
 
-        result = update_case_command(client, args)
+        result = core_list_compliance_standards_command(client, {})
 
-        assert result.outputs[0]["case_id"] == "123"
-        client.update_case.assert_called_once()
+        assert len(result) == 2
+        assert result[0].outputs_prefix == "Core.ComplianceStandards"
+        assert result[1].outputs["filtered_count"] == 1
+        assert result[1].outputs["returned_count"] == 1
 
-    def test_update_case_command_payload_construction(self, mocker):
+    def test_core_list_compliance_standards_command_with_empty_standards_list(self, mocker):
+        """Test handling of empty standards list
+
+        Given: A mock client returning empty standards list
+        When: core_list_compliance_standards_command is called
+        Then: Returns empty outputs with zero counts
         """
-        Given: A client and args with various update fields
-        When: update_case_command is called
-        Then: The payload is constructed correctly with all mapped fields
-        """
-        from CortexPlatformCore import update_case_command, CaseManagement
+        from CortexPlatformCore import core_list_compliance_standards_command
 
         client = mocker.Mock()
-        client.update_case = mocker.Mock(return_value={"case_id": "123"})
-        mocker.patch("CortexPlatformCore.process_case_response", return_value={"case_id": "123"})
-        remove_nulls_mock = mocker.patch("CortexPlatformCore.remove_nulls_from_dictionary")
-        mocker.patch.object(CaseManagement, "STATUS", {"open": 1})
-        mocker.patch.object(CaseManagement, "SEVERITY", {"high": 2})
+        mock_response = {"reply": {"standards": [], "result_count": 0}}
+        client.list_compliance_standards_command.return_value = mock_response
 
-        args = {
-            "case_id": "123",
-            "case_name": "Test Case",
-            "status": "open",
-            "user_defined_severity": "high",
-            "assignee": "user@example.com",
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs == []
+        assert result[1].outputs["filtered_count"] == 0
+        assert result[1].outputs["returned_count"] == 0
+
+    def test_core_list_compliance_standards_command_multiple_standards(self, mocker):
+        """Test handling of multiple compliance standards
+
+        Given: A mock client returning multiple standards
+        When: core_list_compliance_standards_command is called
+        Then: Returns all standards with correct control counts and metadata
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard 1",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 2,
+                        "labels": ["lbl1"],
+                    },
+                    {
+                        "id": "std2",
+                        "name": "Standard 2",
+                        "description": "Test standard 2",
+                        "controls_ids": ["ctrl3"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["lbl2", "lbl3"],
+                    },
+                ],
+                "result_count": 2,
+            }
         }
+        client.list_compliance_standards_command.return_value = mock_response
 
-        update_case_command(client, args)
+        result = core_list_compliance_standards_command(client, {})
 
-        remove_nulls_mock.assert_called_once()
-        call_args = client.update_case.call_args[0]
-        payload = call_args[0]
-
-        assert payload["caseName"] == "Test Case"
-        assert payload["status"] == 1
-        assert payload["userSeverity"] == 2
-        assert payload["assignedUser"] == "user@example.com"
+        assert len(result[0].outputs) == 2
+        assert result[0].outputs[0]["id"] == "std1"
+        assert result[0].outputs[0]["controls_count"] == 2
+        assert result[0].outputs[1]["id"] == "std2"
+        assert result[0].outputs[1]["controls_count"] == 1
+        assert result[1].outputs["returned_count"] == 2
 
 
 def test_run_script_agentix_command_both_script_uid_and_name_provided():
@@ -8084,6 +8150,473 @@ def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
     assert len(result.outputs) == 50
 
 
+def test_update_case_command_single_case_basic_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with single case_id and basic update fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with provided fields and returns proper CommandResults.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Case Name",
+        "description": "Updated description",
+        "notes": "Case notes",
+    }
+
+    result = update_case_command(client, args)
+
+    assert result.outputs_prefix == "Core.Case"
+    assert result.outputs_key_field == "case_id"
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Updated Case Name"
+    assert call_args["description"] == "Updated description"
+    assert call_args["notes"] == "Case notes"
+
+
+def test_update_case_command_bulk_update_allowed_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and bulk-allowed fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "user_defined_severity": "high",
+        "starred": "true",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["severity"] == "SEV_040_HIGH"
+    assert call_args[0]["starred"] is True
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_bulk_update_assignee_unassigned(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and assignee='unassigned'.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed with assignee set to None and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "assignee": "unassigned",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["assignedUser"] is None
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and valid resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with resolved status and reason.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+        "resolved_comment": "This was a false alarm",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_060_RESOLVED_FALSE_POSITIVE"
+    assert call_args["caseResolvedComment"] == "This was a false alarm"
+
+
+def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved but no resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating resolve_reason is required.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+    }
+
+    with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_resolve_reason_without_resolved_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_reason but status is not resolved.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating status must be resolved.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "new",
+        "resolve_reason": "false_positive",
+    }
+
+    with pytest.raises(ValueError, match="the case status must be set to 'resolved'."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid status.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "invalid_status",
+    }
+
+    with pytest.raises(ValueError, match="Invalid status 'invalid_status'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid user_defined_severity value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid severity.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "user_defined_severity": "invalid_severity",
+    }
+
+    with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only case_id (no update fields).
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating no valid update parameters.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {"case_id": "123"}
+
+    with pytest.raises(ValueError, match="No valid update parameters provided."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_non_bulk_fields_trigger_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with fields not allowed in bulk update.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual update is performed instead of bulk update.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Name",
+        "notes": "Some notes",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_resolved_status_not_allowed_in_bulk(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved for multiple cases.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual updates are performed (bulk not allowed for resolved status).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+    }
+
+    update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_multiple_cases_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids requiring individual updates.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        update_case is called for each case individually.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(
+        client,
+        "update_case",
+        side_effect=[{"reply": {"caseId": "123"}}, {"reply": {"caseId": "456"}}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "description": "Updated description",
+    }
+
+    result = update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_empty_string_fields_filtered(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty string values.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Empty string fields are filtered out from the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Valid Name",
+        "description": "",
+        "notes": "",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Valid Name"
+    assert "description" not in call_args
+    assert "notes" not in call_args
+
+
+def test_update_case_command_repackage_to_update_case_format(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance performing bulk update that returns raw case data.
+    WHEN:
+        The update_case_command function processes the response.
+    THEN:
+        Raw case data is properly repackaged to update case format.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "bulk_update_case")
+    raw_case_data = {
+        "CASE_ID": 123,
+        "NAME": "Test Case",
+        "STATUS_PROGRESS": "STATUS_010_NEW",
+        "SEVERITY": "SEV_040_HIGH",
+        "ASSIGNED_USER": "user@example.com",
+        "ASSIGNED_USER_PRETTY": "User Name",
+        "CREATION_TIME": 1640000000000,
+        "LAST_UPDATE_TIME": 1640100000000,
+        "INCIDENT_DOMAIN": "Security",
+        "CASE_STARRED": True,
+        "CURRENT_TAGS": [{"tag_name": "DOM:Security"}],
+        "CASE_GROUPING_STATUS": "GROUPING_STATUS_010_ENABLED",
+    }
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": [raw_case_data]}},
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "starred": "false",
+    }
+
+    result = update_case_command(client, args)
+
+    assert len(result.outputs) == 1
+    output = result.outputs[0]
+    assert output["id"] == "123"
+    assert output["name"]["value"] == "Test Case"
+    assert output["status"]["value"] == "STATUS_010_NEW"
+    assert output["severity"] == "SEV_040_HIGH"
+
+
+def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_all_alerts.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        resolve_all_alerts is included in the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+        "resolve_all_alerts": "true",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["resolve_all_alerts"] == "true"
+
+
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:
@@ -8255,31 +8788,148 @@ def test_start_xql_query_platform(mocker):
     assert call_args[1]["ok_codes"] == [200]
 
 
-def test_start_xql_query_platform_adds_limit(mocker):
+def test_handle_xql_limit_adds_limit_when_missing():
     """
     Given:
-    - A query without a limit clause.
+    - A complex query without a limit clause, containing edge cases like:
+      - "limit" keyword inside comments (block and line comments)
+      - "limit" keyword inside quoted strings (single and double quotes)
+      - Field names containing "limit"
+      - Numeric values that could be confused with limit values
 
     When:
-    - Calling start_xql_query_platform function.
+    - Calling handle_xql_limit function with max_limit=1000.
 
     Then:
-    - Ensure a default limit is added.
+    - Ensure a default limit is added at the end of the query.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
     """
-    from CortexPlatformCore import start_xql_query_platform, Client
+    from CortexPlatformCore import handle_xql_limit
 
-    client = Client(base_url="", headers={})
-    query = "dataset = xdr_data | fields *"
-    timeframe = {"relativeTime": 86400000}
-    mock_execution_id = "test_execution_id_456"
+    MAX_LIMIT = 1000
+    query = """dataset = xdr_data
+// "limit 10" - this limit is in a line comment, should be ignored
+| filter action_process_command_line contains "echo | limit speed"
+| filter description = 'set limit 999 for testing'
+/*
+   Block comment with limit 500 inside.
+   This should also be ignored by the parser.
+*/
+| alter
+    my_limit_field = 5000,
+    rate_limit_threshold = 100
+| filter action_file_name ~= "limit.exe"
+| filter message != "limit 200 exceeded"
+| sort asc _time
+// Final comment mentioning limit 300"""
 
-    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
 
-    start_xql_query_platform(client, query, timeframe)
+    assert result == f"{query}\n| limit {MAX_LIMIT}"
 
-    call_args = mock_http_request.call_args
-    submitted_query = call_args[1]["json_data"]["query"]
-    assert "| limit 1000" in submitted_query
+
+def test_handle_xql_limit_valid_limits_unchanged():
+    """
+    Given:
+    - A complex query with valid limit clauses (within max_limit of 1000), containing edge cases like:
+      - Multiple limit clauses at different positions
+      - "limit" keyword inside comments and quotes (should be ignored)
+      - Limit values at boundary (exactly 1000)
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure the query is NOT modified since all limits are within the allowed maximum.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Starting the investigation
+   Note: limit 9999 in this comment should be ignored
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // filtering for processes, limit 8888 ignored
+| limit 500 /* This is a valid limit within max,
+    should NOT be modified!
+*/
+| filter description contains "limit 7777 test"
+| filter name = 'limit 6666 value'
+| sort desc _time
+| fields agent_hostname,
+         action_process_image_name,
+         action_process_command_line
+| limit 1000
+// End of query with limit 5555 in comment"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == query
+
+
+def test_handle_xql_limit_excessive_limits_modified():
+    """
+    Given:
+    - A complex query with multiple limit clauses that exceed max_limit (1000), containing edge cases like:
+      - Multiple excessive limits at different positions in the query
+      - "limit" keyword with excessive values inside comments and quotes (should be ignored)
+      - Mix of valid and excessive limits
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure ALL excessive limit values are replaced with max_limit (1000).
+    - Ensure valid limits (within max) are NOT modified.
+    - Ensure "limit" keywords inside comments and quotes are NOT modified.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit 5000 /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 2000 // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   3000 | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    expected_query = f"""/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit {MAX_LIMIT} /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit {MAX_LIMIT} // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   {MAX_LIMIT} | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == expected_query
 
 
 def test_get_xql_query_results_platform_success(mocker):
