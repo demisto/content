@@ -48,6 +48,35 @@ def test_extract_indicators_empty_file(mocker):
             pytest.fail()
 
 
+def test_extract_indicators_utf_16_bom_characters(mocker):
+    """
+    Given:
+        A file containing text that starts with UTF-16 BOM.
+
+    When:
+        Running script on file
+
+    Then:
+        Validate an exception is caught and the scripts runs successfully.
+    """
+    mocker.patch("ReadFile.execute_command", return_value={"path": "./test_data/test_utf16_bom_file.txt"})
+
+    mocker.patch.object(demisto, "results")
+    warning_mock = mocker.patch.object(demisto, "info")
+
+    read_file({})
+    results = demisto.results.call_args[0][0]
+    assert results
+    assert "��T" in results.get("Contents").get("FileData")
+
+    warning_mock.assert_called_once()
+
+    # Optional: validate warning content
+    warning_msg = warning_mock.call_args[0][0]
+    assert "failed to decode bytes" in warning_msg
+    assert "ff" in warning_msg.lower()  # UTF-16 BOM
+
+
 def test_read_binary_to_raw_decode_error(mocker):
     """
     Given:
