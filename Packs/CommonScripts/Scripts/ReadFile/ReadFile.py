@@ -40,34 +40,35 @@ def read_file(args):
         data = raw
     else:
         try:
-            data = raw.decode(input_encoding)
+            data = raw.decode(input_encoding)  # type: ignore[assignment]
         except UnicodeDecodeError as e:
             # ---- extract bad bytes ----
-            bad_bytes = raw[e.start:e.end]
+            bad_bytes = raw[e.start : e.end]
             bad_hex = bad_bytes.hex()
             bad_repr = repr(bad_bytes)
 
             # ---- warning ----
-            demisto.info(f"Warning: failed to decode bytes at positions {e.start}-{e.end} using encoding '{input_encoding}'."
-                         f" Bytes (hex)={bad_hex}, repr={bad_repr}"
+            demisto.info(
+                f"Warning: failed to decode bytes at positions {e.start}-{e.end} using encoding '{input_encoding}'."
+                f" Bytes (hex)={bad_hex}, repr={bad_repr}"
             )
 
             # ---- safe fallback decode ----
-            data = raw.decode(input_encoding, errors="replace")
+            data = raw.decode(input_encoding, errors="replace")  # type: ignore[assignment]
 
     # output handling
     if output_data_type == "raw":
         if isinstance(data, bytes):
-            data = data.decode("utf-8", errors="replace")
+            data = data.decode("utf-8", errors="replace")  # type: ignore[assignment]
 
     elif output_data_type == "base64":
         if isinstance(data, str):
             data = data.encode(input_encoding or "utf-8")
-        data = base64.b64encode(data).decode()
+        data = base64.b64encode(data).decode()  # type: ignore[assignment]
 
     elif output_data_type == "json":
         if isinstance(data, bytes):
-            data = data.decode("utf-8", errors="replace")
+            data = data.decode("utf-8", errors="replace")  # type: ignore[assignment]
         data = json.loads(data)
 
     else:
