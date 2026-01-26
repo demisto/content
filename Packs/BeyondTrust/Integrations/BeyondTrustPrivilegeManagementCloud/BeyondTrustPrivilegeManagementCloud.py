@@ -51,9 +51,7 @@ class Client(BaseClient):
         demisto.debug(f"{INTEGRATION_NAME}: Full token URL: {full_url}")
 
         try:
-            response = self._http_request(
-                method="POST", url_suffix=token_url, data=data, headers=headers, resp_type="json"
-            )
+            response = self._http_request(method="POST", url_suffix=token_url, data=data, headers=headers, resp_type="json")
             demisto.debug(f"{INTEGRATION_NAME}: Token request successful")
             return response.get("access_token")
         except Exception as e:
@@ -243,8 +241,7 @@ def fetch_pm_events(
         tuple[dict, list[dict]]: The updated run context and the fetched events.
     """
     demisto.debug(
-        f"{INTEGRATION_NAME}: Starting fetch_pm_events. "
-        f"last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}"
+        f"{INTEGRATION_NAME}: Starting fetch_pm_events. " f"last_run={last_run}, first_fetch={first_fetch}, max_fetch={max_fetch}"
     )
     next_run = last_run.copy()
     last_event_time_str = last_run.get("last_event_time")
@@ -347,8 +344,7 @@ def fetch_activity_audits(
         fetched_audits_list.extend(fetched_audits)
         total_fetched_audits += len(fetched_audits)
         demisto.debug(
-            f"{INTEGRATION_NAME}: Fetched {len(fetched_audits)} audits in this page. "
-            f"Total so far: {total_fetched_audits}"
+            f"{INTEGRATION_NAME}: Fetched {len(fetched_audits)} audits in this page. " f"Total so far: {total_fetched_audits}"
         )
         if fetched_audits:
             demisto.debug(f"{INTEGRATION_NAME}: Sample audit from page {page_number} (first): {fetched_audits[0]}")
