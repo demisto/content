@@ -44,27 +44,40 @@ jobs:
             PR_NUMBER="${{ github.event.pull_request.number }}"
           fi
           
-          # --- 2. CHECKOUT BRANCH ---
+          # --- 2. GET BRANCH ---
           PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
+          
+          if [[ -z "$PR_BRANCH" ]]; then
+             echo "❌ Error: Could not find branch name."
+             exit 1
+          fi
+
+          echo "✅ Target Branch: $PR_BRANCH"
+
+          # --- 3. CHECKOUT & NUKE DEFAULT CONFIG ---
           git fetch origin "$PR_BRANCH"
           git checkout "$PR_BRANCH"
 
-          # --- 3. CONFIG USER ---
+          # 🔥 CRITICAL STEP: Remove the default token headers that block the push
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git config --global --unset-all http.https://github.com/.extraheader || true
+
+          # 🔥 CRITICAL STEP: Force 'origin' to use your PAT
+          git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${REPO}.git"
+
+          # --- 4. CONFIG USER ---
           git config --global user.email "devtestdemisto@paloaltonetworks.com"
           git config --global user.name "Content Bot"
           
-          # --- 4. EXECUTE ACTIONS ---
+          # --- 5. ACTION ---
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
           
-          # We use --allow-empty because you confirmed it works locally.
-          # If this still fails, we will revert to touching a file.
-          git commit --allow-empty -m "Trigger AI Reviewer" || echo "Nothing to commit"
+          # --- 6. REAL COMMIT (To bypass empty-commit filters) ---
+          date > .ai-review-trigger
+          git add .ai-review-trigger
+          git commit -m "Trigger AI Reviewer [skip ci]" || echo "Nothing to commit"
 
-          # --- 5. CRITICAL FIX: UNSET THE DEFAULT HEADER ---
-          # This deletes the default token config so Git MUST use your PAT.
-          git config --global --unset http.https://github.com/.extraheader || true
-
-          # --- 6. PUSH ---
-          echo "⬆️ Pushing to $PR_BRANCH using PAT..."
-          git push "https://${GITHUB_TOKEN}@github.com/${REPO}.git" HEAD:refs/heads/"$PR_BRANCH"
-     
+          # --- 7. PUSH ---
+          # Now we can just push to origin, because origin IS the PAT.
+          echo "⬆️ Pushing to $PR_BRANCH..."
+          git push origin HEAD:refs/heads/"$PR_BRANCH"
