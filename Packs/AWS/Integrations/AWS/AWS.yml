@@ -1809,6 +1809,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: vpc_security_group_ids
+      description: "A list of Amazon EC2 VPC security groups to associate with this DB instance. This setting doesn’t apply to the following DB instances: Amazon Aurora, RDS Custom."
+      required: false
 
   - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
     description: This action will disable public access for AWS RDS database instance by modifying the instance settings.

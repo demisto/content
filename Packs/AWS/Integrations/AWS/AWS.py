@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+#from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -2812,6 +2812,7 @@ class RDS:
                 "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
                 if args.get("backup_retention_period")
                 else None,
+                "VpcSecurityGroupIds": argToList(args.get("vpc_security_group_ids")),
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
