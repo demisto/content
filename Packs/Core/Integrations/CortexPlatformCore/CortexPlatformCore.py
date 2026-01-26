@@ -6,6 +6,7 @@ from CoreIRApiModule import *
 import dateparser
 import copy
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -70,7 +71,7 @@ WEBAPP_COMMANDS = [
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -897,6 +898,18 @@ class Client(CoreClient):
             url_suffix="/rbac/get_users",
         )
 
+        return reply
+
+    def get_case_resolution_statuses(self, case_id: str) -> dict:
+        reply = self._http_request(
+            method="GET",
+            json_data={},
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            url_suffix=f"case/{case_id}/resolution-plan/tasks",
+        )
         return reply
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
@@ -4349,6 +4362,63 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
+    if related_pb:
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
+
+
+def postprocess_case_resolution_statuses(client, response: dict):
+    response = copy.deepcopy(response)
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
+
+            all_items.append(task)
+
+    return all_items
+
+
+def get_case_resolution_statuses(client, args):
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
+
+
+def verify_platform_version(version: str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4495,10 +4565,12 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
+        elif command == "core-get-case-resolution-statuses":
+            verify_platform_version()
+            return_results(get_case_resolution_statuses(client, args))
 
+        elif command == "core-xql-generic-query-platform":
+            verify_platform_version()
             return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
