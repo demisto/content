@@ -249,9 +249,9 @@ call esxi_event_classification
     source_ip = arrayindex(regextract(msg, "user\s+\w+\s+from\s+\[(.+)?\]"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.user.username = user_name,
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
@@ -306,9 +306,9 @@ call esxi_event_classification
     outcome_reason = arrayindex(regextract(msg, "((?i:rejected|accepted).+)"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = coalesce(server_name, parsed_fields -> hostname),
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = coalesce(server_name, parsed_fields -> hostname),
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip, is_ipv4(source_ipv4) = TRUE, source_ipv4),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip, is_ipv6(source_ipv6) = TRUE, source_ipv6),
     xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip), is_known_private_ipv4(source_ipv4) = TRUE, arraycreate(source_ipv4)),
@@ -338,9 +338,9 @@ call esxi_event_classification
     source_port = arrayindex(regextract(msg, "\(.+\:(\d+)"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
     xdm.source.host.ipv4_addresses = if(is_known_private_ipv4(source_ip) = TRUE, arraycreate(source_ip)),
@@ -366,9 +366,9 @@ call esxi_event_classification
     protocol = arrayindex(regextract(msg, "port\s+\d+\s+(\w+)"),0)
 
 | alter // Map XDM mapping
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.user.username = user_name,
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
@@ -429,9 +429,9 @@ call esxi_event_classification
     session_id = arrayindex(regextract(msg, "session\=(\S+)"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.user.username = user_name,
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
@@ -458,9 +458,9 @@ call esxi_event_classification
     outcome_reason = arrayindex(regextract(msg, "Event\s+\d+\s+\:\s+(User.+)"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_integer(pid),
     xdm.source.user.username = user_name,
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
@@ -488,9 +488,9 @@ call esxi_event_classification
     reason = arrayindex(regextract(msg, "login.+\@\S+\:\s+(.+)"),0)
 
 | alter // Map to XDM
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = coalesce(process_name2, process_name1),
-    xdm.source.process.pid = coalesce(to_integer(pid2),to_integer(pid1)),
+    xdm.target.host.hostname = parsed_fields -> hostname,
+    xdm.target.process.name = coalesce(process_name2, process_name1),
+    xdm.target.process.pid = coalesce(to_integer(pid2),to_integer(pid1)),
     xdm.source.user.username = user_name,
     xdm.source.ipv4 = if(is_ipv4(source_ip) = TRUE, source_ip),
     xdm.source.ipv6 = if(is_ipv6(source_ip) = TRUE, source_ip),
