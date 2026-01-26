@@ -672,7 +672,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
         creation_time = get_created_time(events)
         message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
         message.pop("events")
-        incident = {"name": message.get("subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
+        incident = {"dbotMirrorId": message.get("id"), "name": message.get(
+            "subject"), "occurred": message.get("created at"), "rawJSON": json.dumps(message)}
 
         # Update last run and add incident if the incident is newer than last fetch
         last_time = message["created at"]
