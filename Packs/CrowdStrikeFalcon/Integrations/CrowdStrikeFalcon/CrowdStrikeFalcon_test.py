@@ -8333,31 +8333,6 @@ def test_get_cases_details(mocker):
     http_request_mock.assert_called_with("POST", "/cases/entities/cases/v2", data=json.dumps({"ids": ["case1"]}))
 
 
-@pytest.mark.parametrize("status, expected_exception", [("new", False), ("invalid_status", True)])
-def test_update_ngsiem_case_request(mocker, status, expected_exception):
-    """
-    Given:
-        - Case ID and status.
-    When:
-        - Running update_ngsiem_case_request.
-    Then:
-        - Verify that the http_request is called with the correct arguments if status is valid.
-        - Verify that DemistoException is raised if status is invalid.
-    """
-    from CrowdStrikeFalcon import update_ngsiem_case_request
-
-    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request")
-
-    if expected_exception:
-        with pytest.raises(DemistoException):
-            update_ngsiem_case_request("case1", status)
-    else:
-        update_ngsiem_case_request("case1", status)
-        http_request_mock.assert_called_with(
-            "PATCH", "/cases/entities/cases/v2", data=json.dumps({"fields": {"status": status}, "id": "case1"})
-        )
-
-
 def test_get_remote_ngsiem_case_data(mocker):
     """
     Given:
@@ -8557,8 +8532,50 @@ def test_get_evidences_for_case_command(requests_mock, mocker):
     response_data = load_json("test_data/get_evidences_for_case_response.json")
     requests_mock.post(f"{SERVER_URL}/cases/entities/cases/v2", json=response_data)
     mocker.patch.object(demisto, "args", return_value={"id": "case_id_1"})
-
     result = get_evidences_for_case_command({"id": "case_id_1"})
-    
+
     assert result.outputs == response_data["resources"][0]["evidence"]
-    
+
+
+def test_resolve_case_command(requests_mock):
+    """
+    Given:
+        - Case ID and fields to update.
+    When:
+        - Running resolve_case_command.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct readable output.
+    """
+    from CrowdStrikeFalcon import resolve_case_command
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={})
+
+    # Test case 1: Update status and description
+    args = {"id": "case1", "status": "in_progress", "description": "investigating"}
+    result = resolve_case_command(args)
+    assert "Case case1 was changed successfully" in result.readable_output
+    assert "Status" in result.readable_output
+    assert "Description" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"status": "in_progress", "description": "investigating"},
+    }
+
+    # Test case 2: Remove user assignment
+    args = {"id": "case1", "remove_user_assignment": "true"}
+    result = resolve_case_command(args)
+    assert "Assigned To UUID" in result.readable_output
+    assert "Unassigned" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"assigned_to_uuid": ""},
+    }
+
+    # Test case 3: Invalid severity
+    with pytest.raises(ValueError, match="Severity must be an integer between 10 and 100"):
+        resolve_case_command({"id": "case1", "severity": "5"})
+
+    # Test case 4: Missing ID
+    with pytest.raises(ValueError, match="The 'id' argument is required"):
+        resolve_case_command({"status": "new"})

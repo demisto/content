@@ -2418,23 +2418,6 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     )
 
 
-def update_ngsiem_case_request(id: str, status: str) -> dict:
-    """
-    Updates a NGSIEM case status
-    :param id: The case ID to update
-    :param status: The new status
-    :return: The response
-    """
-    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
-    if status not in list_of_stats:
-        raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-
-    demisto.debug(f"Updating remote ngsiem case with {id=} and {status=}")
-    payload = {"fields": {"status": status}, "id": id}
-
-    return http_request("PATCH", "/cases/entities/cases/v2", data=json.dumps(payload))
-
-
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
     """
     Manage the status to send to update to for IDP/Mobile detections.
@@ -3082,9 +3065,9 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(update_ngsiem_case_request(remote_id, "closed"))
+        return str(resolve_case(remote_id, status="closed"))
     elif "status" in delta:
-        return str(update_ngsiem_case_request(remote_id, delta.get("status")))
+        return str(resolve_case(remote_id, status=delta.get("status")))
     return ""
 
 
@@ -6095,6 +6078,103 @@ def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output="Tags were deleted successfully.")
 
 
+def resolve_case(
+    case_id: str,
+    status: str | None = None,
+    name: str | None = None,
+    assigned_to_uuid: str | None = None,
+    description: str | None = None,
+    remove_user_assignment: bool = False,
+    severity: int | None = None,
+    template_id: str | None = None,
+) -> dict:
+    """
+    Updates a specific case object using PATCH /cases/entities/cases/v2.
+
+    Args:
+        case_id (str): The ID of the case to patch.
+        status (str | None): The status to set for the case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
+        description (str | None): A new description for the case.
+        remove_user_assignment (bool): Whether to remove case assignment from current user.
+        severity (int | None): The new case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the case.
+
+    Returns:
+        dict: The response from the API.
+    """
+    fields = {}
+    if status:
+        fields["status"] = status
+    if name:
+        fields["name"] = name
+    if assigned_to_uuid:
+        fields["assigned_to_user_uuid"] = assigned_to_uuid
+    if description:
+        fields["description"] = description
+    if severity:
+        fields["severity"] = severity
+    if template_id:
+        fields["template"]= {"id": template_id}
+    if remove_user_assignment:
+        fields["remove_user_assignment"] = remove_user_assignment
+
+    payload = {"id": case_id, "fields": fields}
+    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+
+
+def resolve_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Command function for cs-falcon-resolve-case.
+    """
+    case_id = args.get("id")
+    status = args.get("status")
+    name = args.get("name")
+    assigned_to_uuid = args.get("assigned_to_uuid")
+    description = args.get("description")
+    remove_user_assignment = argToBoolean(args.get("remove_user_assignment", False))
+    severity = arg_to_number(args.get("severity"))
+    template_id = args.get("template_id")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    if severity is not None and not (10 <= severity <= 100):
+        raise ValueError("Severity must be an integer between 10 and 100.")
+
+    resolve_case(
+        case_id=case_id,
+        status=status,
+        name=name,
+        assigned_to_uuid=assigned_to_uuid,
+        description=description,
+        remove_user_assignment=remove_user_assignment,
+        severity=severity,
+        template_id=template_id,
+    )
+
+    changed_fields = {"ID": case_id}
+    if status:
+        changed_fields["Status"] = status
+    if name:
+        changed_fields["Name"] = name
+    if assigned_to_uuid:
+        changed_fields["Assigned To UUID"] = assigned_to_uuid
+    if description:
+        changed_fields["Description"] = description
+    if severity:
+        changed_fields["Severity"] = severity
+    if template_id:
+        changed_fields["Template ID"] = template_id
+    if remove_user_assignment:
+        changed_fields["Assigned To UUID"] = "Unassigned"
+
+    readable_output = f"Case {case_id} was changed successfully"
+    table = tableToMarkdown("", changed_fields, headers=list(changed_fields.keys()))
+
+    return CommandResults(readable_output=f"{readable_output}\n{table}")
+
+
 def create_host_group_command(
     name: str, group_type: str | None = None, description: str | None = None, assignment_rule: str | None = None
 ) -> CommandResults:
@@ -8488,6 +8568,8 @@ def main():  # pragma: no cover
             return_results(add_case_tags_command(args))
         elif command == "cs-falcon-delete-case-tag":
             return_results(delete_case_tags_command(args))
+        elif command == "cs-falcon-resolve-case":
+            return_results(resolve_case_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
