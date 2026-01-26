@@ -131,6 +131,10 @@
       "workload_information": {
         "type": "string",
         "is_array": false
+      },
+      "bluefield_system_information": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
