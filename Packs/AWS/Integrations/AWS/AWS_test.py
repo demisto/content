@@ -7791,6 +7791,7 @@ def test_ec2_image_available_waiter_command_waiter_error(mocker):
     with pytest.raises(DemistoException, match="Waiter error:"):
         EC2.image_available_waiter_command(mock_client, args)
 
+
 def test_ec2_monitor_instances_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client and valid instance IDs.
