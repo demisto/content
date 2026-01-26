@@ -25,7 +25,7 @@ DEFAULT_FIRST_FETCH = "7 days"
 AUTH_ENDPOINT = "v1/auth"
 GRAPHQL_ENDPOINT = "v1/graphql"
 
-HELLO_WORLD_QUERY = 'query HelloWorld { hello }'
+HELLO_WORLD_QUERY = "query HelloWorld { hello }"
 
 WEAKNESSES_PAGE_QUERY = """
 query WeaknessesPage($page_input: PageInput!) {
@@ -77,7 +77,7 @@ class Token(BaseModel):
 class Incident(TypedDict):
     name: str
     occurred: str
-    rawJSON: str  
+    rawJSON: str
     dbotMirrorId: str
 
 
@@ -160,7 +160,6 @@ HTTPError: TypeAlias = requests.HTTPError
 
 
 class Client(BaseClient):
-
     def __init__(
         self,
         base_url: str,
