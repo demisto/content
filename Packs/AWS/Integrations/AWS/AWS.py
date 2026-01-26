@@ -3225,8 +3225,10 @@ class EC2:
         if volume_ids := args.get("volume_ids"):
             kwargs["VolumeIds"] = argToList(volume_ids)
 
-        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
-        kwargs.update(pagination_kwargs)
+        if not volume_ids:
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
         response = client.describe_volumes(**kwargs)
@@ -3297,7 +3299,26 @@ class EC2:
 
         response = serialize_response_with_datetime_encoding(response)
         volume_modification = response.get("VolumeModification", {})
+        outputs = {
+            "VolumeId": volume_modification.get("VolumeId"),
+            "Size": volume_modification.get("TargetSize"),
+            "Iops": volume_modification.get("TargetIops"),
+            "VolumeType": volume_modification.get("TargetVolumeType"),
+            "Throughput": volume_modification.get("TargetThroughput"),
+            "MultiAttachEnabled": volume_modification.get("TargetMultiAttachEnabled"),
+            "Modification": {
+                "Progress": volume_modification.get("Progress"),
+                "StartTime": volume_modification.get("StartTime"),
+                "EndTime": volume_modification.get("EndTime"),
+                "ModificationState": volume_modification.get("ModificationState"),
+                "OriginalSize": volume_modification.get("OriginalSize"),
+                "OriginalIops": volume_modification.get("OriginalIops"),
+                "OriginalVolumeType": volume_modification.get("OriginalVolumeType"),
+                "OriginalThroughput": volume_modification.get("OriginalThroughput"),
+                "OriginalMultiAttachEnabled": volume_modification.get("OriginalMultiAttachEnabled"),
+            }
 
+        }
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Modification",
             [volume_modification],
@@ -3319,7 +3340,7 @@ class EC2:
         return CommandResults(
             outputs_prefix="AWS.EC2.Volumes",
             outputs_key_field="VolumeId",
-            outputs={"Modification": volume_modification, "VolumeId": volume_modification.get("VolumeId")},
+            outputs=outputs,
             readable_output=readable_output,
             raw_response=response,
         )
@@ -3381,9 +3402,10 @@ class EC2:
 
         response = serialize_response_with_datetime_encoding(response)
 
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         readable_output = tableToMarkdown(
             "AWS EC2 Volumes",
-            [response],
+            [outputs],
             headers=["AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "VolumeId", "Iops", "VolumeType"],
             removeNull=True,
         )
@@ -3391,7 +3413,7 @@ class EC2:
         return CommandResults(
             outputs_prefix="AWS.EC2.Volumes",
             outputs_key_field="VolumeId",
-            outputs=response,
+            outputs=outputs,
             readable_output=readable_output,
             raw_response=response,
         )

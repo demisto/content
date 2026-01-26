@@ -8275,7 +8275,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: One or more filters separated by ';'. See AWS documentation for details & filter options.
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       required: false
     - name: volume_ids
       description: A comma-separated list of volume IDs.
@@ -8433,7 +8433,7 @@ script:
       - 'true'
       - 'false'
     outputs:
-    - contextPath: AWS.EC2.Volumes.Modification.VolumeId
+    - contextPath: AWS.EC2.Volumes.VolumeId
       description: The ID of the volume.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.ModificationState
@@ -8442,19 +8442,19 @@ script:
     - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
       description: A status message about the modification progress or failure.
       type: string
-    - contextPath: AWS.EC2.Volumes.Modification.TargetSize
+    - contextPath: AWS.EC2.Volumes.Size
       description: The target size of the volume, in GiB.
       type: number
-    - contextPath: AWS.EC2.Volumes.Modification.TargetIops
+    - contextPath: AWS.EC2.Volumes.Iops
       description: The target IOPS rate of the volume.
       type: number
-    - contextPath: AWS.EC2.Volumes.Modification.TargetVolumeType
+    - contextPath: AWS.EC2.Volumes.VolumeType
       description: The target EBS volume type of the volume.
       type: string
-    - contextPath: AWS.EC2.Volumes.Modification.TargetThroughput
+    - contextPath: AWS.EC2.Volumes.Throughput
       description: The target throughput of the volume, in MiB/s.
       type: number
-    - contextPath: AWS.EC2.Volumes.Modification.TargetMultiAttachEnabled
+    - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
       description: The target setting for Amazon EBS Multi-Attach.
       type: boolean
     - contextPath: AWS.EC2.Volumes.Modification.OriginalSize
@@ -8708,6 +8708,9 @@ script:
       description: The ID of the EBS volume. The volume and instance must be within the same Availability Zone.
       required: true
     outputs:
+    - contextPath: AWS.EC2.Volumes.VolumeId
+      description: The ID of the volume.
+      type: string
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
       description: The time stamp when the attachment initiated.
       type: date
@@ -8796,6 +8799,9 @@ script:
       description: The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID.
       required: false
     outputs:
+    - contextPath: AWS.EC2.Volumes.VolumeId
+      description: The ID of the volume.
+      type: string
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
       description: The time stamp when the attachment initiated.
       type: date
