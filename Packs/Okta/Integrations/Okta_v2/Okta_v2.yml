@@ -384,7 +384,7 @@ script:
     - contextPath: Okta.Metadata.x-rate-limit-reset
       description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
       type: Number
-    - contextPath: Okta.PollingURL
+    - contextPath: Okta.PollingStatusURL
       description: The polling URL for the push factor challenge.
       type: String
     compliantpolicies:

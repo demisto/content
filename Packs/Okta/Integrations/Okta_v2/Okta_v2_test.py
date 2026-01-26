@@ -873,7 +873,8 @@ def test_verify_push_factor_command_no_polling(mocker):
     readable, outputs, raw_response = verify_push_factor_command(client, args)
 
     assert (
-        outputs.get("Okta.PollingURL(true)") == "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"
+        outputs.get("Okta.PollingStatusURL(true)")
+        == "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"
     )
     assert "Push factor challenge has been initiated. To check the push factor challenge status" in readable
     mock_poll.assert_not_called()

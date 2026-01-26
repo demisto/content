@@ -551,7 +551,7 @@ Enrolls and verifies a push factor for the specified user.
 | --- | --- | --- |
 | Account.ID | String | Okta user ID. |
 | Account.VerifyPushResult | String | Okta user push factor result. |
-| Okta.PollingURL | String | The polling URL for the push factor challenge. |
+| Okta.PollingStatusURL | String | The polling URL for the push factor challenge. |
 | Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
 | Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
 | Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
