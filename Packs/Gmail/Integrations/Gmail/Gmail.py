@@ -1453,7 +1453,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
     if max_results > 500:
         raise ValueError(f"maxResults must be lower than 500, got {max_results}")
     try:
-        mails, q = search(
+        mails, q, nextPageToken = search(
             user_id,
             subject,
             _from,
@@ -1483,6 +1483,9 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
         return None
     if mails:
         res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, "full", mailbox, fields)
+        # Add nextPageToken to the context if it exists
+        if nextPageToken:
+            res.setdefault("EntryContext", {}).setdefault("GmailMails", {})["NextPageToken"] = nextPageToken
         return res
     return None
 
@@ -1527,9 +1530,13 @@ def search(
         "includeSpamTrash": include_spam_trash,
     }
     service = get_service("gmail", "v1", ["https://www.googleapis.com/auth/gmail.readonly"], command_args["userId"])
+    nextPageToken = None
 
     try:
         result = service.users().messages().list(**command_args).execute()
+        nextPageToken = result.get("nextPageToken")
+
+        demisto.debug(f"gmail search result {result}")
     except Exception as e:
         if "Mail service not enabled" in str(e):
             result = {}
@@ -1538,11 +1545,10 @@ def search(
 
     # In case the user wants only account list without content.
     if only_return_account_names and result.get("sizeEstimate", 0) > 0:
-        return True, q
+        return True, q, None
 
     entries = [get_mail(user_id=user_id, _id=mail["id"], _format="full", service=service) for mail in result.get("messages", [])]
-
-    return entries, q
+    return entries, q, nextPageToken
 
 
 def get_mail_command():
