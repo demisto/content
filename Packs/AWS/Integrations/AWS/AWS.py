@@ -3044,14 +3044,13 @@ class EC2:
         if instance_ids := args.get("instance_ids"):
             kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
 
-        if include_all_instances := args.get("include_all_instances"):
-            kwargs["IncludeAllInstances"] = argToBoolean(include_all_instances)
-
         waiter_config = {
             "Delay": arg_to_number(args.get("waiter_delay", "15")),
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
+        kwargs["IncludeAllInstances"] = arg_to_bool_or_none(include_all_instances)
+        remove_nulls_from_dictionary(kwargs)
 
         try:
             waiter = client.get_waiter("instance_status_ok")
@@ -3263,19 +3262,15 @@ class EC2:
         Returns:
             CommandResults: Results containing Reserved Instance information
         """
-        kwargs = {}
+        kwargs = {"OfferingClass": args.get("offering_class"), "OfferingType": args.get("offering_type")}
 
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
 
-        if offering_class := args.get("offering_class"):
-            kwargs["OfferingClass"] = offering_class
-
-        if offering_type := args.get("offering_type"):
-            kwargs["OfferingType"] = offering_type
-
         if reserved_instances_ids := args.get("reserved_instances_ids"):
             kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
+        
+        remove_nulls_from_dictionary(kwargs)
 
         print_debug_logs(client, f"Describing reserved instances with parameters: {kwargs}")
         response = client.describe_reserved_instances(**kwargs)
