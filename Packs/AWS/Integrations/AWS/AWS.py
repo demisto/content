@@ -3272,23 +3272,21 @@ class EC2:
         Returns:
             CommandResults: Results containing volume modification information
         """
-        kwargs = {"VolumeId": args.get("volume_id")}
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled"))
+        }
 
         # Add optional modification parameters
         if size := args.get("size"):
             kwargs["Size"] = arg_to_number(size)
-
-        if volume_type := args.get("volume_type"):
-            kwargs["VolumeType"] = volume_type
 
         if iops := args.get("iops"):
             kwargs["Iops"] = arg_to_number(iops)
 
         if throughput := args.get("throughput"):
             kwargs["Throughput"] = arg_to_number(throughput)
-
-        if multi_attach_enabled := args.get("multi_attach_enabled"):
-            kwargs["MultiAttachEnabled"] = argToBoolean(multi_attach_enabled)
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
@@ -3317,8 +3315,8 @@ class EC2:
                 "OriginalThroughput": volume_modification.get("OriginalThroughput"),
                 "OriginalMultiAttachEnabled": volume_modification.get("OriginalMultiAttachEnabled"),
             }
-
         }
+
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Modification",
             [volume_modification],
@@ -3357,41 +3355,28 @@ class EC2:
         Returns:
             CommandResults: Results containing created volume information
         """
-        kwargs = {"AvailabilityZone": args.get("availability_zone")}
-
-        # Add optional parameters
-        if encrypted := args.get("encrypted"):
-            kwargs["Encrypted"] = argToBoolean(encrypted)
+        kwargs = {
+            "AvailabilityZone": args.get("availability_zone"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "OutpostArn": args.get("outpost_arn"),
+            "SnapshotId": args.get("snapshot_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "ClientToken": args.get("client_token")
+        }
 
         if iops := args.get("iops"):
             kwargs["Iops"] = arg_to_number(iops)
 
-        if kms_key_id := args.get("kms_key_id"):
-            kwargs["KmsKeyId"] = kms_key_id
-
-        if outpost_arn := args.get("outpost_arn"):
-            kwargs["OutpostArn"] = outpost_arn
-
         if size := args.get("size"):
             kwargs["Size"] = arg_to_number(size)
-
-        if snapshot_id := args.get("snapshot_id"):
-            kwargs["SnapshotId"] = snapshot_id
-
-        if volume_type := args.get("volume_type"):
-            kwargs["VolumeType"] = volume_type
 
         if throughput := args.get("throughput"):
             kwargs["Throughput"] = arg_to_number(throughput)
 
-        if multi_attach_enabled := args.get("multi_attach_enabled"):
-            kwargs["MultiAttachEnabled"] = argToBoolean(multi_attach_enabled)
-
         if tags := args.get("tags"):
             kwargs["TagSpecifications"] = [{"ResourceType": "volume", "Tags": parse_tag_field(tags)}]
-
-        if client_token := args.get("client_token"):
-            kwargs["ClientToken"] = client_token
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating volume with parameters: {kwargs}")
@@ -3480,17 +3465,12 @@ class EC2:
         Returns:
             CommandResults: Results containing volume detachment information
         """
-        kwargs = {"VolumeId": args.get("volume_id")}
-
-        # Add optional parameters
-        if force := args.get("force"):
-            kwargs["Force"] = argToBoolean(force)
-
-        if device := args.get("device"):
-            kwargs["Device"] = device
-
-        if instance_id := args.get("instance_id"):
-            kwargs["InstanceId"] = instance_id
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "Force": arg_to_bool_or_none(args.get("force")),
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id")
+        }
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Detaching volume with parameters: {kwargs}")
