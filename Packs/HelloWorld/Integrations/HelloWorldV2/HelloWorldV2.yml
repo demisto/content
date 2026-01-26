@@ -134,6 +134,12 @@ script:
       name: limit
     - description: The severity by which to filter the alerts.
       name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
     outputs:
     - contextPath: HelloWorld.alert.id
       description: The ID of the alert.
@@ -173,6 +179,7 @@ script:
       name: ip
       default: true
       isArray: true
+      required: true
     - description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
       name: threshold
       defaultValue: 65
@@ -307,7 +314,7 @@ script:
       description: The type of the destination of the relationship.
       type: string
   - name: helloworld-get-events
-    description: Retrieves alerts from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
+    description: Retrieves alerts from the HelloWorld API. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - description: The severity by which to filter the alerts.
       name: severity

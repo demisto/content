@@ -80,7 +80,7 @@ Lists the example alerts as it would be fetched from the API.
 | --- | --- | --- |
 | alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional |
 | limit | How many alerts to fetch. Default is 10. | Optional |
-| severity | The severity by which to filter the alerts. | Optional |
+| severity | The severity by which to filter the alerts. Possible values are: low, medium, high, critical. | Optional |
 
 #### Context Output
 
@@ -342,7 +342,7 @@ Return IP information and reputation.
 ### helloworld-get-events
 
 ***
-Retrieves alerts from the HelloWorld API. Can optionally push events to XSIAM when running on XSIAM tenants.
+Retrieves alerts from the HelloWorld API.  Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
@@ -845,6 +845,84 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+```
+
+### AI Agent Prompts
+
+#### Uplift an Existing Integration
+
+```
+Update the logic in MyIntegration.py to follow the style of HelloWorldV2.py.
+
+REFERENCE DOCUMENTATION
+- The ContentClientApiModule README.md file
+- The "Developer Guide" section in the HelloWorldV2 README.md file
+- The HelloWorldV2.py code file
+
+FOCUS AREAS
+Pydantic 1.10 validation models, Auth handling, ContentClient inheritance, ExecutionConfig pattern, and structured logging.
+
+REQUIREMENTS
+- Maintain backward compatibility with existing YML configuration parameters and command arguments (Do not add any new commands and keep existing ones)
+- Preserve all integration-specific logic (authentication methods, API quirks, data transformations)
+- Include consistent debug and diagnostic logging that captures specific variable context
+- Pass type checking with Pydantic validation models
+- Follow the region-based organization from HelloWorldV2
+
+Make sure to update the unit test to match the new code in MyIntegration.py in the style of HelloWorldV2_test.py. Mock API responses and helper functions where needed.
+Update the API Module dependencies and Docker image in MyIntegration.yml to match HelloWorldV2.yml
+```
+
+#### Create a New Integration
+
+```
+Create a new integration called MyIntegration available in the <xsoar|marketplacev2|platform> marketplaces with supported modules <...> and support level <xsoar|partner|community|...> inside my <new|existing> MyPack pack.
+
+REFERENCE DOCUMENTATION
+- The ContentClientApiModule README.md file
+- The "Developer Guide" section in the HelloWorldV2 README.md file
+- The HelloWorldV2.py code file
+
+FOCUS AREAS
+Pydantic 1.10 validation models, Auth handling, ContentClient inheritance, ExecutionConfig pattern, and structured logging.
+
+API DETAILS
+- Base URL: <https://api.example.com>
+- Authentication: <OAuth2|Basic|API Key|Custom>
+- Rate Limits: <X requests per minute/hour>
+
+CONFIGURATION PARAMETERS 
+For each parameter, define in YML and include in the parameter validation model:
+1. **Required** `url` - "Server URL" (type: 0, default: https://api.example.com)
+2. **Required** `credentials` - "Client ID/Client Secret" (type: 9)
+3. **Optional** `proxy` - "Use system proxy settings" (type: 8, inherited from BaseParams)
+4. **Optional** `insecure` - "Trust any certificate" (type: 8, inherited from BaseParams)
+5. **Optional** `<param_name>` - "<Display Name>" (type: <0-16>, default: <value>)
+6. Add more parameters as needed with clear descriptions
+
+COMMANDS TO IMPLEMENT
+For each command, define: YML configuration, argument validation model, command function, and client method.
+1. **test-module**: Validate connectivity and authentication
+   - No arguments
+   - Returns: "ok" on success
+2. **<integration-name>-<command-name>**: <Brief description>
+   - Arguments:
+     - **<Required|Optional>** `<arg_name>`: <description> (Python type: <str|int|bool>, default: <value>)
+   - Context Outputs:
+     - `<IntegrationName>.<CommandPrefix>.<key>` : <description> (YML type: <string|number|boolean|object>)
+   - API Endpoint: <GET|POST|PUT|DELETE> /v1/<endpoint>
+   - Request <Params|Body>: <list parameters>
+   - Returns: CommandResults with readable markdown table and outputs_prefix="<IntegrationName>.<CommandPrefix>"
+3. <Add more commands following the same pattern
+
+REQUIREMENTS
+- Ensure matching configuration parameters and command arguments in both the YML and code
+- Pass type checking with Pydantic validation models
+- Follow the region-based organization from HelloWorldV2
+- Include consistent debug and diagnostic logging that captures specific variable context
+
+Make sure to write parameterized unit tests in the style of HelloWorldV2_test.py that check edge cases and cover at least 80% of the code. Mock API responses and helper functions where needed.
+Update the API Module dependencies and Docker image in MyIntegration.yml to match HelloWorldV2.yml
 ```
 
 ## Additional Resources
