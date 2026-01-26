@@ -1468,6 +1468,7 @@ class FilterBuilder:
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
@@ -4063,6 +4064,7 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
         return ISSUE_FIELDS["assignee_email"]
     else:
         return ISSUE_FIELDS["assignee"]
+
 
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for alerts based on provided arguments."""
