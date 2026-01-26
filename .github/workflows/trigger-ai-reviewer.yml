@@ -1,4 +1,4 @@
-name: Trigger AI Reviewer
+name: Trigger AI Review
 
 on:
   issue_comment:
@@ -6,46 +6,82 @@ on:
   pull_request:
     types: [review_requested]
 
-env:
-  IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
-  ALLOWED_COMMANDS: '["@content-bot start review", "@content-bot re-review"]'
-
 jobs:
   trigger-ai-review:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: read
+      contents: write       
+      pull-requests: write  
+      issues: write
+
+    # LOGIC EXPLANATION:
+    # 1. Runs on Comment IF: 
+    #    - Is a PR 
+    #    - User is MEMBER or OWNER 
+    #    - User is NOT a bot 
+    #    - Comment CONTAINS the command (not exact match)
+    # 2. Runs on PR Review Request IF:
+    #    - Reviewer is 'content-bot'
     if: >-
-      # Review request via PR commented command.
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
        (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-       !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
-       contains(fromJson(env.ALLOWED_COMMANDS), github.event.comment.body)) ||
-       # Review request via GH UI button 
+       !contains(fromJson('["content-bot", "xsoar-bot", "dependabot"]'), github.event.comment.user.login) &&
+       (contains(github.event.comment.body, '@content-bot start review') || contains(github.event.comment.body, '@content-bot re-review'))) ||
       (github.event_name == 'pull_request' &&
        github.event.requested_reviewer.login == 'content-bot')
+
     steps:
-      - name: Checkout
+      # Step 1: Identify the Branch
+      # issue_comment payload does NOT contain branch info, so we must fetch it.
+      - name: Resolve Branch Name
+        id: get_branch
+        env:
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Easy case: PR event gives us the ref directly
+            REF="${{ github.head_ref }}"
+          else
+            # Hard case: Fetch the branch name from the GitHub API using the PR number
+            echo "Fetching PR details for PR #$PR_NUMBER..."
+            REF=$(gh api repos/$REPO/pulls/$PR_NUMBER --jq '.head.ref')
+          fi
+          
+          echo "Detected Branch: $REF"
+          echo "branch_name=$REF" >> $GITHUB_OUTPUT
+
+      # Step 2: Checkout the specific branch
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          ref: ${{ steps.get_branch.outputs.branch_name }}
           fetch-depth: 0
-          
+          token: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      # Step 3: Run Logic
       - name: Trigger AI Review
         env:
-          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
-          COMMENT_ID: ${{ github.event.comment.id }}
-          TRIGGER_TYPE: ${{ github.event_name }}
+          # Use your specific token if needed for the push/labeling
+          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          BRANCH_NAME: ${{ steps.get_branch.outputs.branch_name }}
         run: |
-          echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
+          echo "🚀 Triggering AI Reviewer on branch: $BRANCH_NAME"
 
+          # Configure Git Identity
           git config --global user.email "bot@demisto.com"
           git config --global user.name "Content Bot"
-          
-          gh api "repos/$REPO/issues/$PR_NUMBER/labels" -f name="ready-for-ai-review"
-          git commit --allow-empty -m "Trigger AI Reviewer"
 
-          git push
-      
-     
+          # Add the label
+          # Note: We use || true so the step doesn't fail if the label already exists
+          gh api "repos/$REPO/issues/$PR_NUMBER/labels" -f labels="ready-for-ai-review" || true
+
+          # Create Empty Commit
+          git commit --allow-empty -m "Trigger AI Review"
+
+          # Push explicitly to the branch we resolved earlier
+          git push origin HEAD:refs/heads/$BRANCH_NAME
