@@ -127,6 +127,10 @@
       "destination_port": {
         "type": "string",
         "is_array": false
+      },
+      "workload_information": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
