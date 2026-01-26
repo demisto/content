@@ -67,6 +67,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-create-appsec-rule",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -750,6 +751,22 @@ class Client(CoreClient):
             data=policy_payload,
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
+        )
+
+    def create_rule(self, rule_payload: str) -> dict:
+        """
+        Creates a new policy in Cortex XDR.
+        Args:
+            rule_payload (str): The rule definition payload.
+        Returns:
+            dict: The response from the API.
+        """
+        demisto.debug(f"Rule creation payload: {rule_payload}")
+        return self._http_request(
+            method="POST",
+            data=rule_payload,
+            headers={**self._headers, "content-type": "application/json"},
+            url_suffix="/public_api/appsec/v1/rules",
         )
 
     def get_endpoint_support_file(self, request_data: dict[str, Any]) -> dict:
@@ -2428,6 +2445,72 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(readable_output=f"AppSec policy '{policy_name}' created successfully.")
 
+def create_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a new rule in Cortex Platform with defined conditions, scope, and triggers.
+    Args:
+        client: The Cortex Platform client instance.
+        args: Dictionary containing rule configuration parameters including:
+            - rule_name: Required name for the new rule
+            - description: Optional rule description
+            - severity: Required severity for the new rule
+            - labels: Optional labels to be assigned to the rule
+            - scanner: Required The type of security scanner used to detect findings of this rule IaC/secret
+            - category: Required Custom rule IaC/secret category
+            - subCategory: Required for IaC scanner only 
+            - frameworks: Required rule frameworks configuration parameters name and definition
+
+    Returns:
+        CommandResults: Results object containing the created rule information with
+        readable output, outputs prefix, and raw response data.
+
+    Raises:
+        DemistoException: If rule name is missing.
+    """
+    rule_name = args.get("rule_name")
+    severity = args.get("severity")
+    scanner = args.get("scanner")
+    category = args.get("category")
+    subCategory = args.get("subCategory")
+    frameworks = argToList(args.get("frameworks"))
+
+    if not rule_name:
+        raise DemistoException("Rule name is required.")
+
+    if not severity:
+        raise DemistoException("Severity is required.")
+
+    if not scanner:
+        raise DemistoException("Scanner is required.")
+
+    if not category:
+        raise DemistoException("Category is required.")
+
+    if scanner is 'IaC' and not subCategory:
+        raise DemistoException("SubCategory is required for IaC scanner.")
+
+    if len(frameworks) == 0 :
+        raise DemistoException("Frameworks is required.")
+
+    description = args.get("description", "")
+    labels = argToList(args.get("labels"))
+
+    payload = {
+        "name": rule_name,
+        "description": description,
+        "severity": severity,
+        "labels": labels,
+        "scanner": scanner,
+        "category": category,
+        "subCategory": subCategory,
+        "frameworks": frameworks,
+    }
+    payload = json.dumps(payload)
+    demisto.debug(f"{payload=}")
+
+    client.create_rule(payload)
+
+    return CommandResults(readable_output=f"AppSec rule '{rule_name}' created successfully.")
 
 def create_policy_build_conditions(client: Client, args: dict) -> dict:
     """
@@ -4362,63 +4445,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
-    related_pb = pb_id_to_data.get(playbook.get("id"))
-    if related_pb:
-        playbook["name"] = related_pb.get("name")
-        playbook["description"] = related_pb.get("comment")
-
-
-def postprocess_case_resolution_statuses(client, response: dict):
-    response = copy.deepcopy(response)
-    pbs_metadata = client.get_playbooks_metadata() or []
-    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
-
-    all_items = []
-    categories = ["done", "inProgress", "pending", "recommended"]
-
-    for category in categories:
-        tasks = response.get(category, {}).get("caseTasks", [])
-        for task in tasks:
-            # Add category field to identify which list this came from
-            task["category"] = category
-            if category in ["done", "inProgress", "recommended"]:
-                task["itemType"] = "playbook"
-            else:
-                task["itemType"] = "playbookTask"
-
-            if category in ["done", "inProgress"]:
-                enhance_with_pb_details(pb_id_to_data, task)
-            elif category == "pending":
-                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
-                task["parentPlaybook"] = task.pop("parentdetails")
-
-            all_items.append(task)
-
-    return all_items
-
-
-def get_case_resolution_statuses(client, args):
-    case_ids = argToList(args.get("case_id"))
-    raw_responses = []
-    outputs = []
-    for case_id in case_ids:
-        response = client.get_case_resolution_statuses(case_id)
-        raw_responses.append(response)
-        outputs.append(postprocess_case_resolution_statuses(client, response))
-    return CommandResults(
-        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
-        outputs_prefix="Core.CaseResolutionStatus",
-        outputs=outputs,
-        raw_response=raw_responses,
-    )
-
-
-def verify_platform_version(version: str = "8.13.0"):
-    if not is_demisto_version_ge(version):
-        raise DemistoException("This command is not available for this platform version")
-
-
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4534,6 +4560,8 @@ def main():  # pragma: no cover
             return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
+        elif command == "core-create-appsec-rule":
+            return_results(create_policy_command(client, args))
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-update-case":
@@ -4565,12 +4593,10 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-get-case-resolution-statuses":
-            verify_platform_version()
-            return_results(get_case_resolution_statuses(client, args))
-
         elif command == "core-xql-generic-query-platform":
-            verify_platform_version()
+            if not is_demisto_version_ge("8.13.0"):
+                raise DemistoException("This command is not available for this platform version")
+
             return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
