@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta#, UTC
+from datetime import date, datetime, timedelta  # , UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -11,8 +11,9 @@ from boto3 import Session
 import re
 
 
-from datetime import datetime, timezone
-UTC = datetime.now(timezone.utc)
+from datetime import UTC
+
+UTC = datetime.now(UTC)
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -3994,7 +3995,6 @@ class Lambda:
         try:
             # Use paginator to handle large numbers of functions
             paginator = client.get_paginator("list_functions")
-
             all_functions = []
             for page in paginator.paginate():
                 if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -4063,36 +4063,38 @@ class Lambda:
             kwargs["FunctionVersion"] = function_version
 
         print_debug_logs(client, f"Listing Lambda aliases with parameters: {kwargs}")
-        
+
         try:
             # Use paginator to handle large numbers of aliases
             paginator = client.get_paginator("list_aliases")
-            
+
             all_aliases = []
             for page in paginator.paginate(**kwargs):
                 if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
                     AWSErrorHandler.handle_response_error(page, args.get("account_id"))
-                
+
                 all_aliases.extend(page.get("Aliases", []))
-            
+
             if not all_aliases:
                 return CommandResults(readable_output=f"No aliases found for function {args.get('function_name')}.")
-            
+
             # Serialize response with datetime encoding
             serialized_aliases = serialize_response_with_datetime_encoding({"Aliases": all_aliases})
             aliases_list = serialized_aliases.get("Aliases", [])
-            
+
             # Prepare readable output
             readable_data = []
             for alias in aliases_list:
-                readable_data.append({
-                    "AliasArn": alias.get("AliasArn"),
-                    "Name": alias.get("Name"),
-                    "FunctionVersion": alias.get("FunctionVersion"),
-                })
-            
+                readable_data.append(
+                    {
+                        "AliasArn": alias.get("AliasArn"),
+                        "Name": alias.get("Name"),
+                        "FunctionVersion": alias.get("FunctionVersion"),
+                    }
+                )
+
             human_readable = tableToMarkdown("AWS Lambda Aliases", readable_data)
-            
+
             return CommandResults(
                 outputs_prefix="AWS.Lambda.Aliases",
                 outputs_key_field="AliasArn",
@@ -4100,12 +4102,166 @@ class Lambda:
                 readable_output=human_readable,
                 raw_response=aliases_list,
             )
-            
+
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
             return None
         except Exception as e:
             raise DemistoException(f"Error listing Lambda aliases: {str(e)}")
+
+    @staticmethod
+    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves account settings for AWS Lambda.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing account limits and usage
+        """
+        print_debug_logs(client, "Getting Lambda account settings")
+
+        try:
+            response = client.get_account_settings()
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            serialized_response = serialize_response_with_datetime_encoding(response)
+
+            account_limit = serialized_response.get("AccountLimit", {})
+            account_usage = serialized_response.get("AccountUsage", {})
+
+            # Prepare readable output
+            readable_data = {
+                "AccountLimit": {
+                    "TotalCodeSize": str(account_limit.get("TotalCodeSize")),
+                    "CodeSizeUnzipped": str(account_limit.get("CodeSizeUnzipped")),
+                    "CodeSizeZipped": str(account_limit.get("CodeSizeZipped")),
+                    "ConcurrentExecutions": str(account_limit.get("ConcurrentExecutions")),
+                    "UnreservedConcurrentExecutions": str(account_limit.get("UnreservedConcurrentExecutions")),
+                },
+                "AccountUsage": {
+                    "TotalCodeSize": str(account_usage.get("TotalCodeSize")),
+                    "FunctionCount": str(account_usage.get("FunctionCount")),
+                },
+            }
+
+            human_readable = tableToMarkdown("AWS Lambda Account Settings", readable_data)
+
+            # Add region and account_id to the root of the output for context
+            output = {
+                "Region": args.get("region"),
+                "AccountId": args.get("account_id"),
+                "AccountLimit": account_limit,
+                "AccountUsage": account_usage,
+            }
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.AccountSettings",
+                outputs_key_field=["AccountId", "Region"],
+                outputs=output,
+                readable_output=human_readable,
+                raw_response=serialized_response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+            return None
+        except Exception as e:
+            raise DemistoException(f"Error getting Lambda account settings: {str(e)}")
+
+    @staticmethod
+    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the versions of a Lambda function and returns the results.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - marker (str, optional): The marker for pagination
+                - max_items (str, optional): The maximum number of items to return
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of function versions with their configurations
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+
+        # Add optional pagination parameters
+        if marker := args.get("marker"):
+            kwargs["Marker"] = marker
+        if max_items := args.get("max_items"):
+            kwargs["MaxItems"] = int(max_items)
+
+        print_debug_logs(client, f"Listing Lambda function versions with parameters: {kwargs}")
+
+        try:
+            response = client.list_versions_by_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            serialized_response = serialize_response_with_datetime_encoding(response)
+
+            versions = serialized_response.get("Versions", [])
+            next_marker = serialized_response.get("NextMarker")
+
+            if not versions:
+                return CommandResults(readable_output=f"No versions found for function {args.get('function_name')}.")
+
+            # Prepare readable output
+            readable_data = []
+            for version in versions:
+                readable_data.append(
+                    {
+                        "FunctionName": version.get("FunctionName"),
+                        "Runtime": version.get("Runtime"),
+                        "Role": version.get("Role"),
+                        "Description": version.get("Description"),
+                        "LastModified": version.get("LastModified"),
+                        "State": version.get("State"),
+                    }
+                )
+
+            headers = ["FunctionName", "Role", "Runtime", "LastModified", "State", "Description"]
+            human_readable = tableToMarkdown("AWS Lambda Function Versions", readable_data, headers=headers)
+
+            # Add pagination note if there's a next marker
+            if next_marker:
+                human_readable += (
+                    f"\n\nTo get the next version run the command with the Marker argument with the value: {next_marker}"
+                )
+
+            # Prepare output with region context
+            output = {
+                "Versions": versions,
+                "NextMarker": next_marker,
+                "FunctionName": args.get("function_name"),
+                "Region": args.get("region"),
+            }
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.FunctionVersions",
+                outputs_key_field="FunctionName",
+                outputs=output,
+                readable_output=human_readable,
+                raw_response=serialized_response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+            return None
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda function versions: {str(e)}")
 
 
 class ACM:
@@ -4249,6 +4405,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-function-get": Lambda.get_function_command,
     "aws-lambda-functions-list": Lambda.list_functions_command,
     "aws-lambda-aliases-list": Lambda.list_aliases_command,
+    "aws-lambda-account-settings-get": Lambda.get_account_settings_command,
+    "aws-lambda-function-versions-list": Lambda.list_versions_by_function_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
@@ -4329,6 +4487,8 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetFunction",
     "lambda:ListFunctions",
     "lambda:ListAliases",
+    "lambda:GetAccountSettings",
+    "lambda:ListVersionsByFunction",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",

@@ -7162,17 +7162,17 @@ def test_lambda_list_functions_command_multiple_pages(mocker):
 def test_lambda_list_aliases_command_success(mocker):
     """
     Test Lambda.list_aliases_command with successful response.
-    
+
     Given: Valid function_name, region, and account_id
     When: list_aliases_command is called
     Then: Should return CommandResults with list of aliases
     """
     from AWS import Lambda
-    
+
     # Mock client and paginator
     mock_client = mocker.Mock()
     mock_paginator = mocker.Mock()
-    
+
     # Mock paginated response
     mock_pages = [
         {
@@ -7182,33 +7182,29 @@ def test_lambda_list_aliases_command_success(mocker):
                     "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:prod",
                     "Name": "prod",
                     "FunctionVersion": "1",
-                    "Description": "Production alias"
+                    "Description": "Production alias",
                 },
                 {
                     "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:dev",
                     "Name": "dev",
                     "FunctionVersion": "2",
-                    "Description": "Development alias"
-                }
-            ]
+                    "Description": "Development alias",
+                },
+            ],
         }
     ]
-    
+
     mock_paginator.paginate.return_value = mock_pages
     mock_client.get_paginator.return_value = mock_paginator
-    
-    args = {
-        "function_name": "my-function",
-        "region": "us-east-1",
-        "account_id": "123456789012"
-    }
-    
+
+    args = {"function_name": "my-function", "region": "us-east-1", "account_id": "123456789012"}
+
     result = Lambda.list_aliases_command(mock_client, args)
-    
+
     # Verify paginator was used correctly
     mock_client.get_paginator.assert_called_once_with("list_aliases")
     mock_paginator.paginate.assert_called_once_with(FunctionName="my-function")
-    
+
     # Verify CommandResults structure
     assert result.outputs_prefix == "AWS.Lambda.Aliases"
     assert result.outputs_key_field == "AliasArn"
@@ -7222,16 +7218,16 @@ def test_lambda_list_aliases_command_success(mocker):
 def test_lambda_list_aliases_command_with_function_version(mocker):
     """
     Test Lambda.list_aliases_command with function_version filter.
-    
+
     Given: function_name and function_version parameters
     When: list_aliases_command is called
     Then: Should pass FunctionVersion to AWS API
     """
     from AWS import Lambda
-    
+
     mock_client = mocker.Mock()
     mock_paginator = mocker.Mock()
-    
+
     mock_pages = [
         {
             "ResponseMetadata": {"HTTPStatusCode": 200},
@@ -7239,24 +7235,19 @@ def test_lambda_list_aliases_command_with_function_version(mocker):
                 {
                     "AliasArn": "arn:aws:lambda:us-west-2:123456789012:function:test-func:stable",
                     "Name": "stable",
-                    "FunctionVersion": "5"
+                    "FunctionVersion": "5",
                 }
-            ]
+            ],
         }
     ]
-    
+
     mock_paginator.paginate.return_value = mock_pages
     mock_client.get_paginator.return_value = mock_paginator
-    
-    args = {
-        "function_name": "test-func",
-        "function_version": "5",
-        "region": "us-west-2",
-        "account_id": "123456789012"
-    }
-    
+
+    args = {"function_name": "test-func", "function_version": "5", "region": "us-west-2", "account_id": "123456789012"}
+
     result = Lambda.list_aliases_command(mock_client, args)
-    
+
     # Verify FunctionVersion was passed to API
     mock_paginator.paginate.assert_called_once_with(FunctionName="test-func", FunctionVersion="5")
     assert result.outputs[0]["FunctionVersion"] == "5"
@@ -7265,32 +7256,258 @@ def test_lambda_list_aliases_command_with_function_version(mocker):
 def test_lambda_list_aliases_command_no_aliases(mocker):
     """
     Test Lambda.list_aliases_command when no aliases exist.
-    
+
     Given: Empty aliases list from AWS
     When: list_aliases_command is called
     Then: Should return message indicating no aliases found
     """
     from AWS import Lambda
-    
+
     mock_client = mocker.Mock()
     mock_paginator = mocker.Mock()
-    
-    mock_pages = [
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Aliases": []
-        }
-    ]
-    
+
+    mock_pages = [{"ResponseMetadata": {"HTTPStatusCode": 200}, "Aliases": []}]
+
     mock_paginator.paginate.return_value = mock_pages
     mock_client.get_paginator.return_value = mock_paginator
-    
-    args = {
-        "function_name": "no-aliases-function",
-        "region": "ap-south-1",
-        "account_id": "123456789012"
-    }
-    
+
+    args = {"function_name": "no-aliases-function", "region": "ap-south-1", "account_id": "123456789012"}
+
     result = Lambda.list_aliases_command(mock_client, args)
-    
+
     assert "No aliases found for function no-aliases-function" in result.readable_output
+
+
+def test_lambda_get_account_settings_command_success(mocker):
+    """
+    Test Lambda.get_account_settings_command with successful response.
+
+    Given: Valid region and account_id
+    When: get_account_settings_command is called
+    Then: Should return CommandResults with account limits and usage
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+
+    # Mock response from AWS
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "AccountLimit": {
+            "TotalCodeSize": 80530636800,
+            "CodeSizeUnzipped": 262144000,
+            "CodeSizeZipped": 52428800,
+            "ConcurrentExecutions": 1000,
+            "UnreservedConcurrentExecutions": 900,
+        },
+        "AccountUsage": {"TotalCodeSize": 12345678, "FunctionCount": 25},
+    }
+
+    mock_client.get_account_settings.return_value = mock_response
+
+    args = {"region": "us-east-1", "account_id": "123456789012"}
+
+    result = Lambda.get_account_settings_command(mock_client, args)
+
+    # Verify the client was called correctly
+    mock_client.get_account_settings.assert_called_once()
+
+    # Verify CommandResults structure
+    assert result.outputs_prefix == "AWS.Lambda.AccountSettings"
+    assert result.outputs_key_field == ["AccountId", "Region"]
+    assert result.outputs["Region"] == "us-east-1"
+    assert result.outputs["AccountId"] == "123456789012"
+    assert result.outputs["AccountLimit"]["TotalCodeSize"] == 80530636800
+    assert result.outputs["AccountUsage"]["FunctionCount"] == 25
+    assert "AWS Lambda Account Settings" in result.readable_output
+
+
+def test_lambda_get_account_settings_command_output_structure(mocker):
+    """
+    Test Lambda.get_account_settings_command outputs structure.
+
+    Given: Complete AWS Lambda account settings response
+    When: get_account_settings_command processes the response
+    Then: Should include AccountLimit, AccountUsage, Region, and AccountId in outputs
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "AccountLimit": {
+            "TotalCodeSize": 75161927680,
+            "CodeSizeUnzipped": 262144000,
+            "CodeSizeZipped": 52428800,
+            "ConcurrentExecutions": 1000,
+            "UnreservedConcurrentExecutions": 950,
+        },
+        "AccountUsage": {"TotalCodeSize": 50000000, "FunctionCount": 100},
+    }
+
+    mock_client.get_account_settings.return_value = mock_response
+
+    args = {"region": "eu-west-1", "account_id": "987654321098"}
+
+    result = Lambda.get_account_settings_command(mock_client, args)
+
+    # Verify all major sections are present in outputs
+    assert "AccountLimit" in result.outputs
+    assert "AccountUsage" in result.outputs
+    assert "Region" in result.outputs
+    assert "AccountId" in result.outputs
+    assert result.outputs["Region"] == "eu-west-1"
+    assert result.outputs["AccountId"] == "987654321098"
+
+
+# Tests for list_versions_by_function_command
+
+
+def test_lambda_list_versions_by_function_command_success(mocker):
+    """
+    Test Lambda.list_versions_by_function_command with successful response.
+
+    Given: Valid function name
+    When: list_versions_by_function_command is called
+    Then: Should return CommandResults with versions list
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Versions": [
+            {
+                "FunctionName": "my-function",
+                "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:1",
+                "Runtime": "python3.9",
+                "Role": "arn:aws:iam::123456789012:role/lambda-role",
+                "Handler": "index.handler",
+                "CodeSize": 1024,
+                "Description": "Version 1",
+                "Timeout": 30,
+                "MemorySize": 128,
+                "LastModified": "2024-01-15T10:30:00.000+0000",
+                "CodeSha256": "abc123",
+                "Version": "1",
+                "State": "Active",
+            },
+            {
+                "FunctionName": "my-function",
+                "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:$LATEST",
+                "Runtime": "python3.9",
+                "Role": "arn:aws:iam::123456789012:role/lambda-role",
+                "Handler": "index.handler",
+                "CodeSize": 2048,
+                "Description": "Latest version",
+                "Timeout": 60,
+                "MemorySize": 256,
+                "LastModified": "2024-01-20T14:45:00.000+0000",
+                "CodeSha256": "def456",
+                "Version": "$LATEST",
+                "State": "Active",
+            },
+        ],
+    }
+
+    mock_client.list_versions_by_function.return_value = mock_response
+
+    args = {"function_name": "my-function", "region": "us-east-1", "account_id": "123456789012"}
+
+    result = Lambda.list_versions_by_function_command(mock_client, args)
+
+    # Verify the command was called correctly
+    mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function")
+
+    # Verify outputs structure
+    assert result.outputs_prefix == "AWS.Lambda.FunctionVersions"
+    assert result.outputs_key_field == "FunctionName"
+    assert "Versions" in result.outputs
+    assert len(result.outputs["Versions"]) == 2
+    assert result.outputs["FunctionName"] == "my-function"
+    assert result.outputs["Region"] == "us-east-1"
+
+    # Verify readable output contains expected data
+    assert "my-function" in result.readable_output
+    assert "python3.9" in result.readable_output
+
+
+def test_lambda_list_versions_by_function_command_with_pagination(mocker):
+    """
+    Test Lambda.list_versions_by_function_command with pagination parameters.
+
+    Given: Function name with marker and max_items
+    When: list_versions_by_function_command is called
+    Then: Should pass pagination parameters to API and include NextMarker in output
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Versions": [
+            {
+                "FunctionName": "my-function",
+                "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:2",
+                "Runtime": "nodejs18.x",
+                "Role": "arn:aws:iam::123456789012:role/lambda-role",
+                "Handler": "index.handler",
+                "CodeSize": 512,
+                "Description": "Version 2",
+                "Timeout": 15,
+                "MemorySize": 512,
+                "LastModified": "2024-01-18T12:00:00.000+0000",
+                "CodeSha256": "xyz789",
+                "Version": "2",
+                "State": "Active",
+            }
+        ],
+        "NextMarker": "next-page-token-123",
+    }
+
+    mock_client.list_versions_by_function.return_value = mock_response
+
+    args = {
+        "function_name": "my-function",
+        "marker": "previous-token",
+        "max_items": "10",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    result = Lambda.list_versions_by_function_command(mock_client, args)
+
+    # Verify pagination parameters were passed
+    mock_client.list_versions_by_function.assert_called_once_with(
+        FunctionName="my-function", Marker="previous-token", MaxItems=10
+    )
+
+    # Verify NextMarker is in outputs
+    assert result.outputs["NextMarker"] == "next-page-token-123"
+
+    # Verify pagination note in readable output
+    assert "next-page-token-123" in result.readable_output
+
+
+def test_lambda_list_versions_by_function_command_no_versions(mocker):
+    """
+    Test Lambda.list_versions_by_function_command when no versions are found.
+
+    Given: Function with no versions
+    When: list_versions_by_function_command is called
+    Then: Should return message indicating no versions found
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": 200}, "Versions": []}
+
+    mock_client.list_versions_by_function.return_value = mock_response
+
+    args = {"function_name": "empty-function", "region": "us-west-2", "account_id": "123456789012"}
+
+    result = Lambda.list_versions_by_function_command(mock_client, args)
+
+    # Verify no versions message
+    assert "No versions found" in result.readable_output
+    assert "empty-function" in result.readable_output
