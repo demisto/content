@@ -6,5 +6,4 @@ alter _time = parse_timestamp(
         "(\.\d{6})\d+([+-]\d{2}):(\d{2})$", 
         "\1\2\3"
     )
-)
-| fields _time,occurred_message_time_iso_8601_ns;
+);
