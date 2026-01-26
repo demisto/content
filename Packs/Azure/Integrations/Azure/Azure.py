@@ -568,7 +568,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_security_rules(self, subscription_id: str, resource_group_name: str, network_security_group_name: str) -> dict:
+    def list_security_rules(self, subscription_id: str, resource_group_name: str, network_security_group_name: str):
         """
         Gets all security rules in a network security group.
 
@@ -3827,14 +3827,20 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
         )
 
     hr = tableToMarkdown(
-        name="Security Groups list",
+        name="Security Groups List",
         t=hr_data,
         removeNull=True,
         headers=["name", "id", "direction"],
         headerTransform=pascalToSpace,
     )
 
-    return CommandResults(outputs=security_rules, readable_output=hr, raw_response=security_rules, outputs_prefix="Azure.NSGRule", outputs_key_field="id")
+    return CommandResults(
+        outputs=security_rules,
+        readable_output=hr,
+        raw_response=security_rules,
+        outputs_prefix="Azure.NSGRule",
+        outputs_key_field="id",
+    )
 
 
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:

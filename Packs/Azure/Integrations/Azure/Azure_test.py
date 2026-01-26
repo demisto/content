@@ -4111,8 +4111,8 @@ def test_nsg_security_rules_list_command_success(mocker):
     result = nsg_security_rules_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == mock_response["value"]
-    assert "Security Groups list" in result.readable_output
+    assert result.outputs == mock_response["value"]
+    assert "Security Groups List" in result.readable_output
     assert "rule1" in result.readable_output
     assert "rule2" in result.readable_output
     mock_client.list_security_rules.assert_called_once_with("test-sub-id", "test-rg", "test-nsg")
@@ -4133,7 +4133,7 @@ def test_nsg_security_rules_list_command_empty_response(mocker):
     result = nsg_security_rules_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == []
+    assert result.outputs == []
     assert result.raw_response == []
 
 
@@ -4152,7 +4152,7 @@ def test_nsg_security_rules_list_command_no_value_key(mocker):
     result = nsg_security_rules_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"] == []
+    assert result.outputs == []
 
 
 def test_nsg_security_rules_list_command_missing_properties(mocker):
@@ -4186,4 +4186,4 @@ def test_nsg_security_rules_list_command_missing_properties(mocker):
     result = nsg_security_rules_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert len(result.outputs["Azure.NSGRule(val.id && val.id == obj.id)"]) == 2
+    assert len(result.outputs) == 2
