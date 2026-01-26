@@ -1924,18 +1924,21 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
-    if int(response.get("issue_count") or 0) > 1:
+    mapped_response = preprocess_get_case_extra_data_outputs(response)
+    case = mapped_response.get("case")
+    if int(case.get("issue_count") or 0) > 1:
         try:  # if functionality isn't supported exception is raised and should be handled
-            response = client.get_case_ai_summary(int(case_id))
-            if response:
-                reply = response.get("reply", {})
+            web_app_client = init_client('webapp')
+            ai_response = web_app_client.get_case_ai_summary(int(case_id))
+            if ai_response:
+                reply = ai_response.get("reply", {})
                 if case_description := reply.get("case_description"):
-                    response["description"] = case_description
+                    case["description"] = case_description
                 if case_name := reply.get("case_name"):
-                    response["case_name"] = case_name
+                    case["case_name"] = case_name
         except Exception as e:
             demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
-    mapped_response = preprocess_get_case_extra_data_outputs(response)
+
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
