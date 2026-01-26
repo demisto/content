@@ -9347,6 +9347,8 @@ def test_verify_platform_version_failure(mocker: MockerFixture):
 
     with pytest.raises(DemistoException, match="This command is not available for this platform version"):
         verify_platform_version("8.13.0")
+
+
 def test_enhance_with_pb_details():
     """
     GIVEN:

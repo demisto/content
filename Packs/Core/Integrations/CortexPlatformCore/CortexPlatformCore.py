@@ -4447,6 +4447,7 @@ def init_client(api_type: str) -> Client:
         verify=verify_cert,
         headers=headers,
         timeout=timeout,
+    )
 def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
     related_pb = pb_id_to_data.get(playbook.get("id"))
     if related_pb:
