@@ -113,6 +113,58 @@ class AgentixStatus:
         return status in {cls.AWAITING_AGENT_SELECTION, cls.AWAITING_SENSITIVE_ACTION_APPROVAL}
 
 
+class AgentixMessageType:
+    """
+    Message types for Agentix AI Assistant responses.
+
+    Type mapping:
+    - TEXT: Final response from the model
+    - THINKING: AI is thinking/processing
+    - PLANNING: AI is planning steps
+    - EXECUTING: AI is executing a sensitive action (requires approval)
+    - ERROR: Error message
+    """
+
+    # New message types from backend
+    TEXT = "text"  # Final response (model)
+    THINKING = "thinking"  # AI thinking (step)
+    PLANNING = "planning"  # AI planning (step)
+    EXECUTING = "executing"  # Sensitive action (approval)
+    ERROR = "error"  # Error message
+
+    # All valid message types
+    VALID_TYPES = {TEXT, THINKING, PLANNING, EXECUTING, ERROR}
+
+    # Types that are considered "step" types (shown with subtle styling)
+    STEP_TYPES = {THINKING, PLANNING}
+
+    @classmethod
+    def is_valid(cls, message_type: str) -> bool:
+        """
+        Check if a message type is valid.
+
+        Args:
+            message_type: The message type to validate
+
+        Returns:
+            True if the message type is valid, False otherwise
+        """
+        return message_type in cls.VALID_TYPES
+
+    @classmethod
+    def is_step_type(cls, message_type: str) -> bool:
+        """
+        Check if a message type is a step type (thinking/planning).
+
+        Args:
+            message_type: The message type to check
+
+        Returns:
+            True if it's a step type, False otherwise
+        """
+        return message_type in cls.STEP_TYPES
+
+
 class AgentixMessages:
     """
     Ephemeral messages sent to users during Agentix AI Assistant interactions.
@@ -3615,6 +3667,8 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
     """
     Main processing function for the input message.
     Converts markdown tables and text into Slack Block Kit components.
+
+    Uses AgentixMessageType constants for message type handling.
     """
     if not message:
         return [], []
@@ -3622,8 +3676,8 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
     blocks = []
     attachments = []
 
-    if message_type in ["step", "model", "clarification", "approval"]:
-        # Standard processing for all types including 'step'
+    if message_type in AgentixMessageType.VALID_TYPES:
+        # Standard processing for all new types
         table_regex = r"(\|[^\n]+\|\r?\n\|[\s|:-]+\|\r?\n(?:\|[^\n]+\|\r?\n?)+)"
         parts = re.split(table_regex, message)
 
@@ -3643,12 +3697,26 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
         # Note: Approval buttons are added in send_agent_response() via get_approval_buttons_block()
         # to avoid duplication and allow for better styling
 
-        # For 'step' types, wrap everything in an attachment structure for a subtle appearance.
-        if message_type == "step":
+        # For step types (thinking/planning), wrap everything in an attachment structure for a subtle appearance.
+        if AgentixMessageType.is_step_type(message_type):
+            # Use different icons for thinking vs planning
+            icon = ":thought_balloon:" if message_type == AgentixMessageType.THINKING else ":clipboard:"
+            label = "*Thinking*" if message_type == AgentixMessageType.THINKING else "*Planning*"
+
             attachments = [
                 {
                     "color": "#D1D2D3",  # Light gray border for a subtle look
-                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":thought_balloon: *Plan*")]).to_dict()] + blocks,
+                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=f"{icon} {label}")]).to_dict()] + blocks,
+                }
+            ]
+            return [], attachments
+
+        # For error types, use red color
+        if message_type == AgentixMessageType.ERROR:
+            attachments = [
+                {
+                    "color": "#FF0000",  # Red border for errors
+                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":x: *Error*")]).to_dict()] + blocks,
                 }
             ]
             return [], attachments
@@ -3782,12 +3850,7 @@ def send_agent_response():
     This function handles different message types and updates the conversation status
     based on the type of response being sent.
 
-    Message types:
-    - model/clarification: Final response, releases lock if completed
-    - step: Plan step, updates status to responding_with_plan
-    - approval: Sensitive action requiring approval, adds Yes/No buttons
-    - agent_list: List of agents to choose from, adds dropdown
-    - error: Error message, releases lock immediately
+    Uses AgentixMessageType constants for message type handling.
     """
     args = demisto.args()
     channel_id = args["channel_id"]
@@ -3821,28 +3884,27 @@ def send_agent_response():
     # ========================================
     # Handle different message types
     # ========================================
-    if message_type in ["model", "clarification", "approval"]:
-        # Add approval UI specifically for approval (must come before feedback buttons)
-        if message_type == "approval":
-            # Extend with all approval blocks (header + buttons)
-            blocks.extend(get_approval_buttons_block())
-            new_status = AgentixStatus.AWAITING_SENSITIVE_ACTION_APPROVAL
-        else:
-            # model/clarification - release lock if completed
-            should_release_lock = completed
-
-        # Add feedback buttons for these message types (always last)
+    if message_type == AgentixMessageType.TEXT:
+        # TEXT - Final response, release lock if completed
+        should_release_lock = completed
+        # Add feedback buttons for final responses (always last)
         if message_id and completed:
             blocks.append(get_feedback_buttons_block(message_id))
 
-    elif message_type == "step":
+    elif message_type == AgentixMessageType.EXECUTING:
+        # EXECUTING - Sensitive action requiring approval
+        # Extend with all approval blocks (header + buttons)
+        blocks.extend(get_approval_buttons_block())
+        new_status = AgentixStatus.AWAITING_SENSITIVE_ACTION_APPROVAL
+
+    elif AgentixMessageType.is_step_type(message_type):
+        # THINKING/PLANNING - Plan steps
         # Update status to responding_with_plan
         new_status = AgentixStatus.RESPONDING_WITH_PLAN
 
-    elif message_type == "agent_list":
-        # Create agent selection dropdown
-        blocks = create_agent_selection_blocks(message)
-        new_status = AgentixStatus.AWAITING_AGENT_SELECTION
+    elif message_type == AgentixMessageType.ERROR:
+        # ERROR - release lock immediately
+        should_release_lock = True
 
     # ========================================
     # Send message to Slack
