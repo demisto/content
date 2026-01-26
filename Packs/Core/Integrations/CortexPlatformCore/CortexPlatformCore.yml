@@ -642,9 +642,11 @@ script:
             - ASC
         - description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
           name: offset
+          defaultValue: "0"
           deprecated: true
         - description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
           name: limit
+          defaultValue: "50"
           deprecated: true
         - defaultValue: "0"
           description: The page number for the issues to return for pagination. 
