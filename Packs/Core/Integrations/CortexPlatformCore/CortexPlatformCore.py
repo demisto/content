@@ -1735,7 +1735,7 @@ def get_cases_command(client, args):
                 if case_description := reply.get("case_description"):
                     data[0]["description"] = case_description
                 if case_name := reply.get("case_name"):
-                    data[0]["name"] = case_name
+                    data[0]["case_name"] = case_name
         except Exception as e:
             demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
