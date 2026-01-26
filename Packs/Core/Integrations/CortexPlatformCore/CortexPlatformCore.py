@@ -1941,7 +1941,7 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     case = mapped_response.get("case")
     if int(case.get("issue_count") or 0) > 1:
         try:  # if functionality isn't supported exception is raised and should be handled
-            web_app_client = init_client('webapp')
+            web_app_client = init_client("webapp")
             ai_response = web_app_client.get_case_ai_summary(int(case_id))
             if ai_response:
                 reply = ai_response.get("reply", {})
@@ -4448,6 +4448,8 @@ def init_client(api_type: str) -> Client:
         headers=headers,
         timeout=timeout,
     )
+
+
 def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
     related_pb = pb_id_to_data.get(playbook.get("id"))
     if related_pb:
