@@ -4090,15 +4090,12 @@ async def fetch_spotlight_assets():
         save_spotlight_state(context_store, integration_context, spotlight_state)
         
         # Update assets last run (reset for next snapshot)
+        # TODO: make sure that the last run is according to the correct key
         demisto.setAssetsLastRun({
             "snapshot_id": "",
             "total_fetched_until_now": 0,
         })
-        
-        # TODO: Think need to remove this
-        # Update health module with final count
-        demisto.updateModuleHealth({"assetsPulled": total_fetched})
-        
+
         demisto.info(f"Finished Spotlight assets fetch. Total fetched: {total_fetched}, Unique hosts: {len(unique_aids)}")
         
     except ContentClientError as e:
