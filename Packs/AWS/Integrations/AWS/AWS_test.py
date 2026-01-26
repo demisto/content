@@ -8138,7 +8138,7 @@ def test_ec2_describe_reserved_instances_command_success(mocker):
     from datetime import datetime
 
     mock_client = mocker.Mock()
-    
+
     mock_response = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "ReservedInstances": [
@@ -8179,7 +8179,7 @@ def test_ec2_describe_reserved_instances_command_success(mocker):
     args = {"reserved_instance_ids": "ri-1234567890abcdef0", "region": "us-east-1"}
 
     result = EC2.describe_reserved_instances_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
     assert result.outputs_key_field == "ReservedInstancesId"
@@ -8259,7 +8259,7 @@ def test_ec2_describe_reserved_instances_command_multiple_instances(mocker):
     args = {"reserved_instance_ids": "ri-1234567890abcdef0, ri-0987654321fedcba0", "region": "us-east-1"}
 
     result = EC2.describe_reserved_instances_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
     assert result.outputs_key_field == "ReservedInstancesId"
