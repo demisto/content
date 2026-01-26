@@ -8508,6 +8508,8 @@ def test_recon_notification_to_incident(mocker):
     assert raw_json["mirror_direction"] == "Both"
     assert raw_json["mirror_instance"] == "instance"
     assert raw_json["incident_type"] == incident_type
+
+
 def test_get_cases_data(mocker):
     """
     Given:
