@@ -231,6 +231,16 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
+    def get_groups(self, user):
+        group_data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/memberOf")
+        group_data.pop("@odata.context", None)
+        return group_data
+
+    def get_auth_methods(self, user):
+        data = self.ms_client.http_request(method="GET", url_suffix=f"users/{quote(user)}/authentication/methods")
+        data.pop("@odata.context", None)
+        return data.get("value", [])
+
     def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method="GET", url_suffix="users", full_url=page_url)
@@ -641,6 +651,41 @@ def get_user_command(client: MsGraphClient, args: dict):
     return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
 
 
+@suppress_errors_with_404_code
+def get_groups_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    group_data = client.get_groups(user)
+
+    user_readable, user_outputs = parse_outputs(group_data.get("value", []))
+    human_readable = tableToMarkdown(name=f"{user} group data", t=user_readable, removeNull=True)
+    outputs = {"ID": user, "Groups": user_outputs}
+
+    return CommandResults(
+        outputs_prefix="MSGraphUserGroups",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=group_data,
+    )
+
+
+@suppress_errors_with_404_code
+def get_auth_methods_command(client: MsGraphClient, args: Dict):
+    user = args.get("user")
+    data = client.get_auth_methods(user)
+    readable, outputs = parse_outputs(data)
+    human_readable = tableToMarkdown(name=f"{user} - auth methods", t=readable, removeNull=True)
+    outputs = {"ID": user, "Methods": outputs}
+
+    return CommandResults(
+        outputs_prefix="MSGraphUserAuthMethods",
+        outputs_key_field="ID",
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=data,
+    )
+
+
 def list_users_command(client: MsGraphClient, args: dict):
     properties = args.get("properties", "id,displayName,jobTitle,mobilePhone,mail")
     next_page = args.get("next_page", None)
@@ -921,6 +966,8 @@ def main():
         "msgraph-user-create": create_user_command,
         "msgraph-user-get-delta": get_delta_command,
         "msgraph-user-get": get_user_command,
+        "msgraph-user-get-groups": get_groups_command,
+        "msgraph-user-get-auth-methods": get_auth_methods_command,
         "msgraph-user-list": list_users_command,
         "msgraph-direct-reports": get_direct_reports_command,
         "msgraph-user-get-manager": get_manager_command,
