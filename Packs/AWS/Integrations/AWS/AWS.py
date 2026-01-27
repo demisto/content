@@ -3275,7 +3275,7 @@ class EC2:
         kwargs = {
             "VolumeId": args.get("volume_id"),
             "VolumeType": args.get("volume_type"),
-            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled"))
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
         }
 
         # Add optional modification parameters
@@ -3314,7 +3314,7 @@ class EC2:
                 "OriginalVolumeType": volume_modification.get("OriginalVolumeType"),
                 "OriginalThroughput": volume_modification.get("OriginalThroughput"),
                 "OriginalMultiAttachEnabled": volume_modification.get("OriginalMultiAttachEnabled"),
-            }
+            },
         }
 
         readable_output = tableToMarkdown(
@@ -3363,7 +3363,7 @@ class EC2:
             "SnapshotId": args.get("snapshot_id"),
             "VolumeType": args.get("volume_type"),
             "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
-            "ClientToken": args.get("client_token")
+            "ClientToken": args.get("client_token"),
         }
 
         if iops := args.get("iops"):
@@ -3469,7 +3469,7 @@ class EC2:
             "VolumeId": args.get("volume_id"),
             "Force": arg_to_bool_or_none(args.get("force")),
             "Device": args.get("device"),
-            "InstanceId": args.get("instance_id")
+            "InstanceId": args.get("instance_id"),
         }
 
         remove_nulls_from_dictionary(kwargs)

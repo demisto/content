@@ -7955,7 +7955,7 @@ def test_ec2_modify_volume_command_success(mocker):
     result = EC2.modify_volume_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.Volumes"
-    assert result.outputs["Modification"]["VolumeId"] == "vol-12345678"
+    assert result.outputs["VolumeId"] == "vol-12345678"
     assert "AWS EC2 Volume Modification" in result.readable_output
 
 

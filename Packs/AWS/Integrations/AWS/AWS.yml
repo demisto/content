@@ -8355,6 +8355,9 @@ script:
     - contextPath: AWS.EC2.Volumes.SseType
       description: Reserved for future use.
       type: string
+    - contextPath: AWS.EC2.VolumesNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: String
 
   - name: aws-ec2-volume-modify
     description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.

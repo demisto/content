@@ -2472,6 +2472,40 @@ Adds the specified inbound (egress) rules to a security group.
 
 There is no context output for this command.
 
+### aws-ec2-volume-detach
+
+***
+Detaches an EBS volume from an instance.
+
+#### Base Command
+
+`aws-ec2-volume-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| force | Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance. Possible values are: true, false. | Optional |
+| device | The device name (for example, /dev/sdh or xvdh). | Optional |
+| instance_id | The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
+| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The AWS service principal that owns the instance to which the volume is attached. |
+
 ### aws-ec2-address-allocate
 
 ***
@@ -2505,207 +2539,6 @@ Allocates an Elastic IP address to your AWS account. After you allocate the Elas
 | AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
 | AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
 | AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
-
-### aws-ec2-addresses-describe
-
-***
-Describes one or more of your Elastic IP addresses.
-
-#### Base Command
-
-`aws-ec2-addresses-describe`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
-| public_ips | One or more Elastic IP addresses, separated by commas. | Optional |
-| allocation_ids | One or more allocation IDs, separated by commas. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
-| AWS.EC2.ElasticIPs.AllocationId | string | The ID representing the allocation of the address. |
-| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
-| AWS.EC2.ElasticIPs.InstanceId | string | The ID of the instance the address is associated with \(if any\). |
-| AWS.EC2.ElasticIPs.AssociationId | string | The ID representing the association of the address with an instance. |
-| AWS.EC2.ElasticIPs.NetworkInterfaceId | string | The ID of the network interface. |
-| AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId | string | The ID of the AWS account that owns the network interface. |
-| AWS.EC2.ElasticIPs.PrivateIpAddress | string | The private IP address associated with the Elastic IP address. |
-| AWS.EC2.ElasticIPs.Tags.Key | string | The key of the tag. |
-| AWS.EC2.ElasticIPs.Tags.Value | string | The value of the tag. |
-| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
-| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
-| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address associated. |
-
-### aws-ec2-address-disassociate
-
-***
-Disassociates an Elastic IP address from the instance or network interface it's associated with.
-
-#### Base Command
-
-`aws-ec2-address-disassociate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| association_id | The association ID. Required for VPC. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-address-release
-
-***
-Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
-
-#### Base Command
-
-`aws-ec2-address-release`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| allocation_id | The allocation ID. Required for VPC. | Optional |
-| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-address-associate
-
-***
-Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
-
-#### Base Command
-
-`aws-ec2-address-associate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| allocation_id | The allocation ID. | Required |
-| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
-| network_interface_id | The ID of the network interface. | Optional |
-| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
-| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
-| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |
-
-### aws-ec2-volumes-describe
-
-***
-Describes the specified EBS volumes or all of your EBS volumes.
-
-#### Base Command
-
-`aws-ec2-volumes-describe`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options. | Optional |
-| volume_ids | A comma-separated list of volume IDs. | Optional |
-| limit | The maximum number of records to return. Valid range 5-1000. | Optional |
-| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
-| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
-| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
-| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
-| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
-| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
-| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
-| AWS.EC2.Volumes.CreateTime | date | The timestamp when volume creation was initiated. |
-| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
-| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
-| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
-| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
-| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
-| AWS.EC2.Volumes.State | string | The volume state. |
-| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
-| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
-| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
-| AWS.EC2.Volumes.VolumeType | string | The volume type. |
-| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
-| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
-| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
-| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
-
-### aws-ec2-volume-modify
-
-***
-You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
-
-#### Base Command
-
-`aws-ec2-volume-modify`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| volume_id | The ID of the volume. | Required |
-| size | Target size in GiB of the volume to be modified. | Optional |
-| volume_type | Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard. You also cannot change the type of a volume to standard. Possible values are: gp2, gp3, io1, io2, sc1, st1. | Optional |
-| iops | Target IOPS rate of the volume to be modified. | Optional |
-| throughput | Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes. | Optional |
-| multi_attach_enabled | Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.Volumes.Modification.VolumeId | string | The ID of the volume. |
-| AWS.EC2.Volumes.Modification.ModificationState | string | The current modification state. |
-| AWS.EC2.Volumes.Modification.StatusMessage | string | A status message about the modification progress or failure. |
-| AWS.EC2.Volumes.Modification.TargetSize | number | The target size of the volume, in GiB. |
-| AWS.EC2.Volumes.Modification.TargetIops | number | The target IOPS rate of the volume. |
-| AWS.EC2.Volumes.Modification.TargetVolumeType | string | The target EBS volume type of the volume. |
-| AWS.EC2.Volumes.Modification.TargetThroughput | number | The target throughput of the volume, in MiB/s. |
-| AWS.EC2.Volumes.Modification.TargetMultiAttachEnabled | boolean | The target setting for Amazon EBS Multi-Attach. |
-| AWS.EC2.Volumes.Modification.OriginalSize | number | The original size of the volume, in GiB. |
-| AWS.EC2.Volumes.Modification.OriginalIops | number | The original IOPS rate of the volume. |
-| AWS.EC2.Volumes.Modification.OriginalVolumeType | string | The original EBS volume type of the volume. |
-| AWS.EC2.Volumes.Modification.OriginalThroughput | number | The original throughput of the volume, in MiB/s. |
-| AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled | boolean | The original setting for Amazon EBS Multi-Attach. |
-| AWS.EC2.Volumes.Modification.Progress | number | The modification progress, from 0 to 100 percent complete. |
-| AWS.EC2.Volumes.Modification.StartTime | date | The modification start time. |
-| AWS.EC2.Volumes.Modification.EndTime | date | The modification completion or failure time. |
 
 ### aws-ec2-volume-create
 
@@ -2766,7 +2599,7 @@ Creates an EBS volume that can be attached to an instance in the same Availabili
 ### aws-ec2-volume-attach
 
 ***
-Attaches an EBS volume to a running or stopped instance and makes it available to the instance using the specified device name.
+Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
 
 #### Base Command
 
@@ -2786,6 +2619,7 @@ Attaches an EBS volume to a running or stopped instance and makes it available t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
 | AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
 | AWS.EC2.Volumes.Attachments.Device | string | The device name. |
 | AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
@@ -2795,38 +2629,55 @@ Attaches an EBS volume to a running or stopped instance and makes it available t
 | AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
 | AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached. |
 
-### aws-ec2-volume-detach
+### aws-ec2-address-release
 
 ***
-Detaches an EBS volume from an instance.
+Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
 
 #### Base Command
 
-`aws-ec2-volume-detach`
+`aws-ec2-address-release`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| volume_id | The ID of the volume. | Required |
-| force | Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance. Possible values are: true, false. | Optional |
-| device | The device name (for example, /dev/sdh or xvdh). | Optional |
-| instance_id | The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| allocation_id | The allocation ID. Required for VPC. | Optional |
+| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-address-associate
+
+***
+Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+
+#### Base Command
+
+`aws-ec2-address-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| allocation_id | The allocation ID. | Required |
+| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
+| network_interface_id | The ID of the network interface. | Optional |
+| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
+| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
-| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
-| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
-| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
-| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
-| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
-| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
-| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached. |
+| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
+| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |
 
 ### aws-ec2-volume-delete
 
@@ -2848,3 +2699,155 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-address-disassociate
+
+***
+Disassociates an Elastic IP address from the instance or network interface it's associated with.
+
+#### Base Command
+
+`aws-ec2-address-disassociate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| association_id | The association ID. Required for VPC. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-volume-modify
+
+***
+You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+#### Base Command
+
+`aws-ec2-volume-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| size | Target size in GiB of the volume to be modified. | Optional |
+| volume_type | Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard. You also cannot change the type of a volume to standard. Possible values are: gp2, gp3, io1, io2, sc1, st1. | Optional |
+| iops | Target IOPS rate of the volume to be modified. | Optional |
+| throughput | Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes. | Optional |
+| multi_attach_enabled | Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Modification.ModificationState | string | The current modification state. |
+| AWS.EC2.Volumes.Modification.StatusMessage | string | A status message about the modification progress or failure. |
+| AWS.EC2.Volumes.Size | number | The target size of the volume, in GiB. |
+| AWS.EC2.Volumes.Iops | number | The target IOPS rate of the volume. |
+| AWS.EC2.Volumes.VolumeType | string | The target EBS volume type of the volume. |
+| AWS.EC2.Volumes.Throughput | number | The target throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | The target setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.OriginalSize | number | The original size of the volume, in GiB. |
+| AWS.EC2.Volumes.Modification.OriginalIops | number | The original IOPS rate of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalVolumeType | string | The original EBS volume type of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalThroughput | number | The original throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled | boolean | The original setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.Progress | number | The modification progress, from 0 to 100 percent complete. |
+| AWS.EC2.Volumes.Modification.StartTime | date | The modification start time. |
+| AWS.EC2.Volumes.Modification.EndTime | date | The modification completion or failure time. |
+
+### aws-ec2-addresses-describe
+
+***
+Describes one or more of your Elastic IP addresses.
+
+#### Base Command
+
+`aws-ec2-addresses-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| public_ips | One or more Elastic IP addresses, separated by commas. | Optional |
+| allocation_ids | One or more allocation IDs, separated by commas. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
+| AWS.EC2.ElasticIPs.AllocationId | string | The ID representing the allocation of the address. |
+| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
+| AWS.EC2.ElasticIPs.InstanceId | string | The ID of the instance the address is associated with \(if any\). |
+| AWS.EC2.ElasticIPs.AssociationId | string | The ID representing the association of the address with an instance. |
+| AWS.EC2.ElasticIPs.NetworkInterfaceId | string | The ID of the network interface. |
+| AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId | string | The ID of the AWS account that owns the network interface. |
+| AWS.EC2.ElasticIPs.PrivateIpAddress | string | The private IP address associated with the Elastic IP address. |
+| AWS.EC2.ElasticIPs.Tags.Key | string | The key of the tag. |
+| AWS.EC2.ElasticIPs.Tags.Value | string | The value of the tag. |
+| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
+| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
+| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address associated. |
+
+### aws-ec2-volumes-describe
+
+***
+Describes the specified EBS volumes or all of your EBS volumes.
+
+#### Base Command
+
+`aws-ec2-volumes-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| volume_ids | A comma-separated list of volume IDs. | Optional |
+| limit | The maximum number of records to return. Valid range 5-1000. | Optional |
+| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
+| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
+| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
+| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
+| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
+| AWS.EC2.Volumes.State | string | The volume state. |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
+| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Volumes.VolumeType | string | The volume type. |
+| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
+| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
+| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
+| AWS.EC2.VolumesNextToken | String | Token to use for pagination in subsequent requests. |
