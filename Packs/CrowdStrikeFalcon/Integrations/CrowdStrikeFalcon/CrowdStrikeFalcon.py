@@ -4436,6 +4436,86 @@ async def send_batch_to_xsiam_and_save_context(
         raise
 
 
+def update_spotlight_state_and_metadata(
+    spotlight_state: ContentClientState,
+    cursor: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set
+) -> None:
+    """
+    Update Spotlight state with cursor and metadata.
+    Centralizes the repetitive state update logic.
+    
+    Args:
+        spotlight_state: State object to update
+        cursor: Pagination cursor/token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    spotlight_state.cursor = cursor
+    spotlight_state.metadata = {
+        "snapshot_id": snapshot_id,
+        "total_fetched_until_now": total_fetched,
+        "unique_aids": list(unique_aids),
+        "processed_aids": list(processed_aids)
+    }
+
+
+def handle_spotlight_fetch_error(
+    error: Exception,
+    client: ContentClient,
+    spotlight_state: ContentClientState,
+    context_store: ContentClientContextStore,
+    integration_context: dict,
+    after_token: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set
+) -> None:
+    """
+    Handle errors during Spotlight fetch by logging, saving state, and re-raising.
+    Consolidates error handling logic for both ContentClientError and general exceptions.
+    
+    Args:
+        error: The exception that occurred
+        client: ContentClient instance for diagnostics
+        spotlight_state: State object to update
+        context_store: Context store for saving state
+        integration_context: Full integration context dict
+        after_token: Current pagination token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched so far
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    # Log error with diagnostics if ContentClientError
+    if isinstance(error, ContentClientError):
+        demisto.error(f"ContentClient error during Spotlight fetch: {str(error)}")
+        diagnosis = client.diagnose_error(error)
+        demisto.error(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}")
+    else:
+        demisto.error(f"Unexpected error during Spotlight fetch: {str(error)}")
+    
+    # Save current state for retry (including processed_aids from handler)
+    update_spotlight_state_and_metadata(
+        spotlight_state=spotlight_state,
+        cursor=after_token,
+        snapshot_id=snapshot_id,
+        total_fetched=total_fetched,
+        unique_aids=unique_aids,
+        processed_aids=processed_aids
+    )
+    save_spotlight_state(context_store, integration_context, spotlight_state)
+    
+    # Re-raise the exception
+    raise
+
+
 async def fetch_spotlight_assets():
     """
     Fetch ALL Spotlight vulnerabilities using ContentClient with async capabilities.
@@ -4493,33 +4573,19 @@ async def fetch_spotlight_assets():
             
             # Update state BEFORE creating async task
             batch_counter += 1
-            spotlight_state.cursor = new_after_token
-            spotlight_state.metadata = {
-                "snapshot_id": snapshot_id,
-                "total_fetched_until_now": total_fetched,
-                "unique_aids": list(unique_aids),
-                "processed_aids": list(asset_handler.processed_aids)
-            }
-            
-            # Create async task to send vulnerability batch to XSIAM AND save context
-            # This is "fire and forget" - we don't wait for it to complete
-            task = asyncio.create_task(
-                send_batch_to_xsiam_and_save_context(
-                    data=vulnerabilities,
-                    vendor=VENDOR,
-                    product="Falcon_Spotlight",
-                    snapshot_id=snapshot_id,
-                    items_count=total_fetched if not new_after_token else 1,
-                    batch_number=batch_counter,
-                    last_saved_batch_number=last_saved_batch_number,
-                    context_store=context_store,
-                    integration_context=integration_context,
-                    state=spotlight_state,
-                    save_state_callback=save_spotlight_state,
-                    data_type="assets",
-                )
+            update_spotlight_state_and_metadata(
+                spotlight_state=spotlight_state,
+                cursor=new_after_token,
+                snapshot_id=snapshot_id,
+                total_fetched=total_fetched,
+                unique_aids=unique_aids,
+                processed_aids=asset_handler.processed_aids
             )
-            
+
+            task = create_task_send_batch_to_xsiam_and_save_context(batch_counter, context_store, integration_context,
+                                                                    last_saved_batch_number, new_after_token, snapshot_id,
+                                                                    spotlight_state, total_fetched, vulnerabilities)
+
             # Track task and update last_saved_batch_number when task completes
             def update_last_saved(future):
                 nonlocal last_saved_batch_number
@@ -4563,13 +4629,14 @@ async def fetch_spotlight_assets():
         
         # Fetch completed successfully - reset state for next run
         demisto.debug("Resetting Spotlight state after successful complete fetch")
-        spotlight_state.cursor = None
-        spotlight_state.metadata = {
-            "snapshot_id": "",
-            "total_fetched_until_now": 0,
-            "unique_aids": [],
-            "processed_aids": []
-        }
+        update_spotlight_state_and_metadata(
+            spotlight_state=spotlight_state,
+            cursor=None,
+            snapshot_id="",
+            total_fetched=0,
+            unique_aids=set(),
+            processed_aids=set()
+        )
         
         # Save reset state to integration context
         save_spotlight_state(context_store, integration_context, spotlight_state)
@@ -4583,41 +4650,63 @@ async def fetch_spotlight_assets():
         demisto.info(f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
                      f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}")
         
-    except ContentClientError as e:
-        demisto.error(f"ContentClient error during Spotlight fetch: {str(e)}")
-        diagnosis = client.diagnose_error(e)
-        demisto.error(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}")
-        
-        # Save current state for retry (including processed_aids from handler)
-        spotlight_state.cursor = after_token
-        spotlight_state.metadata = {
-            "snapshot_id": snapshot_id,
-            "total_fetched_until_now": total_fetched,
-            "unique_aids": list(unique_aids),
-            "processed_aids": list(asset_handler.processed_aids)
-        }
-        save_spotlight_state(context_store, integration_context, spotlight_state)
-        
-        raise
-    
-    except Exception as e:
-        demisto.error(f"Unexpected error during Spotlight fetch: {str(e)}")
-        
-        # Save current state for retry (including processed_aids from handler)
-        spotlight_state.cursor = after_token
-        spotlight_state.metadata = {
-            "snapshot_id": snapshot_id,
-            "total_fetched_until_now": total_fetched,
-            "unique_aids": list(unique_aids),
-            "processed_aids": list(asset_handler.processed_aids)
-        }
-        save_spotlight_state(context_store, integration_context, spotlight_state)
-        
-        raise
+    except (ContentClientError, Exception) as e:
+        handle_spotlight_fetch_error(
+            error=e,
+            client=client,
+            spotlight_state=spotlight_state,
+            context_store=context_store,
+            integration_context=integration_context,
+            after_token=after_token,
+            snapshot_id=snapshot_id,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+            processed_aids=asset_handler.processed_aids
+        )
     
     finally:
         # Clean up client resources
         await client.aclose()
+
+
+def create_task_send_batch_to_xsiam_and_save_context(batch_counter, context_store, integration_context,
+                                                           last_saved_batch_number, new_after_token, snapshot_id,
+                                                           spotlight_state, total_fetched, vulnerabilities):
+    """
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    This is a regular (non-async) function that creates and returns an async task.
+    
+    Args:
+        batch_counter: Current batch number
+        context_store: Context store for saving state
+        integration_context: Full integration context dict
+        last_saved_batch_number: Last successfully saved batch number
+        new_after_token: Next pagination token
+        snapshot_id: Snapshot ID for tracking
+        spotlight_state: State object to save
+        total_fetched: Total vulnerabilities fetched
+        vulnerabilities: List of vulnerabilities to send
+        
+    Returns:
+        asyncio.Task: The created async task
+    """
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=vulnerabilities,
+            vendor=VENDOR,
+            product="Falcon_Spotlight",
+            snapshot_id=snapshot_id,
+            items_count=total_fetched if not new_after_token else 1,
+            batch_number=batch_counter,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            integration_context=integration_context,
+            state=spotlight_state,
+            save_state_callback=save_spotlight_state,
+            data_type="assets",
+        )
+    )
+    return task
 
 
 def fetch_cnapp_assets():
