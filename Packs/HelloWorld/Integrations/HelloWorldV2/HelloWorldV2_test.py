@@ -156,14 +156,14 @@ class TestHelloWorldParams:
         assert str(params.url) == expected_clean_url
 
     @pytest.mark.parametrize(
-        "max_fetch,expected",
+        "max_fetch, expected",
         [
             pytest.param(10, 10, id="Within limit"),
-            pytest.param(50, 50, id="At limit"),
-            pytest.param(300, 200, id="Exceeds limit capped"),
+            pytest.param(10000, 10000, id="At limit"),
+            pytest.param(200000, 100000, id="Exceeds limit capped"),
         ],
     )
-    def test_params_max_fetch_capping(self, max_fetch, expected):
+    def test_params_max_events_fetch_capping(self, mocker: MockerFixture, max_fetch: int, expected: int):
         """
         Given:
             - A max_fetch value that may exceed the cap.
@@ -174,10 +174,42 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
+        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)  # Assume running on a Cortex XSIAM tenant
+
         params = HelloWorldParams(
             url="https://api.example.com",  # type: ignore[arg-type]
             credentials={"password": "secret"},  # type: ignore[arg-type]
-            max_fetch=max_fetch,
+            isFetchEvents=True,
+            max_events_fetch=max_fetch,
+        )
+        assert params.max_fetch == expected
+
+    @pytest.mark.parametrize(
+        "max_fetch, expected",
+        [
+            pytest.param(10, 10, id="Within limit"),
+            pytest.param(200, 200, id="At limit"),
+            pytest.param(1000, 200, id="Exceeds limit capped"),
+        ],
+    )
+    def test_params_max_incidents_fetch_capping(self, mocker: MockerFixture, max_fetch: int, expected: int):
+        """
+        Given:
+            - A max_fetch value that may exceed the cap.
+        When:
+            - Initializing HelloWorldParams.
+        Then:
+            - Assert max_fetch is capped at 50 for non-event systems.
+        """
+        from HelloWorldV2 import HelloWorldParams
+
+        mocker.patch("HelloWorldV2.SYSTEM.is_xsoar", True)  # Assume running on a Cortex XSOAR tenant
+
+        params = HelloWorldParams(
+            url="https://api.example.com",  # type: ignore[arg-type]
+            credentials={"password": "secret"},  # type: ignore[arg-type]
+            isFetch=True,
+            max_incidents_fetch=max_fetch,
         )
         assert params.max_fetch == expected
 

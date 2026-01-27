@@ -1,6 +1,8 @@
 # ruff: noqa: F401
 import asyncio
 import json
+import time
+import traceback
 
 from enum import Enum
 from typing import Any
@@ -319,7 +321,7 @@ SYSTEM = SystemCapabilities()
 class Credentials(ContentBaseModel):
     """Credentials model for API authentication."""
 
-    # Add `username: str` unless `hiddenusername: true` in the YML
+    # username field omitted because `hiddenusername: true` in YML
     password: SecretStr
 
 
@@ -329,11 +331,10 @@ class HelloWorldParams(BaseParams):
     credentials: Credentials
 
     # Fetch events / incidents parameters
-    is_fetch: bool | None = Field(default=False, alias=("isFetchEvents" if SYSTEM.can_send_events else "isFetch"))
-    max_fetch: int = Field(
-        default=1000 if SYSTEM.can_send_events else 10,
-        alias=("max_events_fetch" if SYSTEM.can_send_events else "max_incidents_fetch"),
-    )
+    is_fetch_events: bool | None = Field(default=False, alias="isFetchEvents")  # access via abstracted `is_fetch` property
+    is_fetch_incidents: bool | None = Field(default=False, alias="isFetch")
+    max_events_fetch: int = Field(default=1000, alias="max_events_fetch")  # access via abstracted `max_fetch` property
+    max_incidents_fetch: int = Field(default=10, alias="max_incidents_fetch")
     severity: HelloWorldSeverity = HelloWorldSeverity.HIGH
 
     # Fetch assets parameter
@@ -347,20 +348,31 @@ class HelloWorldParams(BaseParams):
     def api_key(self):
         return self.credentials.password
 
-    @validator("url", allow_reuse=True)
-    def clean_url(cls, v):  # noqa: N805
-        return v.rstrip("/")
+    @property
+    def is_fetch(self) -> bool | None:
+        """Abstract getter and validator the 'Fetch incidents / events' parameters, depending on system capabilities."""
+        return self.is_fetch_events if SYSTEM.can_send_events else self.is_fetch_events
 
-    @validator("max_fetch", allow_reuse=True)
-    def cap_max_fetch(cls, v: int):  # noqa: N805
-        """Cap max_fetch to manage rate of data flow."""
-        max_fetch = cast(int, arg_to_number(v))
-        max_fetch_cap = 100000 if SYSTEM.can_send_events else 200
+    @property
+    def max_fetch(self) -> int:
+        """Abstract getter and validator the 'Maximum per fetch' parameters, depending on system capabilities."""
+        if SYSTEM.can_send_events:
+            max_fetch_cap = 100000
+            max_fetch = self.max_events_fetch
+        else:
+            max_fetch = self.max_incidents_fetch
+            max_fetch_cap = 200
 
         if max_fetch > max_fetch_cap:
-            demisto.debug(f"[Param validation] Lowered configured {max_fetch=} to {max_fetch_cap=}")
+            demisto.debug(f"[Param validation] Lowered configured {max_fetch=} to {max_fetch_cap=}.")
             return max_fetch_cap
-        return v
+
+        return max_fetch
+
+    @validator("url", allow_reuse=True)
+    def clean_url(cls, v):  # noqa: N805
+        """Remove trailing forward slash from the 'URL' parameter"""
+        return v.rstrip("/")
 
 
 # endregion
@@ -645,7 +657,7 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/assets"
-        # params = {"limit": limit}
+        # params = {"limit": limit, "offset": id_offset}
         # return self.get(endpoint, params=params)
 
         mock_assets: list[dict] = []
@@ -664,7 +676,7 @@ class HelloWorldClient(ContentClient):
             mock_assets.append(asset_dict)
 
         # Assume our environment has no more assets batches after offset = 5000
-        mock_has_more_data = True if id_offset < 5000 else False
+        mock_has_more_data = bool(id_offset < 5000)
         mock_response = {"has_more": mock_has_more_data, "data": mock_assets}
         return mock_response
 
@@ -683,7 +695,7 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/vulnerabilities"
-        # params = {"limit": limit}
+        # params = {"limit": limit, "offset": id_offset}
         # return self.get(endpoint, params=params)
 
         mock_vulns: list[dict] = []
@@ -1029,19 +1041,19 @@ def fetch_alerts(
         HelloWorldLastRun: Next run state for the next fetch.
     """
     last_id_offset = last_run.id_offset
-    demisto.debug(f"[Fetch] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
+    demisto.debug(f"[Fetch Alerts] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
 
     alerts = asyncio.run(
         get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch, should_push=should_push)
     )
     if not alerts:
-        demisto.debug(f"[Fetch] No new alerts found. Keeping {last_id_offset=}.")
+        demisto.debug(f"[Fetch Alerts] No new alerts found. Keeping {last_id_offset=}.")
         return last_run
 
     next_id_offset = alerts[-1]["id"]
     next_run = HelloWorldLastRun(id_offset=next_id_offset)
 
-    demisto.debug(f"[Fetch] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
+    demisto.debug(f"[Fetch Alerts] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
     return next_run
 
 
@@ -1164,7 +1176,7 @@ def fetch_assets(
     #   - Do *NOT* update the the integration instance heath status to avoid showing a partial count of pulled data
 
     reported_items_count = 1 if has_more else (last_cumulative_count + batch_count)
-    update_health_module = False if has_more else True
+    update_health_module = not has_more
     if should_push:
         demisto.debug(
             f"[Fetch assets] Starting to send {batch_count} {current_data_type} to XSIAM with "
@@ -1177,7 +1189,7 @@ def fetch_assets(
             data_type=ASSETS,  # use "assets" data type even if pulling vulnerabilities
             items_count=reported_items_count,
             snapshot_id=last_snapshot_id,
-            should_update_health_module=update_health_module,  # Do not update health until all assets / vulnerabilities are fetched
+            should_update_health_module=update_health_module,  # Update health only when all assets / vulnerabilities are fetched
             client_class=ContentClient,
         )
         demisto.debug(
@@ -1290,14 +1302,14 @@ def ip_reputation_command(client: HelloWorldClient, args: IpArgs, params: HelloW
     # Thresholds should also be possible to override, as in this case,
     # where threshold is an actual argument of the command.
     threshold = args.threshold or params.threshold_ip
-    demisto.debug(f"[IP] Processing {len(args.ips)} IPs {threshold=}")
+    demisto.debug(f"[IP Reputation] Processing {len(args.ips)} IPs {threshold=}")
 
     # Initialize an empty list of CommandResults to return
     # each CommandResult will contain context standard for IP
     command_results: list[CommandResults] = []
 
     for ip in args.ips:
-        demisto.debug(f"[IP] Getting reputation for {ip=}")
+        demisto.debug(f"[IP Reputation] Getting reputation for {ip=}")
         ip_data = client.get_ip_reputation(ip)
         ip_data["ip"] = ip
 

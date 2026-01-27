@@ -860,7 +860,7 @@ REFERENCE DOCUMENTATION
 - The HelloWorldV2.py code file
 
 FOCUS AREAS
-Pydantic 1.10 validation models, Auth handling, ContentClient inheritance, ExecutionConfig pattern, and structured logging.
+Focus on implementing key features <including fetch if relevant> and avoid common pitfalls, as documented.
 
 REQUIREMENTS
 - Maintain backward compatibility with existing YML configuration parameters and command arguments (Do not add any new commands and keep existing ones)
@@ -884,7 +884,7 @@ REFERENCE DOCUMENTATION
 - The HelloWorldV2.py code file
 
 FOCUS AREAS
-Pydantic 1.10 validation models, Auth handling, ContentClient inheritance, ExecutionConfig pattern, and structured logging.
+Focus on implementing key features <including fetch if relevant> and avoid common pitfalls, as documented.
 
 API DETAILS
 - Base URL: <https://api.example.com>
@@ -924,6 +924,17 @@ REQUIREMENTS
 Make sure to write parameterized unit tests in the style of HelloWorldV2_test.py that check edge cases and cover at least 80% of the code. Mock API responses and helper functions where needed.
 Update the API Module dependencies and Docker image in MyIntegration.yml to match HelloWorldV2.yml
 ```
+
+### Pitfalls to Avoid
+
+Avoid the following where possible to adhere to best practices:
+
+- Do not create an API Client that inherits from `BaseClient` in `CommonServerPython`; inherit from `ContentClient` in `ContentClientApiModule` instead, which is backwards compatible.
+- Do not call `demisto.params()` directly; define a `params` property under the `ExecutionConfig` class and use `execution.params` instead.
+- Do not forget to define an alias for YML configuration parameter or command argument mapping if the field name in the YML is in the "camelCase" format in the validation models. For example: `snake_case_name: str = Field(alias="camelCaseName")`.
+- Do not skip defining a custom Pydantic `@validator` function for specific field(s) under the validation model for complex validation logic.
+- Do not forget to call `client.log_optional_diagnostic_report()` in `finally` block of the `main()` function.
+- Do not forget to accommodate all tenant types if the integration supports multiple marketplaces. For example `send_events_to_xsiam` is not supported on Cortex XSOAR tenants.
 
 ## Additional Resources
 
