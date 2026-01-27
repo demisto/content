@@ -202,7 +202,6 @@ def test_get_endpoints_command_with_duplicates(mocker):
     http_request = mocker.patch.object(test_client, "_http_request")
     http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
 
-    debug_mock = mocker.patch.object(demisto, "debug")
     info_mock = mocker.patch.object(demisto, "info")
 
     args = {"all_results": "true"}
