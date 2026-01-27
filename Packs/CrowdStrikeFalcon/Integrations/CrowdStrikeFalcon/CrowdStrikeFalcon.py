@@ -3899,7 +3899,7 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
     )
 
 
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set]:
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set, set]:
     """
     Load Spotlight state from integration context.
     
@@ -3907,7 +3907,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
         context_store: Context store for reading integration context
         
     Returns:
-        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids)
+        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
     """
     # Read entire integration context (preserves all existing keys)
     integration_context = context_store.read()
@@ -3921,11 +3921,13 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     snapshot_id = spotlight_state.metadata.get("snapshot_id", str(round(time.time() * 1000)))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
     
     demisto.debug(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-                  f"unique_aids_count={len(unique_aids)}, after_token={spotlight_state.cursor}")
+                  f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+                  f"after_token={spotlight_state.cursor}")
     
-    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids
+    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids
 
 
 def save_spotlight_state(
@@ -4012,6 +4014,185 @@ def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
     demisto.debug(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
     
     return existing_aids
+
+
+class AssetsDeviceHandler:
+    """
+    Handler for enriching and ingesting device assets asynchronously.
+    
+    Buffers unique AIDs from vulnerability batches, enriches them via the Devices API,
+    and sends enriched data to XSIAM using the async fire-and-forget pattern.
+    
+    Maintains separate batch tracking from vulnerability chain to prevent out-of-order context saves.
+    """
+    
+    def __init__(
+        self,
+        client: ContentClient,
+        context_store: ContentClientContextStore,
+        integration_context: dict,
+        spotlight_state: ContentClientState,
+        snapshot_id: str,
+        processed_aids: set,
+        batch_limit: int = 5000
+    ):
+        """
+        Initialize the AssetsDeviceHandler.
+        
+        Args:
+            client: ContentClient instance for API calls
+            context_store: Context store for thread-safe state persistence
+            integration_context: Full integration context dict (preserves all keys)
+            spotlight_state: Spotlight state object for metadata updates
+            snapshot_id: Snapshot ID for asset collection tracking
+            processed_aids: Set of already processed AIDs (for deduplication)
+            batch_limit: Number of AIDs to accumulate before triggering enrichment (default: 5000)
+        """
+        self.client = client
+        self.context_store = context_store
+        self.integration_context = integration_context
+        self.spotlight_state = spotlight_state
+        self.snapshot_id = snapshot_id
+        self.processed_aids = processed_aids
+        self.pending_buffer: set[str] = set()
+        self.batch_limit = batch_limit
+        
+        # SEPARATE batch tracking for assets chain (independent from vulnerability chain)
+        self.asset_batch_counter = 0
+        self.asset_last_saved_batch_number = 0
+        
+        self.running_tasks: set[asyncio.Task] = set()
+    
+    async def receive_aids(self, new_aids: set[str]) -> None:
+        """
+        Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
+        
+        Args:
+            new_aids: Set of AIDs extracted from vulnerability batch
+        """
+        # Deduplicate against already processed AIDs
+        unique_new = new_aids - self.processed_aids
+        self.pending_buffer.update(unique_new)
+        
+        demisto.debug(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
+        
+        # Trigger enrichment for full batches
+        while len(self.pending_buffer) >= self.batch_limit:
+            full_list = list(self.pending_buffer)
+            batch = full_list[:self.batch_limit]
+            self.pending_buffer = set(full_list[self.batch_limit:])
+            
+            demisto.debug(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
+            
+            # Create async enrichment task
+            task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
+            
+            # Track task with callback to update last_saved_batch_number
+            def update_last_saved(future):
+                nonlocal self
+                try:
+                    saved_batch_num = future.result()
+                    if saved_batch_num > self.asset_last_saved_batch_number:
+                        self.asset_last_saved_batch_number = saved_batch_num
+                        demisto.debug(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
+                except Exception as e:
+                    demisto.error(f"AssetsDeviceHandler: Enrichment task failed: {e}")
+                finally:
+                    self.running_tasks.discard(future)
+            
+            self.running_tasks.add(task)
+            task.add_done_callback(update_last_saved)
+    
+    async def enrich_and_ingest_batch(self, aid_batch: list[str]) -> None:
+        """
+        Enrich a batch of AIDs via Devices API and send to XSIAM.
+        
+        Args:
+            aid_batch: List of AIDs to enrich
+        """
+        # Increment ASSET batch counter (separate from vulnerability chain)
+        self.asset_batch_counter += 1
+        current_batch_number = self.asset_batch_counter
+        
+        demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
+        
+        try:
+            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            response = await self.client._request(
+                method="POST",
+                url_suffix="/devices/entities/devices/v2",
+                json={"ids": aid_batch}
+            )
+            
+            # Parse response
+            response_data = response.json()
+            devices = response_data.get("resources", [])
+            
+            if not devices:
+                demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
+                return
+            
+            demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
+            
+            # 2. Update state BEFORE sending to XSIAM
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+            
+            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            task = asyncio.create_task(
+                send_batch_to_xsiam_and_save_context(
+                    data=devices,
+                    vendor=VENDOR,
+                    product="Falcon_Spotlight_Assets",
+                    snapshot_id=self.snapshot_id,
+                    items_count=len(devices),
+                    batch_number=current_batch_number,
+                    last_saved_batch_number=self.asset_last_saved_batch_number,
+                    context_store=self.context_store,
+                    integration_context=self.integration_context,
+                    state=self.spotlight_state,
+                    save_state_callback=save_spotlight_state,
+                    data_type="assets"
+                )
+            )
+            
+            # Track the send task
+            self.running_tasks.add(task)
+            
+            demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+            
+        except Exception as e:
+            demisto.error(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}")
+            raise
+    
+    async def flush_remaining(self) -> None:
+        """
+        Flush remaining AIDs in buffer (< batch_limit) and wait for all enrichment tasks.
+        
+        Called after all vulnerability batches have been fetched to handle leftovers.
+        """
+        # Handle leftover AIDs that didn't reach batch_limit
+        if self.pending_buffer:
+            demisto.info(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs")
+            # Create task for remaining batch (fire-and-forget)
+            task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer)))
+            self.running_tasks.add(task)
+            self.pending_buffer.clear()
+        
+        # Wait for all enrichment and send tasks to complete
+        if self.running_tasks:
+            demisto.info(f"AssetsDeviceHandler: Waiting for {len(self.running_tasks)} enrichment/send tasks to complete")
+            results = await asyncio.gather(*self.running_tasks, return_exceptions=True)
+            
+            # Check for errors
+            for res in results:
+                if isinstance(res, Exception):
+                    demisto.error(f"AssetsDeviceHandler: Task failed: {res}")
+                    raise res
+            
+            demisto.info("AssetsDeviceHandler: All enrichment/send tasks completed successfully")
+        else:
+            demisto.debug("AssetsDeviceHandler: No running tasks to wait for")
 
 
 async def xsiam_api_call_async(
@@ -4239,7 +4420,7 @@ async def send_batch_to_xsiam_and_save_context(
         
         # 2. Wait for all chunks to complete
         await asyncio.gather(*tasks)
-        demisto.debug(f"[Batch {batch_number}] Successfully sent to XSIAM")
+        demisto.debug(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
         
         # 3. Save context ONLY if this is the latest batch using the provided callback
         if batch_number > last_saved_batch_number:
@@ -4247,7 +4428,7 @@ async def send_batch_to_xsiam_and_save_context(
             demisto.debug(f"[Batch {batch_number}] Context saved")
             return batch_number
         else:
-            demisto.debug(f"[Batch {batch_number}] Skipped save (batch {last_saved_batch_number} already saved)")
+            demisto.debug(f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)")
             return last_saved_batch_number
             
     except Exception as e:
@@ -4261,32 +4442,48 @@ async def fetch_spotlight_assets():
     Continues fetching in batches of 5000 until no more pages exist.
     Uses integration context for state persistence.
     Implements async fire-and-forget pattern for sending data to XSIAM.
+    Enriches unique AIDs via AssetsDeviceHandler for parallel asset ingestion.
     """
     demisto.info("Starting Spotlight assets fetch execution.")
     
     # Create context store
     context_store = ContentClientContextStore(namespace="CrowdStrikeFalcon")
     
-    # Load state from integration context
-    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids = load_spotlight_state(context_store)
+    # Load state from integration context (now includes processed_aids)
+    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
     after_token = spotlight_state.cursor
     
     # Create client
     client = create_spotlight_client(context_store)
     
-    # Track async send tasks and batch numbers
+    # Track async send tasks and batch numbers for VULNERABILITY chain
     pending_tasks: set[asyncio.Task] = set()
     batch_counter = 0
     last_saved_batch_number = 0
     
+    # Initialize AssetsDeviceHandler for ASSET enrichment chain (separate batch tracking)
+    asset_handler = AssetsDeviceHandler(
+        client=client,
+        context_store=context_store,
+        integration_context=integration_context,
+        spotlight_state=spotlight_state,
+        snapshot_id=snapshot_id,
+        processed_aids=processed_aids,
+        batch_limit=5000
+    )
+    
     try:
-        # Fetch ALL pages in a loop until no more data
+        # Fetch ALL vulnerability pages in a loop until no more data
         while True:
             # Fetch one batch (SEQUENTIAL - must wait for pagination token)
             vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
             
             # Extract unique AIDs from this batch
             unique_aids = extract_unique_aids(vulnerabilities, unique_aids)
+            
+            # Send AIDs to asset handler for enrichment (async fire-and-forget)
+            batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+            await asset_handler.receive_aids(batch_aids)
             
             # Update counters
             total_fetched += len(vulnerabilities)
@@ -4300,10 +4497,11 @@ async def fetch_spotlight_assets():
             spotlight_state.metadata = {
                 "snapshot_id": snapshot_id,
                 "total_fetched_until_now": total_fetched,
-                "unique_aids": list(unique_aids)
+                "unique_aids": list(unique_aids),
+                "processed_aids": list(asset_handler.processed_aids)
             }
             
-            # Create async task to send batch to XSIAM AND save context
+            # Create async task to send vulnerability batch to XSIAM AND save context
             # This is "fire and forget" - we don't wait for it to complete
             task = asyncio.create_task(
                 send_batch_to_xsiam_and_save_context(
@@ -4328,36 +4526,40 @@ async def fetch_spotlight_assets():
                 try:
                     last_saved_batch_number = future.result()
                 except Exception as e:
-                    demisto.error(f"Background task failed: {e}")
+                    demisto.error(f"Background vulnerability task failed: {e}")
                 finally:
                     pending_tasks.discard(future)
             
             pending_tasks.add(task)
             task.add_done_callback(update_last_saved)
-            demisto.debug(f"Created background task for batch {batch_counter}")
+            demisto.debug(f"Created background task for vulnerability batch {batch_counter}")
             
             # Check if more pages exist
             if not new_after_token:
-                # No more pages - we're done fetching!
-                demisto.info(f"Completed fetching. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
+                # No more pages - we're done fetching vulnerabilities!
+                demisto.info(f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
                 break
             
             # More pages exist - continue to next batch
             demisto.debug(f"More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
         
-        # Wait for all pending send tasks to complete before cleanup
+        # Wait for all pending vulnerability send tasks to complete
         if pending_tasks:
-            demisto.info(f"Waiting for {len(pending_tasks)} background send tasks to complete")
+            demisto.info(f"Waiting for {len(pending_tasks)} background vulnerability send tasks to complete")
             results = await asyncio.gather(*pending_tasks, return_exceptions=True)
             
             # Check for errors
             for res in results:
                 if isinstance(res, Exception):
-                    demisto.error(f"Background send task failed: {res}")
+                    demisto.error(f"Background vulnerability send task failed: {res}")
                     raise res
             
-            demisto.info("All background send tasks completed successfully")
+            demisto.info("All background vulnerability send tasks completed successfully")
+        
+        # Flush remaining AIDs and wait for all asset enrichment tasks
+        demisto.info("Flushing remaining AIDs and waiting for asset enrichment tasks")
+        await asset_handler.flush_remaining()
         
         # Fetch completed successfully - reset state for next run
         demisto.debug("Resetting Spotlight state after successful complete fetch")
@@ -4365,7 +4567,8 @@ async def fetch_spotlight_assets():
         spotlight_state.metadata = {
             "snapshot_id": "",
             "total_fetched_until_now": 0,
-            "unique_aids": []
+            "unique_aids": [],
+            "processed_aids": []
         }
         
         # Save reset state to integration context
@@ -4377,19 +4580,21 @@ async def fetch_spotlight_assets():
             "total_fetched_until_now": 0,
         })
 
-        demisto.info(f"Finished Spotlight assets fetch. Total fetched: {total_fetched}, Unique hosts: {len(unique_aids)}")
+        demisto.info(f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
+                     f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}")
         
     except ContentClientError as e:
         demisto.error(f"ContentClient error during Spotlight fetch: {str(e)}")
         diagnosis = client.diagnose_error(e)
         demisto.error(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}")
         
-        # Save current state for retry
+        # Save current state for retry (including processed_aids from handler)
         spotlight_state.cursor = after_token
         spotlight_state.metadata = {
             "snapshot_id": snapshot_id,
             "total_fetched_until_now": total_fetched,
-            "unique_aids": list(unique_aids)
+            "unique_aids": list(unique_aids),
+            "processed_aids": list(asset_handler.processed_aids)
         }
         save_spotlight_state(context_store, integration_context, spotlight_state)
         
@@ -4398,12 +4603,13 @@ async def fetch_spotlight_assets():
     except Exception as e:
         demisto.error(f"Unexpected error during Spotlight fetch: {str(e)}")
         
-        # Save current state for retry
+        # Save current state for retry (including processed_aids from handler)
         spotlight_state.cursor = after_token
         spotlight_state.metadata = {
             "snapshot_id": snapshot_id,
             "total_fetched_until_now": total_fetched,
-            "unique_aids": list(unique_aids)
+            "unique_aids": list(unique_aids),
+            "processed_aids": list(asset_handler.processed_aids)
         }
         save_spotlight_state(context_store, integration_context, spotlight_state)
         
