@@ -1471,9 +1471,11 @@ class FilterBuilder:
         WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         IPLIST_MATCH = ("IPLIST_MATCH", "OR")
+        IP_MATCH = ("IP_MATCH", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+        NEQ = ("NEQ", "AND")
 
     AND = "AND"
     OR = "OR"
