@@ -3726,6 +3726,93 @@ def process_tas_droplet_results(data_list):
     return processed_results_list, processed_vulnerabilities_list
 
 
+
+
+def process_results(data_list):
+    processed_results_list = []
+    processed_vulnerabilities_list = []
+    for data in data_list:
+        processed_results_list.append(
+            {
+                "_id": data.get("_id", ""),
+                "type": data.get("type", ""),
+                "hostname": data.get("hostname", ""),
+                "scanTime": data.get("scanTime", ""),
+                "osDistro": data.get("osDistro", ""),
+                "osDistroVersion": data.get("osDistroVersion", ""),
+                "osDistroRelease": data.get("osDistroRelease", ""),
+                "distro": data.get("distro", ""),
+                "packages": data.get("packages", []),
+                "files": data.get("files", []),
+                "id": data.get("id", ""),
+                "repoTag": data.get("repoTag", {}),
+                "tags": data.get("tags", []),
+                "repoDigests": data.get("repoDigests", []),
+                "creationTime": data.get("creationTime", ""),
+                "pushTime": data.get("pushTime", ""),
+                "vulnerabilitiesCount": data.get("vulnerabilitiesCount", 0),
+                "vulnerabilityRiskScore": data.get("vulnerabilityRiskScore", 0),
+                "riskFactors": data.get("riskFactors", {}),
+                "complianceRiskScore": data.get("complianceRiskScore", 0),
+                "layers": data.get("layers", []),
+                "labels": data.get("labels", []),
+                "scanVersion": data.get("scanVersion", ""),
+                "firstScanTime": data.get("firstScanTime", ""),
+                "cloudMetadata": data.get("cloudMetadata", {}),
+                "namespaces": data.get("namespaces", []),
+                "clusters": data.get("clusters", []),
+                "instances": data.get("instances", []),
+                "hosts": data.get("hosts", {}),
+                "scanID": data.get("scanID", 0),
+                "hostDevices": data.get("hostDevices", []),
+            }
+        )
+        processed_vulnerabilities_list.extend(process_all_findings(data.get("vulnerabilities", []) or [], data))
+    return processed_results_list, processed_vulnerabilities_list
+
+
+
+def process_all_findings(vulnerabilities=[], related_asset={}):
+    processed_vulnerabilities = []
+    for vulnerability in vulnerabilities:
+        processed_vulnerabilities.append(
+            {
+                "asset_id": related_asset.get("_id", "") or related_asset.get("id", ""),
+                "scanTime": related_asset.get("scanTime", ""),
+                "scanID": related_asset.get("scanID", ""),
+                "scanVersion": related_asset.get("scanVersion", ""),
+                "cloudMetadata": related_asset.get("cloudMetadata", {}),
+                "applicableRules": vulnerability.get("applicableRules", []),
+                "binaryPkgs": vulnerability.get("binaryPkgs", []),
+                "cause": vulnerability.get("cause", ""),
+                "cve": vulnerability.get("cve", ""),
+                "cvss": vulnerability.get("cvss", 0),
+                "description": vulnerability.get("description", ""),
+                "discovered": vulnerability.get("discovered", ""),
+                "exploit": vulnerability.get("exploit", ""),
+                "fixDate": vulnerability.get("fixDate", 0),
+                "id": vulnerability.get("id", 0),
+                "link": vulnerability.get("link", ""),
+                "packageName": vulnerability.get("packageName", ""),
+                "packageType": vulnerability.get("packageType", ""),
+                "packageVersion": vulnerability.get("packageVersion", ""),
+                "published": vulnerability.get("published", 0),
+                "riskFactors": vulnerability.get("riskFactors", {}),
+                "severity": vulnerability.get("severity", ""),
+                "status": vulnerability.get("status", ""),
+                "text": vulnerability.get("text", ""),
+                "title": vulnerability.get("title", ""),
+                "type": vulnerability.get("type", ""),
+                "vecStr": vulnerability.get("vecStr", ""),
+                "vulnTagInfos": vulnerability.get("vulnTagInfos", []),
+            }
+        )
+    return processed_vulnerabilities
+
+
+
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
