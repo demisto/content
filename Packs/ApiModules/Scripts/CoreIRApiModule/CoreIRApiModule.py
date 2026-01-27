@@ -2368,7 +2368,7 @@ def get_endpoints_command(client, args):
 
     sort_by_first_seen = args.get("sort_by_first_seen")
     sort_by_last_seen = args.get("sort_by_last_seen")
-    
+
     # When fetching all results without explicit sort, use endpoint_id to ensure stable pagination
     if all_results and not sort_by_first_seen and not sort_by_last_seen:
         sort_by_first_seen = "asc"
@@ -2434,10 +2434,10 @@ def get_endpoints_command(client, args):
             else:
                 duplicates_found += 1
                 demisto.debug(f"get_endpoints_command: duplicate endpoint_id found and removed: {endpoint_id}")
-        
+
         if duplicates_found > 0:
             demisto.info(f"get_endpoints_command: removed {duplicates_found} duplicate endpoint(s) from results")
-        
+
         endpoints = unique_endpoints
 
     if convert_timestamp_to_datestring:
@@ -2458,7 +2458,9 @@ def get_endpoints_command(client, args):
     if account_context:
         context[Common.Account.CONTEXT_PATH] = account_context
 
-    return CommandResults(readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints)
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
+    )
 
 
 def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
