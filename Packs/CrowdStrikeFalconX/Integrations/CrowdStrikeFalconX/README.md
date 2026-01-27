@@ -31,7 +31,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Uploads a file for sandbox analysis.
-Notice that the file identifier (SHA) can be changed as shown in the example below.
 
 #### Base Command
 
@@ -50,13 +49,19 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional |
 | submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". Possible values are: no, yes. Default is no. | Optional |
+| environment_id | Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true. Possible values are: 400: MacOS Catalina 10.15, 310: Linux Ubuntu 20 (64-bit), 200: Android (static analysis), 160: Windows 10 (64-bit), 140: Windows 11 (64-bit), 110: Windows 7 (64-bit), 100: Windows 7 (32-bit). Default is 160: Windows 10 (64-bit). | Optional |
+| action_script | Runtime script for sandbox analysis. Relevant if the submit_file parameter is set to true. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie. | Optional |
+| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true. | Optional |
+| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true. | Optional |
+| submit_name | Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true. | Optional |
+| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true. | Optional |
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true. | Optional |
+| network_settings | Specifies the sandbox network configuration used for analysis.<br/>Possible values are:<br/>- default: Fully operating network (default behavior if not specified).<br/>- tor: Route network traffic via TOR.<br/>- simulated: Simulate network traffic.<br/>- offline: Disable all network traffic.<br/>. Possible values are: default, tor, simulated, offline. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
-| csfalconx.resource.file_name | String | Name of the uploaded file.  |
 | csfalconx.resource.tags | String | Analysis tags. |
 | csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
 | csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
@@ -106,48 +111,24 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
 | csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
 | csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sandbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sandbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sandbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sandbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sandbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sandbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sandbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sandbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sandbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sandbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sandbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sandbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sandbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sandbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sandbox signatures origin. |
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
-
-#### Command Example
-
-```!cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
-
-#### Context Example
-
-```
-{
-    "csfalconx": {
-        "resource": {
-            "file_name": "test.pdf",
-            "sha256": "c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### CrowdStrike Falcon Intelligence Sandbox response
->
->|file_name|sha256|
->|---|---|
->| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
+| csfalconx.resource.file_name | String | Name of the uploaded file.  |
 
 ### cs-fx-submit-uploaded-file
 
