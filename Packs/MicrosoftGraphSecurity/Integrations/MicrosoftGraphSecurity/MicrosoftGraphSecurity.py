@@ -1927,7 +1927,7 @@ def list_ediscovery_case_hold_policy_command(
     """
     case_id = args.get("case_id")
     hold_policy_id = args.get("hold_policy_id")
-    limit = None if argToBoolean(args.get("all_results", 50)) else int(args.get("limit"))
+    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit", 50))
 
     if hold_policy_id:
         raw_res = client.get_ediscovery_case_hold_policy(case_id, hold_policy_id)

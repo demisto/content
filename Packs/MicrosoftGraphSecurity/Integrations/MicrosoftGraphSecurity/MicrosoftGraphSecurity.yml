@@ -2589,7 +2589,6 @@ script:
       required: true
     description: Delete an eDiscovery hold policy. This command submits a deletion request to Microsoft Graph; the policy may not be removed immediately and can take some time to complete.
     name: msg-delete-ediscovery-case-hold-policy
-    output: []
   - arguments:
     - description: The ID of the eDiscovery case.
       isArray: false
