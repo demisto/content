@@ -1986,7 +1986,7 @@ def test_process_all_findings_standalone():
         "scanTime": "2024-01-01T00:00:00Z",
         "scanID": "scan_999",
         "scanVersion": "1.0",
-        "cloudMetadata": {"region": "us-east-1"}
+        "cloudMetadata": {"region": "us-east-1"},
     }
 
     vulnerabilities = [
@@ -1995,12 +1995,12 @@ def test_process_all_findings_standalone():
             "severity": "high",
             "packageName": "openssl",
             "cvss": 8.1,
-            "riskFactors": {"Attack complexity: low": "true"}
+            "riskFactors": {"Attack complexity: low": "true"},
         },
         {
             "cve": "CVE-2023-5678"
             # Missing many fields to test defaults
-        }
+        },
     ]
 
     # Case 1: Asset with vulnerabilities
@@ -2041,10 +2041,8 @@ def test_process_results_all_cases():
             "hostname": "host-1",
             "scanTime": "2024-01-01T10:00:00Z",
             "distro": "Alpine",
-            "vulnerabilities": [
-                {"cve": "CVE-IMAGE-1", "severity": "critical"}
-            ],
-            "vulnerabilitiesCount": 1
+            "vulnerabilities": [{"cve": "CVE-IMAGE-1", "severity": "critical"}],
+            "vulnerabilitiesCount": 1,
         },
         # Case: Host without findings and some empty fields
         {
@@ -2053,7 +2051,7 @@ def test_process_results_all_cases():
             "type": "host",
             "vulnerabilities": None,  # Test None handling
             "vulnerabilitiesCount": 0,
-            "osDistro": ""  # Empty field
+            "osDistro": "",  # Empty field
         },
         # Case: TAS Droplet (simulated)
         {
@@ -2061,8 +2059,8 @@ def test_process_results_all_cases():
             "type": "tas",
             "hostname": "tas-app-1",
             "vulnerabilities": [],
-            "vulnerabilitiesCount": 0
-        }
+            "vulnerabilitiesCount": 0,
+        },
     ]
 
     # Case 1: Process full list
