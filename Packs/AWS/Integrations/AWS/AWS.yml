@@ -8282,7 +8282,7 @@ script:
       required: false
       isArray: true
     - name: limit
-      description: The maximum number of records to return. Valid range 5-1000
+      description: The maximum number of records to return. The valid range is 5-1000.
     - name: next_token
       description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
     outputs:
@@ -8412,7 +8412,7 @@ script:
       description: Target size in GiB of the volume to be modified.
       required: false
     - name: volume_type
-      description: Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard. You also cannot change the type of a volume to standard.
+      description: Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard.
       required: false
       auto: PREDEFINED
       predefined:

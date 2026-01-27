@@ -7864,7 +7864,7 @@ def test_ec2_describe_volumes_command_with_filters(mocker):
     volumes_key = "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)"
     assert len(result.outputs[volumes_key]) == 1
     assert result.outputs[volumes_key][0]["Encrypted"] is True
-    mock_client.describe_volumes.assert_called_once()
+    mock_client.describe_volumes.assert_called_once_with()
 
 
 def test_ec2_describe_volumes_command_no_volumes_found(mocker):
