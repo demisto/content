@@ -58,9 +58,6 @@ jobs:
 
           # Force 'origin' to use the custom PAT
           git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${REPO}.git"
-
-          git config --global user.email "Content-Bot@users.noreply.github.com"
-          git config --global user.name "Content Bot"
           
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
 
