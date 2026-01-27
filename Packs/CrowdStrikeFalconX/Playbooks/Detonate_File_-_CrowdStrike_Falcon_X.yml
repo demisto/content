@@ -492,8 +492,6 @@ tasks:
         simple: ${inputs.CommandLine}
       document_password:
         simple: ${inputs.DocumentPassword}
-      enable_tor:
-        simple: "false"
       environment_id:
         simple: ${inputs.EnvironmentID}
       sha256:
