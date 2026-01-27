@@ -2867,8 +2867,8 @@ script:
       - 'false'
       defaultValue: 'false'
       auto: PREDEFINED
-    - description: Download the report when an export file link is available.
-      name: ediscovery-export-file
+    - description: 'Download the export report when an export file link is available. Only applies when operation_id is provided. If you get an authorization/permissions error while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1.'
+      name: download_file
       isArray: false
       required: false
       predefined:
@@ -2876,7 +2876,7 @@ script:
       - 'false'
       defaultValue: 'false'
       auto: PREDEFINED
-    description: Get a list of the caseOperation objects and their properties.
+    description: Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
     name: msg-list-case-operation
     outputs:
     - contextPath: MsGraph.eDiscoveryCase.Operation.ID
@@ -3002,6 +3002,36 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Operation.ResultInfo.Subcode
       description: The result subcode.
       type: Number
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - arguments:
     - description: The ID of the eDiscovery case.
       isArray: false

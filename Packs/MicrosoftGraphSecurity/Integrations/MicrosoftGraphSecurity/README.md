@@ -53,6 +53,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update/delete-ediscovery`, `msg-export-result-ediscovery-data` commands)
+3. eDiscovery.Download.Read - Delegated (Required for the msg-list-case-operation, download_file=True command)
+More information about defining this permission can be found [here](https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http).
 
 **Threat Assessment**:
 
@@ -2577,7 +2579,7 @@ Get a list of the ediscoveryHoldPolicy objects and their properties.
 ### msg-export-result-ediscovery-data
 
 ***
-Export results from an estimated ediscoverySearch. For details, see [Manage a collection estimate](https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
+Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
 
 #### Base Command
 
@@ -2589,12 +2591,12 @@ Export results from an estimated ediscoverySearch. For details, see [Manage a co
 | --- | --- | --- |
 | case_id | The ID of the eDiscovery case. | Required |
 | search_id | The ID of the search. | Required |
-| additional_options | The additional options for the export. Use the Prefer header include-unknown-enum-members. Possible values are: none, teamsAndYammerConversations, cloudAttachments, allDocumentVersions, subfolderContents, listAttachments, htmlTranscripts, advancedIndexing, allItemsInFolder, includeFolderAndPath, condensePaths, friendlyName, splitSource, includeReport. | Required |
+| additional_options | The additional options for the export. Possible values are: none, teamsAndYammerConversations, cloudAttachments, allDocumentVersions, subfolderContents, listAttachments, htmlTranscripts, advancedIndexing, allItemsInFolder, includeFolderAndPath, condensePaths, friendlyName, splitSource, includeReport. | Required |
 | export_criteria | The portion of the estimate results to be exported. Possible values are: searchHits, partiallyIndexed. | Required |
 | export_format | The desired format of the exported emails. Possible values are: pst, msg. | Required |
 | cloud_attachment_version | The versions of cloud attachments to include in messages. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
 | description | The description of the export result. | Optional |
-| displayName | The display name of the export result. | Required |
+| display_name | The display name of the export result. | Required |
 | document_version | The versions of files in SharePoint to include. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
 | export_location | Location scope for partially indexed items. You can choose to include partially indexed items only in responsive locations with search hits or in all targeted locations. Possible values are: responsiveLocations, nonresponsiveLocations. | Optional |
 
@@ -2605,7 +2607,7 @@ There is no context output for this command.
 ### msg-delete-ediscovery-case-hold-policy
 
 ***
-Delete an ediscoveryHoldPolicy object.
+Delete an eDiscovery hold policy. This command submits a deletion request to Microsoft Graph; the policy may not be removed immediately and can take some time to complete.
 
 #### Base Command
 
@@ -2625,7 +2627,7 @@ There is no context output for this command.
 ### msg-list-case-operation
 
 ***
-Get a list of the caseOperation objects and their properties.
+Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
 
 #### Base Command
 
@@ -2639,16 +2641,15 @@ Get a list of the caseOperation objects and their properties.
 | operation_id | The ID of the operation. | Optional |
 | limit | Number of total results to return. The default is 50. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional |
+| download_file | Download the export report when an export file link is available. Only applies when operation_id is provided. If you get an authorization/permissions error while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&amp;tabs=http#response-1. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.eDiscoveryCase.Operation.ID | String | The ID of the case operation. Read-only. |
-| MsGraph.eDiscoveryCase.Operation.Action | String | The type of action the operation represents \(caseAction\). Example values: contentExport, applyTags, convertToPdf, index, estimateStatistics, addToReviewSet, holdUpdate, purgeData, exportReport, exportResult, holdPolicySync.
- |
-| MsGraph.eDiscoveryCase.Operation.Status | String | The status of the case operation. Possible values: notStarted, submissionFailed, running, succeeded, partiallySucceeded, failed.
- |
+| MsGraph.eDiscoveryCase.Operation.Action | String | The type of action the operation represents \(caseAction\). Example values: contentExport, applyTags, convertToPdf, index, estimateStatistics, addToReviewSet, holdUpdate, purgeData, exportReport, exportResult, holdPolicySync. |
+| MsGraph.eDiscoveryCase.Operation.Status | String | The status of the case operation. Possible values: notStarted, submissionFailed, running, succeeded, partiallySucceeded, failed. |
 | MsGraph.eDiscoveryCase.Operation.PercentProgress | Number | The progress of the operation. |
 | MsGraph.eDiscoveryCase.Operation.CreatedDateTime | Date | The date and time the operation was created. |
 | MsGraph.eDiscoveryCase.Operation.CompletedDateTime | Date | The date and time the operation was completed. |
@@ -2685,6 +2686,16 @@ Get a list of the caseOperation objects and their properties.
 | MsGraph.eDiscoveryCase.Operation.ResultInfo.Code | Number | The result code \(2xx success, 4xx client error, 5xx server error\). |
 | MsGraph.eDiscoveryCase.Operation.ResultInfo.Message | String | The result message. |
 | MsGraph.eDiscoveryCase.Operation.ResultInfo.Subcode | Number | The result subcode. |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
 
 ### msg-create-ediscovery-case-hold-policy
 

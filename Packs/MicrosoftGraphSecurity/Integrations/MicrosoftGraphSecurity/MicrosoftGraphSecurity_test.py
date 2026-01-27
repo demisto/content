@@ -50,6 +50,9 @@ from MicrosoftGraphSecurity import (
     update_ediscovery_case_policy_command,
     list_ediscovery_case_hold_policy_command,
     list_case_operation_command,
+    _extract_export_download_url,
+    _extract_filename_from_headers,
+    _download_operation_export_file,
     export_result_ediscovery_data_command,
 )
 
@@ -1083,7 +1086,7 @@ def test_delete_ediscovery_case_hold_policy_command(mocker):
 
     result = delete_ediscovery_case_hold_policy_command(client_mocker, args)
 
-    assert "successfully deleted" in result.readable_output
+    assert "was sent successfully" in result.readable_output
     assert "hold_123" in result.readable_output
 
 
@@ -1207,6 +1210,41 @@ def test_list_case_operation_command_get(mocker):
     assert "AddToReviewSet" in result.readable_output
 
 
+def test_list_case_operation_command_with_download(mocker):
+    """
+    Given:
+        Arguments requesting a specific operation ID with download_file='true'.
+    When:
+        Calling list_case_operation_command.
+    Then:
+        1. The operation details are fetched.
+        2. The download helper is called.
+        3. A list containing [FileResult, CommandResult] is returned.
+    """
+    args = {"case_id": "case_1", "operation_id": "op_1", "download_file": "true"}
+
+    op_data = {
+        "id": "op_1",
+        "action": "Export",
+        "status": "Succeeded",
+        "exportFileMetadata": {"downloadUrl": "https://download.me"},
+    }
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=op_data)
+
+    mock_file_result = {"Type": 3, "File": "export.zip", "Contents": b"data"}
+    mocker.patch("MicrosoftGraphSecurity._download_operation_export_file", return_value=mock_file_result)
+
+    results = list_case_operation_command(client_mocker, args)
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+
+    assert results[0] == mock_file_result
+
+    assert isinstance(results[1], CommandResults)
+    assert results[1].outputs[0]["ID"] == "op_1"
+
+
 def test_export_result_ediscovery_data_command(mocker):
     """
     Given:
@@ -1227,3 +1265,133 @@ def test_export_result_ediscovery_data_command(mocker):
 
     assert "eDiscovery export request was submitted successfully" in result.readable_output
     assert "op_123" in result.readable_output
+
+
+# ==========================================
+# Helper Function Tests
+# ==========================================
+
+
+@pytest.mark.parametrize(
+    "operation_data, expected_url",
+    [
+        # Case 1: exportFileMetadata is a dictionary
+        (
+            {"exportFileMetadata": {"downloadUrl": "https://example.com/file1.zip"}},
+            "https://example.com/file1.zip",
+        ),
+        # Case 2: exportFileMetadata is a list of dictionaries
+        (
+            {"exportFileMetadata": [{"downloadUrl": "https://example.com/file2.zip"}]},
+            "https://example.com/file2.zip",
+        ),
+        # Case 3: No exportFileMetadata
+        ({"id": "op1"}, None),
+        # Case 4: exportFileMetadata exists but has no downloadUrl
+        ({"exportFileMetadata": {}}, None),
+    ],
+)
+def test_extract_export_download_url(operation_data, expected_url):
+    """
+    Given:
+        An operation dictionary with varying structures for 'exportFileMetadata'.
+    When:
+        Calling _extract_export_download_url.
+    Then:
+        The correct download URL is extracted or None is returned.
+    """
+    assert _extract_export_download_url(operation_data) == expected_url
+
+
+@pytest.mark.parametrize(
+    "headers, default, expected_filename",
+    [
+        # Case 1: Standard double-quoted filename
+        ({"Content-Disposition": 'attachment; filename="export_123.zip"'}, "def.zip", "export_123.zip"),
+        # Case 2: Unquoted filename
+        ({"Content-Disposition": "attachment; filename=plain.csv"}, "def.zip", "plain.csv"),
+        # Case 3: Case insensitive header key
+        ({"content-disposition": 'attachment; filename="lower.zip"'}, "def.zip", "lower.zip"),
+        # Case 4: Header missing
+        ({}, "default.zip", "default.zip"),
+        # Case 5: Header exists but no filename parameter
+        ({"Content-Disposition": "attachment; size=100"}, "fallback.zip", "fallback.zip"),
+    ],
+)
+def test_extract_filename_from_headers(headers, default, expected_filename):
+    """
+    Given:
+        Response headers and a default filename.
+    When:
+        Calling _extract_filename_from_headers.
+    Then:
+        The filename is correctly parsed from the Content-Disposition header,
+        or the default is returned if missing.
+    """
+    assert _extract_filename_from_headers(headers, default) == expected_filename
+
+
+# ==========================================
+# Download Logic Tests
+# ==========================================
+
+
+def test_download_operation_export_file_success(mocker):
+    """
+    Given:
+        An operation with a valid download URL.
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        The client downloads the file, and a fileResult dict is returned with the correct content and name.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    mock_response.ok = True
+    mock_response.content = b"file_content_bytes"
+    mock_response.headers = {"Content-Disposition": 'attachment; filename="results.csv"'}
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    result = _download_operation_export_file(client_mocker, operation)
+
+    assert result["File"] == "results.csv"
+
+
+@pytest.mark.parametrize(
+    "mock_attrs, expected_error_msg",
+    [
+        # Case 1: HTTP Error (ok=False)
+        (
+            {"ok": False, "status_code": 404, "text": "Not Found", "content": b""},
+            "Failed to download export file. HTTP 404. Not Found",
+        ),
+        # Case 2: Empty content (ok=True but content is empty)
+        (
+            {"ok": True, "status_code": 200, "content": b"", "headers": {}},
+            "Downloaded export file is empty. HTTP 200.",
+        ),
+    ],
+)
+def test_download_operation_export_file_errors(mocker, mock_attrs, expected_error_msg):
+    """
+    Given:
+        A client response that indicates failure (404 error or empty body).
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        A DemistoException is raised with the specific error message.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    for key, value in mock_attrs.items():
+        setattr(mock_response, key, value)
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    with pytest.raises(DemistoException) as e:
+        _download_operation_export_file(client_mocker, operation)
+
+    assert expected_error_msg in str(e.value)

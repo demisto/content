@@ -662,15 +662,25 @@ class MsGraphClient:
             method="PATCH", url_suffix=f"security/incidents/{incident_id}", json_data=body, timeout=timeout
         )
         return updated_incident
-    
-    
+
     def download_export_file(self, download_url: str):
+        """
+        Download an eDiscovery export file using the download URL returned by Microsoft Graph.
+
+        Args:
+            download_url (str): The pre-authorized download URL returned in the
+                `exportFileMetadata` property of an export operation.
+
+        Returns:
+            requests.Response: The raw HTTP response object (resp_type="response"),
+                which can be streamed or saved to disk by the caller.
+        """
         return self.ms_client.http_request(
             method="GET",
             headers={"X-AllowWithAADToken": "true"},
             full_url=download_url,
             resp_type="response",
-            scope="b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+            scope="b26e684c-5068-4120-a679-64a5d2c909d9/.default",
         )
 
 
@@ -1840,14 +1850,15 @@ def delete_ediscovery_case_hold_policy_command(
     Returns:
         CommandResults with a success message.
     """
+    hold_policy_id = args.get("hold_policy_id")
+    case_id = args.get("case_id")
+
     client.delete_ediscovery_case_hold_policy(
-        args.get("case_id"),
-        args.get("hold_policy_id"),
+        case_id,
+        hold_policy_id,
     )
     return CommandResults(
-        readable_output=(
-            f'The hold policy {args.get("hold_policy_id")} ' f'for the case {args.get("case_id")} has been successfully deleted.'
-        ),
+        readable_output=(f"The deletion request for hold policy {hold_policy_id} in case {case_id} was sent successfully."),
     )
 
 
@@ -1916,7 +1927,7 @@ def list_ediscovery_case_hold_policy_command(
     """
     case_id = args.get("case_id")
     hold_policy_id = args.get("hold_policy_id")
-    limit = None if argToBoolean(args.get("all_results",50)) else int(args.get("limit"))
+    limit = None if argToBoolean(args.get("all_results", 50)) else int(args.get("limit"))
 
     if hold_policy_id:
         raw_res = client.get_ediscovery_case_hold_policy(case_id, hold_policy_id)
@@ -1956,7 +1967,7 @@ def list_case_operation_command(
     case_id = args.get("case_id")
     operation_id = args.get("operation_id")
 
-    ediscovery_export_file = argToBoolean(args.get("ediscovery-export-file", "false"))
+    download_file = argToBoolean(args.get("download_file", "false"))
     all_results = argToBoolean(args.get("all_results", "false"))
     limit = None if all_results else int(args.get("limit", 50))
 
@@ -1964,8 +1975,8 @@ def list_case_operation_command(
 
     if operation_id:
         raw_res = client.get_case_operation(case_id, operation_id)
-        operation_list = [raw_res] if isinstance(raw_res, dict) else []
-        if ediscovery_export_file and operation_list:
+        operation_list = [raw_res]
+        if download_file and operation_list:
             file_result = _download_operation_export_file(client, operation_list[0])
     else:
         raw_res = client.list_case_operation(case_id, limit)
@@ -2017,57 +2028,49 @@ def _extract_export_download_url(operation: dict) -> str | None:
     return None
 
 
-def _extract_filename_from_headers(headers: dict, default: str = "ediscovery_export") -> str:
+def _extract_filename_from_headers(
+    headers: Optional[dict[str, str]] = None,
+    default: str = "ediscovery_export.zip",
+) -> str:
     """
-    Tries Content-Disposition: filename= and filename*= (RFC 5987).
+    Extract a filename from the Content-Disposition header (expects `filename=...`).
+
+    Args:
+        headers: Response headers mapping.
+        default: Filename to return if Content-Disposition is missing or unparseable.
+
+    Returns:
+        The extracted filename, or `default`.
     """
+    headers = headers or {}
     cd = headers.get("Content-Disposition") or headers.get("content-disposition") or ""
-    if not cd:
-        return default
 
-    # filename*=UTF-8''something.zip
-    m = re.search(r"filename\*\s*=\s*([^;]+)", cd, flags=re.IGNORECASE)
-    if m:
-        value = m.group(1).strip().strip('"')
-        # common pattern: UTF-8''encoded
-        if "''" in value:
-            value = value.split("''", 1)[1]
-        try:
-            return unquote(value) or default
-        except Exception:
-            return value or default
-
-    # filename="something.zip" OR filename=something.zip
-    m = re.search(r'filename\s*=\s*"?([^";]+)"?', cd, flags=re.IGNORECASE)
-    if m:
-        return m.group(1).strip() or default
-
-    return default
+    m = re.search(r'(?i)\bfilename\s*=\s*"?([^";]+)"?', cd)
+    return (m.group(1).strip() if m else "") or default
 
 
-def _download_operation_export_file(client: MsGraphClient, operation: dict) -> dict:
+def _download_operation_export_file(client: MsGraphClient, operation: dict) -> dict | None:
     """
-    Returns a fileResult entry for the operation export file.
-    Raises a clear error if can't download.
+    Download the export file referenced by an operation and return a fileResult.
+    Returns None if the operation has no valid download URL.
     """
     download_url = _extract_export_download_url(operation)
-    if not download_url or not isinstance(download_url, str):
-        raise DemistoException(
-            "No export file download URL was found for this operation. "
-            "Make sure the operation is completed and includes exportFileMetadata.downloadUrl."
-        )
+    if not isinstance(download_url, str) or not download_url:
+        return None
 
     res = client.download_export_file(download_url)
-    if not getattr(res, "ok", False):
-        # Try to surface error text safely
-        text = getattr(res, "text", "") or ""
-        raise DemistoException(f"Failed to download export file. HTTP {res.status_code}. {text[:500]}")
 
-    filename = _extract_filename_from_headers(getattr(res, "headers", {}) or {})
-    file_bytes = getattr(res, "content", b"") or b""
-    if not file_bytes:
-        raise DemistoException("Downloaded export file is empty.")
+    status = getattr(res, "status_code", None)
+    ok = bool(getattr(res, "ok", False))
+    if not ok:
+        text = (getattr(res, "text", "") or "")[:500]
+        raise DemistoException(f"Failed to download export file. HTTP {status}. {text}")
 
+    file_bytes = getattr(res, "content", None) or b""
+    if len(file_bytes) == 0:
+        raise DemistoException(f"Downloaded export file is empty. HTTP {status}.")
+
+    filename = _extract_filename_from_headers(getattr(res, "headers", None), default="ediscovery_export.zip")
     return fileResult(filename=filename, data=file_bytes)
 
 
