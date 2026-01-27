@@ -709,13 +709,11 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
             export_uuid = client.get_vuln_export_uuid(
                 num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             )
-            # Generate a new snapshot_id when resetting the fetch
-            snapshot_id = generate_snapshot_id()
+            # Note: snapshot_id and total_assets are managed by the assets flow, not vulnerabilities
+            # We only update the vuln_export_uuid and retry count here
             assets_last_run.update(
                 {
                     "vuln_export_uuid": export_uuid,
-                    "snapshot_id": snapshot_id,
-                    "total_assets": 0,
                     "vulns_404_retry_count": retry_count,
                 }
             )
@@ -1963,6 +1961,32 @@ def skip_fetch_assets(last_run):  # pragma: no cover   # pylint: disable=W9014
     return to_skip
 
 
+def is_assets_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if assets fetch is still in progress.
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there are pending asset chunks or an active asset export job.
+    """
+    return bool(last_run.get("assets_available_chunks") or last_run.get("assets_export_uuid"))
+
+
+def is_vulns_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if vulnerabilities fetch is still in progress.
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there are pending vuln chunks or an active vuln export job.
+    """
+    return bool(last_run.get("vulns_available_chunks") or last_run.get("vuln_export_uuid"))
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -2076,19 +2100,11 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle (no ongoing exports)
-            if (
-                assets_last_run_copy.get("assets_export_uuid")
-                or assets_last_run_copy.get("assets_available_chunks")
-                or not (assets_last_run_copy.get("vuln_export_uuid") or assets_last_run_copy.get("vulns_available_chunks"))
-            ):
+            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle
+            if is_assets_fetch_in_progress(assets_last_run_copy) or not is_vulns_fetch_in_progress(assets_last_run_copy):
                 assets = run_assets_fetch(client, assets_last_run)
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
-            if (
-                assets_last_run_copy.get("vuln_export_uuid")
-                or assets_last_run_copy.get("vulns_available_chunks")
-                or not (assets_last_run_copy.get("assets_export_uuid") or assets_last_run_copy.get("assets_available_chunks"))
-            ):
+            if is_vulns_fetch_in_progress(assets_last_run_copy) or not is_assets_fetch_in_progress(assets_last_run_copy):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
@@ -2105,9 +2121,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
 
             # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
             # Vulnerabilities are separate and don't affect the assets snapshot completion
-            assets_fetch_in_progress = bool(
-                assets_last_run.get("assets_available_chunks") or assets_last_run.get("assets_export_uuid")
-            )
+            assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
 
             # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
             # Set to actual count when assets are done to signal snapshot is complete
