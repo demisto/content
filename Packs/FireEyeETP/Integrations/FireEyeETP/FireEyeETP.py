@@ -1024,12 +1024,14 @@ def parse_alert_to_incident(response):
 
 def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
+    demisto.debug(f"[FireEyeETP - fetch_incidents] last_run before fetching:\n{last_run}")
 
     # The start time does not change, progress happens using the pagination token.
     start_time = parse_date_range(FETCH_TIME)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
     now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
+    demisto.debug("[FireEyeETP - fetch_incidents] calling /api/v2/public/alerts/search")
     alerts_response = client.get_alerts_request_v2(
         size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token
     )
@@ -1041,10 +1043,11 @@ def fetch_incidents(client: Client):
 
     pagination_token = alerts_response.get("meta", {}).get("search_after")
     if pagination_token:
+        demisto.debug(f"[FireEyeETP - fetch_incidents] response includes a pagination token.\n{pagination_token}")
         last_run["pagination_token"] = pagination_token
 
     total_alert_fetched = alerts_response.get("meta", {}).get("size")
-    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incident fetched: {total_alert_fetched}.")
+    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents fetched from /api/v2/public/alerts/search: {total_alert_fetched}.")
 
     alerts = alerts_response.get("data", [])
     incidents = []
@@ -1057,13 +1060,16 @@ def fetch_incidents(client: Client):
                 f"[FireEyeETP - fetch_incidents] alert: {alert_id} with status {email_status} filtered out."
                 )
             continue
-
+        
+        demisto.debug(f"[FireEyeETP - fetch_incidents] calling /api/v2/public/alerts/{alert_id}")
         alert_info = client.get_alert_request_v2(alert_id)
         incidents.append(parse_alert_to_incident(alert_info))
 
     if not incidents:
-        demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out.")
+        demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out, 0 alerts left.")
+        return
 
+    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents left after filtering: {len(incidents)}.")
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
 
