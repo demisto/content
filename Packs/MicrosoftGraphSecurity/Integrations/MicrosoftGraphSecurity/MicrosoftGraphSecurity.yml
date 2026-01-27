@@ -2607,7 +2607,7 @@ script:
       name: content_query
       required: false
     description: Update the properties of an ediscoveryHoldPolicy object.
-    name: msg-update-ediscovery-case-policy
+    name: msg-update-ediscovery-case-hold-policy
   - arguments:
     - description: The ID of the eDiscovery case.
       isArray: false
@@ -2617,7 +2617,7 @@ script:
       isArray: false
       name: hold_policy_id
       required: false
-    - description: Number of total results to return. The default is 50.
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -2852,7 +2852,7 @@ script:
       isArray: false
       name: operation_id
       required: false
-    - description: Number of total results to return. The default is 50.
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -3076,7 +3076,7 @@ script:
       predefined:
       - pst
       - msg
-    - description: The versions of cloud attachments to include in messages. Default Value is latest.
+    - description: The versions of cloud attachments to include in messages.
       isArray: false
       name: cloud_attachment_version
       required: false
@@ -3095,7 +3095,7 @@ script:
       isArray: false
       name: display_name
       required: true
-    - description: The versions of files in SharePoint to include. Default Value is latest.
+    - description: The versions of files in SharePoint to include.
       isArray: false
       name: document_version
       required: false

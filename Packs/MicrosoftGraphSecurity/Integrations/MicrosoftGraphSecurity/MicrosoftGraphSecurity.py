@@ -2751,7 +2751,7 @@ def main():
         "msg-update-security-incident": update_incident_command,
         "msg-create-ediscovery-case-hold-policy": create_ediscovery_case_hold_policy_command,
         "msg-delete-ediscovery-case-hold-policy": delete_ediscovery_case_hold_policy_command,
-        "msg-update-ediscovery-case-policy": update_ediscovery_case_policy_command,
+        "msg-update-ediscovery-case-hold-policy": update_ediscovery_case_policy_command,
         "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,

@@ -152,7 +152,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | status | Relevant only for Alerts v2. Use this field to filter by alert's status. Possible values are: unknown, new, inProgress, resolved. | Optional |
 | page | Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be &lt;= 500). | Optional |
 | page_size | Number of results in a page. Default is 50, the limit for Legacy Alerts is 1000, the limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider. | Optional |
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
 
 #### Context Output
 
@@ -1215,7 +1215,7 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 | case_id | The ID of the eDiscovery case. | Required |
 | custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
 | site_source_id | The ID of the siteSource. If provided, only this id will be returned. | Optional |
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -2499,7 +2499,7 @@ Get a list of the ediscoveryHoldPolicy objects and their properties.
 | --- | --- | --- |
 | case_id | The ID of the eDiscovery case. | Required |
 | hold_policy_id | The ID of the legal hold policy. | Optional |
-| limit | Number of total results to return. The default is 50. Default is 50. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -2594,10 +2594,10 @@ Export results from an estimated ediscoverySearch. For details, see Manage a col
 | additional_options | The additional options for the export. Possible values are: none, teamsAndYammerConversations, cloudAttachments, allDocumentVersions, subfolderContents, listAttachments, htmlTranscripts, advancedIndexing, allItemsInFolder, includeFolderAndPath, condensePaths, friendlyName, splitSource, includeReport. | Required |
 | export_criteria | The portion of the estimate results to be exported. Possible values are: searchHits, partiallyIndexed. | Required |
 | export_format | The desired format of the exported emails. Possible values are: pst, msg. | Required |
-| cloud_attachment_version | The versions of cloud attachments to include in messages. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
+| cloud_attachment_version | The versions of cloud attachments to include in messages. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
 | description | The description of the export result. | Optional |
 | display_name | The display name of the export result. | Required |
-| document_version | The versions of files in SharePoint to include. Default Value is latest. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
+| document_version | The versions of files in SharePoint to include. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
 | export_location | Location scope for partially indexed items. You can choose to include partially indexed items only in responsive locations with search hits or in all targeted locations. Possible values are: responsiveLocations, nonresponsiveLocations. | Optional |
 
 #### Context Output
@@ -2639,7 +2639,7 @@ Get a list of the caseOperation objects and their properties, or retrieve a spec
 | --- | --- | --- |
 | case_id | The ID of the eDiscovery case. | Required |
 | operation_id | The ID of the operation. | Optional |
-| limit | Number of total results to return. The default is 50. Default is 50. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional |
 | download_file | Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1. Possible values are: true, false. Default is false. | Optional |
 
@@ -2789,14 +2789,14 @@ Create a new ediscoveryHoldPolicy object.
 | MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.DisplayName | String | The display name of the user associated with this action. |
 | MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.TenantId | String | The tenant ID of the user identity associated with this action. |
 
-### msg-update-ediscovery-case-policy
+### msg-update-ediscovery-case-hold-policy
 
 ***
 Update the properties of an ediscoveryHoldPolicy object.
 
 #### Base Command
 
-`msg-update-ediscovery-case-policy`
+`msg-update-ediscovery-case-hold-policy`
 
 #### Input
 
