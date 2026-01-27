@@ -1,0 +1,51 @@
+name: Trigger AI Reviewer
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [review_requested]
+
+env:
+  IGNORED_BOTS: '["content-bot", "xsoar-bot", "dependabot"]'
+  ALLOWED_COMMANDS: '["@content-bot start review", "@content-bot re-review"]'
+
+jobs:
+  trigger-ai-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    if: >-
+      # Review request via PR commented command.
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
+       !contains(fromJson(env.IGNORED_BOTS), github.event.comment.user.login) &&
+       contains(fromJson(env.ALLOWED_COMMANDS), github.event.comment.body)) ||
+       # Review request via GH UI button 
+      (github.event_name == 'pull_request' &&
+       github.event.requested_reviewer.login == 'content-bot')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Trigger AI Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN}}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          TRIGGER_TYPE: ${{ github.event_name }}
+        run: |
+          echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
+
+          git config --global user.email "bot@demisto.com"
+          git config --global user.name "Content Bot"
+          
+          gh api "repos/$REPO/issues/$PR_NUMBER/labels" -f name="ready-for-ai-review"
+          git commit --allow-empty -m "Trigger AI Reviewer"
+
+          git push
+      
+     
