@@ -3203,6 +3203,368 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
+    @staticmethod
+    def describe_launch_templates_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more launch templates.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - launch_template_ids (str, optional): Comma-separated list of launch template IDs
+                - launch_template_names (str, optional): Comma-separated list of launch template names
+                - limit (int, optional): Maximum number of results to return
+                - next_token (str, optional): Token for the next set of results
+
+        Returns:
+            CommandResults: Results containing launch template information
+        """
+        kwargs: Dict[str, Any] = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add launch template IDs if provided
+        if launch_template_ids := args.get("launch_template_ids"):
+            kwargs["LaunchTemplateIds"] = argToList(launch_template_ids)
+
+        # Add launch template names if provided
+        if launch_template_names := args.get("launch_template_names"):
+            kwargs["LaunchTemplateNames"] = argToList(launch_template_names)
+
+        # Add pagination if no specific IDs or names provided
+        if not launch_template_ids and not launch_template_names:
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing launch templates with parameters: {kwargs}")
+
+        response = client.describe_launch_templates(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        launch_templates = response.get("LaunchTemplates", [])
+        if not launch_templates:
+            return CommandResults(readable_output="No launch templates were found.")
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+        launch_templates = response.get("LaunchTemplates", [])
+
+        # Add region to each launch template
+        for template in launch_templates:
+            template["Region"] = args.get("region")
+
+        # Build readable output data
+        readable_outputs = []
+        for template in launch_templates:
+            readable_data = {
+                "LaunchTemplateId": template.get("LaunchTemplateId"),
+                "LaunchTemplateName": template.get("LaunchTemplateName"),
+                "CreatedBy": template.get("CreatedBy"),
+                "DefaultVersionNumber": template.get("DefaultVersionNumber"),
+                "LatestVersionNumber": template.get("LatestVersionNumber"),
+                "CreateTime": template.get("CreateTime"),
+            }
+            readable_data = remove_empty_elements(readable_data)
+            readable_outputs.append(readable_data)
+
+        outputs = {
+            "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)": launch_templates,
+            "AWS.EC2(true)": {"LaunchTemplatesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 LaunchTemplates",
+                readable_outputs,
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber", "CreateTime"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a launch template. A launch template contains the parameters to launch an instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including launch template configuration
+
+        Returns:
+            CommandResults: Results containing the created launch template information
+        """
+        kwargs: Dict[str, Any] = {
+            "LaunchTemplateName": args.get("launch_template_name"),
+            "VersionDescription": args.get("version_description"),
+        }
+
+        # Build LaunchTemplateData
+        launch_template_data: Dict[str, Any] = {}
+
+        # Basic instance configuration
+        if kernel_id := args.get("kernel_id"):
+            launch_template_data["KernelId"] = kernel_id
+
+        if ebs_optimized := args.get("ebs_optimized"):
+            launch_template_data["EbsOptimized"] = argToBoolean(ebs_optimized)
+
+        # IAM instance profile
+        iam_profile = {}
+        if iam_arn := args.get("iam_instance_profile_arn"):
+            iam_profile["Arn"] = iam_arn
+        if iam_name := args.get("iam_instance_profile_name"):
+            iam_profile["Name"] = iam_name
+        if iam_profile:
+            launch_template_data["IamInstanceProfile"] = iam_profile
+
+        if image_id := args.get("image_id"):
+            launch_template_data["ImageId"] = image_id
+
+        if instance_type := args.get("instance_type"):
+            launch_template_data["InstanceType"] = instance_type
+
+        if key_name := args.get("key_name"):
+            launch_template_data["KeyName"] = key_name
+
+        # Monitoring
+        if monitoring := args.get("monitoring"):
+            launch_template_data["Monitoring"] = {"Enabled": argToBoolean(monitoring)}
+
+        if disable_api_termination := args.get("disable_api_termination"):
+            launch_template_data["DisableApiTermination"] = argToBoolean(disable_api_termination)
+
+        if shutdown_behavior := args.get("instance_initiated_shutdown_behavior"):
+            launch_template_data["InstanceInitiatedShutdownBehavior"] = shutdown_behavior
+
+        if user_data := args.get("user_data"):
+            launch_template_data["UserData"] = user_data
+
+        # Security groups
+        if security_group_ids := args.get("security_group_ids"):
+            launch_template_data["SecurityGroupIds"] = argToList(security_group_ids)
+
+        if security_groups := args.get("security_groups"):
+            launch_template_data["SecurityGroups"] = argToList(security_groups)
+
+        # Block device mappings
+        block_device_mappings = []
+        if device_name := args.get("device_name"):
+            ebs_config = remove_empty_elements({
+                "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                "Iops": arg_to_number(args.get("ebs_iops")),
+                "KmsKeyId": args.get("ebs_kms_key_id"),
+                "SnapshotId": args.get("ebs_snapshot_id"),
+                "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                "VolumeType": args.get("ebs_volume_type"),
+            })
+            if ebs_config:
+                block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config})
+
+        if block_device_mappings:
+            launch_template_data["BlockDeviceMappings"] = block_device_mappings
+
+        # Network interfaces
+        network_interfaces = []
+        network_interface_config = remove_empty_elements({
+            "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
+            "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
+            "Description": args.get("network_interfaces_description"),
+            "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
+            "Groups": argToList(args.get("network_interface_groups")) if args.get("network_interface_groups") else None,
+            "SubnetId": args.get("subnet_id"),
+            "PrivateIpAddress": args.get("private_ip_address"),
+        })
+        if network_interface_config:
+            network_interfaces.append(network_interface_config)
+
+        if network_interfaces:
+            launch_template_data["NetworkInterfaces"] = network_interfaces
+
+        # Placement
+        placement = remove_empty_elements({
+            "AvailabilityZone": args.get("availability_zone"),
+            "Tenancy": args.get("placement_tenancy"),
+        })
+        if placement:
+            launch_template_data["Placement"] = placement
+
+        if ram_disk_id := args.get("ram_disk_id"):
+            launch_template_data["RamDiskId"] = ram_disk_id
+
+        # Tag specifications
+        if tags := args.get("tags"):
+            launch_template_data["TagSpecifications"] = parse_tag_specifications(tags)
+
+        # Instance market options (Spot)
+        if market_type := args.get("market_type"):
+            spot_options = remove_empty_elements({
+                "SpotInstanceType": args.get("spot_instance_type"),
+                "MaxPrice": args.get("spot_max_price"),
+                "InstanceInterruptionBehavior": args.get("spot_instance_interruption_behavior"),
+            })
+            launch_template_data["InstanceMarketOptions"] = {
+                "MarketType": market_type,
+                "SpotOptions": spot_options if spot_options else None,
+            }
+
+        # Remove empty elements from launch template data
+        launch_template_data = remove_empty_elements(launch_template_data)
+
+        if launch_template_data:
+            kwargs["LaunchTemplateData"] = launch_template_data
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating launch template with parameters: {kwargs}")
+
+        response = client.create_launch_template(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+
+        launch_template = response.get("LaunchTemplate", {})
+
+        # Build output data
+        output_data = {
+            "LaunchTemplateId": launch_template.get("LaunchTemplateId"),
+            "LaunchTemplateName": launch_template.get("LaunchTemplateName"),
+            "CreateTime": launch_template.get("CreateTime"),
+            "CreatedBy": launch_template.get("CreatedBy"),
+            "DefaultVersionNumber": launch_template.get("DefaultVersionNumber"),
+            "LatestVersionNumber": launch_template.get("LatestVersionNumber"),
+        }
+        output_data = remove_empty_elements(output_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.LaunchTemplates",
+            outputs_key_field="LaunchTemplateId",
+            outputs=launch_template,
+            readable_output=tableToMarkdown(
+                "AWS LaunchTemplates",
+                output_data,
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes a launch template. Deleting a launch template deletes all of its versions.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - launch_template_id (str, optional): The ID of the launch template
+                - launch_template_name (str, optional): The name of the launch template
+
+        Returns:
+            CommandResults: Results of the deletion operation
+        """
+        kwargs: Dict[str, Any] = {}
+
+        # Either launch_template_id or launch_template_name must be provided
+        if launch_template_id := args.get("launch_template_id"):
+            kwargs["LaunchTemplateId"] = launch_template_id
+        elif launch_template_name := args.get("launch_template_name"):
+            kwargs["LaunchTemplateName"] = launch_template_name
+        else:
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided")
+
+        print_debug_logs(client, f"Deleting launch template with parameters: {kwargs}")
+
+        response = client.delete_launch_template(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response to handle datetime objects
+        response = serialize_response_with_datetime_encoding(response)
+
+        deleted_template = response.get("LaunchTemplate", {})
+
+        # Build output data
+        output_data = {
+            "LaunchTemplateId": deleted_template.get("LaunchTemplateId"),
+            "LaunchTemplateName": deleted_template.get("LaunchTemplateName"),
+            "CreateTime": deleted_template.get("CreateTime"),
+            "CreatedBy": deleted_template.get("CreatedBy"),
+            "DefaultVersionNumber": deleted_template.get("DefaultVersionNumber"),
+            "LatestVersionNumber": deleted_template.get("LatestVersionNumber"),
+        }
+        output_data = remove_empty_elements(output_data)
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.DeletedLaunchTemplates",
+            outputs_key_field="LaunchTemplateId",
+            outputs=deleted_template,
+            readable_output=tableToMarkdown(
+                "AWS Deleted Launch Templates",
+                output_data,
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+
+def parse_tag_specifications(tags_string: str) -> list:
+    """
+    Parse tag specifications string into AWS TagSpecifications format.
+    
+    Format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2
+    
+    Args:
+        tags_string: The tag specifications string
+        
+    Returns:
+        A list of TagSpecifications dictionaries
+    """
+    if not tags_string:
+        return []
+    
+    tag_specs = []
+    # Split by # to separate different resource types
+    resource_type_specs = tags_string.split("#")
+    
+    for spec in resource_type_specs:
+        if ":" not in spec:
+            continue
+            
+        # Split resource type from tags
+        parts = spec.split(":", 1)
+        if len(parts) != 2:
+            continue
+            
+        resource_type = parts[0].strip()
+        tags_part = parts[1].strip()
+        
+        # Parse tags using existing parse_tag_field function
+        tags = parse_tag_field(tags_part)
+        
+        if tags:
+            tag_specs.append({
+                "ResourceType": resource_type,
+                "Tags": tags
+            })
+    
+    return tag_specs
+
 
 class EKS:
     service = AWSServices.EKS
@@ -4763,6 +5125,9 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
+    "aws-ec2-launch-templates-describe": EC2.describe_launch_templates_command,
+    "aws-ec2-launch-template-create": EC2.create_launch_template_command,
+    "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4854,6 +5219,9 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ec2:DescribeLaunchTemplates",
+    "ec2:CreateLaunchTemplate",
+    "ec2:DeleteLaunchTemplate",
 ]
 
 COMMAND_SERVICE_MAP = {
