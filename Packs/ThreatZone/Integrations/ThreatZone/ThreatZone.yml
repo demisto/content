@@ -257,6 +257,8 @@ script:
       type: String
     description: Submits a sample to ThreatZone for CDR.
   - name: tz-url-analysis
+    compliantpolicies:
+      - Domain Blockage
     arguments:
     - name: url
       required: true
@@ -554,5 +556,8 @@ script:
   runonce: false
   subtype: python3
 fromversion: 6.9.0
+sectionorder:
+- Connect
+- Collect
 tests:
 - ThreatZone Test
