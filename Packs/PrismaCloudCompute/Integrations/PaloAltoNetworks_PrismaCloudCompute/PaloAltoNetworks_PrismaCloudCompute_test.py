@@ -37,6 +37,8 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     preform_fetch_assets_main_loop_logic,
     collect_assets_and_send_to_xsiam,
     AssetTypeRelatedData,
+    process_results,
+    process_all_findings,
 )
 
 BASE_URL = "https://test.com"
@@ -1969,3 +1971,123 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     assert mock_update_context.called
     assert mock_clear_context.called
     assert asset_type_related_data.offset == 1  # Should have incremented once
+
+
+def test_process_all_findings_standalone():
+    """
+    Tests process_all_findings as a standalone function.
+    Covers:
+    - Asset with vulnerabilities.
+    - Asset with empty vulnerabilities list.
+    - Vulnerability with missing fields (using .get() defaults).
+    """
+    related_asset = {
+        "_id": "asset_123",
+        "scanTime": "2024-01-01T00:00:00Z",
+        "scanID": "scan_999",
+        "scanVersion": "1.0",
+        "cloudMetadata": {"region": "us-east-1"}
+    }
+
+    vulnerabilities = [
+        {
+            "cve": "CVE-2023-1234",
+            "severity": "high",
+            "packageName": "openssl",
+            "cvss": 8.1,
+            "riskFactors": {"Attack complexity: low": "true"}
+        },
+        {
+            "cve": "CVE-2023-5678"
+            # Missing many fields to test defaults
+        }
+    ]
+
+    # Case 1: Asset with vulnerabilities
+    results = process_all_findings(vulnerabilities, related_asset)
+    assert len(results) == 2
+    assert results[0]["asset_id"] == "asset_123"
+    assert results[0]["cve"] == "CVE-2023-1234"
+    assert results[0]["cvss"] == 8.1
+    assert results[0]["riskFactors"] == {"Attack complexity: low": "true"}
+    assert results[0]["scanTime"] == "2024-01-01T00:00:00Z"
+
+    assert results[1]["cve"] == "CVE-2023-5678"
+    assert results[1]["cvss"] == 0  # Default value
+    assert results[1]["packageName"] == ""  # Default value
+
+    # Case 2: Empty vulnerabilities
+    results_empty = process_all_findings([], related_asset)
+    assert results_empty == []
+
+
+def test_process_results_all_cases():
+    """
+    Tests process_results which calls process_all_findings.
+    Covers:
+    - Empty results list.
+    - Assets with some empty fields.
+    - Assets with vulnerabilities (Findings).
+    - Assets without findings.
+    - TAS Droplet, Runtime Image, and Host structures (simulated via data_list).
+    """
+
+    # Mock data representing different asset types based on documentation
+    data_list = [
+        # Case: Runtime Image with vulnerabilities
+        {
+            "_id": "sha256:image123",
+            "type": "image",
+            "hostname": "host-1",
+            "scanTime": "2024-01-01T10:00:00Z",
+            "distro": "Alpine",
+            "vulnerabilities": [
+                {"cve": "CVE-IMAGE-1", "severity": "critical"}
+            ],
+            "vulnerabilitiesCount": 1
+        },
+        # Case: Host without findings and some empty fields
+        {
+            "_id": "host-456",
+            "hostname": "prod-host",
+            "type": "host",
+            "vulnerabilities": None,  # Test None handling
+            "vulnerabilitiesCount": 0,
+            "osDistro": ""  # Empty field
+        },
+        # Case: TAS Droplet (simulated)
+        {
+            "id": "droplet-789",  # TAS often uses 'id' instead of '_id' in some docs
+            "type": "tas",
+            "hostname": "tas-app-1",
+            "vulnerabilities": [],
+            "vulnerabilitiesCount": 0
+        }
+    ]
+
+    # Case 1: Process full list
+    processed_assets, processed_vulns = process_results(data_list)
+
+    assert len(processed_assets) == 3
+    assert len(processed_vulns) == 1
+
+    # Verify first asset (Image)
+    assert processed_assets[0]["_id"] == "sha256:image123"
+    assert processed_assets[0]["vulnerabilitiesCount"] == 1
+    assert processed_vulns[0]["asset_id"] == "sha256:image123"
+    assert processed_vulns[0]["cve"] == "CVE-IMAGE-1"
+
+    # Verify second asset (Host)
+    assert processed_assets[1]["_id"] == "host-456"
+    assert processed_assets[1]["osDistro"] == ""
+    assert processed_assets[1]["vulnerabilitiesCount"] == 0
+
+    # Verify third asset (TAS) - testing 'id' fallback in process_all_findings
+    # Note: process_results uses data.get("id", "") for the asset list,
+    # and process_all_findings uses related_asset.get("_id", "") or related_asset.get("id", "")
+    assert processed_assets[2]["id"] == "droplet-789"
+
+    # Case 2: Empty results
+    empty_assets, empty_vulns = process_results([])
+    assert empty_assets == []
+    assert empty_vulns == []
