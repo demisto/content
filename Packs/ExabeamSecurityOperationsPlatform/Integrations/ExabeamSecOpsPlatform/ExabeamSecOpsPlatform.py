@@ -1152,13 +1152,17 @@ def update_case_details(client: Client, args: dict) -> CommandResults:
         "alertDesciption": args.get("alert_desciption"),
         "alertName": args.get("alert_name"),
         "priority": args.get("priority"),
-        "tags": args.get("tags"),
         "stage": args.get("stage"),
         "closedReason": args.get("closed_reason"),
         "supportingReason": args.get("supporting_reason"),
         "assignee": args.get("assignee"),
         "queue": args.get("queue")
     }
+
+    if newargs["stage"] == "CLOSED" and newargs["closedReason"] == None:
+        demisto.error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+        return_error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+
     request_data = json.dumps(newargs)
     full_url = f"{client._base_url}/threat-center/v2/cases/{caseId}"
     response = client.request(method="POST", full_url=full_url, data=request_data)
@@ -1212,16 +1216,13 @@ def create_case_note(client: Client, args: dict) -> CommandResults:
     request_data = json.dumps(args)
     full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
     response = client.request(method="POST", full_url=full_url, data=request_data)
-    keys_to_remove = ['case_id', 'is_deleted', 'is_edited', 'last_modified_timestamp', 'text_rt']
+    keys_to_remove = ['case_id','is_deleted','is_edited','last_modified_timestamp','text_rt']
     filtered_response = []
-
-    for i in response:
-        filtered_response.append({key: value for key, value in i.items() if key not in keys_to_remove})
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Notes",
         outputs=response,
-        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=filtered_response)
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=response[0])
     )
 
 
