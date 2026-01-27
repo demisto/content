@@ -43,12 +43,12 @@ def convert_environment_id_string_to_int(environment_id: str) -> int:
     try:
         environment_id_options = {
             "400: MacOS Catalina 10.15": 400,
-            "310: Linux Ubuntu 20, 64-bit": 310,
+            "310: Linux Ubuntu 20 (64-bit)": 310,
             "200: Android (static analysis)": 200,
-            "160: Windows 10, 64-bit": 160,
-            "140: Windows 11, 64-bit": 140,
-            "110: Windows 7, 64-bit": 110,
-            "100: Windows 7, 32-bit": 100,
+            "160: Windows 10 (64-bit)": 160,
+            "140: Windows 11 (64-bit)": 140,
+            "110: Windows 7 (64-bit)": 110,
+            "100: Windows 7 (32-bit)": 100,
         }
         return environment_id_options[environment_id]
     except Exception:
@@ -819,10 +819,10 @@ def upload_file_command(  # type: ignore[return]
     action_script: str = "",
     command_line: str = "",
     document_password: str = "",
-    enable_tor: str = "false",
     submit_name: str = "",
     system_date: str = "",
     system_time: str = "",
+    network_settings: str = "",
 ) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -835,11 +835,11 @@ def upload_file_command(  # type: ignore[return]
     :param action_script: runtime script for sandbox analysis
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
-    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
     :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists
+    :param network_settings: specifies the sandbox network_settings used for analysis.
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
 
@@ -863,10 +863,10 @@ def upload_file_command(  # type: ignore[return]
             action_script,
             command_line,
             document_password,
-            enable_tor,
             submit_name,
             system_date,
             system_time,
+            network_settings
         )
 
 
