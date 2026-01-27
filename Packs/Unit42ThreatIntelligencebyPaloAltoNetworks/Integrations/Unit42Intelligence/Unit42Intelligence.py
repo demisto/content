@@ -63,6 +63,37 @@ VALID_REGIONS = {
 #### HELPER FUNCTIONS ####
 
 
+def parse_url_list(url_input: str) -> list[str]:
+    """
+    Parse URL input that may contain multiple URLs or a single URL with commas.
+    
+    This function intelligently splits URLs by detecting URL patterns (http://, https://)
+    to avoid incorrectly splitting URLs that contain commas in their parameters.
+    
+    Args:
+        url_input: String containing one or more URLs
+        
+    Returns:
+        List of individual URLs
+        
+    Examples:
+        >>> parse_url_list("http://example.com,https://test.com")
+        ['http://example.com', 'https://test.com']
+        >>> parse_url_list("https://fonts.googleapis.com/css?family=Roboto:100,100italic,200")
+        ['https://fonts.googleapis.com/css?family=Roboto:100,100italic,200']
+        >>> parse_url_list("http://a.com/path?x=1,2,http://b.com")
+        ['http://a.com/path?x=1,2', 'http://b.com']
+    """
+    # Split by comma, but only if followed by a URL protocol
+    # This regex looks for commas followed by optional whitespace and then http:// or https://
+    parts = re.split(r',\s*(?=https?://)', url_input)
+    
+    # Strip whitespace from each URL
+    urls = [url.strip() for url in parts if url.strip()]
+    
+    return urls
+
+
 def unit42_error_handler(res: requests.Response):
     """
     Custom error handler for Unit 42 API requests.
@@ -1219,7 +1250,8 @@ def main() -> None:
 
         elif command == "url":
             results = []
-            urls = argToList(args.get("url", ""))
+            # Use smart URL parsing to handle URLs with commas in parameters
+            urls = parse_url_list(args.get("url", ""))
             for url in urls:
                 args["url"] = url
                 results.append(url_command(client, args))
