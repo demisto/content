@@ -3286,42 +3286,51 @@ script:
         - contextPath: Core.CDRProtectionStatus.CloudVMs.Total
           description: Total number of cloud VM instances (excluding Kubernetes-managed VMs).
           type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.Protected
-          description: Number of VM instances with agents installed (protected).
-          type: Number
         - contextPath: Core.CDRProtectionStatus.CloudVMs.Unprotected
           description: Number of VM instances without agents (unprotected).
           type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudVMs.ProtectionPercentage
-          description: Percentage of VMs that have agents installed (0-100).
-          type: Number
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.asset_id
+          description: The unique identifier of the uncovered VM asset.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.asset_name
+          description: The name of the uncovered VM asset.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.CloudVMs.UncoveredAssetsList.provider
+          description: The cloud provider of the uncovered VM asset (e.g., AWS, Azure, GCP).
+          type: String
         - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Total
           description: Total number of Kubernetes clusters.
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Protected
-          description: Number of Kubernetes clusters with realtime protection enabled.
           type: Number
         - contextPath: Core.CDRProtectionStatus.KubernetesClusters.Unprotected
           description: Number of Kubernetes clusters without realtime protection.
           type: Number
-        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.ProtectionPercentage
-          description: Percentage of Kubernetes clusters with realtime protection enabled (0-100).
-          type: Number
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.asset_id
+          description: The unique identifier of the uncovered Kubernetes cluster.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.asset_name
+          description: The name of the uncovered Kubernetes cluster.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.KubernetesClusters.UncoveredAssetsList.provider
+          description: The cloud provider of the uncovered Kubernetes cluster (e.g., AWS, Azure, GCP).
+          type: String
         - contextPath: Core.CDRProtectionStatus.CloudAccounts.Total
           description: Total number of cloud accounts.
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudAccounts.SendingLogs
-          description: Number of cloud accounts sending logs (automation_log_level is not OFF).
           type: Number
         - contextPath: Core.CDRProtectionStatus.CloudAccounts.NotSendingLogs
           description: Number of cloud accounts not sending logs (automation_log_level is OFF).
           type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudAccounts.LogSendingPercentage
-          description: Percentage of cloud accounts sending logs (0-100).
-          type: Number
-        - contextPath: Core.CDRProtectionStatus.CloudAccounts.AccountsNotSendingLogsList
-          description: List of cloud accounts not sending logs with their details.
-          type: Unknown
+        - contextPath: Core.CDRProtectionStatus.CloudAccounts.AccountsNotSendingLogsList.account_id
+          description: The unique identifier of the cloud account not sending logs.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.CloudAccounts.AccountsNotSendingLogsList.account_name
+          description: The name of the cloud account not sending logs.
+          type: String
+        - contextPath: Core.CDRProtectionStatus.CloudAccounts.AccountsNotSendingLogsList.cloud_type
+          description: The cloud provider type of the account (e.g., AWS, Azure, GCP).
+          type: String
+        - contextPath: Core.CDRProtectionStatus.CloudAccounts.AccountsNotSendingLogsList.status
+          description: The status of the cloud account.
+          type: String
     - name: core-xql-generic-query-platform
       arguments:
       - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.
