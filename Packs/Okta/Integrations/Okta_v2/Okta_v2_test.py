@@ -24,6 +24,7 @@ from Okta_v2 import (
     update_zone_command,
     verify_push_factor_command,
     verify_mfa_status_command,
+    extract_user_and_factor_id_from_url,
 )
 
 client = Client(base_url="demisto.com", api_token="XXX")
@@ -1340,3 +1341,48 @@ def test_verify_mfa_status_command(mocker):
     assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("factorResult") == "SUCCESS"
     assert outputs.get("Okta.FactorResult(val.ID && val.ID === obj.ID)").get("ID") == "FactorID"
     assert raw_response == mock_response
+
+
+@pytest.mark.parametrize(
+    "url, expected_user_id, expected_factor_id",
+    [
+        ("https://example.okta.com/api/v1/users/user-id/factors/factor-id", "user-id", "factor-id"),
+        ("https://example.okta.com/api/v1/users/U123/factors/F456/transactions/T789", "U123", "F456"),
+        ("http://localhost/users/me/factors/my-factor", "me", "my-factor"),
+    ],
+)
+def test_extract_user_and_factor_id_from_url_success(url, expected_user_id, expected_factor_id):
+    """
+    Given:
+        - A valid polling URL containing user and factor IDs.
+    When:
+        - Calling extract_user_and_factor_id_from_url.
+    Then:
+        - Ensure the user ID and factor ID are correctly extracted.
+    """
+    user_id, factor_id = extract_user_and_factor_id_from_url(url)
+    assert user_id == expected_user_id
+    assert factor_id == expected_factor_id
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.okta.com/api/v1/users/user-id",
+        "https://example.okta.com/api/v1/factors/factor-id",
+        "https://example.okta.com/api/v1/something/else",
+        "",
+    ],
+)
+def test_extract_user_and_factor_id_from_url_failure(url):
+    """
+    Given:
+        - An invalid polling URL.
+    When:
+        - Calling extract_user_and_factor_id_from_url.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException, match="Could not extract user ID and Factor ID from the polling URL"):
+        extract_user_and_factor_id_from_url(url)
