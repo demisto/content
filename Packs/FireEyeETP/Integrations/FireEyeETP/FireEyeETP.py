@@ -251,11 +251,11 @@ def get_auth_headers():
 class Client(BaseClient):
     def get_alerts_request_v2(self, size=None, start_time=None, end_time=None, pagination_token=None, body={}):
         """
-            size (int, optional): Maximum number of alerts to return.
-            start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
-            end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
-            pagination_token (str, optional): Token used for pagination.
-            body (dict, optional): Additional request body parameters.
+        size (int, optional): Maximum number of alerts to return.
+        start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
+        end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
+        pagination_token (str, optional): Token used for pagination.
+        body (dict, optional): Additional request body parameters.
 
         """
         url = "/public/alerts/search"
@@ -269,7 +269,7 @@ class Client(BaseClient):
 
         response = self._http_request(method="POST", url_suffix=url, resp_type="response", json_data=body)
         return response
-    
+
     def get_alert_request_v2(self, alert_id):
         url = f"/public/alerts/{alert_id}"
         response = self._http_request(method="GET", url_suffix=url, resp_type="response")
@@ -522,9 +522,7 @@ def search_messages_command():
 
     # create readable data
     messages_readable_data = [readable_message_data(message) for message in messages_context]
-    md_table = tableToMarkdown(
-        "Trellix Email Security - Cloud - Search Messages", messages_readable_data, removeNull=True
-    )
+    md_table = tableToMarkdown("Trellix Email Security - Cloud - Search Messages", messages_readable_data, removeNull=True)
 
     entry = {
         "Type": entryTypes["note"],
@@ -848,7 +846,6 @@ def get_alert_request(alert_id):
 
 
 def create_request_body_alert_search_endpoint(args):
-    
     body = assign_params(
         domain=argToList(args.get("domain")),
         domain_group=argToList(args.get("domain_group")),
@@ -1027,7 +1024,9 @@ def fetch_incidents(client: Client):
     demisto.debug(f"[FireEyeETP - fetch_incidents] last_run before fetching:\n{last_run}")
 
     # The start time does not change, progress happens using the pagination token.
-    start_time = arg_to_datetime(FETCH_TIME).strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_time = arg_to_datetime(FETCH_TIME)
+    if start_time:
+        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
@@ -1047,7 +1046,9 @@ def fetch_incidents(client: Client):
         last_run["pagination_token"] = pagination_token
 
     total_alert_fetched = alerts_response.get("meta", {}).get("size")
-    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents fetched from /api/v2/public/alerts/search: {total_alert_fetched}.")
+    demisto.debug(
+        f"[FireEyeETP - fetch_incidents] Total incidents fetched from /api/v2/public/alerts/search: {total_alert_fetched}."
+    )
 
     alerts = alerts_response.get("data", [])
     incidents = []
@@ -1056,11 +1057,9 @@ def fetch_incidents(client: Client):
         email_status = alert.get("email_status")
 
         if MESSAGE_STATUS and email_status not in MESSAGE_STATUS:
-            demisto.debug(
-                f"[FireEyeETP - fetch_incidents] alert: {alert_id} with status {email_status} filtered out."
-                )
+            demisto.debug(f"[FireEyeETP - fetch_incidents] alert: {alert_id} with status {email_status} filtered out.")
             continue
-        
+
         demisto.debug(f"[FireEyeETP - fetch_incidents] calling /api/v2/public/alerts/{alert_id}")
         alert_info = client.get_alert_request_v2(alert_id)
         incidents.append(parse_alert_to_incident(alert_info))
@@ -1072,7 +1071,8 @@ def fetch_incidents(client: Client):
     demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents left after filtering: {len(incidents)}.")
     return incidents, last_run
 
-def test_module(client:Client):
+
+def test_module(client: Client):
     params = demisto.params()
     try:
         if params.get("isFetch"):
@@ -1084,7 +1084,7 @@ def test_module(client:Client):
         return f"test-module failed: {str(e)}"
     return "ok"
 
-    
+
 def main():
     """
     main function, parses params and runs command functions

@@ -72,6 +72,9 @@ def test_fetch_incident_by_status_messages(mocker):
         - Ensure one incident was fetched as expected
         - Ensure the correct v2 request functions were called
     """
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
     response_1 = {
         "meta": {"search_after": "token123", "size": 1},
         "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}],
@@ -80,15 +83,15 @@ def test_fetch_incident_by_status_messages(mocker):
 
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
     mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
-    mocker.patch("FireEyeETP.get_alerts_request_v2", return_value=response_1)
-    mocker.patch("FireEyeETP.get_alert_request_v2", return_value=response_2)
+    mock_client.get_alerts_request_v2.return_value = response_1
+    mock_client.get_alert_request_v2.return_value = response_2
     mocker.patch("FireEyeETP.demisto.setLastRun")
-    res = mocker.patch("FireEyeETP.demisto.incidents")
 
-    FireEyeETP.fetch_incidents()
+    incidents, last_run = FireEyeETP.fetch_incidents(mock_client)
 
-    assert res.call_args.args[0][0].get("name") == "alert1"
-    assert res.call_args.args[0][0].get("rawJSON") == json.dumps(response_2)
+    assert incidents[0].get("name") == "alert1"
+    assert incidents[0].get("rawJSON") == json.dumps(response_2)
+    assert last_run.get("pagination_token") == "token123"
 
 
 def test_fetch_incident_by_status_messages_mismatch_status(mocker):
@@ -100,6 +103,9 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker):
     Then:
         - Ensure no incidents were fetched as expected due to filtering
     """
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
     response_1 = {
         "meta": {"search_after": "token123", "size": 1},
         "data": [{"id": "alert1", "email_status": "deleted"}],
@@ -107,13 +113,12 @@ def test_fetch_incident_by_status_messages_mismatch_status(mocker):
 
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)"])
     mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
-    mocker.patch("FireEyeETP.get_alerts_request_v2", return_value=response_1)
+    mock_client.get_alerts_request_v2.return_value = response_1
     mocker.patch("FireEyeETP.demisto.setLastRun")
-    res = mocker.patch("FireEyeETP.demisto.incidents")
 
-    FireEyeETP.fetch_incidents()
+    incidents, _ = FireEyeETP.fetch_incidents(mock_client)
 
-    assert len(res.call_args.args[0]) == 0
+    assert incidents == []
 
 
 def test_fetch_incident_by_status_messages_with_two_status(mocker):
@@ -125,6 +130,10 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker):
     Then:
         - Ensure 2 incidents were fetched as expected
     """
+    from FireEyeETP import Client
+
+    mock_client = MagicMock(spec=Client)
+
     response_1 = {
         "meta": {"search_after": "token456", "size": 2},
         "data": [{"id": "alert1", "email_status": "delivered (retroactive)"}, {"id": "alert2", "email_status": "deleted"}],
@@ -134,16 +143,15 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker):
 
     mocker.patch.object(FireEyeETP, "MESSAGE_STATUS", ["delivered (retroactive)", "deleted"])
     mocker.patch("FireEyeETP.demisto.getLastRun", return_value={})
-    mocker.patch("FireEyeETP.get_alerts_request_v2", return_value=response_1)
-    mocker.patch("FireEyeETP.get_alert_request_v2", side_effect=[response_alert1, response_alert2])
+    mock_client.get_alerts_request_v2.return_value = response_1
+    mock_client.get_alert_request_v2.side_effect = [response_alert1, response_alert2]
     mocker.patch("FireEyeETP.demisto.setLastRun")
-    res = mocker.patch("FireEyeETP.demisto.incidents")
 
-    FireEyeETP.fetch_incidents()
+    incidents, _ = FireEyeETP.fetch_incidents(mock_client)
 
-    assert len(res.call_args.args[0]) == 2
-    assert res.call_args.args[0][0].get("name") == "alert1"
-    assert res.call_args.args[0][1].get("name") == "alert2"
+    assert len(incidents) == 2
+    assert incidents[0].get("name") == "alert1"
+    assert incidents[1].get("name") == "alert2"
 
 
 @pytest.fixture
@@ -478,8 +486,8 @@ def test_get_search_alert_summary_v2():
     }
     res = get_search_alert_summary_v2(alert)
     assert res["Alert ID"] == "1"
-    assert res["Malware name"] == "['mn', 'mn2']"
-    assert res["Malware stype"] == "['ms', 'ms2']"
+    assert res["Malware name"] == ["mn", "mn2"]
+    assert res["Malware stype"] == ["ms", "ms2"]
 
 
 def test_get_single_alert_summary_v2():
@@ -511,7 +519,9 @@ def test_get_alert_list_with_alert_id(mocker):
         - Ensure get_single_alert_entry is called
         - Ensure the correct CommandResults is returned
     """
-    from FireEyeETP import get_alert_list
+    from FireEyeETP import get_alert_list, Client
+
+    mock_client = MagicMock(spec=Client)
 
     alert_data = {
         "id": "alert123",
@@ -531,9 +541,9 @@ def test_get_alert_list_with_alert_id(mocker):
     }
 
     mocker.patch("FireEyeETP.demisto.args", return_value={"alert_id": "alert123"})
-    mocker.patch("FireEyeETP.get_alert_request_v2", return_value=alert_data)
+    mock_client.get_alert_request_v2.return_value = alert_data
 
-    result = get_alert_list()
+    result = get_alert_list(mock_client)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "FireEyeETP.Alerts"
@@ -551,7 +561,9 @@ def test_get_alert_list_without_alert_id(mocker):
         - Ensure get_alerts_entry is called
         - Ensure the correct CommandResults is returned with multiple alerts
     """
-    from FireEyeETP import get_alert_list
+    from FireEyeETP import Client, get_alert_list
+
+    mock_client = MagicMock(spec=Client)
 
     search_response = {
         "data": [
@@ -581,9 +593,9 @@ def test_get_alert_list_without_alert_id(mocker):
     }
 
     mocker.patch("FireEyeETP.demisto.args", return_value={"limit": "10", "domain": "example.com"})
-    mocker.patch("FireEyeETP.get_alerts_request_v2", return_value=search_response)
+    mock_client.get_alerts_request_v2.return_value = search_response
 
-    result = get_alert_list()
+    result = get_alert_list(mock_client)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "FireEyeETP.Alerts"
