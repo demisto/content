@@ -21,11 +21,11 @@
             "is_array": false
         },
         "destination": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "event": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "eventType": {
@@ -33,23 +33,23 @@
             "is_array": false
         },
         "file": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "process": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "responseControls": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "risk": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "source": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "success": {
@@ -65,7 +65,7 @@
             "is_array": false
         },
         "user": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         }
     }
