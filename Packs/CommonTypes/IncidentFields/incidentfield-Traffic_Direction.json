@@ -2,7 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Trellix incident"
+        "Trellix Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

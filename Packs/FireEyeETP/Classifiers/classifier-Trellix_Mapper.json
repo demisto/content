@@ -1,9 +1,9 @@
 {
     "description": "Trellix Mapper for alerts",
     "feed": false,
-    "id": "TrellixMapper",
+    "id": "Trellix Mapper",
     "mapping": {
-        "Trellix incident": {
+        "Trellix Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
                 "Domain Name": {
@@ -42,7 +42,7 @@
             }
         }
     },
-    "name": "TrellixMapper",
+    "name": "Trellix Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"

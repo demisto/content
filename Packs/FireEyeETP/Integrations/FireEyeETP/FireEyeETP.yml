@@ -65,13 +65,20 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  defaultvalue: '1'
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
   section: Collect
   required: false
   defaultvalue: '59'
-  additionalinfo: Input a value between 1-59.
+  additionalinfo: Input a value between 1 and 59. Values above 59 will be internally capped to avoid exceeding API rate limits.
 - display: Incident type
   name: incidentType
   type: 13
@@ -114,9 +121,9 @@ script:
     - name: subject
       description: List of strings, max limit of entries is 10.
     - name: from_accepted_date_time
-      description: ' The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''to_accepted_date_time''  as well to set the complete date range for the search.'
+      description: ' The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10-24T10:48:51.000Z . Specify ''to_accepted_date_time''  as well to set the complete date range for the search.'
     - name: to_accepted_date_time
-      description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
+      description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10-24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
     - name: rejection_reason
       description: 'List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). '
     - name: sender_ip
@@ -322,7 +329,7 @@ script:
     - contextPath: FireEyeETP.Alerts.id
       description: The alert unique ID.
     - contextPath: FireEyeETP.Alerts.alert_date
-      description: The alert data.
+      description: The alert date.
     description: 'Get summary format information about the alerts.'
   - name: fireeye-etp-get-alert
     arguments:
@@ -478,5 +485,6 @@ script:
   dockerimage: demisto/python3:3.12.11.4508456
 tests:
 - No Test
-
+defaultclassifier: Trellix Incident Classifier
+defaultmapperin: Trellix Mapper
 fromversion: 5.0.0

@@ -4,7 +4,7 @@
     "FireEye NX IPS Event",
     "FireEye NX Alert",
     "FireEye EX Alert",
-    "Trellix incident",
+    "Trellix Incident",
     "CrowdStrike Falcon NGSIEM Case"
   ],
   "breachScript": "",

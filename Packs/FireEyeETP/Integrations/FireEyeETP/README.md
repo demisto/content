@@ -27,7 +27,7 @@ The expiration time should be set as `"100d"` for 100 days or `"1y"` for 1 year,
 * **Products**  
 Select both **Email Threat Prevention** and **Identity Access Management**.
 
-6. Select all entitlementsFor any API access, the following entitlements are required:
+6. Select all required entitlements. For any API access, the following entitlements are mandatory:
 
     * `iam.users.browse`
     * `iam.orgs.self.read`
@@ -53,7 +53,7 @@ Select both **Email Threat Prevention** and **Identity Access Management**.
 
 ## Authentication Prerequisites
 
-To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.
+To ensure a successful connection, select the authentication method that matches the Server URL (Instance URL) you are configuring.
 
 ### Dual Authentication Methods
 
@@ -90,9 +90,9 @@ We support two different authentication methods depending on the endpoint domain
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |
 | First fetch timestamp. |  | False |
-| Max incidents per fetch | Input a value between 1-59. | False |
+| Max incidents per fetch | Input a value between 1 and 59. Values above 59 will be internally capped to avoid exceeding API rate limits. | False |
 | Incident type |  | False |
-| Alerts statuses to import | All alerts with a status specified here will be imported as incidents. | False |
+| Alerts statuses to import | All alerts with a status specified here will be imported as incidents. Valid values are: accepted, deleted, delivered, delivered (retroactive), dropped, dropped oob, dropped (oob retroactive), permanent failure, processing quarantined, rejected, temporary failure | False |
 
 ## Fetched Incidents Data
 
@@ -108,11 +108,6 @@ The integration will fetch alerts as incidents. It is possible to filter alerts 
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-1. [Search for messages: fireeye-etp-search-messages](#search-for-messages)
-2. [Get metadata of a specified message: fireeye-etp-get-message](#get-metadata-of-a-specified-message)
-3. [Get summary of all alerts: fireeye-etp-list-alerts](#get-summary-of-all-alerts)
-4. [Get details of a specified alert by specific alert ID: fireeye-etp-list-alerts](#get-details-of-specified-alert)
 
 ### fireeye-etp-search-messages
 
@@ -132,11 +127,11 @@ Search for messages that include specified message attributes that are accessibl
 | from_email | List of 'From' email-addresses, max limit of entries is 10. | Optional |
 | from_email_not_in | List of 'From' email-addresses not to be included, max limit of entries is 10. | Optional |
 | recipients | List of 'To'/'Cc' email-addresses, max limit of entries is 10. | Optional |
-| recipients_not_in | list of 'To'/'Cc' email-addresses not to be included, max limit of entries is 10. . | Optional |
+| recipients_not_in | list of 'To'/'Cc' email-addresses not to be included, max limit of entries is 10. | Optional |
 | subject | List of strings, max limit of entries is 10. | Optional |
-| from_accepted_date_time |  The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'to_accepted_date_time'  as well to set the complete date range for the search. | Optional |
-| to_accepted_date_time |  The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify 'from_accepted_date_time'  as well to set the complete date range for the search. | Optional |
-| rejection_reason | List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). . | Optional |
+| from_accepted_date_time |  The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10-24T10:48:51.000Z . Specify 'to_accepted_date_time'  as well to set the complete date range for the search. | Optional |
+| to_accepted_date_time |  The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10-24T10:48:51.000Z . Specify 'from_accepted_date_time'  as well to set the complete date range for the search. | Optional |
+| rejection_reason | List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). | Optional |
 | sender_ip | List of sender IP addresses, max limit of entries is 10. | Optional |
 | status | List of email status values( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional |
 | status_not_in | List of email status values not to include( "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure"). | Optional |
@@ -170,7 +165,7 @@ Search for messages that include specified message attributes that are accessibl
 
 ##### Command example 1
 
-`!fireeye-etp-search-messages to_accepted_date_time=2017-10- 24T10:00:00.000Z from_accepted_date_time=2017-10- 24T10:30:00.000Z`
+`!fireeye-etp-search-messages to_accepted_date_time=2017-10-24T10:00:00.000Z from_accepted_date_time=2017-10-24T10:30:00.000Z`
 
 ##### Command example 2
 
@@ -313,12 +308,12 @@ Get summary format information about the alerts.
 | FireEyeETP.Alerts.domain | unknown | Domain. |
 | FireEyeETP.Alerts.report_id | unknown | Report_id. |
 | FireEyeETP.Alerts.id | unknown | The alert unique ID. |
-| FireEyeETP.Alerts.alert_date | unknown | The alert data. |
+| FireEyeETP.Alerts.alert_date | unknown | The alert date. |
 
 ### fireeye-etp-download-alert-case-files
 
 ***
-Downloads all case files of the alert specified by the alert ID, in a zip file. You can obtain the ID from the Alert Summary response, for example "id": "AV7zzRy7kvIwrKcfu0I".
+Downloads all case files for the specified alert ID as a ZIP file. You can obtain the alert ID from the Alert Summary response, for example: "id": "AV7zzRy7kvIwrKcfu0I".
 
 #### Base Command
 
