@@ -8487,7 +8487,6 @@ script:
 
   - name: aws-ec2-volume-create
     description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
-    execution: true
     arguments:
     - name: account_id
       description: The AWS account ID. This is used when running commands across multiple accounts.

@@ -3276,17 +3276,10 @@ class EC2:
             "VolumeId": args.get("volume_id"),
             "VolumeType": args.get("volume_type"),
             "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput"))
         }
-
-        # Add optional modification parameters
-        if size := args.get("size"):
-            kwargs["Size"] = arg_to_number(size)
-
-        if iops := args.get("iops"):
-            kwargs["Iops"] = arg_to_number(iops)
-
-        if throughput := args.get("throughput"):
-            kwargs["Throughput"] = arg_to_number(throughput)
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
@@ -3298,23 +3291,13 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         volume_modification = response.get("VolumeModification", {})
         outputs = {
-            "VolumeId": volume_modification.get("VolumeId"),
-            "Size": volume_modification.get("TargetSize"),
-            "Iops": volume_modification.get("TargetIops"),
-            "VolumeType": volume_modification.get("TargetVolumeType"),
-            "Throughput": volume_modification.get("TargetThroughput"),
-            "MultiAttachEnabled": volume_modification.get("TargetMultiAttachEnabled"),
-            "Modification": {
-                "Progress": volume_modification.get("Progress"),
-                "StartTime": volume_modification.get("StartTime"),
-                "EndTime": volume_modification.get("EndTime"),
-                "ModificationState": volume_modification.get("ModificationState"),
-                "OriginalSize": volume_modification.get("OriginalSize"),
-                "OriginalIops": volume_modification.get("OriginalIops"),
-                "OriginalVolumeType": volume_modification.get("OriginalVolumeType"),
-                "OriginalThroughput": volume_modification.get("OriginalThroughput"),
-                "OriginalMultiAttachEnabled": volume_modification.get("OriginalMultiAttachEnabled"),
-            },
+            "VolumeId": volume_modification.pop("VolumeId", None),
+            "Size": volume_modification.pop("TargetSize", None),
+            "Iops": volume_modification.pop("TargetIops", None),
+            "VolumeType": volume_modification.pop("TargetVolumeType", None),
+            "Throughput": volume_modification.pop("TargetThroughput", None),
+            "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
+            "Modification": volume_modification
         }
 
         readable_output = tableToMarkdown(
@@ -3364,16 +3347,10 @@ class EC2:
             "VolumeType": args.get("volume_type"),
             "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
             "ClientToken": args.get("client_token"),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput"))
         }
-
-        if iops := args.get("iops"):
-            kwargs["Iops"] = arg_to_number(iops)
-
-        if size := args.get("size"):
-            kwargs["Size"] = arg_to_number(size)
-
-        if throughput := args.get("throughput"):
-            kwargs["Throughput"] = arg_to_number(throughput)
 
         if tags := args.get("tags"):
             kwargs["TagSpecifications"] = [{"ResourceType": "volume", "Tags": parse_tag_field(tags)}]
@@ -3440,7 +3417,7 @@ class EC2:
 
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
-            [attachment_data],
+            attachment_data,
             headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
             removeNull=True,
         )
@@ -3492,7 +3469,7 @@ class EC2:
 
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
-            [attachment_data],
+            attachment_data,
             headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
             removeNull=True,
         )
