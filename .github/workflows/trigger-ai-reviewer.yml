@@ -37,14 +37,12 @@ jobs:
         run: |
           echo "🚀 Triggering AI Reviewer (via $TRIGGER_TYPE)..."
           
-          # --- 1. DETERMINE PR NUMBER ---
           if [[ "$TRIGGER_TYPE" == "issue_comment" ]]; then
             PR_NUMBER="${{ github.event.issue.number }}"
           elif [[ "$TRIGGER_TYPE" == "pull_request" ]]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
           fi
           
-          # --- 2. GET BRANCH ---
           PR_BRANCH=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName --jq '.headRefName')
           
           if [[ -z "$PR_BRANCH" ]]; then
@@ -54,28 +52,19 @@ jobs:
 
           echo "Target Branch: $PR_BRANCH"
 
-          # --- 3. CHECKOUT & NUKE DEFAULT CONFIG ---
-          git fetch origin "$PR_BRANCH"
-          git checkout "$PR_BRANCH"
-
           # Remove the default token headers that block the push
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config --global --unset-all http.https://github.com/.extraheader || true
 
-          # Force 'origin' to use your PAT
+          # Force 'origin' to use the custom PAT
           git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${REPO}.git"
 
-          # --- 4. CONFIG USER ---
           git config --global user.email "Content-Bot@users.noreply.github.com"
           git config --global user.name "Content Bot"
           
-          # --- 5. ACTION ---
           gh issue edit "$PR_NUMBER" --add-label "ready-for-ai-review" --repo "$REPO"
 
-          # --- 6. EMPTY COMMIT ---
           git commit -m "Trigger AI Reviewer" --allow-empty
 
-          # --- 7. PUSH ---
-          # Now we can just push to origin, because origin IS the PAT.
           echo "Pushing to $PR_BRANCH..."
           git push origin HEAD:refs/heads/"$PR_BRANCH"
