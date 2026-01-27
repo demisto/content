@@ -1425,6 +1425,13 @@ class CoreClient(BaseClient):
         )
         return response.get("reply")
 
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
