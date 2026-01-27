@@ -221,7 +221,7 @@ NUMBER_OF_MESSAGES = """query {{
 """
 
 FETCH_WITHOUT_EVENTS = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: {}, sortBy: REPORTED_AT, sortDirection: ASCENDING) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}, sortField: REPORTED_AT, sortDirection: ASCENDING) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
