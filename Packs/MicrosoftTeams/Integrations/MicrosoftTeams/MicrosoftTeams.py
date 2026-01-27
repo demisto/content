@@ -1947,9 +1947,6 @@ def resolve_chat_or_channel(
     try:
         if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
             # Client Credentials flow cannot resolve chats, so we skip this check
-            # unless we want to explicitly fail fast, but the requirement is to check channel first.
-            # However, get_chat_id_and_type might fail or return nothing useful in this flow for chats.
-            # The user feedback implies we should check auth type BEFORE calling get_chat_id_and_type
             pass
         else:
             chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
