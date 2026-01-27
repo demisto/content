@@ -1,6 +1,8 @@
 import glob
 import hashlib
 import ipaddress
+import os
+import re
 import tempfile
 import zipfile
 from base64 import b64decode
