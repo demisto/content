@@ -2369,7 +2369,7 @@ def get_endpoints_command(client, args):
     sort_by_first_seen = args.get("sort_by_first_seen")
     sort_by_last_seen = args.get("sort_by_last_seen")
 
-    # When fetching all results without explicit sort, use endpoint_id to ensure stable pagination
+    # When fetching all results without explicit sort, use sort_by_first_seen to ensure stable pagination
     if all_results and not sort_by_first_seen and not sort_by_last_seen:
         sort_by_first_seen = "asc"
         demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by_first_seen=asc")
