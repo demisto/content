@@ -4266,7 +4266,7 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
 
         pagination = dict_safe_get(raw, ["meta", "pagination"], {})
         total = pagination.get("total", 0)
-        limit = pagination.get("limit", 0)
+        limit = pagination.get("limit", 1)
         offset = pagination.get("offset", 0) + limit
 
         demisto.debug(f"Recon-Log pagination info: {offset=}, {total=}, {limit=} for detailed notifications")
@@ -4350,7 +4350,7 @@ def recon_notification_to_incident(recon_notification: dict[str, Any], incident_
     incident_context = {
         "name": recon_notification.get("id"),
         "occurred": dict_safe_get(recon_notification, ["notification", "created_date"], ""),
-        "severity": severity_map.get(str(raw_severity)),
+        "severity": severity_map.get(str(raw_severity).lower()),
         "rawJSON": json.dumps(recon_notification | incident_metadata),
     }
     return incident_context
@@ -4412,7 +4412,7 @@ def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], D
         last_fetched_ids_key="last_resource_ids",
     )
     demisto.debug(f"Recon-Log Recon fetch current last run: {last_ids=},{recon_offset=},{last_created=},{first_fetch_ts=}")
-    
+
     # Validate if offset + limit exceeds the 10,000 record limit
     offset_int = arg_to_number(recon_offset) or 0
     if offset_int + min(MAX_FETCH_SIZE, INCIDENTS_PER_FETCH) > 10000:
