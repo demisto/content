@@ -31,6 +31,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Uploads a file for sandbox analysis.
+Notice that the file identifier (SHA) can be changed as shown in the example below.
 
 #### Base Command
 
@@ -129,6 +130,31 @@ Uploads a file for sandbox analysis.
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
 | csfalconx.resource.file_name | String | Name of the uploaded file.  |
+
+#### Command Example
+
+```!cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
+
+#### Context Example
+
+```
+{
+    "csfalconx": {
+        "resource": {
+            "file_name": "test.pdf",
+            "sha256": "c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
+>|file_name|sha256|
+>|---|---|
+>| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
 
 ### cs-fx-submit-uploaded-file
 
