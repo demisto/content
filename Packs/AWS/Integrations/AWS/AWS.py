@@ -3206,7 +3206,22 @@ class EC2:
     @staticmethod
     def describe_snapshots_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Describes the specified EBS snapshots available to you or all of the EBS snapshots available to you.
+        Describes one or more Amazon EBS snapshots available to you.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create
+                 volumes from the snapshot
+                - limit (int, optional): Maximum number of snapshots to return
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing snapshot information including description, encryption status, owner, progress,
+             state, and volume details
         """
         kwargs = {}
         if filters := args.get("filters"):
@@ -3266,7 +3281,15 @@ class EC2:
     @staticmethod
     def delete_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the specified snapshot.
+        Deletes the specified Amazon EBS snapshot.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - snapshot_id (str): The ID of the snapshot to delete (required)
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
         """
         snapshot_id = args.get("snapshot_id")
         kwargs = {"SnapshotId": snapshot_id}
@@ -3282,7 +3305,22 @@ class EC2:
     @staticmethod
     def copy_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3.
+        Copies a point-in-time snapshot of an Amazon EBS volume and stores it in Amazon S3.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - source_snapshot_id (str): The ID of the snapshot to copy (required)
+                - source_region (str): The region containing the source snapshot (required)
+                - description (str, optional): Description for the new snapshot
+                - destination_outpost_arn (str, optional): The ARN of the Outpost to which to copy the snapshot
+                - encrypted (boolean, optional): Whether the destination snapshot should be encrypted
+                - kms_key_id (str, optional): KMS key ID for encryption
+                - presigned_url (str, optional): Pre-signed URL for the copy operation
+                - tag_specifications (str, optional): Tags to apply to the new snapshot
+
+        Returns:
+            CommandResults: Results containing the new snapshot ID and region information
         """
         kwargs = {
             "SourceSnapshotId": args.get("source_snapshot_id"),
@@ -3321,7 +3359,29 @@ class EC2:
     @staticmethod
     def snapshot_completed_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        A waiter function that waits until the snapshot is complete.
+        Waits until an Amazon EBS snapshot reaches the completed state.
+
+        This command uses AWS EC2's built-in waiter functionality to poll the snapshot state
+        until it reaches the 'completed' state. The waiter will check the snapshot status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs to wait for
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create volumes
+                from the snapshot
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+
+        Returns:
+            CommandResults: Results with success message when snapshot is completed
+
+        Raises:
+            WaiterError: If the waiter times out or encounters an error
         """
         kwargs = {}
         if filters := args.get("filters"):
@@ -3333,16 +3393,17 @@ class EC2:
         if restorable_by_user_ids := args.get("restorable_by_user_ids"):
             kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
 
-        waiter_config = {
-            "Delay": int(args.get("waiter_delay", "15")),
-            "MaxAttempts": int(args.get("waiter_max_attempts", "40")),
+        # Configure waiter settings
+        kwargs["WaiterConfig"] = {
+            "Delay": arg_to_number(args.get("waiter_delay")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts")),
         }
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
 
         waiter = client.get_waiter("snapshot_completed")
-        waiter.wait(WaiterConfig=waiter_config, **kwargs)
+        waiter.wait(**kwargs)
 
         return CommandResults(readable_output="Snapshot is now completed.")
 
