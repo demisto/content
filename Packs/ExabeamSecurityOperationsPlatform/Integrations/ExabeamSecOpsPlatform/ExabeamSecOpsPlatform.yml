@@ -609,8 +609,6 @@ script:
       - MEDIUM
       - LOW
       type: unknown
-    - description: Tags to group cases.
-      name: tags
     - auto: PREDEFINED
       description: Case stage.
       name: stage
