@@ -1183,7 +1183,7 @@ class S3:
         Returns:
             CommandResults: Containing the list of buckets.
         """
-        kwargs = {"Prefix": args.get("filter_by_region"), "BucketRegion": args.get("prefix")}
+        kwargs = {"Prefix": args.get("prefix"), "BucketRegion": args.get("filter_by_region")}
         kwargs.update(
             build_pagination_kwargs(args, max_limit=10000, next_token_name="ContinuationToken", limit_name="MaxBuckets")
         )
@@ -4394,7 +4394,7 @@ class SSM:
         if command_timeout := arg_to_number(args.get("command_timeout")):
             max_command_timeout = 2592000  # Maximum timeout for running commands in ssm (30 days).
             min_command_timeout = 30  # Minimum timeout for running commands in ssm.
-            if max_command_timeout < command_timeout < min_command_timeout:
+            if max_command_timeout < command_timeout or command_timeout < min_command_timeout:
                 raise DemistoException(
                     f"Command timeout must be between {min_command_timeout} and {max_command_timeout} seconds."
                 )

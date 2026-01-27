@@ -7699,7 +7699,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.NotificationConfig.NotificationEvents
         description: The different events for which you can receive notifications.
-        type: String
+        type: Object
       - contextPath: AWS.SSM.Command.NotificationConfig.NotificationType
         description: The type of notification.
         type: String

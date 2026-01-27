@@ -2572,7 +2572,7 @@ Runs commands on one or more managed nodes.
 | --- | --- | --- |
 | AWS.SSM.Command.CommandId | String | A unique identifier for this command. |
 | AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. |
-| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. |
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document (SSM document) version. |
 | AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. |
 | AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. |
 | AWS.SSM.Command.Parameters | Object | The parameter values to be inserted in the document when running the command. |
@@ -2589,8 +2589,8 @@ Runs commands on one or more managed nodes.
 | AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. |
 | AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. |
 | AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. |
-| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. |
-| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. |
+| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management (IAM) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. |
+| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name (ARN) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. |
 | AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for which you can receive notifications. |
 | AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. |
 | AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. |
