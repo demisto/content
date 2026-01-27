@@ -44,9 +44,19 @@ BeforeAll {
 
             return $null
         }
+        CreateSession() {}
+        DisconnectSession() {}
+    }
+
+    class MockErrorClient {
+        CreateSession() {
+            throw "Connection failed"
+        }
+        DisconnectSession() {}
     }
 
     $mockClient = [MockClient]::new()
+    $mockErrorClient = [MockErrorClient]::new()
 }
 
 Describe 'EXOGetQuarantineMessageCommand' {
@@ -147,5 +157,29 @@ Describe 'EXOGetQuarantineMessageCommand' {
             $result | Should -HaveCount 3
             $result[2].Identity | Should -Be "msg-123"
         }
+    }
+}
+
+Describe 'TestModuleCommand' {
+    It "Returns 'ok' on success" {
+        $mockDemisto = @{
+            results = { param($val) $script:testResult = $val }
+            Debug = { param($val) }
+        }
+        $demisto = $mockDemisto
+        $Demisto = $mockDemisto
+
+        TestModuleCommand -client $mockClient
+
+        $script:testResult | Should -Be "ok"
+    }
+
+    It "Throws exception on failure" {
+        $mockDemisto = @{
+            Debug = { param($val) }
+        }
+        $demisto = $mockDemisto
+        $Demisto = $mockDemisto
+        { TestModuleCommand -client $mockErrorClient } | Should -Throw "Connection failed"
     }
 }
