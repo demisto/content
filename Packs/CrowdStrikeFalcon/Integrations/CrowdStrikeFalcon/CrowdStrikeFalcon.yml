@@ -2161,7 +2161,8 @@ script:
     - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
-    description: Lists incident summaries.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-list-case-summaries command instead.
     name: cs-falcon-list-incident-summaries
     outputs:
     - contextPath: CrowdStrike.Incidents.incident_id
@@ -2676,7 +2677,8 @@ script:
       name: remove_tag
     - description: Add a comment to the incident. Comment is limited to 1024 characters.
       name: add_comment
-    description: Resolve and update incidents using the specified settings.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-resolve-case command instead.
     name: cs-falcon-resolve-incident
   - arguments:
     - description: A JSON object with a list of CrowdStrike Falcon indicators to upload.
@@ -2918,7 +2920,8 @@ script:
       description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
-    description: Gets the detections for a specific incident.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-get-evidence-for-case command instead.
     name: cs-falcon-get-detections-for-incident
     outputs:
     - contextPath: CrowdStrike.IncidentDetection.incident_id
@@ -5076,7 +5079,8 @@ script:
       name: behavior_ids
       isArray: true
       required: true
-    description: Get incident behavior information.
+    deprecated: true
+    description: This command is deprecated.
     name: cs-falcon-get-incident-behavior
     outputs:
     - contextPath: CrowdStrike.IncidentBehavior.behavior_id
