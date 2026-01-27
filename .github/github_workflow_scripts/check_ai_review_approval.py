@@ -74,22 +74,32 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
 
 
 def find_reaction_on_review(reviews, github_token):
-    ai_review_found = False
-    for review in reviews:
-        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
-            ai_review_found = True
-            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+    bot_reviews = [
+        review for review in reviews if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body
+    ]
 
-            reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
-            for reaction in reactions:
-                content = reaction.get("content")
+    if not bot_reviews:
+        return False, False  # No reviews found
+
+    print(f"Found {len(bot_reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
+
+    for review in bot_reviews:
+        print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+        reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
+
+        thumb_up_found = False
+        for reaction in reactions:
+            if reaction.get("content") == "THUMBS_UP":
                 user = reaction.get("user", {}).get("login")
+                print(f"Found 👍 reaction from user: {user}")
+                thumb_up_found = True
+                break  # next review
 
-                if content == "THUMBS_UP":
-                    print(f"Found 👍 reaction from user: {user}")
-                    print("✅ AI Review approved.")
-                    sys.exit(0)
-    return ai_review_found
+        if not thumb_up_found:
+            print(f"❌ No 👍 reaction found for review ID {review.id}.")
+            return True, False  # Found reviews, but not all are approved
+
+    return True, True  # Found reviews, and all are approved
 
 
 def is_user_in_permitted_team(github_client: Github, username: str) -> bool:
@@ -199,14 +209,18 @@ def main():
     print("Fetching reviews...")
     reviews = pr.get_reviews()
 
-    ai_review_found = find_reaction_on_review(reviews, github_token)
+    found_reviews, all_approved = find_reaction_on_review(reviews, github_token)
 
-    if ai_review_found:
-        print("❌ AI Review found, but no 👍 reaction detected.")
-        sys.exit(1)
-    else:
+    if not found_reviews:
         print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
+
+    if not all_approved:
+        print("❌ Not all AI reviews were approved with a 👍 reaction.")
+        sys.exit(1)
+
+    print("✅ All AI Reviews approved.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
