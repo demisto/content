@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM106,BA125
+ignore=RM106
 
 [known_words]
 tlp
@@ -30,3 +30,9 @@ ignore=DS108
 
 [file:JSONFeedApiModule.yml]
 ignore=DS108
+
+[file:Packs/ApiModules/Scripts/ContentClientApiModule/README.md]
+ignore=BA125
+
+[file:Packs/ApiModules/Scripts/BaseContentApiModule/README.md]
+ignore=BA125
