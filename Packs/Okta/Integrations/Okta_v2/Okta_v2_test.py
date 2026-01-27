@@ -1384,5 +1384,6 @@ def test_extract_user_and_factor_id_from_url_failure(url):
         - Ensure a DemistoException is raised.
     """
     from CommonServerPython import DemistoException
+
     with pytest.raises(DemistoException, match="Could not extract user ID and Factor ID from the polling URL"):
         extract_user_and_factor_id_from_url(url)
