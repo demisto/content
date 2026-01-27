@@ -31,9 +31,6 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_profile_host_forensic_list,
     get_profile_host_list,
     parse_date_string_format,
-    process_tas_droplet_results,
-    process_host_results,
-    process_runtime_image_results,
     fetch_assets_long_running_command,
     init_asset_type_related_data,
     AssetType,
@@ -1752,280 +1749,6 @@ def test_remove_custom_ip_feeds(client, requests_mock, initial_ips, ips_arg, exp
         assert set(custom_ip_put_mock.last_request.json()["feed"]) == set(expected)
 
 
-def test_process_host_results_success():
-    """
-    Given: Raw host data.
-    When: process_host_results is called.
-    Then: It should return processed host data.
-    """
-    raw_data = [
-        {
-            "cloudMetadata": {
-                "name": "host1",
-                "provider": "AWS",
-                "region": "us-east-1",
-                "accountID": "12345",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-            "scanTime": "2024-01-01T00:00:00Z",
-            "tags": ["tag1"],
-            "labels": ["label1"],
-            "hostname": "test-host-1",
-            "osDistro": "Ubuntu",
-            "osDistroVersion": "22.04",
-            "type": "host",
-            "packageManager": "apt",
-            "vulnerabilities": [{"cve": "CVE-1"}],
-        }
-    ]
-    expected_assets = [
-        {
-            "name": "host1",
-            "scanTime": "2024-01-01T00:00:00Z",
-            "provider": "AWS",
-            "region": "us-east-1",
-            "accountID": "12345",
-            "tags": ["tag1"],
-            "labels": ["label1"],
-            "resourceUrl": "url",
-            "hostname": "test-host-1",
-            "resourceID": "res-id",
-            "osDistro": "Ubuntu",
-            "osDistroVersion": "22.04",
-            "vmImageID": "vm-id",
-            "type": "host",
-            "packageManager": "apt",
-            "cloudMetadata": {
-                "name": "host1",
-                "provider": "AWS",
-                "region": "us-east-1",
-                "accountID": "12345",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-        }
-    ]
-    expected_vulnerabilities = [
-        {
-            "scanTime": "2024-01-01T00:00:00Z",
-            "description": "",
-            "cve": "CVE-1",
-            "id": "",
-            "provider": "",
-            "cause": "",
-            "scanVersion": "",
-            "severity": "",
-            "type": "",
-            "cvss": "",
-            "published": "",
-            "fixDate": "",
-            "link": "",
-            "packageName": "",
-            "packageVersion": "",
-            "packageType": "",
-            "asset_id": "res-id",
-        }
-    ]
-    assets, vulnerabilities = process_host_results(raw_data)
-    assert assets == expected_assets
-    assert vulnerabilities == expected_vulnerabilities
-
-
-def test_process_host_results_empty_data():
-    """
-    Given: Empty raw host data.
-    When: process_host_results is called.
-    Then: It should return an empty list.
-    """
-    raw_data = []
-    assets, vulnerabilities = process_host_results(raw_data)
-    assert assets == []
-    assert vulnerabilities == []
-
-
-def test_process_runtime_image_results_success():
-    """
-    Given: Raw runtime image data.
-    When: process_runtime_image_results is called.
-    Then: It should return processed runtime image data.
-    """
-    raw_data = [
-        {
-            "cloudMetadata": {
-                "name": "image1",
-                "provider": "GCP",
-                "region": "us-central1",
-                "accountID": "67890",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-            "scanTime": "2024-01-01T00:00:00Z",
-            "tags": ["tagA"],
-            "labels": ["labelB"],
-            "hostname": "test-host",
-            "osDistro": "Alpine",
-            "osDistroVersion": "3.18",
-            "type": "image",
-            "packageManager": "apk",
-            "vulnerabilities": [{"cve": "CVE-2"}],
-        }
-    ]
-    expected_assets = [
-        {
-            "name": "image1",
-            "scanTime": "2024-01-01T00:00:00Z",
-            "provider": "GCP",
-            "region": "us-central1",
-            "accountID": "67890",
-            "tags": ["tagA"],
-            "labels": ["labelB"],
-            "resourceUrl": "url",
-            "hostname": "test-host",
-            "resourceID": "res-id",
-            "osDistro": "Alpine",
-            "osDistroVersion": "3.18",
-            "vmImageID": "vm-id",
-            "type": "image",
-            "packageManager": "apk",
-            "cloudMetadata": {
-                "name": "image1",
-                "provider": "GCP",
-                "region": "us-central1",
-                "accountID": "67890",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-        }
-    ]
-    expected_vulnerabilities = [
-        {
-            "scanTime": "2024-01-01T00:00:00Z",
-            "description": "",
-            "cve": "CVE-2",
-            "id": "",
-            "provider": "",
-            "cause": "",
-            "scanVersion": "",
-            "severity": "",
-            "type": "",
-            "cvss": "",
-            "published": "",
-            "fixDate": "",
-            "link": "",
-            "packageName": "",
-            "packageVersion": "",
-            "packageType": "",
-            "asset_id": "res-id",
-        }
-    ]
-    assets, vulnerabilities = process_runtime_image_results(raw_data)
-    assert assets == expected_assets
-    assert vulnerabilities == expected_vulnerabilities
-
-
-def test_process_runtime_image_results_empty_data():
-    """
-    Given: Empty raw runtime image data.
-    When: process_runtime_image_results is called.
-    Then: It should return an empty list.
-    """
-    raw_data = []
-    assets, vulnerabilities = process_runtime_image_results(raw_data)
-    assert assets == []
-    assert vulnerabilities == []
-
-
-def test_process_tas_droplet_results_success():
-    """
-    Given: Raw TAS droplet data.
-    When: process_tas_droplet_results is called.
-    Then: It should return processed TAS droplet data.
-    """
-    raw_data = [
-        {
-            "name": "droplet1",
-            "scanTime": "2024-01-01T00:00:00Z",
-            "provider": "Azure",
-            "labels": ["labelY"],
-            "hostname": "test-host",
-            "osDistro": "Ubuntu",
-            "osDistroVersion": "20.04",
-            "type": "droplet",
-            "packageManager": "apt",
-            "lastModified": "2024-01-01T00:00:00Z",
-            "cloudMetadata": {
-                "region": "eastus",
-                "accountID": "abcde",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-            "vulnerabilities": [{"cve": "CVE-3"}],
-        }
-    ]
-    expected_assets = [
-        {
-            "name": "droplet1",
-            "scanTime": "2024-01-01T00:00:00Z",
-            "provider": "Azure",
-            "labels": ["labelY"],
-            "hostname": "test-host",
-            "osDistro": "Ubuntu",
-            "osDistroVersion": "20.04",
-            "type": "droplet",
-            "packageManager": "apt",
-            "cloudMetadata": {
-                "region": "eastus",
-                "accountID": "abcde",
-                "resourceUrl": "url",
-                "resourceID": "res-id",
-                "vmImageID": "vm-id",
-            },
-        }
-    ]
-    expected_vulnerabilities = [
-        {
-            "lastModified": "2024-01-01T00:00:00Z",
-            "description": "",
-            "cve": "CVE-3",
-            "id": "",
-            "provider": "",
-            "cause": "",
-            "scanVersion": "",
-            "severity": "",
-            "type": "",
-            "cvss": "",
-            "published": "",
-            "fixDate": "",
-            "link": "",
-            "packageName": "",
-            "packageVersion": "",
-            "packageType": "",
-            "asset_id": "res-id",
-        }
-    ]
-    assets, vulnerabilities = process_tas_droplet_results(raw_data)
-    assert assets == expected_assets
-    assert vulnerabilities == expected_vulnerabilities
-
-
-def test_process_tas_droplet_results_empty_data():
-    """
-    Given: Empty raw TAS droplet data.
-    When: process_tas_droplet_results is called.
-    Then: It should return an empty list.
-    """
-    raw_data = []
-    assets, vulnerabilities = process_tas_droplet_results(raw_data)
-    assert assets == []
-    assert vulnerabilities == []
-
-
 class MockAsyncClient(PrismaCloudComputeAsyncClient):
     """Mock PrismaCloudComputeAsyncClient for testing with predefined credentials and URL."""
 
@@ -2113,7 +1836,6 @@ def test_init_asset_type_related_data_from_context(mocker):
     asset_type_data = init_asset_type_related_data(
         endpoint="/hosts",
         asset_type=AssetType.HOST,
-        process_result_func=process_host_results,
         ctx_lock=ctx_lock,
         ctx=ctx,
         assets_snapshot_id="assets_snapshot",
@@ -2138,7 +1860,6 @@ def test_init_asset_type_related_data_new_data(mocker):
     asset_type_data = init_asset_type_related_data(
         endpoint="/images",
         asset_type=AssetType.RUNTIME_IMAGE,
-        process_result_func=process_runtime_image_results,
         ctx_lock=ctx_lock,
         ctx=ctx,
         assets_snapshot_id="new_assets_snapshot",
@@ -2192,7 +1913,6 @@ async def test_collect_assets_and_send_to_xsiam_no_data(mocker):
     asset_type_related_data = AssetTypeRelatedData(
         endpoint="/hosts",
         asset_type=AssetType.HOST,
-        process_result_func=process_host_results,
         ctx_lock=ctx_lock,
         assets_snapshot_id="1",
         vulnerabilities_snapshot_id="1",
@@ -2227,7 +1947,6 @@ async def test_collect_assets_and_send_to_xsiam_with_data(mocker):
     asset_type_related_data = AssetTypeRelatedData(
         endpoint="/hosts",
         asset_type=AssetType.HOST,
-        process_result_func=process_host_results,
         limit=1,
         ctx_lock=ctx_lock,
         assets_snapshot_id="1",

@@ -1086,7 +1086,6 @@ class AssetTypeRelatedData:
     ctx_lock: asyncio.Lock
     endpoint: str
     asset_type: AssetType
-    process_result_func: Callable
     assets_snapshot_id: str
     vulnerabilities_snapshot_id: str
     offset: int = 0
@@ -3375,7 +3374,6 @@ def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
         init_asset_type_related_data(
             endpoint="/tas-droplets",
             asset_type=AssetType.TAS_DROPLET,
-            process_result_func=process_tas_droplet_results,
             ctx_lock=ctx_lock,
             ctx=ctx,
             assets_snapshot_id=assets_snapshot_id,
@@ -3384,7 +3382,6 @@ def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
         init_asset_type_related_data(
             endpoint="/hosts",
             asset_type=AssetType.HOST,
-            process_result_func=process_host_results,
             ctx_lock=ctx_lock,
             ctx=ctx,
             assets_snapshot_id=assets_snapshot_id,
@@ -3393,7 +3390,6 @@ def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
         init_asset_type_related_data(
             endpoint="/images",
             asset_type=AssetType.RUNTIME_IMAGE,
-            process_result_func=process_runtime_image_results,
             ctx_lock=ctx_lock,
             ctx=ctx,
             assets_snapshot_id=assets_snapshot_id,
@@ -3406,7 +3402,6 @@ def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
 def init_asset_type_related_data(
     endpoint: str,
     asset_type: AssetType,
-    process_result_func: Callable,
     ctx_lock: asyncio.Lock,
     ctx: dict,
     assets_snapshot_id: str,
@@ -3419,7 +3414,6 @@ def init_asset_type_related_data(
     Args:
         endpoint (str): The endpoint to request the asset from.
         asset_type (AssetType): The type of the asset.
-        process_result_func (Callable): The function that flow should use to process the incoming results.
         ctx_lock (Lock): The lock for editing the context.
 
     Returns:
@@ -3432,7 +3426,6 @@ def init_asset_type_related_data(
     return AssetTypeRelatedData(
         endpoint=endpoint,
         asset_type=asset_type,
-        process_result_func=process_result_func,
         offset=offset,
         assets_total_count=assets_total_count,
         assets_snapshot_id=assets_snapshot_id,
@@ -3560,7 +3553,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
     Returns:
         _type_: The send_data_to_xsiam tasks.
     """
-    processed_assets, processed_vulnerabilities = asset_type_related_data.process_result_func(data)
+    processed_assets, processed_vulnerabilities = process_results(data)
     asset_type_related_data.vulnerabilities_total_count += len(processed_vulnerabilities)
 
     assets_coroutine = async_send_data_to_xsiam(
@@ -3593,139 +3586,6 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         await assets_coroutine
     if vulnerabilities_coroutine:
         await vulnerabilities_coroutine
-
-
-def process_findings(vulnerabilities=[], related_asset={}, time_field=""):
-    processed_vulnerabilities = []
-    for vulnerability in vulnerabilities:
-        processed_vulnerabilities.append(
-            {
-                time_field: related_asset.get(time_field, ""),
-                "description": vulnerability.get("description", ""),
-                "cve": vulnerability.get("cve", ""),
-                "id": vulnerability.get("id", ""),
-                "provider": vulnerability.get("provider", ""),
-                "cause": vulnerability.get("cause", ""),
-                "scanVersion": related_asset.get("scanVersion", ""),
-                "severity": vulnerability.get("severity", ""),
-                "type": vulnerability.get("type", ""),
-                "cvss": vulnerability.get("cvss", ""),
-                "published": vulnerability.get("published", ""),
-                "fixDate": vulnerability.get("fixDate", ""),
-                "link": vulnerability.get("link", ""),
-                "packageName": vulnerability.get("packageName", ""),
-                "packageVersion": vulnerability.get("packageVersion", ""),
-                "packageType": vulnerability.get("packageType", ""),
-                "asset_id": related_asset.get("cloudMetadata", {}).get("resourceID", ""),
-            }
-        )
-    return processed_vulnerabilities
-
-
-def process_host_results(data_list):
-    processed_results_list = []
-    processed_vulnerabilities_list = []
-    for data in data_list:
-        cloud_metadata = data.get("cloudMetadata", {})
-        processed_results_list.append(
-            {
-                "name": cloud_metadata.get("name", ""),
-                "scanTime": data.get("scanTime", ""),
-                "provider": cloud_metadata.get("provider", ""),
-                "region": cloud_metadata.get("region", ""),
-                "accountID": cloud_metadata.get("accountID", ""),
-                "tags": data.get("tags", []),
-                "labels": data.get("labels", []),
-                "resourceUrl": cloud_metadata.get("resourceUrl", ""),
-                "hostname": data.get("hostname", ""),
-                "resourceID": cloud_metadata.get("resourceID", ""),
-                "osDistro": data.get("osDistro", ""),
-                "osDistroVersion": data.get("osDistroVersion", ""),
-                "vmImageID": cloud_metadata.get("vmImageID", ""),
-                "type": data.get("type", ""),
-                "packageManager": data.get("packageManager", ""),
-                "cloudMetadata": {
-                    "name": cloud_metadata.get("name", ""),
-                    "provider": cloud_metadata.get("provider", ""),
-                    "region": cloud_metadata.get("region", ""),
-                    "accountID": cloud_metadata.get("accountID", ""),
-                    "resourceUrl": cloud_metadata.get("resourceUrl", ""),
-                    "resourceID": cloud_metadata.get("resourceID", ""),
-                    "vmImageID": cloud_metadata.get("vmImageID", ""),
-                },
-            }
-        )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []) or [], data, "scanTime"))
-
-    return processed_results_list, processed_vulnerabilities_list
-
-
-def process_runtime_image_results(data_list):
-    processed_results_list = []
-    processed_vulnerabilities_list = []
-    for data in data_list:
-        cloud_metadata = data.get("cloudMetadata", {})
-        processed_results_list.append(
-            {
-                "name": cloud_metadata.get("name", ""),
-                "scanTime": data.get("scanTime", ""),
-                "provider": cloud_metadata.get("provider", ""),
-                "region": cloud_metadata.get("region", ""),
-                "accountID": cloud_metadata.get("accountID", ""),
-                "tags": data.get("tags", []),
-                "labels": data.get("labels", []),
-                "resourceUrl": cloud_metadata.get("resourceUrl", ""),
-                "hostname": data.get("hostname", ""),
-                "resourceID": cloud_metadata.get("resourceID", ""),
-                "osDistro": data.get("osDistro", ""),
-                "osDistroVersion": data.get("osDistroVersion", ""),
-                "vmImageID": cloud_metadata.get("vmImageID", ""),
-                "type": data.get("type", ""),
-                "packageManager": data.get("packageManager", ""),
-                "cloudMetadata": {
-                    "name": cloud_metadata.get("name", ""),
-                    "provider": cloud_metadata.get("provider", ""),
-                    "region": cloud_metadata.get("region", ""),
-                    "accountID": cloud_metadata.get("accountID", ""),
-                    "resourceUrl": cloud_metadata.get("resourceUrl", ""),
-                    "resourceID": cloud_metadata.get("resourceID", ""),
-                    "vmImageID": cloud_metadata.get("vmImageID", ""),
-                },
-            }
-        )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []) or [], data, "scanTime"))
-
-    return processed_results_list, processed_vulnerabilities_list
-
-
-def process_tas_droplet_results(data_list):
-    processed_results_list = []
-    processed_vulnerabilities_list = []
-    for data in data_list:
-        processed_results_list.append(
-            {
-                "name": data.get("name", ""),
-                "scanTime": data.get("scanTime", ""),
-                "provider": data.get("provider", "VMWare"),
-                "labels": data.get("labels", []),
-                "hostname": data.get("hostname", ""),
-                "osDistro": data.get("osDistro", ""),
-                "osDistroVersion": data.get("osDistroVersion", ""),
-                "type": data.get("type", ""),
-                "packageManager": data.get("packageManager", ""),
-                "cloudMetadata": {
-                    "region": data.get("cloudMetadata", {}).get("region", ""),
-                    "accountID": data.get("cloudMetadata", {}).get("accountID", ""),
-                    "resourceUrl": data.get("cloudMetadata", {}).get("resourceUrl", ""),
-                    "resourceID": data.get("cloudMetadata", {}).get("resourceID", ""),
-                    "vmImageID": data.get("cloudMetadata", {}).get("vmImageID", ""),
-                },
-            }
-        )
-        processed_vulnerabilities_list.extend(process_findings(data.get("vulnerabilities", []) or [], data, "lastModified"))
-    return processed_results_list, processed_vulnerabilities_list
-
-
 
 
 def process_results(data_list):
@@ -3771,7 +3631,6 @@ def process_results(data_list):
     return processed_results_list, processed_vulnerabilities_list
 
 
-
 def process_all_findings(vulnerabilities=[], related_asset={}):
     processed_vulnerabilities = []
     for vulnerability in vulnerabilities:
@@ -3808,9 +3667,6 @@ def process_all_findings(vulnerabilities=[], related_asset={}):
             }
         )
     return processed_vulnerabilities
-
-
-
 
 
 def main():
