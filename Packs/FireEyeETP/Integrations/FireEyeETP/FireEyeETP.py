@@ -1024,9 +1024,8 @@ def fetch_incidents(client: Client):
     demisto.debug(f"[FireEyeETP - fetch_incidents] last_run before fetching:\n{last_run}")
 
     # The start time does not change, progress happens using the pagination token.
-    start_time = arg_to_datetime(FETCH_TIME)
-    if start_time:
-        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_time_dt = arg_to_datetime(FETCH_TIME)
+    start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ") if start_time_dt else None
     now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
