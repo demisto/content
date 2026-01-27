@@ -51,10 +51,12 @@ For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/
 For ellaborated Information and Prerequisites, please refer to [**DOCA Argus Service Guide**](https://docs.nvidia.com/doca/sdk/doca-argus-service-guide/index.html#).
 
 ### Fluent Bit side
-<Fill in here the necessary configuration steps required on the vendor's product to set the integration with XSIAM,  
-such as configuring generating API credentials, enabling audit, etc.>
+Fluent Bit is a lightweight, high-performance log processor and forwarder used to collect, parse, enrich, and route logs from systems, containers, and services to external destinations.
+In this integration, Fluent Bit acts as the log shipping layer between NVIDIA DOCA Argus and Cortex XSIAM
 
 #### HTTP out to XSIAM — fill in your [OUTPUT] details
+
+Edit Fluent Bit conf file **/fluent-bit/etc/fluent-bit.conf** and input the following:
 
   | Parameter    | Value                                                                                                                                           |
   |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|                  
