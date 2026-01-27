@@ -450,8 +450,139 @@ script:
       name: resource_group_name
     description: Deletes a policy.
     name: azure-waf-policy-delete
+  - arguments:
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
+      name: policy_name
+    - description: Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_name
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      name: subscription_id
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".'
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10'
+      description: Maximum number of policies to fetch. Default is "10".
+      name: limit
+    description: Lists all of the Front Door protection policies within a resource group.
+    name: azure-waf-front-door-policies-list
+    outputs:
+    - contextPath: AzureWAF.FrontDoorPolicy.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.etag
+      description: A unique read-only string that changes whenever the resource is updated.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.location
+      description: Resource location.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false".
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10'
+      description: Maximum number of policies to fetch. Default is "10".
+      name: limit
+    - description: List of subscription IDs. If not provided, the integration default subscription ID will be used.
+      name: subscription_id
+      isArray: true
+    description: Lists all of the Front Door protection policies within a subscription.
+    name: azure-waf-front-door-policies-list-all-in-subscription
+    outputs:
+    - contextPath: AzureWAF.FrontDoorPolicy.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.etag
+      description: A unique read-only string that changes whenever the resource is updated.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.location
+      description: Resource location.
+      type: String
+  - arguments:
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group.
+      name: policy_name
+      required: true
+    - description: Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_name
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      name: subscription_id
+      isArray: true
+    - description: Describes the managedRules structure.
+      name: managed_rules
+      required: true
+    - description: The custom rules inside the policy in json format.
+      name: custom_rules
+    - description: Describes settings for the policy.
+      name: policy_settings
+    - description: Describes the resource location.
+      name: location
+    - description: The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified.
+      name: sku
+      defaultValue: Classic_AzureFrontDoor
+    - description: A unique read-only string that changes whenever the resource is updated.
+      name: etag
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false".'
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Resource tags.
+      isArray: true
+      name: tags
+    description: Creates or updates a Front Door policy with a specified rule set name within a resource group.
+    name: azure-waf-front-door-policy-update-or-create
+    outputs:
+    - contextPath: AzureWAF.FrontDoorPolicy.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.etag
+      description: A unique read-only string that changes whenever the resource is updated.
+      type: String
+    - contextPath: AzureWAF.FrontDoorPolicy.location
+      description: Resource location.
+      type: String
+  - arguments:
+    - description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group.
+      name: policy_name
+      required: true
+    - description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      name: subscription_id
+    - description: Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_name
+    description: Deletes a Front Door policy.
+    name: azure-waf-front-door-policy-delete
   - description: |-
-      Run this command to start the authorization process and follow the instructions in the command results.
+      Run this command to start the authorization process and follow the instructions provided in the command results.
     name: azure-waf-auth-start
   - description: |-
       Run this command to complete the authorization process.
@@ -516,7 +647,7 @@ script:
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.6308375
   runonce: false
   script: '-'
   subtype: python3
