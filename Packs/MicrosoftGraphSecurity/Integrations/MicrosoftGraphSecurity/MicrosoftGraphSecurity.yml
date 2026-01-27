@@ -2362,7 +2362,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
       isArray: false
       name: content_query
       required: false
@@ -2602,7 +2602,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
       isArray: false
       name: content_query
       required: false
@@ -2866,7 +2866,7 @@ script:
       - 'false'
       defaultValue: 'false'
       auto: PREDEFINED
-    - description: 'Download the export report when an export file link is available. Only applies when operation_id is provided. If you get an authorization/permissions error while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1.'
+    - description: 'Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1'
       name: download_file
       isArray: false
       required: false

@@ -2641,7 +2641,7 @@ Get a list of the caseOperation objects and their properties, or retrieve a spec
 | operation_id | The ID of the operation. | Optional |
 | limit | Number of total results to return. The default is 50. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional |
-| download_file | Download the export report when an export file link is available. Only applies when operation_id is provided. If you get an authorization/permissions error while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&amp;tabs=http#response-1. Possible values are: true, false. Default is false. | Optional |
+| download_file | Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -2713,7 +2713,7 @@ Create a new ediscoveryHoldPolicy object.
 | case_id | The ID of the eDiscovery case. | Required |
 | display_name | The display name of the legal hold policy. | Required |
 | description | The description of the legal hold policy. | Optional |
-| content_query | KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&amp;preserve-view=true ). | Optional |
+| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true ). | Optional |
 
 #### Context Output
 
@@ -2805,7 +2805,7 @@ Update the properties of an ediscoveryHoldPolicy object.
 | case_id | The ID of the eDiscovery case. | Required |
 | hold_policy_id | The policy ID that is intended to be updated. | Required |
 | description | The description of the legal hold policy. | Optional |
-| content_query | KQL query that specifies content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&amp;preserve-view=true ). | Optional |
+| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true ). | Optional |
 
 #### Context Output
 
