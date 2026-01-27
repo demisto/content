@@ -2362,7 +2362,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true).
       isArray: false
       name: content_query
       required: false
@@ -2602,7 +2602,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true )
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true).
       isArray: false
       name: content_query
       required: false
