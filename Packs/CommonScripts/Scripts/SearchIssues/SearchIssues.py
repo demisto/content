@@ -6,7 +6,7 @@ EQ = "EQ"
 OUTPUT_KEYS = [
     "internal_id",
     "severity",
-    "identity_type",
+    "Identity_type",
     "issue_name",
     "issue_source",
     "case_ids",

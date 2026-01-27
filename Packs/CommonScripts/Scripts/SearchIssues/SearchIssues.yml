@@ -236,7 +236,7 @@ outputs:
   - contextPath: Core.Issue.issue_description
     description: The issue description.
     type: String
-  - contextPath: Core.Issue.identity_type
+  - contextPath: Core.Issue.Identity_type
     description: The identity type of the account.
     type: String
   - contextPath: Core.IssueMetadata.returned_count

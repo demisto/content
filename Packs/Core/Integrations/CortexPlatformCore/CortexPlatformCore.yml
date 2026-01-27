@@ -700,7 +700,7 @@ script:
         - contextPath: Core.Issue.internal_id
           description: The unique ID of the issue.
           type: String
-        - contextPath: Core.Issue.identity_type
+        - contextPath: Core.Issue.Identity_type
           description: The identity type of the account.
           type: String
         - contextPath: Core.Issue.source_insert_ts
