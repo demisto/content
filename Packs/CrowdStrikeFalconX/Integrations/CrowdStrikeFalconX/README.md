@@ -274,7 +274,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 #### Command Example
 
-```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
+```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10 (64-bit)" action_script="default" command_line="command" document_password="password" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
 
@@ -2007,7 +2007,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Command Example
 
-```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
+```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10 (64-bit)" action_script="default" document_password="password" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
 
