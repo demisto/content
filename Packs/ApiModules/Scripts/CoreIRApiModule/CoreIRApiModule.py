@@ -1470,6 +1470,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
+        IPLIST_MATCH = ("IPLIST_MATCH", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
