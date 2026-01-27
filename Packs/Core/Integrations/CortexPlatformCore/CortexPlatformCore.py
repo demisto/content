@@ -50,6 +50,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+REMEDIATION_TECHNIQUES_SOURCES = ["CIEM_SCANNER", "DATA_POLICY", "AISPM_RULE_ENGINE"]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -1217,6 +1218,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
+        alert_source = issue.get("alert_source")
 
         # Base recommendation
         recommendation = {
@@ -1237,6 +1239,12 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
         if appsec_recommendation:
             recommendation.update(appsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
+            demisto.debug(f"Remediation recommendation of {current_issue_id=}: {remediation_techniques_response}")
+            recommendation["remediation"] = remediation_techniques_response or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
