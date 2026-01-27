@@ -249,6 +249,32 @@ def get_auth_headers():
 
 
 class Client(BaseClient):
+    def get_alerts_request_v2(self, size=None, start_time=None, end_time=None, pagination_token=None, body={}):
+        """
+            size (int, optional): Maximum number of alerts to return.
+            start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
+            end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
+            pagination_token (str, optional): Token used for pagination.
+            body (dict, optional): Additional request body parameters.
+
+        """
+        url = "/public/alerts/search"
+        body["sort"] = {"order": "asc"}
+        if size:
+            body["size"] = int(size)
+        if start_time and end_time:
+            body["date_range"] = {"from": start_time, "to": end_time}
+        if pagination_token:
+            body["sort"]["search_after"] = pagination_token
+
+        response = self._http_request(method="POST", url_suffix=url, resp_type="response", json_data=body)
+        return response
+    
+    def get_alert_request_v2(self, alert_id):
+        url = f"/public/alerts/{alert_id}"
+        response = self._http_request(method="GET", url_suffix=url, resp_type="response")
+        return response
+
     def get_artifacts_v2(self, alert_id):
         url = f"/public/alerts/{alert_id}/casefile"
         response = self._http_request(method="GET", url_suffix=url, resp_type="response")
@@ -673,31 +699,6 @@ def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_i
     return response["data"]
 
 
-def get_alerts_request_v2(size=None, start_time=None, end_time=None, pagination_token=None, body={}):
-    """
-    Fetch alerts from the /api/v2/public/alerts/search endpoint.
-
-    Args:
-        size (int, optional): Maximum number of alerts to return.
-        start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
-        end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
-        pagination_token (str, optional): Token used for pagination.
-        body (dict, optional): Additional request body parameters.
-
-    """
-    url = f"{BASE_PATH_V2}/public/alerts/search"
-    body["sort"] = {"order": "asc"}
-    if size:
-        body["size"] = int(size)
-    if start_time and end_time:
-        body["date_range"] = {"from": start_time, "to": end_time}
-    if pagination_token:
-        body["sort"]["search_after"] = pagination_token
-
-    response = http_request("POST", url, body=body, headers=HTTP_HEADERS)
-    return response
-
-
 # Deprecated command
 def get_alerts_command():
     args = demisto.args()
@@ -837,12 +838,6 @@ def download_yara_file_command(client, args):
     return [CommandResults(readable_output="Download yara file completed successfully."), file_entry]
 
 
-def get_alert_request_v2(alert_id):
-    url = f"{BASE_PATH_V2}/public/alerts/{alert_id}"
-    response = http_request("GET", url)
-    return response
-
-
 # Deprecated endpoint
 def get_alert_request(alert_id):
     url = f"{BASE_PATH_V1}/alerts/{alert_id}"
@@ -888,8 +883,8 @@ def quarantine_release_command(client, args):
     return command_results
 
 
-def get_single_alert_entry(alert_id):
-    alert = get_alert_request_v2(alert_id)
+def get_single_alert_entry(alert_id, client: Client):
+    alert = client.get_alert_request_v2(alert_id)
     alert_summary = get_single_alert_summary_v2(alert)
     readable_output = tableToMarkdown("Alert Details", alert_summary)
 
@@ -898,7 +893,7 @@ def get_single_alert_entry(alert_id):
     )
 
 
-def get_alerts_entry(args):
+def get_alerts_entry(args, client: Client):
     body = create_request_body_alert_search_endpoint(args)
     size = args.get("limit")
     start_time = args.get("date_from")
@@ -910,7 +905,7 @@ def get_alerts_entry(args):
     if start_time and not end_time:
         end_time = datetime.now(UTC).strftime(ISO_FORMAT)
 
-    response = get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
+    response = client.get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
     alerts = response.get("data") or []
     alerts_summaries = [get_search_alert_summary_v2(alert) for alert in alerts]
     readable_output = tableToMarkdown("Trellix Email Security - Cloud - Get Alerts", alerts_summaries)
@@ -920,17 +915,17 @@ def get_alerts_entry(args):
     )
 
 
-def get_alert_list():
+def get_alert_list(client: Client):
     args = demisto.args()
     alert_id = args.get("alert_id")
 
     # In case alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
     if alert_id:
-        command_result = get_single_alert_entry(alert_id)
+        command_result = get_single_alert_entry(alert_id, client)
 
     # alert_id is not provided, POST calling: /api/v2/public/alerts/search
     else:
-        command_result = get_alerts_entry(args)
+        command_result = get_alerts_entry(args, client)
 
     return command_result
 
@@ -1027,7 +1022,7 @@ def parse_alert_to_incident(response):
     }
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
 
     # The start time does not change, progress happens using the pagination token.
@@ -1035,7 +1030,7 @@ def fetch_incidents():
     now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
-    alerts_response = get_alerts_request_v2(
+    alerts_response = client.get_alerts_request_v2(
         size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token
     )
 
@@ -1063,7 +1058,7 @@ def fetch_incidents():
                 )
             continue
 
-        alert_info = get_alert_request_v2(alert_id)
+        alert_info = client.get_alert_request_v2(alert_id)
         incidents.append(parse_alert_to_incident(alert_info))
 
     if not incidents:
@@ -1117,7 +1112,8 @@ def main():
             test_module()
             demisto.results("ok")
         elif command == "fetch-incidents":
-            fetch_incidents()
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            fetch_incidents(client)
         elif command == "fireeye-etp-search-messages":
             search_messages_command()
         elif command == "fireeye-etp-get-message":
@@ -1127,7 +1123,8 @@ def main():
         elif command == "fireeye-etp-get-alert":
             get_alert_command()
         elif command == "fireeye-etp-list-alerts":
-            return_results(get_alert_list())
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            return_results(get_alert_list(client))
         elif command == "fireeye-etp-download-alert-artifact":
             client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_alert_artifacts_command(client, args))
