@@ -3962,7 +3962,7 @@ async def fetch_spotlight_vulnerabilities_batch(
         Tuple of (vulnerabilities_list, response_data)
     """
     # Build request parameters
-    # TODO: Not sure the pararms should look like that - verify the call.
+    # TODO: Add constants
     params = {
         "limit": 5000,
         "filter": "status:['open','reopen']",
@@ -4014,7 +4014,7 @@ def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
     return existing_aids
 
 
-async def spotlight_xsiam_api_call_async(
+async def xsiam_api_call_async(
     xsiam_url: str,
     zipped_data: bytes,
     headers: dict,
@@ -4023,7 +4023,21 @@ async def spotlight_xsiam_api_call_async(
 ) -> aiohttp.ClientResponse:
     """
     Send data to XSIAM asynchronously with retry logic.
+    Generic function for sending any type of data to XSIAM.
     Adapted from Rapid7_Nexpose.py lines 7705-7761.
+    
+    Args:
+        xsiam_url: XSIAM API endpoint URL (e.g., "https://api-{domain}")
+        zipped_data: Gzip-compressed data bytes to send
+        headers: HTTP headers including authorization token, format, vendor, product, etc.
+        num_of_attempts: Maximum number of retry attempts for failed requests
+        data_type: Type of data being sent (e.g., "assets", "events"). Used for logging. Defaults to "assets"
+        
+    Returns:
+        aiohttp.ClientResponse: The HTTP response object from the XSIAM API
+        
+    Raises:
+        DemistoException: If all retry attempts fail or non-retryable error occurs
     """
     status_code = None
     attempt_num = 1
@@ -4053,8 +4067,9 @@ async def spotlight_xsiam_api_call_async(
                     else:
                         header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
                         demisto.error(header_msg)
-                        raise DemistoException(header_msg)
-        
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+                    
+        demisto.debug(f"received status code: {status_code}")
         if status_code == 429:
             await asyncio.sleep(1)
         attempt_num += 1
@@ -4062,7 +4077,7 @@ async def spotlight_xsiam_api_call_async(
     return response
 
 
-def spotlight_send_data_to_xsiam_async(
+def send_data_to_xsiam_async(
     data: list,
     vendor: str,
     product: str,
@@ -4071,14 +4086,34 @@ def spotlight_send_data_to_xsiam_async(
     num_of_attempts: int = 3,
     chunk_size: int = 2**20,
     data_type: str = "assets",
-    should_update_health_module: bool = True,
-    send_events_asynchronously: bool = False,
     snapshot_id: str = "",
     items_count: int = 1,
 ) -> list:
     """
-    Send data to XSIAM with optional async mode.
+    Send data to XSIAM asynchronously by creating async tasks for each data chunk.
+    Generic function for sending any type of data (assets, events, etc.) to XSIAM.
     Adapted from Rapid7_Nexpose.py lines 7631-7672.
+    
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers (e.g., "Falcon_Spotlight", "Falcon_CNAPP")
+        data_format: Format of the data being sent. Defaults to "json"
+        url_key: Parameter key to retrieve the final reporting device URL from params. Defaults to "url"
+        num_of_attempts: Maximum retry attempts for failed requests. Defaults to 3
+        chunk_size: Maximum size in bytes for each data chunk. Defaults to 1 MiB (2**20)
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        snapshot_id: Snapshot ID for asset collection tracking. Required for assets, empty for events
+        items_count: Total items count - final count when complete, 1 when in-progress. Defaults to 1
+        
+    Returns:
+        list: List of asyncio.Task objects for each data chunk being sent
+        
+    Note:
+        - Data is automatically converted to newline-separated JSON strings
+        - Data is compressed with gzip before sending
+        - Data is split into chunks based on chunk_size parameter
+        - Each chunk is sent as a separate async task
     """
     params = demisto.params()
     calling_context = demisto.callingContext.get("context", {})
@@ -4091,6 +4126,8 @@ def spotlight_send_data_to_xsiam_async(
     
     # Convert list to newline-separated JSON strings
     if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        demisto.debug(f"Sending {len(data)} {data_type} (data type) to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
         data_str = "\n".join(data)
@@ -4115,6 +4152,7 @@ def spotlight_send_data_to_xsiam_async(
         "collector-type": "assets" if data_type == "assets" else "events",
     })
     
+    # Adapt headers to asset data
     if data_type == "assets":
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
@@ -4124,10 +4162,11 @@ def spotlight_send_data_to_xsiam_async(
     # Split into chunks
     data_chunks = list(split_data_to_chunks(data_str, chunk_size))
     
-    async def send_events_async(data_chunk: str) -> int:
+    async def send_events_async(data_chunk) -> int:
         chunk_size_val = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode("utf-8"))
-        await spotlight_xsiam_api_call_async(
+        await xsiam_api_call_async(
             xsiam_url=xsiam_url,
             zipped_data=zipped_data,
             headers=headers,
@@ -4136,42 +4175,64 @@ def spotlight_send_data_to_xsiam_async(
         )
         return chunk_size_val
     
-    if send_events_asynchronously:
-        tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
-        return tasks
-    else:
-        return []
+    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    return tasks
+    
 
 
-async def send_spotlight_batch_to_xsiam_and_save_context(
-    vulnerabilities: list,
+async def send_batch_to_xsiam_and_save_context(
+    data: list,
+    vendor: str,
+    product: str,
     snapshot_id: str,
     items_count: int,
     batch_number: int,
     last_saved_batch_number: int,
     context_store: ContentClientContextStore,
     integration_context: dict,
-    spotlight_state: ContentClientState,
+    state: ContentClientState,
+    save_state_callback: Callable[[ContentClientContextStore, dict, ContentClientState], None],
+    data_type: str = "assets",
 ) -> int:
     """
-    Send batch to XSIAM, then save context ONLY if send succeeds.
-    Only saves if this is the latest batch (prevents out-of-order saves).
+    Send batch to XSIAM asynchronously, then save context ONLY if send succeeds AND this is the latest batch.
+    
+    Generic function implementing the async fire-and-forget pattern for sending any type of data
+    to XSIAM while managing state persistence. Prevents out-of-order context saves by only saving
+    when batch_number > last_saved_batch_number.
+    
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers (e.g., "Falcon_Spotlight", "Falcon_CNAPP")
+        snapshot_id: Snapshot ID for asset collection tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        integration_context: Full integration context dictionary (preserves all keys)
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        
+    Returns:
+        int: batch_number if context was saved, else last_saved_batch_number
     """
-    demisto.debug(f"[Batch {batch_number}] Sending {len(vulnerabilities)} vulnerabilities to XSIAM")
+    demisto.debug(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
     
     try:
         # 1. Send to XSIAM (returns list of async tasks)
-        tasks = spotlight_send_data_to_xsiam_async(
-            data=vulnerabilities,
-            vendor=VENDOR,
-            product="Falcon_Spotlight",
+        tasks = send_data_to_xsiam_async(
+            data=data,
+            vendor=vendor,
+            product=product,
             data_format="json",
             url_key="url",
             num_of_attempts=3,
             chunk_size=2**20,
-            data_type="assets",
-            should_update_health_module=False,
-            send_events_asynchronously=True,
+            data_type=data_type,
             snapshot_id=snapshot_id,
             items_count=items_count,
         )
@@ -4180,9 +4241,9 @@ async def send_spotlight_batch_to_xsiam_and_save_context(
         await asyncio.gather(*tasks)
         demisto.debug(f"[Batch {batch_number}] Successfully sent to XSIAM")
         
-        # 3. Save context ONLY if this is the latest batch
+        # 3. Save context ONLY if this is the latest batch using the provided callback
         if batch_number > last_saved_batch_number:
-            save_spotlight_state(context_store, integration_context, spotlight_state)
+            save_state_callback(context_store, integration_context, state)
             demisto.debug(f"[Batch {batch_number}] Context saved")
             return batch_number
         else:
@@ -4245,15 +4306,19 @@ async def fetch_spotlight_assets():
             # Create async task to send batch to XSIAM AND save context
             # This is "fire and forget" - we don't wait for it to complete
             task = asyncio.create_task(
-                send_spotlight_batch_to_xsiam_and_save_context(
-                    vulnerabilities=vulnerabilities,
+                send_batch_to_xsiam_and_save_context(
+                    data=vulnerabilities,
+                    vendor=VENDOR,
+                    product="Falcon_Spotlight",
                     snapshot_id=snapshot_id,
                     items_count=total_fetched if not new_after_token else 1,
                     batch_number=batch_counter,
                     last_saved_batch_number=last_saved_batch_number,
                     context_store=context_store,
                     integration_context=integration_context,
-                    spotlight_state=spotlight_state,
+                    state=spotlight_state,
+                    save_state_callback=save_spotlight_state,
+                    data_type="assets",
                 )
             )
             
