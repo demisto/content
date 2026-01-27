@@ -866,7 +866,7 @@ def upload_file_command(  # type: ignore[return]
             submit_name,
             system_date,
             system_time,
-            network_settings
+            network_settings,
         )
 
 
