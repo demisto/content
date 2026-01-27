@@ -1027,7 +1027,7 @@ def fetch_incidents(client: Client):
     demisto.debug(f"[FireEyeETP - fetch_incidents] last_run before fetching:\n{last_run}")
 
     # The start time does not change, progress happens using the pagination token.
-    start_time = parse_date_range(FETCH_TIME)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_time = arg_to_datetime(FETCH_TIME).strftime("%Y-%m-%dT%H:%M:%SZ")
     now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
     pagination_token = last_run.get("pagination_token")
 
@@ -1039,7 +1039,7 @@ def fetch_incidents(client: Client):
     # When no alerts are found, there is no search_after token in the response.
     if not alerts_response or not alerts_response.get("data"):
         demisto.debug("[FireEyeETP - fetch_incidents] No incident found.")
-        return
+        return [], {}
 
     pagination_token = alerts_response.get("meta", {}).get("search_after")
     if pagination_token:
@@ -1067,31 +1067,22 @@ def fetch_incidents(client: Client):
 
     if not incidents:
         demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out, 0 alerts left.")
-        return
+        return [], {}
 
     demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents left after filtering: {len(incidents)}.")
-    demisto.incidents(incidents)
-    demisto.setLastRun(last_run)
+    return incidents, last_run
 
-def test_module():
-    
-    # TODO: Add auth check + scopes check
+def test_module(client:Client):
+    params = demisto.params()
     try:
-        time = dateparser.parse("1 minute")
-        assert time
-        severity = params.get("severity", None)
-        if params.get("isFetch"):  # Tests fetch alert:
-            fetch_incidents(client=client, max_results=1, last_run={}, first_fetch_time=time.isoformat(), severity=severity)
+        if params.get("isFetch"):
+            fetch_incidents(client)
         else:
-            client.get_alert_list(limit=1, severity=params.get("severity"))
+            client.get_alerts_request_v2(size=1)
 
-    except DemistoException as e:
-        if "Forbidden" in str(e):
-            return "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
-
-    return "ok"    
+    except Exception as e:
+        return f"test-module failed: {str(e)}"
+    return "ok"
 
     
 def main():
@@ -1115,11 +1106,15 @@ def main():
         command = demisto.command()
 
         if command == "test-module":
-            test_module()
-            demisto.results("ok")
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            result = test_module(client)
+            return_results(result)
         elif command == "fetch-incidents":
             client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
-            fetch_incidents(client)
+            incidents, last_run = fetch_incidents(client)
+            if incidents:
+                demisto.incidents(incidents)
+                demisto.setLastRun(last_run)
         elif command == "fireeye-etp-search-messages":
             search_messages_command()
         elif command == "fireeye-etp-get-message":
