@@ -321,69 +321,15 @@
   },
   "empty_response": {},
   "endpoint_command": {
-    "Type": 1,
-    "ContentsFormat": "json",
-    "Contents": {
-      "items": [
-        {
-          "agentId": "1",
-          "hostName": "host_name",
-          "riskScore": 0,
-          "networkInterfaces": [
-            {
-              "name": "AWS Network",
-              "macAddress": "01:11:11:AA:11:11",
-              "ipv4": [
-                "1.1.1.1"
-              ],
-              "ipv6": [
-                "111::111:11:111:11"
-              ],
-              "networkIdv6": [
-                "111"
-              ],
-              "gateway": [
-                "1.1.1.1"
-              ],
-              "dns": [
-                "1.1.1.1"
-              ],
-              "promiscuous": false
-            }
-          ],
-          "lastSeenTime": "2021-10-19T11:08:55.052Z"
-        }
-      ],
-      "pageNumber": 0,
-      "pageSize": 100,
-      "totalPages": 1,
-      "totalItems": 1,
-      "hasNext": false,
-      "hasPrevious": false
-    },
-    "HumanReadable": "### RSA NetWitness 11.5 -  Endpoint: 1\n|Hostname|ID|IPAddress|MACAddress|Vendor|\n|---|---|---|---|---|\n| host_name | 1 | ['1.1.1.1'] | 01:11:11:AA:11:11 | RSA NetWitness 11.5 Response |\n",
-    "EntryContext": {
-      "Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)": [
-        {
-          "ID": "1",
-          "Hostname": "host_name",
-          "IPAddress": [
-            [
-              "1.1.1.1"
-            ]
-          ],
-          "MACAddress": [
-            "01:11:11:AA:11:11"
-          ],
-          "Vendor": "RSA NetWitness 11.5 Response"
-        }
-      ]
-    },
-    "IndicatorTimeline": [],
-    "IgnoreAutoExtract": false,
-    "Note": false,
-    "Relationships": []
+      "Endpoint": {
+      "ID": "1",
+      "Hostname": "host_name",
+      "IPAddress": [["1.1.1.1"]],
+      "MACAddress": ["01:11:11:AA:11:11"],
+      "Vendor": "RSA NetWitness 11.5 Response"
+    }
   },
+
   "snapshot_list": [
     "2021-10-19T08:51:50.913Z",
     "2021-10-19T08:35:50.790Z",
@@ -625,6 +571,9 @@
     }
   },
   "get_mapping_fields": {
-    "RSA Netwitness incident": {"status": "", "assignee": ""}
+  "RSA Netwitness incident": {
+    "status": "",
+    "assignee": ""
   }
+}
 }

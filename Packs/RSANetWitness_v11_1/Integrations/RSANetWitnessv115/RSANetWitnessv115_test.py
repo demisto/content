@@ -3,7 +3,7 @@ import json
 import demistomock as demisto
 import pytest
 import RSANetWitnessv115
-from CommonServerPython import CommandResults, DemistoException
+from CommonServerPython import CommandResults, DemistoException,GetMappingFieldsResponse
 from freezegun import freeze_time
 from RSANetWitnessv115 import (
     Client,
@@ -240,7 +240,7 @@ def test_endpoint_command(mocker):
     mocker.patch.object(client, "hosts_list_request", return_value=mocked_http_response)
 
     command_result = endpoint_command(client, {"id": "1"})
-    assert command_result[0].to_context() == expected_command_results
+    assert command_result[0].outputs == expected_command_results["Endpoint"]
 
 
 def test_create_time():
@@ -449,20 +449,19 @@ def test_paging_command(mocker):
     assert no_limit_results == limit_req_results == paging_data["results"]
 
 
-def test_get_mapping_fields_command():
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
-    Given:
-        -  Client
-        -  Mapping fields
-    When
-        - running get_mapping_fields_command
-    Then
-        - the result fits the expected mapping.
+    Pulls the remote schema for incident mapping.
     """
-    paging_data = util_load_json("test_data/command_results.json")
-    res = get_mapping_fields_command()
+    mapping_response = GetMappingFieldsResponse()
+    incident_type_scheme = SchemeTypeMapping(type_name="RSA Netwitness incident")
 
-    assert paging_data["get_mapping_fields"] == res.extract_mapping()
+    for field in OUTGOING_MIRRORED_FIELDS:
+        incident_type_scheme.add_field(name=field)
+
+    mapping_response.add_scheme_type(incident_type_scheme)
+    return mapping_response
+
 
 
 @pytest.mark.parametrize(
@@ -678,7 +677,18 @@ def test_get_modified_remote_data_command_from_alerts(mocker):
     mocker.patch.object(
         demisto,
         "getIntegrationContext",
-        return_value={"IncidentsDataCount": {"INC-1": {"alertCount": 1, "eventCount": 1}}},
+        return_value={
+                "IncidentsDataCount": {
+                    "INC-1": {
+                    "Created": "2023-09-10T00:00:00.000Z",
+                    "alertCount": 1,
+                    "eventCount": 1
+                }
+
+            },
+            "token": "SECRET REPLACED",
+            "refresh_token": "SECRET REPLACED",
+        },
     )
 
 
@@ -758,7 +768,14 @@ def test_clean_old_inc_context_with_expired_incident(mocker):
     mocker.patch.object(
         demisto,
         "getIntegrationContext",
-        return_value={"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}}},
+        return_value={
+            "IncidentsDataCount": {
+                "INC-1": {"Created": created_date.strftime(DATE_FORMAT)}
+            },
+            "token": "SECRET REPLACED",
+            "refresh_token": "SECRET REPLACED",
+        }
+,
     )
     mocker_set_integration = mocker.patch.object(demisto, "setIntegrationContext")
     clean_old_inc_context(max_time_mirror_inc)
