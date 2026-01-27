@@ -362,12 +362,6 @@ inputs:
   required: false
   description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "10"
-  required: false
-  description: How much time to wait before a timeout occurs  (in minutes).
-  playbookInputQuery:
 - key: Full Report
   value:
     simple: "True"
