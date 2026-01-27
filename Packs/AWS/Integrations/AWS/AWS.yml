@@ -6000,7 +6000,7 @@ script:
         defaultValue: "40"
 
   - name: aws-ec2-snapshots-describe
-    description: Describes the specified EBS snapshots available to you or all of the EBS snapshots available to you.
+    description: Describes the EBS snapshots available to you or all snapshots accessible in your environment.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -6049,7 +6049,7 @@ script:
     - name: limit
       description: The maximum number of snapshots to return for this request. This value can be between 5 and 1,000.
     - name: next_token
-      description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
+      description: The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended.
     - name: owner_ids
       description: Returns the snapshots owned by the specified owner. Multiple owners can be specified.
       isArray: true
@@ -6226,9 +6226,9 @@ script:
     - name: description
       description: A description for the EBS snapshot.
     - name: destination_outpost_arn
-      description: The Amazon Resource Name (ARN) of the Outpost to which to copy the snapshot.
+      description: The Amazon Resource Name (ARN) of the Outpost where the snapshot will be copied.
     - name: encrypted
-      description: To encrypt a copy of an unencrypted snapshot if encryption by default is not enabled, enable encryption using this parameter. Otherwise, omit this parameter.
+      description: Use this parameter to encrypt a copy of an unencrypted snapshot when encryption-by-default is not enabled. Otherwise, omit it.
       auto: PREDEFINED
       predefined:
       - 'true'
