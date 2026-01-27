@@ -3378,7 +3378,7 @@ class EC2:
         Returns:
             CommandResults: Results indicating instance status is OK
         """
-        kwargs = {}
+        kwargs = {"IncludeAllInstances": arg_to_bool_or_none(args.get("include_all_instances"))}
         # IncludeAllInstances
         if filters := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters)
@@ -3391,7 +3391,6 @@ class EC2:
             "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
         }
         kwargs["WaiterConfig"] = waiter_config
-        kwargs["IncludeAllInstances"] = arg_to_bool_or_none(args.get("include_all_instances"))
         remove_nulls_from_dictionary(kwargs)
 
         try:
@@ -3620,15 +3619,13 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        reserved_instances = response.get("ReservedInstances", [])
+        # Serialize datetime objects
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        reserved_instances = serialized_response.get("ReservedInstances", [])
         print_debug_logs(client, f"Reserved Instances: {reserved_instances}")
 
         if not reserved_instances:
             return CommandResults(readable_output="No Reserved Instances were found.")
-
-        # Serialize datetime objects
-        serialized_response = serialize_response_with_datetime_encoding(response)
-        reserved_instances = serialized_response.get("ReservedInstances", [])
 
         # Format output data
         readable_data = []
