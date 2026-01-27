@@ -1955,7 +1955,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6875480
   type: python
 fromversion: 5.0.0
 tests:
