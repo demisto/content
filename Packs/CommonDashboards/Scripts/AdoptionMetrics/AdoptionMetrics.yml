@@ -16,6 +16,8 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
+marketplaces:
+- xsoar
 tests:
 - No tests (auto formatted)
 

@@ -4,7 +4,8 @@ commonfields:
 name: Humio
 display: Humio
 category: Analytics & SIEM
-description: Integration with Humio
+provider: CrowdStrike
+description: Integration with Humio.
 configuration:
 - display: Humio URL
   name: url
@@ -70,284 +71,284 @@ script:
     arguments:
     - name: repository
       required: true
-      description: Repository to search
+      description: Repository to search.
     - name: queryString
       required: true
-      description: Query string to use
+      description: Query string to use.
     - name: start
-      description: Relative or absolute (epoch)
+      description: Relative or absolute (epoch).
       defaultValue: 24h
     - name: end
-      description: Relative or absolute (epoch)
+      description: Relative or absolute (epoch).
       defaultValue: now
     - name: isLive
-      description: Answer with true, 1, t, y or yes
+      description: Answer with true, 1, t, y or yes.
       defaultValue: "false"
     - name: timeZoneOffsetMinutes
-      description: TimeZoneOffset in Minutes (default 0)
+      description: TimeZoneOffset in Minutes (default 0).
       defaultValue: "0"
     - name: arguments
-      description: Additional arguments
+      description: Additional arguments.
     outputs:
     - contextPath: Humio.Query
-      description: Query output
+      description: Query output.
       type: Unknown
     description: Query the data from Humio
   - name: humio-query-job
     arguments:
     - name: queryString
       required: true
-      description: Query string to use
+      description: Query string to use.
     - name: start
-      description: Relative or absolute (epoch)
+      description: Relative or absolute (epoch).
       defaultValue: 24hours
     - name: end
-      description: Relative or absolute (epoch)
+      description: Relative or absolute (epoch).
       defaultValue: now
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: isLive
       description: Is it live?
       defaultValue: "False"
     - name: timeZoneOffsetMinutes
-      description: Timezone offset in Minutes
+      description: Timezone offset in Minutes.
       defaultValue: "0"
     - name: arguments
-      description: Additional Arguments
+      description: Additional Arguments.
     outputs:
     - contextPath: Humio.Job.queryOnView
-      description: Query Job query abstract syntax tree
+      description: Query Job query abstract syntax tree.
       type: String
     - contextPath: Humio.Job.id
-      description: Query Job id
+      description: Query Job id.
       type: String
     description: Issue a query job to Humio
   - name: humio-poll
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: id
       required: true
-      description: 'Id of the queryjob to poll for'
+      description: 'Id of the queryjob to poll for.'
     outputs:
     - contextPath: Humio.Result.cancelled
-      description: If it was cancelled
+      description: If it was cancelled.
       type: Unknown
     - contextPath: Humio.Result.events
-      description: Events in the poll
+      description: Events in the poll.
       type: Unknown
     - contextPath: Humio.Result.done
-      description: If its done
+      description: If its done.
       type: Unknown
     - contextPath: Humio.Result.metaData
-      description: MetaData from the poll
+      description: MetaData from the poll.
       type: Unknown
     - contextPath: Humio.Result.job_id
-      description: Humio Job id the results came from
+      description: Humio Job id the results came from.
       type: String
     description: Issue poll command to Humio
   - name: humio-delete-job
     arguments:
     - name: id
       required: true
-      description: ID of the job to delete
+      description: ID of the job to delete.
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     description: Issue a job delete command to Humio
   - name: humio-list-alerts
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     outputs:
     - contextPath: Humio.Alert.description
-      description: Description of the alert
+      description: Description of the alert.
       type: String
     - contextPath: Humio.Alert.id
-      description: The alert id
+      description: The alert id.
       type: String
     - contextPath: Humio.Alert.name
-      description: The alert name
+      description: The alert name.
       type: String
     - contextPath: Humio.Alert.notifiers
-      description: The notifiers the alert will use
+      description: The notifiers the alert will use.
       type: String
     - contextPath: Humio.Alert.query.end
-      description: the end time of the query
+      description: the end time of the query.
       type: String
     - contextPath: Humio.Alert.query.isLive
-      description: whether or not the query is live
+      description: whether or not the query is live.
       type: Number
     - contextPath: Humio.Alert.query.queryString
-      description: The query string being used
+      description: The query string being used.
       type: String
     - contextPath: Humio.Alert.query.start
-      description: The start time of the query
+      description: The start time of the query.
       type: String
     - contextPath: Humio.Alert.silenced
-      description: Whether or not the alert is enabled
+      description: Whether or not the alert is enabled.
       type: Number
     - contextPath: Humio.Alert.throttleTimeMillis
-      description: The throttle time for alerts
+      description: The throttle time for alerts.
       type: Number
     description: List alerts from Humio
   - name: humio-get-alert-by-id
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: id
       required: true
-      description: Alert ID
+      description: Alert ID.
     outputs:
     - contextPath: Humio.Alert.description
-      description: Description of the alert
+      description: Description of the alert.
       type: String
     - contextPath: Humio.Alert.id
-      description: The alert id
+      description: The alert id.
       type: String
     - contextPath: Humio.Alert.name
-      description: The alert name
+      description: The alert name.
       type: String
     - contextPath: Humio.Alert.notifiers
-      description: The notifiers the alert will use
+      description: The notifiers the alert will use.
       type: String
     - contextPath: Humio.Alert.query.end
-      description: the end time of the query
+      description: the end time of the query.
       type: String
     - contextPath: Humio.Alert.query.isLive
-      description: whether or not the query is live
+      description: whether or not the query is live.
       type: Number
     - contextPath: Humio.Alert.query.queryString
-      description: The query string being used
+      description: The query string being used.
       type: String
     - contextPath: Humio.Alert.query.start
-      description: The start time of the query
+      description: The start time of the query.
       type: String
     - contextPath: Humio.Alert.silenced
-      description: Whether or not the alert is enabled
+      description: Whether or not the alert is enabled.
       type: Number
     - contextPath: Humio.Alert.throttleTimeMillis
-      description: The throttle time for alerts
+      description: The throttle time for alerts.
       type: Number
     description: list alerts by id from Humio
   - name: humio-create-alert
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: name
       required: true
-      description: Name of the alert
+      description: Name of the alert.
     - name: queryString
       required: true
-      description: Query to use
+      description: Query to use.
     - name: start
       defaultValue: "24h"
       description: Start time, relative or epoch in ms.
     - name: description
-      description: Description of the alert
+      description: Description of the alert.
     - name: throttleTimeMillis
       defaultValue: "300000"
-      description: Time millis interval
+      description: Time millis interval.
     - name: silenced
-      description: Is it silenced
+      description: Is it silenced.
       defaultValue: "false"
     - name: notifiers
       required: true
-      description: comma-separated values of notifier IDs
+      description: comma-separated values of notifier IDs.
       isArray: true
     - name: labels
-      description: comma-separated values of labels
+      description: comma-separated values of labels.
       defaultValue: ""
       isArray: true
     outputs:
     - contextPath: Humio.Alert.description
-      description: Description of the alert
+      description: Description of the alert.
       type: String
     - contextPath: Humio.Alert.id
-      description: The alert id
+      description: The alert id.
       type: String
     - contextPath: Humio.Alert.name
-      description: The alert name
+      description: The alert name.
       type: String
     - contextPath: Humio.Alert.notifiers
-      description: The notifiers the alert will use
+      description: The notifiers the alert will use.
       type: String
     - contextPath: Humio.Alert.query.end
-      description: the end time of the query
+      description: the end time of the query.
       type: String
     - contextPath: Humio.Alert.query.isLive
-      description: whether or not the query is live
+      description: whether or not the query is live.
       type: Number
     - contextPath: Humio.Alert.query.queryString
-      description: The query string being used
+      description: The query string being used.
       type: String
     - contextPath: Humio.Alert.query.start
-      description: The start time of the query
+      description: The start time of the query.
       type: String
     - contextPath: Humio.Alert.silenced
-      description: Whether or not the alert is enabled
+      description: Whether or not the alert is enabled.
       type: Number
     - contextPath: Humio.Alert.throttleTimeMillis
-      description: The throttle time for alerts
+      description: The throttle time for alerts.
       type: Number
     description: Create an alert in Humio
   - name: humio-list-notifiers
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     outputs:
     - contextPath: Humio.Notifier.entity
-      description: The type of notifier
+      description: The type of notifier.
       type: String
     - contextPath: Humio.Notifier.id
-      description: The notifier ID
+      description: The notifier ID.
       type: String
     - contextPath: Humio.Notifier.name
-      description: The notifier name
+      description: The notifier name.
       type: String
     - contextPath: Humio.Notifier.properties.bodyTemplate
-      description: The notifier body template
+      description: The notifier body template.
       type: String
     description: List all notifiers in Humio
   - name: humio-delete-alert
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: id
       required: true
-      description: ID of the alert to be deleted
+      description: ID of the alert to be deleted.
     outputs:
     - contextPath: Humio.Humio-delete-alert
-      description: Details of the deletion
+      description: Details of the deletion.
       type: Unknown
     description: Delete alert in Humio
   - name: humio-get-notifier-by-id
     arguments:
     - name: repository
       required: true
-      description: Repository to use
+      description: Repository to use.
     - name: id
       required: true
-      description: ID to use
+      description: ID to use.
     outputs:
     - contextPath: Humio.Notifier.entity
-      description: The type of notifier
+      description: The type of notifier.
       type: String
     - contextPath: Humio.Notifier.id
-      description: The notifier ID
+      description: The notifier ID.
       type: String
     - contextPath: Humio.Notifier.name
-      description: The notifier name
+      description: The notifier name.
       type: String
     - contextPath: Humio.Notifier.properties.bodyTemplate
-      description: The notifier body template
+      description: The notifier body template.
       type: String
     description: Get notifier from Humio by id
   dockerimage: demisto/python3:3.12.8.3296088

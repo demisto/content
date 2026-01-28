@@ -1,4 +1,5 @@
 category: Network Security
+provider: Zscaler
 sectionorder:
 - Connect
 - Collect
@@ -253,6 +254,9 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
+      required: false
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
@@ -279,6 +283,9 @@ script:
     - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
+      required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
       required: false
     description: Adds IP address to the specified category.
     name: zscaler-category-add-ip
@@ -307,6 +314,9 @@ script:
       isArray: true
       name: retaining-parent-category-url
       required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
+      required: false
     description: Removes URLs from the specified category.
     name: zscaler-category-remove-url
     outputs:
@@ -333,6 +343,9 @@ script:
     - description: A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
+      required: false
+    - description: The name of the custom category. Required for custom categories (e.g., Popular Media). You can retrieve the category name by running the 'zscaler-get-categories' command.
+      name: category-name
       required: false
     description: Removes IP address from the specified category.
     name: zscaler-category-remove-ip
@@ -1942,7 +1955,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6796194
   type: python
 fromversion: 5.0.0
 tests:

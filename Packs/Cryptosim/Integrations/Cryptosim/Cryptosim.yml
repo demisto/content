@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: CRYPTTECH
 commonfields:
   id: Cryptosim
   version: -1
@@ -47,38 +48,38 @@ name: Cryptosim
 script:
   commands:
   - arguments:
-    - description: 'This denotes the start date of the search period. It must be used in all API fields. E.g.: “startDate”: “2021-04-24T12:00:00”'
+    - description: 'This denotes the start date of the search period. It must be used in all API fields. E.g.: "startDate": "2021-04-24T12:00:00".'
       name: startDate
       required: true
-    - description: 'This denotes the end date of the search period. It must be used in all API fields. E.g.: endDate: “2021-04-24T24:00:00”'
+    - description: 'This denotes the end date of the search period. It must be used in all API fields. E.g.: endDate: "2021-04-24T24:00:00".'
       name: endDate
       required: true
     - defaultValue:
-      description: 'Boolean, show only solved correlations if the parameter is true, otherwise take all correlations'
+      description: 'Boolean, show only solved correlations if the parameter is true, otherwise take all correlations.'
       name: showSolved
     - defaultValue:
       description: 'If user want to take specific correlation, can take it when ID of correlation is given as parameter.'
       name: crrPluginId
     - default:
-      description: 'This is used to search for a word specified in the request. (Contains String) E.g.: “containStr”: “Unsuccessful”'
+      description: 'This is used to search for a word specified in the request. (Contains String) E.g.: "containStr": "Unsuccessful".'
       name: containStr
     - defaultValue:
       description: 'The risk level of correlation rules to filter. Default: -1. Default get all.'
       name: risk
     - defaultValue:
-      description: 'This  used  to  search  the  source  IP address in the request. E.g.: “srcIPPort”: “127.0.0.1”'
+      description: 'This  used  to  search  the  source  IP address in the request. E.g.: "srcIPPort": "127.0.0.1".'
       name: srcIPPort
     - defaultValue:
-      description: 'This  used  to  search  the  destination  IP address in the request. E.g.: “dest IPPort”: “127.0.0.1”'
+      description: 'This  used  to  search  the  destination  IP address in the request. E.g.: "dest IPPort": "127.0.0.1".'
       name: destIPPort
     - defaultValue:
-      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “srcPort”: “6335”'
+      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: "srcPort": "6335".'
       name: srcPort
     - defaultValue:
-      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “destPort”: “6335”'
+      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: "destPort": "6335".'
       name: destPort
     - defaultValue: 'equal'
-      description: 'risk operator name. It can be equal, greaternumber, greaterorequalnumber, lessnumber, lessnumberorequal, notequal. Default: equal'
+      description: 'risk operator name. It can be equal, greaternumber, greaterorequalnumber, lessnumber, lessnumberorequal, notequal. Default: equal.'
       name: riskOperatorID
     - defaultValue:
       description: 'The limit to get how many correlation alerts get. Default: 100.'

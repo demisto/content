@@ -1272,7 +1272,7 @@ def test_main_successful_execution(mocker: MockerFixture):
         "args",
         return_value={
             "user_id": ["123", "456"],
-            "user_name": ["johndoe", "usertwo"],
+            "user_name": ["johndoe", "usertwo", 123456],
             "user_email": ["john@example.com"],
         },
     )

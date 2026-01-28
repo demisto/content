@@ -7,6 +7,7 @@ commonfields:
 name: Hoxhunt v2
 display: Hoxhunt v2
 category: Email
+provider: Hoxhunt
 description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
 configuration:
 - display: Server URL

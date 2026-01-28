@@ -1,4 +1,5 @@
 category: Email
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -788,7 +789,7 @@ script:
       required: true
     - description: Flag for rate limit retry.
       name: ran_once_flag
-    description: Moves a message to a different folder.
+    description: Move a message to another folder. This operation creates a new copy of the message in the destination folder and deletes the original message. As a result, the message ID changes.
     name: msgraph-mail-move-email
     outputs:
     - contextPath: MSGraphMail.MovedEmails.DestinationFolderID

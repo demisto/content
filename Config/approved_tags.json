@@ -50,7 +50,10 @@
 		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],
-		"platform": ["Data Source"],
+		"platform": [
+            "Data Source",
+            "MCP"
+        ],
 		"xpanse": ["Data Source"]
 	}
 }

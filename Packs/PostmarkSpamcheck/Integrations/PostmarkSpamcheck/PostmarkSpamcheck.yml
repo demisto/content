@@ -4,6 +4,7 @@ commonfields:
 name: Postmark Spamcheck
 display: Postmark Spamcheck
 category: Messaging and Conferencing
+provider: ActiveCampaign
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.
 configuration:
 - display: URL
@@ -32,22 +33,22 @@ script:
     arguments:
     - name: entryid
       required: true
-      description: Entry ID of mail EML file
+      description: Entry ID of mail EML file.
     - name: short
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      description: Only return spam score
+      description: Only return spam score.
     outputs:
     - contextPath: Postmark.Spamcheck.score
-      description: Value of SpamAssassin score
+      description: Value of SpamAssassin score.
     - contextPath: Postmark.Spamcheck.success
-      description: State of SpamAssassin check
+      description: State of SpamAssassin check.
     - contextPath: Postmark.Spamcheck.rules
-      description: ' List the matched SpamAssassin rules'
+      description: ' List the matched SpamAssassin rules.'
     - contextPath: Postmark.Spamcheck.report
-      description: Detailed SpamAssassin report
+      description: Detailed SpamAssassin report.
     description: Check the spamscore of your email message
   dockerimage: demisto/python3:3.12.8.3296088
   subtype: python3

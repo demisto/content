@@ -1,4 +1,5 @@
 category: Email
+provider: PSG Equity
 sectionorder:
 - Connect
 - Collect
@@ -61,7 +62,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-description: IRONSCALES, a self-learning email security platform integration
+description: IRONSCALES, a self-learning email security platform integration.
 display: Ironscales
 name: Ironscales
 defaultmapperin: Ironscales - Incoming Mapper
@@ -80,7 +81,7 @@ script:
       description: Incident id.
       type: string
     - contextPath: Ironscales.Incident.attachments
-      description: Email attachments
+      description: Email attachments.
       type: string
     - contextPath: Ironscales.Incident.banner_displayed
       description: Email banners.
@@ -134,11 +135,11 @@ script:
       description: Themis verdict.
       type: string
   - arguments:
-    - description: Incident ID
+    - description: Incident ID.
       name: incident_id
       required: true
     - auto: PREDEFINED
-      description: Classification
+      description: Classification.
       name: classification
       required: true
       predefined:
@@ -146,7 +147,7 @@ script:
       - Spam
       - False Positive
     - auto: PREDEFINED
-      description: Current incident classification
+      description: Current incident classification.
       name: prev_classification
       required: true
       predefined:
@@ -154,14 +155,14 @@ script:
       - Spam
       - False Positive
       - Report
-    - description: Your Email Address
+    - description: Your Email Address.
       name: email
       required: true
     description: Classify incident by ID.
     name: ironscales-classify-incident
     outputs:
     - contextPath: Ironscales.classifyincident
-      description: Classification succeeded
+      description: Classification succeeded.
       type: boolean
   - arguments: []
     description: Get open incident ids.

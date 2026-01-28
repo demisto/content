@@ -15,7 +15,7 @@ CLIENT = Client(
 EDL_RESPONSE = {
     "success": "true",
     "link": {"next": "null", "previous": "null"},
-    "count": 1001,
+    "count": 201,
     "data": {
         "version": "1",
         "name": "panw-bulletproof-ip-list",
@@ -30,7 +30,7 @@ EDL_RESPONSE = {
 EDL_RESPONSE_2 = {
     "success": "true",
     "link": {"next": "null", "previous": "null"},
-    "count": 1001,
+    "count": 201,
     "data": {
         "version": "1",
         "name": "panw-bulletproof-ip-list",

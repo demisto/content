@@ -688,9 +688,7 @@ def test_module(client: Client) -> str:
         return "ok"
     except Exception as e:
         if "Authorization" in str(e):
-            DemistoException(
-                "Authentication wasn't successful,\n Please check credentials,\n or specify correct Platform URL."
-            )
+            DemistoException("Authentication wasn't successful,\n Please check credentials,\n or specify correct Platform URL.")
 
         raise
 

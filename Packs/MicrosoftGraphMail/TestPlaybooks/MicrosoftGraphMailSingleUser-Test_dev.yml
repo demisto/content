@@ -233,18 +233,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: MSGraphMail.MovedEmails.ID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: MSGraphMail
-                accessor: ID
-                transformers:
-                - operator: FirstArrayElement
             iscontext: true
       - - operator: isEqualString
           left:
@@ -297,7 +289,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -336,7 +328,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -449,7 +441,7 @@ tasks:
           root: MSGraphMail
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
       status:
         simple: Unread
     separatecontext: false

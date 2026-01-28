@@ -1,4 +1,5 @@
 category: Messaging and Conferencing
+provider: Ilert GmbH
 commonfields:
   id: iLert
   version: -1
@@ -20,7 +21,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Alert and notify users using iLert
+description: Alert and notify users using iLert.
 display: iLert
 name: iLert
 script:
@@ -29,7 +30,7 @@ script:
     - description: For ALERT events, the incident key can be used to deduplicate or group events. If an open incident with the key already exists, the event will be appended to the incident's event log. Otherwise a new incident will be created. For ACCEPT and RESOLVE events, the incident key is used to reference the open incident which is to be accepted or resolved by this event.
       name: incident_key
     - defaultValue: ALERT
-      description: Must be either ALERT, ACCEPT, or RESOLVE
+      description: Must be either ALERT, ACCEPT, or RESOLVE.
       predefined:
       - ALERT
       - ACCEPT

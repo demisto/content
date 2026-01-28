@@ -1,4 +1,5 @@
 category: IT Services
+provider: Open Source
 commonfields:
   id: Wordpress
   version: -1
@@ -31,7 +32,7 @@ script:
     arguments:
     - auto: PREDEFINED
       defaultValue: get
-      description: Method
+      description: Method.
       name: method
       predefined:
       - get
@@ -40,17 +41,17 @@ script:
       - delete
       - patch
       required: true
-    - description: URL suffix to append to the base URL
+    - description: URL suffix to append to the base URL.
       name: url
       required: true
-    - description: Body data (JSON)
+    - description: Body data (JSON).
       name: body
-    - description: Parameters (JSON)
+    - description: Parameters (JSON).
       name: params
     description: Get information from a custom URL
     outputs:
     - contextPath: Wordpress.URL
-      description: URL output data
+      description: URL output data.
       type: Unknown
   - name: wordpress-list-posts
     arguments:
@@ -128,82 +129,82 @@ script:
     description: Lists all posts
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
-      description: Exerpt protected
+      description: Exerpt protected.
       type: Boolean
     - contextPath: Wordpress.Posts.excerpt.rendered
-      description: Exerpt rendered
+      description: Exerpt rendered.
       type: String
     - contextPath: Wordpress.Posts.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Posts.sticky
-      description: Sticky
+      description: Sticky.
       type: Boolean
     - contextPath: Wordpress.Posts.guid.rendered
-      description: GUID rendered
+      description: GUID rendered.
       type: String
     - contextPath: Wordpress.Posts.modified
-      description: Modified
+      description: Modified.
       type: String
     - contextPath: Wordpress.Posts.author
-      description: Author
+      description: Author.
       type: String
     - contextPath: Wordpress.Posts.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Posts.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Posts.comment_status
-      description: Comment status
+      description: Comment status.
       type: String
     - contextPath: Wordpress.Posts.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Posts.featured_media
-      description: Featured media
+      description: Featured media.
       type: Number
     - contextPath: Wordpress.Posts.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: Wordpress.Posts.modified_gmt
-      description: Modified GMT
+      description: Modified GMT.
       type: String
     - contextPath: Wordpress.Posts.title.rendered
-      description: Title rendered
+      description: Title rendered.
       type: String
     - contextPath: Wordpress.Posts.tags
-      description: Tags
+      description: Tags.
       type: List
     - contextPath: Wordpress.Posts.content.protected
-      description: Content protected
+      description: Content protected.
       type: Boolean
     - contextPath: Wordpress.Posts.content.rendered
-      description: Content rendered
+      description: Content rendered.
       type: String
     - contextPath: Wordpress.Posts.template
-      description: Template
+      description: Template.
       type: String
     - contextPath: Wordpress.Posts._links
-      description: Links
+      description: Links.
       type: Unknown
     - contextPath: Wordpress.Posts.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Posts.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Posts.id
-      description: ID
+      description: ID.
       type: String
     - contextPath: Wordpress.Posts.categories
-      description: Categories
+      description: Categories.
       type: List
     - contextPath: Wordpress.Posts.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Posts.ping_status
-      description: Ping status
+      description: Ping status.
       type: String
   - name: wordpress-get-post
     arguments:
@@ -223,82 +224,82 @@ script:
     description: Retrieve a specific post record.
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
-      description: Exerpt protected
+      description: Exerpt protected.
       type: Boolean
     - contextPath: Wordpress.Posts.excerpt.rendered
-      description: Exerpt rendered
+      description: Exerpt rendered.
       type: String
     - contextPath: Wordpress.Posts.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Posts.sticky
-      description: Sticky
+      description: Sticky.
       type: Boolean
     - contextPath: Wordpress.Posts.guid.rendered
-      description: GUID rendered
+      description: GUID rendered.
       type: String
     - contextPath: Wordpress.Posts.modified
-      description: Modified
+      description: Modified.
       type: String
     - contextPath: Wordpress.Posts.author
-      description: Author
+      description: Author.
       type: String
     - contextPath: Wordpress.Posts.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Posts.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Posts.comment_status
-      description: Comment status
+      description: Comment status.
       type: String
     - contextPath: Wordpress.Posts.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Posts.featured_media
-      description: Featured media
+      description: Featured media.
       type: Number
     - contextPath: Wordpress.Posts.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: Wordpress.Posts.modified_gmt
-      description: Modified GMT
+      description: Modified GMT.
       type: String
     - contextPath: Wordpress.Posts.title.rendered
-      description: Title rendered
+      description: Title rendered.
       type: String
     - contextPath: Wordpress.Posts.tags
-      description: Tags
+      description: Tags.
       type: List
     - contextPath: Wordpress.Posts.content.protected
-      description: Content protected
+      description: Content protected.
       type: Boolean
     - contextPath: Wordpress.Posts.content.rendered
-      description: Content rendered
+      description: Content rendered.
       type: String
     - contextPath: Wordpress.Posts.template
-      description: Template
+      description: Template.
       type: String
     - contextPath: Wordpress.Posts._links
-      description: Links
+      description: Links.
       type: Unknown
     - contextPath: Wordpress.Posts.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Posts.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Posts.id
-      description: ID
+      description: ID.
       type: String
     - contextPath: Wordpress.Posts.categories
-      description: Categories
+      description: Categories.
       type: List
     - contextPath: Wordpress.Posts.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Posts.ping_status
-      description: Ping status
+      description: Ping status.
       type: String
   - name: wordpress-create-post
     arguments:
@@ -376,86 +377,86 @@ script:
     description: Create a post
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
-      description: Exerpt protected
+      description: Exerpt protected.
       type: Boolean
     - contextPath: Wordpress.Posts.excerpt.rendered
-      description: Exerpt rendered
+      description: Exerpt rendered.
       type: String
     - contextPath: Wordpress.Posts.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Posts.sticky
-      description: Sticky
+      description: Sticky.
       type: Boolean
     - contextPath: Wordpress.Posts.guid.rendered
-      description: GUID rendered
+      description: GUID rendered.
       type: String
     - contextPath: Wordpress.Posts.modified
-      description: Modified
+      description: Modified.
       type: String
     - contextPath: Wordpress.Posts.author
-      description: Author
+      description: Author.
       type: String
     - contextPath: Wordpress.Posts.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Posts.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Posts.comment_status
-      description: Comment status
+      description: Comment status.
       type: String
     - contextPath: Wordpress.Posts.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Posts.featured_media
-      description: Featured media
+      description: Featured media.
       type: Number
     - contextPath: Wordpress.Posts.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: Wordpress.Posts.modified_gmt
-      description: Modified GMT
+      description: Modified GMT.
       type: String
     - contextPath: Wordpress.Posts.title.rendered
-      description: Title rendered
+      description: Title rendered.
       type: String
     - contextPath: Wordpress.Posts.tags
-      description: Tags
+      description: Tags.
       type: List
     - contextPath: Wordpress.Posts.content.protected
-      description: Content protected
+      description: Content protected.
       type: Boolean
     - contextPath: Wordpress.Posts.content.rendered
-      description: Content rendered
+      description: Content rendered.
       type: String
     - contextPath: Wordpress.Posts.template
-      description: Template
+      description: Template.
       type: String
     - contextPath: Wordpress.Posts._links
-      description: Links
+      description: Links.
       type: Unknown
     - contextPath: Wordpress.Posts.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Posts.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Posts.id
-      description: ID
+      description: ID.
       type: String
     - contextPath: Wordpress.Posts.categories
-      description: Categories
+      description: Categories.
       type: List
     - contextPath: Wordpress.Posts.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Posts.ping_status
-      description: Ping status
+      description: Ping status.
       type: String
   - name: wordpress-update-post
     arguments:
-    - description: Post ID
+    - description: Post ID.
       name: id
       required: true
     - description: The date the object was published, in the sites timezone.
@@ -531,86 +532,86 @@ script:
     description: Update a post
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
-      description: Exerpt protected
+      description: Exerpt protected.
       type: Boolean
     - contextPath: Wordpress.Posts.excerpt.rendered
-      description: Exerpt rendered
+      description: Exerpt rendered.
       type: String
     - contextPath: Wordpress.Posts.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Posts.sticky
-      description: Sticky
+      description: Sticky.
       type: Boolean
     - contextPath: Wordpress.Posts.guid.rendered
-      description: GUID rendered
+      description: GUID rendered.
       type: String
     - contextPath: Wordpress.Posts.modified
-      description: Modified
+      description: Modified.
       type: String
     - contextPath: Wordpress.Posts.author
-      description: Author
+      description: Author.
       type: String
     - contextPath: Wordpress.Posts.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Posts.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Posts.comment_status
-      description: Comment status
+      description: Comment status.
       type: String
     - contextPath: Wordpress.Posts.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Posts.featured_media
-      description: Featured media
+      description: Featured media.
       type: Number
     - contextPath: Wordpress.Posts.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: Wordpress.Posts.modified_gmt
-      description: Modified GMT
+      description: Modified GMT.
       type: String
     - contextPath: Wordpress.Posts.title.rendered
-      description: Title rendered
+      description: Title rendered.
       type: String
     - contextPath: Wordpress.Posts.tags
-      description: Tags
+      description: Tags.
       type: List
     - contextPath: Wordpress.Posts.content.protected
-      description: Content protected
+      description: Content protected.
       type: Boolean
     - contextPath: Wordpress.Posts.content.rendered
-      description: Content rendered
+      description: Content rendered.
       type: String
     - contextPath: Wordpress.Posts.template
-      description: Template
+      description: Template.
       type: String
     - contextPath: Wordpress.Posts._links
-      description: Links
+      description: Links.
       type: Unknown
     - contextPath: Wordpress.Posts.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Posts.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Posts.id
-      description: ID
+      description: ID.
       type: String
     - contextPath: Wordpress.Posts.categories
-      description: Categories
+      description: Categories.
       type: List
     - contextPath: Wordpress.Posts.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Posts.ping_status
-      description: Ping status
+      description: Ping status.
       type: String
   - name: wordpress-delete-post
     arguments:
-    - description: Post ID
+    - description: Post ID.
       name: id
       required: true
     - auto: PREDEFINED
@@ -623,82 +624,82 @@ script:
     description: Delete a post
     outputs:
     - contextPath: Wordpress.Posts.excerpt.protected
-      description: Exerpt protected
+      description: Exerpt protected.
       type: Boolean
     - contextPath: Wordpress.Posts.excerpt.rendered
-      description: Exerpt rendered
+      description: Exerpt rendered.
       type: String
     - contextPath: Wordpress.Posts.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Posts.sticky
-      description: Sticky
+      description: Sticky.
       type: Boolean
     - contextPath: Wordpress.Posts.guid.rendered
-      description: GUID rendered
+      description: GUID rendered.
       type: String
     - contextPath: Wordpress.Posts.modified
-      description: Modified
+      description: Modified.
       type: String
     - contextPath: Wordpress.Posts.author
-      description: Author
+      description: Author.
       type: String
     - contextPath: Wordpress.Posts.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Posts.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Posts.comment_status
-      description: Comment status
+      description: Comment status.
       type: String
     - contextPath: Wordpress.Posts.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Posts.featured_media
-      description: Featured media
+      description: Featured media.
       type: Number
     - contextPath: Wordpress.Posts.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: Wordpress.Posts.modified_gmt
-      description: Modified GMT
+      description: Modified GMT.
       type: String
     - contextPath: Wordpress.Posts.title.rendered
-      description: Title rendered
+      description: Title rendered.
       type: String
     - contextPath: Wordpress.Posts.tags
-      description: Tags
+      description: Tags.
       type: List
     - contextPath: Wordpress.Posts.content.protected
-      description: Content protected
+      description: Content protected.
       type: Boolean
     - contextPath: Wordpress.Posts.content.rendered
-      description: Content rendered
+      description: Content rendered.
       type: String
     - contextPath: Wordpress.Posts.template
-      description: Template
+      description: Template.
       type: String
     - contextPath: Wordpress.Posts._links
-      description: Links
+      description: Links.
       type: Unknown
     - contextPath: Wordpress.Posts.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Posts.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Posts.id
-      description: ID
+      description: ID.
       type: String
     - contextPath: Wordpress.Posts.categories
-      description: Categories
+      description: Categories.
       type: List
     - contextPath: Wordpress.Posts.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Posts.ping_status
-      description: Ping status
+      description: Ping status.
       type: String
   - name: wordpress-list-categories
     arguments:
@@ -753,34 +754,34 @@ script:
     description: List categories
     outputs:
     - contextPath: Wordpress.Categories.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Categories.parent
-      description: Parent
+      description: Parent.
       type: Number
     - contextPath: Wordpress.Categories.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Categories.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Categories.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Categories.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Categories._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Categories.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Categories.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Categories.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-create-category
     arguments:
@@ -798,34 +799,34 @@ script:
     description: Create a category
     outputs:
     - contextPath: Wordpress.Categories.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Categories.parent
-      description: Parent
+      description: Parent.
       type: Number
     - contextPath: Wordpress.Categories.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Categories.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Categories.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Categories.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Categories._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Categories.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Categories.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Categories.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-get-category
     arguments:
@@ -843,34 +844,34 @@ script:
     description: Retrieve a category
     outputs:
     - contextPath: Wordpress.Categories.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Categories.parent
-      description: Parent
+      description: Parent.
       type: Number
     - contextPath: Wordpress.Categories.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Categories.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Categories.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Categories.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Categories._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Categories.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Categories.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Categories.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-update-category
     arguments:
@@ -890,34 +891,34 @@ script:
     description: Update a category
     outputs:
     - contextPath: Wordpress.Categories.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Categories.parent
-      description: Parent
+      description: Parent.
       type: Number
     - contextPath: Wordpress.Categories.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Categories.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Categories.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Categories.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Categories._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Categories.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Categories.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Categories.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-delete-category
     arguments:
@@ -978,31 +979,31 @@ script:
     description: Lists all tags
     outputs:
     - contextPath: Wordpress.Tags.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Tags.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Tags.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Tags.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Tags.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Tags._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Tags.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Tags.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Tags.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-create-tag
     arguments:
@@ -1017,31 +1018,31 @@ script:
     description: Create a tag
     outputs:
     - contextPath: Wordpress.Tags.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Tags.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Tags.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Tags.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Tags.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Tags._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Tags.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Tags.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Tags.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-get-tag
     arguments:
@@ -1053,37 +1054,37 @@ script:
       - view
       - edit
       - embed
-    - description: Tag ID
+    - description: Tag ID.
       name: id
       required: true
     description: Retrieves a tag
     outputs:
     - contextPath: Wordpress.Tags.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Tags.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Tags.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Tags.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Tags.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Tags._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Tags.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Tags.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Tags.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-update-tag
     arguments:
@@ -1103,31 +1104,31 @@ script:
     description: Update a tag
     outputs:
     - contextPath: Wordpress.Tags.meta
-      description: Metadata
+      description: Metadata.
       type: Unknown
     - contextPath: Wordpress.Tags.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Tags.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Tags.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: Wordpress.Tags.taxonomy
-      description: Taxonomy
+      description: Taxonomy.
       type: String
     - contextPath: Wordpress.Tags._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Tags.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Tags.id
-      description: ID
+      description: ID.
       type: Number
     - contextPath: Wordpress.Tags.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-delete-tag
     arguments:
@@ -1203,49 +1204,49 @@ script:
     description: Lists all comments
     outputs:
     - contextPath: Wordpress.Comments.post
-      description: Post ID
+      description: Post ID.
       type: String
     - contextPath: Wordpress.Comments.meta
-      description: Metadata
+      description: Metadata.
       type: String
     - contextPath: Wordpress.Comments.parent
-      description: Parent ID
+      description: Parent ID.
       type: Number
     - contextPath: Wordpress.Comments.author
-      description: Author ID
+      description: Author ID.
       type: Number
     - contextPath: Wordpress.Comments.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Comments.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Comments.author_avatar_urls
-      description: Author svatars
+      description: Author svatars.
       type: List
     - contextPath: Wordpress.Comments.content.rendered
-      description: Rendered content
+      description: Rendered content.
       type: String
     - contextPath: Wordpress.Comments._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Comments.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Comments.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Comments.author_url
-      description: Author URL
+      description: Author URL.
       type: String
     - contextPath: Wordpress.Comments.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Wordpress.Comments.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Comments.author_name
-      description: Author name
+      description: Author name.
       type: String
   - name: wordpress-create-comment
     arguments:
@@ -1274,49 +1275,49 @@ script:
     description: Create a comment
     outputs:
     - contextPath: Wordpress.Comments.post
-      description: Post ID
+      description: Post ID.
       type: String
     - contextPath: Wordpress.Comments.meta
-      description: Metadata
+      description: Metadata.
       type: String
     - contextPath: Wordpress.Comments.parent
-      description: Parent ID
+      description: Parent ID.
       type: Number
     - contextPath: Wordpress.Comments.author
-      description: Author ID
+      description: Author ID.
       type: Number
     - contextPath: Wordpress.Comments.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Comments.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Comments.author_avatar_urls
-      description: Author svatars
+      description: Author svatars.
       type: List
     - contextPath: Wordpress.Comments.content.rendered
-      description: Rendered content
+      description: Rendered content.
       type: String
     - contextPath: Wordpress.Comments._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Comments.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Comments.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Comments.author_url
-      description: Author URL
+      description: Author URL.
       type: String
     - contextPath: Wordpress.Comments.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Wordpress.Comments.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Comments.author_name
-      description: Author name
+      description: Author name.
       type: String
   - name: wordpress-get-comment
     arguments:
@@ -1328,7 +1329,7 @@ script:
       - view
       - edit
       - embed
-    - description: Comment ID
+    - description: Comment ID.
       name: id
       required: true
     - description: The password for the parent post of the comment (if the post is password protected).
@@ -1336,53 +1337,53 @@ script:
     description: Retrieves a comment
     outputs:
     - contextPath: Wordpress.Comments.post
-      description: Post ID
+      description: Post ID.
       type: String
     - contextPath: Wordpress.Comments.meta
-      description: Metadata
+      description: Metadata.
       type: String
     - contextPath: Wordpress.Comments.parent
-      description: Parent ID
+      description: Parent ID.
       type: Number
     - contextPath: Wordpress.Comments.author
-      description: Author ID
+      description: Author ID.
       type: Number
     - contextPath: Wordpress.Comments.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Comments.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Comments.author_avatar_urls
-      description: Author svatars
+      description: Author svatars.
       type: List
     - contextPath: Wordpress.Comments.content.rendered
-      description: Rendered content
+      description: Rendered content.
       type: String
     - contextPath: Wordpress.Comments._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Comments.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Comments.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Comments.author_url
-      description: Author URL
+      description: Author URL.
       type: String
     - contextPath: Wordpress.Comments.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Wordpress.Comments.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Comments.author_name
-      description: Author name
+      description: Author name.
       type: String
   - name: wordpress-update-comment
     arguments:
-    - description: Comment ID
+    - description: Comment ID.
       name: id
       required: true
     - description: The ID of the user object, if author was a user.
@@ -1414,49 +1415,49 @@ script:
     description: Update a comment
     outputs:
     - contextPath: Wordpress.Comments.post
-      description: Post ID
+      description: Post ID.
       type: String
     - contextPath: Wordpress.Comments.meta
-      description: Metadata
+      description: Metadata.
       type: String
     - contextPath: Wordpress.Comments.parent
-      description: Parent ID
+      description: Parent ID.
       type: Number
     - contextPath: Wordpress.Comments.author
-      description: Author ID
+      description: Author ID.
       type: Number
     - contextPath: Wordpress.Comments.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Comments.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Comments.author_avatar_urls
-      description: Author svatars
+      description: Author svatars.
       type: List
     - contextPath: Wordpress.Comments.content.rendered
-      description: Rendered content
+      description: Rendered content.
       type: String
     - contextPath: Wordpress.Comments._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Comments.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Comments.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Comments.author_url
-      description: Author URL
+      description: Author URL.
       type: String
     - contextPath: Wordpress.Comments.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Wordpress.Comments.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Comments.author_name
-      description: Author name
+      description: Author name.
       type: String
   - name: wordpress-delete-comment
     arguments:
@@ -1474,49 +1475,49 @@ script:
       name: password
     outputs:
     - contextPath: Wordpress.Comments.post
-      description: Post ID
+      description: Post ID.
       type: String
     - contextPath: Wordpress.Comments.meta
-      description: Metadata
+      description: Metadata.
       type: String
     - contextPath: Wordpress.Comments.parent
-      description: Parent ID
+      description: Parent ID.
       type: Number
     - contextPath: Wordpress.Comments.author
-      description: Author ID
+      description: Author ID.
       type: Number
     - contextPath: Wordpress.Comments.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: Wordpress.Comments.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Wordpress.Comments.author_avatar_urls
-      description: Author svatars
+      description: Author svatars.
       type: List
     - contextPath: Wordpress.Comments.content.rendered
-      description: Rendered content
+      description: Rendered content.
       type: String
     - contextPath: Wordpress.Comments._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Comments.type
-      description: Type
+      description: Type.
       type: String
     - contextPath: Wordpress.Comments.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Comments.author_url
-      description: Author URL
+      description: Author URL.
       type: String
     - contextPath: Wordpress.Comments.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Wordpress.Comments.date_gmt
-      description: Date GMT
+      description: Date GMT.
       type: String
     - contextPath: Wordpress.Comments.author_name
-      description: Author name
+      description: Author name.
       type: String
     description: Delete a comment
   - name: wordpress-list-users
@@ -1573,31 +1574,31 @@ script:
       - authors
     outputs:
     - contextPath: Wordpress.Users.meta
-      description: Metadata
+      description: Metadata.
       type: List
     - contextPath: Wordpress.Users.avatar_urls
-      description: Avatar URLs
+      description: Avatar URLs.
       type: List
     - contextPath: Wordpress.Users.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Users.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Users.url
-      description: URL
+      description: URL.
       type: String
     - contextPath: Wordpress.Users._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Users.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Users.id
-      description: User ID
+      description: User ID.
       type: Number
     - contextPath: Wordpress.Users.description
-      description: Description
+      description: Description.
       type: String
     description: List users
   - name: wordpress-get-user
@@ -1616,31 +1617,31 @@ script:
     description: Retrieve a user.
     outputs:
     - contextPath: Wordpress.Users.meta
-      description: Metadata
+      description: Metadata.
       type: List
     - contextPath: Wordpress.Users.avatar_urls
-      description: Avatar URLs
+      description: Avatar URLs.
       type: List
     - contextPath: Wordpress.Users.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Users.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Users.url
-      description: URL
+      description: URL.
       type: String
     - contextPath: Wordpress.Users._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Users.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Users.id
-      description: User ID
+      description: User ID.
       type: Number
     - contextPath: Wordpress.Users.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-create-user
     arguments:
@@ -1678,35 +1679,35 @@ script:
     description: Create a user
     outputs:
     - contextPath: Wordpress.Users.meta
-      description: Metadata
+      description: Metadata.
       type: List
     - contextPath: Wordpress.Users.avatar_urls
-      description: Avatar URLs
+      description: Avatar URLs.
       type: List
     - contextPath: Wordpress.Users.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Users.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Users.url
-      description: URL
+      description: URL.
       type: String
     - contextPath: Wordpress.Users._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Users.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Users.id
-      description: User ID
+      description: User ID.
       type: Number
     - contextPath: Wordpress.Users.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-update-user
     arguments:
-    - description: User ID
+    - description: User ID.
       name: id
       required: true
     - defaultValue: en_US
@@ -1740,35 +1741,35 @@ script:
     description: Update a user
     outputs:
     - contextPath: Wordpress.Users.meta
-      description: Metadata
+      description: Metadata.
       type: List
     - contextPath: Wordpress.Users.avatar_urls
-      description: Avatar URLs
+      description: Avatar URLs.
       type: List
     - contextPath: Wordpress.Users.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Wordpress.Users.slug
-      description: Slug
+      description: Slug.
       type: String
     - contextPath: Wordpress.Users.url
-      description: URL
+      description: URL.
       type: String
     - contextPath: Wordpress.Users._links
-      description: Links
+      description: Links.
       type: List
     - contextPath: Wordpress.Users.link
-      description: Link
+      description: Link.
       type: String
     - contextPath: Wordpress.Users.id
-      description: User ID
+      description: User ID.
       type: Number
     - contextPath: Wordpress.Users.description
-      description: Description
+      description: Description.
       type: String
   - name: wordpress-delete-user
     arguments:
-    - description: User ID
+    - description: User ID.
       name: id
       required: true
     - description: Reassign the deleted users posts and links to this user ID.

@@ -1,4 +1,5 @@
 category: Authentication & Identity Management
+provider: Open Source
 commonfields:
   id: JWT
   version: -1
@@ -105,22 +106,22 @@ script:
       name: additionalClaims
     - default: true
       defaultValue: '300'
-      description: Token Timeout in Seconds
+      description: Token Timeout in Seconds.
       name: tokenTimeout
     - defaultValue: HS256
-      description: Token Signing Algorithm
+      description: Token Signing Algorithm.
       name: algorithm
     description: Generates a JWT authorization token with an optional scope and queries the API for an access token and then returns the received API access token
     name: jwt-generate-access-token
     outputs:
     - contextPath: JWT.Token.ID
-      description: The JWT Token ID
+      description: The JWT Token ID.
       type: String
     - contextPath: JWT.Token.AccessToken
-      description: The JWT Access Token Value
+      description: The JWT Access Token Value.
       type: String
     - contextPath: JWT.Token.AuthenticationToken
-      description: JWT Authentication Token
+      description: JWT Authentication Token.
       type: String
   - arguments:
     - description: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
@@ -143,25 +144,25 @@ script:
       name: additionalClaims
     - default: true
       defaultValue: '300'
-      description: Token Timeout in Seconds
+      description: Token Timeout in Seconds.
       name: tokenTimeout
     - defaultValue: HS256
-      description: Token Signing Algorithm
+      description: Token Signing Algorithm.
       name: algorithm
     description: Generates a JWT authorization request payload by encoding the provided claims.
     name: jwt-generate-authentication-payload
     outputs:
     - contextPath: JWT.Token.ID
-      description: The JWT Token ID
+      description: The JWT Token ID.
       type: String
     - contextPath: JWT.Token.AuthenticationToken
-      description: The JWT Authentication Token Value
+      description: The JWT Authentication Token Value.
       type: String
   - arguments:
-    - description: The token to decode
+    - description: The token to decode.
       name: token
       required: true
-    - description: The secret to validate the token signature
+    - description: The secret to validate the token signature.
       name: secret
     description: A command to decode JWT tokens
     name: jwt-decode-token

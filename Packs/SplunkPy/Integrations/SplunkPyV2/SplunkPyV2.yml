@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Cisco Systems
 commonfields:
   id: SplunkPy v2
   version: -1
@@ -690,5 +691,7 @@ script:
   type: python
   runonce: false
 tests:
-- No tests (auto formatted)
+- SplunkPy KV commands
+- SplunkPy parse-raw - Test
+- SplunkPy-Test-V2
 fromversion: 6.0.0

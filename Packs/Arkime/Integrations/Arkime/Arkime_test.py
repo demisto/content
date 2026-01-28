@@ -537,9 +537,7 @@ def test_session_tag_remove_command(mocker, arkime_client):
 
     http_request.assert_called_with("POST", "api/sessions/removetags", json_data=params, headers=HEADERS)
 
-    assert res.readable_output == (
-        "### Session Tag Results:\n|Success|Text|\n|---|---|\n| true | Tags removed successfully |\n"
-    )
+    assert res.readable_output == ("### Session Tag Results:\n|Success|Text|\n|---|---|\n| true | Tags removed successfully |\n")
 
 
 # ----------------------------------------- HELPER FUNCTIONS TESTS  ---------------------------
@@ -571,7 +569,7 @@ def test_page_size_validness_for_invalid_input(page_size: int, exception_msg_exp
 
 
 response_without_Histo = (
-    dict(   # noqa: C408
+    dict(  # noqa: C408
         items=[
             {
                 "name": "localhost",
@@ -597,7 +595,7 @@ response_without_Histo = (
     },
 )
 response_with_Histo = (
-    dict(   # noqa: C408
+    dict(  # noqa: C408
         items=[
             {
                 "name": "localhost",

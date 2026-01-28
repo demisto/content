@@ -272,7 +272,7 @@ class NetscoutClient(BaseClient):
                 page_size=amount_of_incidents, search_filter=data_attribute_filter, status_list_to_retry=[500]
             )
             all_alerts = results.get("data", [])
-            short_alert_list = all_alerts[-1 * self.max_fetch:]
+            short_alert_list = all_alerts[-1 * self.max_fetch :]
             if short_alert_list:
                 new_last_start_time = short_alert_list[0].get("attributes", {}).get("start_time")
 

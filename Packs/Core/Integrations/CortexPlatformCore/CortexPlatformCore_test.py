@@ -17,6 +17,11 @@ from CortexPlatformCore import (
     Client,
     CommandResults,
     DemistoException,
+    validate_start_end_times,
+    transform_distributions,
+    get_endpoint_update_version_command,
+    update_endpoint_version_command,
+    FilterType,
 )
 
 MAX_GET_INCIDENTS_LIMIT = 100
@@ -1337,757 +1342,6 @@ def test_build_webapp_request_data_with_empty_filter_dict(mocker: MockerFixture)
     }
 
     assert result == expected
-
-
-class TestFilterBuilder:
-    def test_add_field_without_mapper(self):
-        """
-        Given:
-            A FilterBuilder instance and field parameters without a mapper.
-        When:
-            The add_field method is called with name, type, and values.
-        Then:
-            A new Field should be added to filter_fields with the original values.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["value1", "value2"]
-
-        filter_builder.add_field("test_field", FilterType.EQ, values)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "test_field"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == values
-
-    def test_add_field_with_mapper_list_values(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and list values.
-        When:
-            The add_field method is called with values that exist in the mapper.
-        Then:
-            A new Field should be added with mapped values only.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["low", "high", "unknown"]
-        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == ["SEV_040_LOW", "SEV_060_HIGH"]
-
-    def test_add_field_with_mapper_single_value(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and a single value.
-        When:
-            The add_field method is called with a single value that exists in the mapper.
-        Then:
-            The single value should be converted to a list and mapped correctly.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        value = "medium"
-        mapper = {"medium": "SEV_050_MEDIUM", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, value, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == ["SEV_050_MEDIUM"]
-
-    def test_add_field_with_mapper_no_matching_values(self):
-        """
-        Given:
-            A FilterBuilder instance, field parameters with a mapper, and values not in the mapper.
-        When:
-            The add_field method is called with values that don't exist in the mapper.
-        Then:
-            A new Field should be added with an empty list of processed values.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        values = ["unknown", "invalid"]
-        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
-
-        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert field.field_name == "severity"
-        assert field.filter_type == FilterType.EQ
-        assert field.values == []
-
-    def test_add_field_with_mappings_single_mapped_value(self):
-        """
-        Given: A FilterBuilder instance and a single mapped value that exists in the mappings dictionary.
-        When: The add_field_with_mappings method is called with a mapped value.
-        Then: A MappedValuesField should be added to the filter_fields list with the correct parameters.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "unassigned", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == "unassigned"
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_multiple_mapped_values(self):
-        """
-        Given: A FilterBuilder instance and multiple values that exist in the mappings dictionary.
-        When: The add_field_with_mappings method is called with a list of mapped values.
-        Then: A MappedValuesField should be added with the list of values and correct mappings.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-            "pending": FilterBuilder.FilterType.CONTAINS,
-        }
-        values = ["unassigned", "assigned"]
-
-        filter_builder.add_field_with_mappings("status", FilterBuilder.FilterType.EQ, values, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "status"
-        assert field.filter_type == FilterBuilder.FilterType.EQ
-        assert field.values == values
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_unmapped_value(self):
-        """
-        Given: A FilterBuilder instance and a value that does not exist in the mappings dictionary.
-        When: The add_field_with_mappings method is called with an unmapped value.
-        Then: A MappedValuesField should be added with the default filter type for unmapped values.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "john.doe", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == "john.doe"
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_mixed_values(self):
-        """
-        Given: A FilterBuilder instance and a list containing both mapped and unmapped values.
-        When: The add_field_with_mappings method is called with mixed value types.
-        Then: A MappedValuesField should be added containing all values with their respective mappings.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
-        }
-        values = ["unassigned", "john.doe", "assigned"]
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, values, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values == values
-        assert field.mappings == mappings
-
-    def test_add_field_with_mappings_empty_mappings(self):
-        """
-        Given: A FilterBuilder instance and an empty mappings dictionary.
-        When: The add_field_with_mappings method is called with empty mappings.
-        Then: A MappedValuesField should be added with the empty mappings dictionary.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {}
-
-        filter_builder.add_field_with_mappings("field", FilterBuilder.FilterType.EQ, "value", mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "field"
-        assert field.filter_type == FilterBuilder.FilterType.EQ
-        assert field.values == "value"
-        assert field.mappings == {}
-
-    def test_add_field_with_mappings_none_value(self):
-        """
-        Given: A FilterBuilder instance and None as the value parameter.
-        When: The add_field_with_mappings method is called with None value.
-        Then: A MappedValuesField should be added with None as the values.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        mappings = {
-            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
-        }
-
-        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, None, mappings)
-
-        assert len(filter_builder.filter_fields) == 1
-        field = filter_builder.filter_fields[0]
-        assert isinstance(field, FilterBuilder.MappedValuesField)
-        assert field.field_name == "assignee"
-        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
-        assert field.values is None
-        assert field.mappings == mappings
-
-    def test_add_time_range_field_with_valid_start_and_end_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance and valid start_time and end_time strings.
-        When: add_time_range_field is called with both start and end times.
-        Then: The method should add a RANGE field with from and to values to the filter.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(
-            filter_builder, "_prepare_time_range", return_value=(1640995200000, 1641081600000)
-        )
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", "2022-01-02T00:00:00")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", "2022-01-02T00:00:00")
-        mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 1640995200000, "to": 1641081600000})
-
-    def test_add_time_range_field_with_none_start_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with None start_time and valid end_time.
-        When: add_time_range_field is called with start_time as None.
-        Then: The method should not add any field to the filter since start is None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, 1641081600000))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", None, "2022-01-02T00:00:00")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with valid start_time and None end_time.
-        When: add_time_range_field is called with end_time as None.
-        Then: The method should not add any field to the filter since end is None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(1640995200000, None))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", None)
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", None)
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_both_none_times(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance with both start_time and end_time as None.
-        When: add_time_range_field is called with both times as None.
-        Then: The method should not add any field to the filter since both values are None.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, None))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", None, None)
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with(None, None)
-        mock_add_field.assert_not_called()
-
-    def test_add_time_range_field_with_zero_timestamps(self, mocker: MockerFixture):
-        """
-        Given: A FilterBuilder instance and _prepare_time_range returning zero timestamps.
-        When: add_time_range_field is called and both timestamps are zero (falsy values).
-        Then: The method should not add any field to the filter since zero is falsy in the condition.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Arrange
-        filter_builder = FilterBuilder()
-        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(0, 0))
-        mock_add_field = mocker.patch.object(filter_builder, "add_field")
-
-        # Act
-        filter_builder.add_time_range_field("test_field", "some_time", "some_other_time")
-
-        # Assert
-        mock_prepare_time_range.assert_called_once_with("some_time", "some_other_time")
-        mock_add_field.assert_not_called()
-
-    def test_to_dict_empty_filter_fields(self):
-        """
-        Given: A FilterBuilder instance with no filter fields.
-        When: The to_dict method is called.
-        Then: An empty dictionary should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        filter_builder = FilterBuilder()
-        result = filter_builder.to_dict()
-        assert result == {}
-
-    def test_to_dict_single_field_single_value(self):
-        """
-        Given: A FilterBuilder with one field containing a single non-list value.
-        When: The to_dict method is called.
-        Then: A properly structured filter dictionary with one search object should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, "test_value")
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "test_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_single_field_multiple_values(self):
-        """
-        Given: A FilterBuilder with one field containing multiple values in a list.
-        When: The to_dict method is called.
-        Then: A filter dictionary with OR operator grouping multiple search values should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, ["value1", "value2"])
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterType.EQ.operator: [
-                        {
-                            FilterBuilder.FIELD: "test_field",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "value1",
-                        },
-                        {
-                            FilterBuilder.FIELD: "test_field",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "value2",
-                        },
-                    ]
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_multiple_fields(self):
-        """
-        Given: A FilterBuilder with multiple fields each containing different values.
-        When: The to_dict method is called.
-        Then: A filter dictionary with AND operator containing all field filters should be returned.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("field1", FilterType.EQ, "value1")
-        filter_builder.add_field("field2", FilterType.CONTAINS, "value2")
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "field1", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "value1"},
-                {FilterBuilder.FIELD: "field2", FilterBuilder.TYPE: FilterType.CONTAINS.value, FilterBuilder.VALUE: "value2"},
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_none_values_filtered_out(self):
-        """
-        Given: A FilterBuilder with fields containing None values mixed with valid values.
-        When: The to_dict method is called.
-        Then: None values should be filtered out and only valid values should appear in the result.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, [None, "valid_value", None])
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "valid_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_all_none_values(self):
-        """
-        Given: A FilterBuilder with fields containing only None values.
-        When: The to_dict method is called.
-        Then: An empty dictionary should be returned since all values are filtered out.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        filter_builder.add_field("test_field", FilterType.EQ, [None, None])
-
-        result = filter_builder.to_dict()
-        assert result == {}
-
-    def test_to_dict_with_mapped_values_field_normal_value(self):
-        """
-        Given: A MappedValuesField with a value that is not in the mappings dictionary.
-        When: The to_dict method is called.
-        Then: The default filter type should be used for the unmapped value.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"special": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("test_field", FilterType.EQ, "normal_value", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "normal_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mapped_values_field_is_empty(self):
-        """
-        Given: A MappedValuesField with a value mapped to IS_EMPTY filter type.
-        When: The to_dict method is called.
-        Then: The mapped filter type should be used and value should be set to "<No Value>".
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"unassigned": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "unassigned", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterBuilder.FIELD: "assignee",
-                    FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
-                    FilterBuilder.VALUE: "<No Value>",
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mapped_values_field_nis_empty(self):
-        """
-        Given: A MappedValuesField with a value mapped to NIS_EMPTY filter type.
-        When: The to_dict method is called.
-        Then: The mapped filter type should be used and value should be set to "<No Value>".
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"assigned": FilterType.NIS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "assigned", mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterBuilder.FIELD: "assignee",
-                    FilterBuilder.TYPE: FilterType.NIS_EMPTY.value,
-                    FilterBuilder.VALUE: "<No Value>",
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_with_mixed_mapped_and_normal_values(self):
-        """
-        Given: A MappedValuesField with both mapped and unmapped values in the same field.
-        When: The to_dict method is called.
-        Then: Each value should use its appropriate filter type and the results should be grouped with OR operator.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        mappings = {"unassigned": FilterType.IS_EMPTY}
-        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, ["unassigned", "john.doe"], mappings)
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {
-                    FilterType.EQ.operator: [
-                        {
-                            FilterBuilder.FIELD: "assignee",
-                            FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
-                            FilterBuilder.VALUE: "<No Value>",
-                        },
-                        {
-                            FilterBuilder.FIELD: "assignee",
-                            FilterBuilder.TYPE: FilterType.EQ.value,
-                            FilterBuilder.VALUE: "john.doe",
-                        },
-                    ]
-                }
-            ]
-        }
-        assert result == expected
-
-    def test_to_dict_converts_non_list_values_to_list(self):
-        """
-        Given: A FilterBuilder with field values that are not initially in list format.
-        When: The to_dict method is called.
-        Then: The non-list values should be converted to lists internally for processing.
-        """
-        from CortexPlatformCore import FilterBuilder, FilterType
-
-        filter_builder = FilterBuilder()
-        # Directly create a field with non-list value
-        field = FilterBuilder.Field("test_field", FilterType.EQ, "single_value")
-        filter_builder.filter_fields = [field]
-
-        result = filter_builder.to_dict()
-        expected = {
-            FilterBuilder.AND: [
-                {FilterBuilder.FIELD: "test_field", FilterBuilder.TYPE: FilterType.EQ.value, FilterBuilder.VALUE: "single_value"}
-            ]
-        }
-        assert result == expected
-
-    def test_prepare_time_range_both_valid_times(self, mocker: MockerFixture):
-        """
-        Given: Valid start_time and end_time strings that can be parsed by dateparser.
-        When: _prepare_time_range is called with both valid time strings.
-        Then: Both timestamps should be converted to milliseconds and returned as a tuple.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return known datetime objects
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
-
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(end_dt.timestamp() * 1000)
-        assert mock_parse.call_count == 2
-
-    def test_prepare_time_range_only_start_time_provided(self, mocker: MockerFixture):
-        """
-        Given: A valid start_time string and None as end_time.
-        When: _prepare_time_range is called with only start_time provided.
-        Then: start_time should be converted to milliseconds and end_time should be set to current time.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse for start_time
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=start_dt)
-
-        # Mock datetime.now for end_time calculation
-        current_dt = datetime(2023, 1, 3, 12, 0, 0)
-        mock_now = mocker.patch("CortexPlatformCore.datetime")
-        mock_now.now.return_value = current_dt
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", None)
-
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(current_dt.timestamp() * 1000)
-        mock_parse.assert_called_once_with("2023-01-01T10:00:00")
-
-    def test_prepare_time_range_both_none_times(self):
-        """
-        Given: Both start_time_str and end_time_str parameters as None.
-        When: _prepare_time_range is called with both parameters as None.
-        Then: Both returned timestamps should be None without any parsing attempts.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        start_time, end_time = FilterBuilder._prepare_time_range(None, None)
-
-        assert start_time is None
-        assert end_time is None
-
-    def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
-        """
-        Given: None as start_time_str and a valid end_time_str.
-        When: _prepare_time_range is called with end_time but no start_time.
-        Then: A DemistoException should be raised with appropriate error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from CommonServerPython import DemistoException
-
-        with pytest.raises(DemistoException, match="When 'end_time' is provided, 'start_time' must be provided as well."):
-            FilterBuilder._prepare_time_range(None, "2023-01-02T15:30:00")
-
-    def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
-        """
-        Given: An invalid start_time string that cannot be parsed by dateparser.
-        When: _prepare_time_range is called with an unparseable start_time.
-        Then: A ValueError should be raised with the invalid start_time in the error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-
-        # Mock dateparser.parse to return None for invalid input
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=None)
-
-        with pytest.raises(ValueError, match="Could not parse start_time: invalid_start_time"):
-            FilterBuilder._prepare_time_range("invalid_start_time", None)
-
-        mock_parse.assert_called_once_with("invalid_start_time")
-
-    def test_prepare_time_range_invalid_end_time_raises_value_error(self, mocker: MockerFixture):
-        """
-        Given: A valid start_time and an invalid end_time string that cannot be parsed.
-        When: _prepare_time_range is called with valid start_time but unparseable end_time.
-        Then: A ValueError should be raised with the invalid end_time in the error message.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return valid datetime for start_time and None for end_time
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, None]
-
-        with pytest.raises(ValueError, match="Could not parse end_time: invalid_end_time"):
-            FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "invalid_end_time")
-
-        assert mock_parse.call_count == 2
-
-    def test_prepare_time_range_string_conversion_for_start_time(self, mocker: MockerFixture):
-        """
-        Given: A non-string start_time parameter that needs string conversion.
-        When: _prepare_time_range is called with start_time that requires str() conversion.
-        Then: The start_time should be converted to string before parsing and processed correctly.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return a valid datetime
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse", return_value=start_dt)
-
-        # Pass an integer that should be converted to string
-        start_time, end_time = FilterBuilder._prepare_time_range(20230101, None)
-
-        # Verify that str() was called on the parameter
-        mock_parse.assert_called_with("20230101")
-        assert start_time == int(start_dt.timestamp() * 1000)
-
-    def test_prepare_time_range_string_conversion_for_end_time(self, mocker: MockerFixture):
-        """
-        Given: A non-string end_time parameter along with valid start_time.
-        When: _prepare_time_range is called with end_time that requires str() conversion.
-        Then: The end_time should be converted to string before parsing and both times processed correctly.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Mock dateparser.parse to return valid datetimes
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        # Pass integers that should be converted to strings
-        start_time, end_time = FilterBuilder._prepare_time_range(20230101, 20230102)
-
-        # Verify that str() was called on both parameters
-        assert mock_parse.call_args_list[0][0][0] == "20230101"
-        assert mock_parse.call_args_list[1][0][0] == "20230102"
-        assert start_time == int(start_dt.timestamp() * 1000)
-        assert end_time == int(end_dt.timestamp() * 1000)
-
-    def test_prepare_time_range_millisecond_conversion_precision(self, mocker: MockerFixture):
-        """
-        Given: Valid datetime objects returned from dateparser with specific timestamp values.
-        When: _prepare_time_range converts the timestamps to milliseconds.
-        Then: The conversion should multiply by 1000 and convert to integer with correct precision.
-        """
-        from CortexPlatformCore import FilterBuilder
-        from datetime import datetime
-
-        # Create datetime with known timestamp
-        start_dt = datetime(2023, 1, 1, 10, 0, 0)
-        end_dt = datetime(2023, 1, 2, 15, 30, 0)
-        mock_parse = mocker.patch("CortexPlatformCore.dateparser.parse")
-        mock_parse.side_effect = [start_dt, end_dt]
-
-        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
-
-        # Verify precise millisecond conversion
-        expected_start = int(start_dt.timestamp() * 1000)
-        expected_end = int(end_dt.timestamp() * 1000)
-        assert start_time == expected_start
-        assert end_time == expected_end
-        assert isinstance(start_time, int)
-        assert isinstance(end_time, int)
 
 
 def test_search_asset_groups_command_success_with_all_filters(mocker):
@@ -4614,7 +3868,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     args = {"case_id": "123"}
     result = get_case_extra_data(mock_client, args)
 
-    assert mock_client._base_url == "api/webapp/public_api/v1"
     assert result["issue_ids"] == ["issue1", "issue2"]
     assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
     assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
@@ -4623,33 +3876,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     assert result["starred_manually"] is True
     assert result["manual_description"] == "Global manual description"
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
-
-
-def test_get_case_extra_data_client_base_url_modification(mocker):
-    """
-    Given:
-        A mock client with an original base URL.
-    When:
-        The get_case_extra_data function is called.
-    Then:
-        The client's base URL should be modified to "api/webapp/public_api/v1".
-    """
-    from CortexPlatformCore import get_case_extra_data
-
-    mock_client = mocker.Mock()
-    original_url = "https://original.api.endpoint"
-    mock_client._base_url = original_url
-
-    mock_command_result = mocker.Mock()
-    mock_command_result.outputs = {}
-
-    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
-
-    args = {"case_id": "url_test"}
-    get_case_extra_data(mock_client, args)
-
-    assert mock_client._base_url == "api/webapp/public_api/v1"
 
 
 def test_add_cases_extra_data_single_case(mocker):
@@ -4935,6 +4161,106 @@ def test_run_playbook_command_client_call_parameters():
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
 
 
+def test_get_endpoint_support_file_command_success(mocker):
+    """
+    Given: A client and valid endpoint IDs to retrieve support files for.
+    When: The get_endpoint_support_file_command is called with valid parameters.
+    Then: It should return a CommandResults object with the correct group_action_id and readable output.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    # Mock the client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {
+        "reply": {
+            "group_action_id": "test-group-123",
+        }
+    }
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    # Test arguments
+    args = {"endpoint_ids": ["endpoint1", "endpoint2", "endpoint3"]}
+
+    # Execute the command
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify the client was called with correct parameters
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {
+                    "AND": [
+                        {
+                            "OR": [
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint1"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint2"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint3"},
+                            ]
+                        }
+                    ]
+                }
+            },
+            "filter_type": "static",
+        }
+    }
+
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+
+    # Verify the result
+    assert result.readable_output == "Endpoint support file request submitted successfully. Group Action ID: test-group-123"
+    assert result.outputs_prefix == "Core.EndpointSupportFile"
+    assert result.outputs_key_field == "group_action_id"
+    assert result.outputs == mock_response["reply"]
+    assert result.raw_response == mock_response
+
+
+def test_get_endpoint_support_file_command_single_endpoint(mocker):
+    """
+    Given: A client and a single endpoint ID as a string to retrieve support file for.
+    When: The get_endpoint_support_file_command is called with a single endpoint ID.
+    Then: It should correctly convert the single ID to a list and process the request successfully.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": "single-endpoint-456"}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": "single-endpoint"}
+
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify single endpoint was converted to list in the filter
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "single-endpoint"}]}
+            },
+            "filter_type": "static",
+        }
+    }
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+    assert result.outputs["group_action_id"] == "single-endpoint-456"
+
+
+def test_get_endpoint_support_file_command_missing_group_action_id(mocker):
+    """
+    Given: A client that returns a response without a group_action_id in the reply.
+    When: The get_endpoint_support_file_command is called and the group_action_id is zero.
+    Then: It should raise a DemistoException indicating the missing group_action_id.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, DemistoException
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": 0}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(DemistoException, match="No group_action_id found. Please ensure that valid endpoint IDs are provided."):
+        get_endpoint_support_file_command(mock_client, args)
+
+
 def test_update_issue_command_link_cases_success(mocker: MockerFixture):
     """
     GIVEN:
@@ -5108,6 +4434,138 @@ def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: Moc
     mock_link_issue_to_cases.assert_not_called()
     mock_unlink_issue_from_cases.assert_not_called()
     mock_update_issue.assert_not_called()
+
+
+def test_list_scripts_command_with_multiple_platforms():
+    """
+    GIVEN:
+        A client with a mock response containing a script that supports multiple platforms.
+    WHEN:
+        The list_scripts_command function is called with platform filters.
+    THEN:
+        The script is returned with correct platform support flags.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for multiple platforms",
+                    "ENTRY_POINT_DEFINITION": {"input_params": [{"name": "param1", "type": "string"}]},
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, list] = {"script_platforms": ["windows", "linux"], "limit": 50}
+
+    result = list_scripts_command(client, args)
+
+    scripts = result[0].outputs
+    assert len(scripts) == 1
+    assert scripts[0]["windows_supported"] is True
+    assert scripts[0]["linux_supported"] is True
+    assert scripts[0]["macos_supported"] is False
+
+
+def test_list_scripts_command_with_script_name_filter():
+    """
+    GIVEN:
+        A client with a mock response containing a script with the specified name.
+    WHEN:
+        The list_scripts_command function is called with a script name filter.
+    THEN:
+        The script with matching name is returned and the client method is called once.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "test_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX",
+                    "GUID": "test-guid-123",
+                    "ID": "script-id-1",
+                    "DESCRIPTION": "Test script for filtering by name",
+                    "ENTRY_POINT_DEFINITION": {"input_params": []},
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, str] = {"script_name": "test_script"}
+
+    result = list_scripts_command(client, args)
+
+    client.get_webapp_data.assert_called_once()
+    scripts = result[0].outputs
+    assert len(scripts) == 1
+    assert scripts[0]["name"] == "test_script"
+
+
+def test_list_scripts_command_outputs_structure():
+    """
+    GIVEN:
+        A client with a mock response containing a complete script with all platform support and input parameters.
+    WHEN:
+        The list_scripts_command function is called without arguments.
+    THEN:
+        The result contains the correct output structure with proper key field, raw response, and expected script data.
+    """
+    from CortexPlatformCore import list_scripts_command
+
+    client = Mock()
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "NAME": "complete_script",
+                    "PLATFORM": "AGENT_OS_WINDOWS,AGENT_OS_LINUX,AGENT_OS_MAC",
+                    "GUID": "complete-guid-456",
+                    "ID": "complete-id-2",
+                    "DESCRIPTION": "Complete script with all platform support",
+                    "ENTRY_POINT_DEFINITION": {
+                        "input_params": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}]
+                    },
+                }
+            ],
+            "FILTER_COUNT": 1,
+            "TOTAL_COUNT": 1,
+        }
+    }
+    client.get_webapp_data.return_value = mock_response
+
+    args: dict[str, str] = {}
+
+    result = list_scripts_command(client, args)
+
+    assert result[0].outputs_key_field == "script_id"
+    assert result[0].raw_response == mock_response
+    expected_script = {
+        "name": "complete_script",
+        "description": "Complete script with all platform support",
+        "windows_supported": True,
+        "linux_supported": True,
+        "macos_supported": True,
+        "script_uid": "complete-guid-456",
+        "script_id": "complete-id-2",
+        "script_inputs": [{"name": "param1", "type": "string"}, {"name": "param2", "type": "int"}],
+    }
+    assert result[0].outputs[0] == expected_script
 
 
 class TestGetAppsecSuggestion(unittest.TestCase):
@@ -6698,3 +6156,3300 @@ def test_normalize_key_without_prefix():
     # Field names that contain 'xdm' but don't start with it
     assert normalize_key("field.xdm.name") == "field.xdm.name"
     assert normalize_key("some_xdm_field") == "some_xdm_field"
+
+
+class TestCoreAddAssessmentProfileCommand:
+    def test_core_add_assessment_profile_command_success(self, mocker):
+        """Test successful assessment profile creation
+
+        Given: Mock client with valid standards and asset groups responses
+        When: core_add_assessment_profile_command is called with valid arguments
+        Then: Returns successful result with profile ID
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        # Mock compliance standards response
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        # Mock asset groups response
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        # Mock add assessment profile response
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        # Mock payload functions
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+            "day": "monday",
+            "time": "14:30",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        assert result.readable_output == "Assessment Profile profile-789 successfully added"
+        assert result.outputs_prefix == "Core.AssessmentProfile"
+        assert result.outputs_key_field == "assessment_profile_id"
+        assert result.outputs == "profile-789"
+
+    def test_core_add_assessment_profile_command_no_compliance_standards(self, mocker):
+        """Test when no compliance standards are found
+
+        Given: Mock client with empty standards response
+        When: core_add_assessment_profile_command is called with nonexistent standard
+        Then: Raises exception indicating no compliance standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": []}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No compliance standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Nonexistent Standard", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="No compliance standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_compliance_standards(self, mocker):
+        """Test when multiple compliance standards match
+
+        Given: Mock client with multiple standards that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous standard name
+        Then: Raises exception indicating multiple standards found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {
+            "reply": {"standards": [{"id": "std-123", "name": "Test Standard 1"}, {"id": "std-456", "name": "Test Standard 2"}]}
+        }
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple standards found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test", "asset_group_name": "Test Group"}
+
+        with pytest.raises(Exception, match="Multiple standards found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_no_asset_groups(self, mocker):
+        """Test when no asset groups are found
+
+        Given: Mock client with valid standards but empty asset groups response
+        When: core_add_assessment_profile_command is called with nonexistent asset group
+        Then: Raises exception indicating no asset group found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": []}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("No asset group found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Nonexistent Group"}
+
+        with pytest.raises(Exception, match="No asset group found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_multiple_asset_groups(self, mocker):
+        """Test when multiple asset groups match
+
+        Given: Mock client with multiple asset groups that match the search criteria
+        When: core_add_assessment_profile_command is called with ambiguous asset group name
+        Then: Raises exception indicating multiple asset groups found
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group 1"},
+                    {"XDM.ASSET_GROUP.ID": "group-789", "XDM.ASSET_GROUP.NAME": "Test Group 2"},
+                ]
+            }
+        }
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+        mocker.patch("CortexPlatformCore.return_error", side_effect=Exception("Multiple asset groups found"))
+
+        args = {"profile_name": "Test Profile", "standard_name": "Test Standard", "asset_group_name": "Test"}
+
+        with pytest.raises(Exception, match="Multiple asset groups found"):
+            core_add_assessment_profile_command(mock_client, args)
+
+    def test_core_add_assessment_profile_command_default_values(self, mocker):
+        """Test with default day and time values
+
+        Given: Mock client with valid responses and arguments without day/time specified
+        When: core_add_assessment_profile_command is called with minimal arguments
+        Then: Uses default values for day (sunday) and time (12:00) and returns successful result
+        """
+        from CortexPlatformCore import core_add_assessment_profile_command
+
+        mock_client = mocker.Mock()
+
+        standards_response = {"reply": {"standards": [{"id": "std-123", "name": "Test Standard"}]}}
+        mock_client.list_compliance_standards_command.return_value = standards_response
+
+        asset_groups_response = {"reply": {"data": [{"XDM.ASSET_GROUP.ID": "group-456", "XDM.ASSET_GROUP.NAME": "Test Group"}]}}
+        mock_client.search_asset_groups.return_value = asset_groups_response
+
+        add_profile_response = {"assessment_profile_id": "profile-789"}
+        mock_client.add_assessment_profile.return_value = add_profile_response
+
+        mock_create_payload = mocker.patch("CortexPlatformCore.create_assessment_profile_payload", return_value={})
+        mocker.patch("CortexPlatformCore.list_compliance_standards_payload", return_value={})
+        mocker.patch("CortexPlatformCore.FilterBuilder")
+
+        args = {
+            "profile_name": "Test Profile",
+            "profile_description": "Test Description",
+            "standard_name": "Test Standard",
+            "asset_group_name": "Test Group",
+        }
+
+        result = core_add_assessment_profile_command(mock_client, args)
+
+        mock_create_payload.assert_called_with(
+            name="Test Profile",
+            description="Test Description",
+            standard_id="std-123",
+            asset_group_id="group-456",
+            day=None,
+            time="12:00",
+            report_type="ALL",
+        )
+        assert result.outputs == "profile-789"
+
+
+class TestCoreListComplianceStandardsCommand:
+    def test_core_list_compliance_standards_command_with_empty_args(self, mocker):
+        """Test list compliance standards command with empty arguments
+
+        Given: A mock client and empty arguments
+        When: core_list_compliance_standards_command is called with empty args
+        Then: Returns proper response structure with correct counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["label1", "label2"],
+                    }
+                ],
+                "result_count": 1,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs_prefix == "Core.ComplianceStandards"
+        assert result[1].outputs["filtered_count"] == 1
+        assert result[1].outputs["returned_count"] == 1
+
+    def test_core_list_compliance_standards_command_with_empty_standards_list(self, mocker):
+        """Test handling of empty standards list
+
+        Given: A mock client returning empty standards list
+        When: core_list_compliance_standards_command is called
+        Then: Returns empty outputs with zero counts
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {"reply": {"standards": [], "result_count": 0}}
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result) == 2
+        assert result[0].outputs == []
+        assert result[1].outputs["filtered_count"] == 0
+        assert result[1].outputs["returned_count"] == 0
+
+    def test_core_list_compliance_standards_command_multiple_standards(self, mocker):
+        """Test handling of multiple compliance standards
+
+        Given: A mock client returning multiple standards
+        When: core_list_compliance_standards_command is called
+        Then: Returns all standards with correct control counts and metadata
+        """
+        from CortexPlatformCore import core_list_compliance_standards_command
+
+        client = mocker.Mock()
+        mock_response = {
+            "reply": {
+                "standards": [
+                    {
+                        "id": "std1",
+                        "name": "Standard 1",
+                        "description": "Test standard 1",
+                        "controls_ids": ["ctrl1", "ctrl2"],
+                        "assessments_profiles_count": 2,
+                        "labels": ["lbl1"],
+                    },
+                    {
+                        "id": "std2",
+                        "name": "Standard 2",
+                        "description": "Test standard 2",
+                        "controls_ids": ["ctrl3"],
+                        "assessments_profiles_count": 5,
+                        "labels": ["lbl2", "lbl3"],
+                    },
+                ],
+                "result_count": 2,
+            }
+        }
+        client.list_compliance_standards_command.return_value = mock_response
+
+        result = core_list_compliance_standards_command(client, {})
+
+        assert len(result[0].outputs) == 2
+        assert result[0].outputs[0]["id"] == "std1"
+        assert result[0].outputs[0]["controls_count"] == 2
+        assert result[0].outputs[1]["id"] == "std2"
+        assert result[0].outputs[1]["controls_count"] == 1
+        assert result[1].outputs["returned_count"] == 2
+
+
+def test_run_script_agentix_command_both_script_uid_and_name_provided():
+    """
+    Given:
+        - Both script_uid and script_name are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating only one should be provided.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "script_name": "test_name", "endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(ValueError, match="Please provide either script_uid or script_name, not both."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_no_script_identifier_provided():
+    """
+    Given:
+        - Neither script_uid nor script_name are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating one must be specified.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(ValueError, match="You must specify either script_uid or script_name."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_both_endpoint_identifiers_provided():
+    """
+    Given:
+        - Both endpoint_ids and endpoint_names are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating only one should be provided.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "endpoint_ids": ["endpoint1"], "endpoint_names": ["endpoint_name1"]}
+
+    with pytest.raises(ValueError, match="Please provide either endpoint_ids or endpoint_names, not both."):
+        run_script_agentix_command(client, args)
+
+
+def test_run_script_agentix_command_no_endpoint_identifier_provided():
+    """
+    Given:
+        - Neither endpoint_ids nor endpoint_names are provided in args.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised indicating one must be specified.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid"}
+
+    with pytest.raises(ValueError, match="You must specify either endpoint_ids or endpoint_names."):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
+    """
+    Given:
+        - Multiple scripts exist with the same name.
+    When:
+        - Calling run_script_agentix_command with script_name.
+    Then:
+        - ValueError is raised with detailed information about all matching scripts.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "First script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": False,
+                        "macos_supported": True,
+                        "script_inputs": [],
+                    },
+                    {
+                        "script_uid": "uid2",
+                        "description": "Second script",
+                        "name": "test_script",
+                        "windows_supported": False,
+                        "linux_supported": True,
+                        "macos_supported": False,
+                        "script_inputs": [],
+                    },
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError) as exc_info:
+        run_script_agentix_command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "Multiple scripts found" in error_message
+    assert "uid1" in error_message
+    assert "uid2" in error_message
+    assert "First script" in error_message
+    assert "Second script" in error_message
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
+    """
+    Given:
+        - No scripts exist with the specified name.
+    When:
+        - Calling run_script_agentix_command with script_name.
+    Then:
+        - ValueError is raised indicating no scripts were found.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "nonexistent_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(outputs={"Scripts": []}),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError, match="No scripts found with the name: nonexistent_script"):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_script_requires_parameters_but_none_provided(mock_list_scripts):
+    """
+    Given:
+        - A script that requires input parameters but no parameters are provided.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - ValueError is raised listing the required parameters.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"]}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+    mock_list_scripts.return_value = mock_scripts_result
+
+    with pytest.raises(ValueError) as exc_info:
+        run_script_agentix_command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "requires the following input parameters: param1, param2" in error_message
+    assert "but none were provided" in error_message
+
+
+@patch("CortexPlatformCore.core_list_endpoints_command")
+def test_run_script_agentix_command_no_endpoints_found_by_name(mock_list_endpoints):
+    """
+    Given:
+        - No endpoints exist with the specified names.
+    When:
+        - Calling run_script_agentix_command with endpoint_names.
+    Then:
+        - ValueError is raised indicating no endpoints were found.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_uid": "test_uid", "endpoint_names": ["nonexistent_endpoint"]}
+
+    mock_list_endpoints.return_value = Mock(outputs=[])
+
+    with pytest.raises(ValueError, match="No endpoints found with the specified names: nonexistent_endpoint"):
+        run_script_agentix_command(client, args)
+
+
+@patch("CortexPlatformCore.script_run_polling_command")
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids(mock_list_scripts, mock_polling):
+    """
+    Given:
+        - Valid script_name, endpoint_ids, and parameters.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - Script is executed successfully and client base URL is updated.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1", "endpoint2"], "parameters": "param=value"}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    expected_result = Mock()
+    mock_polling.return_value = expected_result
+
+    result = run_script_agentix_command(client, args)
+
+    mock_polling.assert_called_once_with(
+        {"endpoint_ids": ["endpoint1", "endpoint2"], "script_uid": "uid1", "parameters": "param=value", "is_core": True},
+        client,
+    )
+    assert result == expected_result
+    assert client._base_url == "/api/webapp/public_api/v1"
+
+
+@patch("CortexPlatformCore.script_run_polling_command")
+@patch("CortexPlatformCore.list_scripts_command")
+def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(mock_list_scripts, mock_polling):
+    """
+    Given:
+        - A script with required inputs and matching parameters are provided.
+    When:
+        - Calling run_script_agentix_command.
+    Then:
+        - Script is executed successfully with the provided parameters.
+    """
+    from CortexPlatformCore import run_script_agentix_command
+
+    client = Mock()
+    args = {"script_name": "test_script", "endpoint_ids": ["endpoint1"], "parameters": "param1=value1;param2=value2"}
+
+    mock_scripts_result = Mock()
+    mock_scripts_result = [
+        CommandResults(
+            outputs={
+                "Scripts": [
+                    {
+                        "script_uid": "uid1",
+                        "description": "Test script",
+                        "name": "test_script",
+                        "windows_supported": True,
+                        "linux_supported": True,
+                        "macos_supported": True,
+                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                    }
+                ]
+            }
+        ),
+        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+    ]
+
+    mock_list_scripts.return_value = mock_scripts_result
+
+    expected_result = Mock()
+    mock_polling.return_value = expected_result
+
+    result = run_script_agentix_command(client, args)
+
+    mock_polling.assert_called_once_with(
+        {"endpoint_ids": ["endpoint1"], "script_uid": "uid1", "parameters": "param1=value1;param2=value2", "is_core": True},
+        client,
+    )
+    assert result == expected_result
+
+
+class TestValidateStartEndTimes:
+    def test_validate_start_end_times_both_none(self):
+        """Test with both start_time and end_time as None - should pass"""
+        # Should not raise any exception
+        validate_start_end_times(None, None)
+
+    def test_validate_start_end_times_both_empty_strings(self):
+        """Test with both start_time and end_time as empty strings - should pass"""
+        # Should not raise any exception
+        validate_start_end_times("", "")
+
+    def test_validate_start_end_times_both_falsy(self):
+        """Test with both start_time and end_time as falsy values - should pass"""
+        # Should not raise any exception
+        validate_start_end_times(None, "")
+        validate_start_end_times("", None)
+
+    def test_validate_start_end_times_only_start_provided(self):
+        """Test with only start_time provided - should raise exception"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", None)
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+    def test_validate_start_end_times_only_end_provided(self):
+        """Test with only end_time provided - should raise exception"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times(None, "15:00")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("", "15:00")
+        assert "Both start_time and end_time must be provided together." in str(exc_info.value)
+
+    def test_validate_start_end_times_valid_same_day_sufficient_gap(self):
+        """Test with valid times on same day with sufficient gap (>= 2 hours)"""
+        # Exactly 2 hours apart - should pass
+        validate_start_end_times("10:00", "12:00")
+
+        # More than 2 hours apart - should pass
+        validate_start_end_times("09:00", "14:00")
+        validate_start_end_times("08:30", "11:15")
+        validate_start_end_times("00:00", "02:00")
+
+    def test_validate_start_end_times_valid_cross_day_sufficient_gap(self):
+        """Test with times crossing midnight with sufficient gap"""
+        # 23:00 to 01:00 next day = 2 hours - should pass
+        validate_start_end_times("23:00", "01:00")
+
+        # 22:00 to 02:00 next day = 4 hours - should pass
+        validate_start_end_times("22:00", "02:00")
+
+        # 20:00 to 01:00 next day = 5 hours - should pass
+        validate_start_end_times("20:00", "01:00")
+
+    def test_validate_start_end_times_insufficient_gap_same_day(self):
+        """Test with insufficient gap between times on same day"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "11:30")  # 1.5 hours
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "11:59")  # 1 hour 59 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("14:30", "15:45")  # 1 hour 15 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_insufficient_gap_cross_day(self):
+        """Test with insufficient gap crossing midnight"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("23:30", "00:30")  # 1 hour
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("23:15", "01:00")  # 1 hour 45 minutes
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_same_time(self):
+        """Test with identical start and end times"""
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_start_end_times("10:00", "10:00")
+        assert "Start and end times must be at least two hours apart" in str(exc_info.value)
+
+    def test_validate_start_end_times_invalid_time_format(self):
+        """Test with invalid time formats - should raise ValueError"""
+        with pytest.raises(ValueError):
+            validate_start_end_times("25:00", "12:00")  # Invalid hour
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10:70", "12:00")  # Invalid minute
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("invalid", "12:00")  # Invalid format
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10:00", "not-a-time")  # Invalid format
+
+        with pytest.raises(ValueError):
+            validate_start_end_times("10", "12:00")  # Incomplete format
+
+    def test_validate_start_end_times_edge_cases_valid(self):
+        """Test edge cases that should be valid"""
+        # Midnight to 2 AM
+        validate_start_end_times("00:00", "02:00")
+
+        # 10 PM to midnight next day (2 hours)
+        validate_start_end_times("22:00", "00:00")
+
+        # Almost full day (22 hours)
+        validate_start_end_times("01:00", "23:00")
+
+    def test_validate_start_end_times_edge_cases_invalid(self):
+        """Test edge cases that should be invalid"""
+        from CommonServerPython import DemistoException
+
+        # 1 minute gap
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "10:01")
+
+        # 1 hour 59 minutes 59 seconds would round to 1 hour 59 minutes in strptime
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "11:59")
+
+    def test_validate_start_end_times_boundary_conditions(self):
+        """Test boundary conditions around the 2-hour requirement"""
+        from CommonServerPython import DemistoException
+
+        # Exactly 2 hours - should pass
+        validate_start_end_times("10:00", "12:00")
+
+        # 1 minute less than 2 hours - should fail
+        with pytest.raises(DemistoException):
+            validate_start_end_times("10:00", "11:59")
+
+        # 1 minute more than 2 hours - should pass
+        validate_start_end_times("10:00", "12:01")
+
+    def test_validate_start_end_times_cross_midnight_boundary(self):
+        """Test the cross-midnight calculation boundary"""
+        from CommonServerPython import DemistoException
+
+        # 22:00 to 00:00 next day = exactly 2 hours - should pass
+        validate_start_end_times("22:00", "00:00")
+
+        # 22:01 to 00:00 next day = 1 hour 59 minutes - should fail
+        with pytest.raises(DemistoException):
+            validate_start_end_times("22:01", "00:00")
+
+        # 21:59 to 00:00 next day = 2 hours 1 minute - should pass
+        validate_start_end_times("21:59", "00:00")
+
+    def test_validate_start_end_times_various_time_formats(self):
+        """Test with various valid time formats"""
+        # Single digit hours and minutes
+        validate_start_end_times("9:00", "11:00")
+        validate_start_end_times("09:0", "11:0")  # This might fail depending on strptime behavior
+
+    def test_validate_start_end_times_whitespace_handling(self):
+        """Test with whitespace in time strings"""
+        # Note: strptime might be sensitive to whitespace
+        validate_start_end_times("10:00", "12:00")
+
+        # Test with potential whitespace (these might raise ValueError)
+        with pytest.raises(ValueError):
+            validate_start_end_times(" 10:00 ", "12:00")
+
+
+class TestTransformDistributions:
+    """Test cases for transform_distributions function."""
+
+    def test_transform_distributions_basic(self):
+        """Test basic transformation of distributions."""
+        response = {
+            "platform_count": 2,
+            "total_count": 100,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}],
+                "linux": [{"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 0}],
+            },
+        }
+
+        result = transform_distributions(response)
+
+        expected = {
+            "platform_count": 2,
+            "total_count": 100,
+            "distributions": [
+                {
+                    "platform": "windows",
+                    "endpoints_with_lower_version_count": 10,
+                    "endpoints_with_higher_version_count": 20,
+                    "endpoints_with_same_version_count": 70,
+                    "version": "1.0.0",
+                },
+                {
+                    "platform": "linux",
+                    "endpoints_with_lower_version_count": 5,
+                    "endpoints_with_higher_version_count": 15,
+                    "endpoints_with_same_version_count": 80,
+                    "version": "2.0.0",
+                },
+            ],
+        }
+
+        assert result == expected
+
+    def test_transform_distributions_filters_beta(self):
+        """Test that beta versions are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": True, "unsupported_os": 0},
+                    {"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 0},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_filters_zero_less(self):
+        """Test that items with less=0 are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 0, "greater": 20, "equal": 80, "version": "1.0.0", "is_beta": False, "unsupported_os": 0},
+                    {"less": 10, "greater": 20, "equal": 70, "version": "2.0.0", "is_beta": False, "unsupported_os": 0},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_filters_unsupported_os(self):
+        """Test that items where unsupported_os equals total_count are filtered out."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 100},
+                    {"less": 5, "greater": 15, "equal": 80, "version": "2.0.0", "is_beta": False, "unsupported_os": 50},
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0]["version"] == "2.0.0"
+
+    def test_transform_distributions_empty_distributions(self):
+        """Test handling of empty distributions."""
+        response = {"platform_count": 0, "total_count": 0, "distributions": {}}
+
+        result = transform_distributions(response)
+
+        expected = {"platform_count": 0, "total_count": 0, "distributions": []}
+
+        assert result == expected
+
+    def test_transform_distributions_missing_fields(self):
+        """Test handling of missing optional fields."""
+        response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [
+                    {
+                        "version": "1.0.0"
+                        # Missing other fields
+                    }
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        expected_item = {"platform": "windows", "version": "1.0.0"}
+
+        assert len(result["distributions"]) == 1
+        assert result["distributions"][0] == expected_item
+
+    def test_transform_distributions_none_total_count(self):
+        """Test handling when total_count is None."""
+        response = {
+            "platform_count": 1,
+            "total_count": None,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert result["total_count"] is None
+        assert len(result["distributions"]) == 1
+
+
+class TestGetEndpointUpdateVersionCommand:
+    """Test cases for get_endpoint_update_version_command function."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.transform_distributions")
+    @patch("CortexPlatformCore.tableToMarkdown")
+    def test_get_endpoint_update_version_command_success(self, mock_table_to_markdown, mock_transform, mock_filter_builder):
+        """Test successful endpoint update version retrieval."""
+        # Setup mocks
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        api_response = {"distributions": {"windows": []}, "total_count": 100}
+        transformed_response = {"distributions": [{"platform": "windows"}], "total_count": 100}
+
+        mock_client.get_endpoint_update_version.return_value = api_response
+        mock_transform.return_value = transformed_response
+        mock_table_to_markdown.return_value = "Test Table"
+
+        args = {"endpoint_ids": "endpoint1,endpoint2"}
+
+        result = get_endpoint_update_version_command(mock_client, args)
+
+        # Assertions
+        mock_filter_instance.add_field.assert_called_once_with("AGENT_ID", FilterType.EQ, ["endpoint1", "endpoint2"])
+        mock_client.get_endpoint_update_version.assert_called_once()
+        mock_transform.assert_called_once_with(api_response)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs == transformed_response
+        assert result.outputs_prefix == "Core.EndpointUpdateVersion"
+
+
+class TestUpdateEndpointVersionCommand:
+    """Test cases for update_endpoint_version_command function."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_success(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test successful endpoint version update."""
+        # Setup mocks
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1", "endpoint2"],  # endpoint_ids
+            ["monday", "tuesday"],  # days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {
+            "endpoint_ids": "endpoint1,endpoint2",
+            "platform": "windows",
+            "version": "1.0.0",
+            "days": "monday,tuesday",
+            "start_time": "2023-01-01",
+            "end_time": "2023-01-02",
+        }
+
+        with patch("CortexPlatformCore.DAYS_MAPPING", {"monday": 1, "tuesday": 2}):
+            result = update_endpoint_version_command(mock_client, args)
+
+        # Assertions
+        mock_validate_times.assert_called_once_with("2023-01-01", "2023-01-02")
+        mock_filter_instance.add_field.assert_called_once_with("AGENT_ID", FilterType.EQ, ["endpoint1", "endpoint2"])
+
+        expected_request_data = {
+            "filter_data": {"filter": {"test": "filter"}},
+            "filter_type": "static",
+            "versions": {"windows": "1.0.0"},
+            "upgrade_to_pkg_manager": False,
+            "schedule_data": {"START_TIME": "2023-01-01", "END_TIME": "2023-01-02", "DAYS": [1, 2]},
+        }
+
+        mock_client.update_endpoint_version.assert_called_once_with(expected_request_data)
+
+        assert isinstance(result, CommandResults)
+        assert "The update to the target versions was successful. Action ID: action123" in result.readable_output
+        assert "action123" in result.readable_output
+        assert result.outputs["action_id"] == "action123"
+        assert result.outputs["endpoint_ids"] == ["endpoint1", "endpoint2"]
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_no_action_id(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test when no group_action_id is returned."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            [],  # days (empty)
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": 0}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "linux", "version": "2.0.0"}
+
+        result = update_endpoint_version_command(mock_client, args)
+
+        assert "The update to the target versions was unsuccessful." in result.readable_output
+        assert result.outputs["action_id"] == 0
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_no_days(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test with no days specified."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            [],  # days (empty)
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0"}
+
+        update_endpoint_version_command(mock_client, args)
+
+        # Verify that DAYS is set to None when no days are provided
+        call_args = mock_client.update_endpoint_version.call_args[0][0]
+        assert call_args["schedule_data"]["DAYS"] is None
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    def test_update_endpoint_version_command_all_invalid_days(self, mock_arg_to_list, mock_validate_times, mock_filter_builder):
+        """Test when all day names are invalid."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"test": "filter"}
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["invalidday1", "invalidday2"],  # all invalid days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0", "days": "invalidday1,invalidday2"}
+
+        with pytest.raises(DemistoException, match="Please provide valid days."):
+            update_endpoint_version_command(mock_client, args)
+
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["monday", "invalidday2"],  # all invalid days
+        ]
+
+        mock_client.update_endpoint_version.return_value = {"reply": {"group_action_id": "action123"}}
+
+        args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "1.0.0", "days": "monday,invalidday2"}
+
+        with pytest.raises(DemistoException, match="Please provide valid days."):
+            update_endpoint_version_command(mock_client, args)
+
+
+class TestEndpointUpdateVersionIntegration:
+    """Integration tests that test the functions working together."""
+
+    @patch("CortexPlatformCore.FilterBuilder")
+    @patch("CortexPlatformCore.validate_start_end_times")
+    @patch("CortexPlatformCore.argToList")
+    @patch("CortexPlatformCore.tableToMarkdown")
+    def test_full_endpoint_update_workflow(
+        self, mock_table_to_markdown, mock_arg_to_list, mock_validate_times, mock_filter_builder
+    ):
+        """Test a complete workflow of getting and updating endpoint versions."""
+        mock_client = Mock()
+        mock_filter_instance = Mock()
+        mock_filter_builder.return_value = mock_filter_instance
+        mock_filter_instance.to_dict.return_value = {"AGENT_ID": {"EQ": ["endpoint1"]}}
+
+        # Mock the get endpoint version response
+        get_response = {
+            "platform_count": 1,
+            "total_count": 100,
+            "distributions": {
+                "windows": [{"less": 10, "greater": 20, "equal": 70, "version": "1.0.0", "is_beta": False, "unsupported_os": 0}]
+            },
+        }
+
+        # Mock the update response
+        update_response = {"reply": {"group_action_id": "action123"}}
+
+        mock_client.get_endpoint_update_version.return_value = get_response
+        mock_client.update_endpoint_version.return_value = update_response
+        mock_table_to_markdown.return_value = "Test Table"
+
+        # Test get endpoint version
+        get_args = {"endpoint_ids": "endpoint1"}
+        get_result = get_endpoint_update_version_command(mock_client, get_args)
+
+        assert isinstance(get_result, CommandResults)
+        assert get_result.outputs["total_count"] == 100
+        assert len(get_result.outputs["distributions"]) == 1
+        assert get_result.outputs["distributions"][0]["platform"] == "windows"
+
+        # Test update endpoint version
+        mock_arg_to_list.side_effect = [
+            ["endpoint1"],  # endpoint_ids
+            ["monday"],  # days
+        ]
+
+        update_args = {"endpoint_ids": "endpoint1", "platform": "windows", "version": "2.0.0", "days": "monday"}
+
+        with patch("CortexPlatformCore.DAYS_MAPPING", {"monday": 1}):
+            update_result = update_endpoint_version_command(mock_client, update_args)
+
+        assert isinstance(update_result, CommandResults)
+        assert "The update to the target versions was successful. Action ID: action123" in update_result.readable_output
+        assert update_result.outputs["action_id"] == "action123"
+
+
+# Test fixtures and utilities
+@pytest.fixture
+def sample_distributions_response():
+    """Fixture providing sample distributions response."""
+    return {
+        "platform_count": 3,
+        "total_count": 500,
+        "distributions": {
+            "windows": [
+                {"less": 50, "greater": 100, "equal": 200, "version": "1.0.0", "is_beta": False, "unsupported_os": 0},
+                {
+                    "less": 25,
+                    "greater": 75,
+                    "equal": 150,
+                    "version": "1.1.0",
+                    "is_beta": True,  # Should be filtered out
+                    "unsupported_os": 0,
+                },
+            ],
+            "linux": [
+                {
+                    "less": 0,  # Should be filtered out
+                    "greater": 50,
+                    "equal": 100,
+                    "version": "2.0.0",
+                    "is_beta": False,
+                    "unsupported_os": 0,
+                },
+                {
+                    "less": 30,
+                    "greater": 70,
+                    "equal": 100,
+                    "version": "2.1.0",
+                    "is_beta": False,
+                    "unsupported_os": 500,  # Should be filtered out (equals total_count)
+                },
+            ],
+            "macos": [{"less": 10, "greater": 20, "equal": 30, "version": "3.0.0", "is_beta": False, "unsupported_os": 5}],
+        },
+    }
+
+
+def test_transform_distributions_with_fixture(sample_distributions_response):
+    """Test transform_distributions using the fixture."""
+    result = transform_distributions(sample_distributions_response)
+
+    # Only windows 1.0.0 and macos 3.0.0 should remain after filtering
+    assert len(result["distributions"]) == 2
+    assert result["platform_count"] == 3
+    assert result["total_count"] == 500
+
+    platforms = [item["platform"] for item in result["distributions"]]
+    versions = [item["version"] for item in result["distributions"]]
+
+    assert "windows" in platforms
+    assert "macos" in platforms
+    assert "1.0.0" in versions
+    assert "3.0.0" in versions
+    assert "1.1.0" not in versions  # Filtered out (beta)
+    assert "2.0.0" not in versions  # Filtered out (less=0)
+    assert "2.1.0" not in versions  # Filtered out (unsupported_os=total_count)
+
+
+# Edge case tests
+class TestEdgeCases:
+    """Test edge cases and error conditions."""
+
+    def test_transform_distributions_string_numbers(self):
+        """Test that string numbers are handled properly."""
+        response = {
+            "platform_count": "2",
+            "total_count": "100",
+            "distributions": {
+                "windows": [
+                    {"less": "10", "greater": "20", "equal": "70", "version": "1.0.0", "is_beta": False, "unsupported_os": "0"}
+                ]
+            },
+        }
+
+        result = transform_distributions(response)
+
+        assert result["total_count"] == 100  # Should be converted to int
+        assert len(result["distributions"]) == 1
+
+    def test_get_endpoint_update_version_command_malformed_response(self):
+        """Test handling of malformed API response."""
+        mock_client = Mock()
+        mock_client.get_endpoint_update_version.return_value = None
+
+        args = {"endpoint_ids": "endpoint1"}
+
+        with (
+            patch("CortexPlatformCore.FilterBuilder"),
+            patch("CortexPlatformCore.transform_distributions") as mock_transform,
+            patch("CortexPlatformCore.tableToMarkdown"),
+        ):
+            mock_transform.return_value = {"distributions": []}
+            result = get_endpoint_update_version_command(mock_client, args)
+
+            mock_transform.assert_called_once_with(None)
+            assert isinstance(result, CommandResults)
+
+
+def test_build_column_mapping_with_enum_values():
+    """
+    GIVEN:
+        A column definition with FILTER_PARAMS containing ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        A dictionary mapping NAME to PRETTY_NAME is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {
+        "FILTER_PARAMS": {
+            "ENUM_VALUES": [
+                {"NAME": "MODULE_1", "PRETTY_NAME": "Module One"},
+                {"NAME": "MODULE_2", "PRETTY_NAME": "Module Two"},
+                {"NAME": "MODULE_3", "PRETTY_NAME": "Module Three"},
+            ]
+        }
+    }
+
+    result = build_column_mapping(column)
+
+    assert result == {
+        "MODULE_1": "Module One",
+        "MODULE_2": "Module Two",
+        "MODULE_3": "Module Three",
+    }
+
+
+def test_build_column_mapping_empty_enum_values():
+    """
+    GIVEN:
+        A column definition with empty ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {"FILTER_PARAMS": {"ENUM_VALUES": []}}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_build_column_mapping_missing_filter_params():
+    """
+    GIVEN:
+        A column definition without FILTER_PARAMS.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_build_column_mapping_missing_enum_values():
+    """
+    GIVEN:
+        A column definition with FILTER_PARAMS but no ENUM_VALUES.
+    WHEN:
+        build_column_mapping is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import build_column_mapping
+
+    column = {"FILTER_PARAMS": {}}
+
+    result = build_column_mapping(column)
+
+    assert result == {}
+
+
+def test_extract_mappings_from_view_def_single_column():
+    """
+    GIVEN:
+        A view definition with one column to map.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        A dictionary with the column mapping is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "MODULES",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "MOD_A", "PRETTY_NAME": "Module A"},
+                        {"NAME": "MOD_B", "PRETTY_NAME": "Module B"},
+                    ]
+                },
+            }
+        ]
+    }
+    columns_to_map = {"MODULES"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {"MODULES": {"MOD_A": "Module A", "MOD_B": "Module B"}}
+
+
+def test_extract_mappings_from_view_def_multiple_columns():
+    """
+    GIVEN:
+        A view definition with multiple columns to map.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        A dictionary with all column mappings is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "MODULES",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "MOD_A", "PRETTY_NAME": "Module A"},
+                    ]
+                },
+            },
+            {
+                "FIELD_NAME": "PROFILE_IDS",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "PROF_1", "PRETTY_NAME": "Profile 1"},
+                    ]
+                },
+            },
+        ]
+    }
+    columns_to_map = {"MODULES", "PROFILE_IDS"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {
+        "MODULES": {"MOD_A": "Module A"},
+        "PROFILE_IDS": {"PROF_1": "Profile 1"},
+    }
+
+
+def test_extract_mappings_from_view_def_no_matching_columns():
+    """
+    GIVEN:
+        A view definition with columns that don't match the columns_to_map set.
+    WHEN:
+        extract_mappings_from_view_def is called.
+    THEN:
+        An empty dictionary is returned.
+    """
+    from CortexPlatformCore import extract_mappings_from_view_def
+
+    view_def = {
+        "COLUMN_DEFINITIONS": [
+            {
+                "FIELD_NAME": "OTHER_FIELD",
+                "FILTER_PARAMS": {
+                    "ENUM_VALUES": [
+                        {"NAME": "VAL", "PRETTY_NAME": "Value"},
+                    ]
+                },
+            }
+        ]
+    }
+    columns_to_map = {"MODULES"}
+
+    result = extract_mappings_from_view_def(view_def, columns_to_map)
+
+    assert result == {}
+
+
+def test_combine_pretty_names_with_list_criteria():
+    """
+    GIVEN:
+        A list of criteria where each criterion is a list of dictionaries with 'pretty_name'.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        A list of concatenated pretty_name strings is returned.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "First"}, {"pretty_name": "Second"}],
+        [{"pretty_name": "Third"}],
+        [{"pretty_name": "A"}, {"pretty_name": "B"}, {"pretty_name": "C"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["FirstSecond", "Third", "ABC"]
+
+
+def test_combine_pretty_names_with_empty_lists():
+    """
+    GIVEN:
+        A list of criteria containing empty lists.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Empty strings are returned for empty lists.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [],
+        [{"pretty_name": "Test"}],
+        [],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["", "Test", ""]
+
+
+def test_combine_pretty_names_with_non_list_items():
+    """
+    GIVEN:
+        A list of criteria containing non-list items.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Non-list items are returned as-is.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "First"}],
+        "StringValue",
+        [{"pretty_name": "Second"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["First", "StringValue", "Second"]
+
+
+def test_combine_pretty_names_missing_pretty_name_key():
+    """
+    GIVEN:
+        A list of criteria with dictionaries missing 'pretty_name' key.
+    WHEN:
+        combine_pretty_names is called.
+    THEN:
+        Empty strings are used for missing keys.
+    """
+    from CortexPlatformCore import combine_pretty_names
+
+    list_of_criteria = [
+        [{"pretty_name": "A"}, {"other_key": "B"}, {"pretty_name": "C"}],
+    ]
+
+    result = combine_pretty_names(list_of_criteria)
+
+    assert result == ["AC"]
+
+
+def test_postprocess_exception_rules_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        View definition and exception rules data.
+    WHEN:
+        postprocess_exception_rules_response is called.
+    THEN:
+        Data is properly mapped and formatted with readable output.
+    """
+    from CortexPlatformCore import postprocess_exception_rules_response
+
+    view_def = [
+        {
+            "TABLE_NAME": "Exception Rules",
+            "COLUMN_DEFINITIONS": [
+                {
+                    "FIELD_NAME": "MODULES",
+                    "FILTER_PARAMS": {
+                        "ENUM_VALUES": [
+                            {"NAME": "MOD_1", "PRETTY_NAME": "Module One"},
+                        ]
+                    },
+                },
+                {
+                    "FIELD_NAME": "PROFILE_IDS",
+                    "FILTER_PARAMS": {
+                        "ENUM_VALUES": [
+                            {"NAME": "PROF_1", "PRETTY_NAME": "Profile One"},
+                        ]
+                    },
+                },
+            ],
+        }
+    ]
+
+    data = [
+        {
+            "ID": "rule_1",
+            "MODULES": ["MOD_1"],
+            "PROFILE_IDS": ["PROF_1"],
+            "ASSOCIATED_TARGETS": [[{"pretty_name": "Target1"}, {"pretty_name": "Target2"}]],
+            "CONDITIONS_PRETTY": "condition text",
+            "SUBTYPE": "legacy",
+            "CREATION_TIME": 1640000000000,
+            "MODIFICATION_TIME": 1640100000000,
+        }
+    ]
+
+    mocker.patch("CortexPlatformCore.timestamp_to_datestring", side_effect=lambda x: f"date_{x}")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="markdown_table")
+
+    result = postprocess_exception_rules_response(view_def, data)
+
+    assert result == "markdown_table"
+    assert data[0]["MODULES"] == ["Module One"]
+    assert data[0]["PROFILE_IDS"] == ["Profile One"]
+    assert data[0]["ASSOCIATED_TARGETS"] == ["Target1Target2"]
+    assert data[0]["CONDITIONS"] == "condition text"
+    assert data[0]["RULE_TYPE"] == "legacy"
+    assert data[0]["CREATION_TIMESTAMP"] == 1640000000000
+    assert data[0]["MODIFICATION_TIMESTAMP"] == 1640100000000
+    assert "CONDITIONS_PRETTY" not in data[0]
+    assert "SUBTYPE" not in data[0]
+
+
+def test_get_webapp_data_single_page(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters for fetching a single page of data.
+    WHEN:
+        get_webapp_data is called with retrieve_all=False.
+    THEN:
+        A single request is made and data is returned.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "1"}, {"id": "2"}]}}
+
+    filter_builder = FilterBuilder()
+    records, raw_responses, filter_count = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=False,
+        base_limit=10,
+        max_limit=100,
+        offset=0,
+    )
+
+    assert len(records) == 2
+    assert records[0]["id"] == "1"
+    assert records[1]["id"] == "2"
+    assert len(raw_responses) == 1
+    assert mock_client.get_webapp_data.call_count == 1
+
+
+def test_get_webapp_data_retrieve_all_multiple_pages(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters for fetching all data across multiple pages.
+    WHEN:
+        get_webapp_data is called with retrieve_all=True.
+    THEN:
+        Multiple requests are made until all data is retrieved.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    # First call returns full page, second call returns partial page (end of data)
+    mock_client.get_webapp_data.side_effect = [
+        {"reply": {"DATA": [{"id": str(i)} for i in range(100)]}},
+        {"reply": {"DATA": [{"id": str(i)} for i in range(100, 150)]}},
+    ]
+
+    filter_builder = FilterBuilder()
+    records, raw_responses, filter_count = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=True,
+        base_limit=50,
+        max_limit=100,
+        offset=0,
+    )
+
+    assert len(records) == 150
+    assert len(raw_responses) == 2
+    assert mock_client.get_webapp_data.call_count == 2
+
+
+def test_get_webapp_data_with_offset(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and parameters with a non-zero offset.
+    WHEN:
+        get_webapp_data is called with offset=50.
+    THEN:
+        The request starts from the specified offset.
+    """
+    from CortexPlatformCore import get_webapp_data, FilterBuilder
+
+    mock_client = mocker.Mock()
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"id": "51"}, {"id": "52"}]}}
+
+    filter_builder = FilterBuilder()
+    records, raw_responses, filter_count = get_webapp_data(
+        client=mock_client,
+        table_name="TEST_TABLE",
+        filter_dict=filter_builder,
+        sort_field="ID",
+        sort_order="ASC",
+        retrieve_all=False,
+        base_limit=10,
+        max_limit=100,
+        offset=50,
+    )
+
+    assert len(records) == 2
+    call_args = mock_client.get_webapp_data.call_args[0][0]
+    assert call_args["filter_data"]["paging"]["from"] == 50
+
+
+def test_list_exception_rules_command_single_type(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args specifying a single exception rule type.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        Only the specified table is queried and results are returned.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {
+                        "ID": "rule_1",
+                        "NAME": "Test Rule",
+                        "MODIFICATION_TIME": 1000,
+                        "CREATION_TIME": 1000,
+                        "CONDITIONS_PRETTY": "conditions",
+                        "SUBTYPE": "XDR",
+                    }
+                ]
+            }
+        },
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"type": "legacy_agent_exceptions", "limit": "10"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result[0].outputs) == 1
+    assert result[0].outputs[0]["ID"] == "rule_1"
+    assert "table" in result[0].readable_output
+
+
+def test_list_exception_rules_command_all_types(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args without specifying exception rule type.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        Both legacy and disable prevention tables are queried.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=[
+            {
+                "reply": {
+                    "DATA": [
+                        {
+                            "ID": "rule_1",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
+                    ]
+                }
+            },
+            {
+                "reply": {
+                    "DATA": [
+                        {
+                            "ID": "rule_2",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
+                    ]
+                }
+            },
+        ],
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"limit": "10"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result[0].outputs) == 2
+    assert mock_client.get_webapp_data.call_count == 2
+
+
+def test_list_exception_rules_command_retrieve_all(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with retrieve_all=True.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        All records are retrieved with pagination.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=[
+            {
+                "reply": {
+                    "DATA": [
+                        {
+                            "ID": f"rule_{i}",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
+                        for i in range(100)
+                    ]
+                }
+            },
+            {
+                "reply": {
+                    "DATA": [
+                        {
+                            "ID": f"rule_{i}",
+                            "MODIFICATION_TIME": 1000,
+                            "CREATION_TIME": 1000,
+                            "CONDITIONS_PRETTY": "conditions",
+                            "SUBTYPE": "XDR",
+                        }
+                        for i in range(100, 120)
+                    ]
+                }
+            },
+        ],
+    )
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_view_def",
+        return_value=[{"TABLE_NAME": "Test Table", "COLUMN_DEFINITIONS": []}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"type": "legacy_agent_exceptions", "retrieve_all": "true"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result[0].outputs) == 120
+
+
+def test_list_exception_rules_command_no_data(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client that returns no data.
+    WHEN:
+        list_exception_rules_command is called.
+    THEN:
+        A message indicating no data is returned.
+    """
+    from CortexPlatformCore import list_exception_rules_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": []}},
+    )
+
+    args = {"type": "legacy_agent_exceptions"}
+
+    result = list_exception_rules_command(mock_client, args)
+
+    assert len(result[0].outputs) == 0
+    assert "No data found" in result[0].readable_output
+
+
+def test_list_system_users_command_with_emails(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with specific email addresses.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        Only users with matching emails are returned.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "get_users",
+        return_value={
+            "reply": [
+                {"user_email": "user1@example.com", "name": "User 1"},
+                {"user_email": "user2@example.com", "name": "User 2"},
+                {"user_email": "user3@example.com", "name": "User 3"},
+            ]
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"email": "user1@example.com,user3@example.com"}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["user_email"] == "user1@example.com"
+    assert result.outputs[1]["user_email"] == "user3@example.com"
+
+
+def test_list_system_users_command_no_emails(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args without email filter.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        All users are returned (up to limit of 50).
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    users = [{"user_email": f"user{i}@example.com", "name": f"User {i}"} for i in range(30)]
+    mocker.patch.object(mock_client, "get_users", return_value={"reply": users})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 30
+
+
+def test_list_system_users_command_exceeds_limit(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client and args with more than 50 emails.
+    WHEN:
+        list_system_users_command is called.
+    THEN:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    emails = [f"user{i}@example.com" for i in range(51)]
+
+    args = {"email": ",".join(emails)}
+
+    with pytest.raises(DemistoException, match="maximum number of emails allowed is 50"):
+        list_system_users_command(mock_client, args)
+
+
+def test_list_system_users_command_limits_results_to_50(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client that returns more than 50 users.
+    WHEN:
+        list_system_users_command is called without email filter.
+    THEN:
+        Results are limited to 50 users.
+    """
+    from CortexPlatformCore import list_system_users_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    users = [{"user_email": f"user{i}@example.com", "name": f"User {i}"} for i in range(100)]
+    mocker.patch.object(mock_client, "get_users", return_value={"reply": users})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {}
+
+    result = list_system_users_command(mock_client, args)
+
+    assert len(result.outputs) == 50
+
+
+def test_update_case_command_single_case_basic_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with single case_id and basic update fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with provided fields and returns proper CommandResults.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Case Name",
+        "description": "Updated description",
+        "notes": "Case notes",
+    }
+
+    result = update_case_command(client, args)
+
+    assert result.outputs_prefix == "Core.Case"
+    assert result.outputs_key_field == "case_id"
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Updated Case Name"
+    assert call_args["description"] == "Updated description"
+    assert call_args["notes"] == "Case notes"
+
+
+def test_update_case_command_bulk_update_allowed_fields(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and bulk-allowed fields.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "user_defined_severity": "high",
+        "starred": "true",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["severity"] == "SEV_040_HIGH"
+    assert call_args[0]["starred"] is True
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_bulk_update_assignee_unassigned(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids and assignee='unassigned'.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Bulk update is performed with assignee set to None and cases are retrieved and formatted.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={
+            "reply": {
+                "DATA": [
+                    {"CASE_ID": 123, "NAME": "Case 1", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                    {"CASE_ID": 456, "NAME": "Case 2", "STATUS_PROGRESS": "STATUS_010_NEW", "SEVERITY": "SEV_040_HIGH"},
+                ]
+            }
+        },
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "assignee": "unassigned",
+    }
+
+    result = update_case_command(client, args)
+
+    mock_bulk_update.assert_called_once()
+    call_args = mock_bulk_update.call_args[0]
+    assert call_args[0]["assignedUser"] is None
+    assert call_args[1] == ["123", "456"]
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and valid resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with resolved status and reason.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+        "resolved_comment": "This was a false alarm",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_060_RESOLVED_FALSE_POSITIVE"
+    assert call_args["caseResolvedComment"] == "This was a false alarm"
+
+
+def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved but no resolve_reason.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating resolve_reason is required.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+    }
+
+    with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_resolve_reason_without_resolved_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_reason but status is not resolved.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating status must be resolved.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "new",
+        "resolve_reason": "false_positive",
+    }
+
+    with pytest.raises(ValueError, match="the case status must be set to 'resolved'."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_status_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid status.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "status": "invalid_status",
+    }
+
+    with pytest.raises(ValueError, match="Invalid status 'invalid_status'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with invalid user_defined_severity value.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating invalid severity.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {
+        "case_id": "123",
+        "user_defined_severity": "invalid_severity",
+    }
+
+    with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'"):
+        update_case_command(client, args)
+
+
+def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with only case_id (no update fields).
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        ValueError is raised indicating no valid update parameters.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+
+    args = {"case_id": "123"}
+
+    with pytest.raises(ValueError, match="No valid update parameters provided."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_non_bulk_fields_trigger_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with fields not allowed in bulk update.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual update is performed instead of bulk update.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Name",
+        "notes": "Some notes",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_resolved_status_not_allowed_in_bulk(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved for multiple cases.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Individual updates are performed (bulk not allowed for resolved status).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mock_bulk_update = mocker.patch.object(client, "bulk_update_case")
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "status": "resolved",
+        "resolve_reason": "false_positive",
+    }
+
+    update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    mock_bulk_update.assert_not_called()
+
+
+def test_update_case_command_multiple_cases_individual_update(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with multiple case_ids requiring individual updates.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        update_case is called for each case individually.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(
+        client,
+        "update_case",
+        side_effect=[{"reply": {"caseId": "123"}}, {"reply": {"caseId": "456"}}],
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123,456",
+        "description": "Updated description",
+    }
+
+    result = update_case_command(client, args)
+
+    assert mock_update_case.call_count == 2
+    assert len(result.outputs) == 2
+
+
+def test_update_case_command_empty_string_fields_filtered(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with empty string values.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Empty string fields are filtered out from the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "case_name": "Valid Name",
+        "description": "",
+        "notes": "",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["caseName"] == "Valid Name"
+    assert "description" not in call_args
+    assert "notes" not in call_args
+
+
+def test_update_case_command_repackage_to_update_case_format(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance performing bulk update that returns raw case data.
+    WHEN:
+        The update_case_command function processes the response.
+    THEN:
+        Raw case data is properly repackaged to update case format.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch.object(client, "bulk_update_case")
+    raw_case_data = {
+        "CASE_ID": 123,
+        "NAME": "Test Case",
+        "STATUS_PROGRESS": "STATUS_010_NEW",
+        "SEVERITY": "SEV_040_HIGH",
+        "ASSIGNED_USER": "user@example.com",
+        "ASSIGNED_USER_PRETTY": "User Name",
+        "CREATION_TIME": 1640000000000,
+        "LAST_UPDATE_TIME": 1640100000000,
+        "INCIDENT_DOMAIN": "Security",
+        "CASE_STARRED": True,
+        "CURRENT_TAGS": [{"tag_name": "DOM:Security"}],
+        "CASE_GROUPING_STATUS": "GROUPING_STATUS_010_ENABLED",
+    }
+    mocker.patch.object(
+        client,
+        "get_webapp_data",
+        return_value={"reply": {"DATA": [raw_case_data]}},
+    )
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "case_id": "123",
+        "starred": "false",
+    }
+
+    result = update_case_command(client, args)
+
+    assert len(result.outputs) == 1
+    output = result.outputs[0]
+    assert output["id"] == "123"
+    assert output["name"]["value"] == "Test Case"
+    assert output["status"]["value"] == "STATUS_010_NEW"
+    assert output["severity"] == "SEV_040_HIGH"
+
+
+def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with resolve_all_alerts.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        resolve_all_alerts is included in the payload.
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+        "resolve_all_alerts": "true",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["resolve_all_alerts"] == "true"
+
+
+def test_validate_custom_fields_success(mocker):
+    """
+    GIVEN:
+        Valid custom fields and client with metadata.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        All fields are returned as valid and no error messages.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    # Mock metadata response
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"field1": "value1", "field2": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == fields_to_validate
+    assert not error_messages
+
+
+def test_validate_custom_fields_system_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a system field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        System field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"system_field": "value1", "custom_field": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "custom_field" in valid_fields
+    assert "system_field" not in valid_fields
+    assert error_messages
+    assert "is a system field" in error_messages
+
+
+def test_validate_custom_fields_non_existent_field(mocker):
+    """
+    GIVEN:
+        Custom fields containing a non-existent field.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        Non-existent field is excluded and error message is returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"existing_field": "value1", "non_existent": "value2"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "existing_field" in valid_fields
+    assert "non_existent" not in valid_fields
+    assert error_messages
+    assert "does not exist" in error_messages
+
+
+# =========================================== TEST platform_http_request Method ===========================================#
+def test_platform_http_request_success(mocker):
+    """
+    Given:
+        - A client with RBAC enabled and valid JSON response from platform API.
+    When:
+        - Calling platform_http_request with json_data parameter.
+    Then:
+        - Ensure demisto._platformAPICall is called correctly and JSON response is parsed.
+    """
+    from CortexPlatformCore import Client
+
+    client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.FORWARD_USER_RUN_RBAC", True)
+
+    mock_platform_api_call = mocker.patch.object(
+        demisto, "_platformAPICall", return_value={"status": 200, "data": '{"result": "success", "query_id": "abc123"}'}
+    )
+
+    response = client.platform_http_request(
+        method="POST",
+        url_suffix="/xql_queries/submit/",
+        json_data={"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}},
+        params={"param1": "value1"},
+        timeout=120,
+        ok_codes=[200],
+    )
+
+    assert response == {"result": "success", "query_id": "abc123"}
+    mock_platform_api_call.assert_called_once_with(
+        path="/xql_queries/submit/",
+        method="POST",
+        params={"param1": "value1"},
+        data='{"query": "dataset = xdr_data | fields *", "timeframe": {"relativeTime": 86400000}}',
+        timeout=120,
+    )
+
+
+# =========================================== TEST Platform Query Functions ===========================================#
+def test_start_xql_query_platform(mocker):
+    """
+    Given:
+    - A query to execute.
+
+    When:
+    - Calling start_xql_query_platform function.
+
+    Then:
+    - Ensure execution_id is returned.
+    """
+    from CortexPlatformCore import start_xql_query_platform, Client
+
+    client = Client(base_url="", headers={})
+    query = "dataset = xdr_data | fields *"
+    timeframe = {"relativeTime": 86400000}
+    mock_execution_id = "test_execution_id_123"
+
+    mock_http_request = mocker.patch.object(client, "platform_http_request", return_value=mock_execution_id)
+
+    response = start_xql_query_platform(client, query, timeframe)
+
+    assert response == mock_execution_id
+    mock_http_request.assert_called_once()
+    call_args = mock_http_request.call_args
+    assert call_args[1]["url_suffix"] == "/xql_queries/submit/"
+    assert call_args[1]["method"] == "POST"
+    assert call_args[1]["ok_codes"] == [200]
+
+
+def test_handle_xql_limit_adds_limit_when_missing():
+    """
+    Given:
+    - A complex query without a limit clause, containing edge cases like:
+      - "limit" keyword inside comments (block and line comments)
+      - "limit" keyword inside quoted strings (single and double quotes)
+      - Field names containing "limit"
+      - Numeric values that could be confused with limit values
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure a default limit is added at the end of the query.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """dataset = xdr_data
+// "limit 10" - this limit is in a line comment, should be ignored
+| filter action_process_command_line contains "echo | limit speed"
+| filter description = 'set limit 999 for testing'
+/*
+   Block comment with limit 500 inside.
+   This should also be ignored by the parser.
+*/
+| alter
+    my_limit_field = 5000,
+    rate_limit_threshold = 100
+| filter action_file_name ~= "limit.exe"
+| filter message != "limit 200 exceeded"
+| sort asc _time
+// Final comment mentioning limit 300"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == f"{query}\n| limit {MAX_LIMIT}"
+
+
+def test_handle_xql_limit_valid_limits_unchanged():
+    """
+    Given:
+    - A complex query with valid limit clauses (within max_limit of 1000), containing edge cases like:
+      - Multiple limit clauses at different positions
+      - "limit" keyword inside comments and quotes (should be ignored)
+      - Limit values at boundary (exactly 1000)
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure the query is NOT modified since all limits are within the allowed maximum.
+    - Ensure "limit" keywords inside comments and quotes are NOT treated as limit clauses.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Starting the investigation
+   Note: limit 9999 in this comment should be ignored
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // filtering for processes, limit 8888 ignored
+| limit 500 /* This is a valid limit within max,
+    should NOT be modified!
+*/
+| filter description contains "limit 7777 test"
+| filter name = 'limit 6666 value'
+| sort desc _time
+| fields agent_hostname,
+         action_process_image_name,
+         action_process_command_line
+| limit 1000
+// End of query with limit 5555 in comment"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == query
+
+
+def test_handle_xql_limit_excessive_limits_modified():
+    """
+    Given:
+    - A complex query with multiple limit clauses that exceed max_limit (1000), containing edge cases like:
+      - Multiple excessive limits at different positions in the query
+      - "limit" keyword with excessive values inside comments and quotes (should be ignored)
+      - Mix of valid and excessive limits
+
+    When:
+    - Calling handle_xql_limit function with max_limit=1000.
+
+    Then:
+    - Ensure ALL excessive limit values are replaced with max_limit (1000).
+    - Ensure valid limits (within max) are NOT modified.
+    - Ensure "limit" keywords inside comments and quotes are NOT modified.
+    """
+    from CortexPlatformCore import handle_xql_limit
+
+    MAX_LIMIT = 1000
+    query = """/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit 5000 /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 2000 // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   3000 | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    expected_query = f"""/* Investigation query
+   Note: limit 9999 in this comment should NOT be modified
+*/
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // limit 8888 in comment, ignored
+| limit {MAX_LIMIT} /* This exceeds max and SHOULD be modified to 1000 */
+| filter description contains "limit 7777 test" | filter name = 'limit 6666 value'
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit {MAX_LIMIT} // This also exceeds max, should be modified
+) as joined_data
+| join type=inner (
+    dataset = another_data
+    | filter status = "active"
+    | limit 200 // This is within max, should not be modified
+) as joined_data2
+| sort desc _time | /*Another troublesome comment*/limit   {MAX_LIMIT} | fields agent_hostname, action_process_image_name
+// Final comment with limit 4444"""
+
+    result = handle_xql_limit(query, max_limit=MAX_LIMIT)
+
+    assert result == expected_query
+
+
+def test_get_xql_query_results_platform_success(mocker):
+    """
+    Given:
+    - A query_id for a completed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure results are retrieved correctly.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {
+        "status": "SUCCESS",
+        "stream_id": "test_stream_id",
+        "number_of_results": 2,
+    }
+    mock_results_data = '{"field1": "value1", "field2": "value3"}\n{"field2": "value2"}'
+
+    mocker.patch.object(client, "platform_http_request", side_effect=[mock_info_response, mock_results_data])
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == "test_query_id"
+    assert len(response["results"]) == 2
+    assert response["results"][0]["field1"] == "value1"
+    assert response["results"][0]["field2"] == "value3"
+    assert response["results"][1]["field2"] == "value2"
+
+
+def test_get_xql_query_results_platform_pending(mocker):
+    """
+    Given:
+    - A query_id for a pending query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure pending status is returned.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_response = {"status": "PENDING"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == "test_query_id"
+    assert "results" not in response
+
+
+def test_get_xql_query_results_platform_failure(mocker):
+    """
+    Given:
+    - A query_id for a failed query.
+
+    When:
+    - Calling get_xql_query_results_platform function.
+
+    Then:
+    - Ensure error details are retrieved.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {"status": "FAIL"}
+    mock_error_response = {"reply": "Query execution failed"}
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_info_response)
+    mocker.patch.object(client, "_http_request", return_value=mock_error_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "FAIL"
+    assert response["error_details"] == "Query execution failed"
+
+
+def test_get_xql_query_results_platform_polling_success(mocker):
+    """
+    Given:
+    - An execution_id for a query that completes successfully.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure results are returned after polling.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 60
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_results)
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == execution_id
+    assert len(response["results"]) == 1
+
+
+def test_xql_query_platform_command_no_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to False.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure execution_id is returned without polling.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+    get_results_polling_mock = mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling")
+
+    res = xql_query_platform_command(client, args)
+
+    get_results_polling_mock.assert_not_called()
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert "query_url" in res.outputs
+    assert "results" not in res.outputs
+
+
+def test_xql_query_platform_command_with_wait(mocker):
+    """
+    Given:
+    - A query with wait_for_results set to True.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure results are polled and returned.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "true"}
+    mock_execution_id = "test_exec_id"
+    mock_results = {
+        "status": "SUCCESS",
+        "execution_id": mock_execution_id,
+        "results": [{"data": "test"}],
+    }
+
+    mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform_polling", return_value=mock_results)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    res = xql_query_platform_command(client, args)
+
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["execution_id"] == mock_execution_id
+    assert res.outputs["status"] == "SUCCESS"
+    assert len(res.outputs["results"]) == 1
+
+
+def test_convert_timeframe_string_to_json_relative_time(mocker):
+    """
+    Given:
+    - A relative time string.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned timestamp is correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock datetime.utcnow to return a fixed time
+    fixed_now = datetime(2023, 1, 15, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.datetime")
+    mocker.patch("CortexPlatformCore.datetime.utcnow", return_value=fixed_now)
+
+    # Mock dateparser.parse to return a time 24 hours ago
+    time_24h_ago = datetime(2023, 1, 14, 12, 0, 0)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=time_24h_ago)
+
+    response = convert_timeframe_string_to_json("24 hours")
+
+    assert "relativeTime" in response
+    assert response["relativeTime"] == 86400000  # 24 hours in milliseconds
+
+
+def test_convert_timeframe_string_to_json_between_times(mocker):
+    """
+    Given:
+    - A time range string with 'between' keyword.
+
+    When:
+    - Calling convert_timeframe_string_to_json function.
+
+    Then:
+    - Ensure the returned from/to timestamps are correct.
+    """
+    from CortexPlatformCore import convert_timeframe_string_to_json
+    from datetime import datetime
+
+    # Mock dateparser.parse to return specific times
+    time_from = datetime(2023, 1, 1, 0, 0, 0)
+    time_to = datetime(2023, 1, 2, 12, 0, 0)
+
+    def mock_parse(time_str, settings=None):
+        if "2023-01-01" in time_str:
+            return time_from
+        elif "2023-01-02" in time_str:
+            return time_to
+        return None
+
+    mocker.patch("CortexPlatformCore.dateparser.parse", side_effect=mock_parse)
+
+    response = convert_timeframe_string_to_json("between 2023-01-01 00:00:00Z and 2023-01-02 12:00:00Z")
+
+    assert "from" in response
+    assert "to" in response
+    assert response["from"] == int(time_from.timestamp()) * 1000
+    assert response["to"] == int(time_to.timestamp()) * 1000
+
+
+def test_xql_query_platform_command_missing_query(mocker):
+    """
+    Given:
+    - Arguments without a query parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure ValueError is raised.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"wait_for_results": "false"}
+
+    with pytest.raises(ValueError, match="query is not specified"):
+        xql_query_platform_command(client, args)
+
+
+def test_xql_query_platform_command_default_timeframe(mocker):
+    """
+    Given:
+    - A query without a timeframe parameter.
+
+    When:
+    - Calling xql_query_platform_command.
+
+    Then:
+    - Ensure default timeframe of 24 hours is used.
+    """
+    from CortexPlatformCore import xql_query_platform_command, Client
+
+    client = Client(base_url="", headers={})
+    args = {"query": "dataset = xdr_data | fields *", "wait_for_results": "false"}
+    mock_execution_id = "test_exec_id"
+
+    mock_start_query = mocker.patch("CortexPlatformCore.start_xql_query_platform", return_value=mock_execution_id)
+    mocker.patch("CortexPlatformCore.convert_timeframe_string_to_json", return_value={"relativeTime": 86400000})
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://test.server"})
+
+    xql_query_platform_command(client, args)
+
+    # Verify convert_timeframe_string_to_json was called with default "24 hours"
+    assert mock_start_query.called
+
+
+def test_get_xql_query_results_platform_polling_timeout(mocker):
+    """
+    Given:
+    - An execution_id for a query that remains pending beyond timeout.
+
+    When:
+    - Calling get_xql_query_results_platform_polling function.
+
+    Then:
+    - Ensure the function returns after timeout with pending status.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform_polling, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_exec_id"
+    timeout = 1  # Very short timeout
+    mock_pending_response = {
+        "status": "PENDING",
+        "execution_id": execution_id,
+    }
+
+    mocker.patch("CortexPlatformCore.get_xql_query_results_platform", return_value=mock_pending_response)
+    mocker.patch("CortexPlatformCore.time.sleep")  # Mock sleep to avoid actual waiting
+
+    response = get_xql_query_results_platform_polling(client, execution_id, timeout)
+
+    assert response["status"] == "PENDING"
+    assert response["execution_id"] == execution_id
+
+
+def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments that trigger AI summary retrieval (single case with >1 issues).
+    WHEN:
+        The get_cases_command function is called.
+    THEN:
+        The AI summary is retrieved and applied to the case data.
+    """
+    from CortexPlatformCore import get_cases_command
+
+    mock_client = mocker.Mock()
+    # Mock get_webapp_data to return a single case with issue_count > 1
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 12345, "issue_count": 2}], "FILTER_COUNT": "1"}}
+    # Mock get_case_ai_summary
+    mock_client.get_case_ai_summary.return_value = {"reply": {"case_description": "AI Summary", "case_name": "AI Name"}}
+    # Mock map_case_format to return the case with the same ID
+    mocker.patch("CortexPlatformCore.map_case_format", return_value=[{"case_id": "12345", "issue_count": 2}])
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"case_id_list": "12345"}
+    result = get_cases_command(mock_client, args)
+
+    # Verify AI summary was called
+    mock_client.get_case_ai_summary.assert_called_once_with(12345)
+    # Verify data was updated (result[1] is the CommandResults for the cases)
+    assert result[1].outputs[0]["description"] == "AI Summary"
+    assert result[1].outputs[0]["case_name"] == "AI Name"
+
+
+def test_init_client(mocker: MockerFixture):
+    """
+    GIVEN:
+        An API type and demisto params.
+    WHEN:
+        The init_client function is called.
+    THEN:
+        A Client object is initialized with the correct base URL and headers.
+    """
+    from CortexPlatformCore import init_client
+
+    mocker.patch.object(demisto, "params", return_value={"api_key": "test_key", "proxy": True, "insecure": True, "timeout": "60"})
+
+    client = init_client("webapp")
+    assert client._base_url == "/api/webapp"
+
+    client_public = init_client("public")
+    assert client_public._base_url == "/api/webapp/public_api/v1"
+
+
+def test_verify_platform_version_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A platform version that meets the requirement.
+    WHEN:
+        The verify_platform_version function is called.
+    THEN:
+        No exception is raised.
+    """
+    from CortexPlatformCore import verify_platform_version
+
+    mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=True)
+
+    # Should not raise
+    verify_platform_version("8.13.0")
+
+
+def test_verify_platform_version_failure(mocker: MockerFixture):
+    """
+    GIVEN:
+        A platform version that does not meet the requirement.
+    WHEN:
+        The verify_platform_version function is called.
+    THEN:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import verify_platform_version, DemistoException
+
+    mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=False)
+
+    with pytest.raises(DemistoException, match="This command is not available for this platform version"):
+        verify_platform_version("8.13.0")
+
+
+def test_enhance_with_pb_details():
+    """
+    GIVEN:
+        - pb_id_to_data: A mapping of playbook IDs to their metadata (name and comment).
+        - playbook: A dictionary representing a playbook task, containing an 'id'.
+    WHEN:
+        - enhance_with_pb_details is called.
+    THEN:
+        - The playbook dictionary is updated with 'name' and 'description' from the metadata if the ID exists.
+    """
+    from CortexPlatformCore import enhance_with_pb_details
+
+    pb_id_to_data = {"pb1": {"name": "Playbook 1", "comment": "Comment 1"}, "pb2": {"name": "Playbook 2", "comment": "Comment 2"}}
+
+    # Case 1: ID exists in metadata
+    playbook1 = {"id": "pb1"}
+    enhance_with_pb_details(pb_id_to_data, playbook1)
+    assert playbook1["name"] == "Playbook 1"
+    assert playbook1["description"] == "Comment 1"
+
+    # Case 2: ID does not exist in metadata
+    playbook3 = {"id": "pb3", "name": "Original Name"}
+    enhance_with_pb_details(pb_id_to_data, playbook3)
+    assert playbook3["name"] == "Original Name"
+    assert "description" not in playbook3
+
+
+def test_postprocess_case_resolution_statuses(mocker):
+    """
+    GIVEN:
+        - A mocked client that returns playbook metadata.
+        - A response dictionary containing case tasks categorized by status.
+    WHEN:
+        - postprocess_case_resolution_statuses is called.
+    THEN:
+        - The tasks are correctly categorized, itemType is assigned, and playbook details are enhanced.
+    """
+    from CortexPlatformCore import postprocess_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
+        {"id": "pb2", "name": "Enhanced PB 2", "comment": "Enhanced Comment 2"},
+    ]
+
+    response = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": [{"id": "pb2", "taskName": "Task 2"}]},
+        "pending": {"caseTasks": [{"id": "task3", "parentdetails": {"id": "pb1"}}]},
+        "recommended": {"caseTasks": [{"id": "pb4", "taskName": "Task 4"}]},
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    assert len(result) == 4
+
+    # Verify "done" category
+    done_task = next(item for item in result if item["category"] == "done")
+    assert done_task["itemType"] == "playbook"
+    assert done_task["name"] == "Enhanced PB 1"
+    assert done_task["description"] == "Enhanced Comment 1"
+
+    # Verify "inProgress" category
+    in_progress_task = next(item for item in result if item["category"] == "inProgress")
+    assert in_progress_task["itemType"] == "playbook"
+    assert in_progress_task["name"] == "Enhanced PB 2"
+
+    # Verify "pending" category
+    pending_task = next(item for item in result if item["category"] == "pending")
+    assert pending_task["itemType"] == "playbookTask"
+    assert "parentdetails" not in pending_task
+    assert pending_task["parentPlaybook"]["name"] == "Enhanced PB 1"
+
+    # Verify "recommended" category
+    recommended_task = next(item for item in result if item["category"] == "recommended")
+    assert recommended_task["itemType"] == "playbook"
+    assert "name" not in recommended_task  # pb4 not in metadata
+
+
+def test_get_case_resolution_statuses_command(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with case IDs.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The client is called for each case ID, and CommandResults are returned with correct structure.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
+    mock_client.get_playbooks_metadata.return_value = []
+
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
+
+    args = {"case_id": "123,456"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Core.CaseResolutionStatus"
+    assert len(result.outputs) == 2
+    assert len(result.raw_response) == 2
+    assert mock_client.get_case_resolution_statuses.call_count == 2
