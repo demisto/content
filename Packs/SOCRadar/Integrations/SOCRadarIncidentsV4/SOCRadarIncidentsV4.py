@@ -67,8 +67,8 @@ class Client(BaseClient):
         alarm_sub_types: list[str] | None = None,
         alarm_type_ids: list[int] | None = None,
         excluded_alarm_type_ids: list[int] | None = None,
-        excluded_alarm_main_types: list[int] | None = None,
-        excluded_alarm_sub_types: list[int] | None = None,
+        excluded_alarm_main_types: list[str] | None = None,
+        excluded_alarm_sub_types: list[str] | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
         limit: int = 20,
@@ -165,8 +165,8 @@ class Client(BaseClient):
                     "message": response.get("message"),
                     "response_code": response.get("response_code"),
                     "data": alarms,
-                    "total_pages": total_pages,
-                    "total_records": total_records,
+                    "total_pages": int(total_pages),
+                    "total_records": int(total_records),
                     "current_page": page,
                 }
             else:
@@ -314,7 +314,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     We safely extract common fields and include full content in rawJSON.
     """
-
+    company_id = alarm.get("company_id")
     alarm_id = alarm.get("alarm_id")
     alarm_risk_level = alarm.get("alarm_risk_level", "UNKNOWN")
     alarm_asset = alarm.get("alarm_asset", "N/A")
@@ -335,7 +335,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
         tags = []
     tags_str = ",".join(str(tag) for tag in tags)
 
-    incident_name = f"SOCRadar Alarm #{alarm_id}: {alarm_main_type}"
+    incident_name = f"SOCRadar Alarm {alarm_id}: {alarm_main_type}"
     if alarm_sub_type:
         incident_name += f" - {alarm_sub_type}"
     incident_name += f" [{alarm_asset}]"
@@ -356,37 +356,38 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     details_parts = []
 
-    details_parts.append(f"🆔 Alarm ID: {alarm_id}")
-    details_parts.append(f"📊 Risk Level: {alarm_risk_level}")
-    details_parts.append(f"🎯 Asset: {alarm_asset}")
-    details_parts.append(f"📌 Status: {alarm_status}")
+    details_parts.append(f"Alarm ID: {alarm_id}")
+    details_parts.append(f"Risk Level: {alarm_risk_level}")
+    details_parts.append(f"Asset: {alarm_asset}")
+    details_parts.append(f"Status: {alarm_status}")
+    details_parts.append(f"Company ID: {company_id}")
 
     if alarm_main_type:
-        details_parts.append(f"🔍 Type: {alarm_main_type}")
+        details_parts.append(f"Type: {alarm_main_type}")
     if alarm_sub_type:
         details_parts.append(f"   Sub-Type: {alarm_sub_type}")
 
     if entity_info:
-        details_parts.append("\n🔗 Related Entities:")
+        details_parts.append("\n Related Entities:")
         for info in entity_info:
             details_parts.append(f"  • {info}")
 
     if alarm_text:
-        details_parts.append("\n📝 Alarm Description:")
+        details_parts.append("\n Alarm Description:")
         details_parts.append(alarm_text)
 
     if tags:
-        details_parts.append(f"\n🏷️ Tags: {', '.join(str(tag) for tag in tags)}")
+        details_parts.append(f"\n Tags: {', '.join(str(tag) for tag in tags)}")
 
     full_details = "\n".join(details_parts)
 
     incident = {
         "name": incident_name,
         "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
-        "rawJSON": json.dumps(alarm),  # Full alarm data including variable content structure
+        "rawJSON": json.dumps(alarm), 
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
-        "dbotMirrorId": str(alarm_id) if alarm_id else None,  # Use alarm_id as incident mirror ID
+        "dbotMirrorId": str(alarm_id) if alarm_id else None, 
         "CustomFields": {
             "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
             "socradarstatus": alarm_status,
@@ -396,7 +397,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
         },
     }
 
-    demisto.debug(f"[SOCRadar] Created incident: Alarm #{alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
+    demisto.debug(f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
 
     return incident
 
@@ -847,7 +848,7 @@ def main() -> None:
             excluded_alarm_type_ids = None
             if excluded_alarm_type_ids_str:
                 try:
-                    excluded_alarm_type_ids = [int(x.strip()) for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
+                    excluded_alarm_type_ids = [x.strip() for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar] Invalid excluded_alarm_type_ids format: {excluded_alarm_type_ids_str}")
 
@@ -855,7 +856,7 @@ def main() -> None:
             excluded_alarm_sub_types = None
             if excluded_alarm_sub_types_str:
                 try:
-                    excluded_alarm_sub_types = [int(x.strip()) for x in excluded_alarm_sub_types_str.split(",") if x.strip()]
+                    excluded_alarm_sub_types = [x.strip() for x in excluded_alarm_sub_types_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar] Invalid excluded_alarm_sub_types format: {excluded_alarm_sub_types_str}")
 
@@ -863,7 +864,7 @@ def main() -> None:
             excluded_alarm_main_types = None
             if excluded_alarm_main_types_str:
                 try:
-                    excluded_alarm_main_types = [int(x.strip()) for x in excluded_alarm_main_types_str.split(",") if x.strip()]
+                    excluded_alarm_main_types = [x.strip() for x in excluded_alarm_main_types_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar] Invalid excluded_alarm_main_types format: {excluded_alarm_main_types_str}")
 
