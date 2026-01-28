@@ -3230,7 +3230,7 @@ class EC2:
 
         # Format output data
         readable_data = []
-        for monitoring in instance_monitorings: # empty commit
+        for monitoring in instance_monitorings:
             readable_data.append(
                 {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
             )
