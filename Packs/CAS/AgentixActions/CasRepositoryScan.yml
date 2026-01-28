@@ -1,0 +1,45 @@
+commonfields:
+  id: CasRepositoryScan
+  version: -1
+name: CasRepositoryScan
+display: CAS - Trigger Repository Scan
+description: Trigger Repository Periodic Scan
+category: Utilities
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture
+tags:
+  - Utilities
+  - ASPM
+  - Repository
+  - Scan
+args:
+  - name: repository_ids
+    underlyingargname: repository_ids
+    description: >
+      A comma-separated list of repository IDs to trigger scan on.
+    type: string
+    required: true
+  - name: scan_git_history
+    underlyingargname: scan_git_history
+    type: string
+    description: >
+      Options: true, false.
+    required: false
+    defaultvalue: "true"
+outputs:
+  - underlyingoutputcontextpath: Cas.RepositoryScan.scan_id
+    description: The scan IDs that triggered
+    type: Number
+    name: Cas.RepositoryScan.scan_id
+underlyingcontentitem:
+  id: AppSecRepositoryScan
+  name: AppSecRepositoryScan
+  type: script
+  version: -1
+  command: ""
+

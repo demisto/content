@@ -1,0 +1,36 @@
+commonfields:
+  id: AppSecRepositoryScan
+  version: -1
+name: AppSecRepositoryScan
+script: ''
+type: python
+tags:
+- Utilities
+comment: Trigger Repository Periodic Scan
+enabled: true
+args:
+- name: repository_ids
+  description: List of repository asset IDs.
+  isArray: true
+  required: true
+- name: scan_git_history
+  description: Enable git history scanning for repository. This argument only relevant when GIT_HISTORY scanner is enabled, default is true.
+  type: boolean
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+outputs:
+- contextPath: Cas.RepositoryScan.scan_id
+  isArray: true
+  description: The scan IDs that triggered
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+isInternal: false
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
