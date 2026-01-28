@@ -120,10 +120,6 @@
         "type": "string",
         "is_array": false
       },
-      "workload_network_interface_ipv6_address": {
-        "type": "string",
-        "is_array": false
-      },
       "destination_port": {
         "type": "string",
         "is_array": false
