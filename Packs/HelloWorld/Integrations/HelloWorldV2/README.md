@@ -12,11 +12,12 @@ This is the Hello World v2 integration for getting started.
 | Use system proxy settings |  | False |
 | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\). | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
+| First fetch time | The timestamp from which to start fetching alerts, expressed as relative time \(for example, '3 hours ago'\) or as absolute time in the ISO 8601 format \(for example, '2025-12-01T00:00:00Z'\). Default is "3 days". Supported in Cortex XSOAR only. | False |
+| Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default value is high. | False |
 | Fetch incidents | Fetch HelloWorld alerts as incidents in Cortex XSOAR. Supported in Cortex XSOAR only. | False |
 | Maximum number of incidents per fetch | Default value is 10. Supported in Cortex XSOAR only. | False |
 | Fetch events | Fetch HelloWorld alerts as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
 | Maximum number of events per fetch | Default value is 1000. Supported in Cortex XSIAM only. | False |
-| Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default value is high. | False |
 | Fetch assets and vulnerabilities | Fetch assets and vulnerabilities found in the HelloWorld environment. Supported in Cortex XSIAM only. | False |
 
 ## Commands
@@ -353,7 +354,7 @@ Retrieves alerts from the HelloWorld API.  Use this command for development and 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | severity | The severity by which to filter the alerts. Possible values are: low, medium, high, critical. | Required |
-| offset | The alert ID (offset) from which to start retrieving. Default is 0. | Optional |
+| start_time | The start time for retrieving alerts, expressed as relative time \(for example, '3 hours ago'\) or as absolute time in the ISO 8601 format \(for example, '2025-12-01T00:00:00Z'\). | Optional |
 | limit | Maximum number of alerts to retrieve. Default is 10. | Optional |
 | should_push_events | Whether to push events to XSIAM (only works on XSIAM tenants). Possible values are: true, false. Default is false. | Optional |
 

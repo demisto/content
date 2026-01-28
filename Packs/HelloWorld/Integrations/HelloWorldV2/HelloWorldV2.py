@@ -1,9 +1,10 @@
-# ruff: noqa: F401
+# ruff: noqa: F401,N805
 import asyncio
 import json
 import time
 import traceback
 
+from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
 from collections.abc import Awaitable
@@ -333,6 +334,7 @@ class HelloWorldParams(BaseParams):
     # Fetch events / incidents parameters
     is_fetch_events: bool | None = Field(default=False, alias="isFetchEvents")  # access via abstracted `is_fetch` property
     is_fetch_incidents: bool | None = Field(default=False, alias="isFetch")
+    first_fetch: str = "3 days"  # access via abstracted and normalized `first_fetch_time` property
     max_events_fetch: int = Field(default=1000, alias="max_events_fetch")  # access via abstracted `max_fetch` property
     max_incidents_fetch: int = Field(default=10, alias="max_incidents_fetch")
     severity: HelloWorldSeverity = HelloWorldSeverity.HIGH
@@ -349,9 +351,18 @@ class HelloWorldParams(BaseParams):
         return self.credentials.password
 
     @property
+    def first_fetch_time(self) -> str:
+        """Convert first_fetch to ISO 8601 timestamp string."""
+        if SYSTEM.can_send_events:
+            demisto.debug("[Param validation] Setting first fetch internally to last 1 minute.")
+            return (datetime.now(tz=UTC) - timedelta(minutes=1)).isoformat()
+        else:
+            return cast(datetime, arg_to_datetime(self.first_fetch)).isoformat()
+
+    @property
     def is_fetch(self) -> bool | None:
         """Abstract getter and validator the 'Fetch incidents / events' parameters, depending on system capabilities."""
-        return self.is_fetch_events if SYSTEM.can_send_events else self.is_fetch_events
+        return self.is_fetch_events if SYSTEM.can_send_events else self.is_fetch_incidents
 
     @property
     def max_fetch(self) -> int:
@@ -370,7 +381,7 @@ class HelloWorldParams(BaseParams):
         return max_fetch
 
     @validator("url", allow_reuse=True)
-    def clean_url(cls, v):  # noqa: N805
+    def clean_url(cls, v):
         """Remove trailing forward slash from the 'URL' parameter"""
         return v.rstrip("/")
 
@@ -508,7 +519,7 @@ class HelloWorldClient(ContentClient):
 
         return f"Hello {name}"
 
-    def get_alert_list(self, limit: int, severity: HelloWorldSeverity | None = None, id_offset: int = 0) -> list[dict]:
+    def get_alert_list(self, limit: int, severity: HelloWorldSeverity | None = None, start_time: str | None = None) -> list[dict]:
         """Get a list of alerts (dummy response for demonstration purposes).
 
         For real API calls, see the `send_example_api_request` method.
@@ -516,7 +527,7 @@ class HelloWorldClient(ContentClient):
         Args:
             limit (int): The number of items to generate.
             severity (HelloWorldSeverity | None): The severity value of the items returned.
-            id_offset (int): The ID of the last fetched alert for pagination.
+            start_time (str | None): ISO 8601 timestamp to fetch alerts from (inclusive).
 
         Returns:
             list[dict]: Dummy data of items as it would be returned from the API.
@@ -524,18 +535,21 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/alerts"
-        # # Use `assign_params` params to remove potentially "empty" values (e.g. severity)
+        # # Use `assign_params` to remove potentially "empty" values (e.g. severity, start_time)
         # params = assign_params(
         #   limit=limit,
         #   severity=severity,
-        #   query=f"id>{id_offset}",
+        #   start_time=start_time,
         # )
         # return self.get(endpoint, params=params)
 
+        # Assume API returns results from the last 24 hours if start_time is not specified
+        base_time = arg_to_datetime(start_time) or (datetime.now(tz=UTC) - timedelta(hours=24))
+
         mock_response: list[dict] = []
         for mock_number in range(limit):
-            mock_alert_time = datetime(2026, 1, 15) + timedelta(seconds=id_offset + mock_number)
-            mock_alert_id = id_offset + mock_number + 1
+            mock_alert_time = base_time + timedelta(seconds=mock_number)
+            mock_alert_id = int(mock_alert_time.timestamp())
             is_even = mock_alert_id % 2 == 0
             item = MOCK_ALERT.format(
                 id=mock_alert_id,
@@ -775,7 +789,14 @@ def test_module(client: HelloWorldClient, params: HelloWorldParams) -> str:
 
         if params.is_fetch:
             demisto.debug("[Testing] Testing fetch flow.")
-            fetch_alerts(client, max_fetch=1, last_run=HelloWorldLastRun(), severity=params.severity, should_push=False)
+            fetch_alerts(
+                client,
+                max_fetch=1,
+                last_run=HelloWorldLastRun(),
+                severity=params.severity,
+                first_fetch_time=params.first_fetch_time,
+                should_push=False,
+            )
             demisto.debug("[Testing] Fetch flow test passed")
 
         if params.is_fetch_assets:
@@ -853,8 +874,10 @@ class HelloWorldLastRun(ContentBaseModel):
     Ensures no data is missed or duplicated between invocations.
     """
 
-    # The ID of the last fetched alert to use for offsetting.
-    id_offset: int = 0
+    # ISO 8601 timestamp of the last fetched alert
+    start_time: str | None = None
+    # List of alert IDs from the last fetch time to prevent duplicates
+    last_alert_ids: list[int] = []
 
     def set(self):
         """Save the current state for the next fetch-incidents or fetch-events execution."""
@@ -930,8 +953,9 @@ def format_as_events(
     events: list[dict[str, Any]] = []
     for alert in alerts:
         event = alert.copy()
-        event_time = cast(datetime, arg_to_datetime(event[time_field]))
-        event[EventsDatasetConfigs.TIME_KEY.value] = event_time.strftime(EventsDatasetConfigs.TIME_FORMAT.value)
+        if raw_event_time := event.get(time_field):
+            event_time = cast(datetime, arg_to_datetime(raw_event_time))
+            event[EventsDatasetConfigs.TIME_KEY.value] = event_time.strftime(EventsDatasetConfigs.TIME_FORMAT.value)
         # Important to declare source log type, especially if multiple event types are fetched
         event[EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] = "Alert"
         events.append(event)
@@ -957,10 +981,11 @@ def create_events(alerts: list[dict]) -> None:
 
 async def get_alert_list(
     client: HelloWorldClient,
-    start_offset: int,
+    start_time: str | None,
     severity: HelloWorldSeverity,
     limit: int,
     should_push: bool,
+    last_alert_ids: list[int] | None = None,
 ) -> list[dict]:
     """Fetch raw alerts from the API in batches and optionally create XSOAR incidents or XSIAM events.
 
@@ -971,54 +996,68 @@ async def get_alert_list(
 
     Args:
         client (HelloWorldClient): HelloWorld client instance for API calls.
-        start_offset (int): Starting offset for fetching alerts.
+        start_time (str | None): ISO 8601 timestamp to fetch alerts from (inclusive).
         severity (HelloWorldSeverity): Severity filter for alerts.
         limit (int): Maximum total number of alerts to fetch.
         should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
+        last_alert_ids (list[int] | None): Optional list of alert IDs from the last fetch time to prevent duplicates.
 
     Returns:
-        list[dict]: List of all raw alerts fetched.
+        list[dict]: List of unique alerts fetched.
     """
-    demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_offset=}, and {limit=}.")
+    demisto.debug(f"[Get alert list] Starting to fetch alerts with {severity=}, {start_time=}, and {limit=}.")
 
-    all_alerts: list[dict] = []
+    unique_alerts: list[dict] = []
     async_push_tasks: list[Awaitable] = []
-    offset: int = start_offset
+    current_start_time: str | None = start_time
+    all_fetched_ids: set[int] = set(last_alert_ids or [])
 
-    while len(all_alerts) < limit:
-        remaining_alerts_count = limit - len(all_alerts)
+    while len(unique_alerts) < limit:
+        # Send API request
+        remaining_alerts_count = limit - len(unique_alerts)
         batch_limit = min(500, remaining_alerts_count)
-        demisto.debug(f"[Get alert list] Request alerts batch using {offset=} and {batch_limit=}.")
-        alerts_batch = client.get_alert_list(limit=batch_limit, id_offset=offset, severity=severity)
-        all_alerts.extend(alerts_batch)
-        offset += len(alerts_batch)
+        demisto.debug(f"[Get alert list] Request alerts batch using {current_start_time=} and {batch_limit=}.")
+        alerts_batch = client.get_alert_list(limit=batch_limit, start_time=current_start_time, severity=severity)
 
-        if should_push:
+        # Deduplicate alerts
+        unique_alerts_batch: list[dict] = []
+        for alert in alerts_batch:
+            alert_id = alert["id"]
+            if alert["id"] in all_fetched_ids:
+                demisto.debug(f"[Get alert list] Skipping duplicate {alert_id=}.")
+                continue
+            unique_alerts.append(alert)
+            unique_alerts_batch.append(alert)
+            all_fetched_ids.add(alert_id)
+
+        # Create XSOAR incidents / XSIAM events
+        if should_push and unique_alerts_batch:
             if SYSTEM.can_send_events:
-                demisto.debug(
-                    f"[Get alert list] Creating asynchronous XSIAM events sending from {len(alerts_batch)} alerts batch."
-                )
-                async_push_tasks.append(asyncio.to_thread(create_events, alerts_batch))
+                demisto.debug(f"[Get alert list] Creating {len(unique_alerts_batch)} XSIAM events asynchronously.")
+                async_push_tasks.append(asyncio.to_thread(create_events, unique_alerts_batch))
             else:
-                demisto.debug(
-                    f"[Get alert list] Calling synchronous XSOAR incidents creation flow from {len(alerts_batch)} alerts batch."
-                )
-                create_incidents(alerts_batch)
+                demisto.debug(f"[Get alert list] Creating {len(unique_alerts_batch)} XSOAR incidents synchronously.")
+                create_incidents(unique_alerts_batch)
 
-        # If the number of returned alerts is less than the requested batch limit, no more new alerts
-        # are available for fetching
-        if len(alerts_batch) < batch_limit:
-            demisto.debug(f"[Get alert list] No more alerts currently available for fetching after {offset=}. Breaking...")
+        # Stop if we have reached the limit
+        if len(unique_alerts) >= limit:
+            demisto.debug(f"[Get alert list] Reached {limit=}. Breaking...")
             break
 
+        # Stop if the returned alerts count is less than the requested batch limit (no more new alerts are currently available)
+        if len(alerts_batch) < batch_limit:
+            demisto.debug("[Get alert list] No more alerts currently available for fetching. Breaking...")
+            break
+
+        # Update start_time to the last alert's time for next batch
+        current_start_time = alerts_batch[-1]["date"]
+
     if async_push_tasks:
-        demisto.debug(f"[Get alert list] Awaiting XSIAM events sending to finish for all {len(all_alerts)} alerts.")
+        demisto.debug(f"[Get alert list] Awaiting to finish sending all {len(unique_alerts)} XSIAM events.")
         await asyncio.gather(*async_push_tasks)
 
-    demisto.debug(
-        f"[Get alert list] Finished fetching {len(all_alerts)} total alerts with {severity=}, {start_offset=}, and {limit=}."
-    )
-    return all_alerts
+    demisto.debug(f"[Get alert list] Finished fetching {len(unique_alerts)} alerts with {severity=}, {start_time=}, {limit=}.")
+    return unique_alerts
 
 
 def fetch_alerts(
@@ -1026,6 +1065,7 @@ def fetch_alerts(
     last_run: HelloWorldLastRun,
     severity: HelloWorldSeverity,
     max_fetch: int,
+    first_fetch_time: str,
     should_push: bool = True,
 ) -> HelloWorldLastRun:
     """Retrieve new alerts and format them as XSOAR incidents or XSIAM events.
@@ -1035,25 +1075,37 @@ def fetch_alerts(
         last_run (HelloWorldLastRun): State from the last fetch.
         severity (HelloWorldSeverity): Severity of the alerts to search for.
         max_fetch (int): Maximum number of alerts per fetch.
+        first_fetch_time (str): ISO 8601 timestamp for first fetch if no last_run exists.
         should_push (bool): Whether to create incidents (XSOAR) or events (XSIAM).
 
     Returns:
         HelloWorldLastRun: Next run state for the next fetch.
     """
-    last_id_offset = last_run.id_offset
-    demisto.debug(f"[Fetch Alerts] Starting fetch alerts with {severity=} and {last_id_offset=} using {max_fetch=}.")
+    start_time = last_run.start_time or first_fetch_time
+    last_alert_ids = last_run.last_alert_ids
+    demisto.debug(
+        f"[Fetch Alerts] Starting fetch alerts with {severity=}, {start_time=}, and {last_alert_ids=} using {max_fetch=}."
+    )
 
     alerts = asyncio.run(
-        get_alert_list(client, start_offset=last_id_offset, severity=severity, limit=max_fetch, should_push=should_push)
+        get_alert_list(
+            client,
+            start_time=start_time,
+            severity=severity,
+            limit=max_fetch,
+            should_push=should_push,
+            last_alert_ids=last_alert_ids,
+        )
     )
     if not alerts:
-        demisto.debug(f"[Fetch Alerts] No new alerts found. Keeping {last_id_offset=}.")
+        demisto.debug(f"[Fetch Alerts] No new alerts found. Keeping {start_time=}.")
         return last_run
 
-    next_id_offset = alerts[-1]["id"]
-    next_run = HelloWorldLastRun(id_offset=next_id_offset)
+    next_start_time = alerts[-1]["date"]
+    latest_alert_ids = [alert["id"] for alert in alerts if alert["date"] == next_start_time]
+    next_run = HelloWorldLastRun(start_time=next_start_time, last_alert_ids=latest_alert_ids)
 
-    demisto.debug(f"[Fetch Alerts] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_id_offset=}.")
+    demisto.debug(f"[Fetch Alerts] Completed, fetched {len(alerts)} HelloWorld alerts. Updating {next_start_time=}.")
     return next_run
 
 
@@ -1428,7 +1480,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
     severity: HelloWorldSeverity | None = None
 
     @root_validator(allow_reuse=True)
-    def check_alert_id_or_severity(cls, values: dict):  # noqa: N805
+    def check_alert_id_or_severity(cls, values: dict):
         has_alert_id = bool(values.get("alert_id"))
         has_severity = bool(values.get("severity"))
 
@@ -1481,12 +1533,19 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
     """Arguments for helloworld-get-events command."""
 
     severity: HelloWorldSeverity
-    offset: int = 0
+    start_time: str | None = None
     limit: int = 10
     should_push_events: bool = False
 
+    @validator("start_time", allow_reuse=True)
+    def validate_start_time(cls, v) -> str | None:
+        """Convert start_time to ISO 8601 timestamp string."""
+        if v:
+            return cast(datetime, arg_to_datetime(v)).isoformat()  # Raises ValueError / AttributeError if invalid
+        return None
+
     @validator("should_push_events", allow_reuse=True)
-    def validate_should_push_events(cls, v):  # noqa: N805
+    def validate_should_push_events(cls, v):
         """Ensure should_push_events is valid for the current tenant."""
         should_push_events = argToBoolean(v)
         if should_push_events and not SYSTEM.can_send_events:
@@ -1502,18 +1561,22 @@ def get_events_command(client: HelloWorldClient, args: HelloWorldGetEventsArgs) 
 
     Args:
         client (HelloWorldClient): HelloWorld client to use.
-        args (HelloWorldGetEventsArgs): Validated command arguments containing severity, offset, limit,
+        args (HelloWorldGetEventsArgs): Validated command arguments containing severity, start_time, limit,
                                         and should_push_events.
 
     Returns:
         CommandResults: CommandResults with collected events.
     """
-    demisto.debug(f"[Get events] Getting events {args.severity=}, {args.offset=}, and {args.limit=}.")
+    demisto.debug(f"[Get events] Getting events {args.severity=}, {args.start_time=}, and {args.limit=}.")
 
     # Fetch events using the simplified approach
     events = asyncio.run(
         get_alert_list(
-            client=client, limit=args.limit, start_offset=args.offset, severity=args.severity, should_push=args.should_push_events
+            client=client,
+            start_time=args.start_time,
+            severity=args.severity,
+            limit=args.limit,
+            should_push=args.should_push_events,
         )
     )
 
@@ -1533,7 +1596,7 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
     note_text: str
 
     @validator("alert_id", allow_reuse=True)
-    def validate_alert_id(cls, v):  # noqa: N805
+    def validate_alert_id(cls, v):
         """Ensure alert_id is a valid positive integer."""
         if v is None or v <= 0:
             raise ValueError("[Args validation] Please provide a valid 'alert_id' argument (must be positive).")
@@ -1953,7 +2016,13 @@ def main() -> None:  # pragma: no cover
                 # Get last_run from the last time was invoked
                 demisto.debug("[Main] Starting fetch")
                 last_run = execution.last_run
-                next_run = fetch_alerts(client, last_run, severity=params.severity, max_fetch=params.max_fetch)
+                next_run = fetch_alerts(
+                    client,
+                    last_run,
+                    severity=params.severity,
+                    max_fetch=params.max_fetch,
+                    first_fetch_time=params.first_fetch_time,
+                )
                 # Save next_run for the next time fetch is invoked
                 next_run.set()
                 demisto.debug("[Main] fetch completed")

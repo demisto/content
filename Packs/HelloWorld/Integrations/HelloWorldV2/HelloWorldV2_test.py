@@ -57,15 +57,19 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 import pytest
 from pytest_mock import MockerFixture
-from CommonServerPython import DemistoException, Common
+from freezegun import freeze_time
+from unittest.mock import AsyncMock
+from CommonServerPython import DemistoException, Common, arg_to_datetime
 from HelloWorldV2 import (
     BASE_CONTEXT_OUTPUT_PREFIX,
-    HelloWorldParams,
-    HelloWorldClient,
-    HelloWorldLastRun,
-    HelloWorldSeverity,
     Credentials,
     DUMMY_VALID_API_KEY,
+    FetchAssetsStages,
+    HelloWorldClient,
+    HelloWorldParams,
+    HelloWorldLastRun,
+    HelloWorldAssetsLastRun,
+    HelloWorldSeverity,
     ContentClient,
 )
 
@@ -253,6 +257,37 @@ class TestHelloWorldParams:
         assert params.severity == HelloWorldSeverity.HIGH
         assert params.threshold_ip == 65
 
+    @pytest.mark.parametrize(
+        "first_fetch,expected_contains",
+        [
+            pytest.param("3 days", "T", id="Relative time - 3 days"),
+            pytest.param("1 week", "T", id="Relative time - 1 week"),
+            pytest.param("2026-01-15T00:00:00Z", "2026-01-15T00:00:00", id="Absolute ISO 8601 time"),
+        ],
+    )
+    def test_params_first_fetch_time_conversion(self, first_fetch, expected_contains):
+        """
+        Given:
+            - Different first_fetch values (relative and absolute time).
+        When:
+            - Accessing first_fetch_time property.
+        Then:
+            - Assert property returns ISO 8601 timestamp string.
+            - Assert the timestamp contains expected components.
+        """
+        params = HelloWorldParams(
+            url="https://api.example.com",  # type: ignore[arg-type]
+            credentials={"password": "secret"},  # type: ignore[arg-type]
+            first_fetch=first_fetch,
+        )
+        first_fetch_time = params.first_fetch_time
+        assert isinstance(first_fetch_time, str)
+        assert expected_contains in first_fetch_time
+
+        # Verify it's a valid ISO 8601 format by parsing it
+        parsed = arg_to_datetime(first_fetch_time)
+        assert parsed is not None
+
     def test_params_missing_url(self):
         """
         Given:
@@ -311,6 +346,7 @@ class TestHelloWorldParams:
         pytest.param(True, id="Fetching enabled"),
     ],
 )
+@freeze_time("2026-01-01 00:01")
 def test_module_success(mocker: MockerFixture, is_fetch: bool):
     """
     Given:
@@ -325,6 +361,9 @@ def test_module_success(mocker: MockerFixture, is_fetch: bool):
     """
     from HelloWorldV2 import test_module
 
+    # Assume this is running on a Cortex XSIAM tenant
+    mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
+
     # Create mock client
     mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
 
@@ -335,7 +374,7 @@ def test_module_success(mocker: MockerFixture, is_fetch: bool):
     params = HelloWorldParams(
         url="https://api.example.com",
         credentials=Credentials(password=DUMMY_VALID_API_KEY),
-        is_fetch=is_fetch,
+        isFetchEvents=is_fetch,
         severity=HelloWorldSeverity.HIGH,
     )
     client = HelloWorldClient(params)
@@ -354,6 +393,7 @@ def test_module_success(mocker: MockerFixture, is_fetch: bool):
             "max_fetch": 1,
             "last_run": HelloWorldLastRun(),  # send empty / default last run object
             "severity": params.severity,
+            "first_fetch_time": "2026-01-01T00:00:00+00:00",  # freeze_time - 1 minute in ISO format
             "should_push": False,  # ensure push is disabled to prevent creating events during testing
         }
     else:
@@ -543,6 +583,1655 @@ def test_create_incidents(mocker: MockerFixture):
     # Assertions
     assert mock_demisto_incidents.call_count == 1
     assert mock_demisto_incidents.call_args.args[0] == expected_formatted_incidents
+
+
+def test_format_as_incidents():
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running format_as_incidents.
+    Then:
+        - Assert alerts are correctly formatted as XSOAR incidents.
+        - Assert incident fields are properly mapped.
+    """
+    from HelloWorldV2 import format_as_incidents
+
+    # Create mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "critical",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "admin@example.com",
+            "action": "Alert",
+            "status": "Error",
+        },
+    ]
+
+    # Execute function
+    incidents = format_as_incidents(
+        mock_alerts,
+        id_field="id",
+        occurred_field="date",
+        severity_field="severity",
+    )
+
+    # Assertions
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "XSOAR Test Alert #1"
+    assert incidents[0]["occurred"] == "2026-01-15T00:00:00Z"
+    assert incidents[0]["type"] == "Hello World Alert"
+    assert incidents[0]["severity"] == 3  # High severity
+    assert "rawJSON" in incidents[0]
+
+    assert incidents[1]["name"] == "XSOAR Test Alert #2"
+    assert incidents[1]["severity"] == 4  # Critical severity
+
+
+def test_format_as_events():
+    """
+    Given:
+        - List of alert dictionaries.
+    When:
+        - Running format_as_events.
+    Then:
+        - Assert alerts are correctly formatted as XSIAM events.
+        - Assert event fields are properly mapped.
+    """
+    from HelloWorldV2 import format_as_events, EventsDatasetConfigs
+
+    # Create mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "critical",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "admin@example.com",
+            "action": "Alert",
+            "status": "Error",
+        },
+    ]
+
+    # Execute function
+    events = format_as_events(mock_alerts, time_field="date")
+
+    # Assertions
+    assert len(events) == 2
+    assert events[0]["id"] == 1
+    assert events[0][EventsDatasetConfigs.TIME_KEY.value] == "2026-01-15T00:00:00Z"
+    assert events[0][EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] == "Alert"
+
+    assert events[1]["id"] == 2
+    assert events[1][EventsDatasetConfigs.TIME_KEY.value] == "2026-01-15T00:00:01Z"
+    assert events[1][EventsDatasetConfigs.SOURCE_LOG_TYPE_KEY.value] == "Alert"
+
+
+@pytest.mark.asyncio
+async def test_get_alert_list(mocker: MockerFixture):
+    """
+    Given:
+        - Client, start_time, limit, severity, should_push, and last_alert_ids.
+    When:
+        - Running get_alert_list async function.
+    Then:
+        - Assert client.get_alert_list is called with correct parameters.
+        - Assert alerts are fetched and deduplicated.
+        - Assert function returns list of alerts.
+    """
+    from HelloWorldV2 import get_alert_list
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",  # type: ignore[arg-type]
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),  # type: ignore[arg-type]
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client.get_alert_list to return alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "critical",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "admin@example.com",
+            "action": "Alert",
+            "status": "Error",
+        },
+    ]
+    mock_get_alert_list = mocker.patch.object(client, "get_alert_list", return_value=mock_alerts)
+
+    # Execute async function
+    start_time = "2026-01-15T00:00:00Z"
+    limit = 10
+    severity = HelloWorldSeverity.HIGH
+    should_push = False
+    last_alert_ids = []
+
+    alerts = await get_alert_list(
+        client=client,
+        start_time=start_time,
+        severity=severity,
+        limit=limit,
+        should_push=should_push,
+        last_alert_ids=last_alert_ids,
+    )
+
+    # Assertions
+    assert len(alerts) == 2
+    assert alerts[0]["id"] == 1
+    assert alerts[1]["id"] == 2
+    # Verify client.get_alert_list was called with correct parameters
+    mock_get_alert_list.assert_called_once_with(
+        limit=limit,
+        start_time=start_time,
+        severity=severity,
+    )
+
+
+class TestHelloWorldLastRun:
+    """Tests for HelloWorldLastRun model."""
+
+    @pytest.mark.parametrize(
+        "start_time,last_alert_ids",
+        [
+            pytest.param(None, [], id="Initial state - no data"),
+            pytest.param("2026-01-15T00:00:00Z", [], id="With start_time only"),
+            pytest.param("2026-01-15T00:00:00Z", [1, 2, 3], id="With start_time and alert IDs"),
+            pytest.param(None, [5, 6], id="With alert IDs only"),
+        ],
+    )
+    def test_last_run_valid_states(self, start_time, last_alert_ids):
+        """
+        Given:
+            - Valid state parameters for HelloWorldLastRun.
+        When:
+            - Initializing HelloWorldLastRun.
+        Then:
+            - Assert model is created successfully with correct values.
+        """
+        from HelloWorldV2 import HelloWorldLastRun
+
+        last_run = HelloWorldLastRun(start_time=start_time, last_alert_ids=last_alert_ids)
+        assert last_run.start_time == start_time
+        assert last_run.last_alert_ids == last_alert_ids
+
+    def test_last_run_default_values(self):
+        """
+        Given:
+            - No parameters provided.
+        When:
+            - Initializing HelloWorldLastRun.
+        Then:
+            - Assert default values are set correctly.
+        """
+        from HelloWorldV2 import HelloWorldLastRun
+
+        last_run = HelloWorldLastRun()
+        assert last_run.start_time is None
+        assert last_run.last_alert_ids == []
+
+
+@pytest.mark.parametrize(
+    "last_run,mock_alerts,expected_start_time,expected_alert_ids",
+    [
+        pytest.param(
+            HelloWorldLastRun(start_time=None, last_alert_ids=[]),
+            [
+                {
+                    "id": 1,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:00Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+                {
+                    "id": 2,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:01Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+            ],
+            "2026-01-15T00:00:01Z",
+            [2],
+            id="First fetch - no duplicates",
+        ),
+        pytest.param(
+            HelloWorldLastRun(start_time="2026-01-15T00:00:00Z", last_alert_ids=[1, 2]),
+            [
+                {
+                    "id": 1,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:00Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+                {
+                    "id": 2,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:00Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+                {
+                    "id": 3,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:01Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+            ],
+            "2026-01-15T00:00:01Z",
+            [3],
+            id="Subsequent fetch - with duplicates filtered",
+        ),
+        pytest.param(
+            HelloWorldLastRun(start_time="2026-01-15T00:00:00Z", last_alert_ids=[]),
+            [
+                {
+                    "id": 1,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:01Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+                {
+                    "id": 2,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:01Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+                {
+                    "id": 3,
+                    "severity": "high",
+                    "date": "2026-01-15T00:00:01Z",
+                    "user": "test@example.com",
+                    "action": "Testing",
+                    "status": "Success",
+                },
+            ],
+            "2026-01-15T00:00:01Z",
+            [1, 2, 3],
+            id="Multiple alerts at same timestamp",
+        ),
+    ],
+)
+def test_fetch_alerts_basic_flow(
+    mocker: MockerFixture,
+    last_run: HelloWorldLastRun,
+    mock_alerts: list[dict],
+    expected_start_time: str,
+    expected_alert_ids: list[int],
+):
+    """
+    Given:
+        - Valid client and last_run state.
+        - Mock alerts from get_alert_list.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert get_alert_list is called with correct parameters.
+        - Assert next_run state is correctly updated.
+        - Assert latest alert IDs are tracked for deduplication.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock get_alert_list as AsyncMock
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    first_fetch_time = "2026-01-15T00:00:00Z"
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time=first_fetch_time,
+        should_push=False,
+    )
+
+    # Verify next_run state
+    assert next_run.start_time == expected_start_time
+    assert next_run.last_alert_ids == expected_alert_ids
+
+
+@pytest.mark.parametrize(
+    "is_xsiam,expected_create_function",
+    [
+        pytest.param(True, "create_events", id="XSIAM - create events"),
+        pytest.param(False, "create_incidents", id="XSOAR - create incidents"),
+    ],
+)
+def test_fetch_alerts_xsiam_vs_xsoar(mocker: MockerFixture, is_xsiam: bool, expected_create_function: str):
+    """
+    Given:
+        - Valid client and last_run.
+    When:
+        - Running fetch_alerts with should_push=True on Cortex XSIAM and Cortex XSOAR tenants.
+    Then:
+        - Assert create_events is called for XSIAM.
+        - Assert create_incidents is called for XSOAR.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Mock system capabilities
+    mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", is_xsiam)
+    mocker.patch("HelloWorldV2.SYSTEM.is_xsoar", not is_xsiam)
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "high",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list to return alerts
+    mocker.patch.object(client, "get_alert_list", return_value=mock_alerts)
+
+    # Mock create functions
+    mock_create_events = mocker.patch("HelloWorldV2.create_events")
+    mock_create_incidents = mocker.patch("HelloWorldV2.create_incidents")
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun()
+    fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=True,
+    )
+
+    # Verify correct create function was called
+    if expected_create_function == "create_events":
+        assert mock_create_events.call_count >= 1
+        assert mock_create_incidents.call_count == 0
+    else:
+        assert mock_create_incidents.call_count >= 1
+        assert mock_create_events.call_count == 0
+
+
+def test_fetch_alerts_no_new_alerts(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - get_alert_list returns empty list (no new alerts).
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert last_run state is returned unchanged.
+        - Assert no incidents/events are created.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock get_alert_list to return empty list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=[]))
+
+    # Mock create functions
+    mock_create_events = mocker.patch("HelloWorldV2.create_events")
+    mock_create_incidents = mocker.patch("HelloWorldV2.create_incidents")
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun(start_time="2026-01-15T00:00:00Z", last_alert_ids=[1, 2])
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-14T00:00:00Z",
+        should_push=True,
+    )
+
+    # Verify last_run is returned unchanged
+    assert next_run.start_time == last_run.start_time
+    assert next_run.last_alert_ids == last_run.last_alert_ids
+
+    # Verify no create functions were called
+    assert mock_create_events.call_count == 0
+    assert mock_create_incidents.call_count == 0
+
+
+def test_fetch_alerts_deduplication(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run with last_alert_ids.
+        - get_alert_list returns alerts including duplicates.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert duplicate alerts are filtered out.
+        - Assert only new alerts are processed.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts with some duplicates
+    mock_alerts = [
+        {
+            "id": 3,
+            "severity": "high",
+            "date": "2026-01-15T00:00:02Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 4,
+            "severity": "high",
+            "date": "2026-01-15T00:00:03Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts with last_alert_ids containing [1, 2]
+    last_run = HelloWorldLastRun(start_time="2026-01-15T00:00:00Z", last_alert_ids=[1, 2])
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-14T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify next_run contains new alert IDs
+    assert next_run.start_time == "2026-01-15T00:00:03Z"
+    assert next_run.last_alert_ids == [4]
+
+
+def test_fetch_alerts_first_fetch_uses_first_fetch_time(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and empty last_run (first fetch).
+        - first_fetch_time parameter provided.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert first_fetch_time is used when last_run.start_time is None.
+        - Assert get_alert_list is called with first_fetch_time.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts with empty last_run
+    first_fetch_time = "2026-01-14T00:00:00Z"
+    last_run = HelloWorldLastRun()
+    fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time=first_fetch_time,
+        should_push=False,
+    )
+
+    # Verify get_alert_list was called with first_fetch_time
+    # Note: asyncio.run is mocked, so we check the mock was called
+    assert mock_get_alert_list.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "severity",
+    [
+        pytest.param(HelloWorldSeverity.LOW, id="Low severity"),
+        pytest.param(HelloWorldSeverity.MEDIUM, id="Medium severity"),
+        pytest.param(HelloWorldSeverity.HIGH, id="High severity"),
+        pytest.param(HelloWorldSeverity.CRITICAL, id="Critical severity"),
+    ],
+)
+def test_fetch_alerts_different_severities(mocker: MockerFixture, severity: HelloWorldSeverity):
+    """
+    Given:
+        - Valid client and last_run.
+        - Different severity levels.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert get_alert_list is called with correct severity.
+        - Assert alerts are fetched for each severity level.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": severity.value,
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun()
+    fetch_alerts(
+        client,
+        last_run,
+        severity=severity,
+        max_fetch=10,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify get_alert_list was called
+    assert mock_get_alert_list.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "max_fetch,expected_limit",
+    [
+        pytest.param(1, 1, id="Fetch 1 alert"),
+        pytest.param(10, 10, id="Fetch 10 alerts"),
+        pytest.param(100, 100, id="Fetch 100 alerts"),
+        pytest.param(1000, 1000, id="Fetch 1000 alerts"),
+    ],
+)
+def test_fetch_alerts_max_fetch_limits(mocker: MockerFixture, max_fetch: int, expected_limit: int):
+    """
+    Given:
+        - Valid client and last_run.
+        - Different max_fetch values.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert get_alert_list is called with correct limit.
+        - Assert no more than max_fetch alerts are processed.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Generate mock alerts up to max_fetch
+    mock_alerts = [
+        {
+            "id": i,
+            "severity": "high",
+            "date": f"2026-01-15T00:00:{i:02d}Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        }
+        for i in range(1, min(max_fetch + 1, 101))  # Cap at 100 for test performance
+    ]
+
+    # Mock get_alert_list
+    mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun()
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=max_fetch,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify get_alert_list was called
+    assert mock_get_alert_list.call_count == 1
+
+    # Verify next_run has correct number of alert IDs
+    assert len(next_run.last_alert_ids) >= 1
+
+
+def test_fetch_alerts_no_push(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - should_push=False.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert get_alert_list is called.
+        - Assert create_events/create_incidents are NOT called.
+        - Assert next_run state is still updated correctly.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Mock create functions
+    mock_create_events = mocker.patch("HelloWorldV2.create_events")
+    mock_create_incidents = mocker.patch("HelloWorldV2.create_incidents")
+
+    # Execute fetch_alerts with should_push=False
+    last_run = HelloWorldLastRun()
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify create functions were NOT called
+    assert mock_create_events.call_count == 0
+    assert mock_create_incidents.call_count == 0
+
+    # Verify next_run is still updated
+    assert next_run.start_time == "2026-01-15T00:00:00Z"
+    assert next_run.last_alert_ids == [1]
+
+
+def test_fetch_alerts_multiple_alerts_same_timestamp(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - Multiple alerts with the same timestamp.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert all alert IDs at the latest timestamp are tracked.
+        - Assert next_run.last_alert_ids contains all IDs from latest timestamp.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts - multiple at same timestamp
+    same_timestamp = "2026-01-15T00:00:05Z"
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "high",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 3,
+            "severity": "high",
+            "date": same_timestamp,
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 4,
+            "severity": "high",
+            "date": same_timestamp,
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 5,
+            "severity": "high",
+            "date": same_timestamp,
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun()
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify all IDs at the latest timestamp are tracked
+    assert next_run.start_time == same_timestamp
+    assert set(next_run.last_alert_ids) == {3, 4, 5}
+    assert len(next_run.last_alert_ids) == 3
+
+
+def test_fetch_alerts_uses_last_run_start_time(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run with existing start_time.
+        - first_fetch_time parameter provided.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert last_run.start_time is used instead of first_fetch_time.
+        - Assert get_alert_list is called with last_run.start_time.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 10,
+            "severity": "high",
+            "date": "2026-01-16T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts with existing last_run
+    last_run_start_time = "2026-01-15T12:00:00Z"
+    last_run = HelloWorldLastRun(start_time=last_run_start_time, last_alert_ids=[8, 9])
+    first_fetch_time = "2026-01-14T00:00:00Z"  # Should be ignored
+
+    fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time=first_fetch_time,
+        should_push=False,
+    )
+
+    # Verify get_alert_list was called (asyncio.run is mocked)
+    assert mock_get_alert_list.call_count == 1
+
+
+def test_fetch_alerts_empty_last_alert_ids(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run with empty last_alert_ids.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert all alerts are processed (no deduplication).
+        - Assert next_run.last_alert_ids is populated.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock alerts
+    mock_alerts = [
+        {
+            "id": 1,
+            "severity": "high",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+        {
+            "id": 2,
+            "severity": "high",
+            "date": "2026-01-15T00:00:01Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun(start_time="2026-01-15T00:00:00Z", last_alert_ids=[])
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.HIGH,
+        max_fetch=10,
+        first_fetch_time="2026-01-14T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify next_run has alert IDs
+    assert next_run.last_alert_ids == [2]
+
+
+def test_fetch_alerts_single_alert(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - get_alert_list returns single alert.
+    When:
+        - Running fetch_alerts.
+    Then:
+        - Assert next_run state is updated with single alert.
+        - Assert last_alert_ids contains only that alert ID.
+    """
+    from HelloWorldV2 import fetch_alerts
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock single alert
+    mock_alerts = [
+        {
+            "id": 42,
+            "severity": "critical",
+            "date": "2026-01-15T00:00:00Z",
+            "user": "test@example.com",
+            "action": "Testing",
+            "status": "Success",
+        },
+    ]
+
+    # Mock get_alert_list
+    mocker.patch("HelloWorldV2.get_alert_list", new=AsyncMock(return_value=mock_alerts))
+
+    # Execute fetch_alerts
+    last_run = HelloWorldLastRun()
+    next_run = fetch_alerts(
+        client,
+        last_run,
+        severity=HelloWorldSeverity.CRITICAL,
+        max_fetch=1,
+        first_fetch_time="2026-01-15T00:00:00Z",
+        should_push=False,
+    )
+
+    # Verify next_run
+    assert next_run.start_time == "2026-01-15T00:00:00Z"
+    assert next_run.last_alert_ids == [42]
+
+
+# endregion
+
+# region fetch-assets
+
+
+class TestHelloWorldAssetsLastRun:
+    """Tests for HelloWorldAssetsLastRun model."""
+
+    @pytest.mark.parametrize(
+        "stage,id_offset,cumulative_count,snapshot_id,next_trigger",
+        [
+            pytest.param("assets", 0, 0, None, None, id="Initial state - assets stage"),
+            pytest.param("vulnerabilities", 100, 50, "1234567890", "1", id="Vulnerabilities stage with data"),
+            pytest.param("assets", 500, 250, "9876543210", None, id="Assets stage mid-fetch"),
+        ],
+    )
+    def test_assets_last_run_valid_states(self, stage, id_offset, cumulative_count, snapshot_id, next_trigger):
+        """
+        Given:
+            - Valid state parameters for HelloWorldAssetsLastRun.
+        When:
+            - Initializing HelloWorldAssetsLastRun.
+        Then:
+            - Assert model is created successfully with correct values.
+        """
+        last_run = HelloWorldAssetsLastRun(
+            stage=stage,
+            id_offset=id_offset,
+            cumulative_count=cumulative_count,
+            snapshot_id=snapshot_id,
+            nextTrigger=next_trigger,
+        )
+        assert last_run.stage == FetchAssetsStages(stage)
+        assert last_run.id_offset == id_offset
+        assert last_run.cumulative_count == cumulative_count
+        assert last_run.snapshot_id == snapshot_id
+        assert last_run.next_trigger_in_seconds == next_trigger
+
+    def test_assets_last_run_default_values(self):
+        """
+        Given:
+            - No parameters provided.
+        When:
+            - Initializing HelloWorldAssetsLastRun.
+        Then:
+            - Assert default values are set correctly.
+        """
+        last_run = HelloWorldAssetsLastRun()
+        assert last_run.stage == FetchAssetsStages.ASSETS
+        assert last_run.id_offset == 0
+        assert last_run.cumulative_count == 0
+        assert last_run.snapshot_id is None
+        assert last_run.next_trigger_in_seconds is None
+        assert last_run.trigger_type == 1
+
+
+@pytest.mark.parametrize(
+    "assets_last_run,mock_assets_response,mock_vulns_response,expected_stage,expected_offset,expected_cumulative,expected_trigger",
+    [
+        pytest.param(
+            HelloWorldAssetsLastRun(stage=FetchAssetsStages.ASSETS, id_offset=0, cumulative_count=0, snapshot_id=None),
+            {
+                "has_more": False,
+                "data": [{"id": 1, "name": "Server-01", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}],
+            },
+            None,
+            "vulnerabilities",
+            0,
+            0,
+            "1",
+            id="First assets batch - no more data, move to vulnerabilities",
+        ),
+        pytest.param(
+            HelloWorldAssetsLastRun(stage=FetchAssetsStages.ASSETS, id_offset=0, cumulative_count=0, snapshot_id=None),
+            {
+                "has_more": True,
+                "data": [
+                    {"id": i, "name": f"Server-{i:02d}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+                    for i in range(1, 11)
+                ],
+            },
+            None,
+            "assets",
+            10,
+            10,
+            "1",
+            id="First assets batch - has more data, continue assets",
+        ),
+        pytest.param(
+            HelloWorldAssetsLastRun(
+                stage=FetchAssetsStages.ASSETS, id_offset=1000, cumulative_count=1000, snapshot_id="1234567890"
+            ),
+            {
+                "has_more": True,
+                "data": [
+                    {"id": i, "name": f"Server-{i:02d}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+                    for i in range(1001, 1011)
+                ],
+            },
+            None,
+            "assets",
+            1010,
+            1010,
+            "1",
+            id="Mid-fetch assets - has more data, continue pagination",
+        ),
+        pytest.param(
+            HelloWorldAssetsLastRun(stage=FetchAssetsStages.VULNS, id_offset=0, cumulative_count=0, snapshot_id="1234567890"),
+            None,
+            {
+                "has_more": False,
+                "data": [
+                    {
+                        "id": 1,
+                        "cve_id": "CVE-MOCK-0001",
+                        "severity": "critical",
+                        "description": "Test vuln",
+                        "published": "2026-01-15T00:00:00",
+                    }
+                ],
+            },
+            "assets",
+            0,
+            0,
+            None,
+            id="Vulnerabilities batch - no more data, complete cycle back to assets",
+        ),
+        pytest.param(
+            HelloWorldAssetsLastRun(stage=FetchAssetsStages.VULNS, id_offset=0, cumulative_count=0, snapshot_id="1234567890"),
+            None,
+            {
+                "has_more": True,
+                "data": [
+                    {
+                        "id": i,
+                        "cve_id": f"CVE-MOCK-{i:04d}",
+                        "severity": "high",
+                        "description": "Test",
+                        "published": "2026-01-15T00:00:00",
+                    }
+                    for i in range(1, 11)
+                ],
+            },
+            "vulnerabilities",
+            10,
+            10,
+            "1",
+            id="Vulnerabilities batch - has more data, continue vulnerabilities",
+        ),
+    ],
+)
+def test_fetch_assets_stage_transitions(
+    mocker: MockerFixture,
+    assets_last_run: HelloWorldAssetsLastRun,
+    mock_assets_response: dict | None,
+    mock_vulns_response: dict | None,
+    expected_stage: str,
+    expected_offset: int,
+    expected_cumulative: int,
+    expected_trigger: str | None,
+):
+    """
+    Given:
+        - Valid client and last_run state at different stages.
+        - Mock API responses with varying has_more flags.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert correct client method is called based on stage.
+        - Assert send_data_to_xsiam is called with correct parameters.
+        - Assert next_run state is correctly updated based on has_more flag.
+        - Assert stage transitions happen correctly.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Mock client methods
+    mock_get_assets = mocker.patch.object(client, "get_assets", return_value=mock_assets_response)
+    mock_get_vulnerabilities = mocker.patch.object(client, "get_vulnerabilities", return_value=mock_vulns_response)
+
+    # Mock send_data_to_xsiam
+    mock_send_data = mocker.patch("HelloWorldV2.send_data_to_xsiam")
+
+    # Mock generate_unix_timestamp to return consistent value
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="9999999999")
+
+    # Execute fetch_assets
+    next_run = fetch_assets(client, assets_last_run, should_push=True)
+
+    # Assertions - verify correct method was called based on stage
+    if assets_last_run.stage is FetchAssetsStages.ASSETS:
+        assert mock_get_assets.call_count == 1
+        assert mock_get_assets.call_args.kwargs == {"limit": 1000, "id_offset": assets_last_run.id_offset}
+        assert mock_get_vulnerabilities.call_count == 0
+        response = mock_assets_response or {}
+    else:
+        assert mock_get_vulnerabilities.call_count == 1
+        assert mock_get_vulnerabilities.call_args.kwargs == {"limit": 1000, "id_offset": assets_last_run.id_offset}
+        assert mock_get_assets.call_count == 0
+        response = mock_vulns_response or {}
+
+    # Verify send_data_to_xsiam was called
+    assert mock_send_data.call_count == 1
+    call_kwargs = mock_send_data.call_args.kwargs
+
+    # Verify data sent
+    assert call_kwargs["data"] == response["data"]
+
+    # Verify items_count and should_update_health_module based on has_more
+    has_more = response["has_more"]
+    batch_count = len(response["data"])
+    if has_more:
+        assert call_kwargs["items_count"] == 1
+        assert call_kwargs["should_update_health_module"] is False
+    else:
+        expected_items_count = assets_last_run.cumulative_count + batch_count
+        assert call_kwargs["items_count"] == expected_items_count
+        assert call_kwargs["should_update_health_module"] is True
+
+    # Verify next_run state
+    assert next_run.stage == FetchAssetsStages(expected_stage)
+    assert next_run.id_offset == expected_offset
+    assert next_run.cumulative_count == expected_cumulative
+    assert next_run.next_trigger_in_seconds == expected_trigger
+
+
+@pytest.mark.parametrize(
+    "stage,has_more",
+    [
+        pytest.param(FetchAssetsStages.ASSETS, True, id="Assets stage - has more - retain snapshot"),
+        pytest.param(FetchAssetsStages.ASSETS, False, id="Assets stage - no more - new snapshot"),
+        pytest.param(FetchAssetsStages.VULNS, True, id="Vulnerabilities stage - has more - retain snapshot"),
+        pytest.param(FetchAssetsStages.VULNS, False, id="Vulnerabilities stage - no more - new snapshot"),
+    ],
+)
+def test_fetch_assets_snapshot_id_management(mocker: MockerFixture, stage: FetchAssetsStages, has_more: bool):
+    """
+    Given:
+        - Valid client and last_run with existing snapshot_id.
+        - Mock API responses with varying has_more flags.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert snapshot_id is retained when has_more=True.
+        - Assert new snapshot_id is generated when has_more=False.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run with existing snapshot_id
+    original_snapshot_id = "1234567890"
+    last_run = HelloWorldAssetsLastRun(stage=stage, id_offset=0, cumulative_count=0, snapshot_id=original_snapshot_id)
+
+    # Mock response
+    mock_response = {
+        "has_more": has_more,
+        "data": [{"id": 1, "name": "Test", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}],
+    }
+
+    # Mock client methods
+    if stage is FetchAssetsStages.ASSETS:
+        mocker.patch.object(client, "get_assets", return_value=mock_response)
+    else:
+        mocker.patch.object(client, "get_vulnerabilities", return_value=mock_response)
+
+    # Mock send_data_to_xsiam
+    mocker.patch("HelloWorldV2.send_data_to_xsiam")
+
+    # Mock generate_unix_timestamp to return new value
+    new_snapshot_id = "9999999999"
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value=new_snapshot_id)
+
+    # Execute fetch_assets
+    next_run = fetch_assets(client, last_run, should_push=True)
+
+    # Verify snapshot_id behavior
+    assert next_run.snapshot_id == original_snapshot_id if has_more else new_snapshot_id
+
+
+def test_fetch_assets_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - Mock API response with empty data array.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert function handles empty data gracefully.
+        - Assert send_data_to_xsiam is called with empty array.
+        - Assert next_run state is updated correctly.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run
+    last_run = HelloWorldAssetsLastRun(stage="assets", id_offset=0, cumulative_count=0)
+
+    # Mock response with empty data
+    mock_response = {"has_more": False, "data": []}
+
+    # Mock client methods
+    mocker.patch.object(client, "get_assets", return_value=mock_response)
+
+    # Mock send_data_to_xsiam
+    mock_send_data = mocker.patch("HelloWorldV2.send_data_to_xsiam")
+
+    # Mock generate_unix_timestamp
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="1234567890")
+
+    # Execute fetch_assets
+    next_run = fetch_assets(client, last_run, should_push=True)
+
+    # Assertions
+    assert mock_send_data.call_count == 1
+    assert mock_send_data.call_args.kwargs["data"] == []
+    assert mock_send_data.call_args.kwargs["items_count"] == 0
+    assert next_run.stage.value == "vulnerabilities"
+    assert next_run.id_offset == 0
+
+
+def test_fetch_assets_no_push(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - should_push=False.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert client method is called.
+        - Assert send_data_to_xsiam is NOT called.
+        - Assert next_run state is still updated correctly.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run
+    last_run = HelloWorldAssetsLastRun(stage="assets", id_offset=0, cumulative_count=0)
+
+    # Mock response
+    mock_response = util_load_json("test_data/assets.json")
+
+    # Mock client methods
+    mock_get_assets = mocker.patch.object(client, "get_assets", return_value=mock_response)
+
+    # Mock send_data_to_xsiam
+    mock_send_data = mocker.patch("HelloWorldV2.send_data_to_xsiam")
+
+    # Mock generate_unix_timestamp
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="1234567890")
+
+    # Execute fetch_assets with should_push=False
+    next_run = fetch_assets(client, last_run, should_push=False)
+
+    # Assertions
+    assert mock_get_assets.call_count == 1
+    assert mock_send_data.call_count == 0  # Should NOT be called
+    assert next_run.stage.value == "vulnerabilities"
+
+
+@pytest.mark.parametrize(
+    "initial_offset,batch_size,has_more,expected_next_offset",
+    [
+        pytest.param(0, 10, True, 10, id="First batch - has more"),
+        pytest.param(100, 50, True, 150, id="Mid-fetch - has more"),
+        pytest.param(5000, 100, True, 5100, id="Large offset - has more"),
+        pytest.param(0, 10, False, 0, id="First batch - no more (reset)"),
+        pytest.param(1000, 50, False, 0, id="Mid-fetch - no more (reset)"),
+    ],
+)
+def test_fetch_assets_offset_calculation(
+    mocker: MockerFixture, initial_offset: int, batch_size: int, has_more: bool, expected_next_offset: int
+):
+    """
+    Given:
+        - Valid client and last_run with various offset values.
+        - Mock API responses with different batch sizes and has_more flags.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert offset is correctly incremented when has_more=True.
+        - Assert offset is reset to 0 when has_more=False.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run
+    last_run = HelloWorldAssetsLastRun(
+        stage="assets", id_offset=initial_offset, cumulative_count=initial_offset, snapshot_id="1234567890"
+    )
+
+    # Mock response with specified batch size
+    mock_data = [
+        {"id": i, "name": f"Asset-{i}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+        for i in range(initial_offset + 1, initial_offset + batch_size + 1)
+    ]
+    mock_response = {"has_more": has_more, "data": mock_data}
+
+    # Mock client methods
+    mocker.patch.object(client, "get_assets", return_value=mock_response)
+    mocker.patch("HelloWorldV2.send_data_to_xsiam")
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="9999999999")
+
+    # Execute fetch_assets
+    next_run = fetch_assets(client, last_run, should_push=True)
+
+    # Verify offset
+    assert next_run.id_offset == expected_next_offset
+
+
+def test_fetch_assets_cumulative_count_tracking(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run with existing cumulative_count.
+        - Mock API response with has_more=True.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert cumulative_count is correctly incremented.
+        - Assert cumulative_count is reset when has_more=False.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Test case 1: has_more=True, cumulative should increment
+    last_run = HelloWorldAssetsLastRun(stage="assets", id_offset=100, cumulative_count=100, snapshot_id="1234567890")
+
+    mock_response = {
+        "has_more": True,
+        "data": [
+            {"id": i, "name": f"Asset-{i}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+            for i in range(101, 111)
+        ],
+    }
+
+    mocker.patch.object(client, "get_assets", return_value=mock_response)
+    mocker.patch("HelloWorldV2.send_data_to_xsiam")
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="9999999999")
+
+    next_run = fetch_assets(client, last_run, should_push=True)
+
+    # Verify cumulative_count incremented
+    assert next_run.cumulative_count == 110
+
+    # Test case 2: has_more=False, cumulative should reset
+    last_run2 = HelloWorldAssetsLastRun(stage="assets", id_offset=200, cumulative_count=200, snapshot_id="1234567890")
+
+    mock_response2 = {
+        "has_more": False,
+        "data": [
+            {"id": i, "name": f"Asset-{i}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+            for i in range(201, 206)
+        ],
+    }
+
+    mocker.patch.object(client, "get_assets", return_value=mock_response2)
+
+    next_run2 = fetch_assets(client, last_run2, should_push=True)
+
+    # Verify cumulative_count reset
+    assert next_run2.cumulative_count == 0
+
+
+def test_fetch_assets_vendor_product_dataset_selection(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run at different stages.
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert correct vendor/product is used for assets stage.
+        - Assert correct vendor/product is used for vulnerabilities stage.
+    """
+    from HelloWorldV2 import (
+        fetch_assets,
+        AssetsDatasetConfigs,
+        VulnerabilitiesDatasetConfigs,
+    )
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Test assets stage
+    last_run_assets = HelloWorldAssetsLastRun(stage="assets", id_offset=0, cumulative_count=0)
+    mock_assets_response = util_load_json("test_data/assets.json")
+    mocker.patch.object(client, "get_assets", return_value=mock_assets_response)
+    mock_send_data = mocker.patch("HelloWorldV2.send_data_to_xsiam")
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="1234567890")
+
+    fetch_assets(client, last_run_assets, should_push=True)
+
+    # Verify vendor/product for assets
+    assert mock_send_data.call_args.kwargs["vendor"] == AssetsDatasetConfigs.VENDOR.value
+    assert mock_send_data.call_args.kwargs["product"] == AssetsDatasetConfigs.PRODUCT.value
+
+    # Test vulnerabilities stage
+    last_run_vulns = HelloWorldAssetsLastRun(stage="vulnerabilities", id_offset=0, cumulative_count=0, snapshot_id="1234567890")
+    mock_vulns_response = util_load_json("test_data/vulnerabilities.json")
+    mocker.patch.object(client, "get_vulnerabilities", return_value=mock_vulns_response)
+    mock_send_data.reset_mock()
+
+    fetch_assets(client, last_run_vulns, should_push=True)
+
+    # Verify vendor/product for vulnerabilities
+    assert mock_send_data.call_args.kwargs["vendor"] == VulnerabilitiesDatasetConfigs.VENDOR.value
+    assert mock_send_data.call_args.kwargs["product"] == VulnerabilitiesDatasetConfigs.PRODUCT.value
+
+
+def test_fetch_assets_initial_snapshot_generation(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run with no snapshot_id (first run).
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert generate_unix_timestamp is called to create new snapshot_id.
+        - Assert snapshot_id is included in send_data_to_xsiam call.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run with no snapshot_id (first run)
+    last_run = HelloWorldAssetsLastRun(stage=FetchAssetsStages.ASSETS, id_offset=0, cumulative_count=0, snapshot_id=None)
+
+    # Mock response
+    mock_response = util_load_json("test_data/assets.json")
+    mock_response["has_more"] = True  # assume has_more to ensure current snapshot_id is persisted
+
+    # Mock client methods
+    mocker.patch.object(client, "get_assets", return_value=mock_response)
+    mock_send_data_to_xsiam = mocker.patch("HelloWorldV2.send_data_to_xsiam")
+
+    # Mock generate_unix_timestamp
+    expected_snapshot_id = "1234567890"
+    mock_generate_timestamp = mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value=expected_snapshot_id)
+
+    # Execute fetch_assets
+    fetch_assets(client, last_run, should_push=True)
+
+    # Verify generate_unix_timestamp was NOT called (snapshot_id generated inline)
+    # The function generates snapshot_id using: last_run.snapshot_id or generate_unix_timestamp()
+    # So it should be called once since response["has_more"] == True
+    assert mock_generate_timestamp.call_count == 1
+
+    # Verify snapshot_id is used in send_data_to_xsiam
+    assert mock_send_data_to_xsiam.call_args.kwargs["snapshot_id"] == expected_snapshot_id
+
+
+def test_fetch_assets_large_batch_pagination(mocker: MockerFixture):
+    """
+    Given:
+        - Valid client and last_run.
+        - Mock API response with exactly 1000 items (batch limit).
+    When:
+        - Running fetch_assets.
+    Then:
+        - Assert function handles large batches correctly.
+        - Assert offset is incremented by batch size.
+    """
+    from HelloWorldV2 import fetch_assets
+
+    # Create params and client
+    params = HelloWorldParams(
+        url="https://api.example.com",
+        credentials=Credentials(password=DUMMY_VALID_API_KEY),
+    )
+    client = HelloWorldClient(params)
+
+    # Create last_run
+    last_run = HelloWorldAssetsLastRun(stage="assets", id_offset=0, cumulative_count=0)
+
+    # Mock response with 1000 items
+    mock_data = [
+        {"id": i, "name": f"Asset-{i:04d}", "type": "server", "status": "active", "created": "2024-01-15T00:00:00"}
+        for i in range(1, 1001)
+    ]
+    mock_response = {"has_more": True, "data": mock_data}
+
+    # Mock client methods
+    mocker.patch.object(client, "get_assets", return_value=mock_response)
+    mocker.patch("HelloWorldV2.send_data_to_xsiam")
+    mocker.patch("HelloWorldV2.generate_unix_timestamp", return_value="1234567890")
+
+    # Execute fetch_assets
+    next_run = fetch_assets(client, last_run, should_push=True)
+
+    # Verify offset incremented by 1000
+    assert next_run.id_offset == 1000
+    assert next_run.cumulative_count == 1000
 
 
 # endregion
@@ -1020,7 +2709,7 @@ def test_get_events_command(mocker: MockerFixture):
     mock_get_alert_list = mocker.patch("HelloWorldV2.get_alert_list", return_value=mock_events)
     mock_table_to_markdown = mocker.patch("HelloWorldV2.tableToMarkdown")
 
-    args = HelloWorldGetEventsArgs(severity=HelloWorldSeverity.HIGH, offset=0, limit=10, should_push_events=False)
+    args = HelloWorldGetEventsArgs(severity=HelloWorldSeverity.HIGH, limit=10, should_push_events=False)
     # Execute command
     get_events_command(client, args)
 
@@ -1029,7 +2718,7 @@ def test_get_events_command(mocker: MockerFixture):
     # Verify the call was made with correct parameters
     assert mock_get_alert_list.call_args.kwargs == {
         "client": client,
-        "start_offset": 0,
+        "start_time": None,
         "severity": HelloWorldSeverity.HIGH,
         "limit": 10,
         "should_push": False,

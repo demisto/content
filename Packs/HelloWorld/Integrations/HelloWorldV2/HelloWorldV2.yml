@@ -54,6 +54,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   advanced: true
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: "3 days"
+  additionalinfo: The timestamp from which to start fetching alerts, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z').
+  type: 0
+  required: false
+  section: Collect
+  hidden:  # Set internally to "1 minute" on Cortex XSIAM (legacy and platform)
+    - marketplacev2
+    - platform
 - name: severity
   display: Severity of alerts to fetch
   defaultvalue: "high"
@@ -325,9 +335,8 @@ script:
       - medium
       - high
       - critical
-    - description: The alert ID (offset) from which to start retrieving.
-      name: offset
-      defaultValue: "0"
+    - description: The start time for retrieving alerts, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z').
+      name: start_time
     - description: Maximum number of alerts to retrieve.
       name: limit
       defaultValue: "10"
