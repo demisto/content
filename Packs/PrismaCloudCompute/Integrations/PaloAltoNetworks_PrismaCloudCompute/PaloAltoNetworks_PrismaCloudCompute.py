@@ -3635,7 +3635,8 @@ def process_all_findings(vulnerabilities=[], related_asset={}):
     for vulnerability in vulnerabilities:
         processed_vulnerabilities.append(
             {
-                "asset_id": related_asset.get("_id", "") or related_asset.get("id", ""),
+                "asset_id": related_asset.get("id", ""),
+                "asset__id": related_asset.get("_id", "")
                 "scanTime": related_asset.get("scanTime", ""),
                 "scanID": related_asset.get("scanID", ""),
                 "scanVersion": related_asset.get("scanVersion", ""),

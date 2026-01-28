@@ -2006,7 +2006,7 @@ def test_process_all_findings_standalone():
     # Case 1: Asset with vulnerabilities
     results = process_all_findings(vulnerabilities, related_asset)
     assert len(results) == 2
-    assert results[0]["asset_id"] == "asset_123"
+    assert results[0]["asset__id"] == "asset_123"
     assert results[0]["cve"] == "CVE-2023-1234"
     assert results[0]["cvss"] == 8.1
     assert results[0]["riskFactors"] == {"Attack complexity: low": "true"}
@@ -2072,7 +2072,7 @@ def test_process_results_all_cases():
     # Verify first asset (Image)
     assert processed_assets[0]["_id"] == "sha256:image123"
     assert processed_assets[0]["vulnerabilitiesCount"] == 1
-    assert processed_vulns[0]["asset_id"] == "sha256:image123"
+    assert processed_vulns[0]["asset__id"] == "sha256:image123"
     assert processed_vulns[0]["cve"] == "CVE-IMAGE-1"
 
     # Verify second asset (Host)
