@@ -267,12 +267,12 @@ class Client(BaseClient):
         if pagination_token:
             body["sort"]["search_after"] = pagination_token
 
-        response = self._http_request(method="POST", url_suffix=url, resp_type="response", json_data=body)
+        response = self._http_request(method="POST", url_suffix=url, json_data=body)
         return response
 
     def get_alert_request_v2(self, alert_id):
         url = f"/public/alerts/{alert_id}"
-        response = self._http_request(method="GET", url_suffix=url, resp_type="response")
+        response = self._http_request(method="GET", url_suffix=url)
         return response
 
     def get_artifacts_v2(self, alert_id):
@@ -1037,7 +1037,7 @@ def fetch_incidents(client: Client):
     # When no alerts are found, there is no search_after token in the response.
     if not alerts_response or not alerts_response.get("data"):
         demisto.debug("[FireEyeETP - fetch_incidents] No incident found.")
-        return [], {}
+        return [], last_run
 
     pagination_token = alerts_response.get("meta", {}).get("search_after")
     if pagination_token:
@@ -1065,7 +1065,7 @@ def fetch_incidents(client: Client):
 
     if not incidents:
         demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out, 0 alerts left.")
-        return [], {}
+        return [], last_run
 
     demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents left after filtering: {len(incidents)}.")
     return incidents, last_run
@@ -1111,9 +1111,8 @@ def main():
         elif command == "fetch-incidents":
             client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
             incidents, last_run = fetch_incidents(client)
-            if incidents:
-                demisto.incidents(incidents)
-                demisto.setLastRun(last_run)
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
         elif command == "fireeye-etp-search-messages":
             search_messages_command()
         elif command == "fireeye-etp-get-message":

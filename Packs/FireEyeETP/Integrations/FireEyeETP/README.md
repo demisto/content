@@ -314,6 +314,7 @@ Get summary format information about the alerts.
 
 ***
 Downloads all case files for the specified alert ID as a ZIP file. You can obtain the alert ID from the Alert Summary response, for example: "id": "AV7zzRy7kvIwrKcfu0I".
+The downloaded zip is password protected, and the password is "infected".
 
 #### Base Command
 

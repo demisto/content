@@ -423,7 +423,7 @@ script:
       description: The alert ID.
     description: 'Downloads all case files of the alert specified by the alert ID, in
       a zip file. You can obtain the ID from the Alert Summary response, for example
-      "id": "AV7zzRy7kvIwrKcfu0I".'
+      "id": "AV7zzRy7kvIwrKcfu0I". The downloaded zip is password protected, and the password is "infected".'
   - name: fireeye-etp-list-yara-rulesets
     arguments:
     - name: policy_uuid
