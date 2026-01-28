@@ -85,4 +85,5 @@ alter
     xdm.target.port = to_integer(destination_port),
     xdm.target.ipv4 = if(is_ipv4(destination_ip_address),destination_ip_address,null),
     xdm.target.ipv6 = if(is_ipv6(destination_ip_address),destination_ip_address,null),
-    xdm.event.operation_sub_type = event_name;
+    xdm.event.operation_sub_type = event_name,
+    xdm.event.id = message_id;
