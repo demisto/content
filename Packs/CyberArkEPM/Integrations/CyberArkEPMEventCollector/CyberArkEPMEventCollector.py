@@ -235,40 +235,42 @@ def add_fields_to_events(events: list, date_field: str, event_type: str):
 def reconcile_last_run_with_current_sets(last_run: dict, current_set_ids: list, args: dict) -> dict:
     """
     Reconciles the last_run state with the currently configured set IDs.
-    
+
     This function handles configuration changes where the user modifies the set names in the integration settings.
     Without this reconciliation, the integration would continue fetching from old/stale set IDs indefinitely,
     even after the configuration has been updated to use different sets.
-    
+
     Args:
         last_run (dict): The last run state loaded from demisto.getLastRun()
         current_set_ids (list): The currently resolved set IDs from get_set_ids_by_set_names()
         args (dict): Command arguments (used to get from_date for new sets)
-    
+
     Returns:
         dict: Updated last_run with stale sets removed and new sets added
     """
     current_set_ids_set = set(current_set_ids)
     last_run_set_ids = set(last_run.keys())
-    
+
     if current_set_ids_set != last_run_set_ids:
-        demisto.debug(f"[reconcile_last_run] Set configuration changed! Current: {current_set_ids}, Previous: {list(last_run.keys())}")
-        
+        demisto.debug(
+            f"[reconcile_last_run] Set configuration changed! Current: {current_set_ids}, Previous: {list(last_run.keys())}"
+        )
+
         # Remove old sets that are no longer configured
         # This prevents fetching from sets the user no longer wants to monitor
         for old_id in last_run_set_ids - current_set_ids_set:
             del last_run[old_id]
             demisto.debug(f"[reconcile_last_run] Removed stale set_id from last_run: {old_id}")
-        
+
         # Add new sets that were just configured
         # Initialize them with a fresh from_date to start fetching their events
         for new_id in current_set_ids_set - last_run_set_ids:
             from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
             last_run[new_id] = create_last_run([new_id], prepare_datetime(from_date))[new_id]
             demisto.debug(f"[reconcile_last_run] Added new set_id to last_run: {new_id}")
-        
+
         demisto.debug(f"[reconcile_last_run] Reconciled last_run now contains set_ids: {list(last_run.keys())}")
-    
+
     return last_run
 
 
@@ -471,7 +473,9 @@ def fetch_events(
 
     unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.info(f"[fetch_events] Sending {len(events)} events to XSIAM. first_event_keys={(list(events[0].keys()) if events else [])} updated_next_run={last_run}")
+    demisto.info(
+        f"[fetch_events] Sending {len(events)} events to XSIAM. first_event_keys={(list(events[0].keys()) if events else [])} updated_next_run={last_run}"
+    )
 
     return events, last_run
 
