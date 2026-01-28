@@ -176,11 +176,13 @@ def search_indicators(
     limit: int = SEARCH_INDICATORS_LIMIT,
     page_size: int = SEARCH_INDICATORS_PAGE_SIZE,
 ) -> list:
-    demisto.debug(f"Searching indicators with {query=}")
+    demisto.debug(f"Searching indicators with {query=}, {limit=}, {page_size=}, fields_to_populate={fields_to_populate}")
     search_indicators = IndicatorsSearcher(
         query=query, limit=limit, size=page_size, filter_fields=",".join(fields_to_populate) if fields_to_populate else None
     )
-    return flatten_list([ioc_res.get("iocs") or [] for ioc_res in search_indicators])
+    results = flatten_list([ioc_res.get("iocs") or [] for ioc_res in search_indicators])
+    demisto.debug(f"search_indicators returned {len(results)} indicators")
+    return results
 
 
 def get_indicators_of_actual_incident(
@@ -197,13 +199,28 @@ def get_indicators_of_actual_incident(
     :param max_incidents_per_indicator: Max incidents in indicators for white list
     :return: a map from indicator ids of the actual incident to their data
     """
+    demisto.debug(f"get_indicators_of_actual_incident called with {incident_id=}, {indicator_types=}, "
+                  f"{min_number_of_indicators=}, {max_incidents_per_indicator=}")
     indicators = search_indicators(query=f"investigationIDs:({incident_id})")
+    demisto.debug(f"Initial search returned {len(indicators)} indicators for incident {incident_id}")
+    
     if not indicators:
+        demisto.debug(f"No indicators found for incident {incident_id}")
         return {}
+    
+    initial_count = len(indicators)
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
+    demisto.debug(f"After filtering by max_incidents_per_indicator ({max_incidents_per_indicator}): "
+                  f"{len(indicators)} indicators (filtered out {initial_count - len(indicators)})")
+    
     if indicator_types:
+        before_type_filter = len(indicators)
         indicators = [x for x in indicators if x[INDICATOR_TYPE_FIELD].lower() in indicator_types]
+        demisto.debug(f"After filtering by indicator_types {indicator_types}: "
+                      f"{len(indicators)} indicators (filtered out {before_type_filter - len(indicators)})")
+    
     if len(indicators) < min_number_of_indicators:
+        demisto.debug(f"Insufficient indicators: found {len(indicators)}, required {min_number_of_indicators}")
         return {}
 
     indicators_data = {ind[INDICATOR_ID_FIELD]: ind for ind in indicators}
@@ -224,10 +241,15 @@ def get_related_incidents(
     :param from_date: A created date to filter the related incidents by
     :return: The list of the related incident IDs
     """
+    demisto.debug(f"get_related_incidents called with {len(indicators)} indicators, {query=}, {from_date=}")
     incident_ids = flatten_list([i.get("investigationIDs") or [] for i in indicators.values()])
+    demisto.debug(f"Extracted {len(incident_ids)} incident IDs from indicators (before deduplication)")
+    
     incident_ids = list({x for x in incident_ids if not re.match(PLAYGROUND_PATTERN, x)})
+    demisto.debug(f"After removing playground incidents: {len(incident_ids)} incident IDs")
+    
     if not (query or from_date) or not incident_ids:
-        demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
+        demisto.debug(f"No query/fromDate filter needed or no incidents. Returning {len(incident_ids)} related incidents: {incident_ids}")
         return incident_ids
 
     args = {
@@ -235,10 +257,12 @@ def get_related_incidents(
         "populateFields": INCIDENT_ID_FIELD,
         "fromDate": from_date,
     }
-    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    demisto.debug(f"Executing GetIncidentsByQuery with args: {args}")
     incidents = get_incidents_by_query(args)
+    demisto.debug(f"GetIncidentsByQuery returned {len(incidents)} incidents")
+    
     incident_ids = [incident[INCIDENT_ID_FIELD] for incident in incidents]
-    demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
+    demisto.debug(f"Found {len(incident_ids)} related incidents after filtering: {incident_ids}")
     return incident_ids
 
 
@@ -246,14 +270,25 @@ def get_indicators_of_related_incidents(
     incident_ids: list[str],
     max_incidents_per_indicator: int,
 ) -> list[dict]:
+    demisto.debug(f"get_indicators_of_related_incidents called with {len(incident_ids)} incident IDs, "
+                  f"{max_incidents_per_indicator=}")
     if not incident_ids:
-        demisto.debug("No mutual indicators were found.")
+        demisto.debug("No incident IDs provided, returning empty list")
         return []
+    
+    query = f"investigationIDs:({' '.join(incident_ids)})"
+    demisto.debug(f"Searching indicators with query: {query}")
     indicators = search_indicators(
-        query=f"investigationIDs:({' '.join(incident_ids)})",
+        query=query,
         fields_to_populate=INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY,
     )
+    demisto.debug(f"Search returned {len(indicators)} indicators before filtering")
+    
+    initial_count = len(indicators)
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
+    demisto.debug(f"After filtering by max_incidents_per_indicator: {len(indicators)} indicators "
+                  f"(filtered out {initial_count - len(indicators)})")
+    
     indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in indicators]
     demisto.debug(f"Found {len(indicators_ids)} related indicators: {indicators_ids}")
     return indicators
@@ -346,29 +381,42 @@ def enrich_incidents(
     :param fields_to_display: Fields selected for enrichement
     :return: Incidents dataFrame enriched
     """
+    demisto.debug(f"enrich_incidents called with {len(incidents)} incidents, fields_to_display={fields_to_display}")
     if incidents.empty:
+        demisto.debug("Incidents DataFrame is empty, skipping enrichment")
         return incidents
 
     incident_ids = incidents.id.tolist() if INCIDENT_ID_FIELD in incidents.columns else incidents.index
+    demisto.debug(f"Enriching {len(incident_ids)} incidents: {incident_ids}")
 
     args = {
         "query": f"incident.id:({' '.join(incident_ids)})",
         "populateFields": ",".join(fields_to_display),
     }
-    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    demisto.debug(f"Executing GetIncidentsByQuery with args: {args}")
     res = get_incidents_by_query(args)
+    demisto.debug(f"GetIncidentsByQuery returned {len(res)} incidents")
+    
     incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in res}
+    demisto.debug(f"Created incidents_map with {len(incidents_map)} entries")
+    
     if CREATED_FIELD in fields_to_display:
         incidents[CREATED_FIELD] = [
             dateparser.parse(incidents_map[inc_id][CREATED_FIELD]).strftime(DATE_FORMAT)  # type: ignore
             for inc_id in incident_ids
         ]
+        demisto.debug(f"Populated {CREATED_FIELD} field")
+        
     if STATUS_FIELD in fields_to_display:
         incidents[STATUS_FIELD] = [STATUS_DICT.get(incidents_map[inc_id][STATUS_FIELD]) or " " for inc_id in incident_ids]
+        demisto.debug(f"Populated {STATUS_FIELD} field")
 
     for field in fields_to_display:
         if field not in [CREATED_FIELD, STATUS_FIELD]:
             incidents[field] = [incidents_map[inc_id].get(field) or "" for inc_id in incident_ids]
+            demisto.debug(f"Populated custom field: {field}")
+    
+    demisto.debug("Incident enrichment completed")
     return incidents
 
 
@@ -466,6 +514,9 @@ def actual_incident_results(
 
 
 def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[CommandResults]:
+    demisto.debug(f"=== Starting find_similar_incidents_by_indicators for incident {incident_id} ===")
+    demisto.debug(f"Input arguments: {args}")
+    
     # get_indicators_of_actual_incident() args
     indicators_types = argToList(args.get("indicatorsTypes"), transform=str.lower)
     min_number_of_indicators = int(args["minNumberOfIndicators"])
@@ -483,29 +534,51 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
     show_actual_incident = argToBoolean(args.get("showActualIncident"))
     fields_to_display = list(set(argToList(args["fieldsIncidentToDisplay"])) | {CREATED_FIELD, NAME_FIELD})
 
+    demisto.debug(f"Parsed parameters: {indicators_types=}, {min_number_of_indicators=}, "
+                  f"{max_incidents_per_indicator=}, {query=}, {from_date=}, {similarity_threshold=}, "
+                  f"{max_incidents_to_display=}, {show_actual_incident=}, {fields_to_display=}")
+
     command_results_list: list[CommandResults] = []
 
+    demisto.debug("Step 1: Getting indicators of actual incident")
     indicators_of_actual_incident = get_indicators_of_actual_incident(
         incident_id,
         indicators_types,
         min_number_of_indicators,
         max_incidents_per_indicator,
     )
+    demisto.debug(f"Step 1 complete: Found {len(indicators_of_actual_incident)} indicators for actual incident")
 
+    demisto.debug("Step 2: Getting related incidents")
     incident_ids = get_related_incidents(indicators_of_actual_incident, query, from_date)
+    demisto.debug(f"Step 2 complete: Found {len(incident_ids)} related incidents")
+    
+    demisto.debug("Step 3: Getting indicators of related incidents")
     related_indicators = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator)
+    demisto.debug(f"Step 3 complete: Found {len(related_indicators)} related indicators")
+    
+    demisto.debug("Step 4: Getting mutual indicators")
     mutual_indicators = get_mutual_indicators(related_indicators, indicators_of_actual_incident)
+    demisto.debug(f"Step 4 complete: Found {len(mutual_indicators)} mutual indicators")
+    
+    demisto.debug("Step 5: Creating DataFrames")
     actual_incident_df = create_actual_incident_df(indicators_of_actual_incident)
     related_incidents_df = create_related_incidents_df(related_indicators, incident_ids, incident_id)
+    demisto.debug(f"Step 5 complete: Created actual_incident_df with shape {actual_incident_df.shape}, "
+                  f"related_incidents_df with shape {related_incidents_df.shape}")
 
+    demisto.debug("Step 6: Running similarity model")
     similar_incidents = Model(
         actual_incident_df,
         related_incidents_df,
         similarity_threshold,
         max_incidents_to_display,
     ).predict()
+    demisto.debug(f"Step 6 complete: Model returned {len(similar_incidents)} similar incidents")
 
+    demisto.debug("Step 7: Preparing results")
     if show_actual_incident:
+        demisto.debug("Adding actual incident to results")
         command_results_list.append(
             actual_incident_results(actual_incident_df, incident_id, indicators_of_actual_incident, fields_to_display)
         )
@@ -515,15 +588,22 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
             similar_incidents_results(similar_incidents, indicators_of_actual_incident, fields_to_display),
         ]
     )
+    demisto.debug(f"Step 7 complete: Generated {len(command_results_list)} command results")
+    demisto.debug("=== Completed find_similar_incidents_by_indicators ===")
     return command_results_list
 
 
 def main():  # pragma: no cover
     try:
         args = demisto.args()
+        demisto.debug(f"Script started with args: {args}")
         incident_id = args.get("incidentId") or demisto.incidents()[0]["id"]
+        demisto.debug(f"Processing incident ID: {incident_id}")
         return_results(find_similar_incidents_by_indicators(incident_id, args))
+        demisto.debug("Script completed successfully")
     except Exception as e:
+        demisto.error(f"Failed to execute DBotFindSimilarIncidentsByIndicators. Error: {str(e)}")
+        demisto.error(f"Traceback: {traceback.format_exc()}")
         return_error(f"Failed to execute DBotFindSimilarIncidentsByIndicators. Error: {e}")
 
 
