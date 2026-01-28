@@ -453,6 +453,8 @@ script:
     description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
     execution: true
     name: aws-lambda-invoke
+    compliantpolicies:
+    - Cloud Compute Operations
     outputs:
     - contextPath: AWS.Lambda.InvokedFunctions.FunctionName
       description: The name of the Lambda function.

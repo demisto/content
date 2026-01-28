@@ -5893,6 +5893,8 @@ script:
         description: The AWS Region.
         type: String
   - name: aws-lambda-invoke
+    compliantpolicies:
+    - Cloud Compute Operations
     arguments:
     - name: account_id
       required: true
