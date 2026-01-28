@@ -639,6 +639,7 @@ def update_remote_system(
     parsed_args = UpdateRemoteSystemArgs(args)
 
     incident_id = parsed_args.remote_incident_id
+    inc_status = parsed_args.inc_status  # XSOAR incident status (2 = Done/Closed)
 
     demisto.debug(
         f"******** Got the following delta keys {list(parsed_args.delta.keys())!s}"
@@ -653,23 +654,31 @@ def update_remote_system(
             update_args = parsed_args.delta
             demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
-            updated_arguments = {}
-            if updated_status := update_args.get("status"):
+            updated_arguments: dict[str, Any] = {}
+            updated_status = update_args.get("status")
+            xsoar_incident_closed = inc_status == IncidentStatus.DONE
+
+            if updated_status == "closed" or (not updated_status and xsoar_incident_closed):
+                # Closing the alert - need closure_reason and description
                 closure_reason = update_args.get("closure_reason", "other")
-                closure_reason_description = update_args.get(
-                    "closure_reason_description", "user wasn't specified closure reason when closed alert"
-                )
-                if updated_status != "closed":
-                    updated_arguments["status"] = updated_status
-                else:
-                    updated_arguments["status"] = updated_status
-                    updated_arguments["closure_reason"] = closure_reason
-                    updated_arguments["closure_reason_description"] = closure_reason_description
+                closure_reason_description = update_args.get("closure_reason_description", "Closed from XSOAR")
+                updated_arguments["status"] = "closed"
+                updated_arguments["closure_reason"] = closure_reason
+                updated_arguments["closure_reason_description"] = closure_reason_description
+            elif updated_status:
+                # Status change to non-closed state
+                updated_arguments["status"] = updated_status
             else:
+                # No status change from XSOAR, check current Cyberint status
                 cyberint_response = client.get_alert(alert_ref_id=incident_id)
                 cyberint_alert: dict[str, Any] = cyberint_response["alert"]
                 cyberint_status = cyberint_alert.get("status")
                 updated_arguments["status"] = cyberint_status
+                if cyberint_status == "closed":
+                    updated_arguments["closure_reason"] = cyberint_alert.get("closure_reason", "other")
+                    updated_arguments["closure_reason_description"] = cyberint_alert.get(
+                        "closure_reason_description", "Closed from Cyberint"
+                    )
 
             updated_arguments["alerts"] = [incident_id]
 
