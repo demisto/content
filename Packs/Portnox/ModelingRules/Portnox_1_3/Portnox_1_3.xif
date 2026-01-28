@@ -1,5 +1,5 @@
 [MODEL:dataset="portnox_portnox_raw"]
-filter _raw_log != null
+filter cefVersion = null
 | alter deviceVersion = arrayindex(regextract(_raw_log ,"CEF\:0\|Portnox\|Portnox\|([^\|]+)\|"),0),
     deviceEventClassId = arrayindex(regextract(_raw_log ,"CEF\:0\|Portnox\|Portnox\|[^\|]+\|([^\|]+)\|"),0),
     action = arrayindex(regextract(_raw_log ,"CEF\:0\|Portnox\|Portnox\|[^\|]+\|[^\|]+\|([^\|]+)\|"),0),
