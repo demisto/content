@@ -28,13 +28,13 @@ For example: Feb 4 2025 17:40:49.388 UTC is converted to 2025 Feb 4 17:40:49.388
 // Concatenate prefix, year and the rest of the date
 | alter tmp_change_location = concat(tmp_get_prefix,tmp_get_year ," ",tmp_remove_year )
 // Replace the original timestamp with the new timestamp using regex
-| alter _raw_log = coalesce(replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location ),_raw_log )
+| alter tmp_raw_log = coalesce(replex(_raw_log , "\d+:\s+(\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}.\d+\s+\w+):", tmp_change_location ),_raw_log )
 
 /*
 This section alters the timestamp
 */
 | alter
-    tmp_get_log_datetime = arraystring(regextract(_raw_log, "(\d*\s*\S+\s+\d+\s+\S+)\s*\S*\:\s+\%"), "")
+    tmp_get_log_datetime = arraystring(regextract(tmp_raw_log, "(\d*\s*\S+\s+\d+\s+\S+)\s*\S*\:\s+\%"), "")
 | alter
     tmp_get_year = if(tmp_get_log_datetime ~= "\d{4}", arraystring(regextract(tmp_get_log_datetime, "\d{4}"), ""), "1970"),
     tmp_get_time_milli = arraystring(regextract(tmp_get_log_datetime, "\d{2}:\d{2}:\d{2}\.\d{3}"), ""),
@@ -43,4 +43,4 @@ This section alters the timestamp
     tmp_full_timestamp = arraystring(arraycreate(tmp_get_year, tmp_get_month_day, tmp_get_time_milli), " ")
 | alter
     _time = if(tmp_full_timestamp ~= "1970", _insert_time, parse_timestamp("%Y %h %e %H:%M:%E3S", tmp_full_timestamp))
-| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp, tmp_get_prefix, tmp_get_time , tmp_get_year , tmp_remove_year , tmp_change_location;
+| fields -tmp_get_log_datetime, tmp_get_year, tmp_get_time_milli, tmp_get_month_day, tmp_full_timestamp, tmp_get_prefix, tmp_get_time, tmp_remove_year , tmp_change_location, tmp_raw_log;
