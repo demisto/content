@@ -1,0 +1,17 @@
+{
+    "GravityZone.Command.KillProcess(val.TaskID && val.TaskID == obj.TaskID)": [
+        {
+            "TaskID": "6941944218d1fb8aea04019b",
+            "TaskType": "KillProcess",
+            "Status": "Processed",
+            "EndDate": "2025-12-16T19:17:55",
+            "EndpointID": "ENDPOINT_ID",
+            "Hostname": "ENDPOINT_NAME",
+            "ErrorCode": "Success",
+            "Error": "Success",
+            "StartDate": "2025-12-16T19:17:54",
+            "ProcessID": 10252,
+            "ProcessPath": ""
+        }
+    ]
+}
