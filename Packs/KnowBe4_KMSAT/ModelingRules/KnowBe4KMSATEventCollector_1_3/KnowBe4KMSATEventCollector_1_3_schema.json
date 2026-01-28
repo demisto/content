@@ -1,38 +1,38 @@
 {
     "knowbe4_kmsat_raw": {
-        "id": {
+        "ID": {
           "type": "string",
           "is_array": false
         },
-        "risk": {
+        "RISK": {
+          "type": "nested_json",
+          "is_array": false
+        },
+        "OCCURRED_DATE": {
+           "type": "datetime",
+           "is_array": false
+        },
+        "USER": {
+          "type": "nested_json",
+          "is_array": false
+         },
+        "EXTERNAL_ID": {
           "type": "string",
           "is_array": false
         },
-        "occurred_date": {
-            "type": "datetime",
-            "is_array": false
-          },
-        "user": {
-            "type": "string",
-            "is_array": false
-          },
-        "external_id": {
+        "EVENT_TYPE": {
+          "type": "nested_json",
+          "is_array": false
+        },
+        "ACCOUNT_ID": {
           "type": "string",
           "is_array": false
         },
-        "event_type": {
+        "DESCRIPTION": {
           "type": "string",
           "is_array": false
         },
-        "account_id": {
-          "type": "string",
-          "is_array": false
-        },
-        "description": {
-          "type": "string",
-          "is_array": false
-        },
-        "source": {
+        "SOURCE": {
           "type": "string",
           "is_array": false
         }
