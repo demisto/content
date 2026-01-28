@@ -13,6 +13,30 @@ configuration:
   type: 8
   defaultvalue: 'true'
   section: Collect
+- display: Maximum Indicators Per Fetch
+  name: limit
+  type: 0
+  defaultvalue: '100000'
+  additionalinfo: |-
+    Maximum number of indicators to fetch PER TYPE. 
+    Example: limit=20,000 with 4 types selected = 80,000 total indicators.
+    
+    The total (limit × number of types) is automatically capped at 100,000.
+    If limit × types > 100,000, the limit per type is adjusted.
+    Example: limit=30,000 with 4 types selected = 120,000 total indicators
+    adjusted to 25,000 per type (100,000 / 4 = 25,000).
+    
+    Fetch priority order:
+    1. Threat Objects
+    2. IPs
+    3. Domains
+    4. URLs
+    5. Files
+    
+    Default (in total for all types): 100,000. Maximum (in total for all types): 100,000.
+  required: false
+  section: Collect
+  advanced: true
 - display: Feed Types
   additionalinfo: Choose the requested indicator feeds. Indicators feed and Threat Objects (actors, malware, campaigns, techniques, etc.) feed (default is both).
   name: feed_types
