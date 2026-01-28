@@ -66,16 +66,16 @@ VALID_REGIONS = {
 def parse_url_list(url_input: str) -> list[str]:
     """
     Parse URL input that may contain multiple URLs or a single URL with commas.
-    
+
     This function intelligently splits URLs by detecting URL patterns (http://, https://)
     to avoid incorrectly splitting URLs that contain commas in their parameters.
-    
+
     Args:
         url_input: String containing one or more URLs
-        
+
     Returns:
         List of individual URLs
-        
+
     Examples:
         >>> parse_url_list("http://example.com,https://test.com")
         ['http://example.com', 'https://test.com']
@@ -86,11 +86,11 @@ def parse_url_list(url_input: str) -> list[str]:
     """
     # Split by comma, but only if followed by a URL protocol
     # This regex looks for commas followed by optional whitespace and then http:// or https://
-    parts = re.split(r',\s*(?=https?://)', url_input)
-    
+    parts = re.split(r",\s*(?=https?://)", url_input)
+
     # Strip whitespace from each URL
     urls = [url.strip() for url in parts if url.strip()]
-    
+
     return urls
 
 

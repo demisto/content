@@ -1647,9 +1647,9 @@ def test_parse_url_list_single_url_with_commas():
         - The URL is not split at the commas
     """
     url_input = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 1
     assert result[0] == url_input
 
@@ -1665,9 +1665,9 @@ def test_parse_url_list_multiple_urls():
         - Each URL is properly trimmed
     """
     url_input = "http://google.com/path,https://amazon.com/path"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 2
     assert result[0] == "http://google.com/path"
     assert result[1] == "https://amazon.com/path"
@@ -1683,9 +1683,9 @@ def test_parse_url_list_multiple_urls_with_spaces():
         - Returns a list with all URLs correctly separated and trimmed
     """
     url_input = "http://google.com/path , https://amazon.com/path"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 2
     assert result[0] == "http://google.com/path"
     assert result[1] == "https://amazon.com/path"
@@ -1702,9 +1702,9 @@ def test_parse_url_list_mixed_urls_with_commas():
         - URLs with commas in parameters are not split
     """
     url_input = "http://example.com/path?x=1,2,3,https://fonts.googleapis.com/css?family=Roboto:100,200,300,http://test.com"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 3
     assert result[0] == "http://example.com/path?x=1,2,3"
     assert result[1] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
@@ -1721,9 +1721,9 @@ def test_parse_url_list_single_url_no_commas():
         - Returns a list with a single URL
     """
     url_input = "https://example.com/path"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 1
     assert result[0] == "https://example.com/path"
 
@@ -1738,9 +1738,9 @@ def test_parse_url_list_empty_string():
         - Returns an empty list
     """
     url_input = ""
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 0
 
 
@@ -1754,9 +1754,9 @@ def test_parse_url_list_https_only():
         - Returns a list with all HTTPS URLs correctly separated
     """
     url_input = "https://site1.com,https://site2.com,https://site3.com"
-    
+
     result = parse_url_list(url_input)
-    
+
     assert len(result) == 3
     assert result[0] == "https://site1.com"
     assert result[1] == "https://site2.com"
