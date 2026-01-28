@@ -1,8 +1,8 @@
-id: Sanitize File - CDR - ThreatZone
+id: Sanitize File - CDR - ThreatZone v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Sanitize File - CDR - ThreatZone
+name: Sanitize File - CDR - ThreatZone v2
 description: |-
   Sanitize one file using the ThreatZone CDR integration.
   Returns relevant reports to the War Room and file reputations to the context data.
@@ -115,7 +115,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Analysis(val.STATUS!==5).REPORT
+        simple: ThreatZone.Submission.Summary(val.REPORT.status!==5).REPORT
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -380,34 +380,34 @@ inputs:
   description: Maximum polling duration (in minutes) before the playbook resumes.
   playbookInputQuery:
 outputs:
-- contextPath: ThreatZone.Analysis.STATUS
+- contextPath: ThreatZone.Submission.Summary.STATUS
   description: The status of the submission scanning process.
   type: String
-- contextPath: ThreatZone.Analysis.LEVEL
+- contextPath: ThreatZone.Submission.Summary.LEVEL
   description: Threat Level of the scanned file. (malicious, suspicious or informative).
   type: String
-- contextPath: ThreatZone.Analysis.URL
+- contextPath: ThreatZone.Submission.Summary.URL
   description: The result page url of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.INFO
+- contextPath: ThreatZone.Submission.Summary.INFO
   description: Contains the file name, scan process status and public status.
   type: String
-- contextPath: ThreatZone.Analysis.REPORT
+- contextPath: ThreatZone.Submission.Summary.REPORT
   description: The analysis report of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.MD5
+- contextPath: ThreatZone.Submission.Summary.MD5
   description: The md5 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SHA1
+- contextPath: ThreatZone.Submission.Summary.SHA1
   description: The sha1 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SHA256
+- contextPath: ThreatZone.Submission.Summary.SHA256
   description: The sha256 hash of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.UUID
+- contextPath: ThreatZone.Submission.Summary.UUID
   description: The UUID of the submission.
   type: String
-- contextPath: ThreatZone.Analysis.SANITIZED
+- contextPath: ThreatZone.Submission.Summary.SANITIZED
   description: The url of the sanitized file.
   type: String
 tests:
