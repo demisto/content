@@ -27,7 +27,47 @@ alter
     xdm.event.type = message_type,
     xdm.alert.severity = if(message_type = "ALERT",severity,null),
     xdm.event.log_level = if(severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL , severity = "WARNING", XDM_CONST.LOG_LEVEL_WARNING , severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL), 
-    xdm.event.operation = event_name,
+    xdm.event.operation = if(
+    event_name = "Process_Created", XDM_CONST.OPERATION_TYPE_PROCESS_CREATE,
+    event_name = "Process_Terminated", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE,
+    event_name = "File_Descriptor_Open", XDM_CONST.OPERATION_TYPE_FILE_OPEN,
+    event_name in ("File_Descriptor_File_Content_Change", "New_File_Mapped"), XDM_CONST.OPERATION_TYPE_FILE_WRITE,
+    event_name in ("File_Descriptor_Close", "File_Unmapped"), null, // No standard FILE_CLOSE constant exists
+    event_name in ("Foreign_Library_Loaded", "Foreign_Library_Loaded_File_Size_Mismatch"), XDM_CONST.OPERATION_TYPE_IMAGE_LOAD,
+    event_name in (
+        "Foreign_Binary_Executed", 
+        "Binary_Executed_Not_as_Intended", 
+        "Shell_Command_Executed", 
+        "Reverse_Shell_Detected",
+        "Service_Initialization_Started",
+        "Service_Runtime_Failure"
+    ), XDM_CONST.OPERATION_TYPE_EXECUTION,
+    event_name in (
+        "Network_Connection_Created", 
+        "Thread_Created", 
+        "Container_Started", 
+        "Process_Memory_Created",
+        "New_Executable_Anonymous_Memory_Mapped"
+    ), XDM_CONST.OPERATION_TYPE_CREATE,
+    event_name in (
+        "Network_Connection_Terminated", 
+        "Thread_Terminated", 
+        "Container_Terminated", 
+        "Process_Memory_Terminated",
+        "Service_Gracefully_Shutdown"
+    ),XDM_CONST.OPERATION_TYPE_DELETE,
+    event_name in (
+        "Executable_Permissions_Added", 
+        "Executable_Permissions_Removed", 
+        "TCP_Network_Connection_State_Change",
+        "Shell_History_Disabled",
+        "Shell_History_Cleared"
+    ), XDM_CONST.OPERATION_TYPE_UPDATE,
+    event_name in (
+        "OS_Identifier_Found",
+        "OS_Identifier_Discovery_Extended",
+        "TCP_Network_Connections_Status"
+    ), XDM_CONST.OPERATION_TYPE_READ,null),
     xdm.event.description = activity_data,
     xdm.source.host.device_id = device_id,
     xdm.source.host.ipv4_addresses = ipv4_list,
@@ -44,4 +84,5 @@ alter
     xdm.source.port = to_integer(source_port),
     xdm.target.port = to_integer(destination_port),
     xdm.target.ipv4 = if(is_ipv4(destination_ip_address),destination_ip_address,null),
-    xdm.target.ipv6 = if(is_ipv6(destination_ip_address),destination_ip_address,null);
+    xdm.target.ipv6 = if(is_ipv6(destination_ip_address),destination_ip_address,null)
+| alter xdm.event.operation_subtype = if(xdm.event.operation = null, event_name, null);
