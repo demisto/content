@@ -25,7 +25,7 @@
         "is_array": false
       },
       "occurred_message_time_iso_8601_ns": {
-        "type": "string",
+        "type": "datetime",
         "is_array": false
       },
       "bluefield_network_interface_name": {
