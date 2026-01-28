@@ -4,6 +4,7 @@ commonfields:
 name: Cloaken
 display: Cloaken
 category: Data Enrichment & Threat Intelligence
+provider: Cloaken
 description: Unshorten URLs onsite using the power of a Tor proxy server to prevent leaking IP addresses to adversaries.
 configuration:
 - display: Server URL (e.g., https://cloaken.cypherint.com)
@@ -55,7 +56,7 @@ script:
       description: The URL for which to take a screenshot.
     outputs:
     - contextPath: CloakenScreenshot.Url
-      description: Url
+      description: Url.
       type: string
     - contextPath: CloakenScreenshot.Status
       description: Status of the screenshot.
@@ -63,3 +64,5 @@ script:
     description: Creates a screenshot of the specified URL.
   dockerimage: demisto/vendors-sdk:1.0.0.115493
 fromversion: 5.0.0
+tests:
+- No tests
