@@ -1708,7 +1708,7 @@ script:
 
 
   - name: aws-rds-db-instance-modify
-    description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
+    description: "Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1796,14 +1796,14 @@ script:
       - 'true'
       - 'false'
     - name: auto_minor_version_upgrade
-      description: 'Whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+      description: 'Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. Behavior: An outage occurs only if automatic upgrades are enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version; otherwise, changes are applied as soon as possible without causing an outage. Note: Do not enable for RDS Custom DB instances (operation will fail).'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: multi_az
-      description: 'Whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+      description: 'Behavior: Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage and is applied during the next maintenance window unless ApplyImmediately is enabled. Not applicable to RDS Custom DB instances.'
       required: false
       auto: PREDEFINED
       predefined:
