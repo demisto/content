@@ -3866,6 +3866,36 @@ script:
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   - arguments:
+    - description: A comma-separated list of API key IDs to retrieve.
+      isArray: true
+      name: api_id
+    - description: A comma-separated list of API key roles to retrieve.
+      isArray: true
+      name: role
+    - description: 'Filters API keys that expire before this date. For example: "1 year". Filters API keys that have an expiration date.'
+      name: expires_before
+    - description: 'Filters API keys that expire after this date. For example: "1 year". Filters API keys that have an expiration date.'
+      name: expires_after
+    description: Gets a list of existing API keys.
+    name: xdr-api-key-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.id
+      description: The API key ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.roles
+      description: The roles associated with the API key.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.APIKeyData.expiration
+      description: The expiration date of the API key.
+      type: Date
+  - arguments:
+    - description: A comma-separated list of API key IDs to delete.
+      isArray: true
+      name: api_id
+      required: true
+    description: Deletes the specified API keys.
+    name: xdr-api-key-delete
+  - arguments:
     - description: 'A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used.'
       isArray: true
       name: asset_id
