@@ -339,7 +339,7 @@ def test_get_events_command_with_push(monkeypatch, client):
 
     def fake_send(events, vendor, product):
         called["sent"] = len(events)
-        assert vendor == "decyfir"
+        assert vendor == "cyfirma"
         assert product == "decyfir"
 
     monkeypatch.setattr("DecyfirEventCollector.send_events_to_xsiam", fake_send)
