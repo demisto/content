@@ -3912,7 +3912,7 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
     )
 
 
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set, set]:
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, str, int, set, set]:
     """
     Load Spotlight state from integration context.
     
@@ -3931,16 +3931,17 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
     
     # Extract state variables
-    snapshot_id = spotlight_state.metadata.get("snapshot_id", str(round(time.time() * 1000)))
+    snapshot_id_vuln = spotlight_state.metadata.get("snapshot_id_vuln", str(round(time.time() * 1000)))
+    snapshot_id_assets = spotlight_state.metadata.get("snapshot_id_assets", '1' + str(round(time.time() * 1000)))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
     processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
     
-    log_falcon_assets(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+    log_falcon_assets(f"Loaded Spotlight state: {snapshot_id_vuln=}, {snapshot_id_assets=}, {total_fetched=}, "
                   f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
                   f"after_token={spotlight_state.cursor}")
     
-    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids
+    return spotlight_state, integration_context, snapshot_id_vuln, snapshot_id_assets, total_fetched, unique_aids, processed_aids
 
 
 def save_spotlight_state(
@@ -4134,7 +4135,7 @@ class AssetsDeviceHandler:
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Update state BEFORE sending to XSIAM
+            # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
             self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
 
@@ -4216,7 +4217,7 @@ class AssetsDeviceHandler:
         }
 
         return [
-            {k: v for k, v in asset.items() if k in allowed_keys}
+            {k: asset.get(k, [] if k == "tags" else "") for k in allowed_keys}
             for asset in assets
         ]
 
@@ -4290,7 +4291,7 @@ def send_data_to_xsiam_async(
     data_format: str = "json",
     url_key: str = "url",
     num_of_attempts: int = 3,
-    chunk_size: int = 2**20,
+    chunk_size: int = XSIAM_EVENT_CHUNK_SIZE,
     data_type: str = "assets",
     snapshot_id: str = "",
     items_count: int = 1,
@@ -4437,7 +4438,7 @@ async def send_batch_to_xsiam_and_save_context(
             data_format="json",
             url_key="url",
             num_of_attempts=3,
-            chunk_size=2**20,
+            chunk_size=XSIAM_EVENT_CHUNK_SIZE,
             data_type=data_type,
             snapshot_id=snapshot_id,
             items_count=items_count,
@@ -4464,7 +4465,8 @@ async def send_batch_to_xsiam_and_save_context(
 def update_spotlight_state_and_metadata(
     spotlight_state: ContentClientState,
     cursor: str | None,
-    snapshot_id: str,
+    snapshot_id_vuln: str,
+    snapshot_id_assets: str,
     total_fetched: int,
     unique_aids: set,
     processed_aids: set
@@ -4483,7 +4485,8 @@ def update_spotlight_state_and_metadata(
     """
     spotlight_state.cursor = cursor
     spotlight_state.metadata = {
-        "snapshot_id": snapshot_id,
+        "snapshot_id_vuln": snapshot_id,
+        "snapshot_id_assets": snapshot_id_assets,
         "total_fetched_until_now": total_fetched,
         "unique_aids": list(unique_aids),
         "processed_aids": list(processed_aids)
@@ -4497,7 +4500,8 @@ def handle_spotlight_fetch_error(
     context_store: ContentClientContextStore,
     integration_context: dict,
     after_token: str | None,
-    snapshot_id: str,
+    snapshot_id_vuln: str,
+    snapshot_id_assets: str,
     total_fetched: int,
     unique_aids: set,
     processed_aids: set
@@ -4513,7 +4517,8 @@ def handle_spotlight_fetch_error(
         context_store: Context store for saving state
         integration_context: Full integration context dict
         after_token: Current pagination token
-        snapshot_id: Snapshot ID for tracking
+        snapshot_id_vuln: Snapshot ID vulenrabilties for tracking
+        snapshot_id_assets: Snapshot ID Assets for tracking
         total_fetched: Total vulnerabilities fetched so far
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
@@ -4530,7 +4535,8 @@ def handle_spotlight_fetch_error(
     update_spotlight_state_and_metadata(
         spotlight_state=spotlight_state,
         cursor=after_token,
-        snapshot_id=snapshot_id,
+        snapshot_id_vuln=snapshot_id_vuln,
+        snapshot_id_assets=snapshot_id_assets,
         total_fetched=total_fetched,
         unique_aids=unique_aids,
         processed_aids=processed_aids
@@ -4554,7 +4560,7 @@ async def fetch_spotlight_assets():
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     
     # Load state from integration context (now includes processed_aids)
-    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
+    spotlight_state, integration_context, snapshot_id_vuln, snapshot_id_assets, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
     after_token = spotlight_state.cursor
     
     # Create client
@@ -4571,7 +4577,7 @@ async def fetch_spotlight_assets():
         context_store=context_store,
         integration_context=integration_context,
         spotlight_state=spotlight_state,
-        snapshot_id=snapshot_id,
+        snapshot_id=snapshot_id_assets,
         processed_aids=processed_aids,
         batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS
     )
@@ -4595,20 +4601,30 @@ async def fetch_spotlight_assets():
             # Get next pagination token
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
             
-            # Update state BEFORE creating async task
+            # Update state 
             batch_counter += 1
             update_spotlight_state_and_metadata(
                 spotlight_state=spotlight_state,
                 cursor=new_after_token,
-                snapshot_id=snapshot_id,
+                snapshot_id_vuln=snapshot_id_vuln,
+                snapshot_id_assets=snapshot_id_assets,
                 total_fetched=total_fetched,
                 unique_aids=unique_aids,
                 processed_aids=asset_handler.processed_aids
             )
 
-            task = create_task_send_batch_to_xsiam_and_save_context(batch_counter, context_store, integration_context,
-                                                                    last_saved_batch_number, new_after_token, snapshot_id,
-                                                                    spotlight_state, total_fetched, vulnerabilities)
+            task = create_task_send_batch_to_xsiam_and_save_context(
+                                                data=vulnerabilities,
+                                                product=SPOTLIGHT_VULN_PRODUCT,
+                                                snapshot_id=snapshot_id_vuln,
+                                                items_count=1,
+                                                batch_number=batch_counter,
+                                                last_saved_batch_number=last_saved_batch_number,
+                                                context_store=context_store,
+                                                integration_context=integration_context,
+                                                state=spotlight_state,
+                                                save_state_callback=save_spotlight_state,
+                                                data_type="assets")
 
             # Track task and update last_saved_batch_number when task completes
             def update_last_saved(future):
@@ -4656,7 +4672,8 @@ async def fetch_spotlight_assets():
         update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
             cursor=None,
-            snapshot_id="",
+            snapshot_id_vuln="",
+            snapshot_id_assets="",
             total_fetched=0,
             unique_aids=set(),
             processed_aids=set()
@@ -4682,7 +4699,8 @@ async def fetch_spotlight_assets():
             context_store=context_store,
             integration_context=integration_context,
             after_token=after_token,
-            snapshot_id=snapshot_id,
+            snapshot_id_vuln=snapshot_id_vuln,
+            snapshot_id_assets=snapshot_id_assets,
             total_fetched=total_fetched,
             unique_aids=unique_aids,
             processed_aids=asset_handler.processed_aids
@@ -4738,46 +4756,6 @@ def create_task_send_batch_to_xsiam_and_save_context(data, product, snapshot_id,
     return task
 
 
-def create_task_send_batch_to_xsiam_and_save_contextt(batch_counter, context_store, integration_context,
-                                                           last_saved_batch_number, new_after_token, snapshot_id,
-                                                           spotlight_state, total_fetched, vulnerabilities):
-    """
-    Create an async task to send vulnerability batch to XSIAM and save context.
-    This is a regular (non-async) function that creates and returns an async task.
-    
-    Args:
-        batch_counter: Current batch number
-        context_store: Context store for saving state
-        integration_context: Full integration context dict
-        last_saved_batch_number: Last successfully saved batch number
-        new_after_token: Next pagination token
-        snapshot_id: Snapshot ID for tracking
-        spotlight_state: State object to save
-        total_fetched: Total vulnerabilities fetched
-        vulnerabilities: List of vulnerabilities to send
-        
-    Returns:
-        asyncio.Task: The created async task
-    """
-    task = asyncio.create_task(
-        send_batch_to_xsiam_and_save_context(
-            data=vulnerabilities,
-            vendor=VENDOR,
-            product=SPOTLIGHT_VULN_PRODUCT,
-            snapshot_id=snapshot_id,
-            items_count=total_fetched if not new_after_token else 1,
-            batch_number=batch_counter,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            integration_context=integration_context,
-            state=spotlight_state,
-            save_state_callback=save_spotlight_state,
-            data_type="assets",
-        )
-    )
-    return task
-
-
 def fetch_cnapp_assets():
     demisto.info("Strating fetch assets exeuction.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
@@ -4802,6 +4780,7 @@ def fetch_cnapp_assets():
 
     demisto.info("Finished fetch assets exeuction.")
 
+
 def fetch_assets_command():
     demisto.debug("Strating fetch assets exeuction.")
     params = demisto.params()
@@ -4812,6 +4791,7 @@ def fetch_assets_command():
 
     if "Spotlight" in fetch_assets_types:
         asyncio.run(fetch_spotlight_assets())
+
 
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
