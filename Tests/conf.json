@@ -6402,6 +6402,7 @@
         "CrowdStrike Falcon Basic Test",
         "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data",
         "Test Playbook - CrowdStrike Falcon - Retrieve File",
+        "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions",
         "TestDemistoRestAPI",
         "Test XDR Playbook execute script commands",
         "Test XDR Playbook quarantine file command",
