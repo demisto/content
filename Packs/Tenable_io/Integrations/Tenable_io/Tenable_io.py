@@ -123,13 +123,14 @@ VENDOR = "tenable"
 PRODUCT = "io"
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
-MAX_CHUNKS_PER_FETCH = 8
-MAX_VULNS_CHUNKS_PER_FETCH = 8
+MAX_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
+MAX_VULNS_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = "404"
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
+MAX_404_RETRIES = 3  # Maximum number of 404 retries before giving up on current export
 
 
 class Client(BaseClient):
@@ -540,6 +541,20 @@ def get_timestamp(timestamp):  # pylint: disable=W9014
     return time.mktime(timestamp.timetuple())
 
 
+def generate_snapshot_id() -> str:
+    """
+    Generate a unique snapshot ID for XSIAM dataset snapshots.
+
+    Uses current timestamp in milliseconds to ensure uniqueness across fetch cycles.
+    This ID is used to group assets/vulnerabilities that belong to the same snapshot,
+    allowing XSIAM to properly track complete vs incomplete snapshots.
+
+    Returns:
+        str: A unique snapshot ID based on current timestamp in milliseconds.
+    """
+    return str(round(time.time() * 1000))
+
+
 def generate_export_uuid(client: Client, last_run):  # pylint: disable=W9014
     """
     Generate a job export uuid in order to fetch vulnerabilities.
@@ -555,6 +570,11 @@ def generate_export_uuid(client: Client, last_run):  # pylint: disable=W9014
     export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
 
     demisto.info(f"vulnerabilities export uuid is {export_uuid}")
+    # Ensure snapshot_id exists (should already be set by generate_assets_export_uuid)
+    if "snapshot_id" not in last_run:
+        snapshot_id = generate_snapshot_id()
+        demisto.debug(f"Generated new snapshot_id for vulnerabilities: {snapshot_id}")
+        last_run["snapshot_id"] = snapshot_id
     last_run.update({"vuln_export_uuid": export_uuid})
 
 
@@ -575,7 +595,11 @@ def generate_assets_export_uuid(client: Client, assets_last_run):  # pylint: dis
     export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
     demisto.debug(f"assets export uuid is {export_uuid}")
 
-    assets_last_run.update({"assets_export_uuid": export_uuid})
+    # Generate a new snapshot_id for this fetch cycle (used for XSIAM dataset snapshots)
+    snapshot_id = generate_snapshot_id()
+    demisto.debug(f"Generated new snapshot_id: {snapshot_id}")
+
+    assets_last_run.update({"assets_export_uuid": export_uuid, "snapshot_id": snapshot_id, "total_assets": 0})
 
 
 def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9014
@@ -595,16 +619,48 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+            # Track 404 retries to prevent infinite loop
+            retry_count = assets_last_run.get("assets_404_retry_count", 0) + 1
+            if retry_count >= MAX_404_RETRIES:
+                demisto.error(
+                    f"Assets export failed after {MAX_404_RETRIES} retries due to 404 errors. "
+                    "The export UUID may be expiring before all chunks can be downloaded. "
+                    "Consider increasing the fetch frequency or reducing the data volume. "
+                    "Clearing export state to start fresh on next fetch cycle."
+                )
+                # Clear all assets export state to start fresh on next cycle
+                assets_last_run.pop("assets_export_uuid", None)
+                assets_last_run.pop("assets_available_chunks", None)
+                assets_last_run.pop("assets_404_retry_count", None)
+                return [], assets_last_run
 
-            export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
-            assets_last_run.update({"assets_export_uuid": export_uuid})
+            demisto.info(
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
+            )
+            fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
+            export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
+            # Generate a new snapshot_id when resetting the fetch
+            snapshot_id = generate_snapshot_id()
+            assets_last_run.update(
+                {
+                    "assets_export_uuid": export_uuid,
+                    "snapshot_id": snapshot_id,
+                    "total_assets": 0,
+                    "assets_404_retry_count": retry_count,
+                }
+            )
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("assets_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
         assets.extend(result)
         updated_stored_chunks.remove(chunk_id)
+    # Reset retry count on successful chunk download
+    assets_last_run.pop("assets_404_retry_count", None)
+
+    # Note: total_assets counter is updated in main() after successful send_data_to_xsiam()
+    # to ensure the counter only reflects assets that were actually sent to XSIAM
+
     if updated_stored_chunks:
         assets_last_run.update(
             {"assets_available_chunks": updated_stored_chunks, "nextTrigger": "30", "type": FETCH_COMMAND.get("assets")}
@@ -632,18 +688,43 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
     for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
         result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
-            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+            # Track 404 retries to prevent infinite loop
+            retry_count = assets_last_run.get("vulns_404_retry_count", 0) + 1
+            if retry_count >= MAX_404_RETRIES:
+                demisto.error(
+                    f"Vulnerabilities export failed after {MAX_404_RETRIES} retries due to 404 errors. "
+                    "The export UUID may be expiring before all chunks can be downloaded. "
+                    "Consider increasing the fetch frequency or reducing the data volume. "
+                    "Clearing export state to start fresh on next fetch cycle."
+                )
+                # Clear all vuln export state to start fresh on next cycle
+                assets_last_run.pop("vuln_export_uuid", None)
+                assets_last_run.pop("vulns_available_chunks", None)
+                assets_last_run.pop("vulns_404_retry_count", None)
+                return [], assets_last_run
 
+            demisto.info(
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
+            )
             export_uuid = client.get_vuln_export_uuid(
                 num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             )
-            assets_last_run.update({"vuln_export_uuid": export_uuid})
+            # Note: snapshot_id and total_assets are managed by the assets flow, not vulnerabilities
+            # We only update the vuln_export_uuid and retry count here
+            assets_last_run.update(
+                {
+                    "vuln_export_uuid": export_uuid,
+                    "vulns_404_retry_count": retry_count,
+                }
+            )
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
             assets_last_run.pop("vulns_available_chunks", None)
             demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
             return [], assets_last_run
         vulnerabilities.extend(result)
         updated_stored_chunks.remove(chunk_id)
+    # Reset retry count on successful chunk download
+    assets_last_run.pop("vulns_404_retry_count", None)
     for vuln in vulnerabilities:
         vuln["_time"] = vuln.get("received") or vuln.get("indexed")
     if updated_stored_chunks:
@@ -653,6 +734,9 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
     else:
         assets_last_run.pop("vulns_available_chunks", None)
         assets_last_run.pop("vuln_export_uuid", None)
+        # Reset snapshot_id when all data has been fetched (will be regenerated on next fetch cycle)
+        assets_last_run.pop("snapshot_id", None)
+        assets_last_run.pop("total_assets", None)
     return vulnerabilities, assets_last_run
 
 
@@ -694,8 +778,13 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):  # pylin
 
 
 def test_module(client: Client, params):  # pylint: disable=W9014
-    if int(params.get("assetsFetchInterval")) < 60:
-        raise DemistoException("Assets and vulnerabilities fetch Interval is supposed to be 1 hour minimum.")
+    # Use default of 720 minutes (12 hours) if assetsFetchInterval is not set or empty
+    # This matches the defaultvalue in the YML configuration
+    assets_fetch_interval = params.get("assetsFetchInterval") or MIN_ASSETS_INTERVAL
+    if int(assets_fetch_interval) < MIN_ASSETS_INTERVAL:
+        raise DemistoException(
+            f"Assets and vulnerabilities fetch Interval is supposed to be {MIN_ASSETS_INTERVAL} minutes (1 hour) minimum."
+        )
     client.list_scan_filters()
     return "ok"
 
@@ -1872,6 +1961,32 @@ def skip_fetch_assets(last_run):  # pragma: no cover   # pylint: disable=W9014
     return to_skip
 
 
+def is_assets_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if assets fetch is still in progress.
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there are pending asset chunks or an active asset export job.
+    """
+    return bool(last_run.get("assets_available_chunks") or last_run.get("assets_export_uuid"))
+
+
+def is_vulns_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if vulnerabilities fetch is still in progress.
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there are pending vuln chunks or an active vuln export job.
+    """
+    return bool(last_run.get("vulns_available_chunks") or last_run.get("vuln_export_uuid"))
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -1985,11 +2100,11 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
-            if assets_last_run_copy.get("assets_export_uuid") or not assets_last_run_copy.get("vuln_export_uuid"):
+            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle
+            if is_assets_fetch_in_progress(assets_last_run_copy) or not is_vulns_fetch_in_progress(assets_last_run_copy):
                 assets = run_assets_fetch(client, assets_last_run)
-            # Fetch Vulnerabilities
-            if assets_last_run_copy.get("vuln_export_uuid") or not assets_last_run_copy.get("assets_export_uuid"):
+            # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
+            if is_vulns_fetch_in_progress(assets_last_run_copy) or not is_assets_fetch_in_progress(assets_last_run_copy):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
@@ -1997,13 +2112,51 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
+            # Get snapshot_id and determine if we're still fetching assets
+            # Note: items_count is for the assets snapshot only, not vulnerabilities
+            # Fallback to generate_snapshot_id() if not in last_run - this handles edge cases
+            # where the fetch cycle starts without a stored snapshot_id (e.g., first run or reset)
+            snapshot_id = assets_last_run.get("snapshot_id", generate_snapshot_id())
+            total_assets = assets_last_run.get("total_assets", len(assets))
+
+            # Check if assets fetch is still in progress (has more asset chunks or asset export job pending)
+            # Vulnerabilities are separate and don't affect the assets snapshot completion
+            assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
+
+            # items_count: Set to 1 if assets fetch is still in progress to signal snapshot is incomplete
+            # Set to actual count when assets are done to signal snapshot is complete
+            items_count = 1 if assets_fetch_in_progress else total_assets
+
             if assets:
-                demisto.debug("sending assets to XSIAM.")
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product=f"{PRODUCT}_assets", data_type="assets")
+                demisto.debug(
+                    f"sending {len(assets)} assets to XSIAM with snapshot_id={snapshot_id}, "
+                    f"items_count={items_count}, total_assets={total_assets}"
+                )
+                send_data_to_xsiam(
+                    data=assets,
+                    vendor=VENDOR,
+                    product=f"{PRODUCT}_assets",
+                    data_type="assets",
+                    snapshot_id=snapshot_id,
+                    items_count=str(items_count),
+                    # Disable automatic health module update here because we update it separately
+                    # below with the cumulative total_assets count across all fetch cycles,
+                    # rather than just the count from this single batch
+                    should_update_health_module=False,
+                )
+                # Update cumulative asset count AFTER successful send_data_to_xsiam()
+                # This ensures the counter only reflects assets that were actually sent to XSIAM
+                total_assets = assets_last_run.get("total_assets", 0) + len(assets)
+                assets_last_run["total_assets"] = total_assets
+                demisto.setAssetsLastRun(assets_last_run)
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
-                demisto.debug("sending vulnerabilities to XSIAM.")
+                demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
+
+            # Update module health separately to show the number of assets pulled
+            if assets or not assets_fetch_in_progress:
+                demisto.updateModuleHealth({"assetsPulled": total_assets})
 
             demisto.info("Done Sending data to XSIAM.")
 
