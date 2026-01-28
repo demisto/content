@@ -1965,21 +1965,6 @@ def resolve_chat_or_channel(
     raise DemistoException(error_message)
 
 
-def fetch_chat_messages(
-    chat_id: str,
-    top: int,
-    order_by: str,
-) -> dict[str, Any]:
-    demisto.debug(f"Fetching messages from chat {chat_id}.")
-    return get_messages_list(
-        chat_id=chat_id,
-        odata_params={
-            "$orderBy": f"{order_by} desc",
-            "$top": top,
-        },
-    )
-
-
 def fetch_channel_messages(
     channel_id: str,
     team_name: str,
@@ -2018,10 +2003,13 @@ def list_messages_command():
             raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
 
         if entity_type == "chat":
-            messages_list_response = fetch_chat_messages(
+            demisto.debug(f"Fetching messages from chat {resolved_id}.")
+            messages_list_response = get_messages_list(
                 chat_id=resolved_id,
-                top=top,
-                order_by=order_by,
+                odata_params={
+                    "$orderBy": f"{order_by} desc",
+                    "$top": top,
+                },
             )
         else:
             messages_list_response = fetch_channel_messages(
