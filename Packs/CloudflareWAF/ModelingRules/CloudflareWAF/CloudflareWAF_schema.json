@@ -1,98 +1,98 @@
 {
     "cloudflare_waf_raw": {
-      "EdgeResponseBytes": {
+      "edgeresponsebytes": {
           "type": "int",
           "is_array": false
         },
-      "EdgePathingOp": {
+      "edgepathingop": {
           "type": "string",
           "is_array": false
         },
-      "EdgeServerIP": {
+      "edgeserverip": {
           "type": "string",
           "is_array": false
         },
-      "OriginIP": {
+      "originip": {
           "type": "string",
           "is_array": false
         },
-      "EdgeResponseStatus": {
+      "edgeresponsestatus": {
           "type": "int",
           "is_array": false
         },
-      "OriginResponseStatus": {
+      "originresponsestatus": {
           "type": "int",
           "is_array": false
         },
-      "ClientRequestMethod": {
+      "clientrequestmethod": {
           "type": "string",
           "is_array": false
         },
-      "ClientASN": {
+      "clientasn": {
           "type": "int",
           "is_array": false
         },
-      "ClientCountry": {
+      "clientcountry": {
           "type": "string",
           "is_array": false
         },
-      "ClientDeviceType": {
+      "clientdevicetype": {
           "type": "string",
           "is_array": false
         },
-      "ClientRegionCode": {
+      "clientregioncode": {
           "type": "string",
           "is_array": false
         },
-      "ClientRequestBytes": {
+      "clientrequestbytes": {
           "type": "int",
           "is_array": false
         },
-      "ClientRequestHost": {
+      "clientrequesthost": {
           "type": "string",
           "is_array": false
         },
-      "ClientRequestScheme": {
+      "clientrequestscheme": {
           "type": "string",
           "is_array": false
         },
-      "ClientRequestURI": {
+      "clientrequesturi": {
           "type": "string",
           "is_array": false
         },
-      "ClientRequestReferer": {
+      "clientrequestreferer": {
           "type": "string",
           "is_array": false
         },
-      "ClientRequestUserAgent": {
+      "clientrequestuseragent": {
           "type": "string",
           "is_array": false
         },
-      "ClientSSLCipher": {
+      "clientsslcipher": {
           "type": "string",
           "is_array": false
         },
-      "ClientSSLProtocol": {
+      "clientsslprotocol": {
           "type": "string",
           "is_array": false
         },
-      "ClientSrcPort": {
+      "clientsrcport": {
           "type": "int",
           "is_array": false
         },
-      "RayID": {
+      "rayid": {
           "type": "string",
           "is_array": false
         },
-      "RequestHeaders": {
+      "requestheaders": {
           "type": "string",
           "is_array": false
         },
-      "WAFAttackScore": {
+      "wafattackscore": {
           "type": "int",
           "is_array": false
         },
-      "ZoneName": {
+      "zonename": {
           "type": "string",
           "is_array": false
         },
@@ -116,7 +116,7 @@
         "type": "datetime",
         "is_array": false
       },
-      "Datetime": {
+      "datetime": {
         "type": "string",
         "is_array": false
       }
