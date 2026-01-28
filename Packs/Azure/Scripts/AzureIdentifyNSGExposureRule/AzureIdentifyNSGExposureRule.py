@@ -29,7 +29,7 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
         "subscription_id": subscription_id,
         "resource_group_name": rg_name,
         "network_security_group_name": nsg_name,
-        "using": integration_instance
+        "using": integration_instance,
     }
     result = demisto.executeCommand("azure-nsg-security-rules-list", cmd_args)
 
@@ -57,11 +57,12 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
     instance_to_use = dict_safe_get(nsg_rules, (0, "Metadata", "instance"))
 
     # Get all Inbound rules
-    inbound_rules = [rule for rule in nsg_rules[0]["Contents"] if rule.get(
-        'properties', {}).get('direction', '').lower() == 'inbound']
+    inbound_rules = [
+        rule for rule in nsg_rules[0]["Contents"] if rule.get("properties", {}).get("direction", "").lower() == "inbound"
+    ]
 
     # Sort inbound rules by priority (ascending order)
-    sorted_rules = sorted(inbound_rules, key=lambda rule: rule.get('properties', {}).get('priority', 0))
+    sorted_rules = sorted(inbound_rules, key=lambda rule: rule.get("properties", {}).get("priority", 0))
 
     if not sorted_rules:
         raise DemistoException("No inbound NSG rules found.")
@@ -89,15 +90,15 @@ def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg
     protocol_normalized = protocol.lower()
 
     for rule in nsg_rules:
-        properties = rule.get('properties', {})
+        properties = rule.get("properties", {})
 
         # Skip rules that don't allow traffic
-        if properties.get('access', '').lower() != 'allow':
+        if properties.get("access", "").lower() != "allow":
             continue
 
         # Check protocol match (case-insensitive)
-        rule_protocol = properties.get('protocol', '').lower()
-        if rule_protocol != '*' and rule_protocol != protocol_normalized:
+        rule_protocol = properties.get("protocol", "").lower()
+        if rule_protocol != "*" and rule_protocol != protocol_normalized:
             continue
 
         # Check port match
@@ -109,7 +110,7 @@ def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg
             continue
 
         # Found a matching rule
-        return rule.get('name', ''), properties.get('priority', 0)
+        return rule.get("name", ""), properties.get("priority", 0)
 
     # No matching rule found
     raise DemistoException("No matching NSG inbound rule found.")
@@ -127,18 +128,13 @@ def _matches_port(target_port: int, rule_properties: dict) -> bool:
         bool: True if the port matches, False otherwise
     """
     # Check single port range field
-    single_port_range = rule_properties.get('destinationPortRange', '')
-    if single_port_range:
-        if _port_matches_range(target_port, single_port_range):
-            return True
+    single_port_range = rule_properties.get("destinationPortRange", "")
+    if single_port_range and _port_matches_range(target_port, single_port_range):
+        return True
 
     # Check multiple port ranges field
-    multiple_port_ranges = rule_properties.get('destinationPortRanges', [])
-    for port_range in multiple_port_ranges:
-        if _port_matches_range(target_port, port_range):
-            return True
-
-    return False
+    multiple_port_ranges = rule_properties.get("destinationPortRanges", [])
+    return any(_port_matches_range(target_port, port_range) for port_range in multiple_port_ranges)
 
 
 def _port_matches_range(target_port: int, port_range: str) -> bool:
@@ -153,19 +149,19 @@ def _port_matches_range(target_port: int, port_range: str) -> bool:
         bool: True if the port matches, False otherwise
     """
     # Handle wildcard
-    if port_range.strip() == '*':
+    if port_range.strip() == "*":
         return True
 
     # Split by commas to handle multiple ports/ranges
-    port_specs = [spec.strip() for spec in port_range.split(',')]
+    port_specs = [spec.strip() for spec in port_range.split(",")]
 
     for spec in port_specs:
-        if '-' in spec:
+        if "-" in spec:
             # Handle range (e.g., "8080-8090")
             try:
-                start_port, end_port = spec.split('-', 1)
-                start_port = int(start_port.strip())
-                end_port = int(end_port.strip())
+                start_port_str, end_port_str = spec.split("-", 1)
+                start_port = int(start_port_str.strip())
+                end_port = int(end_port_str.strip())
                 if start_port <= target_port <= end_port:
                     return True
             except (ValueError, IndexError):
@@ -206,14 +202,14 @@ def _matches_destination_ip(target_ips: list[str], rule_properties: dict) -> boo
         return False
 
     # Check single destination address prefix
-    single_prefix = rule_properties.get('destinationAddressPrefix', '')
+    single_prefix = rule_properties.get("destinationAddressPrefix", "")
     if single_prefix:
         for target_ip_obj in target_ip_objects:
             if _ip_matches_prefix(target_ip_obj, single_prefix):
                 return True
 
     # Check multiple destination address prefixes
-    multiple_prefixes = rule_properties.get('destinationAddressPrefixes', [])
+    multiple_prefixes = rule_properties.get("destinationAddressPrefixes", [])
     for prefix in multiple_prefixes:
         for target_ip_obj in target_ip_objects:
             if _ip_matches_prefix(target_ip_obj, prefix):
@@ -233,18 +229,18 @@ def _ip_matches_prefix(target_ip_obj: Any, address_prefix: str) -> bool:
     Returns:
         bool: True if the IP matches, False otherwise
     """
-    if not address_prefix or address_prefix.strip() == '':
+    if not address_prefix or address_prefix.strip() == "":
         return False
 
     address_prefix = address_prefix.strip()
 
     # Handle wildcard
-    if address_prefix == '*':
+    if address_prefix == "*":
         return True
 
     try:
         # Try to parse as network (CIDR notation)
-        if '/' in address_prefix:
+        if "/" in address_prefix:
             network = ipaddress.ip_network(address_prefix, strict=False)
             return target_ip_obj in network
         else:
@@ -334,7 +330,7 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
         destination_ips = destination_ip_input
     elif isinstance(destination_ip_input, str):
         # Handle comma-separated IPs in a single string or single IP
-        destination_ips = [ip.strip() for ip in destination_ip_input.split(',') if ip.strip()]
+        destination_ips = [ip.strip() for ip in destination_ip_input.split(",") if ip.strip()]
 
     if not destination_ips:
         raise ValueError("At least one valid IP address must be provided in private_ip_address parameter")
@@ -368,7 +364,7 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
             "MatchingRulePriority": priority,
             "NextAvailablePriorityValues": available_priorities,
             "IntegrationInstance": instance_to_use,
-        }
+        },
     )
 
 
