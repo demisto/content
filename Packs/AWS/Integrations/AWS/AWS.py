@@ -11,6 +11,7 @@ from boto3 import Session
 from xml.sax.saxutils import escape
 import re
 
+
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
@@ -241,6 +242,68 @@ def convert_datetimes_to_iso_safe(data):
     """
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
+
+
+def read_zip_to_bytes(filename: str) -> bytes:
+    """
+    Reads the entire zip file into a bytes object in chunks.
+
+    Args:
+        filename: Path to the zip file.
+
+    Returns:
+        A bytes object containing the complete zip file content.
+    """
+    with open(filename, "rb") as zip_file:
+        data = b""
+        for chunk in iter(lambda: zip_file.read(1024), b""):
+            data += chunk
+    return data
+
+
+def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Prepare arguments to be sent to the Lambda CreateFunction API.
+
+    Args:
+        args: Command arguments dictionary
+
+    Returns:
+        Dictionary of kwargs ready for create_function API call
+    """
+    create_function_api_keys = ["FunctionName", "Runtime", "Role", "Handler", "Description", "PackageType"]
+    kwargs: Dict[str, Any] = {}
+
+    if code_path := args.get("code"):
+        file_path = demisto.getFilePath(code_path).get("path")
+        method_code = read_zip_to_bytes(file_path)
+        kwargs.update({"Code": {"ZipFile": method_code}})
+    elif s3_bucket := args.get("s3_bucket"):
+        kwargs.update({"Code": {"S3Bucket": s3_bucket}})
+    else:
+        raise DemistoException("code or s3_bucket must be provided.")
+
+    kwargs["TracingConfig"] = {"Mode": args.get("tracing_config") or "Active"}
+    kwargs["MemorySize"] = arg_to_number(args.get("memory_size")) or 128
+    kwargs["Timeout"] = arg_to_number(args.get("function_timeout")) or 3
+
+    for key in create_function_api_keys:
+        arg_name = key[0].lower() + key[1:]
+        if arg_name in args:
+            kwargs.update({key: args.get(arg_name)})
+
+    if publish := args.get("publish"):
+        kwargs["Publish"] = argToBoolean(publish)
+    if env := args.get("environment"):
+        kwargs["Environment"] = {"Variables": json.loads(env) if isinstance(env, str) else env}
+    if tags := args.get("tags"):
+        kwargs["Tags"] = json.loads(tags) if isinstance(tags, str) else tags
+    if layers := args.get("layers"):
+        kwargs["Layers"] = argToList(layers)
+    if vpc := args.get("vpc_config"):
+        kwargs["VpcConfig"] = json.loads(vpc) if isinstance(vpc, str) else vpc
+
+    return kwargs
 
 
 class AWSErrorHandler:
@@ -5077,6 +5140,717 @@ class Lambda:
             raw_response=response,
         )
 
+    @staticmethod
+    def get_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves information about a Lambda function including configuration, code location, and metadata.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): Version or alias to retrieve
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing function configuration, code location, tags, and concurrency settings
+        """
+        # Build API parameters
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Getting Lambda function with parameters: {kwargs}")
+
+        try:
+            response = client.get_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            response = serialize_response_with_datetime_encoding(response)
+
+            # Add region to response
+            response["Region"] = args.get("region")
+
+            # Extract configuration for readable output
+            func_config = response.get("Configuration", {})
+            readable_data = {
+                "FunctionName": func_config.get("FunctionName"),
+                "FunctionArn": func_config.get("FunctionArn"),
+                "Runtime": func_config.get("Runtime"),
+                "Region": args.get("region"),
+            }
+
+            human_readable = tableToMarkdown("AWS Lambda Function", readable_data)
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Functions",
+                outputs_key_field="FunctionArn",
+                outputs=response,
+                readable_output=human_readable,
+                raw_response=response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error retrieving Lambda function: {str(e)}")
+
+    @staticmethod
+    def list_functions_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists Lambda functions in the specified region.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of Lambda functions with their configurations
+        """
+        print_debug_logs(client, "Listing Lambda functions")
+
+        try:
+            # Use paginator to handle large numbers of functions
+            paginator = client.get_paginator("list_functions")
+            all_functions = []
+            for page in paginator.paginate():
+                if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(page, args.get("account_id"))
+
+                all_functions.extend(page.get("Functions", []))
+
+            if not all_functions:
+                return CommandResults(readable_output="No Lambda functions found.")
+
+            # Serialize response with datetime encoding
+            serialized_functions = serialize_response_with_datetime_encoding({"Functions": all_functions})
+            functions_list = serialized_functions.get("Functions", [])
+
+            # Add region to each function
+            for func in functions_list:
+                func["Region"] = args.get("region")
+
+            # Prepare readable output
+            readable_data = []
+            for func in functions_list:
+                readable_data.append(
+                    {
+                        "FunctionName": func.get("FunctionName"),
+                        "FunctionArn": func.get("FunctionArn"),
+                        "Runtime": func.get("Runtime"),
+                        "LastModified": func.get("LastModified"),
+                        "Region": args.get("region"),
+                    }
+                )
+
+            human_readable = tableToMarkdown("AWS Lambda Functions", readable_data)
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Functions",
+                outputs_key_field="FunctionArn",
+                outputs=functions_list,
+                readable_output=human_readable,
+                raw_response=functions_list,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda functions: {str(e)}")
+
+    @staticmethod
+    def list_aliases_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists aliases for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - function_version (str, optional): Function version to filter aliases
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of aliases for the function
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if function_version := args.get("function_version"):
+            kwargs["FunctionVersion"] = function_version
+
+        print_debug_logs(client, f"Listing Lambda aliases with parameters: {kwargs}")
+
+        try:
+            # Use paginator to handle large numbers of aliases
+            paginator = client.get_paginator("list_aliases")
+
+            all_aliases = []
+            for page in paginator.paginate(**kwargs):
+                if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(page, args.get("account_id"))
+
+                all_aliases.extend(page.get("Aliases", []))
+
+            if not all_aliases:
+                return CommandResults(readable_output=f"No aliases found for function {args.get('function_name')}.")
+
+            # Serialize response with datetime encoding
+            serialized_aliases = serialize_response_with_datetime_encoding({"Aliases": all_aliases})
+            aliases_list = serialized_aliases.get("Aliases", [])
+
+            # Prepare readable output
+            readable_data = []
+            for alias in aliases_list:
+                readable_data.append(
+                    {
+                        "AliasArn": alias.get("AliasArn"),
+                        "Name": alias.get("Name"),
+                        "FunctionVersion": alias.get("FunctionVersion"),
+                    }
+                )
+
+            human_readable = tableToMarkdown("AWS Lambda Aliases", readable_data)
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.Aliases",
+                outputs_key_field="AliasArn",
+                outputs=aliases_list,
+                readable_output=human_readable,
+                raw_response=aliases_list,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda aliases: {str(e)}")
+
+    @staticmethod
+    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves account settings for AWS Lambda.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing account limits and usage
+        """
+        print_debug_logs(client, "Getting Lambda account settings")
+
+        try:
+            response = client.get_account_settings()
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            serialized_response = serialize_response_with_datetime_encoding(response)
+
+            account_limit = serialized_response.get("AccountLimit", {})
+            account_usage = serialized_response.get("AccountUsage", {})
+
+            # Prepare readable output
+            readable_data = {
+                "AccountLimit": {
+                    "TotalCodeSize": str(account_limit.get("TotalCodeSize")),
+                    "CodeSizeUnzipped": str(account_limit.get("CodeSizeUnzipped")),
+                    "CodeSizeZipped": str(account_limit.get("CodeSizeZipped")),
+                    "ConcurrentExecutions": str(account_limit.get("ConcurrentExecutions")),
+                    "UnreservedConcurrentExecutions": str(account_limit.get("UnreservedConcurrentExecutions")),
+                },
+                "AccountUsage": {
+                    "TotalCodeSize": str(account_usage.get("TotalCodeSize")),
+                    "FunctionCount": str(account_usage.get("FunctionCount")),
+                },
+            }
+
+            human_readable = tableToMarkdown("AWS Lambda Account Settings", readable_data)
+
+            # Add region and account_id to the root of the output for context
+            output = {
+                "Region": args.get("region"),
+                "AccountId": args.get("account_id"),
+                "AccountLimit": account_limit,
+                "AccountUsage": account_usage,
+            }
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.AccountSettings",
+                outputs_key_field=["AccountId", "Region"],
+                outputs=output,
+                readable_output=human_readable,
+                raw_response=serialized_response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error getting Lambda account settings: {str(e)}")
+
+    @staticmethod
+    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists the versions of a Lambda function and returns the results.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - marker (str, optional): The marker for pagination
+                - max_items (str, optional): The maximum number of items to return
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of function versions with their configurations
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+
+        # Add optional pagination parameters
+        if marker := args.get("marker"):
+            kwargs["Marker"] = marker
+        if max_items := args.get("max_items"):
+            kwargs["MaxItems"] = int(max_items)
+
+        print_debug_logs(client, f"Listing Lambda function versions with parameters: {kwargs}")
+
+        try:
+            response = client.list_versions_by_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            serialized_response = serialize_response_with_datetime_encoding(response)
+
+            versions = serialized_response.get("Versions", [])
+            next_marker = serialized_response.get("NextMarker")
+
+            if not versions:
+                return CommandResults(readable_output=f"No versions found for function {args.get('function_name')}.")
+
+            # Prepare readable output
+            readable_data = []
+            for version in versions:
+                readable_data.append(
+                    {
+                        "FunctionName": version.get("FunctionName"),
+                        "Runtime": version.get("Runtime"),
+                        "Role": version.get("Role"),
+                        "Description": version.get("Description"),
+                        "LastModified": version.get("LastModified"),
+                        "State": version.get("State"),
+                    }
+                )
+
+            headers = ["FunctionName", "Role", "Runtime", "LastModified", "State", "Description"]
+            human_readable = tableToMarkdown("AWS Lambda Function Versions", readable_data, headers=headers)
+
+            # Add pagination note if there's a next marker
+            if next_marker:
+                human_readable += (
+                    f"\n\nTo get the next version run the command with the Marker argument with the value: {next_marker}"
+                )
+
+            # Prepare output with region context
+            output = {
+                "Versions": versions,
+                "NextMarker": next_marker,
+                "FunctionName": args.get("function_name"),
+                "Region": args.get("region"),
+            }
+
+            return CommandResults(
+                outputs_prefix="AWS.Lambda.FunctionVersions",
+                outputs_key_field="FunctionName",
+                outputs=output,
+                readable_output=human_readable,
+                raw_response=serialized_response,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda function versions: {str(e)}")
+
+    @staticmethod
+    def delete_function_url_config_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes the URL configuration for a Lambda function in AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): The qualifier of the function
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Deleting Lambda function URL config with parameters: {kwargs}")
+
+        try:
+            response = client.delete_function_url_config(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Successfully deleted function URL configuration for {args.get('function_name')}"
+                )
+            else:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error deleting Lambda function URL configuration: {str(e)}")
+
+    @staticmethod
+    def create_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Creates a Lambda function from AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including function configuration
+                - function_name (str): The name of the function
+                - runtime (str): The runtime environment
+                - role (str): The ARN of the function's execution role
+                - handler (str): The function entry point
+                - code (str, optional): Entry ID of uploaded ZIP file
+                - s3_bucket (str, optional): S3 bucket containing the code
+                - description (str, optional): Function description
+                - memory_size (int, optional): Memory size in MB (default: 128)
+                - function_timeout (int, optional): Timeout in seconds (default: 3)
+                - publish (bool, optional): Whether to publish the first version
+                - environment (str/dict, optional): Environment variables
+                - tags (str/dict, optional): Tags for the function
+                - layers (list, optional): List of layer ARNs
+                - vpc_config (str/dict, optional): VPC configuration
+                - tracing_config (str, optional): Tracing mode (default: Active)
+                - package_type (str, optional): Deployment package type
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing the created function details
+        """
+        output_headers = [
+            "FunctionName",
+            "FunctionArn",
+            "Runtime",
+            "Role",
+            "Handler",
+            "CodeSize",
+            "Description",
+            "Timeout",
+            "MemorySize",
+            "Version",
+            "PackageType",
+            "LastModified",
+            "VpcConfig",
+        ]
+
+        print_debug_logs(client, f"Creating Lambda function: {args.get('function_name')}")
+
+        try:
+            kwargs = prepare_create_function_kwargs(args)
+            kwargs["FunctionName"] = args.get("function_name")
+            response = client.create_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.CREATED:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            response = serialize_response_with_datetime_encoding(response)
+
+            # Extract outputs based on headers
+            outputs = {key: response.get(key) for key in output_headers}
+            outputs["Region"] = args.get("region")
+
+            # Prepare readable output
+            readable_outputs = outputs.copy()
+            vpc_config = readable_outputs.pop("VpcConfig", {})
+            if vpc_config:
+                readable_outputs.update(
+                    {
+                        "SubnetIds": vpc_config.get("SubnetIds"),
+                        "SecurityGroupIds": vpc_config.get("SecurityGroupIds"),
+                        "VpcId": vpc_config.get("VpcId"),
+                        "Ipv6AllowedForDualStack": vpc_config.get("Ipv6AllowedForDualStack"),
+                    }
+                )
+
+            readable_output = tableToMarkdown(
+                name=f"Created Lambda Function: {args.get('function_name')}",
+                t=readable_outputs,
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs=outputs,
+                raw_response=response,
+                outputs_prefix="AWS.Lambda.Functions",
+                outputs_key_field="FunctionArn",
+                readable_output=readable_output,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error creating Lambda function: {str(e)}")
+
+    @staticmethod
+    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Lists the versions of an Lambda layer.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name or ARN of the layer
+                - compatible_runtime (str, optional): A runtime identifier
+                - marker (str, optional): Pagination token
+                - limit (int, optional): Maximum number of versions to return
+                - compatible_architecture (str, optional): Compatible architecture
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing list of layer versions
+        """
+        kwargs = {
+            "LayerName": args.get("layer_name"),
+            "CompatibleRuntime": args.get("compatible_runtime"),
+            "Marker": args.get("marker"),
+            "MaxItems": arg_to_number(args.get("limit")),
+            "CompatibleArchitecture": args.get("compatible_architecture"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Listing Lambda layer versions with parameters: {kwargs}")
+
+        try:
+            response = client.list_layer_versions(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            serialized_response = serialize_response_with_datetime_encoding(response)
+
+            layer_versions = serialized_response.get("LayerVersions", [])
+            next_marker = serialized_response.get("NextMarker")
+
+            if not layer_versions:
+                return CommandResults(readable_output=f"No layer versions found for {args.get('layer_name')}.")
+
+            # Prepare outputs
+            outputs = {
+                "AWS.Lambda.Layers(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
+                "AWS.Lambda(true)": {"LayerVersionsNextToken": next_marker},
+            }
+
+            readable_output = tableToMarkdown(
+                name="Layer Version List", t=layer_versions, headerTransform=pascalToSpace, removeNull=True
+            )
+
+            if next_marker:
+                readable_output += f"\n\nNext Token: {next_marker}"
+
+            return CommandResults(
+                outputs=remove_empty_elements(outputs),
+                raw_response=serialized_response,
+                readable_output=readable_output,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error listing Lambda layer versions: {str(e)}")
+
+    @staticmethod
+    def delete_function_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes a Lambda function from AWS.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name of the Lambda function
+                - qualifier (str, optional): The qualifier of the function
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        kwargs = {"FunctionName": args.get("function_name")}
+        if qualifier := args.get("qualifier"):
+            kwargs["Qualifier"] = qualifier
+
+        print_debug_logs(client, f"Deleting Lambda function with parameters: {kwargs}")
+
+        try:
+            response = client.delete_function(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
+            else:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error deleting Lambda function: {str(e)}")
+
+    @staticmethod
+    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Deletes a version of a Lambda layer.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name or ARN of the layer
+                - version_number (int): The version number to delete
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        layer_name = args.get("layer_name")
+        version_number = arg_to_number(args.get("version_number"))
+
+        kwargs = {"LayerName": layer_name, "VersionNumber": version_number}
+
+        print_debug_logs(client, f"Deleting Lambda layer version with parameters: {kwargs}")
+
+        try:
+            response = client.delete_layer_version(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output=f"Successfully deleted version {version_number} of layer {layer_name}")
+            else:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error deleting Lambda layer version: {str(e)}")
+
+    @staticmethod
+    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Creates a Lambda layer from a ZIP archive.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including:
+                - layer_name (str): The name of the layer
+                - description (str, optional): Description of the layer version
+                - zip_file (str, optional): Entry ID of uploaded ZIP file
+                - s3_bucket (str, optional): S3 bucket containing the layer code
+                - s3_key (str, optional): S3 key of the layer code
+                - s3_object_version (str, optional): S3 object version
+                - compatible_runtimes (list, optional): Compatible runtimes
+                - compatible_architectures (list, optional): Compatible architectures
+                - region (str): AWS region
+                - account_id (str): AWS account ID
+
+        Returns:
+            CommandResults: Results containing the published layer version details
+        """
+        output_headers = [
+            "LayerVersionArn",
+            "LayerArn",
+            "Description",
+            "CreatedDate",
+            "Version",
+            "CompatibleRuntimes",
+            "CompatibleArchitectures",
+        ]
+
+        # Prepare content configuration
+        content = {}
+        s3_bucket = args.get("s3_bucket")
+        s3_key = args.get("s3_key")
+        s3_object_version = args.get("s3_object_version")
+
+        if zip_file := args.get("zip_file"):
+            file_path = demisto.getFilePath(zip_file).get("path")
+            content["ZipFile"] = read_zip_to_bytes(file_path)
+        elif s3_bucket and s3_key and s3_object_version:
+            content["S3Bucket"] = s3_bucket
+            content["S3Key"] = s3_key
+            content["S3ObjectVersion"] = s3_object_version
+        else:
+            raise DemistoException(
+                "Either zip_file or a combination of s3_bucket, s3_key and s3_object_version must be provided."
+            )
+
+        kwargs = {
+            "LayerName": args.get("layer_name"),
+            "Description": args.get("description", ""),
+            "Content": content,
+            "CompatibleRuntimes": argToList(args.get("compatible_runtimes")),
+            "CompatibleArchitectures": argToList(args.get("compatible_architectures")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Publishing Lambda layer version with parameters: {kwargs.keys()}")
+
+        try:
+            response = client.publish_layer_version(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") not in [HTTPStatus.OK, HTTPStatus.CREATED]:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Serialize response with datetime encoding
+            response = serialize_response_with_datetime_encoding(response)
+
+            # Extract outputs based on headers
+            outputs = {key: response.get(key) for key in output_headers}
+            outputs["Region"] = args.get("region")
+
+            readable_output = tableToMarkdown(
+                name=f"Published Layer Version: {response.get('LayerArn')}",
+                t=outputs,
+                headers=output_headers,
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            )
+
+            return CommandResults(
+                outputs=remove_empty_elements(outputs),
+                raw_response=response,
+                outputs_prefix="AWS.Lambda.Layers",
+                outputs_key_field="LayerVersionArn",
+                readable_output=readable_output,
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        except Exception as e:
+            raise DemistoException(f"Error publishing Lambda layer version: {str(e)}")
+
 
 class ACM:
     service = AWSServices.ACM
@@ -5233,6 +6007,17 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-get": Lambda.get_function_command,
+    "aws-lambda-functions-list": Lambda.list_functions_command,
+    "aws-lambda-aliases-list": Lambda.list_aliases_command,
+    "aws-lambda-account-settings-get": Lambda.get_account_settings_command,
+    "aws-lambda-function-versions-list": Lambda.list_versions_by_function_command,
+    "aws-lambda-function-url-config-delete": Lambda.delete_function_url_config_command,
+    "aws-lambda-function-create": Lambda.create_function_command,
+    "aws-lambda-layer-version-list": Lambda.list_layer_versions_command,
+    "aws-lambda-function-delete": Lambda.delete_function_command,
+    "aws-lambda-layer-version-delete": Lambda.delete_layer_version_command,
+    "aws-lambda-layer-version-publish": Lambda.publish_layer_version_command,
     "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
     "aws-ec2-addresses-describe": EC2.describe_addresses_command,
@@ -5333,6 +6118,17 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "lambda:GetFunction",
+    "lambda:ListFunctions",
+    "lambda:ListAliases",
+    "lambda:GetAccountSettings",
+    "lambda:ListVersionsByFunction",
+    "lambda:DeleteFunctionUrlConfig",
+    "lambda:CreateFunction",
+    "lambda:ListLayerVersions",
+    "lambda:DeleteFunction",
+    "lambda:DeleteLayerVersion",
+    "lambda:PublishLayerVersion",
     "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
