@@ -4561,7 +4561,7 @@ def main():  # pragma: no cover
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
         elif command == "core-create-appsec-rule":
-            return_results(create_policy_command(client, args))
+            return_results(create_rule_command(client, args))
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-update-case":
