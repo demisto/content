@@ -2043,12 +2043,12 @@ def list_messages_command():
             if next_link
             else ""
         ),
-        outputs_key_field="chatId",
+        outputs_key_field="conversationId",
         outputs={
             "MicrosoftTeams(true)": {"MessagesListNextLink": next_link},
-            "MicrosoftTeams.MessagesList(val.chatId && val.chatId === obj.chatId)": {
+            "MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)": {
                 "messages": messages_data,
-                "chatId": chat_or_channel,
+                "conversationId": chat_or_channel,
             },
             "MicrosoftTeams.MessagesListMetadata": {"returned_count": len(messages_data), "filtered_count": limit},
         },

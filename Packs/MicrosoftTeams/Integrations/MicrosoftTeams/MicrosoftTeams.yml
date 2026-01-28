@@ -731,10 +731,10 @@ script:
       Retrieves a list of messages in a chat or channel.
 
       Notes:
-      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+      - When retrieving messages from a chat, this command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-list-messages
     outputs:
-    - contextPath: MicrosoftTeams.MessagesList.chatId
+    - contextPath: MicrosoftTeams.MessagesList.conversationId
       description: The chat's unique identifier.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.id
