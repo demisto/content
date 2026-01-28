@@ -47,7 +47,7 @@ jobs:
 
     - name: Cache Pre commit
       id: cache-pre-commit
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
@@ -132,7 +132,7 @@ jobs:
         pytest-xml-coverage-path: coverage_report/coverage.xml
         junitxml-path: report_pytest.xml
     
-    - uses: actions/cache/save@v3
+    - uses: actions/cache/save@v5
       if: always()
       with:
         path: ~/.cache/pre-commit
