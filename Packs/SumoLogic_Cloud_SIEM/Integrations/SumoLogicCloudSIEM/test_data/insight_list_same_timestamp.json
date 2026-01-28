@@ -1,0 +1,73 @@
+{
+  "data": {
+    "hasNextPage": false,
+    "objects": [
+      {
+        "artifacts": [],
+        "assignedTo": null,
+        "assignee": null,
+        "closed": null,
+        "closedBy": null,
+        "created": "2021-05-18T14:46:46.741955",
+        "description": "First insight",
+        "entity": {
+          "id": "_username-test1",
+          "name": "test1",
+          "username": "test1"
+        },
+        "id": "insight-same-time-1",
+        "lastUpdated": "2021-05-18T14:47:17.560178",
+        "lastUpdatedBy": null,
+        "name": "Test Insight 1",
+        "readableId": "INSIGHT-301",
+        "recordSummaryFields": [],
+        "relatedEntities": [],
+        "resolution": null,
+        "severity": "MEDIUM",
+        "signals": [],
+        "source": "ALGORITHM",
+        "status": {"displayName": "New", "name": "new"},
+        "tags": [],
+        "teamAssignedTo": null,
+        "timeToDetection": 80543.741955,
+        "timeToRemediation": null,
+        "timeToResponse": null,
+        "timestamp": "2021-05-18T14:45:51"
+      },
+      {
+        "artifacts": [],
+        "assignedTo": null,
+        "assignee": null,
+        "closed": null,
+        "closedBy": null,
+        "created": "2021-05-18T14:46:46.741955",
+        "description": "Second insight with same timestamp",
+        "entity": {
+          "id": "_username-test2",
+          "name": "test2",
+          "username": "test2"
+        },
+        "id": "insight-same-time-2",
+    "lastUpdated": "2021-05-18T14:47:17.560178",
+    "lastUpdatedBy": null,
+    "name": "Test Insight 2",
+    "readableId": "INSIGHT-302",
+    "recordSummaryFields": [],
+    "relatedEntities": [],
+    "resolution": null,
+    "severity": "MEDIUM",
+    "signals": [],
+    "source": "ALGORITHM",
+    "status": {"displayName": "New", "name": "new"},
+    "tags": [],
+    "teamAssignedTo": null,
+    "timeToDetection": 80543.741955,
+    "timeToRemediation": null,
+    "timeToResponse": null,
+    "timestamp": "2021-05-18T14:45:51"
+  }
+],
+"total": 2
+    },
+"errors": []
+}

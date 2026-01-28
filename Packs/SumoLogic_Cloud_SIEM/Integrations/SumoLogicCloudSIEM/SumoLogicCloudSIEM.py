@@ -1003,8 +1003,8 @@ def fetch_incidents(
                 incident_created_time = (int)(incident_created_time_ms / 1000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
-                if last_fetch and incident_created_time < last_fetch:
-                    continue
+                # if last_fetch and incident_created_time < last_fetch:
+                #     continue
 
                 signals = a.get("signals")
                 for signal in signals:

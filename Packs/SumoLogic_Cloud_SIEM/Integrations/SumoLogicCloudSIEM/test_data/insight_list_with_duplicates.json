@@ -1,0 +1,74 @@
+{
+  "data": {
+    "hasNextPage": false,
+    "objects": [
+      {
+        "artifacts": [],
+        "assignedTo": null,
+        "assignee": null,
+        "closed": null,
+        "closedBy": null,
+        "created": "2021-05-18T14:46:46.741955",
+        "description": "Defense Evasion, Persistence",
+        "entity": {
+          "id": "_username-service",
+          "name": "service-user",
+          "username": "service-user"
+        },
+        "id": "3fa0cee5-6658-31d4-bd66-32fe1739cf61",
+        "lastUpdated": "2021-05-18T14:47:17.560178",
+        "lastUpdatedBy": null,
+        "name": "Defense Evasion with Persistence",
+        "readableId": "INSIGHT-231",
+        "recordSummaryFields": [],
+        "relatedEntities": [],
+        "resolution": null,
+        "severity": "MEDIUM",
+        "signals": [],
+        "source": "ALGORITHM",
+        "status": {"displayName": "New", "name": "new"},
+        "tags": [],
+        "teamAssignedTo": null,
+        "timeToDetection": 80543.741955,
+        "timeToRemediation": null,
+        "timeToResponse": null,
+        "timestamp": "2021-05-18T14:45:51"
+      },
+      {
+        "artifacts": [],
+        "assignedTo": null,
+        "assignee": null,
+        "closed": null,
+        "closedBy": null,
+        "created": "2021-05-18T14:46:48.000000",
+        "description": "New insight for testing",
+        "entity": {
+          "id": "_ip-192.168.1.2",
+          "ip": {"address": "192.168.1.2"},
+          "ipHostname": null,
+          "name": "192.168.1.2"
+        },
+        "id": "new-insight-id-123",
+        "lastUpdated": "2021-05-18T14:47:18.000000",
+        "lastUpdatedBy": null,
+        "name": "New Test Insight",
+        "readableId": "INSIGHT-233",
+        "recordSummaryFields": [],
+        "relatedEntities": [],
+        "resolution": null,
+        "severity": "HIGH",
+        "signals": [],
+        "source": "ALGORITHM",
+        "status": {"displayName": "New", "name": "new"},
+        "tags": [],
+        "teamAssignedTo": null,
+        "timeToDetection": 80544.000000,
+        "timeToRemediation": null,
+        "timeToResponse": null,
+        "timestamp": "2021-05-18T14:46:48"
+      }
+    ],
+    "total": 2
+  },
+  "errors": []
+}
