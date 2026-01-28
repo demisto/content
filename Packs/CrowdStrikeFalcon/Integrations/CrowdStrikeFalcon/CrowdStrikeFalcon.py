@@ -807,6 +807,16 @@ def modify_detection_summaries_outputs(detection: dict):
 
     return detection
 
+def log_falcon_assets(log_line: str, log_type = "debug"):
+    """ Wrapper for log line for spotlight asset collector"""
+    full_log_line = f"[Falcon Asset Collector] {log_line}"
+    if log_type == "debug":
+        demisto.debug(full_log_line)
+    elif log_type == "info":
+        demisto.info(full_log_line)
+    else:
+        demisto.error(full_log_line)
+
 
 """ API FUNCTIONS """
 
@@ -3914,7 +3924,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     """
     # Read entire integration context (preserves all existing keys)
     integration_context = context_store.read()
-    demisto.debug(f"Loaded integration context with keys: {list(integration_context.keys())}")
+    log_falcon_assets(f"Loaded integration context with keys: {list(integration_context.keys())}")
     
     # Get Spotlight-specific state
     spotlight_state_dict = integration_context.get("spotlight_assets", {})
@@ -3926,7 +3936,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
     processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
     
-    demisto.debug(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+    log_falcon_assets(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
                   f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
                   f"after_token={spotlight_state.cursor}")
     
@@ -3949,7 +3959,7 @@ def save_spotlight_state(
     # Update only the spotlight_assets key, preserving all other context
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    demisto.debug("Saved Spotlight state to integration context")
+    log_falcon_assets("Saved Spotlight state to integration context")
 
 
 async def fetch_spotlight_vulnerabilities_batch(
@@ -3977,7 +3987,7 @@ async def fetch_spotlight_vulnerabilities_batch(
     if after_token:
         params["after"] = after_token
     
-    demisto.debug(f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}")
+    log_falcon_assets(f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}")
     
     # Make ASYNC API request
     response = await client._request(
@@ -3990,7 +4000,7 @@ async def fetch_spotlight_vulnerabilities_batch(
     response_data = response.json()
     vulnerabilities = response_data.get("resources", [])
     
-    demisto.debug(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
     
     return vulnerabilities, response_data
 
@@ -4013,7 +4023,7 @@ def extract_unique_aids(vulnerabilities: list, existing_aids: set) -> set:
     # Merge with existing
     existing_aids.update(batch_aids)
     
-    demisto.debug(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
+    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_aids)}")
     
     return existing_aids
 
@@ -4076,7 +4086,7 @@ class AssetsDeviceHandler:
         unique_new = new_aids - self.processed_aids
         self.pending_buffer.update(unique_new)
         
-        demisto.debug(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
+        log_falcon_assets(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
         
         # Trigger enrichment for full batches
         while len(self.pending_buffer) >= self.batch_limit:
@@ -4084,7 +4094,7 @@ class AssetsDeviceHandler:
             batch = full_list[:self.batch_limit]
             self.pending_buffer = set(full_list[self.batch_limit:])
             
-            demisto.debug(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
+            log_falcon_assets(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
             
             # Create async enrichment task
             task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
@@ -4102,7 +4112,7 @@ class AssetsDeviceHandler:
         self.asset_batch_counter += 1
         current_batch_number = self.asset_batch_counter
         
-        demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
+        log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
         
         try:
             # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
@@ -4117,10 +4127,10 @@ class AssetsDeviceHandler:
             devices = response_data.get("resources", [])
             
             if not devices:
-                demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
+                log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
                 return
             
-            demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
 
             devices = self._filter_asset_fields(devices)
 
@@ -4149,19 +4159,19 @@ class AssetsDeviceHandler:
                     saved_batch_num = future.result()
                     if saved_batch_num > self.asset_last_saved_batch_number:
                         self.asset_last_saved_batch_number = saved_batch_num
-                        demisto.debug(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
+                        log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
                 except Exception as e:
-                    demisto.error(f"AssetsDeviceHandler: Enrichment task failed: {e}")
+                    log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
                 finally:
                     self.running_tasks.discard(future)
 
             # Track the send task
             self.running_tasks.add(send_task)
             send_task.add_done_callback(update_last_saved)
-            demisto.debug(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
             
         except Exception as e:
-            demisto.error(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}")
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
             raise
     
     async def flush_remaining(self) -> None:
@@ -4172,7 +4182,7 @@ class AssetsDeviceHandler:
         """
         # Handle leftover AIDs that didn't reach batch_limit
         if self.pending_buffer:
-            demisto.info(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs")
+            log_falcon_assets(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs", "info")
             # Create task for remaining batch (fire-and-forget)
             task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer)))
             self.running_tasks.add(task)
@@ -4180,18 +4190,18 @@ class AssetsDeviceHandler:
         
         # Wait for all enrichment and send tasks to complete
         if self.running_tasks:
-            demisto.info(f"AssetsDeviceHandler: Waiting for {len(self.running_tasks)} enrichment/send tasks to complete")
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {len(self.running_tasks)} enrichment/send tasks to complete", "info")
             results = await asyncio.gather(*self.running_tasks, return_exceptions=True)
             
             # Check for errors
             for res in results:
                 if isinstance(res, Exception):
-                    demisto.error(f"AssetsDeviceHandler: Task failed: {res}")
+                    log_falcon_assets(f"AssetsDeviceHandler: Task failed: {res}", "error")
                     raise res
             
-            demisto.info("AssetsDeviceHandler: All enrichment/send tasks completed successfully")
+            log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
         else:
-            demisto.debug("AssetsDeviceHandler: No running tasks to wait for")
+            log_falcon_assets("AssetsDeviceHandler: No running tasks to wait for")
 
     @staticmethod
     def _filter_asset_fields(assets : list[Dict]) -> list[Dict]:
@@ -4240,7 +4250,7 @@ async def xsiam_api_call_async(
     response = None
     
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
+        log_falcon_assets(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         
         async with aiohttp.ClientSession() as session:
@@ -4262,10 +4272,10 @@ async def xsiam_api_call_async(
                         continue
                     else:
                         header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
-                        demisto.error(header_msg)
+                        log_falcon_assets(header_msg, "error")
                         demisto.updateModuleHealth(header_msg + e.message, is_error=True)
                     
-        demisto.debug(f"received status code: {status_code}")
+        log_falcon_assets(f"received status code: {status_code}")
         if status_code == 429:
             await asyncio.sleep(1)
         attempt_num += 1
@@ -4317,13 +4327,13 @@ def send_data_to_xsiam_async(
     collector_name = calling_context.get("IntegrationBrand", "")
     
     if not data:
-        demisto.debug(f"No {data_type} to send to XSIAM")
+        log_falcon_assets(f"No {data_type} to send to XSIAM")
         return []
     
     # Convert list to newline-separated JSON strings
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        demisto.debug(f"Sending {len(data)} {data_type} (data type) to XSIAM")
+        log_falcon_assets(f"Sending {len(data)} {data_type} (data type) to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
         data_str = "\n".join(data)
@@ -4416,7 +4426,7 @@ async def send_batch_to_xsiam_and_save_context(
     Returns:
         int: batch_number if context was saved, else last_saved_batch_number
     """
-    demisto.debug(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
+    log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
     
     try:
         # 1. Send to XSIAM (returns list of async tasks)
@@ -4435,19 +4445,19 @@ async def send_batch_to_xsiam_and_save_context(
         
         # 2. Wait for all chunks to complete
         await asyncio.gather(*tasks)
-        demisto.debug(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+        log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
         
         # 3. Save context ONLY if this is the latest batch using the provided callback
         if batch_number > last_saved_batch_number:
             save_state_callback(context_store, integration_context, state)
-            demisto.debug(f"[Batch {batch_number}] Context saved")
+            log_falcon_assets(f"[Batch {batch_number}] Context saved")
             return batch_number
         else:
-            demisto.debug(f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)")
+            log_falcon_assets(f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)")
             return last_saved_batch_number
             
     except Exception as e:
-        demisto.error(f"[Batch {batch_number}] Failed: {str(e)}")
+        log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
         raise
 
 
@@ -4510,11 +4520,11 @@ def handle_spotlight_fetch_error(
     """
     # Log error with diagnostics if ContentClientError
     if isinstance(error, ContentClientError):
-        demisto.error(f"ContentClient error during Spotlight fetch: {str(error)}")
+        log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
         diagnosis = client.diagnose_error(error)
-        demisto.error(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}")
+        log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
     else:
-        demisto.error(f"Unexpected error during Spotlight fetch: {str(error)}")
+        log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
     
     # Save current state for retry (including processed_aids from handler)
     update_spotlight_state_and_metadata(
@@ -4538,7 +4548,7 @@ async def fetch_spotlight_assets():
     Implements async fire-and-forget pattern for sending data to XSIAM.
     Enriches unique AIDs via AssetsDeviceHandler for parallel asset ingestion.
     """
-    demisto.info("Starting Spotlight assets fetch execution.")
+    log_falcon_assets("Starting Spotlight assets fetch execution.", "info")
     
     # Create context store
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
@@ -4606,43 +4616,43 @@ async def fetch_spotlight_assets():
                 try:
                     last_saved_batch_number = future.result()
                 except Exception as e:
-                    demisto.error(f"Background vulnerability task failed: {e}")
+                    log_falcon_assets(f"Background vulnerability task failed: {e}", "error")
                 finally:
                     pending_tasks.discard(future)
             
             pending_tasks.add(task)
             task.add_done_callback(update_last_saved)
-            demisto.debug(f"Created background task for vulnerability batch {batch_counter}")
+            log_falcon_assets(f"Created background task for vulnerability batch {batch_counter}")
             
             # Check if more pages exist
             if not new_after_token:
                 # No more pages - we're done fetching vulnerabilities!
-                demisto.info(f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}")
+                log_falcon_assets(f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}", "info")
                 break
             
             # More pages exist - continue to next batch
-            demisto.debug(f"More pages available. Fetched so far: {total_fetched}")
+            log_falcon_assets(f"More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
         
         # Wait for all pending vulnerability send tasks to complete
         if pending_tasks:
-            demisto.info(f"Waiting for {len(pending_tasks)} background vulnerability send tasks to complete")
+            log_falcon_assets(f"Waiting for {len(pending_tasks)} background vulnerability send tasks to complete", "info")
             results = await asyncio.gather(*pending_tasks, return_exceptions=True)
             
             # Check for errors
             for res in results:
                 if isinstance(res, Exception):
-                    demisto.error(f"Background vulnerability send task failed: {res}")
+                    log_falcon_assets(f"Background vulnerability send task failed: {res}", "error")
                     raise res
             
-            demisto.info("All background vulnerability send tasks completed successfully")
+            log_falcon_assets("All background vulnerability send tasks completed successfully", "info")
         
         # Flush remaining AIDs and wait for all asset enrichment tasks
-        demisto.info("Flushing remaining AIDs and waiting for asset enrichment tasks")
+        log_falcon_assets("Flushing remaining AIDs and waiting for asset enrichment tasks", "info")
         await asset_handler.flush_remaining()
         
         # Fetch completed successfully - reset state for next run
-        demisto.debug("Resetting Spotlight state after successful complete fetch")
+        log_falcon_assets("Resetting Spotlight state after successful complete fetch")
         update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
             cursor=None,
@@ -4661,8 +4671,8 @@ async def fetch_spotlight_assets():
             "total_fetched_until_now": 0,
         })
 
-        demisto.info(f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
-                     f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}")
+        log_falcon_assets(f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
+                     f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}", "info")
         
     except (ContentClientError, Exception) as e:
         handle_spotlight_fetch_error(
