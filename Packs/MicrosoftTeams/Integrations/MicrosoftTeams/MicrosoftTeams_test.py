@@ -3678,3 +3678,70 @@ def test_get_bot_access_token_single_tenant_no_tenant_id(mocker):
 
     with pytest.raises(ValueError, match=MISS_CONFIGURATION_ERROR_MESSAGE):
         get_bot_access_token()
+
+
+def test_validate_auth_header_signature_verification(mocker):
+    """
+    Given:
+        - A valid JWT token signed with a private key.
+        - An invalid JWT token signed with a different private key (attacker's key).
+        - The public key corresponding to the valid token is available in the integration context (JWK).
+    When:
+        - Calling validate_auth_header with the valid token.
+        - Calling validate_auth_header with the invalid token.
+    Then:
+        - The valid token should be accepted (return True).
+        - The invalid token should be rejected (return False) because signature verification fails.
+    """
+    from MicrosoftTeams import validate_auth_header
+    import jwt
+    import json
+    import base64
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.backends import default_backend
+
+    # 1. Setup Keys
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+    public_key = private_key.public_key()
+
+    attacker_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+
+    def base64_url_encode(val):
+        bytes_val = val.to_bytes((val.bit_length() + 7) // 8, byteorder="big")
+        return base64.urlsafe_b64encode(bytes_val).decode("utf-8").rstrip("=")
+
+    def get_jwk(pub_key, kid):
+        numbers = pub_key.public_numbers()
+        return {
+            "kty": "RSA",
+            "kid": kid,
+            "n": base64_url_encode(numbers.n),
+            "e": base64_url_encode(numbers.e),
+            "alg": "RS256",
+            "use": "sig",
+            "endorsements": ["msteams"],
+        }
+
+    kid = "test-key-id"
+    jwk = get_jwk(public_key, kid)
+
+    # 2. Mock Integration Context
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"open_id_metadata": json.dumps({"keys": [jwk]})})
+    mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.BOT_ID", new="test-bot-id")
+
+    # 3. Create Tokens
+    payload = {"iss": "https://api.botframework.com", "aud": "test-bot-id", "sub": "test-user", "exp": 9999999999}
+
+    valid_token = jwt.encode(payload=payload, key=private_key, algorithm="RS256", headers={"kid": kid})
+
+    invalid_token = jwt.encode(payload=payload, key=attacker_private_key, algorithm="RS256", headers={"kid": kid})
+
+    # 4. Run Tests
+    # Test Valid Token
+    headers_valid = {"Authorization": f"Bearer {valid_token}"}
+    assert validate_auth_header(headers_valid) is True
+
+    # Test Invalid Token
+    headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
+    assert validate_auth_header(headers_invalid) is False
