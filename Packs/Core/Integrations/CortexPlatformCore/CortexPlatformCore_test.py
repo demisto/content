@@ -3868,7 +3868,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     args = {"case_id": "123"}
     result = get_case_extra_data(mock_client, args)
 
-    assert mock_client._base_url == "api/webapp/public_api/v1"
     assert result["issue_ids"] == ["issue1", "issue2"]
     assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
     assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
@@ -3877,33 +3876,6 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     assert result["starred_manually"] is True
     assert result["manual_description"] == "Global manual description"
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
-
-
-def test_get_case_extra_data_client_base_url_modification(mocker):
-    """
-    Given:
-        A mock client with an original base URL.
-    When:
-        The get_case_extra_data function is called.
-    Then:
-        The client's base URL should be modified to "api/webapp/public_api/v1".
-    """
-    from CortexPlatformCore import get_case_extra_data
-
-    mock_client = mocker.Mock()
-    original_url = "https://original.api.endpoint"
-    mock_client._base_url = original_url
-
-    mock_command_result = mocker.Mock()
-    mock_command_result.outputs = {}
-
-    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
-
-    args = {"case_id": "url_test"}
-    get_case_extra_data(mock_client, args)
-
-    assert mock_client._base_url == "api/webapp/public_api/v1"
 
 
 def test_add_cases_extra_data_single_case(mocker):
@@ -9291,6 +9263,90 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+def test_get_cases_command_with_ai_summary(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments that trigger AI summary retrieval (single case with >1 issues).
+    WHEN:
+        The get_cases_command function is called.
+    THEN:
+        The AI summary is retrieved and applied to the case data.
+    """
+    from CortexPlatformCore import get_cases_command
+
+    mock_client = mocker.Mock()
+    # Mock get_webapp_data to return a single case with issue_count > 1
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 12345, "issue_count": 2}], "FILTER_COUNT": "1"}}
+    # Mock get_case_ai_summary
+    mock_client.get_case_ai_summary.return_value = {"reply": {"case_description": "AI Summary", "case_name": "AI Name"}}
+    # Mock map_case_format to return the case with the same ID
+    mocker.patch("CortexPlatformCore.map_case_format", return_value=[{"case_id": "12345", "issue_count": 2}])
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
+    args = {"case_id_list": "12345"}
+    result = get_cases_command(mock_client, args)
+
+    # Verify AI summary was called
+    mock_client.get_case_ai_summary.assert_called_once_with(12345)
+    # Verify data was updated (result[1] is the CommandResults for the cases)
+    assert result[1].outputs[0]["description"] == "AI Summary"
+    assert result[1].outputs[0]["case_name"] == "AI Name"
+
+
+def test_init_client(mocker: MockerFixture):
+    """
+    GIVEN:
+        An API type and demisto params.
+    WHEN:
+        The init_client function is called.
+    THEN:
+        A Client object is initialized with the correct base URL and headers.
+    """
+    from CortexPlatformCore import init_client
+
+    mocker.patch.object(demisto, "params", return_value={"api_key": "test_key", "proxy": True, "insecure": True, "timeout": "60"})
+
+    client = init_client("webapp")
+    assert client._base_url == "/api/webapp"
+
+    client_public = init_client("public")
+    assert client_public._base_url == "/api/webapp/public_api/v1"
+
+
+def test_verify_platform_version_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A platform version that meets the requirement.
+    WHEN:
+        The verify_platform_version function is called.
+    THEN:
+        No exception is raised.
+    """
+    from CortexPlatformCore import verify_platform_version
+
+    mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=True)
+
+    # Should not raise
+    verify_platform_version("8.13.0")
+
+
+def test_verify_platform_version_failure(mocker: MockerFixture):
+    """
+    GIVEN:
+        A platform version that does not meet the requirement.
+    WHEN:
+        The verify_platform_version function is called.
+    THEN:
+        A DemistoException is raised.
+    """
+    from CortexPlatformCore import verify_platform_version, DemistoException
+
+    mocker.patch("CortexPlatformCore.is_demisto_version_ge", return_value=False)
+
+    with pytest.raises(DemistoException, match="This command is not available for this platform version"):
+        verify_platform_version("8.13.0")
 
 
 def test_enhance_with_pb_details():
