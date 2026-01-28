@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta  # , UTC
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -10,10 +10,6 @@ from botocore.exceptions import ClientError
 from boto3 import Session
 import re
 
-
-from datetime import UTC
-
-UTC = datetime.now(UTC)
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -3979,7 +3975,7 @@ class Lambda:
         )
 
     @staticmethod
-    def get_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_function_command(client: BotoClient, args: Dict[str, Any]):
         """
         Retrieves information about a Lambda function including configuration, code location, and metadata.
 
@@ -4034,12 +4030,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error retrieving Lambda function: {str(e)}")
 
     @staticmethod
-    def list_functions_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_functions_command(client: BotoClient, args: Dict[str, Any]):
         """
         Lists Lambda functions in the specified region.
 
@@ -4100,12 +4095,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error listing Lambda functions: {str(e)}")
 
     @staticmethod
-    def list_aliases_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_aliases_command(client: BotoClient, args: Dict[str, Any]):
         """
         Lists aliases for a Lambda function.
 
@@ -4167,12 +4161,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error listing Lambda aliases: {str(e)}")
 
     @staticmethod
-    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]):
         """
         Retrieves account settings for AWS Lambda.
 
@@ -4234,12 +4227,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error getting Lambda account settings: {str(e)}")
 
     @staticmethod
-    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]):
         """
         Lists the versions of a Lambda function and returns the results.
 
@@ -4321,12 +4313,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error listing Lambda function versions: {str(e)}")
 
     @staticmethod
-    def delete_function_url_config_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_function_url_config_command(client: BotoClient, args: Dict[str, Any]):
         """
         Deletes the URL configuration for a Lambda function in AWS.
 
@@ -4356,16 +4347,14 @@ class Lambda:
                 )
             else:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-                return None
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error deleting Lambda function URL configuration: {str(e)}")
 
     @staticmethod
-    def create_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_function_command(client: BotoClient, args: Dict[str, Any]):
         """
         Creates a Lambda function from AWS.
 
@@ -4414,7 +4403,7 @@ class Lambda:
 
         try:
             kwargs = prepare_create_function_kwargs(args)
-
+            kwargs["FunctionName"] = args.get("function_name")
             response = client.create_function(**kwargs)
 
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.CREATED:
@@ -4457,12 +4446,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error creating Lambda function: {str(e)}")
 
     @staticmethod
-    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]):
         """
         Lists the versions of an Lambda layer.
 
@@ -4528,12 +4516,11 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error listing Lambda layer versions: {str(e)}")
 
     @staticmethod
-    def delete_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_function_command(client: BotoClient, args: Dict[str, Any]):
         """
         Deletes a Lambda function from AWS.
 
@@ -4561,16 +4548,14 @@ class Lambda:
                 return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
             else:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-                return None
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error deleting Lambda function: {str(e)}")
 
     @staticmethod
-    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
         """
         Deletes a version of a Lambda layer.
 
@@ -4599,16 +4584,13 @@ class Lambda:
                 return CommandResults(readable_output=f"Successfully deleted version {version_number} of layer {layer_name}")
             else:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-                return None
-
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error deleting Lambda layer version: {str(e)}")
 
     @staticmethod
-    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
         """
         Creates a Lambda layer from a ZIP archive.
 
@@ -4700,7 +4682,6 @@ class Lambda:
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-            return None
         except Exception as e:
             raise DemistoException(f"Error publishing Lambda layer version: {str(e)}")
 
