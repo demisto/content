@@ -1,7 +1,7 @@
 {
     "darktrace_darktrace_raw": {
         "model": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "pbid": {
@@ -13,11 +13,11 @@
             "is_array": false
         },
         "device": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "triggeredComponents": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         }
     }
