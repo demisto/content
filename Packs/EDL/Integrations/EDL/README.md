@@ -241,7 +241,7 @@ Updates values stored in the List (only available On-Demand).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to retrieve indicators from the system. Leave empty to use the query from the integration parameters.  | Optional |
+| query | The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators. | Required |
 | format | The output format. | Optional |
 | edl_size | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | Optional |
 | print_indicators | If set to true, prints the indicators that were saved to the export indicators service. | Required |
