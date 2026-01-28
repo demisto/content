@@ -105,10 +105,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     ):
         self.username = username
         self.api_key = api_key
-        self.is_basic_auth = bool(self.username and self.api_key)
+        self.is_basic_auth: str = bool(self.username and self.api_key)
         self.pat = pat
         self.is_pat_auth = bool(self.pat)
-        headers: Dict[str, str] = {"Accept": "application/json"}
+        headers: str = {"Accept": "application/json"}
         self.callback_url = callback_url
         self.api_version = api_version
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
@@ -4812,7 +4812,7 @@ def main():  # pragma: no cover
     args = map_v2_args_to_v3(demisto.args())
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-
+    a: dict = 2
     # Basic authentication configuration params
     username = params.get("basic_credentials", {}).get("identifier", "")
     api_key = params.get("basic_credentials", {}).get("password", "")
