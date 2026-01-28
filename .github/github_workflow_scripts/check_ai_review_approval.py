@@ -79,7 +79,7 @@ def find_reaction_on_review(reviews, github_token):
     ]
 
     if not bot_reviews:
-        return False, False  # No reviews found
+        return False, False
 
     print(f"Found {len(bot_reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
 
@@ -93,13 +93,13 @@ def find_reaction_on_review(reviews, github_token):
                 user = reaction.get("user", {}).get("login")
                 print(f"Found 👍 reaction from user: {user}")
                 thumb_up_found = True
-                break  # next review
+                break
 
         if not thumb_up_found:
             print(f"❌ No 👍 reaction found for review ID {review.id}.")
-            return True, False  # Found reviews, but not all are approved
+            return True, False
 
-    return True, True  # Found reviews, and all are approved
+    return True, True
 
 
 def is_user_in_permitted_team(github_client: Github, username: str) -> bool:
