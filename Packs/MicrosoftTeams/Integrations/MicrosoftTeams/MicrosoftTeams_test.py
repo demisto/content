@@ -3752,7 +3752,7 @@ def test_list_messages_command_channel(mocker, requests_mock):
 
     expected_outputs = test_data.get("expected_outputs_list_messages_new_command")
     # Adjust expected outputs for channel context
-    expected_outputs["MicrosoftTeams.MessagesList(val.chatId && val.chatId === obj.chatId)"]["chatId"] = channel_name
+    expected_outputs["MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)"]["conversationId"] = channel_name
 
     assert return_results.call_args[0][0].outputs == expected_outputs
 
@@ -3789,7 +3789,7 @@ def test_list_messages_command_replies(mocker, requests_mock):
 
     expected_outputs = test_data.get("expected_outputs_list_messages_new_command")
     # Adjust expected outputs for channel context
-    expected_outputs["MicrosoftTeams.MessagesList(val.chatId && val.chatId === obj.chatId)"]["chatId"] = channel_name
+    expected_outputs["MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)"]["conversationId"] = channel_name
 
     assert return_results.call_args[0][0].outputs == expected_outputs
 
