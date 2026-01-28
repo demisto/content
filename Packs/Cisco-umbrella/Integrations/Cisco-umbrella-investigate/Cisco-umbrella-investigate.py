@@ -1703,7 +1703,6 @@ def domain_command(
         except (ValueError, TypeError):
             risk_score = None
 
-
         dbot_score = Common.DBotScore(
             integration_name=INDICATOR_VENDOR,
             indicator=domain,
