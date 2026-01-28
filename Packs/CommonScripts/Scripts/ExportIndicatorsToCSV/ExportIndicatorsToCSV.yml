@@ -7,6 +7,13 @@ args:
   name: seenDays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified).'
   name: columns
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: 'Whether to use internalHttpRequest instead of core-rest-api commands. Use this option if you are in a load-balanced environment and experiencing issues with the default method. Note: This option may have permission limitations when running from playbooks. (Default is false).'
+  name: use_internal_http_request
+  predefined:
+  - "true"
+  - "false"
 comment: This automation uses the Core REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
 commonfields:
   id: ExportIndicatorsToCSV
