@@ -5880,7 +5880,7 @@
             "integrations": ["Okta v2", "Microsoft Graph User", "Active Directory Query v2"],
             "instance_names": [
                 "ms_graph_user_dev",
-                "active_directory_ninja"
+                "active_directory_80k"
             ],
             "memory_threshold": 100
         },
