@@ -1,7 +1,7 @@
 <~XSIAM>
 
 ## Overview
-DOCA Argus is a DOCA service running on NVIDIA® BlueField® networking platforms, designed to immediately detect and enable response to attacks, minimizing their potential impact and risk.
+DOCA Argus is a DOCA service running on NVIDIA® BlueField® networking platforms. It is designed to detect attacks in real time and enable rapid response, minimizing their potential impact and risk.```
 
 ## This pack includes:
 
