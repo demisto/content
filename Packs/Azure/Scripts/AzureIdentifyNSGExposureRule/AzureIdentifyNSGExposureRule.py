@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 import traceback
 import ipaddress
+import json
 
 
 def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration_instance: str) -> tuple[list, str]:
@@ -55,10 +56,11 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
 
     instance_to_use = dict_safe_get(nsg_rules, (0, "Metadata", "instance"))
 
+    # Get all Inbound rules
     inbound_rules = [rule for rule in nsg_rules[0]["Contents"] if rule.get(
         'properties', {}).get('direction', '').lower() == 'inbound']
 
-    # Sort rules by priority (ascending order)
+    # Sort inbound rules by priority (ascending order)
     sorted_rules = sorted(inbound_rules, key=lambda rule: rule.get('properties', {}).get('priority', 0))
 
     if not sorted_rules:
@@ -69,7 +71,7 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
 
 def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg_rules: list[dict]) -> tuple[str, int]:
     """
-    Find the first NSG rule that matches the specified port, protocol, and any of the destination IPs.
+    Find the first NSG Allow rule that matches the specified port, protocol, and any of the destination IPs.
 
     Args:
         port (int): The destination port to match
@@ -78,7 +80,7 @@ def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg
         nsg_rules (list[dict]): List of NSG command results
 
     Returns:
-        tuple[str, int]: (rule_name, rule_priority) or ("", "") if no match found
+        tuple[str, int]: (rule_name, rule_priority)
 
     Raises:
         DemistoException: If no matching NSG inbound rule is found
@@ -89,10 +91,8 @@ def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg
     for rule in nsg_rules:
         properties = rule.get('properties', {})
 
-        # Skip rules that don't allow traffic or aren't inbound
+        # Skip rules that don't allow traffic
         if properties.get('access', '').lower() != 'allow':
-            continue
-        if properties.get('direction', '').lower() != 'inbound':
             continue
 
         # Check protocol match (case-insensitive)
@@ -255,38 +255,35 @@ def _ip_matches_prefix(target_ip_obj: Any, address_prefix: str) -> bool:
         return False
 
 
-def find_available_priorities(
-    target_rule_priority: int,
-    nsg_rules: list,
-    priority_count: int
-) -> list[int]:
-    """This function gathers the below arguments to retrieve the next available priorities
-    from an Azure NSG that can be used to add rules to.
+def find_available_priorities(target_rule_priority: int, nsg_rules: list, priority_count: int) -> list[int]:
+    """
+    Identifies unused NSG rule priority values below the target priority that can be used to insert new
+    rules above it.
 
     Args:
         target_rule_priority (int): The priority of the rule you want to find available priorities before.
         nsg_rules (list[dict]): List of NSG command results
-        priority_count (int):  Maximum number of priorities needed
+        priority_count (int):  Number of priorities needed
 
     Raises:
-        ValueError: if the requested number of available priorities are not found.
+        DemistoException: if the requested number of available priorities are not found.
 
     Returns:
         list[int]: List of available priorities before the target rule priority
     """
-    # Sort rules by priority (ascending order)
-    sorted_rules = sorted(nsg_rules, key=lambda rule: rule.get('properties', {}).get('priority', 0))
-
     rule_priorities = []
 
-    for rule in sorted_rules:
+    # Store all used priority values
+    for rule in nsg_rules:
         rule_priorities.append(int(rule.get("properties").get("priority", 0)))
 
+    # Format values as a set for easier evaluation
     rule_priorities_set = set(rule_priorities)
 
     available_priorities = []
 
     # Find available priorities counting down from target_rule_priority - 1
+    # Only goes down to 100, as this is the lowest value supported by Azure NSG rules
     for priority in range(target_rule_priority - 1, 99, -1):  # Count down from target-1 to 100
         if priority not in rule_priorities_set:
             available_priorities.append(priority)
@@ -294,8 +291,9 @@ def find_available_priorities(
             if len(available_priorities) >= priority_count:
                 break
 
+    # Raise error if requested priority count exceeds the number available
     if len(available_priorities) < priority_count:
-        raise ValueError(
+        raise DemistoException(
             f"Requested {priority_count} available priority values, but only found {len(available_priorities)} "
             f"below the matching rule's priority of {target_rule_priority}."
         )
@@ -330,10 +328,6 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     priority_count = int(args.get("priority_count", ""))
     integration_instance = args.get("integration_instance", "")
 
-    if not all([subscription_id, rg_name, nsg_name, destination_ip_input, port, protocol]):
-        raise ValueError("subscription_id, resource_group_name, network_security_group_name, private_ip_addresses, port,"
-                         " and protocol are required parameters")
-
     # Parse and validate IP addresses - handle both single IP and list of IPs
     destination_ips = []
     if isinstance(destination_ip_input, list):
@@ -352,16 +346,18 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
             ipaddress.ip_address(ip)
             valid_ips.append(ip)
         except ValueError:
-            # Continue processing with valid IPs, but log the invalid one
-            demisto.debug(f"Invalid IP address provided: {ip}")
+            raise ValueError(f"Invalid IP address provided: {ip}")
 
     if not valid_ips:
         raise ValueError("No valid IP addresses found in private_ip_address parameter")
 
+    # Retrieve NSG rules and identify the Azure integration instance to use
     nsg_rules, instance_to_use = get_nsg_rules(subscription_id, rg_name, nsg_name, integration_instance)
 
+    # Find the name and priority value of the first Allow rule that matches the provided criteria
     matching_rule_name, priority = find_matching_rule(port, protocol, valid_ips, nsg_rules)
 
+    # Identify available priority values to insert new rules ahead of the matched rule
     available_priorities = find_available_priorities(priority, nsg_rules, priority_count)
 
     return CommandResults(
