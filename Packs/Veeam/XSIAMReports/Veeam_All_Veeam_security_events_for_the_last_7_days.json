@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam security events for the last 7 days",
+            "name": "All Veeam security events for the last 7 days",
             "report_description": "Provides an overview of Veeam Backup & Replication security events created for the last 7 days.",
             "layout": [
                 {
@@ -250,6 +251,7 @@
                 "relativeTime": 604800000
             },
             "global_id": "fbd5ec931030499886b595b972d9c3bc",
+            "id": "fbd5ec931030499886b595b972d9c3bc",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }
