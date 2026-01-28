@@ -1,0 +1,19 @@
+{   
+    "has_more": false,
+    "data": [
+        {
+            "id": 1,
+            "cve_id": "CVE-MOCK-0001",
+            "severity": "critical",
+            "description": "Remote code execution vulnerability",
+            "published": "2026-01-10T08:00:00"
+        },
+        {
+            "id": 2,
+            "cve_id": "CVE-MOCK-0002",
+            "severity": "high",
+            "description": "SQL injection vulnerability",
+            "published": "2026-01-12T14:30:00"
+        }
+    ]
+}
