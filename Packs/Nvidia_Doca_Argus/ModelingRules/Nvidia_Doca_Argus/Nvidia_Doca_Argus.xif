@@ -10,7 +10,6 @@ alter
     process_name = process_details -> process_name,
     process_command_line_arguments = process_details -> process_command_line_arguments,
     process_hash_sha256 = process_details -> process_hash_sha256,
-    process_hash_sha1 = process_details -> process_hash_sha1,
     process_hash_md5 = process_details -> process_hash_md5,
     process_execution_path = process_details -> process_execution_path,
     protocol = network_details -> protocol,
