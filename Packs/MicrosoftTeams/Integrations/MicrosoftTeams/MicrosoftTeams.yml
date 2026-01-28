@@ -735,46 +735,46 @@ script:
     name: microsoft-teams-list-messages
     outputs:
     - contextPath: MicrosoftTeams.MessagesList.conversationId
-      description: The chat's unique identifier.
+      description: The conversation's unique identifier.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.id
       description: Unique ID of the message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.replyToId
-      description: ID of the parent chat message or root chat message of the thread.
+      description: ID of the parent message or root message of the thread.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.etag
-      description: Version number of the chat message.
+      description: Version number of the message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.messageType
-      description: The type of chat message.
+      description: The type of message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.createdDateTime
-      description: Timestamp of when the chat message was created.
+      description: Timestamp of when the message was created.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.lastModifiedDateTime
-      description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+      description: Timestamp when the message is created (initial setting) or modified, including when a reaction is added or removed.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.lastEditedDateTime
-      description: Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
+      description: Timestamp when edits to the message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.deletedDateTime
-      description: Timestamp when the chat message was deleted, or null if not deleted.
+      description: Timestamp when the message was deleted, or null if not deleted.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.subject
-      description: The subject of the chat message, in plaintext.
+      description: The subject of the message, in plaintext.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.summary
-      description: Summary text of the chat message that could be used for push notifications and summary views or fall back views.
+      description: Summary text of the message that could be used for push notifications and summary views or fall back views.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.chatId
       description: If the message was sent in a chat, represents the identity of the chat.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.importance
-      description: The importance of the chat message.
+      description: The importance of the message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.locale
-      description: Locale of the chat message set by the client.
+      description: Locale of the message set by the client.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.webUrl
       description: Link to the message in Microsoft Teams.
@@ -788,11 +788,8 @@ script:
     - contextPath: MicrosoftTeams.MessagesList.messages.eventDetail
       description: If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.
       type: String
-    - contextPath: MicrosoftTeams.MessagesList.messages.eventDetail.@odata.type
-      type: String
-      description: Specifies the type of system event associated with the message and is useful when the message content is empty.
     - contextPath: MicrosoftTeams.MessagesList.messages.from
-      description: Details of the sender of the chat message.
+      description: Details of the sender of the message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.body.content
       description: The content of the message.
@@ -807,10 +804,10 @@ script:
       type: String
       description: The content of the attachments.
     - contextPath: MicrosoftTeams.MessagesList.messages.mentions
-      description: List of entities mentioned in the chat message.
+      description: List of entities mentioned in the message.
       type: String
     - contextPath: MicrosoftTeams.MessagesList.messages.reactions
-      description: Reactions for this chat message (for example, Like).
+      description: Reactions for this message (for example, Like).
       type: String
     - contextPath: MicrosoftTeams.MessagesListNextLink
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
