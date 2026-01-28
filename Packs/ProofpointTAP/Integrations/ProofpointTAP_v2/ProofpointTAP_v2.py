@@ -547,20 +547,47 @@ def fetch_incidents(
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+        demisto.debug(f"First fetch - starting from: {start_query_time}")
+    else:
+        demisto.debug(f"Continuing fetch from last_fetch: {start_query_time}")
+
+    # Validate that start_query_time is not more than 7 days ago
+    try:
+        validate_first_fetch_time(start_query_time)
+    except DemistoException as e:
+        demisto.error(f"Fetch time validation failed: {str(e)}. Resetting to 1 hour ago.")
+        start_query_time, _ = parse_date_range("1 hour", date_format=DATE_FORMAT, utc=True)
+
     fetch_times = get_fetch_times(start_query_time)
+    demisto.debug(f"Fetching incidents across {len(fetch_times) - 1} time intervals")
+
     for i in range(len(fetch_times) - 1):
         start_query_time = fetch_times[i]
         end_query_time = fetch_times[i + 1]
         demisto.debug(f"{start_query_time=}  {end_query_time=}")
-        raw_events = client.get_events(
-            interval=start_query_time + "/" + end_query_time,
-            event_type_filter=event_type_filter,
-            threat_status=threat_status,
-            threat_type=threat_type,
-        )
+
+        try:
+            raw_events = client.get_events(
+                interval=start_query_time + "/" + end_query_time,
+                event_type_filter=event_type_filter,
+                threat_status=threat_status,
+                threat_type=threat_type,
+            )
+        except Exception as e:
+            demisto.debug(
+                f"Failed to fetch events for interval {start_query_time}/{end_query_time}. "
+                f"Error: {str(e)}. Continuing with next interval."
+            )
+            continue
+
+        if not raw_events:
+            demisto.debug(f"No events returned for interval {start_query_time}/{end_query_time}")
+            continue
 
         message_delivered = raw_events.get("messagesDelivered", [])
-        demisto.debug(f"Fetched {len(message_delivered)} messagesDelivered events")
+        demisto.debug(
+            f"Fetched {len(message_delivered)} messagesDelivered events for interval {start_query_time}/{end_query_time}"
+        )
         for raw_event in message_delivered:
             raw_event["type"] = "messages delivered"
             event_guid = raw_event.get("GUID", "")
@@ -577,7 +604,7 @@ def fetch_incidents(
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
-        demisto.debug(f"Fetched {len(message_blocked)} messagesBlocked events")
+        demisto.debug(f"Fetched {len(message_blocked)} messagesBlocked events for interval {start_query_time}/{end_query_time}")
         for raw_event in message_blocked:
             raw_event["type"] = "messages blocked"
             event_guid = raw_event.get("GUID", "")
@@ -594,7 +621,7 @@ def fetch_incidents(
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
-        demisto.debug(f"Fetched {len(clicks_permitted)} clicks_permitted events")
+        demisto.debug(f"Fetched {len(clicks_permitted)} clicks_permitted events for interval {start_query_time}/{end_query_time}")
         for raw_event in clicks_permitted:
             raw_event["type"] = "clicks permitted"
             event_guid = raw_event.get("GUID", "")
@@ -611,7 +638,7 @@ def fetch_incidents(
             incidents.append(incident)
 
         clicks_blocked = raw_events.get("clicksBlocked", [])
-        demisto.debug(f"Fetched {len(clicks_blocked)} clicks_blocked events")
+        demisto.debug(f"Fetched {len(clicks_blocked)} clicks_blocked events for interval {start_query_time}/{end_query_time}")
         for raw_event in clicks_blocked:
             raw_event["type"] = "clicks blocked"
             event_guid = raw_event.get("GUID", "")
@@ -630,7 +657,23 @@ def fetch_incidents(
     # Cut the milliseconds from last fetch if exists
     end_query_time = end_query_time[:-5] + "Z" if end_query_time[-5] == "." else end_query_time
     next_run = {"last_fetch": end_query_time}
-    demisto.debug(f"{last_run}=")
+
+    total_incidents = len(incidents)
+    returned_incidents = min(total_incidents, limit)
+    remaining_incidents = max(0, total_incidents - limit)
+
+    demisto.debug(
+        f"Fetch completed. Total incidents: {total_incidents}, "
+        f"Returning: {returned_incidents}, Remaining in context: {remaining_incidents}, "
+        f"Next fetch will start from: {end_query_time}"
+    )
+
+    if total_incidents == 0:
+        demisto.debug(
+            f"WARNING: No incidents fetched for time range {fetch_times[0]} to {end_query_time}. "
+            f"This may indicate an issue with the API or configuration."
+        )
+
     return next_run, incidents[:limit], incidents[limit:]
 
 
