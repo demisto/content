@@ -312,7 +312,7 @@ class HelloWorldSeverity(str, Enum):
 
 DUMMY_VALID_API_KEY = "dummy-key"  # to mock API errors
 
-SYSTEM = SystemCapabilities()
+CAN_SEND_EVENTS = is_xsiam() or is_platform()
 
 # endregion
 
@@ -353,7 +353,7 @@ class HelloWorldParams(BaseParams):
     @property
     def first_fetch_time(self) -> str:
         """Convert first_fetch to ISO 8601 timestamp string."""
-        if SYSTEM.can_send_events:
+        if CAN_SEND_EVENTS:
             demisto.debug("[Param validation] Setting first fetch internally to last 1 minute.")
             return (datetime.now(tz=UTC) - timedelta(minutes=1)).isoformat()
         else:
@@ -362,12 +362,12 @@ class HelloWorldParams(BaseParams):
     @property
     def is_fetch(self) -> bool | None:
         """Abstract getter and validator the 'Fetch incidents / events' parameters, depending on system capabilities."""
-        return self.is_fetch_events if SYSTEM.can_send_events else self.is_fetch_incidents
+        return self.is_fetch_events if CAN_SEND_EVENTS else self.is_fetch_incidents
 
     @property
     def max_fetch(self) -> int:
         """Abstract getter and validator the 'Maximum per fetch' parameters, depending on system capabilities."""
-        if SYSTEM.can_send_events:
+        if CAN_SEND_EVENTS:
             max_fetch_cap = 100000
             max_fetch = self.max_events_fetch
         else:
@@ -1032,7 +1032,7 @@ async def get_alert_list(
 
         # Create XSOAR incidents / XSIAM events
         if should_push and unique_alerts_batch:
-            if SYSTEM.can_send_events:
+            if CAN_SEND_EVENTS:
                 demisto.debug(f"[Get alert list] Creating {len(unique_alerts_batch)} XSIAM events asynchronously.")
                 async_push_tasks.append(asyncio.to_thread(create_events, unique_alerts_batch))
             else:
@@ -1548,7 +1548,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
     def validate_should_push_events(cls, v):
         """Ensure should_push_events is valid for the current tenant."""
         should_push_events = argToBoolean(v)
-        if should_push_events and not SYSTEM.can_send_events:
+        if should_push_events and not CAN_SEND_EVENTS:
             raise ValueError("[Args validation] 'should_push_events' is not supported on this tenant.")
         return should_push_events
 

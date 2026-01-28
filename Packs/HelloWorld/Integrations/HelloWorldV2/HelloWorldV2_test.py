@@ -178,7 +178,7 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
-        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)  # Assume running on a Cortex XSIAM tenant
+        mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", True)  # Assume running on a Cortex XSIAM tenant
 
         params = HelloWorldParams(
             url="https://api.example.com",  # type: ignore[arg-type]
@@ -207,7 +207,7 @@ class TestHelloWorldParams:
         """
         from HelloWorldV2 import HelloWorldParams
 
-        mocker.patch("HelloWorldV2.SYSTEM.is_xsoar", True)  # Assume running on a Cortex XSOAR tenant
+        mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", False)  # Assume running on a Cortex XSOAR tenant
 
         params = HelloWorldParams(
             url="https://api.example.com",  # type: ignore[arg-type]
@@ -362,7 +362,7 @@ def test_module_success(mocker: MockerFixture, is_fetch: bool):
     from HelloWorldV2 import test_module
 
     # Assume this is running on a Cortex XSIAM tenant
-    mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
+    mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", True)
 
     # Create mock client
     mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
@@ -955,8 +955,7 @@ def test_fetch_alerts_xsiam_vs_xsoar(mocker: MockerFixture, is_xsiam: bool, expe
     from HelloWorldV2 import fetch_alerts
 
     # Mock system capabilities
-    mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", is_xsiam)
-    mocker.patch("HelloWorldV2.SYSTEM.is_xsoar", not is_xsiam)
+    mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", is_xsiam)
 
     # Create params and client
     params = HelloWorldParams(
@@ -2676,7 +2675,7 @@ class TestHelloWorldGetEventsArgs:
         """
         from HelloWorldV2 import HelloWorldGetEventsArgs
 
-        mocker.patch("HelloWorldV2.SYSTEM.is_xsiam", True)
+        mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", True)
 
         args = HelloWorldGetEventsArgs(limit=limit, severity=HelloWorldSeverity.HIGH, should_push_events=should_push_events)
         assert args.limit == limit

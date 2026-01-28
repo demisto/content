@@ -13362,26 +13362,6 @@ class ISOEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class SystemCapabilities:
-    """
-    Determines if we are running in XSOAR, XSIAM, or a Hybrid context.
-    Acts as the traffic cop for Unified commands.
-    """
-    def __init__(self):
-        self.is_platform = is_platform()
-        self.is_xsiam = is_xsiam()
-        self.is_xsoar = is_xsoar()
-    
-    @property
-    def can_send_events(self):
-        """
-        """
-        if self.is_xsiam or self.is_platform:
-            demisto.debug("XSIAM Context detected. Sending events is supported.")
-            return True
-        return False
-
-
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
