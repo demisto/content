@@ -5,11 +5,11 @@
             "is_array": false
         },
         "action": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "actor": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "allowed": {
@@ -61,7 +61,7 @@
             "is_array": false
         },
         "owner": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "ray_id": {
@@ -69,7 +69,7 @@
             "is_array": false
         },
         "resource": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "user_email": {
