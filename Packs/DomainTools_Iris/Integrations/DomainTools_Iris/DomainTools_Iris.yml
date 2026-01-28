@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: DomainTools
 commonfields:
   id: DomainTools Iris
   version: -1
@@ -54,9 +53,32 @@ configuration:
   - Iris
   - Verdict
   section: Collect
-- defaultvalue: B - Usually reliable
-  display: 'Source Reliability'
+- defaultvalue: Iris Investigate
+  display: 'Domain Enrichment Method (DomainTools)'
+  name: domain_enrichmenth_method
+  options:
+  - Iris Investigate
+  - Iris Enrich
+  type: 15
+  required: false
+  section: Collect
+  additionalinfo: "Iris API to be used for domain enrichment. Defaults to Iris Investigate."
+- defaultvalue: 'Disabled'
+  name: domain_auto_enrich
+  display: 'Domain Auto-Enrich on Ingestion'
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - Enabled
+  - Disabled
+  additionalinfo: "Enable real-time enrichment for incoming ingested domain. Note: This may consume Iris API quotas."
+- defaultvalue: 'B - Usually reliable'
   name: integrationReliability
+  display: 'Source Reliability'
+  type: 15
+  required: false
+  section: Collect
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -65,13 +87,10 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
-  required: false
-  section: Collect
   additionalinfo: Reliability of the source providing the intelligence data.
-- defaultvalue: 'indicatorType'
+- display: ''
   name: feedExpirationPolicy
-  display: ''
+  defaultvalue: 'indicatorType'
   type: 17
   required: false
   section: Collect
@@ -80,19 +99,19 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-- defaultvalue: '20160'
+- display: ''
   name: feedExpirationInterval
-  display: ''
   type: 1
   required: false
   section: Collect
+  defaultvalue: '20160'
 - display: 'Guided Pivot Threshold'
   name: pivot_threshold
-  defaultvalue: 500
   type: 1
   required: true
   section: Connect
   additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
+  defaultvalue: 500
 - display: 'Enabled on Monitoring Domains by Iris Search Hash'
   name: monitor_iris_search_hash
   type: 15
@@ -104,25 +123,25 @@ configuration:
   - Create Incident and Import Indicators
 - display: 'Domaintools Iris Investigate Search Hash'
   name: domaintools_iris_search_hash
-  type: 12
   required: false
-  section: Collect
+  type: 12
   additionalinfo: The DomainTools Iris Investigate Search hash
+  section: Collect
 - display: 'Enabled on Monitoring Domains by Iris Tags'
   name: monitor_iris_tags
   type: 15
-  required: false
   section: Collect
-  defaultvalue: Import Indicators Only
+  defaultvalue: 'Import Indicators Only'
+  required: false
   options:
   - Import Indicators Only
   - Create Incident and Import Indicators
 - display: Domaintools Iris Tags
   name: domaintools_iris_tags
-  required: false
   type: 12
-  additionalinfo: The DomainTools Iris Tags (Values should be a comma separated value. e.g. (tag1,tag2))
   section: Collect
+  required: false
+  additionalinfo: The DomainTools Iris Tags (Values should be a comma separated value. e.g. (tag1,tag2))
 - display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
@@ -157,6 +176,17 @@ script:
       required: true
       isArray: false
       secret: false
+    - name: bypass_auto_enrich
+      description: Bypasses the Domain Auto-Enrich on Ingestion.
+      default: false
+      required: false
+      isArray: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Provides data enrichment for domains.
     name: domain
     outputs:
@@ -2483,7 +2513,7 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Name of the domain returned by the query.
-  dockerimage: demisto/vendors-sdk:1.0.0.5505539
+  dockerimage: demisto/vendors-sdk:1.0.0.6383083
   runonce: false
   script: '-'
   type: python
