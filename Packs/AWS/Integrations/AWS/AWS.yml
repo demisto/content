@@ -153,6 +153,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
@@ -225,6 +227,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: acl
       description: 'The canned ACL to apply to the bucket.'
@@ -311,6 +315,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: 'The name of the bucket for which to set the logging parameters.'
       name: bucket
       required: true
@@ -397,6 +403,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The name of the bucket for which to set the logging parameters.
       name: bucket
       required: true
@@ -483,6 +491,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: bucket
       description: 'The name of the bucket to which the policy will be applied.'
       required: true
@@ -533,6 +543,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: bucket
         description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
@@ -605,6 +617,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: bucket
         description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
         required: true
@@ -660,6 +674,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: bucket
         description: The bucket name for which to get the website configuration.
         required: true
@@ -720,6 +736,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: bucket
         description: Specifies the S3 bucket whose ACL is being requested.
         required: true
@@ -1161,6 +1179,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: cluster_name
       description: 'The name of the Amazon EKS cluster to update.'
       required: true
@@ -1274,6 +1294,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     outputs:
     - contextPath: AWS.EKS.Cluster.name
       description: The name of your cluster.
@@ -1449,6 +1471,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -1515,6 +1539,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: db_cluster_identifier
       description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
       required: true
@@ -1603,6 +1629,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: db_cluster_snapshot_identifier
       description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
       required: true
@@ -1680,7 +1708,7 @@ script:
 
 
   - name: aws-rds-db-instance-modify
-    description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
+    description: "Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1722,26 +1750,28 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
     - name: publicly_accessible
-      description: 'Weather the DB instance is publicly accessible.'
+      description: 'Whether the DB instance is publicly accessible.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: apply_immediately
-      description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+      description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: copy_tags_to_snapshot
-      description: 'Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
+      description: 'Whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
       required: false
       auto: PREDEFINED
       predefined:
@@ -1752,33 +1782,36 @@ script:
       required: false
 
     - name: enable_iam_database_authentication
-      description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: deletion_protection
-      description: 'Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
+      description: 'Whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: auto_minor_version_upgrade
-      description: 'Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+      description: 'Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. Behavior: An outage occurs only if automatic upgrades are enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version; otherwise, changes are applied as soon as possible without causing an outage. Note: Do not enable for RDS Custom DB instances (operation will fail).'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: multi_az
-      description: 'Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+      description: 'Behavior: Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage and is applied during the next maintenance window unless ApplyImmediately is enabled. Not applicable to RDS Custom DB instances.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+    - name: vpc_security_group_ids
+      description: "A list of Amazon EC2 VPC security groups to associate with this DB instance. This setting doesn’t apply to the following DB instances: Amazon Aurora, RDS Custom."
+      required: false
 
   - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
     description: This action will disable public access for AWS RDS database instance by modifying the instance settings.
@@ -2046,6 +2079,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
@@ -2105,6 +2140,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: subscription_name
         description: The name of the RDS event notification subscription.
         required: true
@@ -2225,6 +2262,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -2291,6 +2330,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -2357,6 +2398,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -2424,6 +2467,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -2487,6 +2532,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
 
     - name: snapshot_id
       description: 'The ID of the snapshot.'
@@ -2557,6 +2604,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The ID of the instance.
       name: instance_id
       required: true
@@ -2657,6 +2706,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -2762,6 +2813,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
@@ -2827,6 +2880,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
     outputs:
     - contextPath: AWS.EC2.Snapshot.DataEncryptionKeyId
@@ -2940,6 +2995,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     description: Adds or removes permission settings for the specified snapshot.
 
   - name: aws-ec2-set-snapshot-to-private-quick-action
@@ -3028,6 +3085,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     description: Updates the containerInsights setting of an ECS cluster.
 
   - name: aws-ec2-subnet-attribute-modify
@@ -3073,6 +3132,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - description: The ID of the subnet.
         name: subnet_id
         required: true
@@ -3142,6 +3203,8 @@ script:
         - me-south-1
         - me-central-1
         - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
     description: Describes one or more of your VPCs.
     name: aws-ec2-vpcs-describe
     outputs:
@@ -3242,6 +3305,8 @@ script:
         - me-south-1
         - me-central-1
         - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
     description: Describes one or more of your subnets.
     name: aws-ec2-subnets-describe
     outputs:
@@ -3346,6 +3411,8 @@ script:
         - me-south-1
         - me-central-1
         - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
     outputs:
     - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
       description: The resource discovery ID.
@@ -3414,6 +3481,8 @@ script:
         - me-south-1
         - me-central-1
         - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
     outputs:
     - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
       description: The resource discovery association ID.
@@ -3473,6 +3542,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: name
       description: The name of the trail or trail ARN.
       required: true
@@ -3686,6 +3757,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: name
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
@@ -3758,6 +3831,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: instance_ids
       description: "A comma-separated list of instance IDs to describe. If empty, returns all accessible instances in the specified region."
       required: false
@@ -4101,6 +4176,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: instance_ids
       description: "A comma-separated list of instance IDs to start, in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions."
       required: true
@@ -4150,6 +4227,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: instance_ids
       description: "A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance."
       required: true
@@ -4214,6 +4293,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: instance_ids
       description: "A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated."
       required: true
@@ -4263,6 +4344,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: count
       description: "The number of instances to launch. Must be greater than 0."
       required: true
@@ -4699,6 +4782,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: executable_users
         description: Scopes the images by users with explicit launch permissions.
       - name: filters
@@ -4875,6 +4960,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: vpc_id
         description: The ID of the VPC.
         required: true
@@ -4984,6 +5071,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: ipam_resource_discovery_id
         description: An IPAM resource discovery ID.
         required: true
@@ -5062,6 +5151,8 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
       - name: resources
         description: The IDs of one or more resources to tag, separated by a comma. For example, ami-1a2b3c4d.
         required: true
@@ -5121,6 +5212,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     outputs:
     - contextPath: AWS.CloudTrail.Trails.Name
       description: The name of the trail, as set in CreateTrail.
@@ -5211,6 +5304,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The name of the Amazon S3 bucket from which to delete the bucket policy.
       name: bucket
       required: true
@@ -5258,6 +5353,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The name of the Amazon S3 bucket to retrieve public access block configuration from.
       name: bucket
       required: true
@@ -5323,6 +5420,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: Name of the S3 bucket to retrieve encryption configuration from. Must follow S3 naming conventions.
       name: bucket
       required: true
@@ -5377,6 +5476,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - description: The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions.
       name: bucket
       required: true
@@ -5450,6 +5551,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: function_name
       required: true
       description: Name, ARN, or qualified name of the Lambda function.
@@ -5662,6 +5765,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: function_name
       required: true
       description: Name of the Lambda function.
@@ -5748,6 +5853,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: function_name
       required: true
       description: Name of the Lambda function, version, or alias.
@@ -5830,6 +5937,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: function_name
       required: true
       description: Name of the Lambda function to invoke.
@@ -5916,6 +6025,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: function_name
       required: true
       description: Name of the Lambda function.
@@ -6042,6 +6153,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     description: Upload file to S3 bucket.
     name: aws-s3-file-upload
     outputs: []
@@ -6092,6 +6205,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     description: Download a file from S3 bucket to the War Room.
     name: aws-s3-file-download
     outputs:
@@ -6607,11 +6722,50 @@ script:
       description: Next page token for pagination.
       type: string
   - name: aws-kms-key-rotation-enable
-    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. The default value is us-east-1.
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
+    - name: region
+      description: The AWS region.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
     - name: key_id
       description: The key ARN to enable rotation for.
       required: true
@@ -6663,6 +6817,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: load_balancer_name
       description: The name of the Load Balancer.
       required: true
@@ -6870,6 +7026,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: certificate_arn
       description: The ARN of the ACM certificate to update.
       required: true
@@ -6926,6 +7084,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: group_name
       description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
       required: true
@@ -6979,6 +7139,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: group_id
       description: The ID of the security group to delete (e.g., sg-12345678). Required if group_name is not provided.
     - name: group_name
@@ -7026,6 +7188,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
     - name: group_ids
       description: Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321).
       isArray: true
@@ -7082,7 +7246,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.5295752
+  dockerimage: demisto/boto3py3:1.0.0.6593929
 supportsquickactions: true
 fromversion: 5.5.0
 tests:
