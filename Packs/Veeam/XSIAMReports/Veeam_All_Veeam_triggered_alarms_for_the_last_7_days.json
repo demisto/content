@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam triggered alarms for the last 7 days",
+            "name": "All Veeam triggered alarms for the last 7 days",
             "report_description": "Provides an overview of Veeam ONE alarms triggered for the last 7 days.",
             "layout": [
                 {
@@ -178,6 +179,7 @@
                 "relativeTime": 604800000
             },
             "global_id": "e32e26a18441477599887e9e96068a11",
+            "id": "e32e26a18441477599887e9e96068a11",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }
