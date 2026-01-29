@@ -115,7 +115,7 @@ def is_minimized_via_graphql(node_id: str, token: str) -> bool:
         return False
 
 
-def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str):
+def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str, pr_number: str):
     if not reviews:
         return False, False
 
@@ -134,7 +134,8 @@ def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str)
                 break
 
         if not thumb_up_found:
-            print(f"❌ No 👍 reaction found for review ID {review.id}.")
+            review_link = f"https://github.com/demisto/content/pull/{pr_number}#pullrequestreview-{review.id}"
+            print(f"❌ No 👍 reaction found for review: {review_link}")
             return True, False
 
     return True, True
@@ -253,7 +254,7 @@ def main():
         if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body and not is_minimized_via_graphql(review.raw_data["node_id"], github_token)
     ]
 
-    found_reviews, all_approved = find_reaction_on_review(relevant_reviews, github_token)
+    found_reviews, all_approved = find_reaction_on_review(relevant_reviews, github_token, pr_number)
 
     if not found_reviews:
         print("❌ AI Review check failed. No AI Review comment found.")
