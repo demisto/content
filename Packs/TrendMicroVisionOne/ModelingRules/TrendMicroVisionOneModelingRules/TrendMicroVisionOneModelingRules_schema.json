@@ -33,7 +33,7 @@
          "is_array":false
       },
       "details":{
-         "type":"string",
+         "type":"nested_json",
          "is_array":false
       },
       "source":{
@@ -49,11 +49,11 @@
          "is_array":false
       },
       "filters":{
-         "type":"string",
-         "is_array":false
+         "type":"nested_json",
+         "is_array":true
       },
       "endpoint":{
-         "type":"string",
+         "type":"nested_json",
          "is_array":false
       },
       "entityName":{
@@ -70,7 +70,7 @@
       },
       "component":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "deviceGUID":{
          "type":"string",
@@ -98,7 +98,7 @@
       },
       "dst":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "endpointGUID":{
          "type":"string",
@@ -110,7 +110,7 @@
       },
       "endpointIp":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "endpointMacAddress":{
          "type":"string",
@@ -130,7 +130,7 @@
       },
       "fileName":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "filePath":{
          "type":"string",
@@ -158,11 +158,11 @@
       },
       "mDevice":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "mitreMapping":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "mpname":{
          "type":"string",
@@ -174,7 +174,7 @@
       },
       "objectCmd":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "objectFileHashMd5":{
          "type":"string",
@@ -198,7 +198,7 @@
       },
       "objectSigner":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "pname":{
          "type":"string",
@@ -246,7 +246,7 @@
       },
       "src":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "threatName":{
          "type":"string",
@@ -289,20 +289,20 @@
          "is_array":false
       },
       "impactScope": {
-          "type":"string",
+          "type":"nested_json",
          "is_array":false
       },
       "indicators": {
-          "type":"string",
-         "is_array":false
+          "type":"nested_json",
+         "is_array":true
       },
       "matchedRules": {
-          "type":"string",
-         "is_array":false
+          "type":"nested_json",
+         "is_array":true
       },
       "act": {
           "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "behaviorCat": {
           "type":"string",

@@ -45,7 +45,7 @@
             "is_array": false
         },
         "details": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "scope": {

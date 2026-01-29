@@ -9,7 +9,7 @@
             "is_array": false
         },
         "policy": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "policyId": {
@@ -21,7 +21,7 @@
             "is_array": false
         },
         "resource": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "status": {

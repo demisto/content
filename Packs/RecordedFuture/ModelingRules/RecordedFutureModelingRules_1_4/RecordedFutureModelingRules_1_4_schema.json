@@ -9,11 +9,11 @@
             "is_array": false
         },
         "url": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "rule": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "type": {
@@ -25,7 +25,7 @@
             "is_array": false
         },
         "ai_insights": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         }
     }

@@ -65,11 +65,11 @@
             "is_array": false
         },
         "mitreTechniques": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "evidence": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "classification": {

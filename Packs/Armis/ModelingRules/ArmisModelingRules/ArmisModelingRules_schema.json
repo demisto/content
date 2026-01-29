@@ -153,24 +153,24 @@
             "is_array": false
         },
         "sensor": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "site": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "tags": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "type": {
             "type": "string",
             "is_array": false
         },
         "userIds": {
-            "type": "string",
-            "is_array": false
+            "type": "int",
+            "is_array": true
         }
     }
 }

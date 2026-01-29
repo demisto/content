@@ -75,7 +75,7 @@
             "is_array": false
         },
         "device_type_reference": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "Failed_Signon": {
@@ -115,7 +115,7 @@
             "is_array": false
         },
         "multi_factor_authentication_type_reference": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "operating_system": {

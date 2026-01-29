@@ -18,10 +18,10 @@
       },
       "Types": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "Severity": {
-        "type": "string",
+        "type": "nested_json",
         "is_array": false
       },
       "Title": {
@@ -34,10 +34,10 @@
       },
       "Resources": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "Compliance": {
-        "type": "string",
+        "type": "nested_json",
         "is_array": false
       }
     }

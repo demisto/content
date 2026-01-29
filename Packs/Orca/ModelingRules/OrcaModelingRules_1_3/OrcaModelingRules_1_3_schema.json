@@ -5,7 +5,7 @@
       "is_array": false
     },
     "data": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "cloud_account_type": {
@@ -17,11 +17,11 @@
       "is_array": false
     },
     "model": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "state": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "cloud_provider": {

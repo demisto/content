@@ -1,15 +1,15 @@
 {
     "atlassian_confluence_raw": {        
         "changedvalues": {
-            "type": "string",
-            "is_array": false
+            "type": "nested_json",
+            "is_array": true
         },
         "associatedobjects": {
-            "type": "string",
-            "is_array": false
+            "type": "nested_json",
+            "is_array": true
         },
         "affectedobject": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "sysadmin": {
@@ -33,7 +33,7 @@
             "is_array": false
         },
         "author": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "summary": {

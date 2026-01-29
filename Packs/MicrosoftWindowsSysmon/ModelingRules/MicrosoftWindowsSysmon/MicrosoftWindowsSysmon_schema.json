@@ -21,7 +21,7 @@
             "is_array": false
         },
         "user": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "opcode": {
@@ -45,7 +45,7 @@
             "is_array": false
         },
         "event_data": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "event_action": {

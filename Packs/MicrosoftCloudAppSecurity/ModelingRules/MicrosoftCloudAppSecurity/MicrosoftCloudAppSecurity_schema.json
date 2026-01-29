@@ -9,23 +9,23 @@
           "is_array": false
       },
       "device": {
-          "type": "string",
+          "type": "nested_json",
           "is_array": false
       },
       "location": {
-          "type": "string",
+          "type": "nested_json",
           "is_array": false
       },
       "mainInfo": {
-          "type": "string",
+          "type": "nested_json",
           "is_array": false
       },
       "user": {
-          "type": "string",
+          "type": "nested_json",
           "is_array": false
       },
       "rawDataJson": {
-          "type": "string",
+          "type": "nested_json",
           "is_array": false
       },
       "appName": {
@@ -45,8 +45,8 @@
           "is_array": false
       },
       "entities": {
-          "type": "string",
-          "is_array": false
+          "type": "nested_json",
+          "is_array": true
       },
       "severityValue": {
           "type": "int",
@@ -61,12 +61,12 @@
           "is_array": false
       },
       "stories": {
-          "type": "string",
-          "is_array": false
+          "type": "int",
+          "is_array": true
       },
       "evidence": {
-          "type": "string",
-          "is_array": false
+          "type": "nested_json",
+          "is_array": true
       },
       "timestamp": {
           "type": "int",

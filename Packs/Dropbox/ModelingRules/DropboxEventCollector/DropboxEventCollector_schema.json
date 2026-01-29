@@ -1,31 +1,31 @@
 {
   "dropbox_dropbox_raw": {
     "actor": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "assets": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "context": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "details": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "event_category": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "event_type": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "origin": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "timestamp": {
