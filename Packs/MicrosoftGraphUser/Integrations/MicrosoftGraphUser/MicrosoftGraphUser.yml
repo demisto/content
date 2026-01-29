@@ -143,6 +143,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Allow secret generators commands execution
+  name: allow_secret_generators
+  defaultvalue: 'false'
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Checking this box will allow running commands that generate and print secrets. Make sure to add restrictions to the related commands. For more information please refer to the following guide - <MFA guide>
 description: The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Entra ID Users
 name: Microsoft Graph User

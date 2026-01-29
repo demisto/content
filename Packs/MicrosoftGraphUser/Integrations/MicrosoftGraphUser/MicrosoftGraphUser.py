@@ -949,7 +949,10 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
     return CommandResults(readable_output=human_readable)
 
 
-def create_access_token_command(client: MsGraphClient, args: dict) -> CommandResults:
+def create_access_token_command(client: MsGraphClient, args: dict, params: dict) -> CommandResults:
+    if not argToBoolean(params.get("allow_secret_generators", "False")):
+        raise DemistoException('"Allow secret generators commands execution" parameter is not marked, Cannot run this command.'
+                               'For more information please refer to the integration configuration.')
     client_secret = args.get("client_secret", "")
     mfa_client_token = client.get_mfa_app_client_token(client_secret)
     outputs = mfa_client_token
@@ -991,7 +994,10 @@ def get_default_auth_methods_command(client: MsGraphClient, args: dict) -> Comma
     )
 
 
-def create_client_secret_command(client: MsGraphClient, args: dict) -> CommandResults:
+def create_client_secret_command(client: MsGraphClient, args: dict, params: dict) -> CommandResults:
+    if not argToBoolean(params.get("allow_secret_generators", "False")):
+        raise DemistoException('"Allow secret generators commands execution" parameter is not marked, Cannot run this command.'
+                               'For more information please refer to the integration configuration.')
     mfa_app_secret = client.request_mfa_app_secret()
     new_secret_value = mfa_app_secret.get('secretText')
     valid_from = mfa_app_secret.get('startDateTime')
@@ -1132,9 +1138,7 @@ def main():
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
         "msgraph-user-request-mfa": request_mfa_command,
-        "msgraph-user-create-mfa-client-secret": create_client_secret_command,
         "msgraph-user-get-user-default-auth-method": get_default_auth_methods_command,
-        "msgraph-user-create-mfa-client-access-token": create_access_token_command
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
@@ -1157,12 +1161,17 @@ def main():
             azure_cloud=azure_cloud,
             managed_identities_client_id=managed_identities_client_id,
         )
+        args = demisto.args()
         if command == "msgraph-user-generate-login-url":
             return_results(generate_login_url(client.ms_client))
         elif command == "msgraph-user-auth-reset":
             return_results(reset_auth())
+        elif command == "msgraph-user-create-mfa-client-secret":
+            return_results(create_client_secret_command(client, args, params))
+        elif command == "msgraph-user-create-mfa-client-access-token":
+            return_results(create_access_token_command(client, args, params))
         else:
-            return_results(commands[command](client, demisto.args()))
+            return_results(commands[command](client, args))
 
     except Exception as err:
         return_error(str(err))
