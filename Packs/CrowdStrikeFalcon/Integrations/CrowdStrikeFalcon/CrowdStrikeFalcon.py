@@ -3912,7 +3912,7 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
     )
 
 
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, str, int, set, set]:
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set, set]:
     """
     Load Spotlight state from integration context.
     
@@ -3931,17 +3931,16 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
     
     # Extract state variables
-    snapshot_id_vuln = spotlight_state.metadata.get("snapshot_id_vuln", str(round(time.time() * 1000)))
-    snapshot_id_assets = spotlight_state.metadata.get("snapshot_id_assets", '1' + str(round(time.time() * 1000)))
+    snapshot_id = spotlight_state.metadata.get("snapshot_id", str(round(time.time() * 1000)))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
     processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
     
-    log_falcon_assets(f"Loaded Spotlight state: {snapshot_id_vuln=}, {snapshot_id_assets=}, {total_fetched=}, "
+    log_falcon_assets(f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
                   f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
                   f"after_token={spotlight_state.cursor}")
     
-    return spotlight_state, integration_context, snapshot_id_vuln, snapshot_id_assets, total_fetched, unique_aids, processed_aids
+    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids
 
 
 def save_spotlight_state(
@@ -4363,7 +4362,7 @@ def send_data_to_xsiam_async(
     if data_type == "assets":
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
-        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["snapshot-id"] = snapshot_id + instance_name + product
         headers["total-items-count"] = str(items_count)
     
     # Split into chunks
@@ -4465,8 +4464,7 @@ async def send_batch_to_xsiam_and_save_context(
 def update_spotlight_state_and_metadata(
     spotlight_state: ContentClientState,
     cursor: str | None,
-    snapshot_id_vuln: str,
-    snapshot_id_assets: str,
+    snapshot_id: str,
     total_fetched: int,
     unique_aids: set,
     processed_aids: set
@@ -4485,8 +4483,7 @@ def update_spotlight_state_and_metadata(
     """
     spotlight_state.cursor = cursor
     spotlight_state.metadata = {
-        "snapshot_id_vuln": snapshot_id,
-        "snapshot_id_assets": snapshot_id_assets,
+        "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
         "unique_aids": list(unique_aids),
         "processed_aids": list(processed_aids)
@@ -4500,8 +4497,7 @@ def handle_spotlight_fetch_error(
     context_store: ContentClientContextStore,
     integration_context: dict,
     after_token: str | None,
-    snapshot_id_vuln: str,
-    snapshot_id_assets: str,
+    snapshot_id: str,
     total_fetched: int,
     unique_aids: set,
     processed_aids: set
@@ -4517,8 +4513,7 @@ def handle_spotlight_fetch_error(
         context_store: Context store for saving state
         integration_context: Full integration context dict
         after_token: Current pagination token
-        snapshot_id_vuln: Snapshot ID vulenrabilties for tracking
-        snapshot_id_assets: Snapshot ID Assets for tracking
+        snapshot_id: Snapshot ID for tracking
         total_fetched: Total vulnerabilities fetched so far
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
@@ -4535,8 +4530,7 @@ def handle_spotlight_fetch_error(
     update_spotlight_state_and_metadata(
         spotlight_state=spotlight_state,
         cursor=after_token,
-        snapshot_id_vuln=snapshot_id_vuln,
-        snapshot_id_assets=snapshot_id_assets,
+        snapshot_id=snapshot_id,
         total_fetched=total_fetched,
         unique_aids=unique_aids,
         processed_aids=processed_aids
@@ -4560,7 +4554,7 @@ async def fetch_spotlight_assets():
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     
     # Load state from integration context (now includes processed_aids)
-    spotlight_state, integration_context, snapshot_id_vuln, snapshot_id_assets, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
+    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
     after_token = spotlight_state.cursor
     
     # Create client
@@ -4577,7 +4571,7 @@ async def fetch_spotlight_assets():
         context_store=context_store,
         integration_context=integration_context,
         spotlight_state=spotlight_state,
-        snapshot_id=snapshot_id_assets,
+        snapshot_id=snapshot_id,
         processed_aids=processed_aids,
         batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS
     )
@@ -4606,8 +4600,7 @@ async def fetch_spotlight_assets():
             update_spotlight_state_and_metadata(
                 spotlight_state=spotlight_state,
                 cursor=new_after_token,
-                snapshot_id_vuln=snapshot_id_vuln,
-                snapshot_id_assets=snapshot_id_assets,
+                snapshot_id=snapshot_id,
                 total_fetched=total_fetched,
                 unique_aids=unique_aids,
                 processed_aids=asset_handler.processed_aids
@@ -4616,7 +4609,7 @@ async def fetch_spotlight_assets():
             task = create_task_send_batch_to_xsiam_and_save_context(
                                                 data=vulnerabilities,
                                                 product=SPOTLIGHT_VULN_PRODUCT,
-                                                snapshot_id=snapshot_id_vuln,
+                                                snapshot_id=snapshot_id,
                                                 items_count=1,
                                                 batch_number=batch_counter,
                                                 last_saved_batch_number=last_saved_batch_number,
@@ -4672,8 +4665,7 @@ async def fetch_spotlight_assets():
         update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
             cursor=None,
-            snapshot_id_vuln="",
-            snapshot_id_assets="",
+            snapshot_id="",
             total_fetched=0,
             unique_aids=set(),
             processed_aids=set()
@@ -4699,8 +4691,7 @@ async def fetch_spotlight_assets():
             context_store=context_store,
             integration_context=integration_context,
             after_token=after_token,
-            snapshot_id_vuln=snapshot_id_vuln,
-            snapshot_id_assets=snapshot_id_assets,
+            snapshot_id=snapshot_id,
             total_fetched=total_fetched,
             unique_aids=unique_aids,
             processed_aids=asset_handler.processed_aids
