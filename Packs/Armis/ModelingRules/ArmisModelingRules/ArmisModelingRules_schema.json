@@ -153,11 +153,11 @@
             "is_array": false
         },
         "sensor": {
-            "type": "json",
+            "type": "nested_json",
             "is_array": false
         },
         "site": {
-            "type": "json",
+            "type": "nested_json",
             "is_array": false
         },
         "tags": {
