@@ -328,8 +328,9 @@ class MsGraphClient:
             auth_result_node = root.find("./AuthenticationResult")
 
             if result_node is not None and auth_result_node is not None:
-                result_value = result_node.find("./Value").text
-                mfa_challenge_received = auth_result_node.text.lower() == "true"
+                value_node = result_node.find("./Value")
+                result_value = value_node.text if value_node is not None else ""
+                mfa_challenge_received = (auth_result_node.text or "").lower() == "true"
 
                 message_node = result_node.find("./Message")
                 is_nil = message_node is not None and message_node.get("{http://www.w3.org/2001/XMLSchema-instance}nil") == "true"
@@ -728,7 +729,7 @@ def validate_input_password(args: dict[str, Any]) -> str:
 
 @polling_function(
     "msgraph-user-change-password-on-premise",  # The specified command name
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)) or 600,
     requires_polling_arg=False,
 )
 def change_password_user_on_premise_command(
@@ -994,8 +995,8 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
 
     tap_readable, tap_policy_output = parse_outputs(tap_data)
 
-    tap_readable_dict = tap_readable[0]
-    tap_policy_output_dict = tap_policy_output[0]
+    tap_readable_dict = tap_readable[0]  # type: ignore
+    tap_policy_output_dict = tap_policy_output[0]  # type: ignore
 
     # Remove the 'temporaryAccessPass' value as it confidential and thus should be removed from context
     tap_policy_output_dict.pop("TemporaryAccessPass")

@@ -1198,6 +1198,44 @@ def test_request_mfa_command(mocker):
     client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
 
 
+def test_request_mfa_command_declined(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Status: User Denied Request"
+
+    mocker.patch.object(client, "push_mfa_notification", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        request_mfa_command(client, args)
+
+    assert expected_output in str(e.value)
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
 def test_get_default_auth_methods_command(mocker):
     """
     Given:
