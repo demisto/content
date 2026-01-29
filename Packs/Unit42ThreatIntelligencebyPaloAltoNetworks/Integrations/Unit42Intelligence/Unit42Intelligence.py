@@ -63,7 +63,7 @@ VALID_REGIONS = {
 #### HELPER FUNCTIONS ####
 
 
-def parse_url_list(url_input: str | list | None) -> list:
+def parse_url_list(url_input: str | list | None) -> list[str]:
     """
     Parse URL input that may contain multiple URLs or a single URL with commas.
 
@@ -105,7 +105,7 @@ def parse_url_list(url_input: str | list | None) -> list:
 
     # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
     # This preserves commas within URL parameters
-    all_urls = []
+    all_urls: list[str] = []
     for line in url_input.split("\n"):
         if line := line.strip():
             all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
