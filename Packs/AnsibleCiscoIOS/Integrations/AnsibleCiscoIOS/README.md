@@ -24,6 +24,7 @@ The connection will be initiated from the XSOAR engine/server specified in the i
 
 ## Configure Ansible Cisco IOS in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
@@ -31,6 +32,10 @@ The connection will be initiated from the XSOAR engine/server specified in the i
 | Enable Password |  | True |
 | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
 | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+| Command timeout | his field controls how long  \(in seconds\) XSOAR will wait for a specific command \(like a full configuration backup\) to finish before timing out. | False |
+|  |  This field determines how long \(in seconds\) the system waits to establish the initial handshake with the Cisco device before timing out. | False |
+|  | This field determines the timeout \(in seconds\) for the underlying communication socket. | False |
+
 
 ## Testing
 
