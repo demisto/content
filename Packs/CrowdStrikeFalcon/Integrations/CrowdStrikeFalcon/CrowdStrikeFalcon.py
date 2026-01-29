@@ -4143,7 +4143,7 @@ class AssetsDeviceHandler:
                     data=devices,
                     product=SPOTLIGHT_ASSETS_PRODUCT,
                     snapshot_id=self.snapshot_id,
-                    items_count=len(devices),
+                    items_count=1,
                     batch_number=current_batch_number,
                     last_saved_batch_number=self.asset_last_saved_batch_number,
                     context_store=self.context_store,
@@ -4325,20 +4325,22 @@ def send_data_to_xsiam_async(
     calling_context = demisto.callingContext.get("context", {})
     instance_name = calling_context.get("IntegrationInstance", "")
     collector_name = calling_context.get("IntegrationBrand", "")
-    
-    if not data:
+
+    # We only return early if data is empty AND it's NOT an asset snapshot update.
+    # If it is assets, we might be sending the "Final Seal" (empty data + count header).
+    if not data and data_type != "assets":
         log_falcon_assets(f"No {data_type} to send to XSIAM")
         return []
-    
+
     # Convert list to newline-separated JSON strings
-    if isinstance(data, list):
-        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+    if data and isinstance(data, list):
         log_falcon_assets(f"Sending {len(data)} {data_type} (data type) to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
         data_str = "\n".join(data)
     else:
-        data_str = data
+        # Handle cases where data is empty list [] or None
+        data_str = data if data else ""
     
     # Get XSIAM credentials
     xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
@@ -4364,9 +4366,13 @@ def send_data_to_xsiam_async(
             snapshot_id = str(round(time.time() * 1000))
         headers["snapshot-id"] = snapshot_id + instance_name + product
         headers["total-items-count"] = str(items_count)
-    
-    # Split into chunks
-    data_chunks = list(split_data_to_chunks(data_str, chunk_size))
+
+    # If data_str is empty (the seal), we force a list with one empty string [""] to ensure the task is created
+    if not data_str and data_type == "assets":
+        data_chunks = [""]
+        log_falcon_assets("Preparing empty 'Seal' batch to close snapshot.")
+    else:
+        data_chunks = list(split_data_to_chunks(data_str, chunk_size))
     
     async def send_events_async(data_chunk) -> int:
         chunk_size_val = len(data_chunk)
@@ -4461,6 +4467,59 @@ async def send_batch_to_xsiam_and_save_context(
         raise
 
 
+async def finalize_spotlight_snapshots(
+    snapshot_id: str,
+    total_vulns: int,
+    total_assets: int,
+    last_vuln_batch: int,
+    last_asset_batch: int,
+    context_store,
+    integration_context: dict,
+    spotlight_state,
+):
+    """
+    Sends a final empty batch with the ACTUAL total counts to 'seal' the snapshots
+    for both Vulnerabilities and Assets.
+
+    This must be awaited to ensure the server receives the closure signal.
+    """
+    log_falcon_assets(f"Finalizing Snapshots | Vulns: {total_vulns}, Assets: {total_assets}", "info")
+
+    # 1. Finalize Vulnerabilities Snapshot
+    vuln_seal_task = create_task_send_batch_to_xsiam_and_save_context(
+        data=[],  # Empty data acts as the seal
+        product=SPOTLIGHT_VULN_PRODUCT,
+        snapshot_id=snapshot_id,
+        items_count=total_vulns,
+        batch_number=last_vuln_batch + 1,
+        last_saved_batch_number=last_vuln_batch,
+        context_store=context_store,
+        integration_context=integration_context,
+        state=spotlight_state,
+        save_state_callback=save_spotlight_state,
+        data_type="assets"
+    )
+
+    # 2. Finalize Assets Snapshot
+    asset_seal_task = create_task_send_batch_to_xsiam_and_save_context(
+        data=[],  # Empty data acts as the seal
+        product=SPOTLIGHT_ASSETS_PRODUCT,
+        snapshot_id=snapshot_id,
+        items_count=total_assets,
+        batch_number=last_asset_batch + 1,
+        last_saved_batch_number=last_asset_batch,
+        context_store=context_store,
+        integration_context=integration_context,
+        state=spotlight_state,
+        save_state_callback=save_spotlight_state,
+        data_type="assets"
+    )
+
+    # Wait for both seal requests to complete
+    await asyncio.gather(vuln_seal_task, asset_seal_task)
+    log_falcon_assets("Successfully finalized and sealed both snapshots.", "info")
+
+
 def update_spotlight_state_and_metadata(
     spotlight_state: ContentClientState,
     cursor: str | None,
@@ -4539,6 +4598,51 @@ def handle_spotlight_fetch_error(
     
     # Re-raise the exception
     raise
+
+
+def create_task_send_batch_to_xsiam_and_save_context(data, product, snapshot_id, items_count, batch_number,
+                                                     last_saved_batch_number, context_store,
+                                                     integration_context, state, save_state_callback,
+                                                     data_type):
+    """
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    Parameters now match the order and names of the internal async function.
+
+    Args:
+        data: List of data items to send
+        product: The product name
+        snapshot_id: Snapshot ID for tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        integration_context: Full integration context dictionary (preserves all keys)
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+    Returns:
+        asyncio.Task: The created async task
+    """
+    # items_count = items_count if batch
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            integration_context=integration_context,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
+    )
+    return task
 
 
 async def fetch_spotlight_assets():
@@ -4659,7 +4763,19 @@ async def fetch_spotlight_assets():
         # Flush remaining AIDs and wait for all asset enrichment tasks
         log_falcon_assets("Flushing remaining AIDs and waiting for asset enrichment tasks", "info")
         await asset_handler.flush_remaining()
-        
+
+        # send last time to XSIAM with correct number to update and close snapshot
+        await finalize_spotlight_snapshots(
+            snapshot_id=snapshot_id,
+            total_vulns=total_fetched,
+            total_assets=len(asset_handler.processed_aids),
+            last_vuln_batch=batch_counter,
+            last_asset_batch=asset_handler.asset_batch_counter,
+            context_store=context_store,
+            integration_context=integration_context,
+            spotlight_state=spotlight_state
+        )
+
         # Fetch completed successfully - reset state for next run
         log_falcon_assets("Resetting Spotlight state after successful complete fetch")
         update_spotlight_state_and_metadata(
@@ -4700,51 +4816,6 @@ async def fetch_spotlight_assets():
     finally:
         # Clean up client resources
         await client.aclose()
-
-
-def create_task_send_batch_to_xsiam_and_save_context(data, product, snapshot_id, items_count, batch_number,
-                                                     last_saved_batch_number, context_store,
-                                                     integration_context, state, save_state_callback,
-                                                     data_type):
-    """
-    Create an async task to send vulnerability batch to XSIAM and save context.
-    Parameters now match the order and names of the internal async function.
-
-    Args:
-        data: List of data items to send
-        product: The product name
-        snapshot_id: Snapshot ID for tracking
-        items_count: Total items count - use final count when complete, 1 when in-progress
-        batch_number: Current batch number being processed
-        last_saved_batch_number: Highest batch number that has successfully saved context
-        context_store: ContentClientContextStore instance for thread-safe context operations
-        integration_context: Full integration context dictionary (preserves all keys)
-        state: ContentClientState object containing cursor and metadata
-        save_state_callback: Callback function to save state with signature:
-                            (ContentClientContextStore, dict, ContentClientState) -> None
-                            Example: save_spotlight_state, save_cnapp_state, etc.
-        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
-    Returns:
-        asyncio.Task: The created async task
-    """
-    # items_count = items_count if batch
-    task = asyncio.create_task(
-        send_batch_to_xsiam_and_save_context(
-            data=data,
-            vendor=VENDOR,
-            product=product,
-            snapshot_id=snapshot_id,
-            items_count=items_count,
-            batch_number=batch_number,
-            last_saved_batch_number=last_saved_batch_number,
-            context_store=context_store,
-            integration_context=integration_context,
-            state=state,
-            save_state_callback=save_state_callback,
-            data_type=data_type,
-        )
-    )
-    return task
 
 
 def fetch_cnapp_assets():
