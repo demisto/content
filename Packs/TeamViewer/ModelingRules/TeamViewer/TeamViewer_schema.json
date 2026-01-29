@@ -17,8 +17,8 @@
             "is_array": false
         },
         "EventDetails": {
-            "type": "string",
-            "is_array": false
+            "type": "nested_json",
+            "is_array": true
         }
     }
 }
