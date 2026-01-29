@@ -2,6 +2,8 @@ commonfields:
   id: Incapsula
   version: -1
 name: Incapsula
+sectionorder:
+- Connect
 display: Imperva Incapsula
 category: Network Security
 provider: Imperva
@@ -13,22 +15,25 @@ configuration:
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: API key
   name: apikey
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API ID
   name: creds
   type: 9
   displaypassword: API key
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
+  section: Connect
 script:
   script: ''
   type: javascript
@@ -406,6 +411,7 @@ script:
       description: Consider site to be under DDoS if the request rate is above this threshold. The valid values are 10, 20, 50, 100, 200, 500, 750, 1000, 2000, 3000, 4000, 5000.
     description: Use this operation to change the security configuration of a site.
   - name: incap-modify-site-acl-config
+    deprecated: true
     arguments:
     - name: site_id
       required: true
@@ -424,8 +430,9 @@ script:
       description: "A comma seperated list of continent codes."
     - name: ips
       description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
-    description: Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
+    description: Deprecated. Use the new Policy Management commands (incap-get-all-policies, incap-create-policy, incap-modify-policy) instead. Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
   - name: incap-modify-site-wl-config
+    deprecated: true
     arguments:
     - name: site_id
       required: true
@@ -1154,6 +1161,7 @@ script:
       description: 'Filter the sessions that were handled according to the security-related specifications. Multiple values are supported, e.g.: "api.threats.action.block_ip, api.threats.sql_injection".'
     description: Use this operation to get a log of recent visits to a website. The visits are fetched in reverse chronological order, starting with the most recent visit. Not all visits are recorded - only visits with abnormal activity are recorded e.g. violation of security rules, visits from black-listed IPs/Countries, etc. A visit may still be updated even after it was retrieved. To avoid retrieving such visits and to retrieve only visits that will no longer be updated use the list_live_visits parameter.
   - name: incap-upload-public-key
+    deprecated: true
     arguments:
     - name: config_id
       required: true
@@ -1162,8 +1170,9 @@ script:
     - name: public_key
       required: true
       description: "The public key file(2048bit) in base64 format (without password protection)."
-    description: Organizations that purchased the Security Logs Integration SKU can download security events created for their account and archive or push those events into their SIEM solution.
+    description: Deprecated. No known replacement at this time. Organizations that purchased the Security Logs Integration SKU can download security events created for their account and archive or push those events into their SIEM solution.
   - name: incap-change-logs-collector-configuration
+    deprecated: true
     arguments:
     - name: config_id
       required: true
@@ -1172,7 +1181,7 @@ script:
     - name: logs_config_new_status
       required: true
       description: The new configuration status of the Logs Collector. Values can be ACTIVE or SUSPENDED.
-    description: Available only for Enterprise Plan customers that purchased the Security Logs Integration SKU.  Use this operation to change the status of the Logs Collector configuration.
+    description: Deprecated. No known replacement at this time. Available only for Enterprise Plan customers that purchased the Security Logs Integration SKU.  Use this operation to change the status of the Logs Collector configuration.
   - name: incap-get-infra-protection-statistics
     arguments:
     - name: account_id
@@ -1388,6 +1397,289 @@ script:
       required: true
     description: Use this operation to view the highest peak values and highest average values for a protected IP range during a selected time period.
     name: incap-get-infra-protection-top-items-table
+  - name: incap-list-policy
+    arguments:
+    - name: policy_id
+      description: Unique identifier of the policy. If provided, retrieves a specific policy.
+    - name: account_id
+      description: Account ID to retrieve policies for a different sub-account.
+    - name: extended
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Default is false (basic policy details). Set to true for full policy data, including configuration.
+    description: Retrieves all policies associated with the account or a specific policy if policy_id is provided.
+    outputs:
+    - contextPath: Incapsula.Policy
+      description: The policies information.
+      type: unknown
+    - contextPath: Incapsula.Policy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policy.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policy.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policy.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policy.policy_setting_type
+      description: The type of policy setting.
+      type: string
+  - name: incap-policy-create
+    arguments:
+    - name: policy_name
+      required: true
+      description: The name of the policy.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the policy is enabled.
+    - name: policy_id
+      description: The ID of the policy.
+    - name: source_policy_id
+      description: Optional to clone full policy data.
+    - name: setting_action
+      auto: PREDEFINED
+      predefined:
+      - "BLOCK"
+      - "ALLOW"
+      - "ALERT"
+      - "BLOCK_USER"
+      - "BLOCK_IP"
+      - "IGNORE"
+      - "HIDDEN_ALERT"
+      - "MASK"
+      description: The action to take when the policy is triggered.
+    - name: policy_setting_type
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "GEO"
+      - "URL"
+      - "CROSS_SITE_SCRIPTING"
+      - "ILLEGAL_RESOURCE_ACCESS"
+      - "REMOTE_FILE_INCLUSION"
+      - "SQL_INJECTION"
+      - "RESP_DATA_LEAK"
+      description: The type of policy setting.
+    - name: policy_summary
+      required: true
+      description: A summary of the policy.
+    - name: account_id
+      description: Account ID to create the policy for a different sub-account.
+    - name: policy_description
+      description: A description of the policy.
+    - name: policy_type
+      auto: PREDEFINED
+      predefined:
+      - "ACL"
+      - "WHITELIST"
+      - "WAF_RULES"
+      - "FILE_UPLOAD"
+      description: The type of policy.
+    - name: ips
+      description: Comma-separated list of IPs.
+      isArray: true
+    - name: countries
+      description: Comma-separated list of countries.
+      isArray: true
+    - name: continents
+      description: Comma-separated list of continents.
+      isArray: true
+    - name: urls
+      description: Comma-separated list of URLs.
+      isArray: true
+    - name: policy_raw_json
+      description: A json with the full body of the policy.
+    - name: policy_raw_json_entry_id
+      description: Entry Id of the file that contains JSON representation of the policy_raw_json.
+    description: Add a new policy or copy an existing policy.
+    outputs:
+    - contextPath: Incapsula.Policy
+      description: The created policy information.
+      type: unknown
+    - contextPath: Incapsula.Policy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policy.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policy.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policy.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policy.policy_setting_type
+      description: The type of policy setting.
+      type: string
+  - name: incap-policy-update
+    arguments:
+    - name: policy_name
+      required: true
+      description: The name of the policy.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the policy is enabled.
+    - name: policy_id
+      required: true
+      description: The ID of the policy to modify.
+    - name: setting_action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "BLOCK"
+      - "ALLOW"
+      - "ALERT"
+      - "BLOCK_USER"
+      - "BLOCK_IP"
+      - "IGNORE"
+      - "HIDDEN_ALERT"
+      - "MASK"
+      description: The action to take when the policy is triggered.
+    - name: policy_setting_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "GEO"
+      - "URL"
+      - "CROSS_SITE_SCRIPTING"
+      - "ILLEGAL_RESOURCE_ACCESS"
+      - "REMOTE_FILE_INCLUSION"
+      - "SQL_INJECTION"
+      - "RESP_DATA_LEAK"
+      description: The type of policy setting.
+    - name: policy_summary
+      required: true
+      description: A summary of the policy.
+    - name: update_type
+      auto: PREDEFINED
+      predefined:
+      - "Full"
+      - "Partial"
+      description: The type of update (Full or Partial). Default is Partial.
+    - name: account_id
+      description: Account ID.
+    - name: policy_description
+      description: A description of the policy.
+    - name: policy_type
+      auto: PREDEFINED
+      predefined:
+      - "ACL"
+      - "WHITELIST"
+      - "WAF_RULES"
+      - "FILE_UPLOAD"
+      description: The type of policy.
+    - name: ips
+      description: Comma-separated list of IPs.
+      isArray: true
+    - name: countries
+      description: Comma-separated list of countries.
+      isArray: true
+    - name: continents
+      description: Comma-separated list of continents.
+      isArray: true
+    - name: urls
+      description: Comma-separated list of URLs.
+      isArray: true
+    - name: policy_config_raw_json
+      description: Raw JSON for policy configuration.
+    - name: policy_config_json_entry_id
+      description: Entry ID for policy configuration JSON.
+    description: Modify an existing policy (partial or full update).
+    outputs:
+    - contextPath: Incapsula.Policy
+      description: The modified policy information.
+      type: unknown
+    - contextPath: Incapsula.Policy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.Policy.policy_name
+      description: The policy name.
+      type: string
+    - contextPath: Incapsula.Policy.enabled
+      description: Whether the policy is enabled.
+      type: boolean
+    - contextPath: Incapsula.Policy.setting_action
+      description: The action to take when the policy is triggered.
+      type: string
+    - contextPath: Incapsula.Policy.policy_setting_type
+      description: The type of policy setting.
+      type: string
+  - name: incap-policy-delete
+    arguments:
+    - name: policy_id
+      required: true
+      description: The ID of the policy to delete.
+    - name: account_id
+      description: Optional account ID to delete the policy for a different sub-account.
+    description: Delete an existing policy.
+  - name: incap-check-asset-on-policy
+    arguments:
+    - name: asset_id
+      required: true
+      description: The ID of the asset.
+    - name: asset_type
+      required: true
+      description: Type of asset on which the policy is applied.
+    - name: policy_id
+      required: true
+      description: The ID of the policy.
+    - name: account_id
+      description: Optional account ID for different sub-account.
+    description: Check whether the policy is applied on the asset.
+    outputs:
+    - contextPath: Incapsula.AssetOnPolicy
+      description: The asset on policy check result.
+      type: unknown
+    - contextPath: Incapsula.AssetOnPolicy.asset_id
+      description: The asset ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.asset_type
+      description: Type of asset on which the policy is applied.
+      type: string
+  - name: incap-override-asset-in-policy
+    arguments:
+    - name: asset_id
+      required: true
+      description: The ID of the asset.
+    - name: asset_type
+      required: true
+      description: Type of asset on which the policy is applied.
+    - name: policy_id
+      required: true
+      description: The ID of the policy.
+    - name: account_id
+      description: Optional account ID for different sub-account.
+    description: Overwrite applied assets in a policy.
+    outputs:
+    - contextPath: Incapsula.AssetOnPolicy
+      description: The asset on policy apply result.
+      type: unknown
+    - contextPath: Incapsula.AssetOnPolicy.asset_id
+      description: The asset ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.policy_id
+      description: The policy ID.
+      type: string
+    - contextPath: Incapsula.AssetOnPolicy.asset_type
+      description: Type of asset on which the policy is applied.
+      type: string
 system: true
 tests:
 - No test

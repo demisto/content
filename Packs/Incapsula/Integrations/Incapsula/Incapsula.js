@@ -25,6 +25,239 @@ var sendRequest = function(url, body, queryName) {
     return response;
 }
 
+var sendRequestV2 = function(url, method, body, queryName) {
+    var requestObj = {
+        Method: method,
+        Headers: {'content-type': ['application/json'], 'x-API-Id': [apiid], 'x-API-Key': [apikey]},
+    };
+
+    if (body) {
+        requestObj.Body = JSON.stringify(body);
+    }
+
+    var res = http(
+            url,
+            requestObj,
+            true,
+            proxy
+        );
+
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+    }
+    
+    try {
+        var response = JSON.parse(res.Body);
+        return response;
+    } catch (e) {
+        // In case of empty body or non-json response (like delete success message sometimes)
+        return res.Body;
+    }
+}
+
+var incapListPolicy = function(args) {
+    var url = base + '/v2/policies';
+    if (args.policy_id) {
+        url += '/' + args.policy_id;
+    }
+    
+    var queryParams = [];
+    if (args.account_id) {
+        queryParams.push('account_id=' + args.account_id);
+    }
+    if (args.extended) {
+        queryParams.push('extended=' + args.extended);
+    }
+    
+    if (queryParams.length > 0) {
+        url += '?' + queryParams.join('&');
+    }
+
+    var response = sendRequestV2(url, 'GET', null, 'incap-list-policy');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policies', response),
+        EntryContext: {
+            'Incapsula.Policy': response
+        }
+    };
+}
+
+var incapPolicyCreate = function(args) {
+    var url = base + '/v2/policies';
+    
+    // Construct body from args
+    var body = {};
+    
+    // Required fields
+    body.policyName = args.policy_name;
+    body.enabled = args.enabled === 'true';
+    body.policySummary = args.policy_summary;
+    
+    // Optional fields
+    if (args.policy_id) body.policyId = parseInt(args.policy_id);
+    if (args.source_policy_id) body.sourcePolicyId = parseInt(args.source_policy_id);
+    if (args.setting_action) body.settingsAction = args.setting_action;
+    if (args.policy_setting_type) body.policySettingType = args.policy_setting_type;
+    if (args.account_id) body.accountId = args.account_id;
+    if (args.policy_description) body.description = args.policy_description;
+    if (args.policy_type) body.policyType = args.policy_type;
+    
+    // Array fields
+    if (args.ips) body.ips = args.ips;
+    if (args.countries) body.countries = args.countries;
+    if (args.continents) body.continents = args.continents;
+    if (args.urls) body.urls = args.urls;
+    
+    // JSON/ID fields
+    if (args.policy_raw_json) {
+        var rawJson = JSON.parse(args.policy_raw_json);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+    if (args.policy_raw_json_entry_id) {
+        var fileContent = getFileByEntryID(args.policy_raw_json_entry_id);
+        var rawJson = JSON.parse(fileContent);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+
+    var response = sendRequestV2(url, 'POST', body, 'incap-policy-create');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policy Created', response),
+        EntryContext: {
+            'Incapsula.Policy': response
+        }
+    };
+}
+
+var incapPolicyUpdate = function(args) {
+    var policyId = args.policy_id;
+    var url = base + '/v2/policies/' + policyId;
+    var method = (args.update_type && args.update_type.toLowerCase() === 'full') ? 'PUT' : 'POST';
+    
+    var body = {};
+    
+    // Required fields
+    body.policyName = args.policy_name;
+    body.enabled = args.enabled === 'true';
+    body.policyId = parseInt(args.policy_id);
+    body.settingsAction = args.setting_action;
+    body.policySettingType = args.policy_setting_type;
+    body.policySummary = args.policy_summary;
+    
+    // Optional fields
+    if (args.account_id) body.accountId = args.account_id;
+    if (args.policy_description) body.description = args.policy_description;
+    if (args.policy_type) body.policyType = args.policy_type;
+    
+    // Array fields
+    if (args.ips) body.ips = args.ips;
+    if (args.countries) body.countries = args.countries;
+    if (args.continents) body.continents = args.continents;
+    if (args.urls) body.urls = args.urls;
+    
+    // JSON/ID fields
+    if (args.policy_config_raw_json) {
+        var rawJson = JSON.parse(args.policy_config_raw_json);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+    if (args.policy_config_json_entry_id) {
+        var fileContent = getFileByEntryID(args.policy_config_json_entry_id);
+        var rawJson = JSON.parse(fileContent);
+        for (var key in rawJson) {
+            body[key] = rawJson[key];
+        }
+    }
+
+    var response = sendRequestV2(url, method, body, 'incap-policy-update');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Policy Modified', response),
+        EntryContext: {
+            'Incapsula.Policy': response
+        }
+    };
+}
+
+var incapPolicyDelete = function(args) {
+    var policyId = args.policy_id;
+    var url = base + '/v2/policies/' + policyId;
+    
+    if (args.account_id) {
+        url += '?account_id=' + args.account_id;
+    }
+
+    var response = sendRequestV2(url, 'DELETE', null, 'incap-policy-delete');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.text,
+        HumanReadable: policyId + ' deleted successfully'
+    };
+}
+
+var incapCheckAssetOnPolicy = function(args) {
+    var policyId = args.policy_id;
+    var assetType = args.asset_type;
+    var assetId = args.asset_id;
+    var url = base + '/v2/policies/' + policyId + '/assets/' + assetType + '/' + assetId;
+    
+    if (args.account_id) {
+        url += '?account_id=' + args.account_id;
+    }
+
+    var response = sendRequestV2(url, 'GET', null, 'incap-check-asset-on-policy');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Asset on Policy Check', response),
+        EntryContext: {
+            'Incapsula.AssetOnPolicy': response
+        }
+    };
+}
+
+var incapOverrideAssetInPolicy = function(args) {
+    var policyId = args.policy_id;
+    var assetType = args.asset_type;
+    var assetId = args.asset_id;
+    var url = base + '/v2/policies/' + policyId + '/' + assetType + '/' + assetId;
+    
+    if (args.account_id) {
+        url += '?account_id=' + args.account_id;
+    }
+
+    var response = sendRequestV2(url, 'PATCH', null, 'incap-override-asset-in-policy');
+    
+    return {
+        Type: entryTypes.note,
+        Contents: response,
+        ContentsFormat: formats.json,
+        HumanReadable: tableToMarkdown('Asset on Policy Apply', response),
+        EntryContext: {
+            'Incapsula.AssetOnPolicy': response
+        }
+    };
+}
+
 var urlDict = {
     /*
         Account Management
@@ -155,6 +388,18 @@ switch (command) {
             return 'ok';
         }
         return 'not cool';
+    case 'incap-list-policy':
+        return incapListPolicy(args);
+    case 'incap-policy-create':
+        return incapPolicyCreate(args);
+    case 'incap-policy-update':
+        return incapPolicyUpdate(args);
+    case 'incap-policy-delete':
+        return incapPolicyDelete(args);
+    case 'incap-check-asset-on-policy':
+        return incapCheckAssetOnPolicy(args);
+    case 'incap-override-asset-in-policy':
+        return incapOverrideAssetInPolicy(args);
     default:
         return sendRequest(base + urlDict[command], encodeToURLQuery(args).substr(1), urlDict[command]);
 }
