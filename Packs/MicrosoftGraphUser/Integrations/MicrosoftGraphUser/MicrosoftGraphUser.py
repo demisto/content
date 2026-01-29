@@ -152,7 +152,7 @@ class MsGraphClient:
     def create_user(self, properties):
         self.ms_client.http_request(method="POST", url_suffix="users", json_data=properties)
         
-        def get_sign_in_preferences(self, user: str):
+    def get_sign_in_preferences(self, user: str):
         """
         Retrieves the sign-in preferences for a user, which includes the preferred method.
         API Reference: https://learn.microsoft.com/en-us/graph/api/authentication-get?view=graph-rest-beta
