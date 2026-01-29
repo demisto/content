@@ -1264,56 +1264,52 @@ def test_change_warninglist_details(demisto_args: dict, mocker):
         (
             {"123": {"Event Name": "Test Event High", "Threat Level ID": 1, "Event ID": "123"}},
             True,
-            "Single event with ThreatLevelID=1 (High) should return True"
+            "Single event with ThreatLevelID=1 (High) should return True",
         ),
         (
             {"456": {"Event Name": "Test Event Medium", "Threat Level ID": 2, "Event ID": "456"}},
             True,
-            "Single event with ThreatLevelID=2 (Medium) should return True"
+            "Single event with ThreatLevelID=2 (Medium) should return True",
         ),
         (
             {"789": {"Event Name": "Test Event Low", "Threat Level ID": 3, "Event ID": "789"}},
             True,
-            "Single event with ThreatLevelID=3 (Low) should return True"
+            "Single event with ThreatLevelID=3 (Low) should return True",
         ),
         (
             {"999": {"Event Name": "Test Event Unknown", "Threat Level ID": 4, "Event ID": "999"}},
             False,
-            "Single event with ThreatLevelID=4 (Unknown) should return False"
+            "Single event with ThreatLevelID=4 (Unknown) should return False",
         ),
-        # Multiple events scenarios - Customer's exact scenario from XSUP-61869
+        # Multiple events scenarios
         (
             {
                 "123": {"Event Name": "Event with High Threat", "Threat Level ID": 1, "Event ID": "123"},
                 "456": {"Event Name": "Event with Medium Threat", "Threat Level ID": 2, "Event ID": "456"},
-                "789": {"Event Name": "Event with Low Threat", "Threat Level ID": 3, "Event ID": "789"}
+                "789": {"Event Name": "Event with Low Threat", "Threat Level ID": 3, "Event ID": "789"},
             },
             True,
-            "Multiple events with ThreatLevelID=[1,2,3] should return True (XSUP-61869 scenario)"
+            "Multiple events with ThreatLevelID=[1,2,3] should return True (XSUP-61869 scenario)",
         ),
         (
             {
                 "123": {"Event Name": "Event with High Threat", "Threat Level ID": 1, "Event ID": "123"},
-                "999": {"Event Name": "Event with Unknown Threat", "Threat Level ID": 4, "Event ID": "999"}
+                "999": {"Event Name": "Event with Unknown Threat", "Threat Level ID": 4, "Event ID": "999"},
             },
             True,
-            "Multiple events with mixed ThreatLevelID=[1,4] should return True"
+            "Multiple events with mixed ThreatLevelID=[1,4] should return True",
         ),
         (
             {
                 "111": {"Event Name": "Event 1 Unknown", "Threat Level ID": 4, "Event ID": "111"},
-                "222": {"Event Name": "Event 2 Unknown", "Threat Level ID": 4, "Event ID": "222"}
+                "222": {"Event Name": "Event 2 Unknown", "Threat Level ID": 4, "Event ID": "222"},
             },
             False,
-            "Multiple events all with ThreatLevelID=4 should return False"
+            "Multiple events all with ThreatLevelID=4 should return False",
         ),
         # Edge case
-        (
-            {},
-            False,
-            "Empty events dictionary should return False"
-        ),
-    ]
+        ({}, False, "Empty events dictionary should return False"),
+    ],
 )
 def test_found_event_with_bad_threat_level_id(mocker, found_related_events, expected_result, test_description):
     """
