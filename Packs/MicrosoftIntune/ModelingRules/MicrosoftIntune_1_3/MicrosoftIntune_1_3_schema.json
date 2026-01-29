@@ -1,7 +1,7 @@
 {
     "msft_intune_raw": {
         "properties": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "category": {
