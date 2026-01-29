@@ -488,7 +488,7 @@ def convert_timestamp_to_readable(attribute, event):
 
 def found_event_with_bad_threat_level_id(found_related_events):
     bad_threat_level_ids = ["1", "2", "3"]
-    return any(event["Threat Level ID"] in bad_threat_level_ids for event in found_related_events.values())
+    return any(str(event["Threat Level ID"]) in bad_threat_level_ids for event in found_related_events.values())
 
 
 def get_score(
