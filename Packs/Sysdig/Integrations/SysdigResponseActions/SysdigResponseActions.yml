@@ -174,15 +174,6 @@ marketplaces:
 - marketplacev2
 - xsoar_saas
 - platform
-supportedModules:
-- cloud_posture
-- cloud
-- cloud_runtime_security
-- edr
-- asm
-- xsiam
-- exposure_management
-- agentix
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

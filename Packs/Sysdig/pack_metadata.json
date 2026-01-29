@@ -26,16 +26,6 @@
         "xsoar_saas",
         "platform"
     ],
-    "supportedModules": [
-        "cloud_posture",
-        "cloud",
-        "cloud_runtime_security",
-        "edr",
-        "asm",
-        "xsiam",
-        "exposure_management",
-        "agentix"
-    ],
     "githubUser": [
         "S3B4SZ17"
     ],
