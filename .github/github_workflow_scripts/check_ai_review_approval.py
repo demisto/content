@@ -254,10 +254,12 @@ def main():
     relevant_reviews: list[PullRequestReview] = [
         review
         for review in reviews
-        if (review.user
+        if (
+            review.user
             and review.user.login == BOT_USERNAME
             and REQUIRED_TEXT in review.body
-            and not is_minimized_via_graphql(review.raw_data["node_id"], github_token))
+            and not is_minimized_via_graphql(review.raw_data["node_id"], github_token)
+        )
     ]
 
     found_reviews, all_approved = find_reaction_on_review(relevant_reviews, github_token, pr_number)
