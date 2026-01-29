@@ -1014,49 +1014,6 @@ Pops a synchronous MFA request for the given user. This is a blocking call that 
 
 There is no context output for this command.
 
-### msgraph-user-create-mfa-client-secret
-
-***
-Issue a new client secret for the MFA app.
-
-#### Base Command
-
-`msgraph-user-create-mfa-client-secret`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MSGraphUser.MFAClientSecret.ValidUntil | String | The expiration date for the client secret in ISO 8601 format. |
-| MSGraphUser.MFAClientSecret.MFAClientSecret | String | The new MFA client secret. |
-| MSGraphUser.MFAClientSecret.ValidFrom | String | The date of issue for the client secret. |
-
-### msgraph-user-create-mfa-client-access-token
-
-***
-Issue a new access token for the MFA app.
-
-#### Base Command
-
-`msgraph-user-create-mfa-client-access-token`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| client_secret | The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MSGraphUser.MFAAccessToken.ValidUntil | String | The expiration date for the access token in epoch format. |
-| MSGraphUser.MFAAccessToken.AccessToken | String | The access token value. |
-
 ### msgraph-user-get-user-default-auth-method
 
 ***

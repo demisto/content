@@ -250,7 +250,7 @@ class MsGraphClient:
         except requests.exceptions.HTTPError as e:
             raise DemistoException(f"Error obtaining access token: {e}\nResponse: {token_response.text}")
 
-    def push_mfa_notification(self, user_principal_name: str, timeout: int, access_token: str) -> str:
+    def push_mfa_notification(self, user_principal_name: str, timeout: int, access_token: str) -> str:  # pragma: no cover
         """
         Send a synchronous MFA push notification to the user with the given UPN.
         This is a blocking call that waits for user response or timeout.

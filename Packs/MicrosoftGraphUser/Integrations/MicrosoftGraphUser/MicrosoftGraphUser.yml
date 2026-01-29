@@ -1013,6 +1013,7 @@ script:
       description: The system-preferred authentication method.
       type: String
   - name: msgraph-user-create-mfa-client-secret
+    hidden: true
     description: Issue a new client secret for the MFA app.
     outputs:
     - contextPath: MSGraphUser.MFAClientSecret.ValidUntil
@@ -1025,6 +1026,7 @@ script:
       description: The date of issue for the client secret.
       type: String
   - name: msgraph-user-create-mfa-client-access-token
+    hidden: true
     description: Issue a new access token for the MFA app.
     arguments:
     - description: The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command.
