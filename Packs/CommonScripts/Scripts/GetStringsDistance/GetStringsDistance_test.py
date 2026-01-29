@@ -17,7 +17,27 @@ def test_levenshtein(str1, str2, expected_results):
     assert levenshtein(str1, str2) == expected_results
 
 
-def test_main(mocker):
+@pytest.mark.parametrize(
+    "args, expected_result",
+    [
+        pytest.param(
+            {"inputString": "123", "compareString": "abc"},
+            {"LevenshteinDistance": 3, "StringA": "123", "StringB": "abc", "TooClose": False},
+            id="Two different strings",
+        ),
+        pytest.param(
+            {"inputString": "aba", "compareString": "baba"},
+            {"LevenshteinDistance": 1, "StringA": "aba", "StringB": "baba", "TooClose": True},
+            id="Two similar strings",
+        ),
+        pytest.param(
+            {"inputString": "johndoe", "compareString": "johndoe"},
+            {"LevenshteinDistance": 0, "StringA": "johndoe", "StringB": "johndoe", "TooClose": True},
+            id="Two identical strings",
+        ),
+    ],
+)
+def test_main(mocker, args: dict, expected_result: dict):
     """
     Given
     - The commands args.
@@ -28,10 +48,8 @@ def test_main(mocker):
     """
     from GetStringsDistance import main
 
-    mocker.patch("GetStringsDistance.levenshtein", return_value=1)
-    mocker.patch.object(demisto, "args", return_value={"inputString": "aba", "compareString": "baba"})
+    mocker.patch.object(demisto, "args", return_value=args)
     results_mock = mocker.patch.object(demisto, "results")
-    expected_result = {"LevenshteinDistance": 1, "StringA": "aba", "StringB": "baba", "TooClose": True}
 
     main()
 
