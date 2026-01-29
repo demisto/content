@@ -316,8 +316,8 @@ tasks:
         simple: ${inputs.CommandLine}
       document_password:
         simple: ${inputs.DocumentPassword}
-      enable_tor:
-        simple: ${inputs.EnableTor}
+      network_setting:
+        simple: ${inputs.NetworkSettings}
       environment_id:
         simple: ${inputs.EnvironmentID}
       extended_data:
@@ -380,23 +380,27 @@ inputs:
               simple: Windows,Linux,Android
           mapped_values:
             value:
-              simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
+              simple: '160: Windows 10 (64-bit),300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
   required: false
   description: |-
     The operating system for which the alert was raised.
     accepted values are Windows, Linux, Android
   playbookInputQuery: null
-- key: EnableTor
+- key: NetworkSettings
   value:
-    simple: "false"
+    simple: "default"
   required: false
-  description: Whether the sandbox analysis routes network traffic via TOR. If true,
-    sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter
-    is set to true.
+  description: |
+    Specifies the sandbox network configuration used for analysis.
+    Possible values are:
+    - default: Fully operating network (default behavior if not specified).
+    - tor: Route network traffic via TOR.
+    - simulated: Simulate network traffic.
+    - offline: Disable all network traffic.
   playbookInputQuery: null
 - key: EnvironmentID
   value:
-    simple: '''160: Windows 10'''
+    simple: '''160: Windows 10 (64-bit)'''
   required: false
   description: Sandbox environment used for analysis.
   playbookInputQuery: null
