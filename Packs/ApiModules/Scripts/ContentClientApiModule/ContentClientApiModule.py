@@ -1350,7 +1350,8 @@ class ContentClient:
         circuit_breaker: Optional[CircuitBreakerPolicy] = None,
         diagnostic_mode: bool = False,
         client_name: str = "ContentClient",
-        is_multithreaded: bool = True
+        is_multithreaded: bool = True,
+        reuse_client: bool = True
     ) -> None:
         """Initialize ContentClient with BaseClient-compatible parameters.
 
@@ -1368,6 +1369,10 @@ class ContentClient:
             circuit_breaker: Optional circuit breaker policy.
             diagnostic_mode: Whether to enable diagnostic logging.
             client_name: Name for logging identification.
+            is_multithreaded: Whether to enable multithreading support.
+            reuse_client: Whether to reuse the HTTP client across sync requests (default: True).
+                When True, the client is kept open for better performance.
+                When False, the client is closed after each sync request to avoid event loop issues.
         """
         # Store BaseClient-compatible parameters
         self._base_url: str = base_url
@@ -1378,6 +1383,7 @@ class ContentClient:
         self.timeout: float = timeout
         self._closed: bool = False
         self._is_multithreaded: bool = is_multithreaded
+        self._reuse_client: bool = reuse_client
 
         # Handle proxy exactly like BaseClient
         if proxy:
@@ -1929,14 +1935,16 @@ class ContentClient:
                     # If JSON parsing fails, return the response object
                     return response
             finally:
-                # Clean up the client after each sync request to prevent event loop issues
-                if hasattr(self._local_storage, "client") and self._local_storage.client is not None:
-                    try:
-                        await self._local_storage.client.aclose()
-                    except Exception:
-                        pass
-                    self._local_storage.client = None
-                    self._local_storage.client_event_loop = None
+                # Clean up the client after each sync request only if reuse_client is False
+                # When reuse_client is True (default), the client is kept open for better performance
+                if not self._reuse_client:
+                    if hasattr(self._local_storage, "client") and self._local_storage.client is not None:
+                        try:
+                            await self._local_storage.client.aclose()
+                        except Exception:
+                            pass
+                        self._local_storage.client = None
+                        self._local_storage.client_event_loop = None
 
         # Check if we're already in an async context
         try:
