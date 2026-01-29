@@ -4213,11 +4213,13 @@ class Client:
         domain_updatenotificationrequestv1_id,
         domain_updatenotificationrequestv1_status,
     ):
-        data = assign_params(
-            assigned_to_uuid=domain_updatenotificationrequestv1_assigned_to_uuid,
-            id=domain_updatenotificationrequestv1_id,
-            status=domain_updatenotificationrequestv1_status,
-        )
+        data = [
+            assign_params(
+                assigned_to_uuid=domain_updatenotificationrequestv1_assigned_to_uuid,
+                id=domain_updatenotificationrequestv1_id,
+                status=domain_updatenotificationrequestv1_status,
+            )
+        ]
 
         headers = self.cs_client._headers
 
