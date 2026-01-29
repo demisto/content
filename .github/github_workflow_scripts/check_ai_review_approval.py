@@ -47,10 +47,11 @@ def get_reactions_query() -> str:
     }
     """
 
+
 def is_minimized_query() -> str:
     """
     Returns the GraphQL query to fetch minimization status.
-    We use '... on Comment' because both IssueComment and 
+    We use '... on Comment' because both IssueComment and
     PullRequestReviewComment implement the Comment interface.
     """
     return """
@@ -90,6 +91,7 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
         print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
         return []
 
+
 def is_minimized_via_graphql(node_id: str, token: str) -> bool:
     """
     Uses GraphQL to understand if a review is minimized or not.
@@ -102,9 +104,7 @@ def is_minimized_via_graphql(node_id: str, token: str) -> bool:
     variables = {"nodeId": node_id}
 
     try:
-        response = requests.post(
-            url, json={"query": is_minimized_query(), "variables": variables}, headers=headers, verify=False
-        )
+        response = requests.post(url, json={"query": is_minimized_query(), "variables": variables}, headers=headers, verify=False)
         response.raise_for_status()
         data = response.json()
         node_data = data.get("data", {}).get("node")
@@ -122,7 +122,9 @@ def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str,
     print(f"Found {len(reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
 
     for review in reviews:
-        print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}, Review ID: {review.id}). Checking reactions via GraphQL...")
+        print(
+            f"Found Bot Review (Node ID: {review.raw_data['node_id']}, Review ID: {review.id}). Checking reactions via GraphQL..."
+        )
         reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
 
         thumb_up_found = False
@@ -248,7 +250,7 @@ def main():
 
     print("Fetching reviews...")
     reviews = pr.get_reviews()
-    
+
     relevant_reviews: list[PullRequestReview] = [
         review
         for review in reviews
