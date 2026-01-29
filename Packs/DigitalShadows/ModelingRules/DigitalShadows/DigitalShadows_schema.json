@@ -9,7 +9,7 @@
          "is_array":false
       },
       "alert":{
-         "type":"string",
+         "type":"nested_json",
          "is_array":false
       },
       "state":{
@@ -33,7 +33,7 @@
          "is_array":false
       },
       "triage_item":{
-         "type":"string",
+         "type":"nested_json",
          "is_array":false
       },
       "triage_item_id":{
@@ -46,15 +46,15 @@
       },
       "mitre_tactics":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "mitre_techniques":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "mitre_ids":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "classification":{
          "type":"string",
