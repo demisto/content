@@ -5852,8 +5852,7 @@
         {
             "playbookID": "GetUserData - Test",
             "integrations": [
-                "Microsoft Graph User",
-                "AWS - IAM"
+                "Microsoft Graph User"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
@@ -5877,10 +5876,9 @@
         },
         {
             "playbookID": "ExpirePassword - Test",
-            "integrations": ["Okta v2", "Microsoft Graph User", "Active Directory Query v2"],
+            "integrations": ["Okta v2", "Microsoft Graph User"],
             "instance_names": [
-                "ms_graph_user_dev",
-                "active_directory_80k"
+                "ms_graph_user_dev"
             ],
             "memory_threshold": 100
         },
