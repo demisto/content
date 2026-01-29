@@ -12547,7 +12547,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, client_class=BaseClient):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12605,7 +12605,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
         multiple_threads=multiple_threads,
-        client_class=client_class
+        client_class=client_class if client_class else BaseClient
     )
 
 
@@ -12719,7 +12719,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       client_class=BaseClient):
+                       client_class=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12862,7 +12862,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
-
+    if client_class is None:
+        client_class = BaseClient
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
