@@ -2,7 +2,7 @@
     "proofpoint_tap_raw": {
         "ccAddresses": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "fromAddress": {
             "type": "string",
@@ -17,16 +17,16 @@
             "is_array": false
         },
         "messageParts": {
-            "type": "string",
-            "is_array": false
+            "type": "nested_json",
+            "is_array": true
         },
         "messageTime": {
-            "type": "datetime",
+            "type": "string",
             "is_array": false
         },
         "recipient": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "sender": {
             "type": "string",
@@ -41,15 +41,15 @@
             "is_array": false
         },
         "threatsInfoMap": {
-            "type": "string",
-            "is_array": false
+            "type": "nested_json",
+            "is_array": true
         },
         "clickIP": {
             "type": "string",
             "is_array": false
         },
         "clickTime": {
-            "type": "datetime",
+            "type": "string",
             "is_array": false
         },
         "url": {
