@@ -7494,7 +7494,7 @@ def test_lambda_list_versions_by_function_command_with_pagination(mocker):
     """
     Test Lambda.list_versions_by_function_command with pagination parameters.
 
-    Given: Function name with marker and max_items
+    Given: Function name with next_token and limit
     When: list_versions_by_function_command is called
     Then: Should pass pagination parameters to API and include NextMarker in output
     """
@@ -7527,8 +7527,8 @@ def test_lambda_list_versions_by_function_command_with_pagination(mocker):
 
     args = {
         "function_name": "my-function",
-        "marker": "previous-token",
-        "max_items": "10",
+        "next_token": "previous-token",
+        "limit": "10",
         "region": "us-east-1",
         "account_id": "123456789012",
     }

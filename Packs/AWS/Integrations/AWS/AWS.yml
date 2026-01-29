@@ -7166,7 +7166,8 @@ script:
     - description: Specify the pagination token that's returned by a previous request to retrieve the next page of results.
       name: next_token
     - description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
-      name: max_items
+      name: limit
+      defaultValue: "50"
     description: Returns a list of versions, with the version-specific configuration of each.
     outputs:
     - contextPath: AWS.Lambda.Functions.FunctionVersions.NextMarker

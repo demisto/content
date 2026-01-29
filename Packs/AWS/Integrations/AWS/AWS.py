@@ -5431,8 +5431,8 @@ class Lambda:
             client (BotoClient): The boto3 client for Lambda service
             args (Dict[str, Any]): Command arguments including:
                 - function_name (str): The name of the Lambda function
-                - marker (str, optional): The marker for pagination
-                - max_items (str, optional): The maximum number of items to return
+                - next_token (str, optional): The token for pagination
+                - limit (int, optional): The maximum number of items to return
                 - region (str): AWS region
                 - account_id (str): AWS account ID
 
@@ -5441,11 +5441,11 @@ class Lambda:
         """
         kwargs = {"FunctionName": args.get("function_name")}
 
-        # Add optional pagination parameters
-        if marker := args.get("marker"):
-            kwargs["Marker"] = marker
-        if max_items := args.get("max_items"):
-            kwargs["MaxItems"] = int(max_items)
+        # Build pagination parameters using build_pagination_kwargs
+        pagination_kwargs = build_pagination_kwargs(
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+        )
+        kwargs.update(pagination_kwargs)
 
         print_debug_logs(client, f"Listing Lambda function versions with parameters: {kwargs}")
 
