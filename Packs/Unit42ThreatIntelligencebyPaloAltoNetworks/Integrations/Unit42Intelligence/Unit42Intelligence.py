@@ -93,23 +93,23 @@ def parse_url_list(url_input: str | list | None) -> list[str]:
     """
     if url_input is None:
         return []
-    
+
     # Handle list input from playbooks
     if isinstance(url_input, list):
         return [url.strip() for url in argToList(url_input) if url and str(url).strip()]
-    
+
     # Handle string input - split by newlines, then intelligently by commas
     url_input = str(url_input).strip()
     if not url_input:
         return []
-    
+
     # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
     # This preserves commas within URL parameters
     all_urls = []
-    for line in url_input.split('\n'):
+    for line in url_input.split("\n"):
         if line := line.strip():
             all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
-    
+
     return all_urls
 
 
