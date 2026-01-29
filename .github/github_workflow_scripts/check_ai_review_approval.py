@@ -1,11 +1,14 @@
 import sys
 import argparse
-from github import Github
+from github import Github, Auth
 from github.PullRequest import PullRequest
 from github.PullRequestReview import PullRequestReview
 import requests
 import urllib3
 from utils import timestamped_print
+import warnings
+
+warnings.filterwarnings("ignore", message=".*Python version.*which Google will stop supporting.*")
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
@@ -238,7 +241,8 @@ def main():
     github_token = options.github_token
     print(f"Checking PR {pr_number}")
 
-    github_client = Github(github_token, verify=False)
+    auth = Auth.Token(github_token)
+    github_client = Github(auth=auth, verify=False)
     repo = github_client.get_repo(f"{ORG_NAME}/{REPO_NAME}")
     pr = repo.get_pull(int(pr_number))
 
