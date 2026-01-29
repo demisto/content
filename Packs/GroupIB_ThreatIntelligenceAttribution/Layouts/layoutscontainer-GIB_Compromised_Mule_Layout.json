@@ -3,7 +3,6 @@
     "group": "incident",
     "id": "GIB Compromised Mule Layout",
     "name": "GIB Compromised Mule Layout",
-    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

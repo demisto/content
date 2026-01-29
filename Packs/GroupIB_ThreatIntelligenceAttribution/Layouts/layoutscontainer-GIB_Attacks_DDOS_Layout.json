@@ -761,7 +761,6 @@
     "group": "incident",
     "id": "GIB Attacks DDOS Layout",
     "name": "GIB Attacks DDOS Layout",
-    "system": true,
     "version": -1,
     "fromVersion": "6.10.0"
 }

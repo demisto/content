@@ -585,7 +585,6 @@
     "group": "incident",
     "id": "GIB Compromised Card Group Layout",
     "name": "GIB Compromised Card Group Layout",
-    "system": true,
     "version": -1,
     "fromVersion": "6.10.0"
 }

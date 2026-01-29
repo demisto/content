@@ -594,7 +594,6 @@
     "group": "incident",
     "id": "GIB Cybercriminal Threat Layout",
     "name": "GIB Cybercriminal Threat Layout",
-    "system": true,
     "version": -1,
     "fromVersion": "6.10.0"
 }
