@@ -173,6 +173,16 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Recon filter query
+  name: recon_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  hidden:
+  - marketplacev2
+  - platform
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -271,6 +281,7 @@ configuration:
   - NGSIEM Automated Lead
   - NGSIEM Case
   - NGSIEM Incident (XDR Alert)
+  - Recon notifications
   hidden:
   - marketplacev2
   - platform
