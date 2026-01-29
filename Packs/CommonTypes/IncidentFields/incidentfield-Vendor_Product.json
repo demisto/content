@@ -35,6 +35,7 @@
         "CrowdStrike Falcon OFP Detection",
         "CrowdStrike Falcon Third Party Detection",
         "CrowdStrike Falcon NGSIEM Detection",
+        "Trellix Incident",
         "CrowdStrike Falcon NGSIEM Automated Lead"
     ],
     "systemAssociatedTypes": [
