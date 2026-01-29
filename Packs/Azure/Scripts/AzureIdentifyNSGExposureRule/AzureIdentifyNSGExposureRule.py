@@ -65,19 +65,24 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
     sorted_rules = sorted(inbound_rules, key=lambda rule: rule.get("properties", {}).get("priority", 0))
 
     if not sorted_rules:
-        raise DemistoException("No inbound NSG rules found.")
+        raise DemistoException("No inbound NSG rules found in the specified Network Security Group.")
 
     return sorted_rules, instance_to_use
 
 
-def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg_rules: list[dict]) -> tuple[str, int]:
+def find_matching_rule(
+    port: int,
+    protocol: str,
+    destination_ips: list[ipaddress.IPv4Address | ipaddress.IPv6Address],
+    nsg_rules: list[dict],
+) -> tuple[str, int]:
     """
     Find the first NSG Allow rule that matches the specified port, protocol, and any of the destination IPs.
 
     Args:
         port (int): The destination port to match
         protocol (str): The protocol to match (case-insensitive)
-        destination_ips (list[str]): The destination IP addresses to match (rule matches if ANY IP matches)
+        destination_ips (list[IPv4Address | IPv6Address]): The destination IP addresses to match (rule matches if ANY IP matches)
         nsg_rules (list[dict]): List of NSG command results
 
     Returns:
@@ -113,7 +118,7 @@ def find_matching_rule(port: int, protocol: str, destination_ips: list[str], nsg
         return rule.get("name", ""), properties.get("priority", 0)
 
     # No matching rule found
-    raise DemistoException("No matching NSG inbound rule found.")
+    raise DemistoException("No matching NSG inbound rule found for the specified IP/Port/Protocol.")
 
 
 def _matches_port(target_port: int, rule_properties: dict) -> bool:
@@ -177,41 +182,28 @@ def _port_matches_range(target_port: int, port_range: str) -> bool:
     return False
 
 
-def _matches_destination_ip(target_ips: list[str], rule_properties: dict) -> bool:
+def _matches_destination_ip(target_ips: list[ipaddress.IPv4Address | ipaddress.IPv6Address], rule_properties: dict) -> bool:
     """
     Check if any of the target IPs match the rule's destination address configuration.
 
     Args:
-        target_ips (list[str]): The IP addresses to check (rule matches if ANY IP matches)
+        target_ips (list[IPv4Address | IPv6Address]): The IP addresses to check (rule matches if ANY IP matches)
         rule_properties (dict): The rule properties containing address information
 
     Returns:
         bool: True if any IP matches, False otherwise
     """
-    # Convert all target IPs to IP objects, skipping invalid ones
-    target_ip_objects = []
-    for ip_str in target_ips:
-        try:
-            target_ip_objects.append(ipaddress.ip_address(ip_str))
-        except ValueError:
-            # Skip invalid IP addresses and continue with valid ones
-            continue
-
-    # If no valid IP addresses were provided, return False
-    if not target_ip_objects:
-        return False
-
     # Check single destination address prefix
     single_prefix = rule_properties.get("destinationAddressPrefix", "")
     if single_prefix:
-        for target_ip_obj in target_ip_objects:
+        for target_ip_obj in target_ips:
             if _ip_matches_prefix(target_ip_obj, single_prefix):
                 return True
 
     # Check multiple destination address prefixes
     multiple_prefixes = rule_properties.get("destinationAddressPrefixes", [])
     for prefix in multiple_prefixes:
-        for target_ip_obj in target_ip_objects:
+        for target_ip_obj in target_ips:
             if _ip_matches_prefix(target_ip_obj, prefix):
                 return True
 
@@ -324,7 +316,7 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     priority_count = int(args.get("priority_count", ""))
     integration_instance = args.get("integration_instance", "")
 
-    # Parse and validate IP addresses - handle both single IP and list of IPs
+    # Format provided IP addresses as a list. Handle both single IP and list of IPs
     destination_ips = []
     if isinstance(destination_ip_input, list):
         destination_ips = destination_ip_input
@@ -335,12 +327,11 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     if not destination_ips:
         raise ValueError("At least one valid IP address must be provided in private_ip_address parameter")
 
-    # Validate that all provided IPs are valid IP addresses
+    # Validate that all provided IPs are valid IP addresses and create IP Address objects
     valid_ips = []
     for ip in destination_ips:
         try:
-            ipaddress.ip_address(ip)
-            valid_ips.append(ip)
+            valid_ips.append(ipaddress.ip_address(ip))
         except ValueError:
             raise ValueError(f"Invalid IP address provided: {ip}")
 
