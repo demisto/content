@@ -1,13 +1,38 @@
 [INGEST:vendor="VMware", product="ESXi", target_dataset="VMware_ESXi_raw", no_hit=keep]
-filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[Z\d\.]+"
-| alter 
-    tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|\.\d{3}Z?)"), 0)
-| alter 
-    tmp_format_check1 = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_timestamp_extract),
-    tmp_format_check2 = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_timestamp_extract),
-    tmp_format_check3 = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_timestamp_extract)
+// Filter for RFC 3164 log format, with ISO-8601 timestamp format: <PRI>YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
+filter _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
 | alter
-    tmp_format_check = coalesce(tmp_format_check1, tmp_format_check2, tmp_format_check3)
-| alter 
+    parsed_fields = if(
+    _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<*(?P<pri>\d*)\>*(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+(?P<hostname>\S+)\s+(?P<process_pid>.+?)\:\s*(?P<msg>.+)")),
+    tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|\.\d{3}Z?)"), 0)
+| alter
+    tmp_format_check1 = parse_timestamp("%FT%R:%E*SZ", parsed_fields -> timestamp), // Standard ISO-8601 with flexible milliseconds: YYYY-MM-DDTHH:MM:SS.mmZ
+    tmp_format_check2 = parse_timestamp("%FT%R:%E*S", parsed_fields -> timestamp), // ISO-8601 with flexible milliseconds, NO Z: YYYY-MM-DDTHH:MM:SS.mm
+    tmp_format_check3 = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_timestamp_extract), //Strict 3-digit milliseconds:YYYY-MM-DDTHH:MM:SS.mmmZ
+    tmp_format_check4 = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_timestamp_extract), //No milliseconds: YYYY-MM-DDTHH:MM:SSZ
+    tmp_format_check5 = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_timestamp_extract) //Flexible milliseconds without Z: YYYY-MM-DDTHH:MM:SS.mmm
+| alter
+    tmp_format_check = coalesce(tmp_format_check1, tmp_format_check2, tmp_format_check3, tmp_format_check4, tmp_format_check5)
+| alter
+    _time = tmp_format_check
+| fields -tmp*;
+
+// Filter for RFC 5242 log format, with ISO-8601 timestamp format: <PRI>VERSION YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
+filter
+    _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
+| alter
+    parsed_fields = if(
+        _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<(?P<pri>\d+)\>\d+\s+(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+(?P<hostname>\S+)\s+(?P<process_pid>.+?)\:\s*(?P<msg>.+)")
+    ),
+    tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|\.\d{3}Z?)"), 0)
+| alter
+    tmp_format_check1 = parse_timestamp("%FT%R:%E*SZ", parsed_fields -> timestamp), // Standard ISO-8601 with flexible milliseconds: YYYY-MM-DDTHH:MM:SS.mmZ
+    tmp_format_check2 =  parse_timestamp("%FT%R:%E*S", parsed_fields -> timestamp), // ISO-8601 with flexible milliseconds, NO Z: YYYY-MM-DDTHH:MM:SS.mm
+    tmp_format_check3 = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_timestamp_extract), //Strict 3-digit milliseconds:YYYY-MM-DDTHH:MM:SS.mmmZ
+    tmp_format_check4 = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_timestamp_extract), //No milliseconds: YYYY-MM-DDTHH:MM:SSZ
+    tmp_format_check5 = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_timestamp_extract) //Flexible milliseconds without Z: YYYY-MM-DDTHH:MM:SS.mmm
+| alter
+    tmp_format_check = coalesce(tmp_format_check1, tmp_format_check2, tmp_format_check3, tmp_format_check4, tmp_format_check5)
+| alter
     _time = tmp_format_check
 | fields -tmp*;
