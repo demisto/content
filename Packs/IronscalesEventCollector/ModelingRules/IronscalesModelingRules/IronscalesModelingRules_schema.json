@@ -21,7 +21,7 @@
             "is_array": false
         },
         "mail_server": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "reports": {
@@ -29,11 +29,11 @@
             "is_array": false
         },
         "links": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "attachments": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "name": {
@@ -49,7 +49,7 @@
             "is_array": false
         },
         "headers": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "original_email_body": {
