@@ -610,22 +610,22 @@ script:
       type: String
     - contextPath: Domain.Name
       description: The domain.
-      type: string.
+      type: string
     - contextPath: Domain.Relationships.EntityA
       description: The domain name.
-      type: string.
+      type: string
     - contextPath: Domain.Relationships.EntityAType
       description: The entity type.
-      type: string.
+      type: string
     - contextPath: Domain.Relationships.EntityB
       description: The entity B.
-      type: string.
+      type: string
     - contextPath: Domain.Relationships.EntityBType
       description: The entity B type.
-      type: string.
+      type: string
     - contextPath: Domain.Relationships.Relationship
       description: The relationship type.
-      type: string.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type

@@ -1622,9 +1622,8 @@ Runs reputation on IPs.
 | --- | --- | --- |
 | Censys.IP.services.port | Number   | The port number associated with the service running on the IP. |
 | Censys.IP.services.transport_protocol | String | The transport protocol used by the service running on the IP. |
-| Censys.IP.services.extended_service_name | String   | The extended name of the service running on the IP. |
-| Censys.IP.services.service_name | String | The name of the service running on the IP. |
-| Censys.IP.services.certificate | String   | The SSL/TLS certificate associated with the service running on the IP. |
+| Censys.IP.services.protocol | String | The name of the service running on the IP. |
+| Censys.IP.services.cert | String | The SSL/TLS certificate associated with the service running on the IP. |
 | Censys.IP.labels | String | Labels associated with the IP address (with premium access only). |
 | Censys.IP.dns.reverse_dns.names | String | Reverse DNS names associated with the IP address. |
 | Censys.IP.autonomous_system.country_code | String | The country code of the autonomous system associated with the IP address. |
@@ -1642,7 +1641,6 @@ Runs reputation on IPs.
 | Censys.IP.location.postal_code | String | Postal code of the location associated with the IP address. |
 | Censys.IP.location.city | String | City name of the location associated with the IP address. |
 | Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
-| Censys.IP.last_updated_at | Date | The date and time when the information about the IP address was last updated. |
 | IP.Address | unknown | The IP address. |
 | IP.ASN | unknown | The IP ASN. |
 | IP.Geo.Country | unknown | The IP country. |
