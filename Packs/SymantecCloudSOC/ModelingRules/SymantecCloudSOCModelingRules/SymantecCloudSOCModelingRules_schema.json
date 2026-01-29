@@ -50,11 +50,11 @@
       },
       "browsers": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "devices": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "host": {
         "type": "string",
