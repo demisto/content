@@ -2673,28 +2673,28 @@ Modifies the specified network interface attribute. You can specify only one att
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| network_interface_id | The ID of the network interface. | Required | 
-| ena_srd_enabled | Indicates whether ENA Express is enabled for the network interface. Possible values are: true, false. | Optional | 
-| ena_srd_udp_enabled | Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express. Possible values are: true, false. | Optional | 
-| enable_primary_ipv6 | If you're modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address. Possible values are: true, false. | Optional | 
-| tcp_established_timeout | Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds. | Optional | 
-| udp_stream_timeout | Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds. | Optional | 
-| udp_timeout | Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds. | Optional | 
-| associate_public_ip_address | Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0). Possible values are: true, false. | Optional | 
-| associated_subnet_ids | A list of comma-separated subnet IDs to associate with the network interface. | Optional | 
-| description | A description for the network interface. | Optional | 
-| source_dest_check | Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls. Possible values are: true, false. | Optional | 
-| groups | A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. | Optional | 
-| default_ena_queue_count | Whether to use the default number of the ENA queues. Possible values are: true, false. | Optional | 
-| ena_queue_count | The number of ENA queues to be created with the instance. | Optional | 
-| attachment_id | The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment. | Optional | 
-| delete_on_termination | Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment. Possible values are: true, false. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| network_interface_id | The ID of the network interface. | Required |
+| ena_srd_enabled | Indicates whether ENA Express is enabled for the network interface. Possible values are: true, false. | Optional |
+| ena_srd_udp_enabled | Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express. Possible values are: true, false. | Optional |
+| enable_primary_ipv6 | If you're modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address. Possible values are: true, false. | Optional |
+| tcp_established_timeout | Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds. | Optional |
+| udp_stream_timeout | Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds. | Optional |
+| udp_timeout | Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds. | Optional |
+| associate_public_ip_address | Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0). Possible values are: true, false. | Optional |
+| associated_subnet_ids | A list of comma-separated subnet IDs to associate with the network interface. | Optional |
+| description | A description for the network interface. | Optional |
+| source_dest_check | Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls. Possible values are: true, false. | Optional |
+| groups | A comma-separated list of security groups IDs. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. | Optional |
+| default_ena_queue_count | Whether to use the default number of the ENA queues. Possible values are: true, false. | Optional |
+| ena_queue_count | The number of ENA queues to be created with the instance. | Optional |
+| attachment_id | The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment. | Optional |
+| delete_on_termination | Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.NetworkInterfaces.Attribute.ModifyResponseMetadata | Object | The response metadata. | 
-| AWS.EC2.NetworkInterfaces.NetworkInterfaceId | String | The ID of the network interface. | 
+| AWS.EC2.NetworkInterfaces.Attribute.ModifyResponseMetadata | Object | The response metadata. |
+| AWS.EC2.NetworkInterfaces.NetworkInterfaceId | String | The ID of the network interface. |

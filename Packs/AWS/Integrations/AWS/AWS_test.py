@@ -7463,9 +7463,16 @@ def test_buckets_list_command_failure(mocker):
 
 def test_network_interface_attribute_modify_command_success(mocker):
     """
-    Given: A mocked boto3 EC2 client and valid network interface modification arguments.
-    When: network_interface_attribute_modify_command is called.
-    Then: It should return CommandResults with a success message.
+    Given:
+        - A mocked boto3 EC2 client.
+        - Valid network interface modification arguments including network_interface_id, description, and source_dest_check.
+    When:
+        - network_interface_attribute_modify_command is called.
+    Then:
+        - It should return CommandResults with a success message.
+        - The outputs should contain the expected NetworkInterfaceId and ModifyResponseMetadata with HTTPStatusCode 200.
+        - The outputs_prefix should be 'AWS.EC2.NetworkInterfaces'.
+        - The outputs_key_field should be 'NetworkInterfaceId'.
     """
     from AWS import EC2
 
@@ -7478,6 +7485,14 @@ def test_network_interface_attribute_modify_command_success(mocker):
 
     assert isinstance(result, CommandResults)
     assert "The Network Interface attribute eni-12345 was modified successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.EC2.NetworkInterfaces"
+    assert result.outputs_key_field == "NetworkInterfaceId"
+    assert result.outputs == {
+        "Attribute": {
+            "ModifyResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        },
+        "NetworkInterfaceId": "eni-12345",
+    }
     mock_client.modify_network_interface_attribute.assert_called_once()
 
 

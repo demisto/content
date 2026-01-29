@@ -2619,14 +2619,15 @@ class EC2:
             "Attribute": {
                 "ModifyResponseMetadata": {"HTTPStatusCode": response.get("ResponseMetadata", {}).get("HTTPStatusCode", "")},
             },
-            "NetworkInterfaceId":network_interface_id,
+            "NetworkInterfaceId": network_interface_id,
         }
 
         return CommandResults(
             readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully.",
             raw_response=response,
-            outputs= outputs,
+            outputs=outputs,
             outputs_prefix="AWS.EC2.NetworkInterfaces",
+            outputs_key_field="NetworkInterfaceId",
         )
 
     @staticmethod
