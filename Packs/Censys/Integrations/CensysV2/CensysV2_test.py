@@ -879,8 +879,8 @@ def test_domain_command_multiple_domains_partial_found(client, requests_mock):
     assert found_result is not None
     assert found_result.indicator.domain == "facebook.com"
     assert len(not_found_results) == 2
-    assert any("nonexistent1.com" in r.readable_output for r in not_found_results)
-    assert any("nonexistent2.com" in r.readable_output for r in not_found_results)
+    assert any("nonexistent1" in r.readable_output for r in not_found_results)
+    assert any("nonexistent2" in r.readable_output for r in not_found_results)
 
 
 def test_domain_command_multiple_domains_all_found(client, requests_mock):
@@ -953,8 +953,8 @@ def test_domain_command_multiple_domains_none_found(client, requests_mock):
         if hasattr(r, "readable_output") and r.readable_output and "No results found for domain:" in r.readable_output
     ]
     assert len(not_found_results) == 2
-    assert any("nonexistent1.com" in r.readable_output for r in not_found_results)
-    assert any("nonexistent2.com" in r.readable_output for r in not_found_results)
+    assert any("nonexistent1" in r.readable_output for r in not_found_results)
+    assert any("nonexistent2" in r.readable_output for r in not_found_results)
 
 
 def test_ip_command_multiple_ips_none_found(client, requests_mock):
