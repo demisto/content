@@ -52,15 +52,12 @@ def test_update_notificationsv1(client, requests_mock):
     args = {
         "domain_updatenotificationrequestv1_id": "test-notification-id",
         "domain_updatenotificationrequestv1_status": "in-progress",
-        "domain_updatenotificationrequestv1_assigned_to_uuid": "test-uuid"
+        "domain_updatenotificationrequestv1_assigned_to_uuid": "test-uuid",
     }
     api_response = util_load_json("./test_data/update_notificationsv1_response.json")
-    
+
     # Mock the PATCH request
-    mock_patch = requests_mock.patch(
-        "https://api.crowdstrike.com/recon/entities/notifications/v1",
-        json=api_response
-    )
+    mock_patch = requests_mock.patch("https://api.crowdstrike.com/recon/entities/notifications/v1", json=api_response)
 
     result = update_notificationsv1_command(client=client, args=args)
 
@@ -72,6 +69,6 @@ def test_update_notificationsv1(client, requests_mock):
     assert request_body[0]["id"] == "test-notification-id"
     assert request_body[0]["status"] == "in-progress"
     assert request_body[0]["assigned_to_uuid"] == "test-uuid"
-    
+
     # Verify command outputs
     assert result.outputs == api_response
