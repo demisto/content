@@ -1160,6 +1160,7 @@ def test_get_auth_methods_command(mocker):
     assert result.outputs["Methods"][0]["ID"] == "auth-id-1"
     assert "test-user - auth methods" in result.readable_output
 
+
 def test_request_mfa_command(mocker):
     """
     Given:
@@ -1227,7 +1228,7 @@ def test_get_default_auth_methods_command(mocker):
     mock_preferences = {
         "userPreferredMethodForSecondaryAuthentication": "push",
         "systemPreferredAuthenticationMethod": "sms",
-        "isSystemPreferredAuthenticationMethodEnabled": True
+        "isSystemPreferredAuthenticationMethodEnabled": True,
     }
 
     mocker.patch.object(client, "get_sign_in_preferences", return_value=mock_preferences)
@@ -1273,11 +1274,7 @@ def test_create_client_secret_command(mocker):
 
     # Case 2: Allowed
     params = {"allow_secret_generators": "True"}
-    mock_secret = {
-        "secretText": "secret_value",
-        "startDateTime": "2023-01-01T00:00:00Z",
-        "endDateTime": "2025-01-01T00:00:00Z"
-    }
+    mock_secret = {"secretText": "secret_value", "startDateTime": "2023-01-01T00:00:00Z", "endDateTime": "2025-01-01T00:00:00Z"}
     mocker.patch.object(client, "request_mfa_app_secret", return_value=mock_secret)
 
     result = create_client_secret_command(client, {}, params)
@@ -1321,10 +1318,7 @@ def test_create_access_token_command(mocker):
     # Case 2: Allowed
     params = {"allow_secret_generators": "True"}
     args = {"client_secret": "secret"}
-    mock_token = {
-        "AccessToken": "access_token_value",
-        "ValidUntil": "2023-01-01T01:00:00Z"
-    }
+    mock_token = {"AccessToken": "access_token_value", "ValidUntil": "2023-01-01T01:00:00Z"}
     mocker.patch.object(client, "get_mfa_app_client_token", return_value=mock_token)
 
     result = create_access_token_command(client, args, params)
