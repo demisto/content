@@ -1,5 +1,5 @@
 """
-Event Collector Source file for AdminByRequest API.
+Event Collector Source file for AdminByRequest  API.
 """
 
 from typing import Any
