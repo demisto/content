@@ -25,16 +25,16 @@
             "is_array": false
         },
         "filters": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "triggers": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "notifiers": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "has_triggers": {
             "type": "boolean",
