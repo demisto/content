@@ -21,7 +21,7 @@
         "is_array": true
       },
       "Severity": {
-        "type": "json",
+        "type": "nested_json",
         "is_array": false
       },
       "Title": {
@@ -37,7 +37,7 @@
         "is_array": true
       },
       "Compliance": {
-        "type": "json",
+        "type": "nested_json",
         "is_array": false
       }
     }
