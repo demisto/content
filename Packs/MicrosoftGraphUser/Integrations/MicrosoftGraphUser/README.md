@@ -1006,13 +1006,14 @@ Pops a synchronous MFA request for the given user. This is a blocking call that 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_mail | The user mail to pop the MFA to. | Required | 
-| timeout | The timeout for the MFA request. Default is 60. | Optional | 
-| access_token | The MFA access token obtained from msgraph-user-create-mfa-client-access-token command. | Required | 
+| user_mail | The user mail to pop the MFA to. | Required |
+| timeout | The timeout for the MFA request. Default is 60. | Optional |
+| access_token | The MFA access token obtained from msgraph-user-create-mfa-client-access-token command. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-user-create-mfa-client-secret
 
 ***
@@ -1030,9 +1031,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.MFAClientSecret.ValidUntil | String | The expiration date for the client secret in ISO 8601 format. | 
-| MSGraphUser.MFAClientSecret.MFAClientSecret | String | The new MFA client secret. | 
-| MSGraphUser.MFAClientSecret.ValidFrom | String | The date of issue for the client secret. | 
+| MSGraphUser.MFAClientSecret.ValidUntil | String | The expiration date for the client secret in ISO 8601 format. |
+| MSGraphUser.MFAClientSecret.MFAClientSecret | String | The new MFA client secret. |
+| MSGraphUser.MFAClientSecret.ValidFrom | String | The date of issue for the client secret. |
 
 ### msgraph-user-create-mfa-client-access-token
 
@@ -1047,14 +1048,14 @@ Issue a new access token for the MFA app.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| client_secret | The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command. | Required | 
+| client_secret | The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.MFAAccessToken.ValidUntil | String | The expiration date for the access token in epoch format. | 
-| MSGraphUser.MFAAccessToken.AccessToken | String | The access token value. | 
+| MSGraphUser.MFAAccessToken.ValidUntil | String | The expiration date for the access token in epoch format. |
+| MSGraphUser.MFAAccessToken.AccessToken | String | The access token value. |
 
 ### msgraph-user-get-user-default-auth-method
 
@@ -1069,14 +1070,14 @@ Retrieves the authentication preferences for a user, including the default metho
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
+| user | User ID or userPrincipalName. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphUser.AuthMethod.User | String | The user principal name. | 
-| MSGraphUser.AuthMethod.DefaultMethod | String | The default authentication method for the user. | 
-| MSGraphUser.AuthMethod.IsSystemPreferredAuthenticationMethodEnabled | Boolean | Whether system-preferred authentication is enabled. | 
-| MSGraphUser.AuthMethod.UserPreferredMethodForSecondaryAuthentication | String | The user's preferred method for secondary authentication. | 
-| MSGraphUser.AuthMethod.SystemPreferredAuthenticationMethod | String | The system-preferred authentication method. | 
+| MSGraphUser.AuthMethod.User | String | The user principal name. |
+| MSGraphUser.AuthMethod.DefaultMethod | String | The default authentication method for the user. |
+| MSGraphUser.AuthMethod.IsSystemPreferredAuthenticationMethodEnabled | Boolean | Whether system-preferred authentication is enabled. |
+| MSGraphUser.AuthMethod.UserPreferredMethodForSecondaryAuthentication | String | The user's preferred method for secondary authentication. |
+| MSGraphUser.AuthMethod.SystemPreferredAuthenticationMethod | String | The system-preferred authentication method. |
