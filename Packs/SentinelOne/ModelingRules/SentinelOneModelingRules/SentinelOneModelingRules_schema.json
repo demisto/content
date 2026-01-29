@@ -5,7 +5,7 @@
       "is_array": false
     },
     "agentDetectionInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "agentId": {
@@ -17,8 +17,8 @@
       "is_array": false
     },
     "indicators": {
-      "type": "string",
-      "is_array": false
+      "type": "nested_json",
+      "is_array": true
     },
     "id": {
       "type": "string",
@@ -29,7 +29,7 @@
       "is_array": false
     },
     "containerInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "accountName": {
@@ -41,7 +41,7 @@
       "is_array": false
     },
     "sourceProcessInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "agentUpdatedVersion": {
@@ -53,15 +53,15 @@
       "is_array": false
     },
     "ruleInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "mitigationStatus": {
-      "type": "string",
-      "is_array": false
+      "type": "nested_json",
+      "is_array": true
     },
     "targetProcessInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "groupName": {
@@ -69,7 +69,7 @@
       "is_array": false
     },
     "threatInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "osFamily": {
@@ -77,19 +77,19 @@
       "is_array": false
     },
     "alertInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "agentRealtimeInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "sourceParentProcessInfo": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "data": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "activityType": {
