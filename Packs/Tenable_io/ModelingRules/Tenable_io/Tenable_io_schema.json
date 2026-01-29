@@ -27,11 +27,11 @@
     },
     "tenable_io_vulnerabilities_raw": {
         "asset": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "plugin": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "severity": {
