@@ -236,11 +236,13 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
+- cloud_posture
+- cloud
+- cloud_runtime_security
+- edr
+- asm
 - xsiam
+- exposure_management
+- agentix
 tests:
 - No tests
