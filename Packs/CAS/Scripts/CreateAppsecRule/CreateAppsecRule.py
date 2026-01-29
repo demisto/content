@@ -54,7 +54,6 @@ def main():
 
         description = args.get("description", "")
         labels = argToList(args.get("labels"))
-
         payload = {
             "name": rule_name,
             "description": description,
@@ -62,21 +61,23 @@ def main():
             "labels": labels,
             "scanner": scanner,
             "category": category,
-            "subCategory": subCategory,
             "frameworks": frameworks,
         }
+        demisto.info(f"KUKU payload is {payload}.")
         payload = json.dumps(payload)
 
         res = demisto.executeCommand(
             "core-generic-api-call",
             {
-                "path": "/public_api/appsec/v1/rules",
+                "path": "/api/webapp/public_api/appsec/v1/rules",
                 "method": "POST",
-                "data": payload
+                "data": payload,
+                "headers":{"content-type": 'application/json'}
             },
         )
 
         if is_error(res):
+            demisto.info(f"KUKU error is {res}.")
             return_error(res)
 
         else:
@@ -85,6 +86,7 @@ def main():
             data = json.loads(data)
             reply = data.get("reply")
             data = reply.get("DATA")
+            demisto.info(f"KUKU details is {res}.")
 
             return_results(
                 CommandResults(
