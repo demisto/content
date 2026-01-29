@@ -31,5 +31,5 @@ ignore=DS108
 [file:JSONFeedApiModule.yml]
 ignore=DS108
 
-[file:ContentClientApiModule.yml]
+[file:Packs/ApiModules/Scripts/ContentClientApiModule/ContentClientApiModule.yml]
 ignore=BA125
