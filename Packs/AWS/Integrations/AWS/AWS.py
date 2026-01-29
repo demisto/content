@@ -2608,15 +2608,25 @@ class EC2:
         """
         network_interface_id = args.get("network_interface_id", "")
         kwargs = build_kwargs_network_interface_attribute(args, network_interface_id)
-        remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
         response = client.modify_network_interface_attribute(**kwargs)
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        demisto.debug(f"{response=}")
+        outputs = {
+            "Attribute": {
+                "ModifyResponseMetadata": {"HTTPStatusCode": response.get("ResponseMetadata", {}).get("HTTPStatusCode", "")},
+            },
+            "NetworkInterfaceId":network_interface_id,
+        }
+
         return CommandResults(
-            readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully."
+            readable_output=f"The Network Interface attribute {network_interface_id} was modified successfully.",
+            raw_response=response,
+            outputs= outputs,
+            outputs_prefix="AWS.EC2.NetworkInterfaces",
         )
 
     @staticmethod

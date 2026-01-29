@@ -7156,6 +7156,13 @@ script:
         predefined:
           - 'true'
           - 'false'
+    outputs:
+      - contextPath: AWS.EC2.NetworkInterfaces.Attribute.ModifyResponseMetadata
+        description: The response metadata.
+        type: Object
+      - contextPath: AWS.EC2.NetworkInterfaces.NetworkInterfaceId
+        description: The ID of the network interface.
+        type: String
   - name: aws-ec2-regions-describe
     description: Describes the Regions that are enabled for your account, or all Regions.
     arguments:
