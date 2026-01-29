@@ -9,7 +9,7 @@
       "is_array": false
     },
     "properties": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "type": {
@@ -21,15 +21,15 @@
       "is_array": false
     },
     "Entities": {
-      "type": "string",
-      "is_array": false
+      "type": "nested_json",
+      "is_array": true
     },
     "ResourceIdentifiers": {
-      "type": "string",
-      "is_array": false
+      "type": "nested_json",
+      "is_array": true
     },
     "ExtendedProperties": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "AgentId": {
