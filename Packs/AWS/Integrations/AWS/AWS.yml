@@ -1708,7 +1708,7 @@ script:
 
 
   - name: aws-rds-db-instance-modify
-    description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
+    description: "Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1757,21 +1757,21 @@ script:
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
     - name: publicly_accessible
-      description: 'Weather the DB instance is publicly accessible.'
+      description: 'Whether the DB instance is publicly accessible.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: apply_immediately
-      description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+      description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: copy_tags_to_snapshot
-      description: 'Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
+      description: 'Whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
       required: false
       auto: PREDEFINED
       predefined:
@@ -1782,33 +1782,36 @@ script:
       required: false
 
     - name: enable_iam_database_authentication
-      description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: deletion_protection
-      description: 'Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
+      description: 'Whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: auto_minor_version_upgrade
-      description: 'Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+      description: 'Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. Behavior: An outage occurs only if automatic upgrades are enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version; otherwise, changes are applied as soon as possible without causing an outage. Note: Do not enable for RDS Custom DB instances (operation will fail).'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: multi_az
-      description: 'Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+      description: 'Behavior: Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage and is applied during the next maintenance window unless ApplyImmediately is enabled. Not applicable to RDS Custom DB instances.'
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+    - name: vpc_security_group_ids
+      description: "A list of Amazon EC2 VPC security groups to associate with this DB instance. This setting doesn’t apply to the following DB instances: Amazon Aurora, RDS Custom."
+      required: false
 
   - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
     description: This action will disable public access for AWS RDS database instance by modifying the instance settings.
