@@ -6,9 +6,6 @@ from github.PullRequestReview import PullRequestReview
 import requests
 import urllib3
 from utils import timestamped_print
-import warnings
-
-warnings.filterwarnings("ignore", message=".*Python version.*which Google will stop supporting.*")
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
