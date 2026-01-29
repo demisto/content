@@ -1,11 +1,11 @@
 {
   "jamf_pro_raw": {
     "event": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     },
     "webhook": {
-      "type": "string",
+      "type": "nested_json",
       "is_array": false
     }
   }
