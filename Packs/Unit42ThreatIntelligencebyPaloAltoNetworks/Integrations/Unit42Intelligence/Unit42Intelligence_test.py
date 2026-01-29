@@ -1761,3 +1761,192 @@ def test_parse_url_list_https_only():
     assert result[0] == "https://site1.com"
     assert result[1] == "https://site2.com"
     assert result[2] == "https://site3.com"
+
+
+def test_parse_url_list_none_input():
+    """
+    Given:
+        - None as input
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns an empty list without errors
+    """
+    result = parse_url_list(None)
+
+    assert result == []
+
+
+def test_parse_url_list_list_input():
+    """
+    Given:
+        - A list of URLs (as would come from playbooks)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns the list with URLs properly trimmed
+    """
+    url_input = ["http://example.com", "https://test.com", "  https://trimmed.com  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "https://trimmed.com"
+
+
+def test_parse_url_list_list_input_with_empty_strings():
+    """
+    Given:
+        - A list of URLs with empty strings and None values
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns only non-empty URLs
+    """
+    url_input = ["http://example.com", "", "https://test.com", None, "  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_newline_separator():
+    """
+    Given:
+        - URLs separated by newlines (supported by argToList)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com\nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_mixed_separators():
+    """
+    Given:
+        - URLs separated by both newlines and commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com,ftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_non_http_schemes():
+    """
+    Given:
+        - URLs with non-HTTP schemes (ftp, ftps, file, etc.)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports various URL schemes beyond http/https
+    """
+    url_input = "ftp://files.com,ftps://secure.com,file:///local/path,ssh://server.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 4
+    assert result[0] == "ftp://files.com"
+    assert result[1] == "ftps://secure.com"
+    assert result[2] == "file:///local/path"
+    assert result[3] == "ssh://server.com"
+
+
+def test_parse_url_list_mixed_schemes_with_commas_in_params():
+    """
+    Given:
+        - Multiple URLs with different schemes where some have commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - URLs with commas in parameters are not split
+    """
+    url_input = "http://example.com/path?x=1,2,3,ftp://files.com/data,https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com/path?x=1,2,3"
+    assert result[1] == "ftp://files.com/data"
+    assert result[2] == "https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+
+def test_parse_url_list_newline_with_commas_in_params():
+    """
+    Given:
+        - URLs separated by newlines where URLs contain commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Commas within URL parameters are preserved
+    """
+    url_input = "https://fonts.googleapis.com/css?family=Roboto:100,200,300\nhttp://example.com/path?x=1,2,3"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
+    assert result[1] == "http://example.com/path?x=1,2,3"
+
+
+def test_parse_url_list_whitespace_handling():
+    """
+    Given:
+        - URLs with various whitespace (spaces, tabs, newlines)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs properly trimmed
+        - Empty lines are ignored
+    """
+    url_input = "  http://example.com  \n\n  https://test.com  \n  \nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_custom_scheme():
+    """
+    Given:
+        - URLs with custom schemes (e.g., custom://)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports custom URL schemes
+    """
+    url_input = "custom://example.com,myscheme://test.com,http://normal.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "custom://example.com"
+    assert result[1] == "myscheme://test.com"
+    assert result[2] == "http://normal.com"
