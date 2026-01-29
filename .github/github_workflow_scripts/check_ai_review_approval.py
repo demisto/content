@@ -55,8 +55,8 @@ def is_minimized_query() -> str:
     PullRequestReviewComment implement the Comment interface.
     """
     return """
-        query($id: ID!) {
-        node(id: $id) {
+        query($nodeId: ID!) {
+        node(id: $nodeId) {
             ... on PullRequestReview {
             isMinimized
             minimizedReason
@@ -108,7 +108,6 @@ def is_minimized_via_graphql(node_id: str, token: str) -> bool:
         response.raise_for_status()
         data = response.json()
         node_data = data.get("data", {}).get("node")
-        print(f"{node_data=}")
 
         return node_data and node_data.get("isMinimized")
     except Exception as e:
