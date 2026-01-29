@@ -42,7 +42,7 @@
         },
         "IP": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "MsgId": {
             "type": "string",
@@ -90,7 +90,7 @@
         },
         "Rcpt": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "Recipient": {
             "type": "string",
