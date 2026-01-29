@@ -25,7 +25,7 @@
         "is_array": false
       },
       "occurred_message_time_iso_8601_ns": {
-        "type": "datetime",
+        "type": "string",
         "is_array": false
       },
       "bluefield_network_interface_name": {
@@ -61,10 +61,6 @@
         "is_array": false
       },
       "workload_network_interface_ipv4_address": {
-        "type": "string",
-        "is_array": false
-      },
-      "workload_network_interface_ipv6_address": {
         "type": "string",
         "is_array": false
       },
@@ -117,6 +113,10 @@
         "is_array": false
       },
       "destination_ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_network_interface_ipv6_address": {
         "type": "string",
         "is_array": false
       },
