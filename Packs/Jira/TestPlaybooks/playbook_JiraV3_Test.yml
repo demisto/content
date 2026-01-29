@@ -180,7 +180,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: Ticket.Status
@@ -490,7 +490,7 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: ${Ticket.[0].timetracking.rawData}
