@@ -1653,7 +1653,7 @@ tasks:
     task:
       id: 00f44ec0-19fd-4afe-8dba-5107493f1a6b
       version: -1
-      name: Else Block
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -1684,7 +1684,7 @@ tasks:
     task:
       id: 5828a3c8-4114-4de6-8f6c-e487d0dedbf9
       version: -1
-      name: Else Block
+      name: Done
       type: title
       iscommand: false
       brand: ""
