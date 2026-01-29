@@ -7475,7 +7475,7 @@ def test_lambda_list_versions_by_function_command_success(mocker):
     result = Lambda.list_versions_by_function_command(mock_client, args)
 
     # Verify the command was called correctly
-    mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function")
+    mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function", MaxItems=50)
 
     # Verify outputs structure
     assert result.outputs_prefix == "AWS.Lambda.Functions.FunctionVersions"
