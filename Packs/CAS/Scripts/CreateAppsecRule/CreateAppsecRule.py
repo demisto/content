@@ -81,23 +81,24 @@ def main():
             return_error(res)
 
         else:
+            demisto.info(f"KUKU finish {res}.")
             context = res[0]["EntryContext"]
+            demisto.info(f"KUKU 1111111.")
             data = context.get("data")
+            demisto.info(f"KUKU 2222222.")
             data = json.loads(data)
-            reply = data.get("reply")
-            data = reply.get("DATA")
-            demisto.info(f"KUKU details is {res}.")
+            demisto.info(f"KUKU 3333333. {data}")
 
             return_results(
                 CommandResults(
-                    outputs_prefix="Core.Case",
+                    outputs_prefix="Appsec.Rule",
                     outputs=data,
-                    readable_output=f"Cases {data}",
+                    readable_output=f"Rules {data}",
                     raw_response=data,
                 )
             )
     except Exception as ex:
-        return_error(f"Failed to execute GetCases. Error:\n{str(ex)}")
+        return_error(f"Failed to execute CreateAppsecRule. Error:\n{str(ex)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
