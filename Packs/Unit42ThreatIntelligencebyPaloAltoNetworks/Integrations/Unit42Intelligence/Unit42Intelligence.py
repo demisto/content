@@ -63,7 +63,7 @@ VALID_REGIONS = {
 #### HELPER FUNCTIONS ####
 
 
-def parse_url_list(url_input: str | list | None) -> list[str]:
+def parse_url_list(url_input: str | list | None) -> list:
     """
     Parse URL input that may contain multiple URLs or a single URL with commas.
 
