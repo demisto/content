@@ -1,6 +1,6 @@
-id: Nvidia_Doca_Argus_ParsingRule
-name: Nvidia Doca Argus Parsing Rule
 fromversion: 8.4.0   # Will be updated with XSIAM version updates  
+id: Nvidia_Doca_Argus_ParsingRule
+name: Nvidia Doca Argus ParsingRule
 tags: []
 rules: ''
 samples: ''
