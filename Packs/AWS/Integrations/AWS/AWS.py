@@ -5184,7 +5184,11 @@ class Lambda:
                 "Region": args.get("region"),
             }
 
-            human_readable = tableToMarkdown("AWS Lambda Function", readable_data)
+            human_readable = tableToMarkdown(
+                "AWS Lambda Function",
+                readable_data,
+                headerTransform=pascalToSpace,
+            )
 
             return CommandResults(
                 outputs_prefix="AWS.Lambda.Functions",
@@ -5209,6 +5213,8 @@ class Lambda:
             args (Dict[str, Any]): Command arguments including:
                 - region (str): AWS region
                 - account_id (str): AWS account ID
+                - limit (int, optional): Maximum number of functions to return
+                - next_token (str, optional): Token for pagination
 
         Returns:
             CommandResults: Results containing list of Lambda functions with their configurations
@@ -5216,21 +5222,25 @@ class Lambda:
         print_debug_logs(client, "Listing Lambda functions")
 
         try:
-            # Use paginator to handle large numbers of functions
-            paginator = client.get_paginator("list_functions")
-            all_functions = []
-            for page in paginator.paginate():
-                if page.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                    AWSErrorHandler.handle_response_error(page, args.get("account_id"))
+            # Build pagination parameters using build_pagination_kwargs
+            pagination_kwargs = build_pagination_kwargs(
+                args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+            )
 
-                all_functions.extend(page.get("Functions", []))
+            print_debug_logs(client, f"Listing Lambda functions with pagination parameters: {pagination_kwargs}")
 
-            if not all_functions:
-                return CommandResults(readable_output="No Lambda functions found.")
+            response = client.list_functions(**pagination_kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
             # Serialize response with datetime encoding
-            serialized_functions = serialize_response_with_datetime_encoding({"Functions": all_functions})
-            functions_list = serialized_functions.get("Functions", [])
+            serialized_response = serialize_response_with_datetime_encoding(response)
+            functions_list = serialized_response.get("Functions", [])
+            next_marker = serialized_response.get("NextMarker")
+
+            if not functions_list:
+                return CommandResults(readable_output="No Lambda functions found.")
 
             # Add region to each function
             for func in functions_list:
@@ -5249,14 +5259,22 @@ class Lambda:
                     }
                 )
 
-            human_readable = tableToMarkdown("AWS Lambda Functions", readable_data)
+            human_readable = tableToMarkdown(
+                "AWS Lambda Functions",
+                readable_data,
+                headerTransform=pascalToSpace,
+            )
+
+            # Prepare outputs with pagination support
+            outputs = {
+                "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)": functions_list,
+                "AWS.Lambda(true)": {"FunctionsNextToken": next_marker},
+            }
 
             return CommandResults(
-                outputs_prefix="AWS.Lambda.Functions",
-                outputs_key_field="FunctionArn",
-                outputs=functions_list,
+                outputs=outputs,
                 readable_output=human_readable,
-                raw_response=functions_list,
+                raw_response=serialized_response,
             )
 
         except ClientError as err:
@@ -5315,10 +5333,14 @@ class Lambda:
                     }
                 )
 
-            human_readable = tableToMarkdown("AWS Lambda Aliases", readable_data)
+            human_readable = tableToMarkdown(
+                "AWS Lambda Aliases",
+                readable_data,
+                headerTransform=pascalToSpace,
+            )
 
             return CommandResults(
-                outputs_prefix="AWS.Lambda.Aliases",
+                outputs_prefix="AWS.Lambda.Functions.Aliases",
                 outputs_key_field="AliasArn",
                 outputs=aliases_list,
                 readable_output=human_readable,
@@ -5373,7 +5395,11 @@ class Lambda:
                 },
             }
 
-            human_readable = tableToMarkdown("AWS Lambda Account Settings", readable_data)
+            human_readable = tableToMarkdown(
+                "AWS Lambda Account Settings",
+                readable_data,
+                headerTransform=pascalToSpace,
+            )
 
             # Add region and account_id to the root of the output for context
             output = {
@@ -5453,7 +5479,12 @@ class Lambda:
                 )
 
             headers = ["FunctionName", "Role", "Runtime", "LastModified", "State", "Description"]
-            human_readable = tableToMarkdown("AWS Lambda Function Versions", readable_data, headers=headers)
+            human_readable = tableToMarkdown(
+                "AWS Lambda Function Versions",
+                readable_data,
+                headers=headers,
+                headerTransform=pascalToSpace,
+            )
 
             # Add pagination note if there's a next marker
             if next_marker:
@@ -5470,7 +5501,7 @@ class Lambda:
             }
 
             return CommandResults(
-                outputs_prefix="AWS.Lambda.FunctionVersions",
+                outputs_prefix="AWS.Lambda.Functions.FunctionVersions",
                 outputs_key_field="FunctionName",
                 outputs=output,
                 readable_output=human_readable,
@@ -5670,9 +5701,6 @@ class Lambda:
             readable_output = tableToMarkdown(
                 name="Layer Version List", t=layer_versions, headerTransform=pascalToSpace, removeNull=True
             )
-
-            if next_marker:
-                readable_output += f"\n\nNext Token: {next_marker}"
 
             return CommandResults(
                 outputs=remove_empty_elements(outputs),

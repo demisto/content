@@ -7095,53 +7095,53 @@ def test_lambda_list_functions_command_success(mocker):
 
     Given: Valid region and account_id
     When: list_functions_command is called
-    Then: Should return CommandResults with list of functions
+    Then: Should return CommandResults with list of functions and pagination support
     """
     from AWS import Lambda
 
-    # Mock client and paginator
+    # Mock client
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    # Mock paginated response
-    mock_pages = [
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Functions": [
-                {
-                    "FunctionName": "function1",
-                    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function1",
-                    "Runtime": "python3.9",
-                    "LastModified": "2024-01-01T00:00:00.000+0000",
-                },
-                {
-                    "FunctionName": "function2",
-                    "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function2",
-                    "Runtime": "nodejs18.x",
-                    "LastModified": "2024-01-02T00:00:00.000+0000",
-                },
-            ],
-        }
-    ]
+    # Mock response with pagination
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Functions": [
+            {
+                "FunctionName": "function1",
+                "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function1",
+                "Runtime": "python3.9",
+                "LastModified": "2024-01-01T00:00:00.000+0000",
+            },
+            {
+                "FunctionName": "function2",
+                "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:function2",
+                "Runtime": "nodejs18.x",
+                "LastModified": "2024-01-02T00:00:00.000+0000",
+            },
+        ],
+        "NextMarker": "next-token-123",
+    }
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_functions.return_value = mock_response
 
     args = {"region": "us-east-1", "account_id": "123456789012"}
 
     result = Lambda.list_functions_command(mock_client, args)
 
-    # Verify paginator was used
-    mock_client.get_paginator.assert_called_once_with("list_functions")
-    mock_paginator.paginate.assert_called_once()
+    # Verify list_functions was called with pagination kwargs
+    mock_client.list_functions.assert_called_once()
+    call_kwargs = mock_client.list_functions.call_args[1]
+    assert call_kwargs["MaxItems"] == 50  # Default limit
 
     # Verify CommandResults structure
-    assert result.outputs_prefix == "AWS.Lambda.Functions"
-    assert result.outputs_key_field == "FunctionArn"
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["FunctionName"] == "function1"
-    assert result.outputs[0]["Region"] == "us-east-1"
-    assert result.outputs[1]["FunctionName"] == "function2"
+    assert "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)" in result.outputs
+    assert "AWS.Lambda(true)" in result.outputs
+    functions_list = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    assert len(functions_list) == 2
+    assert functions_list[0]["FunctionName"] == "function1"
+    assert functions_list[0]["Region"] == "us-east-1"
+    assert functions_list[1]["FunctionName"] == "function2"
+    assert result.outputs["AWS.Lambda(true)"]["FunctionsNextToken"] == "next-token-123"
     assert "function1" in result.readable_output
     assert "function2" in result.readable_output
 
@@ -7157,12 +7157,10 @@ def test_lambda_list_functions_command_no_functions(mocker):
     from AWS import Lambda
 
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    mock_pages = [{"ResponseMetadata": {"HTTPStatusCode": 200}, "Functions": []}]
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": 200}, "Functions": []}
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_functions.return_value = mock_response
 
     args = {"region": "us-west-2", "account_id": "123456789012"}
 
@@ -7171,55 +7169,52 @@ def test_lambda_list_functions_command_no_functions(mocker):
     assert "No Lambda functions found" in result.readable_output
 
 
-def test_lambda_list_functions_command_multiple_pages(mocker):
+def test_lambda_list_functions_command_with_pagination(mocker):
     """
-    Test Lambda.list_functions_command with multiple pages of results.
+    Test Lambda.list_functions_command with pagination parameters.
 
-    Given: Multiple pages of functions from paginator
-    When: list_functions_command is called
-    Then: Should aggregate all functions from all pages
+    Given: Limit and next_token parameters
+    When: list_functions_command is called with pagination
+    Then: Should pass pagination parameters to API and return next token
     """
     from AWS import Lambda
 
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    # Mock multiple pages
-    mock_pages = [
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Functions": [
-                {
-                    "FunctionName": "func1",
-                    "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:func1",
-                    "Runtime": "python3.11",
-                }
-            ],
-        },
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Functions": [
-                {
-                    "FunctionName": "func2",
-                    "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:func2",
-                    "Runtime": "java17",
-                }
-            ],
-        },
-    ]
+    # Mock response with next marker
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Functions": [
+            {
+                "FunctionName": "func1",
+                "FunctionArn": "arn:aws:lambda:eu-west-1:123456789012:function:func1",
+                "Runtime": "python3.11",
+                "LastModified": "2024-01-01T00:00:00.000+0000",
+            }
+        ],
+        "NextMarker": "next-page-token",
+    }
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_functions.return_value = mock_response
 
-    args = {"region": "eu-west-1", "account_id": "123456789012"}
+    args = {"region": "eu-west-1", "account_id": "123456789012", "limit": "10", "next_token": "previous-token"}
 
     result = Lambda.list_functions_command(mock_client, args)
 
-    # Verify all functions from all pages are included
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["FunctionName"] == "func1"
-    assert result.outputs[1]["FunctionName"] == "func2"
-    assert all(func["Region"] == "eu-west-1" for func in result.outputs)
+    # Verify pagination parameters were passed
+    call_kwargs = mock_client.list_functions.call_args[1]
+    assert call_kwargs["MaxItems"] == 10
+    assert call_kwargs["Marker"] == "previous-token"
+
+    # Verify outputs include next token
+    assert "AWS.Lambda(true)" in result.outputs
+    assert result.outputs["AWS.Lambda(true)"]["FunctionsNextToken"] == "next-page-token"
+
+    # Verify functions are returned
+    functions_list = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    assert len(functions_list) == 1
+    assert functions_list[0]["FunctionName"] == "func1"
+    assert functions_list[0]["Region"] == "eu-west-1"
 
 
 def test_lambda_list_aliases_command_success(mocker):
@@ -7269,7 +7264,7 @@ def test_lambda_list_aliases_command_success(mocker):
     mock_paginator.paginate.assert_called_once_with(FunctionName="my-function")
 
     # Verify CommandResults structure
-    assert result.outputs_prefix == "AWS.Lambda.Aliases"
+    assert result.outputs_prefix == "AWS.Lambda.Functions.Aliases"
     assert result.outputs_key_field == "AliasArn"
     assert len(result.outputs) == 2
     assert result.outputs[0]["Name"] == "prod"
@@ -7483,7 +7478,7 @@ def test_lambda_list_versions_by_function_command_success(mocker):
     mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function")
 
     # Verify outputs structure
-    assert result.outputs_prefix == "AWS.Lambda.FunctionVersions"
+    assert result.outputs_prefix == "AWS.Lambda.Functions.FunctionVersions"
     assert result.outputs_key_field == "FunctionName"
     assert "Versions" in result.outputs
     assert len(result.outputs["Versions"]) == 2
@@ -7758,64 +7753,6 @@ def test_lambda_create_function_command_with_vpc_config(mocker):
 
 # Tests for list_layer_versions_command
 
-
-def test_lambda_list_layer_versions_command_success(mocker):
-    """
-    Test Lambda.list_layer_versions_command with successful response.
-
-    Given: Valid layer name
-    When: list_layer_versions_command is called
-    Then: Should return CommandResults with layer versions list
-    """
-    from AWS import Lambda
-
-    mock_client = mocker.Mock()
-    mock_response = {
-        "ResponseMetadata": {"HTTPStatusCode": 200},
-        "LayerVersions": [
-            {
-                "LayerVersionArn": "arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1",
-                "Version": 1,
-                "Description": "First version",
-                "CreatedDate": "2024-01-15T10:00:00.000+0000",
-                "CompatibleRuntimes": ["python3.9", "python3.10"],
-                "LicenseInfo": "MIT",
-                "CompatibleArchitectures": ["x86_64"],
-            },
-            {
-                "LayerVersionArn": "arn:aws:lambda:us-east-1:123456789012:layer:my-layer:2",
-                "Version": 2,
-                "Description": "Second version",
-                "CreatedDate": "2024-01-20T14:30:00.000+0000",
-                "CompatibleRuntimes": ["python3.11"],
-                "LicenseInfo": "Apache-2.0",
-                "CompatibleArchitectures": ["x86_64", "arm64"],
-            },
-        ],
-    }
-
-    mock_client.list_layer_versions.return_value = mock_response
-
-    args = {"layer_name": "my-layer", "region": "us-east-1", "account_id": "123456789012"}
-
-    result = Lambda.list_layer_versions_command(mock_client, args)
-
-    # Verify the command was called correctly
-    mock_client.list_layer_versions.assert_called_once_with(LayerName="my-layer")
-
-    # Verify outputs structure
-    assert result.outputs_prefix == "AWS.Lambda.Layers"
-    assert result.outputs_key_field == "LayerVersionArn"
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["Version"] == 1
-    assert result.outputs[1]["Version"] == 2
-    assert result.outputs[0]["Region"] == "us-east-1"
-
-    # Verify readable output
-    assert "my-layer" in result.readable_output
-    assert "AWS Lambda Layer Versions" in result.readable_output
-
-
 def test_lambda_list_layer_versions_command_with_pagination(mocker):
     """
     Test Lambda.list_layer_versions_command with pagination parameters.
@@ -7867,9 +7804,6 @@ def test_lambda_list_layer_versions_command_with_pagination(mocker):
     # Verify NextMarker is in context
     assert "AWS.Lambda(true)" in result.outputs
     assert result.outputs["AWS.Lambda(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
-
-    # Verify pagination note in readable output
-    assert "next-layer-token-456" in result.readable_output
 
 
 def test_lambda_list_layer_versions_command_no_versions(mocker):
