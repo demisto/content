@@ -2,7 +2,6 @@ import pytest
 from requests.models import Response
 
 from CommonServerPython import *
-from CommonServerPython import Common, DemistoException
 
 TAG_IDS_LISTS = [
     ([1, 2, 3], [2, 3, 4, 5], [4, 6, 7], [1, 2, 3], [4, 5], [6, 7]),
