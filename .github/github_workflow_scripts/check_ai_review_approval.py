@@ -2,6 +2,7 @@ import sys
 import argparse
 from github import Github
 from github.PullRequest import PullRequest
+from github.PullRequestReview import PullRequestReview
 import requests
 import urllib3
 from utils import timestamped_print
@@ -29,7 +30,7 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def get_reactions_query():
+def get_reactions_query() -> str:
     """Returns the GraphQL query to fetch reactions for a specific Node ID."""
     return """
     query($nodeId: ID!) {
@@ -45,6 +46,23 @@ def get_reactions_query():
       }
     }
     """
+
+def is_minimized_query() -> str:
+    """
+    Returns the GraphQL query to fetch minimization status.
+    We use '... on Comment' because both IssueComment and 
+    PullRequestReviewComment implement the Comment interface.
+    """
+    return """
+        query($id: ID!) {
+        node(id: $id) {
+            ... on PullRequestReview {
+            isMinimized
+            minimizedReason
+            }
+        }
+        }
+        """
 
 
 def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
@@ -72,19 +90,39 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
         print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
         return []
 
+def is_minimized_via_graphql(node_id: str, token: str) -> bool:
+    """
+    Uses GraphQL to understand if a review is minimized or not.
+    """
+    url = "https://api.github.com/graphql"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+    variables = {"nodeId": node_id}
 
-def find_reaction_on_review(reviews, github_token):
-    bot_reviews = [
-        review for review in reviews if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body
-    ]
+    try:
+        response = requests.post(
+            url, json={"query": is_minimized_query(), "variables": variables}, headers=headers, verify=False
+        )
+        response.raise_for_status()
+        data = response.json()
+        node_data = data.get("data", {}).get("node")
 
-    if not bot_reviews:
+        return node_data and node_data.get("isMinimized")
+    except Exception as e:
+        print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
+        return False
+
+
+def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str):
+    if not reviews:
         return False, False
 
-    print(f"Found {len(bot_reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
+    print(f"Found {len(reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
 
-    for review in bot_reviews:
-        print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+    for review in reviews:
+        print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}, Review ID: {review.id}). Checking reactions via GraphQL...")
         reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
 
         thumb_up_found = False
@@ -208,8 +246,14 @@ def main():
 
     print("Fetching reviews...")
     reviews = pr.get_reviews()
+    
+    relevant_reviews: list[PullRequestReview] = [
+        review
+        for review in reviews
+        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body and not is_minimized_via_graphql(review.raw_data["node_id"], github_token)
+    ]
 
-    found_reviews, all_approved = find_reaction_on_review(reviews, github_token)
+    found_reviews, all_approved = find_reaction_on_review(relevant_reviews, github_token)
 
     if not found_reviews:
         print("❌ AI Review check failed. No AI Review comment found.")
