@@ -1,5 +1,4 @@
 import os
-import shlex
 import shutil
 import sys
 import zipfile as z
@@ -88,8 +87,8 @@ def extract(file_info, dir_path, zip_tool="7z", password=None):
     # remembering which files and dirs we currently have so we add them later as newly extracted files.
     file_path = file_info["path"]
     file_name = file_info["name"]
-    excluded_files = [f for f in os.listdir(dir_path) if isfile(os.path.join(dir_path, f))]
-    excluded_dirs = [d for d in os.listdir(dir_path) if isdir(os.path.join(dir_path, d))]
+    excluded_files = [f for f in os.listdir(".") if isfile(f)]
+    excluded_dirs = [d for d in os.listdir(".") if isdir(d)]
     # extracting the zip file
     """
     We check the python version to ensure the docker image contains the necessary packages. 4.5+
