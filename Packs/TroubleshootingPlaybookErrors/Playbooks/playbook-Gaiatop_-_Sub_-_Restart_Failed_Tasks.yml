@@ -1,0 +1,217 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - mas
+id: Gaiatop - Sub - Restart Failed Tasks
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - TaskName
+  - RESTAPIInstanceName
+  name: General (Inputs group)
+inputs:
+- description: ""
+  key: TaskName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: RESTAPIInstanceName
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Gaiatop - Sub - Restart Failed Tasks
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0e9b985a-4dda-4b48-86ee-c6c7efff0ccc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0e9b985a-4dda-4b48-86ee-c6c7efff0ccc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.TaskName
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 05f07b3f-3422-4e81-8330-1df2c2e1276c
+      iscommand: false
+      name: Is there a task name?
+      type: condition
+      version: -1
+    taskid: 05f07b3f-3422-4e81-8330-1df2c2e1276c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 210
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b11f7225-ff5d-4f25-8757-d4e1f87ff30e
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: b11f7225-ff5d-4f25-8757-d4e1f87ff30e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 740
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      TaskName:
+        simple: ${inputs.TaskName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation returns dictionary list objects with Incident ID and the corresponding failed Task ID by name
+      id: d8762203-d56e-4312-a845-ce02e5bf97d3
+      iscommand: false
+      name: Get Task ID and Incident ID
+      scriptName: Gaiatop_GetFailedTaskIDByName
+      type: regular
+      version: -1
+    taskid: d8762203-d56e-4312-a845-ce02e5bf97d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 385
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaxTasksToRestart:
+        simple: "1"
+      RESTAPIInstanceName:
+        simple: ${inputs.RESTAPIInstanceName}
+      TaskIDObject:
+        simple: ${TasksDetails}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d62bcc4-9998-4ec7-a461-eb81e4d6f769
+      iscommand: false
+      name: Restart Failed Tasks
+      scriptName: Gaiatop_RestartFailedTaskByID
+      type: regular
+      version: -1
+    taskid: 7d62bcc4-9998-4ec7-a461-eb81e4d6f769
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 750,
+        "width": 800,
+        "x": 60,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

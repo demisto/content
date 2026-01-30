@@ -1,0 +1,208 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - mas
+id: Gaiatop - Playbook Error Handler
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - RestAPIInstance
+  name: General (Inputs group)
+inputs:
+- description: ''
+  key: RestAPIInstance
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${lists.Gaiatop_CoreRESTAPIInstance}
+name: Gaiatop - Playbook Error Handler
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d2b4cabd-dff5-408d-8a5a-0a4306c92e55
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: d2b4cabd-dff5-408d-8a5a-0a4306c92e55
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        simple: -status:closed -category:job runStatus:error
+      rest_api_instance:
+        simple: ${inputs.RestAPIInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: d58d4b15-9ab4-4cf2-84ff-09353710bd9d
+      iscommand: false
+      name: Get Failed Tasks
+      scriptName: GetFailedTasks
+      type: regular
+      version: -1
+    taskid: d58d4b15-9ab4-4cf2-84ff-09353710bd9d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    form:
+      description: ''
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Select the tasks to restart
+        options: []
+        optionsarg:
+        - complex:
+            accessor: Task Name}
+            root: ${GetFailedTasks
+            transformers:
+            - operator: uniq
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
+      sender: ''
+      title: SelectFailedTasksToRestart
+      totalanswers: 0
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f4d2f1c2-8681-44da-8c03-38650d9912d0
+      iscommand: false
+      name: Select The Failed Tasks To Restart
+      type: collection
+      version: -1
+    taskid: f4d2f1c2-8681-44da-8c03-38650d9912d0
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      RESTAPIInstanceName:
+        simple: ${inputs.RestAPIInstance}
+      TaskName:
+        simple: ${SelectFailedTasksToRestart.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d5f0067d-e251-4673-aaf5-48c21c6577fd
+      iscommand: false
+      name: PS - Sub - Restart Failed Tasks
+      playbookId: Gaiatop - Sub - Restart Failed Tasks
+      type: playbook
+      version: -1
+      description: ''
+    taskid: d5f0067d-e251-4673-aaf5-48c21c6577fd
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 540\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 51ed4399-b60e-4758-8f6d-2ee8b0ada8d3
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: 51ed4399-b60e-4758-8f6d-2ee8b0ada8d3
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 730\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 740,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

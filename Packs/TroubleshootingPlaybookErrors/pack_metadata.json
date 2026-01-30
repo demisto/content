@@ -1,0 +1,21 @@
+{
+    "name": "Troubleshooting Playbook Errors",
+    "description": "Centralize error management for all active XSOAR incidents. This pack enables engineers to rapidly troubleshoot and re-execute failed tasks with one-click functionality, reducing MTTR (Mean Time to Resolution).",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Prasoon Agnihotri",
+    "url": "",
+    "email": "",
+    "created": "2026-01-29T05:38:49Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "cozybear"
+    ]
+}
