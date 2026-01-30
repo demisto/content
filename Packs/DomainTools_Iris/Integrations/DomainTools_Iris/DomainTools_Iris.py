@@ -851,11 +851,19 @@ def format_guided_pivot_link(link_type, item, domain=None):
     query = item.get("value", "")
     count = item.get("count", 0)
 
+    if isinstance(count, str) and "[" in count and "](" in count:
+        return count
+
     if domain:
         link_type = "domain"
         query = domain
 
-    if 1 < int(count) < GUIDED_PIVOT_THRESHOLD:
+    try:
+        numeric_count = int(count)
+    except (ValueError, TypeError):
+        return count
+
+    if 1 < numeric_count < GUIDED_PIVOT_THRESHOLD:
         return f'[{count}]({IRIS_LINK}?q={link_type}:"{urllib.parse.quote(str(query), safe="")}")'
 
     return count
@@ -905,8 +913,8 @@ def format_investigate_output(result):
         "SSL Certificate": format_ssl_info(result.get("ssl_info", {})),
         "Redirects To": format_single_value(None, result.get("redirect", {}), domain),
         "Redirect Domain": format_single_value("rdd", result.get("redirect_domain", {})),
-        "Website Title": format_single_value(None, result.get("website_title", {}), domain),
-        "First Seen": format_single_value(None, result.get("first_seen", {}), domain),
+        "Website Title": format_single_value("title", result.get("website_title", {}), None),
+        "First Seen": format_single_value("current_lifecycle_first_seen", result.get("first_seen", {}), None),
         "Server Type": format_single_value("server_type", result.get("server_type", {})),
         "Popularity": result.get("popularity_rank"),
     }
@@ -1204,20 +1212,48 @@ def create_history_table(data, headers):
     return table
 
 
+def get_domaintools_domain_enrichment_command() -> dict[str, Callable]:
+    domain_enrichmenth_method = demisto.params().get("domain_enrichmenth_method") or "Iris Investigate"
+    domain_enrich_function_mapping = {
+        "iris enrich": {"cmd": domain_enrich, "formatter": format_enrich_output},
+        "iris investigate": {"cmd": domain_investigate, "formatter": format_investigate_output},
+    }
+
+    try:
+        dt_domain_func = domain_enrich_function_mapping[domain_enrichmenth_method.lower()]
+    except Exception:
+        dt_domain_func = domain_enrich_function_mapping["iris investigate"]
+
+    return dt_domain_func
+
+
 """ COMMANDS """
 
 
 def domain_command():
     """
-    Command to do a total profile of a domain using iris_investigate API endpoint.
+    Command to do a total profile of a domain using iris_investigate/iris_enrich API endpoint.
     e.g. !domain domain=domaintools.com
     """
     domain = demisto.args()["domain"]
-    domain_result_type = demisto.params().get("domain_result_type") or "Iris"
+    bypass_auto_enrich = argToBoolean(demisto.args()["bypass_auto_enrich"])
     domain_list = domain.split(",")
+
+    domain_result_type = demisto.params().get("domain_result_type") or "Iris"
+    domain_auto_enrich = demisto.params().get("domain_auto_enrich") or "Disabled"
 
     command_results_list: list[CommandResults] = []
 
+    dt_enrichment_command = get_domaintools_domain_enrichment_command()
+
+    if domain_auto_enrich.lower() == "disabled" and not bypass_auto_enrich:
+        return_warning(
+            "Enrichment skipped: The 'Domain Auto-Enrich on Ingestion' setting is disabled for this instance.\n\n"
+            "To force execution for this specific command, add the argument: bypass_auto_enrich=true",
+            exit=True,
+        )
+
+    logging.info(f"domain_result_type: {domain_result_type}")
     human_readable_output = ""
     if domain_result_type.lower() == "verdict":
         # get the risk score using DT risk endpoint
@@ -1242,13 +1278,18 @@ def domain_command():
         include_context = argToBoolean(demisto.args().get("include_context", True))
         domain_chunks = chunks(domain_list, 100)
         for chunk in domain_chunks:
-            response = domain_investigate(",".join(chunk))
-            missing_domains = response.get("missing_domains")
-            for result in response.get("results", []):
-                human_readable_output, indicators = format_investigate_output(result)
+            string_chunk = ",".join(chunk)
+            response = dt_enrichment_command["cmd"](string_chunk)
+
+            missing_domains = response.get("missing_domains", [])
+            results = response.get("results", [])
+
+            for result in results:
+                human_readable_output, indicators = dt_enrichment_command["formatter"](result)
 
                 if len(missing_domains) > 0:
                     human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
+                    missing_domains = []
 
                 domain_indicator = indicators.get("domain") if include_context else None
                 domaintools_context = indicators.get("domaintools") if include_context else None
@@ -1755,27 +1796,55 @@ def parsed_whois_command():
     human_readable = tableToMarkdown(f"DomainTools whois result for {domain}", table, headers=headers)
 
     parsed = response.get("parsed_whois", {})
+    registrar_contacts = parsed.get("contacts", {})
+
+    domain_kwargs = {
+        "registrant_name": "",
+        "registrant_email": "",
+        "registrant_phone": "",
+        "registrant_country": "",
+        "admin_name": "",
+        "admin_email": "",
+        "admin_phone": "",
+        "admin_country": "",
+        "tech_country": "",
+        "tech_name": "",
+        "tech_organization": "",
+        "tech_email": "",
+        "billing": "",
+    }
+
+    if isinstance(registrar_contacts, dict):
+        domain_kwargs["registrant_name"] = registrar_contacts.get("registrant", {}).get("name")
+        domain_kwargs["registrant_email"] = registrar_contacts.get("registrant", {}).get("email")
+        domain_kwargs["registrant_phone"] = registrar_contacts.get("registrant", {}).get("phone")
+        domain_kwargs["registrant_country"] = registrar_contacts.get("registrant", {}).get("country")
+        domain_kwargs["admin_name"] = registrar_contacts.get("admin", {}).get("name")
+        domain_kwargs["admin_email"] = registrar_contacts.get("admin", {}).get("email")
+        domain_kwargs["admin_phone"] = registrar_contacts.get("admin", {}).get("phone")
+        domain_kwargs["admin_country"] = registrar_contacts.get("admin", {}).get("country")
+        domain_kwargs["tech_country"] = registrar_contacts.get("tech", {}).get("country")
+        domain_kwargs["tech_name"] = registrar_contacts.get("tech", {}).get("name")
+        domain_kwargs["tech_organization"] = registrar_contacts.get("tech", {}).get("org")
+        domain_kwargs["tech_email"] = registrar_contacts.get("tech", {}).get("email")
+        domain_kwargs["billing"] = registrar_contacts.get("billing", {}).get("name")
+    else:  # for list type when querying IP and make sure its not null
+        if registrar_contacts and isinstance(registrar_contacts, list) and len(registrar_contacts) > 0:
+            registrar_contact = registrar_contacts[0]  # get the first one
+            domain_kwargs["registrant_name"] = registrar_contact.get("name")
+            domain_kwargs["registrant_email"] = registrar_contact.get("email")
+            domain_kwargs["registrant_phone"] = registrar_contact.get("phone")
+            domain_kwargs["registrant_country"] = registrar_contact.get("country")
+
     domain_indicator = Common.Domain(
         domain,
         None,
         registrar_name=parsed.get("registrar", {}).get("name"),
         registrar_abuse_email=parsed.get("registrar", {}).get("abuse_contact_email"),
         registrar_abuse_phone=parsed.get("registrar", {}).get("abuse_contact_phone"),
-        registrant_name=parsed.get("contacts", {}).get("registrant", {}).get("name"),
-        registrant_email=parsed.get("contacts", {}).get("registrant", {}).get("email"),
-        registrant_phone=parsed.get("contacts", {}).get("registrant", {}).get("phone"),
-        registrant_country=parsed.get("contacts", {}).get("registrant", {}).get("country"),
-        admin_name=parsed.get("contacts", {}).get("admin", {}).get("name"),
-        admin_email=parsed.get("contacts", {}).get("admin", {}).get("email"),
-        admin_phone=parsed.get("contacts", {}).get("admin", {}).get("phone"),
-        admin_country=parsed.get("contacts", {}).get("admin", {}).get("country"),
-        tech_country=parsed.get("contacts", {}).get("tech", {}).get("country"),
-        tech_name=parsed.get("contacts", {}).get("tech", {}).get("name"),
-        tech_organization=parsed.get("contacts", {}).get("tech", {}).get("org"),
-        tech_email=parsed.get("contacts", {}).get("tech", {}).get("email"),
-        billing=parsed.get("contacts", {}).get("billing", {}).get("name"),
         name_servers=parsed.get("name_servers"),
         whois_records=[Common.WhoisRecord(whois_record_value=whois_record, whois_record_date=parsed.get("updated_date"))],
+        **domain_kwargs,
     )
 
     return CommandResults(
