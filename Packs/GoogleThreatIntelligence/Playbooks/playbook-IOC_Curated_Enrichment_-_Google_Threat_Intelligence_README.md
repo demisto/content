@@ -31,7 +31,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | resource | The file hash \(MD5, SHA1, or SHA256\), Domain, URL or IP. |  | Optional |
-| resource_type | The type of the resource \(IP, domain, URL, or file hash\). |  | Optional |
+| resource_type | The type of the resource \(ip, domain, url, or hash\). |  | Optional |
 
 ## Playbook Outputs
 
