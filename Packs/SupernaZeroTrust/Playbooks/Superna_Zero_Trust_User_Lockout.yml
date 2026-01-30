@@ -1,0 +1,161 @@
+id: ca35ab03-ad5a-4593-80bf-066944648c10
+version: -1
+name: Superna Zero Trust User Lockout
+fromversion: 6.10.0
+description: 'Supports Zero Trust incidents created by Superna Zerto Trust api integration
+  with Cortex, to extract the custom user ID field and run an API lockout of the user
+  listed in the alert.   '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8282f383-8434-46f4-8fdc-91b711d30d61
+    type: start
+    task:
+      id: 8282f383-8434-46f4-8fdc-91b711d30d61
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1522802c-11ea-4a49-8de3-22e0b71bba99
+    type: regular
+    task:
+      id: 1522802c-11ea-4a49-8de3-22e0b71bba99
+      version: -1
+      name: Superna Zero Trust Lockout User
+      description: Lock out a user from NAS storage access
+      script: SupernaZeroTrust|||superna-zt-lockout-user
+      type: regular
+      iscommand: true
+      brand: SupernaZeroTrust
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9aa29e1f-1021-47f3-8e86-6b9f12c99735
+    type: title
+    task:
+      id: 9aa29e1f-1021-47f3-8e86-6b9f12c99735
+      version: -1
+      name: Done
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8e672319-aa07-41c9-8c54-273050485749
+    type: regular
+    task:
+      id: 8e672319-aa07-41c9-8c54-273050485749
+      version: -1
+      name: print inputs to API task
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: ${inputs.apiurl} and ${inputs.username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 675,
+        "width": 390,
+        "x": 460,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: username
+  value:
+    complex:
+      root: incident
+      accessor: sourceusername
+  required: false
+  description: The source user name is populated by Superna Zero trust webhook integration
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: 2e1317a3-5dcd-419c-8e68-83e41fce3e47
+quiet: true
