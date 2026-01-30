@@ -538,7 +538,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.mock.com?e=P6wGLG
+              simple: http://www.mock.com/?e=P6wGLG
     continueonerrortype: ""
     view: |-
       {
@@ -579,7 +579,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://test.com#fragment3
+              simple: http://test.com/#fragment3
     continueonerrortype: ""
     view: |-
       {
