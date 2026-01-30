@@ -1,0 +1,252 @@
+{
+    "id": "XM Cyber Dashboard",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "calendarDays",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "XM Cyber Dashboard",
+    "layout": [
+        {
+            "id": "ffbfbd17-3f0d-49df-8e81-66a4e443f56d",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "ffbfbd17-3f0d-49df-8e81-66a4e443f56d",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "646a91dd-dbee-4bc4-8f84-773e86414565",
+                "version": 2,
+                "cacheVersn": 0,
+                "sequenceNumber": 2925367,
+                "primaryTerm": 6,
+                "modified": "2025-12-23T09:32:52.2894684Z",
+                "sizeInBytes": 849,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Security Score",
+                "prevName": "Security Score",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "XMCyberDashboard",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "return_type": "security_score"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "cbffd8a7-362e-4184-8f72-aed1815e7648",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "cbffd8a7-362e-4184-8f72-aed1815e7648",
+            "w": 9,
+            "h": 3,
+            "widget": {
+                "id": "ce29aed4-c885-42a6-84b3-a7cb4f5f3ab6",
+                "version": 1,
+                "cacheVersn": 0,
+                "sequenceNumber": 2930808,
+                "primaryTerm": 6,
+                "modified": "2025-12-23T10:58:01.422923029Z",
+                "sizeInBytes": 847,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Choke Points by Severity",
+                "prevName": "Choke Points by Severity",
+                "dataType": "scripts",
+                "widgetType": "table",
+                "query": "XMCyberDashboard",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "return_type": "choke_points",
+                    "tableColumns": []
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "d7accbed-38ce-4fd7-9f11-efc6666b9247",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "d7accbed-38ce-4fd7-9f11-efc6666b9247",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "ce29aed4-c885-42a6-84b3-a7cb4f5f3ab6",
+                "version": 1,
+                "cacheVersn": 0,
+                "sequenceNumber": 2930808,
+                "primaryTerm": 6,
+                "modified": "2025-12-23T10:58:01.422923029Z",
+                "sizeInBytes": 847,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Critical Assets by Severity",
+                "prevName": "Critical Assets by Severity",
+                "dataType": "scripts",
+                "widgetType": "table",
+                "query": "XMCyberDashboard",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "return_type": "critical_assets",
+                    "tableColumns": []
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "8d8b3147-fc0d-4d4d-8437-5192ad764af4",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "8d8b3147-fc0d-4d4d-8437-5192ad764af4",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "ce29aed4-c885-42a6-84b3-a7cb4f5f3ab6",
+                "version": 1,
+                "cacheVersn": 0,
+                "sequenceNumber": 2930808,
+                "primaryTerm": 6,
+                "modified": "2025-12-23T10:58:01.422923029Z",
+                "sizeInBytes": 847,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "isOverridable": false,
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Top Compromising Exposures",
+                "prevName": "Top Compromising Exposures",
+                "dataType": "scripts",
+                "widgetType": "table",
+                "query": "XMCyberDashboard",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "return_type": "compromising_exposure",
+                    "tableColumns": []
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.10.0",
+    "description": "This dashboard shows the information from the XM Cyber CEM integration for Security Score, Choke Points by Severity, Critical Assets by Severity, and Top Compromising Exposures.",
+    "isPredefined": true
+}

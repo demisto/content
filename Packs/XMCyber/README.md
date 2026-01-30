@@ -1,6 +1,6 @@
 # Product/Integration Overview
 
-XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on new critical assets at risk, new choke points, and trends in the overall risk score. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.
+XM Cyber continuously identifies attack paths to critical assets. This integration retrieves events for newly at-risk critical assets, newly discovered choke points, and changes in overall risk score. Incidents are also enriched with incoming attack vectors to affected endpoints and a list of critical assets exposed by the incident.
 
 ## Use Cases
 
