@@ -1,27 +1,19 @@
 # Cortex Insights
 
-This pack provides dashboards and visualizations for Cortex platform insights, health monitoring, and risk assessment.
+Cortex Cloud Badges and content
 
-## What does this pack do?
+## Overview
 
-- Provides overview dashboards for current health status
-- Displays risk assessment visualizations
-- Shows customer badges and metrics
+This content pack includes dashboards to provide customers with snapshots of current metrics and trends related to their Cortex Cloud use case deployment.  This information is meant to empower Cortex Cloud users as a part of the product adoption journey.
 
-## Prerequisites
+## Installation
 
-- Permission to install content packs
-- Permission to view dashboards
+- Install the content pack from the marketplace.
 
-## Setup
+## Requirements
 
-1. Install the Cortex Insights pack from the marketplace
-2. Configure dashboard access permissions as needed
-3. Verify data sources are properly connected
+- Cortex XSIAM Platform version 3.4 or later
 
-## Use Cases
+## Support
 
-- **Health Monitoring**: Monitor the overall health status of your Cortex environment
-- **Risk Assessment**: Visualize and track security risks across your infrastructure
-- **Compliance Tracking**: Display customer badges and compliance metrics
-- **Executive Reporting**: Provide high-level dashboards for management visibility
+This pack is supported by the Palo Alto Networks Technical Services team.
