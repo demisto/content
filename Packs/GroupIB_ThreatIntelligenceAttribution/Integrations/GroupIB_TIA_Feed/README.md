@@ -88,14 +88,16 @@ For step-by-step configuration instructions including classifier and mapper setu
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### gibtia-get-indicators
+### gibti-get-indicators
 
 ***
 Get a limited count of indicators for a specified collection and get all indicators from particular events by ID.
 
 #### Base Command
 
-`gibtia-get-indicators`
+`gibti-get-indicators`
+
+> Legacy alias `gibtia-get-indicators` remains available for backward compatibility.
 
 #### Input
 
@@ -107,4 +109,4 @@ Get a limited count of indicators for a specified collection and get all indicat
 
 #### Command Example
 
-```!gibtia-get-indicators collection=ioc/common```
+```!gibti-get-indicators collection=ioc/common```

@@ -3,10 +3,10 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
+from typing import Any, cast
 from GroupIBTIA import (
     fetch_incidents_command,
     Client,
-    main,
     get_available_collections_command,
     local_search_command,
     CommonHelpers,
@@ -147,8 +147,141 @@ def test_main_error():
       - The test checks that the main function handles errors in a predictable and controlled
         manner, allowing graceful exits during failure.
     """
-    with pytest.raises(SystemExit):
-        main()["error_command"]()  # type: ignore
+    with (
+        pytest.raises(SystemExit),
+        patch.object(
+            GroupIBTIA.demisto,
+            "params",
+            return_value={
+                "credentials": {"identifier": "user@example.com", "password": "token"},
+                "url": "https://some-url.com",
+                "proxy": False,
+                "insecure": False,
+                "incident_collections": [],
+                "first_fetch": "3 days",
+                "max_fetch": 1,
+                "limit": 10,
+            },
+        ),
+        patch.object(GroupIBTIA.demisto, "args", return_value={}),
+        patch.object(GroupIBTIA.demisto, "command", return_value="non-existent-command"),
+        patch.object(GroupIBTIA, "Client", autospec=True),
+        patch.object(GroupIBTIA, "return_error", side_effect=SystemExit(1)),
+    ):
+        GroupIBTIA.main()
+
+
+def test_reputation_command_disabled_ip(mocker):
+    """
+    Given: Integration instance configuration does not enable the 'ip' reputation command.
+    When: The 'ip' command is invoked.
+    Then: The integration must return a controlled no-op result and must not execute enrichment logic.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            # New behavior: allow-list. Empty means disabled.
+            "enabled_reputation_commands": [],
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(GroupIBTIA.ReputationCommands, "ip", autospec=True)
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 0, "Expected ReputationCommands.ip not to be called when not enabled."
+    assert rr.call_count == 1
+    result_obj = rr.call_args[0][0]
+    assert isinstance(result_obj, CommandResults)
+    assert "not enabled" in (result_obj.readable_output or "").lower()
+
+
+def test_reputation_commands_default_disabled_when_param_missing(mocker):
+    """
+    Given: Integration instance configuration does not include the 'enabled_reputation_commands' param.
+    When: A reputation command (ip/domain/file) is invoked.
+    Then: The integration must default to disabled (fail-safe) and must not execute enrichment logic.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(GroupIBTIA.ReputationCommands, "ip", autospec=True)
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 0, "Expected ReputationCommands.ip not to be called when param is missing."
+    assert rr.call_count == 1
+
+
+def test_reputation_command_enabled_allow_list(mocker):
+    """
+    Given: Allow-list enables 'ip' reputation command.
+    When: The 'ip' reputation command is invoked.
+    Then: The integration must call the underlying reputation implementation.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            "enabled_reputation_commands": ["ip"],
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(
+        GroupIBTIA.ReputationCommands,
+        "ip",
+        autospec=True,
+        return_value=CommandResults(readable_output="ok"),
+    )
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 1
+    assert rr.call_count == 1
 
 
 def test_global_search_command(mocker, single_session_fixture):
@@ -174,7 +307,7 @@ def test_global_search_command(mocker, single_session_fixture):
     test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
-    assert result.outputs_prefix == "GIBTIA.search.global"
+    assert result.outputs_prefix == "GIBTI.search.global"
     assert result.outputs_key_field == "query"
 
 
@@ -189,7 +322,7 @@ def test_get_available_collections(mocker, single_session_fixture):
       - The get_available_collections_command() function is invoked with the client instance.
 
     Then:
-      - Verifies that the outputs_prefix is correctly set to "GIBTIA.OtherInfo", indicating that
+      - Verifies that the outputs_prefix is correctly set to "GIBTI.OtherInfo", indicating that
         the response data is categorized as general information.
       - Checks that the outputs_key_field is "collections", matching the expected key for collections data.
       - Ensures that the "collections" field in the output contains a list of collection names, as expected.
@@ -200,7 +333,7 @@ def test_get_available_collections(mocker, single_session_fixture):
     mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
-    assert result.outputs_prefix == "GIBTIA.OtherInfo"
+    assert result.outputs_prefix == "GIBTI.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs["collections"], list)
 
@@ -210,6 +343,7 @@ def mock_client():
     """Fixture to create a mock client."""
     client = MagicMock()
     client.poller.create_search_generator.return_value = []
+    client.poller.create_update_generator.return_value = []
     return client
 
 
@@ -236,7 +370,7 @@ def test_local_search_command_no_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
     assert result.outputs == []
     assert "Search results" in result.readable_output
@@ -248,7 +382,7 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     When: The local_search_command function is executed.
     Then: The function should return a formatted list of search results.
     """
-    mock_client.poller.create_search_generator.return_value = [
+    mock_client.poller.create_update_generator.return_value = [
         MagicMock(
             parse_portion=lambda keys, as_json: [
                 {"id": "123", "name": "Test Result"},
@@ -262,11 +396,12 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["id"] == "123"
-    assert result.outputs[0]["additional_info"] == "Name: Test Result"
+    outputs = cast(list[dict[str, Any]], result.outputs)
+    assert len(outputs) == 2
+    assert outputs[0]["id"] == "123"
+    assert outputs[0]["additional_info"] == "Name: Test Result"
     assert "Search results" in result.readable_output
     assert "Name: Test Result" in result.readable_output
     assert "Name: Another Result" in result.readable_output
@@ -280,8 +415,8 @@ def test_transform_dict_empty():
 
 
 def test_transform_dict_various_lengths():
-    input_dict = {"a": [1, 2], "b": "x", "c": []}
-    result = CommonHelpers.transform_dict(input_dict)
+    input_dict: dict[str, Any] = {"a": [1, 2], "b": "x", "c": []}
+    result = CommonHelpers.transform_dict(cast(Any, input_dict))
     assert len(result) == 2
     assert result[0] == {"a": 1, "b": "x", "c": None}
     assert result[1] == {"a": 2, "b": "x", "c": None}
@@ -300,14 +435,14 @@ def test_replace_empty_values_dict():
 
 
 def test_replace_empty_values_list():
-    data = ["", "x", [], [{}]]
-    result = CommonHelpers.replace_empty_values(data)
+    data: list[Any] = ["", "x", [], [{}]]
+    result = CommonHelpers.replace_empty_values(cast(Any, data))
     assert result == [None, "x", None, [{}]]
 
 
 def test_replace_empty_values_empty_list_returns_none():
-    assert CommonHelpers.replace_empty_values([]) is None
-    assert CommonHelpers.replace_empty_values([[]]) is None
+    assert CommonHelpers.replace_empty_values(cast(Any, [])) is None
+    assert CommonHelpers.replace_empty_values(cast(Any, [[]])) is None
 
 
 def test_all_lists_empty_true():
@@ -331,8 +466,8 @@ def test_date_parse_invalid():
 
 
 def test_transform_list_to_str():
-    data = [{"x": [1, 2], "y": "a"}, {"x": []}]
-    result = CommonHelpers.transform_list_to_str(data)
+    data: list[dict[str, Any]] = [{"x": [1, 2], "y": "a"}, {"x": []}]
+    result = CommonHelpers.transform_list_to_str(cast(Any, data))
     assert result[0]["x"] == "1, 2"
     assert result[1]["x"] == ""
 
@@ -565,7 +700,7 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
     # Verify effective_last_fetch is max(last_fetch, sequpdate)
     assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
     effective_last_fetch = next_run["last_fetch"][collection_name]
-    assert effective_last_fetch == max(
+    assert int(str(effective_last_fetch)) == max(
         last_fetch_value, sequpdate_value
     ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 

@@ -869,7 +869,7 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.1.2",
+            integration_version="2.3.2",
         )
         demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
 
@@ -1411,9 +1411,13 @@ def main():  # pragma: no cover
         limit = int(limit_param)
 
         args = demisto.args()
-        command = demisto.command()
-        LOG(f"Command being called is {command}")
-        demisto.debug(f"Command being called is {command}")
+        raw_command = demisto.command()
+        command_aliases = {
+            "gibtia-get-indicators": "gibti-get-indicators",
+        }
+        command = command_aliases.get(raw_command, raw_command)
+        LOG(f"Command being called is {raw_command}, mapped to {command}")
+        demisto.debug(f"Command being called is {raw_command}, mapped to {command}")
         demisto.debug(
             "[main] Parsed params: "
             f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
@@ -1430,7 +1434,11 @@ def main():  # pragma: no cover
         )
         demisto.info("[main] TI Feed client created successfully")
 
-        commands = {"gibtia-get-indicators": get_indicators_command}
+        commands = {
+            "gibti-get-indicators": get_indicators_command,
+            # alias kept for backward compatibility
+            "gibtia-get-indicators": get_indicators_command,
+        }
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
