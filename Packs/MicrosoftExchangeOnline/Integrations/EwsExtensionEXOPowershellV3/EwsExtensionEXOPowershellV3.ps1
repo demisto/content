@@ -233,7 +233,14 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+        try {
+            Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -ErrorAction Stop -WarningAction:SilentlyContinue | Out-Null
+        }
+        catch {
+            $errorMessage = $_.Exception.Message
+            $stackTrace = $_.ScriptStackTrace
+            throw "Connect-ExchangeOnline failed. \nError: $errorMessage. \nStackTrace: $stackTrace"
+        }
     }
     DisconnectSession()
     {
@@ -2653,7 +2660,9 @@ function TestModuleCommand($client)
 {
     try
     {
+        $Demisto.Debug("Attempting to create session in TestModuleCommand")
         $client.CreateSession()
+        $Demisto.Debug("Session created successfully")
         $demisto.results("ok")
     }
     finally
@@ -2692,7 +2701,8 @@ function Main
         switch ($command)
         {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
+                TestModuleCommand $exo_client
+                return
             }
             "$script:COMMAND_PREFIX-cas-mailbox-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
