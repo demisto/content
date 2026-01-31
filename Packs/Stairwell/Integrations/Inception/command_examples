@@ -1,0 +1,69 @@
+---!stairwell-file-enrichment fileHash=9fe1ac46f0cdebf03156a6232d771c14559f8daf
+---!stairwell-variant-discovery sha256=e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
+---!stairwell-ai-triage-summarize objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+---!stairwell-object-sightings objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+---!stairwell-object-detonation-get objectId="7986bbaee8940da11ce089383521ab420c443ab7b15ed42aed91fd31ce833896"
+---!stairwell-object-opinions objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+---!stairwell-run-to-ground-generate objectIds=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283,e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
+---!stairwell-asn-get-whois asn=15169
+---!stairwell-hostname-get-resolutions hostname=www.google.com
+---!stairwell-ipaddress-get ipAddress=8.8.8.8
+---!stairwell-ipaddress-lookup-cloud-provider ipAddress=8.8.8.8
+---!stairwell-ipaddress-get-whois ipAddress=8.8.8.8
+---!stairwell-utilities-get-cloud-ip-ranges provider=AWS
+---!stairwell-utilities-batch-canonicalize-hostnames hostnames=EXAMPLE.COM,WWW.TEST.COM
+---!stairwell-utilities-canonicalize-hostname hostname=EXAMPLE.COM
+---!stairwell-utilities-compute-etld-plus-one domain=subdomain.example.com
+---!stairwell-utilities-batch-canonicalize-urls urls=https://EXAMPLE.COM/PATH,http://TEST.COM/
+---!stairwell-utilities-canonicalize-url url=https://EXAMPLE.COM/PATH
+---!stairwell-hostname-get hostname="google.com" recordType="A"
+---!stairwell-hostname-batch-get-resolutions hostnames=www.google.com,www.stairwell.com
+---!stairwell-hostname-batch-get-resolutions hostnames=www.google.com,www.stairwell.com recordTypes=A,AAAA
+---!stairwell-utilities-batch-compute-etld-plus-one domains=subdomain.example.com,www.test.co.uk
+---!stairwell-ipaddress-get-hostnames-resolving-to-ip ipAddress=104.26.12.236
+---!stairwell-asset-list environment=BJJKNH-MCGB8F-WAED6B-3ELG8CPJ
+---!stairwell-asset-list environment=BJJKNH-MCGB8F-WAED6B-3ELG8CPJ pageSize=50
+---!stairwell-asset-create environment=BJJKNH-MCGB8F-WAED6B-3ELG8CPJ label=xSOAR 
+---!stairwell-asset-get asset=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6
+
+# Intake Upload Commands
+# Upload using XSOAR entry ID (recommended for production playbooks)
+--!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entryID=${File.EntryID}
+
+# Upload from HTTP/HTTPS URL
+--!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 url=https://example.com/malware.exe
+
+# Upload using direct file path (backward compatibility, dev/testing)
+--!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 filePath=/path/to/xsoar.exe sha256=c8db3b833751c96991b6ff87715bd9a73f28d7e02adefd9c3e048cb190dfb3a6
+
+# Upload with metadata
+--!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entryID=${File.EntryID} originType=web originHostUrl=https://malicious-site.com
+
+---!stairwell-object-detonation-trigger objectId=f916f8c54f8228926e2eaa9d712658f6d97ddd54382048225c5e6a1813c4337b
+
+# YARA Rules Commands
+# Simple rule (single line)
+!stairwell-yara-create-rule environment=YOUR_ENV_ID ruleDefinition="rule simple_rule { condition: true }"
+
+# Complex rule (multi-line - IMPORTANT: Use backticks ` instead of quotes for multi-line rules)
+!stairwell-yara-create-rule environment=YOUR_ENV_ID ruleDefinition=`rule Stairwell_Test_Upload_xsoar
+{
+    meta:
+        author = "Zach Daniel"
+        description = "Basic test rule for upload validation"
+        date = "2026-01-27"
+
+    strings:
+        $test_string = "STairWELL_YARA_TEST_STRING_12345"
+
+    condition:
+        $test_string
+}`
+
+# Get a specific YARA rule
+!stairwell-yara-get-rule environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID
+!stairwell-yara-get-rule environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID matchCountEnvs=env1,env2
+
+# Query objects matching a YARA rule
+!stairwell-yara-query-matches environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID
+!stairwell-yara-query-matches environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID includedEnvironments=env1,env2 pageSize=100
