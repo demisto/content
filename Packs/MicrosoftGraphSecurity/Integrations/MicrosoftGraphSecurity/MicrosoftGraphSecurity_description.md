@@ -1,3 +1,16 @@
+## ⚠️ Important: Microsoft Graph Security Legacy Alerts Deprecation
+
+> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API on **April 10, 2026**.
+
+According to [Microsoft documentation](https://learn.microsoft.com/fi-fi/graph/api/resources/alert?view=graph-rest-beta), the Legacy Alerts option will be fully deprecated on **April 10, 2026**.
+
+* **Impact:** After this date, configuring this integration to use the "Legacy Alerts" option will stop returning data.
+* **Action Required:** Users currently utilizing Legacy Alerts must migrate to the new **Alerts v2** API option to ensure continued data ingestion.
+
+__________________________________________________________________________________________________
+The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
+The legacy content search solution has been retired; you can now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 

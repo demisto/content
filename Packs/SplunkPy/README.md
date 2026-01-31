@@ -1,22 +1,25 @@
-This content pack runs queries on Splunk servers.
-
-When a query or alert triggers an event (incident) in Splunk, the event is stored in an index (table). An XSOAR/XSIAM analyst can fetch the event and its context data all from the XSOAR/XSIAM console.
-
-We strongly recommend you to use the SplunkPy pre-release version, specifically if you experience any issues regarding fetch logic, including (but not limited to) missing incidents.
+This content pack runs queries on Splunk servers and fetches events from both Splunk Enterprise Security (ES) and non-ES environments.
 
 ## What does this pack do?
 
-Using the SplunkPy integration, you can fetch Splunk finding events. The events contain details such as:
+This pack includes two integrations designed for different Splunk ES versions:
 
-- The name of the alert that was triggered.
-- The objects that make up the alert, such as the IP address, hashes, and user names.
+### SplunkPy
 
-Besides fetching finding events, the SplunkPy integration enables you to run drill down searches to retrieve additional data from other tables in Splunk such as:
+The primary integration for Splunk ES versions up to 8.1, which automatically fetches notable events from Splunk along with their context data. The integration provides the analyst with comprehensive incident information directly in the XSOAR/XSIAM console.
 
-- Data about the users (department, role, and geographical location)
-- Data about the assets (such as hostname, IP address, geographical location, and department)
+### SplunkPy v2
 
-In addition, the integration enables mirroring between Splunk and Cortex XSOAR.  
+Designed for Splunk ES version 8.2 and higher, supporting the new Splunk Finding Events architecture.
+
+Using the commands in these integrations, you can leverage the Splunk API capabilities, such as:
+
+- Running SPL (Splunk Search Processing Language) queries
+- Managing events
+- Working with KV store collections (create, search, update, delete)
+- Enriching events with Asset, Identity, and Drilldown data
+- Managing indexes and submitting events
+- Bi-directional mirroring between Splunk and Cortex XSOAR
 
 **Note:**  
-When mirroring or fetching incidents between Splunk to Cortex XSOAR, you need to [map Splunk users to Cortex XSOAR users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#use-cases).
+When mirroring or fetching incidents between Splunk and Cortex XSOAR, you need to [map Splunk users to Cortex XSOAR users](https://xsoar.pan.dev/docs/reference/integrations/splunk-py#use-cases).
