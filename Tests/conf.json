@@ -618,6 +618,11 @@
             "playbookID": "Maltiverse Test"
         },
         {
+            "integrations": "Stairwell",
+            "playbookID": "Stairwell Test",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "Box v2",
             "playbookID": "BoxV2_TestPlaybook"
         },
