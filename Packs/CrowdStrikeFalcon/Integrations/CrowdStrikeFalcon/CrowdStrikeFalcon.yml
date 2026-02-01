@@ -2283,7 +2283,6 @@ script:
     - description: A comma-separated list of case IDs.
       isArray: true
       name: ids
-      required: true
     description: Lists case summaries.
     name: cs-falcon-list-case-summaries
     outputs:
