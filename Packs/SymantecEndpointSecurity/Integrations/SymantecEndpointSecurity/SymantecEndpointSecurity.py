@@ -21,7 +21,7 @@ MAX_FETCH_FAILURES_ALLOWED = 5
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
 primarily used to avoid overloading with consecutive API calls
-if an error is received from the API.
+if an error is received from the API. test
 """
 FETCH_INTERVAL = 60
 SLEEP_DURATION_DUE_API_ERROR = FETCH_INTERVAL / 2
