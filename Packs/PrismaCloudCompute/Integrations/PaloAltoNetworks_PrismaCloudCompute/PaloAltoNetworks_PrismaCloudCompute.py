@@ -3459,7 +3459,7 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
             snapshot_id=assets_snapshot_id,
             data_size_expected_to_split_evenly=False,
             url_key="address",
-            items_count=-1,
+            items_count=assets_total,
         )
         if assets_coroutine:
             await assets_coroutine
@@ -3476,7 +3476,7 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
             snapshot_id=vulnerabilities_snapshot_id,
             data_size_expected_to_split_evenly=False,
             url_key="address",
-            items_count=-1,
+            items_count=vulnerabilities_total,
         )
         if vulnerabilities_coroutine:
             await vulnerabilities_coroutine
