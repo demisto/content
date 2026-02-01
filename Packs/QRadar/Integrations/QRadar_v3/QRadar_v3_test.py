@@ -2498,6 +2498,7 @@ def test_get_rules_names(mocker):
         103: "Malware Detected",
     }
 
+
 def test_get_integration_context_not_versioned(mocker):
     """
     Given:
