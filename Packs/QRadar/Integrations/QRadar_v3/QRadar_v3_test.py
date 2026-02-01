@@ -2498,27 +2498,6 @@ def test_get_rules_names(mocker):
         103: "Malware Detected",
     }
 
-
-def test_get_integration_context_versioned(mocker):
-    """
-    Given:
-        - is_versioned_context_available returns True
-    When:
-        - Calling get_integration_context
-    Then:
-        - Ensure demisto.getIntegrationContextVersioned is called
-        - Ensure the correct context is returned
-    """
-    mocker.patch("QRadar_v3.is_versioned_context_available", return_value=True)
-    mocker.patch.object(demisto, "getIntegrationContextVersioned", return_value={"context": {"a": 1}, "version": 1})
-
-    # Test without version
-    assert QRadar_v3.get_integration_context() == {"a": 1}
-
-    # Test with version
-    assert QRadar_v3.get_integration_context(with_version=True) == {"context": {"a": 1}, "version": 1}
-
-
 def test_get_integration_context_not_versioned(mocker):
     """
     Given:

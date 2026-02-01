@@ -1242,32 +1242,6 @@ def deep_merge_context_changes(
     always_merger.merge(current_ctx, changes)  # updates `current_ctx` in place with `changes`
 
 
-def get_integration_context(sync=True, with_version=False):
-    """
-    Gets the integration context.
-
-    :type sync: ``bool``
-    :param sync: Whether to get the integration context directly from the DB.
-
-    :type with_version: ``bool``
-    :param with_version: Whether to return the version.
-
-    :rtype: ``dict``
-    :return: The integration context.
-    """
-    if is_versioned_context_available():
-        integration_context = demisto.getIntegrationContextVersioned(sync)
-
-        if with_version:
-            return integration_context
-        else:
-            if isinstance(integration_context, list):
-                demisto.error(f"QRadar integration context is a list: {integration_context=}")
-            return integration_context.get("context", {})
-    else:
-        return demisto.getIntegrationContext()
-
-
 def qradar_get_integration_context():
     global LAST_FETCHED_ID
 
