@@ -117,26 +117,49 @@ class AgentixMessageType:
     """
     Message types for Agentix AI Assistant responses.
 
-    Type mapping:
-    - TEXT: Final response from the model
-    - THINKING: AI is thinking/processing
-    - PLANNING: AI is planning steps
-    - EXECUTING: AI is executing a sensitive action (requires approval)
-    - ERROR: Error message
+    Type mapping (from backend):
+    - step: Step execution (function calls, actions)
+    - model: Model/AI response (final text response)
+    - error: Error message
+    - user: User message
+    - thought: AI thinking
+    - approval: Approval request for sensitive actions
+    - clarification: Clarification request
+    - copilot: Copilot response
+    - script: Script execution
+
+    Our grouping:
+    - MODEL_TYPES: model, clarification, copilot, script (all treated as final responses)
+    - STEP_TYPES: step, thought (shown with subtle styling)
+    - APPROVAL_TYPES: approval (requires user approval)
+    - ERROR_TYPES: error (shown with error styling)
     """
 
-    # New message types from backend
-    TEXT = "text"  # Final response (model)
-    THINKING = "thinking"  # AI thinking (step)
-    PLANNING = "planning"  # AI planning (step)
-    EXECUTING = "executing"  # Sensitive action (approval)
+    # Message types from backend
+    STEP = "step"  # Step execution
+    MODEL = "model"  # Model/AI response
     ERROR = "error"  # Error message
+    USER = "user"  # User message
+    THOUGHT = "thought"  # AI thinking
+    APPROVAL = "approval"  # Approval request
+    CLARIFICATION = "clarification"  # Clarification request
+    COPILOT = "copilot"  # Copilot response
+    SCRIPT = "script"  # Script execution
 
     # All valid message types
-    VALID_TYPES = {TEXT, THINKING, PLANNING, EXECUTING, ERROR}
+    VALID_TYPES = {STEP, MODEL, ERROR, USER, THOUGHT, APPROVAL, CLARIFICATION, COPILOT, SCRIPT}
+
+    # Types that are treated as final model responses (with feedback buttons)
+    MODEL_TYPES = {MODEL, CLARIFICATION, COPILOT, SCRIPT}
 
     # Types that are considered "step" types (shown with subtle styling)
-    STEP_TYPES = {THINKING, PLANNING}
+    STEP_TYPES = {STEP, THOUGHT}
+
+    # Types that require approval
+    APPROVAL_TYPES = {APPROVAL}
+
+    # Error types
+    ERROR_TYPES = {ERROR}
 
     @classmethod
     def is_valid(cls, message_type: str) -> bool:
@@ -152,9 +175,22 @@ class AgentixMessageType:
         return message_type in cls.VALID_TYPES
 
     @classmethod
+    def is_model_type(cls, message_type: str) -> bool:
+        """
+        Check if a message type is a model/final response type.
+
+        Args:
+            message_type: The message type to check
+
+        Returns:
+            True if it's a model type, False otherwise
+        """
+        return message_type in cls.MODEL_TYPES
+
+    @classmethod
     def is_step_type(cls, message_type: str) -> bool:
         """
-        Check if a message type is a step type (thinking/planning).
+        Check if a message type is a step type (step/thought).
 
         Args:
             message_type: The message type to check
@@ -164,6 +200,64 @@ class AgentixMessageType:
         """
         return message_type in cls.STEP_TYPES
 
+    @classmethod
+    def is_approval_type(cls, message_type: str) -> bool:
+        """
+        Check if a message type requires approval.
+
+        Args:
+            message_type: The message type to check
+
+        Returns:
+            True if it requires approval, False otherwise
+        """
+        return message_type in cls.APPROVAL_TYPES
+
+    @classmethod
+    def is_error_type(cls, message_type: str) -> bool:
+        """
+        Check if a message type is an error.
+
+        Args:
+            message_type: The message type to check
+
+        Returns:
+            True if it's an error type, False otherwise
+        """
+        return message_type in cls.ERROR_TYPES
+
+
+class AgentixActionIds:
+    """
+    Action IDs for Agentix interactive elements in Slack.
+    Centralized constants for easy maintenance.
+    """
+    
+    # Interactive action IDs
+    AGENT_SELECTION = "agent_selection"
+    APPROVAL_YES = "yes_btn"
+    APPROVAL_NO = "no_btn"
+    FEEDBACK = "agentix_feedback"
+    
+    # Modal callback IDs
+    FEEDBACK_MODAL_CALLBACK_ID = "agentix_feedback_modal"
+    
+    # All valid action IDs
+    VALID_ACTION_IDS = {AGENT_SELECTION, APPROVAL_YES, APPROVAL_NO, FEEDBACK}
+    
+    @classmethod
+    def is_valid(cls, action_id: str) -> bool:
+        """
+        Check if an action ID is valid.
+        
+        Args:
+            action_id: The action ID to validate
+            
+        Returns:
+            True if the action ID is valid, False otherwise
+        """
+        return action_id in cls.VALID_ACTION_IDS
+
 
 class AgentixMessages:
     """
@@ -171,8 +265,10 @@ class AgentixMessages:
     These messages are only visible to the specific user who triggered them.
     """
 
-    # Messages for when user action is awaited
-    AWAITING_YOUR_RESPONSE = "Still waiting for your response to the previous request."
+    # Messages for when user action is awaited - specific to action type
+    AWAITING_AGENT_SELECTION = "Still waiting for you to select an agent from the dropdown above."
+    AWAITING_APPROVAL_RESPONSE = "Still waiting for you to approve or reject the sensitive action above."
+    
     ONLY_LOCKED_USER_CAN_RESPOND = (
         "You cannot mention {bot_tag} in this thread. Only {locked_user_tag} can interact with the AI here."
     )
@@ -213,6 +309,30 @@ class AgentixMessages:
     FEEDBACK_BAD_BUTTON = "Bad response"
     FEEDBACK_GOOD_ACCESSIBILITY = "Mark this response as good"
     FEEDBACK_BAD_ACCESSIBILITY = "Mark this response as bad"
+    FEEDBACK_THANK_YOU = "Thanks for your feedback!"
+    
+    # Feedback modal texts
+    FEEDBACK_MODAL_TITLE = "Send feedback"
+    FEEDBACK_MODAL_SUBMIT = "Submit"
+    FEEDBACK_MODAL_CANCEL = "Cancel"
+    FEEDBACK_MODAL_QUICK_LABEL = "Quick Feedback"
+    FEEDBACK_MODAL_ADDITIONAL_LABEL = "Anything to add?"
+    FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER = "Enter your feedback here..."
+    
+    # Feedback modal checkbox options (text is also used as value)
+    FEEDBACK_OPTION_NO_ANSWER = "No answer but I expected you to know that"
+    FEEDBACK_OPTION_FACTUALLY_INCORRECT = "Factually incorrect"
+    FEEDBACK_OPTION_ANSWERED_ANOTHER = "Answered another question"
+    FEEDBACK_OPTION_PARTIALLY_HELPFUL = "Partially helpful"
+    FEEDBACK_OPTION_UNHELPFUL = "Unhelpful"
+
+    # Step/Plan display (for step and thought types)
+    PLAN_LABEL = "*Plan*"
+    PLAN_ICON = ":clipboard:"
+
+    # Decision indicators
+    DECISION_APPROVED = "✅ *Approved*"
+    DECISION_CANCELLED = "❌ *Cancelled*"
 
     @classmethod
     def format_message(cls, message_template: str, bot_id: str = "", locked_user: str = "") -> str:
@@ -283,46 +403,72 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 ENABLED_AI_ASSISTANT: bool
 
-# TODO: Remove this helper function
+
+# TODO: Remove these helper functions when backend is ready
 """ AGENTIX HELPER FUNCTIONS """
 
 
-def agentix_chat(
-    message: str, username: str, channel_id: str, thread_ts: str, agent_id: str = "", is_approved: Optional[bool] = None
-):
+def agentix_integrations(action: str, params: dict):
     """
-    Sends a message to the Agentix backend.
-    This is a wrapper function that will be added to the demisto object.
+    Mock function for Agentix integrations API.
+    This is a temporary wrapper that will be replaced with actual backend integration.
 
     Args:
-        message: The message text
-        username: The username (email) of the sender
-        channel_id: The Slack channel ID
-        thread_ts: The thread timestamp
-        agent_id: Optional agent ID if user selected an agent
-        is_approved: Optional boolean for sensitive action approval
+        action: The action to perform (e.g., "sendToConversation", "submitFeedback")
+        params: Parameters for the action
 
     Returns:
-        Response object with .ok attribute indicating success
+        Response dict with success status or agent list
     """
+    demisto.debug(f"agentixIntegrations called: action={action}, params={params}")
+    
+    # Mock response based on action
+    if action == "sendToConversation":
+        message = params.get("message", "").lower()
+        
+        # For testing: if message contains "agent", return agent list
+        if "agent" in message and not params.get("agent_id"):
+            demisto.debug("Mock: Returning agent list for testing")
+            return {
+                "agents": [
+                    {
+                        "id": "security-analyst-001",
+                        "name": "Security Analyst Assistant",
+                        "description": "Specialized in security analysis and threat detection",
+                        "status": "enabled"
+                    },
+                    {
+                        "id": "incident-responder-002",
+                        "name": "Incident Response Assistant",
+                        "description": "Helps with incident response and remediation",
+                        "status": "enabled"
+                    },
+                    {
+                        "id": "threat-hunter-003",
+                        "name": "Threat Hunter Assistant",
+                        "description": "Proactive threat hunting and investigation",
+                        "status": "enabled"
+                    }
+                ]
+            }
+        
+        # Normal success response
+        return {"success": True}
+        
+    elif action == "submitFeedback":
+        # Log feedback submission
+        demisto.debug(
+            f"Feedback submitted: message_id={params.get('message_id')}, "
+            f"score={params.get('feedback_score')}, message={params.get('message', 'N/A')}"
+        )
+        return {"success": True}
+    else:
+        return {"success": False, "error": f"Unknown action: {action}"}
 
-    # TODO: Implement actual backend call
-    # For now, return a mock response
-    class Response:
-        def __init__(self, ok: bool):
-            self.ok = ok
 
-    # This will be replaced with actual backend integration
-    demisto.debug(
-        f"Agentix chat called: message={message}, username={username}, "
-        f"channel={channel_id}, thread={thread_ts}, agent={agent_id}, approved={is_approved}"
-    )
-    return Response(ok=True)
-
-
-# Add the chat method to demisto object (monkey patching)
-if not hasattr(demisto, "chat"):
-    demisto.chat = agentix_chat  # type: ignore
+# Add the agentixIntegrations method to demisto object (monkey patching)
+if not hasattr(demisto, "agentixIntegrations"):
+    demisto.agentixIntegrations = agentix_integrations  # type: ignore
 
 
 """ HELPER FUNCTIONS """
@@ -1630,13 +1776,132 @@ def is_bot_mention(text: str, bot_id: str) -> bool:
 
 def is_agentix_interactive_response(actions: list) -> bool:
     """
-    Check if received action is an agentix sensitive response that requires special handling
+    Check if received action is an agentix interactive response that requires special handling
+    (agent selection, sensitive action approval, or feedback)
     """
     if actions:
-        value = actions[0].get("value", "")
-        if value.startswith(("agentix-sensitive-action-btn", "agentix-agent-selection")):
+        action = actions[0]
+        demisto.debug(f"Checking Agentix interactive response for action: {action}")
+        
+        # Check action_id using centralized constants
+        action_id = action.get("action_id", "")
+        if AgentixActionIds.is_valid(action_id):
             return True
+            
     return False
+
+
+def is_agentix_modal_submission(data_type: str, view: dict) -> bool:
+    """
+    Check if received event is an agentix modal submission (e.g., feedback modal)
+    
+    Args:
+        data_type: The type of the Slack event
+        view: The view payload from Slack
+        
+    Returns:
+        True if this is an agentix modal submission, False otherwise
+    """
+    if data_type == "interactive":
+        callback_id = view.get("callback_id", "")
+        return callback_id == AgentixActionIds.FEEDBACK_MODAL_CALLBACK_ID
+    return False
+
+
+async def get_conversation_context(channel_id: str, thread_ts: str, bot_id: str, current_message_ts: str) -> str:
+    """
+    Retrieves up to 5 previous messages from the conversation for context.
+    Filters out bot messages and stops at previous bot mentions.
+    
+    Args:
+        channel_id: The Slack channel ID
+        thread_ts: The thread timestamp (or message ts if not in thread)
+        bot_id: The bot user ID
+        current_message_ts: The timestamp of the current message (to exclude it)
+        
+    Returns:
+        Formatted context string with previous messages
+    """
+    try:
+        # Get conversation history
+        # If in thread, get thread replies; otherwise get channel history
+        if thread_ts:
+            history_response = await send_slack_request_async(
+                ASYNC_CLIENT,
+                "conversations.replies",
+                http_verb="GET",
+                body={"channel": channel_id, "ts": thread_ts, "limit": 20}  # Get more to filter
+            )
+        # TODO: Need to check if we need to fetch channel history when not in thread
+        # else:
+        #     history_response = await send_slack_request_async(
+        #         ASYNC_CLIENT,
+        #         "conversations.history",
+        #         http_verb="GET",
+        #         body={"channel": channel_id, "latest": current_message_ts, "limit": 20}
+        #     )
+        
+        messages = history_response.get("messages", [])
+        if not messages:
+            return ""
+        
+        # Filter and collect context messages
+        context_messages = []
+        bot_mention_tag = f"<@{bot_id}>"
+        
+        for msg in reversed(messages):  # Process from oldest to newest
+            msg_ts = msg.get("ts", "")
+            msg_text = msg.get("text", "")
+            msg_user = msg.get("user", "")
+            msg_bot_id = msg.get("bot_id", "")
+            
+            # Skip current message
+            if msg_ts == current_message_ts:
+                continue
+            
+            # Skip bot messages
+            if msg_bot_id or msg_user == bot_id:
+                continue
+            
+            # Stop if we hit a previous bot mention
+            if bot_mention_tag in msg_text and msg_ts != current_message_ts:
+                break
+            
+            # Add to context
+            if msg_text and msg_user:
+                # Get user name
+                try:
+                    user_info = await get_user_details(msg_user)
+                    user_name = user_info.get("name", msg_user)  # type: ignore
+                except Exception:
+                    user_name = msg_user
+                
+                context_messages.append({
+                    "user": user_name,
+                    "text": msg_text,
+                    "ts": msg_ts
+                })
+            
+            # Limit to 5 messages
+            if len(context_messages) >= 5:
+                break
+        
+        # Format context messages
+        if not context_messages:
+            return ""
+        
+        # Create formatted context string
+        context_lines = ["--- Previous conversation context ---"]
+        for ctx_msg in reversed(context_messages):  # Show oldest first
+            context_lines.append(f"**{ctx_msg['user']}**: {ctx_msg['text']}")
+        context_lines.append("--- End of context ---")
+        context_lines.append("")  # Empty line before current message
+        
+        return "\n".join(context_lines)
+        
+    except Exception as e:
+        demisto.error(f"Failed to get conversation context: {e}")
+        return ""
 
 
 async def handle_agentix_bot_mention(
@@ -1647,8 +1912,9 @@ async def handle_agentix_bot_mention(
     thread_ts: str,
     agentix: dict,
     agentix_id_key: str,
-    integration_context: dict,
-):
+    bot_id: str,
+    message_ts: str,
+) -> dict:
     """
     Handles when the bot is mentioned in a message for Agentix AI Assistant.
 
@@ -1660,9 +1926,12 @@ async def handle_agentix_bot_mention(
         thread_ts: The thread timestamp
         agentix: The agentix context dictionary
         agentix_id_key: The unique key for this conversation
-        integration_context: The integration context
+        bot_id: The bot user ID
+        message_ts: The current message timestamp
+        
+    Returns:
+        Updated agentix dictionary - to be saved by caller
     """
-    bot_id = integration_context.get("bot_id", "")
 
     # Check if there's already an active conversation
     if agentix_id_key in agentix:
@@ -1676,7 +1945,11 @@ async def handle_agentix_bot_mention(
         if AgentixStatus.is_awaiting_user_action(status):
             # Waiting for user action (agent selection or approval)
             if locked_user == user_id:
-                message_to_send = AgentixMessages.AWAITING_YOUR_RESPONSE
+                # Show specific message based on what we're waiting for
+                if status == AgentixStatus.AWAITING_AGENT_SELECTION:
+                    message_to_send = AgentixMessages.AWAITING_AGENT_SELECTION
+                elif status == AgentixStatus.AWAITING_SENSITIVE_ACTION_APPROVAL:
+                    message_to_send = AgentixMessages.AWAITING_APPROVAL_RESPONSE
             else:
                 message_to_send = AgentixMessages.format_message(
                     AgentixMessages.ONLY_LOCKED_USER_CAN_RESPOND, bot_id=bot_id, locked_user=locked_user
@@ -1700,11 +1973,55 @@ async def handle_agentix_bot_mention(
             send_message_to_destinations(
                 [channel_id], message_to_send, thread_id=thread_ts, ephemeral_message=is_ephemeral, user_id=user_id
             )
-            return
+        return agentix
 
-    # Send message to backend
-    response = demisto.chat(text, user_email, channel_id, thread_ts)
-    if response.ok:
+    # Get conversation context (up to 5 previous messages)
+    context = await get_conversation_context(channel_id, thread_ts, bot_id, message_ts)
+    
+    # Prepare message with context
+    message_with_context = text
+    if context:
+        message_with_context = f"{context}\n**Current message**: {text}"
+    
+    # Send message to backend using agentixIntegrations
+    response = demisto.agentixIntegrations(
+        "sendToConversation",
+        {
+            "channel_id": channel_id,
+            "thread_id": thread_ts,
+            "message": message_with_context,
+            "username": user_email,
+        }
+    )
+
+    # Check if response contains agent list (requires user to select an agent)
+    if isinstance(response, dict) and "agents" in response:
+        # Backend returned a list of agents - user needs to select one
+        demisto.debug(f"Received agent list with {len(response.get('agents', []))} agents")
+        
+        # Create agent selection dropdown
+        agent_selection_blocks = create_agent_selection_blocks(json.dumps(response))
+        
+        if agent_selection_blocks:
+            # Send agent selection UI to Slack
+            send_message_to_destinations([channel_id], "", thread_ts, agent_selection_blocks)
+            
+            # Lock the conversation with agent selection status
+            agentix[agentix_id_key] = {
+                "date": thread_ts,
+                "user": user_id,
+                "message": message_with_context,
+                "channel_id": channel_id,
+                "thread_ts": thread_ts,
+                "status": AgentixStatus.AWAITING_AGENT_SELECTION,
+                "last_updated": thread_ts,
+            }
+            
+            demisto.debug(
+                f"Created new Agentix conversation {agentix_id_key} with status {AgentixStatus.AWAITING_AGENT_SELECTION}"
+            )
+    
+    elif response.get("success"):
         # Lock the conversation with initial status
         agentix[agentix_id_key] = {
             "date": thread_ts,
@@ -1716,24 +2033,17 @@ async def handle_agentix_bot_mention(
             "last_updated": thread_ts,
         }
 
-        # Get bot_id if not already in context
-        if integration_context.get("bot_id"):
-            bot_id = integration_context["bot_id"]
-        else:
-            bot_id = get_bot_id()
-
-        set_to_integration_context_with_retries({"agentix": agentix, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
         demisto.debug(
-            f"Created new Agentix conversation {agentix_id_key} " f"with status {AgentixStatus.AWAITING_BACKEND_RESPONSE}"
+            f"Created new Agentix conversation {agentix_id_key} with status {AgentixStatus.AWAITING_BACKEND_RESPONSE}"
         )
     elif "User not authorized for this thread" in str(response):
-        error_msg = AgentixMessages.format_message(AgentixMessages.NOT_AUTHORIZED, bot_id=integration_context.get("bot_id", ""))
+        error_msg = AgentixMessages.format_message(AgentixMessages.NOT_AUTHORIZED, bot_id=bot_id)
         send_message_to_destinations([channel_id], error_msg, thread_id=thread_ts, ephemeral_message=True, user_id=user_id)
-        return
     else:
         # Permission error or other issue - don't lock
-        demisto.debug(f"demisto.chat() failed for user {user_email}: {response}")
+        demisto.debug(f"demisto.agentixIntegrations() failed for user {user_email}: {response}")
+    
+    return agentix
 
 
 async def handle_agentix_action(
@@ -1742,10 +2052,11 @@ async def handle_agentix_action(
     user_email: str,
     channel_id: str,
     thread_ts: str,
-    message_ts: str,
+    message: dict,
     agentix: dict,
     agentix_id_key: str,
-):
+    trigger_id: str,
+) -> dict:
     """
     Handles Agentix interactive actions (agent selection or sensitive action approval).
 
@@ -1755,79 +2066,307 @@ async def handle_agentix_action(
         user_email: The user's email
         channel_id: The Slack channel ID
         thread_ts: The thread timestamp
-        message_ts: The message timestamp
+        message: The message dict from Slack payload
         agentix: The agentix context dictionary
         agentix_id_key: The unique key for this conversation
+        
+    Returns:
+        Updated agentix dictionary - to be saved by caller
     """
+    message_ts = message.get("ts", "")
     demisto.debug(f"Processing AgentIX interactive response for user {user_id}")
 
-    # Decode the value payload
-    action_id = actions[0].get("action_id", "")
-    action_value = actions[0].get("value", "")
+    # Decode the action payload
+    action = actions[0]
+    action_id = action.get("action_id", "")
+    action_value = action.get("value", "")
 
-    # Check if conversation exists and get locked user
+    # -------------------------------------
+    # OPTION 1: Feedback Buttons (Good/Bad response)
+    # -------------------------------------
+    if action_id == AgentixActionIds.FEEDBACK:
+        demisto.debug(f"User provided feedback: action_id={action_id}, value={action_value}")
+        
+        # Value format: "positive|message_id" or "negative|message_id"
+        parts = action_value.split("-")
+        if len(parts) == 2:
+            feedback_type, message_id = parts
+            is_positive = feedback_type == "positive"
+        else:
+            demisto.error(f"Invalid feedback value format: {action_value}")
+            return agentix
+        
+        if is_positive:
+            # Positive feedback - send immediately
+            demisto.agentixIntegrations(
+                "submitFeedback",
+                {
+                    "message_id": message_id,
+                    "feedback_score": 1,
+                    "thread_id": thread_ts,
+                    "channel_id": channel_id,
+                    "username": user_email,
+                }
+            )
+            
+            # Send confirmation message (ephemeral)
+            send_message_to_destinations(
+                [channel_id],
+                AgentixMessages.FEEDBACK_THANK_YOU,
+                thread_id=thread_ts,
+                ephemeral_message=True,
+                user_id=user_id
+            )
+        else:
+            # Negative feedback - open a modal to collect feedback with checkboxes and text
+            # Get trigger_id from the action payload (needed for modal)
+            if trigger_id:
+                # Open modal for private feedback collection with checkboxes
+                modal_view = {
+                    "type": "modal",
+                    "callback_id": AgentixActionIds.FEEDBACK_MODAL_CALLBACK_ID,
+                    "title": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_TITLE},
+                    "submit": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_SUBMIT},
+                    "close": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_CANCEL},
+                    "blocks": [
+                        {
+                            "type": "input",
+                            "block_id": "quick_feedback_block",
+                            "optional": False,
+                            "element": {
+                                "type": "checkboxes",
+                                "action_id": "quick_feedback_checkboxes",
+                                "options": [
+                                    {
+                                        "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_OPTION_NO_ANSWER},
+                                        "value": AgentixMessages.FEEDBACK_OPTION_NO_ANSWER
+                                    },
+                                    {
+                                        "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT},
+                                        "value": AgentixMessages.FEEDBACK_OPTION_FACTUALLY_INCORRECT
+                                    },
+                                    {
+                                        "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER},
+                                        "value": AgentixMessages.FEEDBACK_OPTION_ANSWERED_ANOTHER
+                                    },
+                                    {
+                                        "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL},
+                                        "value": AgentixMessages.FEEDBACK_OPTION_PARTIALLY_HELPFUL
+                                    },
+                                    {
+                                        "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_OPTION_UNHELPFUL},
+                                        "value": AgentixMessages.FEEDBACK_OPTION_UNHELPFUL
+                                    }
+                                ]
+                            },
+                            "label": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_QUICK_LABEL}
+                        },
+                        {
+                            "type": "input",
+                            "block_id": "feedback_text_block",
+                            "optional": False,
+                            "element": {
+                                "type": "plain_text_input",
+                                "action_id": "feedback_text_input",
+                                "multiline": True,
+                                "placeholder": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER}
+                            },
+                            "label": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_MODAL_ADDITIONAL_LABEL}
+                        }
+                    ],
+                    "private_metadata": json.dumps({
+                        "message_id": message_id,
+                        "channel_id": channel_id,
+                        "thread_ts": thread_ts,
+                    })
+                }
+                
+                try:
+                    await send_slack_request_async(
+                        client=ASYNC_CLIENT,
+                        method="views.open",
+                        body={"trigger_id": trigger_id, "view": modal_view}
+                    )
+                except Exception as e:
+                    demisto.error(f"Failed to open feedback modal: {e}")
+                    # Fallback to ephemeral message
+                    send_message_to_destinations(
+                        [channel_id],
+                        AgentixMessages.FEEDBACK_THANK_YOU,
+                        thread_id=thread_ts,
+                        ephemeral_message=True,
+                        user_id=user_id
+                    )
+        
+        # Feedback doesn't require active conversation, so return early
+        return agentix
+    
+    # For other actions (agent selection, approval), check if conversation exists
     if agentix_id_key not in agentix:
         demisto.debug(f"No active Agentix conversation found for {agentix_id_key}")
-        return
+        return agentix
 
     locked_user = agentix[agentix_id_key].get("user", "")
-    original_message = agentix[agentix_id_key].get("message", "")
 
     # -------------------------------------
-    # OPTION 1: Agent Selection from Dropdown
+    # OPTION 2: Agent Selection from Dropdown
     # -------------------------------------
-    if action_value.startswith("agentix-agent-selection"):
-        demisto.debug(f"User selected an agent: {action_value}")
+    if action_id == AgentixActionIds.AGENT_SELECTION:
+        # Get value from selected_option for dropdown
+        selected_option = action.get("selected_option", {})
+        option_value = selected_option.get("value", "")
+        
+        original_message = agentix[agentix_id_key].get("message", "")
+
+        demisto.debug(f"User selected an agent: {option_value}")
 
         if user_id == locked_user:
             # Correct user selected an agent
-            selected_agent_id = action_value.replace("agentix-agent-selection-", "")
-
+            selected_agent_id = option_value.replace("agentix-agent-selection-", "")
+            selected_agent_name = selected_option.get("text", {}).get("text", "")
             # Send message to backend with selected agent
-            demisto.chat(original_message, user_email, channel_id, thread_ts, agent_id=selected_agent_id)
+            demisto.agentixIntegrations(
+                "sendToConversation",
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_ts,
+                    "message": original_message,
+                    "username": user_email,
+                    "agent_id": selected_agent_id,
+                }
+            )
 
             # Update the original message to show selection (disable dropdown)
             await send_slack_request_async(
                 client=ASYNC_CLIENT,
                 method="chat.update",
-                body={"channel": channel_id, "ts": message_ts, "text": f"Selected agent: {selected_agent_id}", "blocks": []},
+                body={"channel": channel_id, "ts": message_ts, "text": f"Selected agent: {selected_agent_name}", "blocks": []},
             )
 
             # Update status
             agentix[agentix_id_key]["status"] = AgentixStatus.AWAITING_BACKEND_RESPONSE
             agentix[agentix_id_key]["selected_agent"] = selected_agent_id
             agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
-
-            set_to_integration_context_with_retries({"agentix": agentix}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
             # Wrong user trying to select
             error_msg = AgentixMessages.format_message(AgentixMessages.CANNOT_SELECT_AGENT, locked_user=locked_user)
             send_message_to_destinations([channel_id], error_msg, thread_id=thread_ts, ephemeral_message=True, user_id=user_id)
 
     # -------------------------------------
-    # OPTION 2: Sensitive Action Approval (Yes/No buttons)
+    # OPTION 3: Sensitive Action Approval (Yes/No buttons)
     # -------------------------------------
-    elif action_value.startswith("agentix-sensitive-action-btn"):
-        demisto.debug(f"User responded to sensitive action: {action_value}")
+    elif action_id in [AgentixActionIds.APPROVAL_YES, AgentixActionIds.APPROVAL_NO]:
+        demisto.debug(f"User responded to sensitive action: action_id={action_id}")
 
         if user_id == locked_user:
             # Correct user responded
-            # Determine if approved or rejected based on action_id or value
-            is_approved = "yes" in action_id.lower() or "yes" in action_value.lower()
+            # Determine if approved or rejected based on action_id
+            is_approved = action_id == AgentixActionIds.APPROVAL_YES
 
-            # Send response to backend with special is_approved parameter
-            demisto.chat("Yes" if is_approved else "No", user_email, channel_id, thread_ts, is_approved=is_approved)
+            # Send response to backend with approval decision
+            demisto.agentixIntegrations(
+                "sendToConversation",
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_ts,
+                    "message": "Yes" if is_approved else "No",
+                    "username": user_email,
+                    "is_approved": is_approved,
+                }
+            )
+
+            # Update the original message to remove buttons and add decision indicator
+            decision_indicator = AgentixMessages.DECISION_APPROVED if is_approved else AgentixMessages.DECISION_CANCELLED
+            
+            # Get blocks from the message payload (already available)
+            original_blocks = message.get("blocks", [])
+            
+            # Remove the action buttons block (last block with buttons)
+            updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
+            
+            # Add decision indicator
+            updated_blocks.append({
+                "type": "context",
+                "elements": [{"type": "mrkdwn", "text": decision_indicator}]
+            })
+            
+            try:
+                await send_slack_request_async(
+                    client=ASYNC_CLIENT,
+                    method="chat.update",
+                    body={"channel": channel_id, "ts": message_ts, "blocks": updated_blocks},
+                )
+            except Exception as e:
+                demisto.error(f"Failed to update approval message: {e}")
+                # Fallback: just show decision text
+                await send_slack_request_async(
+                    client=ASYNC_CLIENT,
+                    method="chat.update",
+                    body={"channel": channel_id, "ts": message_ts, "text": decision_indicator, "blocks": []},
+                )
 
             # Update status
             agentix[agentix_id_key]["status"] = AgentixStatus.AWAITING_BACKEND_RESPONSE
             agentix[agentix_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
             agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
-
-            set_to_integration_context_with_retries({"agentix": agentix}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
             # Wrong user trying to respond
             error_msg = AgentixMessages.format_message(AgentixMessages.CANNOT_APPROVE_ACTION, locked_user=locked_user)
             send_message_to_destinations([channel_id], error_msg, thread_id=thread_ts, ephemeral_message=True, user_id=user_id)
+    
+    return agentix
+
+
+async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: str):
+    """
+    Handles Agentix modal submissions (e.g., negative feedback with checkboxes and text).
+
+    Args:
+        view: The view payload from Slack
+        user_id: The Slack user ID
+    """
+    private_metadata = json.loads(view.get("private_metadata", "{}"))
+    message_id = private_metadata.get("message_id", "")
+    channel_id = private_metadata.get("channel_id", "")
+    thread_ts = private_metadata.get("thread_ts", "")
+
+    # Extract feedback from modal
+    values = view.get("state", {}).get("values", {})
+    
+    # Extract selected checkboxes (quick feedback)
+    issues = []
+    if "quick_feedback_block" in values:
+        selected_options = values["quick_feedback_block"].get("quick_feedback_checkboxes", {}).get("selected_options", [])
+        issues = [option.get("value", "") for option in selected_options]
+    
+    # Extract additional text feedback
+    feedback_text = ""
+    if "feedback_text_block" in values:
+        feedback_text = values["feedback_text_block"].get("feedback_text_input", {}).get("value", "") or ""
+    
+    # Send negative feedback with checkboxes and text to backend
+    demisto.agentixIntegrations(
+        "submitFeedback",
+        {
+            "message_id": message_id,
+            "feedback_score": 0,
+            "issues": issues,
+            "message": feedback_text,
+            "thread_id": thread_ts,
+            "channel_id": channel_id,
+            "username": user_email,
+        }
+    )
+
+    # Send confirmation message (ephemeral)
+    send_message_to_destinations(
+        [channel_id],
+        AgentixMessages.FEEDBACK_THANK_YOU,
+        thread_id=thread_ts,
+        ephemeral_message=True,
+        user_id=user_id
+    )
+    demisto.debug(f"Submitted negative feedback for message {message_id}: issues={issues}, text={feedback_text}")
 
 
 async def get_user_details(user_id: str) -> AsyncSlackResponse:
@@ -2106,42 +2645,60 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         # Handle Agentix AI Assistant interactions
         if ENABLED_AI_ASSISTANT:
-            # First check if this is an Agentix-related event
-            is_agentix_action = is_agentix_interactive_response(actions)
+            # Check if this is a modal submission (e.g., feedback modal)
+            view = data.get("view", {})
+            is_modal_submission = is_agentix_modal_submission(data_type, view)
 
-            # Get integration context once for both checks
             integration_context = get_integration_context(SYNC_CONTEXT)
-            bot_id = integration_context.get("bot_id", "")
+            bot_id = json.loads(integration_context.get("bot_id", '""'))
             if not bot_id:
                 bot_id = get_bot_id()
-                integration_context["bot_id"] = bot_id
-                # Will be saved later with agentix data
 
-            # Check if bot was mentioned
+            is_agentix_action = is_agentix_interactive_response(actions)
             is_bot_mentioned = is_bot_mention(text, bot_id)
 
+            demisto.debug(f"Processing Agentix AI Assistant interaction: Bot Mentioned: {is_bot_mentioned}, Agentix Action: {is_agentix_action}")
             # Only proceed if bot was mentioned or it's an agentix action
-            if is_bot_mentioned or is_agentix_action:
+            if is_bot_mentioned or is_agentix_action or is_modal_submission:
                 # Get user details and prepare data
                 user = await get_user_details(user_id=user_id)
                 user_email = user.get("profile", {}).get("email", "")  # type: ignore[call-overload]
-                channel_id = event.get("channel", "")
-                thread_ts = event.get("thread_ts", "") or event.get("ts", "")
+                demisto.debug(f"Agentix AI Assistant processing for user {user_email}")
+                demisto.debug(f"{data=}")
+                container = data.get("container", {})
+                channel_id = event.get("channel", "") or container.get("channel_id", "")
+                thread_ts = event.get("thread_ts", "") or event.get("ts", "") or container.get("thread_ts", "")
 
-                agentix = integration_context.get("agentix", {})
+                agentix = json.loads(integration_context.get("agentix", "{}"))
+                demisto.debug(f"Current Agentix state before processing: {agentix}")
                 agentix_id_key = f"{channel_id}_{thread_ts}"
+                
+                # Track if agentix was updated
+                agentix_updated = False
 
                 # Handle bot mention
                 if is_bot_mentioned:
-                    await handle_agentix_bot_mention(
-                        text, user_id, user_email, channel_id, thread_ts, agentix, agentix_id_key, integration_context
+                    message_ts = event.get("ts", "")
+                    agentix = await handle_agentix_bot_mention(
+                        text, user_id, user_email, channel_id, thread_ts, agentix, agentix_id_key, bot_id, message_ts
                     )
+                    agentix_updated = True
 
                 # Handle interactive actions (agent selection or approval)
                 elif is_agentix_action:
-                    await handle_agentix_action(
-                        actions, user_id, user_email, channel_id, thread_ts, message_ts, agentix, agentix_id_key
+                    trigger_id = data.get("trigger_id", "")
+                    agentix = await handle_agentix_action(
+                        actions, user_id, user_email, channel_id, thread_ts, message, agentix, agentix_id_key, trigger_id
                     )
+                    agentix_updated = True
+
+                elif is_modal_submission:
+                    await handle_agentix_modal_submission(view, user_id, user_email)
+
+                # Save updated agentix context if it was modified
+                if agentix_updated:
+                    demisto.debug(f"Saving updated Agentix context: {agentix}")
+                    set_to_integration_context_with_retries({"agentix": agentix, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         if MIRRORING_ENABLED:
@@ -3697,22 +4254,19 @@ def prepare_slack_message(message: str, message_type) -> tuple[list, list]:
         # Note: Approval buttons are added in send_agent_response() via get_approval_buttons_block()
         # to avoid duplication and allow for better styling
 
-        # For step types (thinking/planning), wrap everything in an attachment structure for a subtle appearance.
+        # For step types (step/thought), wrap everything in an attachment structure for a subtle appearance.
         if AgentixMessageType.is_step_type(message_type):
-            # Use different icons for thinking vs planning
-            icon = ":thought_balloon:" if message_type == AgentixMessageType.THINKING else ":clipboard:"
-            label = "*Thinking*" if message_type == AgentixMessageType.THINKING else "*Planning*"
-
+            # All step types use the same "Plan" label
             attachments = [
                 {
                     "color": "#D1D2D3",  # Light gray border for a subtle look
-                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=f"{icon} {label}")]).to_dict()] + blocks,
+                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=f"{AgentixMessages.PLAN_ICON} {AgentixMessages.PLAN_LABEL}")]).to_dict()] + blocks,
                 }
             ]
             return [], attachments
 
         # For error types, use red color
-        if message_type == AgentixMessageType.ERROR:
+        if AgentixMessageType.is_error_type(message_type):
             attachments = [
                 {
                     "color": "#FF0000",  # Red border for errors
@@ -3759,7 +4313,7 @@ def create_agent_selection_blocks(message: str) -> list:
             elements=[
                 StaticSelectElement(
                     placeholder=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_PLACEHOLDER),
-                    action_id="agent_selection",
+                    action_id=AgentixActionIds.AGENT_SELECTION,
                     options=dropdown_options,
                     confirm=ConfirmObject(
                         title=PlainTextObject(text=AgentixMessages.AGENT_SELECTION_CONFIRM_TITLE),
@@ -3788,15 +4342,15 @@ def get_feedback_buttons_block(message_id: str) -> dict:
         "elements": [
             {
                 "type": "feedback_buttons",
-                "action_id": f"agentix_feedback_{message_id}",
+                "action_id": AgentixActionIds.FEEDBACK,
                 "positive_button": {
                     "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_GOOD_BUTTON},
-                    "value": f"agentix-feedback-positive-{message_id}",
+                    "value": f"positive-{message_id}",
                     "accessibility_label": AgentixMessages.FEEDBACK_GOOD_ACCESSIBILITY,
                 },
                 "negative_button": {
                     "text": {"type": "plain_text", "text": AgentixMessages.FEEDBACK_BAD_BUTTON},
-                    "value": f"agentix-feedback-negative-{message_id}",
+                    "value": f"negative-{message_id}",
                     "accessibility_label": AgentixMessages.FEEDBACK_BAD_ACCESSIBILITY,
                 },
             }
@@ -3823,7 +4377,7 @@ def get_approval_buttons_block() -> list:
                 ButtonElement(
                     text=PlainTextObject(text=AgentixMessages.APPROVAL_PROCEED_BUTTON),
                     style="primary",
-                    action_id="yes_btn",
+                    action_id=AgentixActionIds.APPROVAL_YES,
                     value="agentix-sensitive-action-btn-yes",
                     confirm=ConfirmObject(
                         title=PlainTextObject(text=AgentixMessages.APPROVAL_CONFIRM_TITLE),
@@ -3835,12 +4389,101 @@ def get_approval_buttons_block() -> list:
                 ButtonElement(
                     text=PlainTextObject(text=AgentixMessages.APPROVAL_CANCEL_BUTTON),
                     style="danger",
-                    action_id="no_btn",
+                    action_id=AgentixActionIds.APPROVAL_NO,
                     value="agentix-sensitive-action-btn-no",
                 ),
             ],
         ).to_dict(),
     ]
+
+
+def send_or_update_agent_message(
+    channel_id: str,
+    thread_ts: str,
+    message_type: str,
+    blocks: list,
+    attachments: list,
+    agentix: dict,
+    agentix_id_key: str,
+) -> dict:
+    """
+    Sends a new message or updates an existing step message in Slack.
+    
+    For step types (step/thought):
+    - First step: Send new message and save its timestamp
+    - Subsequent steps: Update existing message by appending new content
+    
+    For other types (model, approval, error):
+    - Always send as new message
+    - Clear step_message_ts when sending final model response
+    
+    Args:
+        channel_id: The Slack channel ID
+        thread_ts: The thread timestamp
+        message_type: The type of message (from AgentixMessageType)
+        blocks: Message blocks to send
+        attachments: Message attachments to send
+        agentix: The agentix context dictionary
+        agentix_id_key: The unique key for this conversation
+        
+    Returns:
+        Updated agentix dictionary
+    """
+    step_message_ts = agentix.get(agentix_id_key, {}).get("step_message_ts")
+    
+    if AgentixMessageType.is_step_type(message_type):
+        # For step types, update existing message if it exists, otherwise create new one
+        if step_message_ts:
+            # Update existing step message - append new content to existing
+            demisto.debug(f"Updating existing step message {step_message_ts} with new content")
+            try:
+                # Get the current message to preserve existing content
+                history_response = send_slack_request_sync(
+                    CLIENT,
+                    "conversations.history",
+                    http_verb="GET",
+                    body={"channel": channel_id, "latest": step_message_ts, "limit": 1, "inclusive": True}
+                )
+                
+                existing_attachments = []
+                messages = history_response.get("messages", [])
+                if messages:
+                    existing_attachments = messages[0].get("attachments", [])
+                
+                # Append new attachment to existing ones
+                combined_attachments = existing_attachments + attachments
+                
+                send_slack_request_sync(
+                    CLIENT,
+                    "chat.update",
+                    body={
+                        "channel": channel_id,
+                        "ts": step_message_ts,
+                        "text": "",
+                        "attachments": combined_attachments
+                    }
+                )
+            except Exception as e:
+                demisto.error(f"Failed to update step message: {e}")
+                # Fallback: send as new message
+                response = send_message_to_destinations([channel_id], "", thread_ts, blocks, attachments)
+                if response and agentix_id_key in agentix:
+                    agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
+        else:
+            # Send new step message and save its timestamp
+            response = send_message_to_destinations([channel_id], "", thread_ts, blocks, attachments)
+            if response and agentix_id_key in agentix:
+                agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
+                demisto.debug(f"Saved step message timestamp: {response.get('ts')}")
+    else:
+        # For non-step types (model, approval, error), always send as new message
+        send_message_to_destinations([channel_id], "", thread_ts, blocks, attachments)
+        
+        # Clear step_message_ts when sending final response
+        if AgentixMessageType.is_model_type(message_type) and agentix_id_key in agentix:
+            agentix[agentix_id_key].pop("step_message_ts", None)
+    
+    return agentix
 
 
 def send_agent_response():
@@ -3884,32 +4527,32 @@ def send_agent_response():
     # ========================================
     # Handle different message types
     # ========================================
-    if message_type == AgentixMessageType.TEXT:
-        # TEXT - Final response, release lock if completed
+    if AgentixMessageType.is_model_type(message_type):
+        # MODEL TYPES (model, clarification, copilot, script) - Final responses
         should_release_lock = completed
         # Add feedback buttons for final responses (always last)
         if message_id and completed:
             blocks.append(get_feedback_buttons_block(message_id))
 
-    elif message_type == AgentixMessageType.EXECUTING:
-        # EXECUTING - Sensitive action requiring approval
+    elif AgentixMessageType.is_approval_type(message_type):
+        # APPROVAL - Sensitive action requiring approval
         # Extend with all approval blocks (header + buttons)
         blocks.extend(get_approval_buttons_block())
         new_status = AgentixStatus.AWAITING_SENSITIVE_ACTION_APPROVAL
 
     elif AgentixMessageType.is_step_type(message_type):
-        # THINKING/PLANNING - Plan steps
+        # STEP TYPES (step, thought) - Plan steps
         # Update status to responding_with_plan
         new_status = AgentixStatus.RESPONDING_WITH_PLAN
 
-    elif message_type == AgentixMessageType.ERROR:
+    elif AgentixMessageType.is_error_type(message_type):
         # ERROR - release lock immediately
         should_release_lock = True
 
     # ========================================
-    # Send message to Slack
+    # Send or update message to Slack
     # ========================================
-    send_message_to_destinations([channel_id], "", thread_ts, blocks if blocks else "", attachments)
+    agentix = send_or_update_agent_message(channel_id, thread_ts, message_type, blocks, attachments, agentix, agentix_id_key)
 
     # ========================================
     # Update context based on message type
