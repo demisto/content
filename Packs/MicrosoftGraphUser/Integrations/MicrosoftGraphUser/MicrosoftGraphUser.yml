@@ -1290,7 +1290,7 @@ script:
       Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
     name: msgraph-user-temp-access-pass-method-delete
   - arguments:
-    - description: The user mail to pop the MFA to.
+    - description: The user mail to send the MFA request to.
       name: user_mail
       required: true
     - description: The timeout for the MFA request.
@@ -1300,6 +1300,7 @@ script:
     - description: The MFA access token obtained from msgraph-user-create-mfa-client-access-token command.
       name: access_token
       required: true
+      secret: true
     description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
     name: msgraph-user-request-mfa
   - arguments:
@@ -1344,6 +1345,7 @@ script:
     - description: The MFA app client secret obtained from msgraph-user-create-mfa-client-secret command.
       name: client_secret
       required: true
+      secret: true
     outputs:
     - contextPath: MSGraphUser.MFAAccessToken.ValidUntil
       description: The expiration date for the access token in epoch format.

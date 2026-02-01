@@ -1377,7 +1377,7 @@ Pops a synchronous MFA request for the given user. This is a blocking call that 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_mail | The user mail to pop the MFA to. | Required |
+| user_mail | The user mail to send the MFA request to. | Required |
 | timeout | The timeout for the MFA request. Default is 60. | Optional |
 | access_token | The MFA access token obtained from msgraph-user-create-mfa-client-access-token command. | Required |
 
