@@ -109,8 +109,8 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Core @JudahSchwartz
 /Packs/CortexXDR @JudahSchwartz
 /Packs/SentinelOne @JudahSchwartz
-/Packs/CrowdstrikeFalcon @JudahSchwartz @talzich
-/Packs/CrowdstrikeFalconSandbox @JudahSchwartz
+/Packs/CrowdStrikeFalcon @JudahSchwartz @talzich
+/Packs/CrowdStrikeFalconSandbox @JudahSchwartz
 /Packs/CrowdStrikeFalconStreamingV2 @JudahSchwartz
 /Packs/MicrosoftExchangeOnline @JudahSchwartz @noydavidi
 /Packs/AggregatedScripts @JudahSchwartz
