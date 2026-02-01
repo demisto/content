@@ -1,52 +1,65 @@
 category: Analytics & SIEM
+provider: SOCRadar
 commonfields:
-  id: SOCRadarIncidentsV4MultiTenant
+  id: SOCRadarIncidentsMultiTenant
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: API Key
   name: apikey
   required: true
   type: 4
+  section: Connect
   additionalinfo: Your SOCRadar API key from platform.socradar.com
 - display: Multi-Tenant ID
   name: multi_tenant_id
   required: true
   type: 0
-  additionalinfo: Your multi-tenant ID from SOCRadar platform (numeric value)
+  section: Connect
+  additionalinfo: Your Multi-Tenant ID from SOCRadar platform for fetching incidents across all companies
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: First Fetch Time
   name: first_fetch
   type: 0
   defaultvalue: 3 days
+  section: Collect
   additionalinfo: 'Time range for FIRST fetch only. Examples: "3 days", "7 days", "30 days". After first fetch, integration will use Fetch Interval for subsequent fetches.'
 - display: Fetch Interval (Minutes)
   name: fetch_interval_minutes
   type: 0
   defaultvalue: '1'
+  section: Collect
   additionalinfo: 'Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle.'
 - display: Max incidents per fetch
   name: max_fetch
   type: 0
-  defaultvalue: '10000'
-  additionalinfo: 'Maximum number of incidents to create per cycle. Default: 10000. This limits total incidents returned to XSOAR per fetch cycle.'
-- display: Status Filter (Multi-select)
+  defaultvalue: '200'
+  section: Collect
+  additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
+- display: Status Filter
   name: status
   type: 16
   required: false
+  section: Collect
   options:
   - OPEN
   - CLOSED
   - ON_HOLD
-  additionalinfo: Filter incidents by status (select multiple or leave empty for all statuses)
+  additionalinfo: Filter incidents by status (leave empty for all statuses)
 - display: Severity Levels
   name: severities
   type: 16
   required: false
+  section: Collect
   options:
   - LOW
+  - INFO
   - MEDIUM
   - HIGH
   - CRITICAL
@@ -55,61 +68,65 @@ configuration:
   name: alarm_type_ids
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm type IDs to include (e.g., "1,2,3"). Leave empty to include all alarm types.
 - display: Alarm Type IDs (Exclude)
   name: excluded_alarm_type_ids
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm type IDs to exclude (e.g., "4,5,6"). Takes precedence if same ID appears in both include and exclude.
 - display: Alarm Main Types
   name: alarm_main_types
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm main types to filter (e.g., "Brand Protection,Attack Surface Management")
+- display: Alarm Main Types (Exclude)
+  name: excluded_alarm_main_types
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Comma-separated list of alarm main types to exclude (e.g., "Brand Protection,Attack Surface Management")
 - display: Alarm Sub Types
   name: alarm_sub_types
   type: 0
   required: false
+  section: Collect
   additionalinfo: Comma-separated list of alarm sub types to filter (e.g., "Impersonating Domain,Stolen Credential")
-- display: Include Alarm Content in Custom Fields
-  name: include_content
-  type: 8
+- display: Alarm Sub Types (Exclude)
+  name: excluded_alarm_sub_types
+  type: 0
   required: false
-  defaultvalue: 'true'
-  additionalinfo: Include alarm content fields (like dns_information, whois_information, etc.) in custom fields. Content structure varies by alarm type.
-- display: Include Related Entities Details
-  name: include_entities
-  type: 8
-  required: false
-  defaultvalue: 'true'
-  additionalinfo: Include detailed information about related entities in custom fields
-- display: Include Company Info in Incidents
-  name: include_company_info
-  type: 8
-  required: false
-  defaultvalue: 'true'
-  additionalinfo: Include company ID and company name in incident details and custom fields. Useful for multi-tenant environments to identify which company the alarm belongs to.
+  section: Collect
+  additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
-description: SOCRadar Incidents v4.0 Multi-Tenant - Enterprise security monitoring for MSPs and multi-tenant environments. Fetches security incidents from multiple companies using multi-tenant API with automatic company tracking and comprehensive alarm data capture.
-display: SOCRadar Incidents v4.0 Multi-Tenant
-name: SOCRadarIncidentsV4MultiTenant
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+description: SOCRadar Multi-Tenant Incidents integration with advanced incident management, status reasons, and compliance tracking. Fetches security incidents from SOCRadar platform across all tenant companies with proper deduplication and date handling. Uses Multi-Tenant API for incident fetching and company-specific APIs for alarm management.
+display: SOCRadar Incidents Multi-Tenant
+name: SOCRadarIncidentsMultiTenant
 script:
   commands:
   - name: socradar-change-alarm-status
-    description: Change the status of one or more alarms
+    description: Change the status of one or more alarms.
     arguments:
     - name: alarm_ids
-      description: Comma-separated list of alarm IDs to update
+      description: Comma-separated list of alarm IDs to update.
       required: true
     - name: status_reason
-      description: New status reason for the alarms
+      description: New status reason for the alarms.
       required: true
       auto: PREDEFINED
       predefined:
@@ -125,218 +142,148 @@ script:
       - MITIGATED
       - NOT_APPLICABLE
     - name: comments
-      description: Optional comments explaining the status change
+      description: Optional comments explaining the status change.
       required: false
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
+
   - name: socradar-mark-false-positive
-    description: Mark an alarm as false positive
+    description: Mark an alarm as false positive.
     arguments:
     - name: alarm_id
-      description: Alarm ID to mark as false positive
+      description: Alarm ID to mark as false positive.
       required: true
     - name: comments
-      description: Optional comments explaining why this is a false positive
+      description: Optional comments explaining why this is a false positive.
       required: false
       defaultValue: False positive
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
+
   - name: socradar-mark-resolved
-    description: Mark an alarm as resolved
+    description: Mark an alarm as resolved.
     arguments:
     - name: alarm_id
-      description: Alarm ID to mark as resolved
+      description: Alarm ID to mark as resolved.
       required: true
     - name: comments
-      description: Optional comments explaining the resolution
+      description: Optional comments explaining the resolution.
       required: false
       defaultValue: Resolved
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Status
-      description: New alarm status
+      description: New alarm status.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
+
   - name: socradar-add-comment
-    description: Add a comment to an alarm
+    description: Add a comment to an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to add comment to
+      description: Alarm ID to add comment to.
       required: true
     - name: user_email
-      description: Email address of the user adding the comment
+      description: Email address of the user adding the comment.
       required: true
     - name: comment
-      description: Comment text to add
+      description: Comment text to add.
       required: true
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
-  - name: socradar-change-assignee
-    description: Change the assignee(s) of an alarm
+
+  - name: socradar-add-assignee
+    description: add the assignee(s) of an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to change assignee for
+      description: Alarm ID to add assignee for.
       required: true
     - name: user_emails
-      description: Comma-separated list of user email addresses to assign
+      description: Comma-separated list of user email addresses to assign.
       required: true
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Assignees
-      description: New assignees
+      description: New assignees.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
+
   - name: socradar-add-tag
-    description: Add or remove a tag from an alarm
+    description: Add or remove a tag from an alarm.
     arguments:
     - name: alarm_id
-      description: Alarm ID to add/remove tag for
+      description: Alarm ID to add/remove tag for.
       required: true
     - name: tag
-      description: Tag name to add or remove
+      description: Tag name to add or remove.
       required: true
     - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
+      description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
+      description: Alarm ID.
       type: String
     - contextPath: SOCRadar.Alarm.Tags
-      description: Alarm tags
+      description: Alarm tags.
       type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
-  - name: socradar-ask-analyst
-    description: Request assistance from SOCRadar analyst for an alarm
-    arguments:
-    - name: alarm_id
-      description: Alarm ID to request help for
-      required: true
-    - name: comment
-      description: Message/question for the analyst
-      required: true
-    - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
-      required: false
-    outputs:
-    - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
-      type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
-  - name: socradar-change-severity
-    description: Change the severity level of an alarm
-    arguments:
-    - name: alarm_id
-      description: Alarm ID to change severity for
-      required: true
-    - name: severity
-      description: New severity level
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - LOW
-      - MEDIUM
-      - HIGH
-      - CRITICAL
-    - name: company_id
-      description: Company ID (optional, auto-extracted from alarm if not provided)
-      required: false
-    outputs:
-    - contextPath: SOCRadar.Alarm.ID
-      description: Alarm ID
-      type: String
-    - contextPath: SOCRadar.Alarm.Severity
-      description: New severity level
-      type: String
-    - contextPath: SOCRadar.Alarm.CompanyID
-      description: Company ID used for the operation
-      type: String
-      
+
   - name: socradar-test-fetch
-    description: Test incident fetching to verify alarms are available and date parsing works correctly
+    description: Test incident fetching to verify alarms are available and date parsing works correctly.
     arguments:
     - name: limit
-      description: Number of incidents to test fetch (default 5)
+      description: Number of incidents to test fetch (default 5).
       required: false
       defaultValue: '5'
     - name: first_fetch
-      description: 'Test date range (e.g., "3 days", "7 days")'
+      description: 'Test date range (e.g., "3 days", "7 days").'
       required: false
       defaultValue: '3 days'
     outputs:
     - contextPath: SOCRadar.TestFetch.TotalCount
-      description: Total number of incidents found
+      description: Total number of incidents found.
       type: Number
     - contextPath: SOCRadar.TestFetch.SampleIncidents
-      description: Sample incidents for testing
+      description: Sample incidents for testing.
       type: Unknown
     - contextPath: SOCRadar.TestFetch.StartDate
-      description: Parsed start date used for the test
+      description: Parsed start date used for the test.
       type: String
-    - contextPath: SOCRadar.TestFetch.Companies
-      description: List of companies found in the test results
-      type: Unknown
-      
-  dockerimage: demisto/python3:3.12.8.3296088
+
+  dockerimage: demisto/python3:3.12.12.6796194
   isfetch: true
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
