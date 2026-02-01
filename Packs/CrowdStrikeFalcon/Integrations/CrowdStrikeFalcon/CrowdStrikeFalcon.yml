@@ -2314,11 +2314,11 @@ script:
       description: The tags of the case.
       type: String
   - arguments:
-    - description: The ID of the case to retrieve evidences for.
+    - description: The ID of the case to retrieve evidence for.
       name: id
       required: true
-    description: Get evidences for a specific case.
-    name: cs-falcon-get-evidences-for-case
+    description: Get evidence for a specific case.
+    name: cs-falcon-get-evidence-for-case
     outputs:
     - contextPath: CrowdStrike.CaseEvidence.alerts
       description: The alerts associated with the case.
