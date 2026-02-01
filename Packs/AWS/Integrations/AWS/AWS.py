@@ -3405,19 +3405,11 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
-
-        attachment_data = {
-            "AttachTime": response.get("AttachTime"),
-            "Device": response.get("Device"),
-            "InstanceId": response.get("InstanceId"),
-            "State": response.get("State"),
-            "VolumeId": response.get("VolumeId"),
-            "DeleteOnTermination": response.get("DeleteOnTermination"),
-        }
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
-            attachment_data,
+            outputs,
             headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
             removeNull=True,
         )
@@ -3425,7 +3417,7 @@ class EC2:
         return CommandResults(
             outputs_prefix="AWS.EC2.Volumes",
             outputs_key_field="VolumeId",
-            outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
             readable_output=readable_output,
             raw_response=response,
         )
@@ -3458,18 +3450,11 @@ class EC2:
 
         response = serialize_response_with_datetime_encoding(response)
 
-        attachment_data = {
-            "AttachTime": response.get("AttachTime"),
-            "Device": response.get("Device"),
-            "InstanceId": response.get("InstanceId"),
-            "State": response.get("State"),
-            "VolumeId": response.get("VolumeId"),
-            "DeleteOnTermination": response.get("DeleteOnTermination"),
-        }
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
-            attachment_data,
+            outputs,
             headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
             removeNull=True,
         )
@@ -3477,7 +3462,7 @@ class EC2:
         return CommandResults(
             outputs_prefix="AWS.EC2.Volumes",
             outputs_key_field="VolumeId",
-            outputs={"Attachments": attachment_data, "VolumeId": response.get("VolumeId")},
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
             readable_output=readable_output,
             raw_response=response,
         )
