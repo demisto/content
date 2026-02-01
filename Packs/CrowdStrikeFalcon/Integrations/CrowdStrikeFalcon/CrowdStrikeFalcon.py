@@ -5970,7 +5970,9 @@ def cases_to_human_readable(cases):
         demisto.debug(f"appending {readable_output=} to cases_readable_outputs")
         cases_readable_outputs.append(readable_output)
     headers = ["case_id", "name", "created_timestamp", "status", "version", "description", "severity", "assigned_to", "tags"]
-    return tableToMarkdown("CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header)
+    return tableToMarkdown(
+        "CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header
+    )
 
 
 def list_case_summaries_command():
@@ -6018,23 +6020,12 @@ def get_evidences_for_case_command(args: dict[str, Any]) -> CommandResults:
     events = [record.get("selector", {}).get("id") for record in evidence.get("events", {}).get("records", [])]
     leads = [record.get("selector", {}).get("id") for record in evidence.get("leads", {}).get("records", [])]
 
-    readable_output = [{
-        "Case Id": case.get("id"),
-        "Case Alerts": alerts,
-        "Case Events": events,
-        "Case Leads": leads
-    }]
+    readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
     markdown_output = tableToMarkdown(
-        "Case Evidences",
-        readable_output,
-        headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"],
-        removeNull=True
+        "Case Evidences", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
     )
     return CommandResults(
-        outputs_prefix="CrowdStrike.CaseEvidence",
-        outputs=evidence,
-        readable_output=markdown_output,
-        raw_response=case
+        outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
     )
 
 
@@ -6115,7 +6106,7 @@ def resolve_case(
     if severity:
         fields["severity"] = severity
     if template_id:
-        fields["template"]= {"id": template_id}
+        fields["template"] = {"id": template_id}
     if remove_user_assignment:
         fields["remove_user_assignment"] = remove_user_assignment
 

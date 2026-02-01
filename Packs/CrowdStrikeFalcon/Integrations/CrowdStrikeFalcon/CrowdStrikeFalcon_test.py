@@ -8186,7 +8186,8 @@ class TestFetchAssetsFlow:
         )
         assert command_results_to_assert.outputs == expected_outputs
         assert command_results_to_assert.readable_output == expected_readable_outputs
-    
+
+
 def test_fetch_endpoint_detections_builds_grouped_filter_arg(mocker: MockerFixture):
     """
     Given:
@@ -8475,7 +8476,7 @@ def test_list_case_summaries_command_with_given_ids(requests_mock, mocker):
     assert outputs[0]["assigned_to_name"] == "Test with ids"
     assert outputs[0]["id"] == "case_id_1"
 
-    
+
 def test_add_case_tags_command(requests_mock):
     """
     Given:
