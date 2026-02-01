@@ -79,7 +79,7 @@ class Modules:
 
 def is_valid_args(command: Command):
     """
-    Validate if the command has valid arguments.
+    Verify that the command has valid arguments.
 
     Args:
         command (Command): The command object to validate.
@@ -785,7 +785,7 @@ def main():
     try:
         args = demisto.args()
         users_ids = argToList(args.get("user_id", []))
-        users_names = argToList(args.get("user_name", []))
+        users_names = [str(name) for name in argToList(args.get("user_name", []))]
         users_emails = argToList(args.get("user_email", []))
         users_sid = argToList(args.get("user_sid", []))
         domain = args.get("domain", "")

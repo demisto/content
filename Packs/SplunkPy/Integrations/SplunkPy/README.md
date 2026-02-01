@@ -249,7 +249,7 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 
 **Important Notes***
 
-- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server, meaning only one instance per Splunk server can be configured to perform mirroring-in.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: CheckPoint Software Technologies
 sectionorder:
 - Connect
 - Collect
@@ -27,8 +28,9 @@ configuration:
 - display: Data residency
   name: region
   type: 15
-  required: true
-  additionalinfo: Select the data region for GDPR compliance (US or EU).
+  required: false
+  hidden: true
+  additionalinfo: Deprecated. Data residency field has been removed in favor of automatic routing.
   options:
   - US
   - EU
@@ -153,6 +155,7 @@ configuration:
   - user_defined_saved_query
   - other
   - ssl_tls
+  - web_app_security
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -276,6 +279,7 @@ script:
       - user_defined_saved_query
       - other
       - ssl_tls
+      - web_app_security
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
@@ -597,7 +601,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.6663663
   isfetch: true
   runonce: false
   script: '-'

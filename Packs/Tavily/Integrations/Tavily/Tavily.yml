@@ -1,4 +1,5 @@
 category: Utilities
+provider: Tavily
 commonfields:
   id: Tavily
   version: -1

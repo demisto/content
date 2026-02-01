@@ -66,9 +66,7 @@ class Client(OktaClient):
         uri = "/api/v1/groups"
         query_params = {"q": encode_string_results(group_name)}
         res = self.http_request(method="GET", url_suffix=uri, params=query_params)
-        if res and len(res) == 1:
-            return res[0].get("id")
-        return None
+        return next((r.get("id") for r in (res or []) if r.get("profile", {}).get("name") == group_name), None)
 
     def get_app_id(self, app_name):
         uri = "/api/v1/apps"
@@ -238,6 +236,11 @@ class Client(OktaClient):
             counter += 1
             time.sleep(polling_time)  # pylint: disable=E9003
         response["factorResult"] = "TIMEOUT"
+        return response
+
+    def get_push_factor_status(self, polling_url: str):
+        """Get the status of the push factor"""
+        response = self.http_request(method="GET", full_url=polling_url, url_suffix="")
         return response
 
     def search(self, term, limit, advanced_search):
@@ -681,7 +684,7 @@ def add_user_to_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     raw_response = client.add_user_to_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -701,7 +704,7 @@ def remove_from_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     raw_response = client.remove_user_from_group(user_id, group_id)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
@@ -730,11 +733,20 @@ def verify_push_factor_command(client, args):
     factor_id = args.get("factorId")
     polling_time = arg_to_number(args.get("polling_time", DEFAULT_POLLING_TIME))
     max_polling_calls = arg_to_number(args.get("max_polling_calls", DEFAULT_MAX_POLLING_CALLS))
+    polling = argToBoolean(args.get("polling", True))
 
     raw_response = client.verify_push_factor(user_id, factor_id)
     poll_link = raw_response.get("_links").get("poll")
     if not poll_link:
         raise Exception("No poll link for the push factor challenge")
+    if not polling:
+        outputs = {"Okta.PollingStatusURL(true)": poll_link.get("href")}
+        readable_output = (
+            "Push factor challenge has been initiated. To check the push factor challenge status, "
+            f"use the 'okta-verify-mfa-status' command with url: {poll_link.get('href')}"
+        )
+        return (readable_output, outputs, raw_response)
+
     poll_response = client.poll_verify_push(poll_link.get("href"), polling_time, max_polling_calls)
 
     outputs = {
@@ -742,6 +754,30 @@ def verify_push_factor_command(client, args):
         "Okta.Metadata(true)": client.request_metadata,
     }
     readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"
+    return (readable_output, outputs, raw_response)
+
+
+def verify_mfa_status_command(client: Client, args: dict):
+    """Checks the status of a push factor procedure
+
+    Args:
+        client (Client): The Okta client
+        args (dict): The command arguments
+    """
+    polling_url = args.get("polling_url", "")
+    user_id, factor_id = extract_user_and_factor_id_from_url(polling_url)
+
+    raw_response = client.get_push_factor_status(polling_url)
+    status = raw_response.get("factorResult")
+    outputs = {
+        "Okta.FactorResult(val.ID && val.ID === obj.ID)": {
+            "ID": factor_id,
+            "factorResult": status,
+            "UserID": user_id,
+        },
+        "Okta.Metadata(true)": client.request_metadata,
+    }
+    readable_output = f"The status of the push factor challenge is {status}"
     return (readable_output, outputs, raw_response)
 
 
@@ -842,7 +878,7 @@ def get_group_members_command(client, args):
     limit = args.get("limit")
     group_id = args.get("groupId") or client.get_group_id(args.get("groupName"))
     if group_id is None:
-        raise ValueError("Either the group name was not found or multiple groups contain this name.")
+        raise ValueError("The group was not found.")
     raw_members = client.get_group_members(group_id, limit)
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
@@ -1138,7 +1174,7 @@ def assign_group_to_app_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
         if group_id is None:
-            raise ValueError("Either the group name was not found or multiple groups contain this name.")
+            raise ValueError("The group was not found.")
     app_id = client.get_app_id(args.get("appName"))
     raw_response = client.assign_group_to_app(group_id, app_id)
     outputs = {"Okta.Metadata(true)": client.request_metadata}
@@ -1192,6 +1228,27 @@ def delete_limit_param(url):
     return urlunparse(parsed_url._replace(query=urlencode(query_dict, True)))
 
 
+def extract_user_and_factor_id_from_url(url: str) -> tuple[str, str]:
+    """Extracts the user ID and Factor ID from the polling url.
+
+    Args:
+        url (str): The polling url.
+
+    Returns:
+        tuple[str, str]: The user ID and Factor ID.
+    """
+    parsed_url = urlparse(url)
+    path_parts = parsed_url.path.split("/")
+    # Example for url: https://example.okta.com/api/v1/users/user-id/factors/factor-id
+    # path_parts: ['', 'api', 'v1', 'users', 'user-id', 'factors', 'factor-id']
+    try:
+        user_id = path_parts[path_parts.index("users") + 1]
+        factor_id = path_parts[path_parts.index("factors") + 1]
+        return user_id, factor_id
+    except (ValueError, IndexError):
+        raise DemistoException(f"Could not extract user ID and Factor ID from the polling URL: {url}")
+
+
 def main():
     try:
         params = demisto.params()
@@ -1212,6 +1269,7 @@ def main():
             "okta-get-groups": get_groups_for_user_command,
             "okta-get-user-factors": get_user_factors_command,
             "okta-verify-push-factor": verify_push_factor_command,
+            "okta-verify-mfa-status": verify_mfa_status_command,
             "okta-search": search_command,
             "okta-get-user": get_user_command,
             "okta-create-user": create_user_command,

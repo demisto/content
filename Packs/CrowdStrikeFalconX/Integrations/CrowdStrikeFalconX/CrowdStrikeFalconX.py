@@ -42,13 +42,13 @@ def convert_environment_id_string_to_int(environment_id: str) -> int:
     """
     try:
         environment_id_options = {
-            "310: Linux Ubuntu 20": 310,
+            "400: MacOS Catalina 10.15": 400,
+            "310: Linux Ubuntu 20 (64-bit)": 310,
             "200: Android (static analysis)": 200,
-            "160: Windows 10": 160,
-            "110: Windows 7": 110,
-            "100: Windows 7": 100,
-            "64-bit": 64,
-            "32-bit": 32,
+            "160: Windows 10 (64-bit)": 160,
+            "140: Windows 11 (64-bit)": 140,
+            "110: Windows 7 (64-bit)": 110,
+            "100: Windows 7 (32-bit)": 100,
         }
         return environment_id_options[environment_id]
     except Exception:
@@ -302,10 +302,10 @@ class Client:
         action_script: str,
         command_line: str,
         document_password: str,
-        enable_tor: str,
         submit_name: str,
         system_date: str,
         system_time: str,
+        network_settings: str,
     ) -> dict:
         """Creating the needed arguments for the http request
         :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
@@ -313,10 +313,10 @@ class Client:
         :param action_script: runtime script for sandbox analysis
         :param command_line: command line script passed to the submitted file at runtime
         :param document_password: auto-filled for Adobe or Office files that prompt for a password
-        :param enable_tor: if true, sandbox analysis routes network traffic via TOR
         :param submit_name: name of the malware sample that's used for file type detection and analysis
         :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
         :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+        :param network_settings: specifies the sandbox network_settings used for analysis.
         :return: http response
         """
         url_suffix = "/falconx/entities/submissions/v1"
@@ -328,10 +328,10 @@ class Client:
                     "action_script": action_script,
                     "command_line": command_line,
                     "document_password": document_password,
-                    "enable_tor": enable_tor == "true",
                     "submit_name": submit_name,
                     "system_date": system_date,
                     "system_time": system_time,
+                    "network_settings": network_settings,
                 }
             ]
         }
@@ -345,10 +345,10 @@ class Client:
         action_script: str,
         command_line: str,
         document_password: str,
-        enable_tor: str,
         submit_name: str,
         system_date: str,
         system_time: str,
+        network_settings: str,
     ) -> dict:
         """Creating the needed arguments for the http request
         :param url: a web page or file URL. It can be HTTP(S) or FTP.
@@ -356,10 +356,10 @@ class Client:
         :param action_script: runtime script for sandbox analysis
         :param command_line: command line script passed to the submitted file at runtime
         :param document_password: auto-filled for Adobe or Office files that prompt for a password
-        :param enable_tor: if true, sandbox analysis routes network traffic via TOR
         :param submit_name: name of the malware sample that's used for file type detection and analysis
         :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
         :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+        :param network_settings: specifies the sandbox network_settings used for analysis.
         :return: http response
         """
         body = {
@@ -370,10 +370,10 @@ class Client:
                     "action_script": action_script,
                     "command_line": command_line,
                     "document_password": document_password,
-                    "enable_tor": enable_tor == "true",
                     "submit_name": submit_name,
                     "system_date": system_date,
                     "system_time": system_time,
+                    "network_settings": network_settings,
                 }
             ]
         }
@@ -819,10 +819,10 @@ def upload_file_command(  # type: ignore[return]
     action_script: str = "",
     command_line: str = "",
     document_password: str = "",
-    enable_tor: str = "false",
     submit_name: str = "",
     system_date: str = "",
     system_time: str = "",
+    network_settings: str = "",
 ) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -835,11 +835,11 @@ def upload_file_command(  # type: ignore[return]
     :param action_script: runtime script for sandbox analysis
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
-    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
     :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs when entry_context and responses are lists
+    :param network_settings: specifies the sandbox network_settings used for analysis.
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
 
@@ -863,10 +863,10 @@ def upload_file_command(  # type: ignore[return]
             action_script,
             command_line,
             document_password,
-            enable_tor,
             submit_name,
             system_date,
             system_time,
+            network_settings,
         )
 
 
@@ -894,10 +894,10 @@ def send_uploaded_file_to_sandbox_analysis_command(
     action_script: str = "",
     command_line: str = "",
     document_password: str = "",
-    enable_tor: str = "false",
     submit_name: str = "",
     system_date: str = "",
     system_time: str = "",
+    network_settings: str = "",
 ) -> CommandResults:
     """Submit a sample SHA256 for sandbox analysis.
     :param client: the client object with an access token
@@ -906,14 +906,22 @@ def send_uploaded_file_to_sandbox_analysis_command(
     :param action_script: runtime script for sandbox analysis
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
-    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
     :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+    :param network_settings: specifies the sandbox network_settings used for analysis.
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.send_uploaded_file_to_sandbox_analysis(
-        sha256, environment_id, action_script, command_line, document_password, enable_tor, submit_name, system_date, system_time
+        sha256,
+        environment_id,
+        action_script,
+        command_line,
+        document_password,
+        submit_name,
+        system_date,
+        system_time,
+        network_settings,
     )
     sandbox_fields = ("environment_id", "sha256")
     resource_fields = ("id", "state", "created_timestamp", "created_timestamp")
@@ -943,10 +951,10 @@ def send_url_to_sandbox_analysis_command(
     action_script: str = "",
     command_line: str = "",
     document_password: str = "",
-    enable_tor: str = "false",
     submit_name: str = "",
     system_date: str = "",
     system_time: str = "",
+    network_settings: str = "",
 ) -> CommandResults:
     """Submit a URL or FTP for sandbox analysis.
     :param client: the client object with an access token
@@ -955,14 +963,22 @@ def send_url_to_sandbox_analysis_command(
     :param action_script: runtime script for sandbox analysis
     :param command_line: command line script passed to the submitted file at runtime
     :param document_password: auto-filled for Adobe or Office files that prompt for a password
-    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
     :param submit_name: name of the malware sample that's used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+    :param network_settings: specifies the sandbox network_settings used for analysis.
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.send_url_to_sandbox_analysis(
-        url, environment_id, action_script, command_line, document_password, enable_tor, submit_name, system_date, system_time
+        url,
+        environment_id,
+        action_script,
+        command_line,
+        document_password,
+        submit_name,
+        system_date,
+        system_time,
+        network_settings,
     )
 
     resources_fields = ("id", "state", "created_timestamp")
@@ -1587,7 +1603,7 @@ def validate_command_args(command: str, args: dict) -> None:
         if "environment_id" not in args:
             raise Exception("environment_id argument is a mandatory for cs-fx-submit-url command")
         if "url" not in args:
-            raise Exception("sha256 argument is a mandatory for cs-fx-submit-url command")
+            raise Exception("url argument is a mandatory for cs-fx-submit-url command")
 
 
 def remove_polling_related_args(args: dict) -> None:
