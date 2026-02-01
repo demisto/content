@@ -40,13 +40,14 @@ MESSAGES = {
 
 def convert_to_demisto_severity(severity: str) -> int:
     """Convert SOCRadar severity to Demisto severity level"""
-    return {
+    severity_map = {
         "LOW": IncidentSeverity.LOW,
         "MEDIUM": IncidentSeverity.MEDIUM,
         "HIGH": IncidentSeverity.HIGH,
         "CRITICAL": IncidentSeverity.CRITICAL,
         "INFO": IncidentSeverity.INFO,
-    }.get(severity.upper(), IncidentSeverity.UNKNOWN)
+    }
+    return int(severity_map.get(severity.upper(), IncidentSeverity.UNKNOWN))
 
 
 class Client(BaseClient):
@@ -190,7 +191,13 @@ class Client(BaseClient):
             demisto.error(f"[SOCRadar-MT] Traceback: {traceback.format_exc()}")
             raise
 
-    def change_alarm_status(self, alarm_ids: list[int], status_reason: str, comments: str | None = None, company_id: str | None = None) -> dict[str, Any]:
+    def change_alarm_status(
+        self,
+        alarm_ids: list[int],
+        status_reason: str,
+        comments: str | None = None,
+        company_id: str | None = None,
+    ) -> dict[str, Any]:
         """Change status of alarms"""
         if status_reason not in STATUS_REASON_MAP:
             raise ValueError(f"Invalid status reason: {status_reason}")
@@ -231,7 +238,11 @@ class Client(BaseClient):
         )
 
     def add_alarm_assignee(
-        self, alarm_id: int, user_ids: list[int] | None = None, user_emails: list[str] | None = None, company_id: str | None = None
+        self,
+        alarm_id: int,
+        user_ids: list[int] | None = None,
+        user_emails: list[str] | None = None,
+        company_id: str | None = None,
     ) -> dict[str, Any]:
         """Add assignee(s) to an alarm"""
         if not company_id:
@@ -313,7 +324,7 @@ def test_module(client: Client) -> str:
         if response.get("is_success"):
             alarms = response.get("data", [])
             if alarms:
-                company_ids = set(alarm.get("company_id") for alarm in alarms if alarm.get("company_id"))
+                company_ids = {alarm.get("company_id") for alarm in alarms if alarm.get("company_id")}
                 demisto.debug(f"[SOCRadar-MT] Found company_ids in response: {company_ids}")
             demisto.debug("[SOCRadar-MT] Test module successful")
             return "ok"
@@ -527,9 +538,10 @@ def fetch_incidents(
         start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
         demisto.debug(f"[SOCRadar-MT] Subsequent fetch: Using fetch_interval of {fetch_interval_minutes} minutes")
     else:
-        start_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
-        if not start_datetime:
+        parsed_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
+        if not parsed_datetime:
             raise ValueError("Failed to parse first_fetch_time")
+        start_datetime = parsed_datetime
         demisto.debug("[SOCRadar-MT] First fetch: Using first_fetch_time")
 
     start_date = start_datetime.strftime("%Y-%m-%d")
@@ -696,7 +708,10 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
         if not company_id:
             raise ValueError(f"Could not find company_id for alarm {alarm_id}. Please provide company_id parameter.")
 
-    response = client.change_alarm_status([int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id)
+    comments = args.get("comments", "Marked as false positive")
+    response = client.change_alarm_status(
+        [int(alarm_id)], "FALSE_POSITIVE", comments, company_id
+    )
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
 
@@ -867,7 +882,12 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"📊 Total available: {total_records} records across {total_pages} pages\n\n"
         message += "Sample incidents:\n"
         for info in incidents_info:
-            message += f"- [{info['Alarm ID']}] Company: {info['Company ID']} | {info['Risk Level']} | {info['Status']} | {info['Asset']}\n"
+            alarm_id = info['Alarm ID']
+            company = info['Company ID']
+            risk = info['Risk Level']
+            status = info['Status']
+            asset = info['Asset']
+            message += f"- [{alarm_id}] Company: {company} | {risk} | {status} | {asset}\n"
             message += f"  Type: {info['Type']}{info['Extra']}\n"
 
         if data:
