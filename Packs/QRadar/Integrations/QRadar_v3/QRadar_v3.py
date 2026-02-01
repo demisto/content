@@ -1264,9 +1264,9 @@ def get_integration_context(sync=True, with_version=False):
         if with_version:
             return integration_context
         else:
-            if isinstance(integration_context,list):
+            if isinstance(integration_context, list):
                 demisto.error(f"QRadar integration context is a list: {integration_context=}")
-            return integration_context.get('context', {})
+            return integration_context.get("context", {})
     else:
         return demisto.getIntegrationContext()
 
@@ -1302,6 +1302,7 @@ def qradar_set_integration_context(context_data):
         demisto.info(f"LAST_FETCHED_ID variable set to {LAST_FETCHED_ID}")
     else:
         demisto.info("LAST_FETCH_KEY not found in context")
+
 
 def safely_update_context_data_partial(
     changes: dict,
