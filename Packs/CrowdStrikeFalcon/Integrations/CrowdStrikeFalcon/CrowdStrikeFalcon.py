@@ -6094,7 +6094,7 @@ def resolve_case(
     Returns:
         dict: The response from the API.
     """
-    fields = {}
+    fields: dict[str, Any] = {}
     if status:
         fields["status"] = status
     if name:
