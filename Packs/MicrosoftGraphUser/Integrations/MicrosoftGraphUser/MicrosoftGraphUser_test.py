@@ -2110,6 +2110,7 @@ def test_list_temp_access_pass_method_command_get_specific(mocker, client):
     assert result.outputs_prefix == "MSGraphUser.TempAccessPassAuthMethod"
     assert "WTemporary Access Pass Method tap-method-id-1 for User test-user" in result.readable_output
 
+
 def test_request_mfa_command(mocker):
     """
     Given:
