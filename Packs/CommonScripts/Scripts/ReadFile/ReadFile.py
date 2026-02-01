@@ -15,7 +15,7 @@ def read_file(args):
         max_file_size = 1024**2
 
     entry_id = args.get("entryID")
-    input_encoding = args.get("input_encoding") or "utf-8"
+    input_encoding = args.get("input_encoding", "utf-8")
     output_data_type = args.get("output_data_type", "raw")
     output_metadata = argToBoolean(args.get("output_metadata", "false"))
 
@@ -47,13 +47,11 @@ def read_file(args):
             bad_hex = bad_bytes.hex()
             bad_repr = repr(bad_bytes)
 
-            # ---- warning ----
             demisto.info(
                 f"Warning: failed to decode bytes at positions {e.start}-{e.end} using encoding '{input_encoding}'."
-                f" Bytes (hex)={bad_hex}, repr={bad_repr}"
+                f" Bytes (hex)={bad_hex}, repr={bad_repr} for file: {file_path}"
             )
 
-            # ---- safe fallback decode ----
             data = raw.decode(input_encoding, errors="replace")  # type: ignore[assignment]
 
     # output handling
