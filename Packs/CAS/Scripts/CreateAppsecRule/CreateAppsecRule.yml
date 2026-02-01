@@ -45,18 +45,56 @@ args:
   underlyingargname: category
   description: >
     Custom rule secret category
-    Options: API_KEYS, DATABASE_CREDENTIALS, ENCRYPTION_KEYS, CLOUD_SERVICE_PROVIDER_KEYS, SSH_KEYS, ENVIRONMENT_VARIABLES, SENSITIVE_TOKENS, THIRD_PARTY_SERVICES.
+    Options: if scanner is SECRETS : API_KEYS, DATABASE_CREDENTIALS, ENCRYPTION_KEYS, CLOUD_SERVICE_PROVIDER_KEYS, SSH_KEYS, ENVIRONMENT_VARIABLES, SENSITIVE_TOKENS, THIRD_PARTY_SERVICES.
+    if scanner is IAC : AI_ML, COMPUTE, IAM, KUBERNETES, LOGGING, MONITORING, NETWORKING, PUBLIC, STORAGE.
   type: string
   required: true
+- name: sub_category
+  underlyingargname: sub_category
+  description: >
+    required only if scanner is IAC 
+    Custom rule IAC sub_category
+    Options: 
+    if category is AI_ML: GUARDRAILS, RISKY_MODELS, PUBLIC_EXPOSURE, PERMISSIONS.
+    if category is COMPUTE: OVERPROVISIONED, STARTUP_SCRIPT_LEAKS, DEFAULT_CREDENTIALS_OR_AUTH, UNSANCTIONED_RESOURCE_OR_TYPE.
+    if category is IAM: OVERLY_PERMISSIVE, UNUSED, CREDENTIAL_EXPOSURE, MFA, ROLE_SEPARATION, SHARED, EXPIRED_KEY_CONTROLS, AUTHENTICATION_POLICIES.
+    if category is KUBERNETES: NETWORK_POLICIES, ACCESS_CONTROL, LOGGING_AND_MONITORING, RESOURCE_MANAGEMENT, NATIVE_SECURITY_CONTROLS, MANAGEMENT_SERVICES_EXPOSURE.
+    if category is LOGGING: ENCRYPTION, PERMISSIONS, RETENTION, FORMATS, DISABLED_OR_MISSING, PUBLIC_EXPOSURE, UNDER_USE.
+    if category is MONITORING: TAGS_AND_METADATA, RESOURCE_HEALTH, PERFORMANCE_MONITORING, ALERTING_AND_NOTIFICATIONS, UNINTEGRATED, STORAGE.
+    if category is NETWORKING: LOAD_BALANCING, INGRESS_CONTROLS, EGRESS_CONTROLS, ENCRYPTION_AND_PROTOCOLS, VPC_VCN_VNET, FLOW_LOGS.
+    if category is PUBLIC: ADMIN_INTERFACES, DATABASE_ENDPOINTS, STORAGE_BUCKETS, APIS, SENSITIVE_PORTS.
+    if category is STORAGE: ENCRYPTION, PERMISSIONS, BACKUPS, VERSIONING, REPLICATION, ALERTING, REDUNDANCY.
+  type: string
+  required: false
 - name: frameworks
   underlyingargname: frameworks
   description: >
     list of {name:string,definition:string} for the rule
-    name Options: GIT.
-    The rule definition
+    name Options: if scanner is IAC: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM.
+    if scanner is SECRETS: GIT.
     If definition not exist create one for yourself
-    Example:
+    The rule definition
+    if scanner is SECRETS:
     "definition:\n   cond_type: 'secrets'\n   value:\n     - '(?<![A-Za-z0-9])[AK][A-Z0-9]{20}(?![A-Za-z0-9])'"
+    if scanner is IAC:
+    Example:
+    scope:
+      provider: '' # Optional - choose one: "alibaba_cloud"/"aws"/"azure"/"gcp"/"oci"
+    definition: # Define the configurations that will pass when running a scan. Any resource matching the specified resource type but not matching the defined attribute configuration and/or resource type will fail the check.
+      The example below checks for EC2s with an instance_type that is not t3.micro or t3.nano. For more examples please visit our docs - https://docs-cortex.paloaltonetworks.com/r/Cortex-CLOUD/Cortex-Cloud-Runtime-Security-Documentation/Configure-YAML-file-properties
+      or:
+        - cond_type: 'attribute'
+          resource_types:
+            - 'aws_instance'
+          attribute: 'instance_type'
+          operator: 'equals'
+          value: 't3.micro'
+        - cond_type: 'attribute'
+          resource_types:
+            - 'aws_instance'
+          attribute: 'instance_type'
+          operator: 'equals'
+          value: 't3.nano'
 outputs:
 - contextPath: Appsec.Rule.RULE_NAME
   description: The name of the Rule.

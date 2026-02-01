@@ -1,8 +1,8 @@
 commonfields:
-  id: CreateSecretAppsecRule
+  id: CreateIACAppsecRule
   version: -1
-name: CreateSecretAppsecRule
-display: CAS - Create Secret Appsec Rule 
+name: CreateIACAppsecRule
+display: CAS - Create Iac Appsec Rule 
 description: Creates a new Application Security rule in Cortex Platform. An AppSec rule defines the specific criteria and scanners used to detect vulnerabilities or misconfigurations across your application lifecycle.
 category: Utilities
 requiresuserapproval: false
@@ -45,25 +45,42 @@ args:
   underlyingargname: scanner
   description: >
     The type of security scanner used to detect findings of this rule. 
-    Options: SECRETS, IAC.
+    Options: IACS, IAC.
   type: string
   required: true
 - name: category
   underlyingargname: category
   description: >
-    Custom rule secret category
-    Options: API_KEYS, DATABASE_CREDENTIALS, ENCRYPTION_KEYS, CLOUD_SERVICE_PROVIDER_KEYS, SSH_KEYS, ENVIRONMENT_VARIABLES, SENSITIVE_TOKENS, THIRD_PARTY_SERVICES.
+    Custom rule IAC category
+    Options: AI_ML, COMPUTE, IAM, KUBERNETES, LOGGING, MONITORING, NETWORKING, PUBLIC, STORAGE
+  type: string
+  required: true
+- name: sub_category
+  underlyingargname: sub_category
+  description: >
+    required only if scanner is IAC 
+    Custom rule IAC sub_category
+    Options: 
+    if category is AI_ML: GUARDRAILS, RISKY_MODELS, PUBLIC_EXPOSURE, PERMISSIONS.
+    if category is COMPUTE: OVERPROVISIONED, STARTUP_SCRIPT_LEAKS, DEFAULT_CREDENTIALS_OR_AUTH, UNSANCTIONED_RESOURCE_OR_TYPE.
+    if category is IAM: OVERLY_PERMISSIVE, UNUSED, CREDENTIAL_EXPOSURE, MFA, ROLE_SEPARATION, SHARED, EXPIRED_KEY_CONTROLS, AUTHENTICATION_POLICIES.
+    if category is KUBERNETES: NETWORK_POLICIES, ACCESS_CONTROL, LOGGING_AND_MONITORING, RESOURCE_MANAGEMENT, NATIVE_SECURITY_CONTROLS, MANAGEMENT_SERVICES_EXPOSURE.
+    if category is LOGGING: ENCRYPTION, PERMISSIONS, RETENTION, FORMATS, DISABLED_OR_MISSING, PUBLIC_EXPOSURE, UNDER_USE.
+    if category is MONITORING: TAGS_AND_METADATA, RESOURCE_HEALTH, PERFORMANCE_MONITORING, ALERTING_AND_NOTIFICATIONS, UNINTEGRATED, STORAGE.
+    if category is NETWORKING: LOAD_BALANCING, INGRESS_CONTROLS, EGRESS_CONTROLS, ENCRYPTION_AND_PROTOCOLS, VPC_VCN_VNET, FLOW_LOGS.
+    if category is PUBLIC: ADMIN_INTERFACES, DATABASE_ENDPOINTS, STORAGE_BUCKETS, APIS, SENSITIVE_PORTS.
+    if category is STORAGE: ENCRYPTION, PERMISSIONS, BACKUPS, VERSIONING, REPLICATION, ALERTING, REDUNDANCY.
   type: string
   required: true
 - name: frameworks
   underlyingargname: frameworks
   description: >
     list of {name:string,definition:string} for the rule
-    name Options: GIT.
+    name Options: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM..
     The rule definition
     If definition not exist create one for yourself
     Example:
-    "definition:\n   cond_type: 'secrets'\n   value:\n     - '(?<![A-Za-z0-9])[AK][A-Z0-9]{20}(?![A-Za-z0-9])'"
+    "definition:\n   cond_type: 'IACs'\n   value:\n     - '(?<![A-Za-z0-9])[AK][A-Z0-9]{20}(?![A-Za-z0-9])'"
   type: string
 outputs:
 - name: Appsec.Rule.RULE_NAME

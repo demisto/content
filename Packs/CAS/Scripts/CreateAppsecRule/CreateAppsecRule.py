@@ -31,7 +31,7 @@ def main():
         severity = args.get("severity")
         scanner = args.get("scanner")
         category = args.get("category")
-        subCategory = args.get("subCategory")
+        sub_category = args.get("sub_category")
         frameworks = argToList(args.get("frameworks"))
 
         if not rule_name:
@@ -46,8 +46,8 @@ def main():
         if not category:
             raise DemistoException("Category is required.")
 
-        if scanner is 'IaC' and not subCategory:
-            raise DemistoException("SubCategory is required for IaC scanner.")
+        if scanner == 'IAC' and not sub_category:
+            raise DemistoException("Sub Category is required for IaC scanner.")
 
         if len(frameworks) == 0 :
             raise DemistoException("Frameworks is required.")
@@ -62,7 +62,12 @@ def main():
             "scanner": scanner,
             "category": category,
             "frameworks": frameworks,
+            "subCategory": sub_category # Might be None
         }
+
+        # Remove any keys where the value is None
+        payload = {k: v for k, v in payload.items() if v is not None}
+
         demisto.info(f"KUKU payload is {payload}.")
         payload = json.dumps(payload)
 
