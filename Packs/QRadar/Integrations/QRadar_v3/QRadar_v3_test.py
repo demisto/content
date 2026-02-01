@@ -4,7 +4,6 @@ QRadar v3 integration for Cortex XSOAR - Unit Tests file
 
 import copy
 import json
-import os
 from collections.abc import Callable
 from datetime import datetime
 from unittest.mock import patch
@@ -139,7 +138,7 @@ QRadar_v3.EVENTS_SEARCH_RETRY_SECONDS = 0
 
 
 def util_load_json(path):
-    with open(os.path.join(os.path.dirname(__file__), path), encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -512,7 +511,7 @@ def test_create_single_asset_for_offense_enrichment():
     ],
 )
 def test_poll_offense_events_with_retry(
-    mocker, status_exception, status_response, results_response, search_id, expected
+    mocker, requests_mock, status_exception, status_response, results_response, search_id, expected
 ):
     """
     Given:
@@ -530,17 +529,11 @@ def test_poll_offense_events_with_retry(
     mocker.patch.object(demisto, "error")
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
-
-    def mock_http_request(method, url_suffix, *args, **kwargs):
-        if search_id in url_suffix and "/results" in url_suffix:
-            return results_response
-        if search_id in url_suffix:
-            if status_exception:
-                raise status_exception
-            return status_response
-        return {}
-
-    mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
+    if status_exception:
+        requests_mock.get(f"{client.server}/api/ariel/searches/{search_id}", exc=status_exception)
+    else:
+        requests_mock.get(f"{client.server}/api/ariel/searches/{search_id}", json=status_response)
+    requests_mock.get(f"{client.server}/api/ariel/searches/{search_id}/results", json=results_response)
     assert poll_offense_events(client, search_id, True, 16) == expected
 
 
@@ -2157,7 +2150,7 @@ def test_recovery_lastrun(mocker):
         - If there are not changes, make sure that the context is not updated
     """
     set_integration_context(
-        {LAST_FETCH_KEY: 4, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
+        {LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
     )
     mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 4})
     QRadar_v3.recover_from_last_run()

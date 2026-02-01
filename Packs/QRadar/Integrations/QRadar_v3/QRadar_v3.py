@@ -1,7 +1,6 @@
 import concurrent.futures
 import copy
 import secrets
-import sys
 import uuid
 from enum import Enum
 from ipaddress import ip_address
@@ -1316,7 +1315,7 @@ def safely_update_context_data_partial(
     changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
     print_debug_msg(f"Updating context with {changes=}, {override_keys=}, {changes_size_bytes=}.")
     for _ in range(attempts):
-        ctx = qradar_get_integration_context()
+        ctx = get_integration_context()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes, override_keys=override_keys)
         merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
@@ -2898,7 +2897,7 @@ def recover_from_last_run(ctx: dict | None = None):
     after demisto.createIncidents but before the context is updated.
     """
     if not ctx:
-        ctx = qradar_get_integration_context()
+        ctx = get_integration_context()
 
     assert isinstance(ctx, dict)
 
