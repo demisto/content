@@ -3265,6 +3265,7 @@ class EC2:
                 "VolumeSize",
             ],
             removeNull=True,
+            headerTransform=pascalToSpace
         )
 
         outputs = {
@@ -3292,10 +3293,8 @@ class EC2:
             CommandResults: Results of the deletion operation with success message
         """
         snapshot_id = args.get("snapshot_id")
-        kwargs = {"SnapshotId": snapshot_id}
-
         print_debug_logs(client, f"Deleting snapshot: {snapshot_id}")
-        response = client.delete_snapshot(**kwargs)
+        response = client.delete_snapshot(SnapshotId=snapshot_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -3346,7 +3345,7 @@ class EC2:
         if tags := response.get("Tags"):
             outputs["Tags"] = tags
 
-        readable_output = tableToMarkdown("AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True)
+        readable_output = tableToMarkdown("Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True, headerTransform=pascalToSpace)
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Snapshots",
