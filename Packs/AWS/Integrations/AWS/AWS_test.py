@@ -7864,7 +7864,7 @@ def test_ec2_describe_volumes_command_with_filters(mocker):
     volumes_key = "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)"
     assert len(result.outputs[volumes_key]) == 1
     assert result.outputs[volumes_key][0]["Encrypted"] is True
-    mock_client.describe_volumes.assert_called_once_with(Filters=[{'Name': 'encrypted', 'Values': ['true']}], MaxResults=50)
+    mock_client.describe_volumes.assert_called_once_with(Filters=[{"Name": "encrypted", "Values": ["true"]}], MaxResults=50)
 
 
 def test_ec2_describe_volumes_command_no_volumes_found(mocker):
@@ -7958,6 +7958,10 @@ def test_ec2_modify_volume_command_success(mocker):
     assert result.outputs_prefix == "AWS.EC2.Volumes"
     assert result.outputs["VolumeId"] == "vol-12345678"
     assert "AWS EC2 Volume Modification" in result.readable_output
+    assert result.outputs.get("VolumeId") not in mock_response["VolumeModification"]
+    assert result.outputs.get("VolumeType") == "gp3"
+    assert result.outputs.get("Modification").get("OriginalSize") == mock_response["VolumeModification"]["OriginalSize"]
+    assert result.outputs.get("Modification").get("ModificationState") == "modifying"
 
 
 def test_ec2_modify_volume_command_with_throughput(mocker):
