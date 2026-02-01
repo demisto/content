@@ -5996,9 +5996,9 @@ def list_case_summaries_command():
     )
 
 
-def get_evidences_for_case_command(args: dict[str, Any]) -> CommandResults:
+def get_evidence_for_case_command(args: dict[str, Any]) -> CommandResults:
     """
-    Get evidences for a specific case.
+    Get evidence for a specific case.
     Args:
         args: The arguments of the command.
     Returns:
@@ -6022,7 +6022,7 @@ def get_evidences_for_case_command(args: dict[str, Any]) -> CommandResults:
 
     readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
     markdown_output = tableToMarkdown(
-        "Case Evidences", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
+        "Case evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
     )
     return CommandResults(
         outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
@@ -8368,8 +8368,8 @@ def main():  # pragma: no cover
             return_results(list_incident_summaries_command())
         elif command == "cs-falcon-list-case-summaries":
             return_results(list_case_summaries_command())
-        elif command == "cs-falcon-get-evidences-for-case":
-            return_results(get_evidences_for_case_command(args))
+        elif command == "cs-falcon-get-evidence-for-case":
+            return_results(get_evidence_for_case_command(args))
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":
