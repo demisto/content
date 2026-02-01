@@ -3052,6 +3052,8 @@ def messages() -> Response:
 
         if validate_auth_header(headers) is False:
             demisto.info(f"Authorization header failed: {headers!s}")
+            error_msg = "Authorization header validation failed"
+            return Response(response=error_msg, status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
             integration_context: dict = get_integration_context()

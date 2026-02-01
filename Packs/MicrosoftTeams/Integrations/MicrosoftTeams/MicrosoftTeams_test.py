@@ -3745,3 +3745,45 @@ def test_validate_auth_header_signature_verification(mocker):
     # Test Invalid Token
     headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
     assert validate_auth_header(headers_invalid) is False
+
+
+def test_messages_endpoint_auth_header_validation_failure(mocker):
+    """
+    Given:
+        - A POST request to the messages endpoint with invalid authorization headers.
+    When:
+        - The validate_auth_header function returns False.
+    Then:
+        - The endpoint returns a 401 status code.
+        - The response contains "Authorization header validation failed" message.
+    """
+    from MicrosoftTeams import APP
+
+    # Mock validate_auth_header to return False
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=False)
+
+    # Mock demisto.info to avoid errors
+    mocker.patch.object(demisto, "info")
+
+    # Create test request with invalid headers
+    mock_request_body = {
+        "type": "message",
+        "text": "test message",
+        "from": {"id": "test-user-id", "name": "Test User"},
+        "conversation": {"id": "test-conversation-id"},
+    }
+
+    APP.testing = True
+    app = APP.test_client()
+
+    # Send POST request with invalid authorization
+    response = app.post(
+        "/",
+        data=json.dumps(mock_request_body),
+        content_type="application/json",
+        headers={"Authorization": "Bearer invalid_token"},
+    )
+
+    # Assert response
+    assert response.status_code == 401
+    assert response.data.decode() == "Authorization header validation failed"
