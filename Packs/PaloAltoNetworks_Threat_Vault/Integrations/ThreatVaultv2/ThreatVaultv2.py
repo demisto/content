@@ -141,11 +141,11 @@ class Client(BaseClient):
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params=args)
 
-    def atp_batch_report_request(self, args: str, value: list) -> dict:
+    def atp_batch_report_request(self, args: str, value: list) -> requests.Response:
         params: dict[str, Union[list, str]] = {args: value}
         params = json.dumps(params)
         suffix = "atp/reports"
-        return self._http_request(method="POST", url_suffix=suffix, data=params)
+        return self._http_request(method="POST", url_suffix=suffix, data=params, resp_type="response")
 
     def atp_report_pcap_request(self, args: dict) -> dict:
         suffix = "atp/reports/pcaps"
@@ -838,19 +838,60 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
     command_results_list: List[CommandResults] = []
 
     if report_ids:
+        demisto.debug(f"Requesting report IDs: {report_ids}")
         try:
             response = client.atp_batch_report_request(args="id", value=report_ids)
+            demisto.debug(f"Response TEXT value: {response.text}")
+            demisto.debug("Decoding response JSON string and converting a Python object")
+            # Debug logging for response analysis
+            response = response.json()
+            demisto.debug(f"Response DECODED type: {type(response)}")
+
+            # Check if response is a string (unexpected)
+            if isinstance(response, str):
+                demisto.error(f"Received string response instead of dict. Content: {response[:500]}")
+                return_error(
+                    f"Unexpected API response format. Expected JSON but received string. Response preview: {response[:200]}"
+                )
+
+            # Check if response is a dict
+            if not isinstance(response, dict):
+                demisto.error(f"Response is not a dictionary. Type: {type(response)}")
+                return_error(f"Unexpected API response type: {type(response)}. Expected dictionary.")
+
+            demisto.debug(f"Response keys: {response.keys() if isinstance(response, dict) else 'N/A'}")
+
         except DemistoException as err:
-            if err.res is not None and err.res.status_code == 404:
-                response = {}
-                readable_output = f"There is no information about the {report_ids!s}"
-                command_results_list.append(CommandResults(readable_output=readable_output))
+            demisto.debug(f"DemistoException caught: {err}")
+            if err.res is not None:
+                demisto.debug(f"HTTP Status Code: {err.res.status_code}")
+                demisto.debug(f"Response headers: {dict(err.res.headers)}")
+                demisto.debug(f"Response content preview: {str(err.res.content[:500])}")
+
+                if err.res.status_code == 404:
+                    response = {}
+                    readable_output = f"There is no information about the {report_ids!s}"
+                    command_results_list.append(CommandResults(readable_output=readable_output))
+                else:
+                    raise
             else:
+                demisto.debug("Received empty response")
                 raise
 
         if response:
-            report_infos: List[dict] = response.get("data", {}).get("reports", [])
-            for report_info in report_infos:
+            demisto.debug("Processing response data")
+
+            # Safely extract data
+            data_section = response.get("data", {})
+            demisto.debug(
+                f"Data section type: {type(data_section)}, keys: {data_section.keys() if isinstance(data_section, dict) else 'N/A'}"
+            )
+
+            report_infos: List[dict] = data_section.get("reports", []) if isinstance(data_section, dict) else []
+            demisto.debug(f"Found {len(report_infos)} reports")
+
+            for idx, report_info in enumerate(report_infos):
+                demisto.debug(f"Processing report {idx + 1}/{len(report_infos)}: {report_info.get('report_id', 'unknown')}")
                 readable_output = tableToMarkdown(
                     name=f"Advanced Threat Prevention Report ID: {report_info.get('report_id')}:",
                     t=report_info,
@@ -864,6 +905,8 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
                         outputs=report_info,
                     )
                 )
+
+            demisto.debug(f"Successfully processed {len(command_results_list)} reports")
 
     return command_results_list
 
