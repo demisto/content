@@ -240,7 +240,7 @@ def test_archive_with_slash_in_path():
 
 @pytest.fixture
 def mock_popen():
-    with patch("UnzipFile.Popen") as mock:
+    with patch('UnzipFile.Popen') as mock:
         yield mock
 
 
@@ -263,7 +263,7 @@ def test_extract_with_errors_in_stdout(mock_popen):
     mock_process = MagicMock()
     mock_process.communicate.return_value = (
         b"Hello_World_Errors.yml\nHello_World.yml",  # stdout
-        b"",  # stderr (no error)
+        b""  # stderr (no error)
     )
 
     # Mock the Popen constructor to return our mock process
@@ -280,3 +280,37 @@ def test_extract_with_errors_in_stdout(mock_popen):
     # Assert the stdout contains both filenames
     assert "Hello_World_Errors.yml" in result
     assert "Hello_World.yml" in result
+
+
+def test_unzip_with_space_in_path(mocker):
+    """
+    Given
+    - A zip file path with spaces
+    - empty folder _dir
+    When
+    - run extract on that zip file
+    Then
+    - ensure the command passed to Popen is a list and contains the path correctly (not split)
+    """
+    import UnzipFile as unzip
+    
+    # Given
+    zip_path = "/path/to/directory with spaces/test.zip"
+    zipped_file_object = {"name": "test.zip", "path": zip_path}
+    _dir = "/tmp/extract_dir"
+    
+    # Mock Popen
+    mock_popen = mocker.patch.object(unzip, 'Popen')
+    mock_process = MagicMock()
+    mock_process.communicate.return_value = (b"", b"")
+    mock_popen.return_value = mock_process
+    
+    # When
+    extract(zipped_file_object, _dir, zip_tool="7z")
+    
+    # Then
+    args, _ = mock_popen.call_args
+    cmd_list = args[0]
+    
+    assert isinstance(cmd_list, list)
+    assert zip_path in cmd_list
