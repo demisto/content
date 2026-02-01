@@ -287,8 +287,7 @@ configuration:
   - Spotlight
   - CNAPP Alerts
   hidden:
-  - marketplacev2
-  - platform
+  - xsoar
 - display: 'Fetch types'
   defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
