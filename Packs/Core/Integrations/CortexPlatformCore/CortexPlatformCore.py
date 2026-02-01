@@ -998,14 +998,24 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
 
 
 def get_remediation_techniques_suggestion(issue: dict, current_issue_id: str) -> list:
+    """
+    Get remediation techniques suggestions based on asset types.
+
+    Args:
+        issue (dict): The issue data.
+        current_issue_id (str): The current issue ID.
+
+    Returns:
+        list: A list of filtered remediation techniques.
+    """
     asset_types: list = issue.get("asset_types", [])
     normalized_asset_types = {
-        t.upper().replace(" ", "_") for t in asset_types
+        t.upper().replace(" ", "_") for t in asset_types if t
     }
-    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
+    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques") or []
     filtered_techniques = [
         t for t in remediation_techniques_response
-        if t.get("techniqueAssetType").upper() in normalized_asset_types
+        if t.get("techniqueAssetType") and t.get("techniqueAssetType").upper() in normalized_asset_types
     ]
     demisto.debug(f"Remediation recommendation of {current_issue_id=}: {filtered_techniques}")
     return filtered_techniques
