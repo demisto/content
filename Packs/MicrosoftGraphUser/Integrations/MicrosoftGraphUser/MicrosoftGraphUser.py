@@ -53,7 +53,7 @@ AUTH_METHODS_FIELD_MAPPING = {
         "keyStrength": "Method Key Strength",
     },
 }
-MFA_APP_ID = '981f26a1-7f43-403b-a875-f8b09b8cd720'  # MFA app ID (not a secret, same app ID for all azure tenants)
+MFA_APP_ID = "981f26a1-7f43-403b-a875-f8b09b8cd720"  # MFA app ID (not a secret, same app ID for all azure tenants)
 MAX_TIMEOUT_LIMIT = 60
 
 
