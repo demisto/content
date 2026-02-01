@@ -3236,7 +3236,7 @@ class EC2:
 
         # Add pagination if no specific IDs or names provided
         if not launch_template_ids and not launch_template_names:
-            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+            pagination_kwargs = build_pagination_kwargs(args)
             kwargs.update(pagination_kwargs)
 
         remove_nulls_from_dictionary(kwargs)
@@ -3308,52 +3308,24 @@ class EC2:
         }
 
         # Build LaunchTemplateData
-        launch_template_data: Dict[str, Any] = {}
-
-        # Basic instance configuration
-        if kernel_id := args.get("kernel_id"):
-            launch_template_data["KernelId"] = kernel_id
-
-        if ebs_optimized := args.get("ebs_optimized"):
-            launch_template_data["EbsOptimized"] = argToBoolean(ebs_optimized)
-
-        # IAM instance profile
-        iam_profile = {}
-        if iam_arn := args.get("iam_instance_profile_arn"):
-            iam_profile["Arn"] = iam_arn
-        if iam_name := args.get("iam_instance_profile_name"):
-            iam_profile["Name"] = iam_name
-        if iam_profile:
-            launch_template_data["IamInstanceProfile"] = iam_profile
-
-        if image_id := args.get("image_id"):
-            launch_template_data["ImageId"] = image_id
-
-        if instance_type := args.get("instance_type"):
-            launch_template_data["InstanceType"] = instance_type
-
-        if key_name := args.get("key_name"):
-            launch_template_data["KeyName"] = key_name
-
-        # Monitoring
-        if monitoring := args.get("monitoring"):
-            launch_template_data["Monitoring"] = {"Enabled": argToBoolean(monitoring)}
-
-        if disable_api_termination := args.get("disable_api_termination"):
-            launch_template_data["DisableApiTermination"] = argToBoolean(disable_api_termination)
-
-        if shutdown_behavior := args.get("instance_initiated_shutdown_behavior"):
-            launch_template_data["InstanceInitiatedShutdownBehavior"] = shutdown_behavior
-
-        if user_data := args.get("user_data"):
-            launch_template_data["UserData"] = user_data
-
-        # Security groups
-        if security_group_ids := args.get("security_group_ids"):
-            launch_template_data["SecurityGroupIds"] = argToList(security_group_ids)
-
-        if security_groups := args.get("security_groups"):
-            launch_template_data["SecurityGroups"] = argToList(security_groups)
+        launch_template_data: Dict[str, Any] = {
+            "KernelId": args.get("kernel_id"),
+            "EbsOptimized": arg_to_bool_or_none(args.get("ebs_optimized")),
+            "ImageId": args.get("image_id"),
+            "InstanceType": args.get("instance_type"),
+            "KeyName": args.get("key_name"),
+            "DisableApiTermination": arg_to_bool_or_none(args.get("disable_api_termination")),
+            "InstanceInitiatedShutdownBehavior": args.get("instance_initiated_shutdown_behavior"),
+            "UserData": args.get("user_data"),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "SecurityGroups": argToList(args.get("security_groups")),
+            "Monitoring": remove_empty_elements({"Enabled": arg_to_bool_or_none(args.get("monitoring"))}),
+            "IamInstanceProfile": remove_empty_elements(
+                {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")}),
+            "Placement": remove_empty_elements(
+                {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")}),
+            "RamDiskId": args.get("ram_disk_id"),
+        }
 
         # Block device mappings
         block_device_mappings = []
@@ -3390,20 +3362,9 @@ class EC2:
         if network_interfaces:
             launch_template_data["NetworkInterfaces"] = network_interfaces
 
-        # Placement
-        placement = remove_empty_elements({
-            "AvailabilityZone": args.get("availability_zone"),
-            "Tenancy": args.get("placement_tenancy"),
-        })
-        if placement:
-            launch_template_data["Placement"] = placement
-
-        if ram_disk_id := args.get("ram_disk_id"):
-            launch_template_data["RamDiskId"] = ram_disk_id
-
         # Tag specifications
         if tags := args.get("tags"):
-            launch_template_data["TagSpecifications"] = parse_tag_specifications(tags)
+            launch_template_data["TagSpecifications"] = [{"ResourceType": "launch-template", "Tags": parse_tag_field(tags)}]
 
         # Instance market options (Spot)
         if market_type := args.get("market_type"):
@@ -3436,24 +3397,13 @@ class EC2:
 
         launch_template = response.get("LaunchTemplate", {})
 
-        # Build output data
-        output_data = {
-            "LaunchTemplateId": launch_template.get("LaunchTemplateId"),
-            "LaunchTemplateName": launch_template.get("LaunchTemplateName"),
-            "CreateTime": launch_template.get("CreateTime"),
-            "CreatedBy": launch_template.get("CreatedBy"),
-            "DefaultVersionNumber": launch_template.get("DefaultVersionNumber"),
-            "LatestVersionNumber": launch_template.get("LatestVersionNumber"),
-        }
-        output_data = remove_empty_elements(output_data)
-
         return CommandResults(
             outputs_prefix="AWS.EC2.LaunchTemplates",
             outputs_key_field="LaunchTemplateId",
             outputs=launch_template,
             readable_output=tableToMarkdown(
                 "AWS LaunchTemplates",
-                output_data,
+                launch_template,
                 headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
