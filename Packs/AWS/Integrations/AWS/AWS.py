@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta, UTC
+from datetime import date, datetime, timedelta
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -3278,7 +3278,7 @@ class EC2:
             "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
             "Iops": arg_to_number(args.get("iops")),
             "Size": arg_to_number(args.get("size")),
-            "Throughput": arg_to_number(args.get("throughput"))
+            "Throughput": arg_to_number(args.get("throughput")),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -3297,7 +3297,7 @@ class EC2:
             "VolumeType": volume_modification.pop("TargetVolumeType", None),
             "Throughput": volume_modification.pop("TargetThroughput", None),
             "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
-            "Modification": volume_modification
+            "Modification": volume_modification,
         }
 
         readable_output = tableToMarkdown(
@@ -3349,7 +3349,7 @@ class EC2:
             "ClientToken": args.get("client_token"),
             "Iops": arg_to_number(args.get("iops")),
             "Size": arg_to_number(args.get("size")),
-            "Throughput": arg_to_number(args.get("throughput"))
+            "Throughput": arg_to_number(args.get("throughput")),
         }
 
         if tags := args.get("tags"):

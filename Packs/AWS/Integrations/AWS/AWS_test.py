@@ -7864,7 +7864,7 @@ def test_ec2_describe_volumes_command_with_filters(mocker):
     volumes_key = "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)"
     assert len(result.outputs[volumes_key]) == 1
     assert result.outputs[volumes_key][0]["Encrypted"] is True
-    mock_client.describe_volumes.assert_called_once_with()
+    mock_client.describe_volumes.assert_called_once_with(Filters=[{'Name': 'encrypted', 'Values': ['true']}], MaxResults=50)
 
 
 def test_ec2_describe_volumes_command_no_volumes_found(mocker):
@@ -7920,6 +7920,7 @@ def test_ec2_describe_volumes_command_with_pagination(mocker):
     mock_client.describe_volumes.assert_called_once()
     call_args = mock_client.describe_volumes.call_args[1]
     assert call_args["MaxResults"] == 50
+    assert mock_response["NextToken"] == result.outputs.get("AWS.EC2(true)").get("VolumesNextToken")
 
 
 def test_ec2_modify_volume_command_success(mocker):
