@@ -2497,3 +2497,80 @@ def test_get_rules_names(mocker):
         102: "Unauthorized Login",
         103: "Malware Detected",
     }
+
+
+def test_get_integration_context_versioned(mocker):
+    """
+    Given:
+        - is_versioned_context_available returns True
+    When:
+        - Calling get_integration_context
+    Then:
+        - Ensure demisto.getIntegrationContextVersioned is called
+        - Ensure the correct context is returned
+    """
+    mocker.patch("QRadar_v3.is_versioned_context_available", return_value=True)
+    mocker.patch.object(demisto, "getIntegrationContextVersioned", return_value={"context": {"a": 1}, "version": 1})
+
+    # Test without version
+    assert QRadar_v3.get_integration_context() == {"a": 1}
+
+    # Test with version
+    assert QRadar_v3.get_integration_context(with_version=True) == {"context": {"a": 1}, "version": 1}
+
+
+def test_get_integration_context_not_versioned(mocker):
+    """
+    Given:
+        - is_versioned_context_available returns False
+    When:
+        - Calling get_integration_context
+    Then:
+        - Ensure demisto.getIntegrationContext is called
+        - Ensure the correct context is returned
+    """
+    mocker.patch("QRadar_v3.is_versioned_context_available", return_value=False)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"a": 1})
+
+    assert QRadar_v3.get_integration_context() == {"a": 1}
+
+
+def test_qradar_set_integration_context(mocker):
+    """
+    Given:
+        - Context data with LAST_FETCH_KEY
+    When:
+        - Calling qradar_set_integration_context
+    Then:
+        - Ensure set_integration_context is called
+        - Ensure LAST_FETCHED_ID global variable is updated
+    """
+    mock_set = mocker.patch("QRadar_v3.set_integration_context")
+    context_data = {QRadar_v3.LAST_FETCH_KEY: 123}
+
+    QRadar_v3.qradar_set_integration_context(context_data)
+
+    mock_set.assert_called_with(context_data)
+    assert QRadar_v3.LAST_FETCHED_ID == 123
+
+
+def test_qradar_set_integration_context_no_last_fetch(mocker):
+    """
+    Given:
+        - Context data without LAST_FETCH_KEY
+    When:
+        - Calling qradar_set_integration_context
+    Then:
+        - Ensure set_integration_context is called
+        - Ensure LAST_FETCHED_ID global variable is NOT updated (or remains as is/None)
+    """
+    mock_set = mocker.patch("QRadar_v3.set_integration_context")
+    context_data = {"other": "data"}
+
+    # Reset global if needed
+    QRadar_v3.LAST_FETCHED_ID = None
+
+    QRadar_v3.qradar_set_integration_context(context_data)
+
+    mock_set.assert_called_with(context_data)
+    assert QRadar_v3.LAST_FETCHED_ID is None
