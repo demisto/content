@@ -4349,6 +4349,165 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+from typing import Dict, Any, Set, List
+
+
+def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Validates arguments and maps them to the support ticket context.
+    Includes dependent validation for problem_concentration based on the issue_category.
+    """
+    product_type = args.get('product_type')
+    description = args.get('description', '')
+    contact_number = args.get('contact_number')
+    issue_impact = args.get('issue_impact')
+    issue_category = args.get('issue_category')
+    problem_concentration = args.get('problem_concentration')
+    issue_frequency = args.get('issue_frequency')
+    start_time = args.get('most_recent_issue_start_time')
+
+    # 2. Validation Data Structures
+    LEGIT_PRODUCT_TYPES = {"Cortex XSIAM", "Cortex Cloud", "Cortex XDR"}
+    LEGIT_IMPACTS = {
+        "Low", "Minor", "Major", "Critical", "Critical & Life/Operations at Risk"
+    }
+
+    # Mapping of Product Type to allowed Categories
+    PRODUCT_CATEGORY_MAPPING: Dict[str, Set[str]] = {
+        "Cortex XSIAM": {
+            "Agent", "Cases and Issues", "Cloud Onboarding", "Data Collection, Integrations, and Marketplace",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management", "Security Incidents",
+            "Server", "Tenant Administration and Access Control", "Vulnerability and Compliance Management",
+            "Web Application and API Security", "XDR Agent"
+        },
+        "Cortex Cloud": {
+            "AI Security (AISPM)", "API Security (WAAS)", "Access Management, Integrations and Authentication",
+            "Application Security", "CI/CD Prevention", "Cases and Issues", "Cloud Agent", "Cloud Alerts and Events",
+            "Cloud Assets and Reports", "Cloud Onboarding", "Cloud Scan and Agentless",
+            "Cloud Workload and Posture Security Settings", "Compliance Management", "Compute Workload Inventory",
+            "Data Collection, Integrations, and Marketplace", "Data Security (DSPM)",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management",
+            "Tenant Administration and Access Control", "Vulnerability Management",
+            "Vulnerability and Compliance Management", "Web Application and API Security", "XDR Agent"
+        },
+        "Cortex XDR": {
+            "Agent", "Cases and Issues", "Cloud Onboarding", "Data Collection, Integrations, and Marketplace",
+            "Detection, Investigation and Inventory", "Modules", "Posture Management", "Security Incidents",
+            "Server", "Tenant Administration and Access Control", "Vulnerability and Compliance Management",
+            "Web Application and API Security", "XDR Agent"
+        }
+    }
+
+    # Mapping of Category (smeArea) to allowed Concentrations (subGroupName)
+    CATEGORY_MAPPING: Dict[str, Set[str]] = {
+        "Agent": {"Communication", "Device Control", "Install/Upgrade/Uninstall", "Performance", "non-persistent VDI"},
+        "Cases and Issues": {"Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain", "IT Domain",
+                             "Posture Domain", "Security Domain", "Threat Coverage Analysis"},
+        "Cloud Onboarding": {"CI/CD Security", "Cloud Scan", "Kubernetes Connectors", "Option not available",
+                             "Registry Configuration", "Scan with Outpost"},
+        "Data Collection, Integrations, and Marketplace": {"Broker VM", "Cloud Identitiy Engine", "Data Collection Configuration",
+                                                           "Data Management", "Engines", "Integrations Configuration",
+                                                           "Marketplace", "Public API"},
+        "Detection, Investigation and Inventory": {"Cases and Issues Configuration", "Dashboard and Reports",
+                                                   "Host Insights / Host Inventory", "Inventory - Assets",
+                                                   "Inventory - Endpoints", "Investigation and Response", "Threat Management"},
+        "Modules": {"AI Security", "Application Security", "Attack Surface Management", "Data Security", "Identity Security"},
+        "Posture Management": {"Management", "Policies", "Rules"},
+        "Security Incidents": {"Breach Assessment", "Coverage Assessment", "Other Alert Source", "Security Incidents"},
+        "Server": {"Automation", "Broker VM", "Dashboard and Reports", "Data Ingestion", "Endpoint Management", "Marketplace",
+                   "Others", "TIM (Threat Intelligence Management)", "Tenant Performance", "License/Provisioning",
+                   "User and Roles Management"},
+        "Tenant Administration and Access Control": {"Access Management", "Add-ons", "Audit Logs and Health Issues", "Copilot",
+                                                     "Cortex Gateway", "Licensing", "Onboarding and Access",
+                                                     "Support Case Creation", "Tenant Availability", "Tenant Configuration",
+                                                     "Tenant Migration"},
+        "Vulnerability and Compliance Management": {"Compliance Management", "Option not available", "Vulnerability Management"},
+        "Web Application and API Security": {"API Discovery", "API Gateway Configuration", "API Specifications",
+                                             "In-Line Security"},
+        "XDR Agent": {"XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container", "XDR Agent for Cloud - Host",
+                      "XDR Agent for Cloud - Kubernetes", "XDR Agent for Cloud - Serverless",
+                      "XDR Agent for Enterprise - Android", "XDR Agent for Enterprise - Linux",
+                      "XDR Agent for Enterprise - Windows", "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS"},
+        "AI Security (AISPM)": {"Dashboard and Reporting", "Onboarding"},
+        "API Security (WAAS)": {"API Discovery", "API Gateway Configuration", "API Protection", "In-Line Security"},
+        "Access Management, Integrations and Authentication": {"API", "API Keys", "Integrations", "PAN CSP", "PAN HUB", "Roles",
+                                                               "Single Sign-on", "User Groups", "Users"},
+        "Application Security": {"Assets - IaC Resources", "Assets - Repositories", "Assets - Software Pacakges", "CI/CD Runs",
+                                 "CI/CD Systems", "IDEs", "Issues - CVE", "Issues - IaC Misconfigurations",
+                                 "Issues - Package Integrity", "Issues - Secrets", "Package Registries",
+                                 "Scans - Branch Periodic Scan", "Scans - PR Scans"},
+        "CI/CD Prevention": {"Cortex CLI", "Jenkins"},
+        "Cloud Agent": {"App-Embedded", "Container", "Host", "Kubernetes", "Serverless", "Tanzu"},
+        "Cloud Alerts and Events": {"Cloud Alerts", "Cloud Events"},
+        "Cloud Assets and Reports": {"API", "API Keys", "Asset Groups", "Assets", "Dashboard & Reports", "Integrations",
+                                     "Network Configuration", "PAN CSP", "PAN HUB", "Roles", "Single Sign-on", "User Groups",
+                                     "Users"},
+        "Cloud Scan and Agentless": {"Cloud Scan", "Scan with Outpost"},
+        "Cloud Workload and Posture Security Settings": {"Admission Controls", "Alert Exclusions", "Compliance Policy",
+                                                         "Health Alerts", "Kubernetes Connectors", "Licensing", "Malware Policy",
+                                                         "Management Audit Logs", "Notifications", "Registry Settings",
+                                                         "Secrets Policy", "Settings", "Vulnerability Policy"},
+        "Compliance Management": {"Cloud Compliance", "Hosts", "Images and Containers", "Kubernetes"},
+        "Compute Workload Inventory": {"Container Images", "Image Registry", "Kubernetes Inventory", "Serverless Functions",
+                                       "VM Instance"},
+        "Data Security (DSPM)": {"API", "Asset - Data", "Classification", "Connectivity/Role Permissions",
+                                 "Dashboard and Reporting", "Data Detection and Response (DDR)", "Integrations", "Risks",
+                                 "Scanning"},
+        "Vulnerability Management": {"Configuration", "False Negative", "False Positive", "Reports"}
+    }
+
+    # 3. Validation Logic
+    # 3a. Check Product Type
+    if product_type and product_type not in LEGIT_PRODUCT_TYPES:
+        raise ValueError(f"Invalid product type: '{product_type}'. Options are: {', '.join(LEGIT_PRODUCT_TYPES)}")
+
+    # 3b. Check Description Length
+    if not (25 <= len(description) <= 32000):
+        raise ValueError(f"Description length {len(description)} is invalid. Must be 25-32,000 chars.")
+
+    # 3b. Check Impact
+    if issue_impact not in LEGIT_IMPACTS:
+        raise ValueError(f"Invalid impact: '{issue_impact}'. Options are: {', '.join(LEGIT_IMPACTS)}")
+
+    # 3c. Check Category per Product Type
+    if product_type:
+        allowed_categories = PRODUCT_CATEGORY_MAPPING.get(product_type, set())
+        if issue_category not in allowed_categories:
+            raise ValueError(
+                f"Invalid issue category '{issue_category}' for product type '{product_type}'. "
+                f"Expected one of: {', '.join(sorted(allowed_categories))}"
+            )
+
+    # 3d. Check Category and dependent Problem Concentration
+    if issue_category not in CATEGORY_MAPPING:
+        raise ValueError(f"'{issue_category}' is not a valid issue category.")
+
+    allowed_concentrations = CATEGORY_MAPPING[issue_category]
+    if problem_concentration not in allowed_concentrations:
+        raise ValueError(
+            f"Invalid problem concentration '{problem_concentration}' for category '{issue_category}'. "
+            f"Expected one of: {', '.join(allowed_concentrations)}"
+        )
+
+    # 4. Construct Output
+    data = {
+        "description": description,
+        "contactNumber": contact_number,
+        "OngoingIssue": issue_frequency,
+        "DateTimeOfIssue": arg_to_datetime(start_time).timestamp(),
+        "IssueImpact": issue_impact,
+        "smeArea": issue_category,
+        "subGroupName": problem_concentration
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Validated Support Ticket Fields", data),
+        outputs_prefix="Core.SupportTicket",
+        outputs=data,
+        raw_response=data
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4500,6 +4659,9 @@ def main():  # pragma: no cover
                 raise DemistoException("This command is not available for this platform version")
 
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-fill-support-ticket":
+            return_results(core_fill_support_ticket_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

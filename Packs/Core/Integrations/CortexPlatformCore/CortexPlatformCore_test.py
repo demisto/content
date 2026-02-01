@@ -9291,3 +9291,81 @@ def test_get_xql_query_results_platform_polling_timeout(mocker):
 
     assert response["status"] == "PENDING"
     assert response["execution_id"] == execution_id
+
+
+def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Valid arguments including the new product_type.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        The response contains the productType and other fields correctly mapped.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    args = {
+        "product_type": "Cortex XSIAM",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "contact_number": "123456789",
+        "issue_impact": "Low",
+        "issue_category": "Agent",
+        "problem_concentration": "Communication",
+        "issue_frequency": "Once",
+        "most_recent_issue_start_time": "2023-01-01T00:00:00Z"
+    }
+
+    result = core_fill_support_ticket_command(None, args)
+
+    assert result.outputs["productType"] == "Cortex XSIAM"
+    assert result.outputs["description"] == args["description"]
+    assert result.outputs["smeArea"] == "Agent"
+    assert result.outputs["subGroupName"] == "Communication"
+    assert result.outputs_prefix == "CoreApiModule.SupportTicket"
+
+
+def test_core_fill_support_ticket_command_invalid_product_type():
+    """
+    GIVEN:
+        An invalid product_type argument.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        A ValueError is raised.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    args = {
+        "product_type": "Invalid Product",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "issue_impact": "Low",
+        "issue_category": "Agent",
+        "problem_concentration": "Communication"
+    }
+
+    with pytest.raises(ValueError, match="Invalid product type: 'Invalid Product'"):
+        core_fill_support_ticket_command(None, args)
+
+
+def test_core_fill_support_ticket_command_invalid_category_per_product():
+    """
+    GIVEN:
+        A valid product_type but an issue_category that is not allowed for that product.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        A ValueError is raised.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    # AI Security (AISPM) is allowed for Cortex Cloud but NOT for Cortex XSIAM
+    args = {
+        "product_type": "Cortex XSIAM",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "issue_impact": "Low",
+        "issue_category": "AI Security (AISPM)",
+        "problem_concentration": "Communication"
+    }
+
+    with pytest.raises(ValueError, match="Invalid issue category 'AI Security \(AISPM\)' for product type 'Cortex XSIAM'"):
+        core_fill_support_ticket_command(None, args)

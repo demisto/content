@@ -2740,7 +2740,7 @@ script:
         - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
           name: parameters
       outputs:
-      - contextPath: CoreApiModule.ScriptResult.action_id
+      - contextPath: Core.ScriptResult.action_id
         description: ID of the action initiated.
         type: Number
     - arguments:
@@ -3320,6 +3320,90 @@ script:
       - contextPath: GenericXQLQuery.query_limit_modified
         description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
         type: String
+    - name: core-fill-support-ticket
+      description: Returns fields for the completion of the support ticket
+      hidden: true
+      arguments:
+        - name: product_type
+          description: "The product type for the support ticket. Options: Cortex XSIAM, Cortex Cloud, Cortex XDR."
+          auto: PREDEFINED
+          predefined:
+            - Cortex XSIAM
+            - Cortex Cloud
+            - Cortex XDR
+        - name: description
+          description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
+        - name: contact_number
+          description: The preferred contact number for follow-up.
+        - name: issue_frequency
+          description: "The frequency of the issue. Options: Once, Ongoing, Intermittent."
+        - name: most_recent_issue_start_time
+          description: The start date and time of the most recent occurrence of the issue. Flexible formats are supported (e.g., "7 days ago", "2023-01-01T00:00:00Z").
+        - name: issue_impact
+          description: "The impact of the issue on the system or business. Options: Low, Minor, Major, Critical, Critical & Life/Operations at Risk."
+        - name: issue_category
+          auto: PREDEFINED
+          predefined:
+            - Agent
+            - Cases and Issues
+            - Cloud Onboarding
+            - Data Collection, Integrations, and Marketplace
+            - Detection, Investigation and Inventory
+            - Modules
+            - Posture Management
+            - Security Incidents
+            - Server
+            - Tenant Administration and Access Control
+            - Vulnerability and Compliance Management
+            - Web Application and API Security
+            - XDR Agent
+            - AI Security (AISPM)
+            - API Security (WAAS)
+            - Access Management, Integrations and Authentication
+            - Application Security
+            - CI/CD Prevention
+            - Cloud Agent
+            - Cloud Alerts and Events
+            - Cloud Assets and Reports
+            - Cloud Scan and Agentless
+            - Cloud Workload and Posture Security Settings
+            - Compliance Management
+            - Compute Workload Inventory
+            - Data Security (DSPM)
+            - Vulnerability Management
+          description: |
+            The category of the issue. Valid values per product:
+            - Cortex XSIAM: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
+            - Cortex Cloud: AI Security (AISPM), API Security (WAAS), Access Management, Integrations and Authentication, Application Security, CI/CD Prevention, Cases and Issues, Cloud Agent, Cloud Alerts and Events, Cloud Assets and Reports, Cloud Onboarding, Cloud Scan and Agentless, Cloud Workload and Posture Security Settings, Compliance Management, Compute Workload Inventory, Data Collection, Integrations, and Marketplace, Data Security (DSPM), Detection, Investigation and Inventory, Modules, Posture Management, Tenant Administration and Access Control, Vulnerability Management, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
+            - Cortex XDR: Agent, Cases and Issues, Cloud Onboarding, Data Collection, Integrations, and Marketplace, Detection, Investigation and Inventory, Modules, Posture Management, Security Incidents, Server, Tenant Administration and Access Control, Vulnerability and Compliance Management, Web Application and API Security, XDR Agent
+        - name: problem_concentration
+          description: |
+            The specific problem concentration. Valid values vary based on the selected issue_category (smeArea) such as Communication, Device Control, Dashboard and Reports, etc.
+      outputs:
+        - contextPath: Core.SupportTicket.productType
+          description: The product type associated with the ticket.
+          type: String
+        - contextPath: Core.SupportTicket.description
+          description: The description of the Filed support ticket.
+          type: String
+        - contextPath: Core.SupportTicket.contactNumber
+          description: The contact number associated with the ticket.
+          type: String
+        - contextPath: Core.SupportTicket.OngoingIssue
+          description: The frequency status of the issue.
+          type: String
+        - contextPath: Core.SupportTicket.DateTimeOfIssue
+          description: The timestamp of the issue occurrence.
+          type: Date
+        - contextPath: Core.SupportTicket.IssueImpact
+          description: The impact level of the ticket.
+          type: String
+        - contextPath: Core.SupportTicket.smeArea
+          description: The category of the issue.
+          type: String
+        - contextPath: Core.SupportTicket.subGroupName
+          description: The specific problem concentration.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
