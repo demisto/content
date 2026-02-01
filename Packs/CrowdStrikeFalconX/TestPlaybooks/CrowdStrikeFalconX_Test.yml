@@ -89,10 +89,8 @@ tasks:
         simple: command
       document_password:
         simple: password
-      enable_tor:
-        simple: "false"
       environment_id:
-        simple: '160: Windows 10'
+        simple: '160: Windows 10 (64-bit)'
       execution-timeout:
         simple: "660"
       extended_data:
@@ -1022,7 +1020,7 @@ tasks:
       document_password:
         simple: password
       environment_id:
-        simple: '160: Windows 10'
+        simple: '160: Windows 10 (64-bit)'
       submit_name:
         simple: malware_test
       system_date:

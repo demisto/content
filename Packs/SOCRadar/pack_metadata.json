@@ -4,6 +4,7 @@
     "currentVersion": "2.2.0",
     "description": "Streamline remediation of alerts and incidents. Fetch and manage security incidents from SOCRadar's Incident API v4 with multi-tenant support. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
     "author": "SOCRadar Cyber Intelligence Inc.",
+    "defaultDataSource": "SOCRadarIncidentsV4",
     "url": "www.socradar.io",
     "email": "xsoar@socradar.io",
     "categories": [
@@ -14,7 +15,10 @@
     "keywords": [
         "Threat Intelligence",
         "CTI",
-        "Digital Risk Protection"
+        "Digital Risk Protection",
+        "Incident Management",
+        "Brand Protection",
+        "Credential Monitoring"
     ],
     "devEmail": [
         "xsoar@socradar.io"
