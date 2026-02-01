@@ -37,11 +37,15 @@ from ContentClientApiModule import (
     ContentClientRetryError,
     ContentClientLogger,
     ContentClientContextStore,
+    StructuredLogEntry,
     _extract_list,
     _ensure_dict,
     _parse_retry_after,
     _get_value_by_path,
     _create_rate_limiter,
+    _now,
+    create_http_request_log,
+    create_error_log,
 )
 
 
@@ -2454,3 +2458,386 @@ def test_context_store_thread_safety(mocker):
     assert len(errors) == 0
     # All writes should have completed
     assert len(writes) == 15  # 3 threads * 5 iterations
+
+
+# =============================================================================
+# Additional Test Coverage (PR Review Comment #2)
+# =============================================================================
+
+
+def test_now_utility_function():
+    """Test _now() utility function returns monotonic time."""
+    import time
+    
+    # _now() should return a float representing monotonic time
+    t1 = _now()
+    time.sleep(0.01)
+    t2 = _now()
+    
+    assert isinstance(t1, float)
+    assert isinstance(t2, float)
+    assert t2 > t1  # Time should increase
+
+
+def test_structured_log_entry_to_dict():
+    """Test StructuredLogEntry.to_dict() method."""
+    entry = StructuredLogEntry(
+        severity="INFO",
+        message="Test message",
+        client_name="TestClient",
+        request_id="abc-123",
+        custom_field="custom_value"
+    )
+    
+    result = entry.to_dict()
+    
+    assert result["severity"] == "INFO"
+    assert result["message"] == "Test message"
+    assert result["labels"]["client_name"] == "TestClient"
+    assert result["labels"]["request_id"] == "abc-123"
+    assert result["custom_field"] == "custom_value"
+    assert "timestamp" in result
+
+
+def test_structured_log_entry_with_http_request():
+    """Test StructuredLogEntry with http_request field."""
+    http_request = {"requestMethod": "GET", "requestUrl": "https://example.com"}
+    entry = StructuredLogEntry(
+        severity="INFO",
+        message="HTTP request",
+        client_name="TestClient",
+        http_request=http_request
+    )
+    
+    result = entry.to_dict()
+    
+    assert result["httpRequest"] == http_request
+
+
+def test_structured_log_entry_with_error():
+    """Test StructuredLogEntry with error field."""
+    error_info = {"type": "TestError", "message": "Test error message"}
+    entry = StructuredLogEntry(
+        severity="ERROR",
+        message="Error occurred",
+        client_name="TestClient",
+        error=error_info
+    )
+    
+    result = entry.to_dict()
+    
+    assert result["error"] == error_info
+
+
+def test_structured_log_entry_with_labels():
+    """Test StructuredLogEntry with additional labels."""
+    entry = StructuredLogEntry(
+        severity="INFO",
+        message="Test",
+        client_name="TestClient",
+        labels={"custom_label": "value"}
+    )
+    
+    result = entry.to_dict()
+    
+    assert result["labels"]["custom_label"] == "value"
+    assert result["labels"]["client_name"] == "TestClient"
+
+
+def test_create_http_request_log_basic():
+    """Test create_http_request_log with basic parameters."""
+    result = create_http_request_log(
+        method="GET",
+        url="https://api.example.com/v1/data"
+    )
+    
+    assert result["requestMethod"] == "GET"
+    assert result["requestUrl"] == "https://api.example.com/v1/data"
+
+
+def test_create_http_request_log_full():
+    """Test create_http_request_log with all parameters."""
+    result = create_http_request_log(
+        method="POST",
+        url="https://api.example.com/v1/data",
+        status=201,
+        latency_ms=150.0,  # Use exact value to avoid floating point issues
+        request_size=1024,
+        response_size=2048,
+        user_agent="TestAgent/1.0"
+    )
+    
+    assert result["requestMethod"] == "POST"
+    assert result["requestUrl"] == "https://api.example.com/v1/data"
+    assert result["status"] == 201
+    assert result["latency"] == "0.150s"  # 150.0ms / 1000
+    assert result["requestSize"] == "1024"
+    assert result["responseSize"] == "2048"
+    assert result["userAgent"] == "TestAgent/1.0"
+
+
+def test_create_error_log_basic():
+    """Test create_error_log with basic parameters."""
+    result = create_error_log(
+        error_type="TestError",
+        error_message="Something went wrong"
+    )
+    
+    assert result["type"] == "TestError"
+    assert result["message"] == "Something went wrong"
+    assert "stackTrace" not in result
+    assert "code" not in result
+
+
+def test_create_error_log_full():
+    """Test create_error_log with all parameters."""
+    result = create_error_log(
+        error_type="NetworkError",
+        error_message="Connection refused",
+        stack_trace="Traceback (most recent call last):\n  File ...",
+        error_code="ECONNREFUSED"
+    )
+    
+    assert result["type"] == "NetworkError"
+    assert result["message"] == "Connection refused"
+    assert result["stackTrace"] == "Traceback (most recent call last):\n  File ..."
+    assert result["code"] == "ECONNREFUSED"
+
+
+def test_content_client_logger_log_metrics_summary():
+    """Test ContentClientLogger.log_metrics_summary() method."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    # Add some request times
+    logger._performance["request_times"] = [100.0, 200.0, 150.0, 300.0, 250.0]
+    
+    # Add some traces with retries
+    for i in range(3):
+        trace = logger.trace_request("GET", "https://api.example.com/test", {}, {}, retry_attempt=i)
+        logger.trace_response(trace, 200, {}, {}, 100.0)
+    
+    # Should not raise
+    logger.log_metrics_summary()
+
+
+def test_content_client_logger_log_metrics_summary_empty():
+    """Test ContentClientLogger.log_metrics_summary() with no data."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    # Should not raise even with no data
+    logger.log_metrics_summary()
+
+
+def test_content_client_logger_log_metrics_summary_p95():
+    """Test ContentClientLogger.log_metrics_summary() with enough data for p95."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    # Add 25 request times (enough for p95 calculation)
+    logger._performance["request_times"] = [float(i * 10) for i in range(25)]
+    
+    # Should not raise
+    logger.log_metrics_summary()
+
+
+@respx.mock
+def test_content_client_default_is_multithreaded(mocker):
+    """Test ContentClient default is_multithreaded=True behavior."""
+    mock_support_multithreading = mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    # Create client with default is_multithreaded=True
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Verify support_multithreading was called
+    mock_support_multithreading.assert_called_once()
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_is_multithreaded_false(mocker):
+    """Test ContentClient with is_multithreaded=False."""
+    mock_support_multithreading = mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    # Create client with is_multithreaded=False
+    client = ContentClient(base_url="https://api.example.com", is_multithreaded=False)
+    
+    # Verify support_multithreading was NOT called
+    mock_support_multithreading.assert_not_called()
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_reuse_client_true(mocker):
+    """Test ContentClient with reuse_client=True (default) keeps client open."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com", reuse_client=True)
+    
+    # Make multiple requests
+    client._http_request("GET", "/v1/data", resp_type="json")
+    client._http_request("GET", "/v1/data", resp_type="json")
+    
+    # Client should still have an async client
+    assert hasattr(client._local_storage, "client")
+    
+    assert route.call_count == 2
+    client.close()
+
+
+@respx.mock
+def test_content_client_reuse_client_false(mocker):
+    """Test ContentClient with reuse_client=False closes client after each request."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com", reuse_client=False)
+    
+    # Make a request
+    client._http_request("GET", "/v1/data", resp_type="json")
+    
+    # Client should be closed after request
+    assert client._local_storage.client is None
+    
+    # Make another request - should work fine
+    client._http_request("GET", "/v1/data", resp_type="json")
+    
+    assert route.call_count == 2
+    client.close()
+
+
+@respx.mock
+def test_content_client_get_async_client_event_loop_handling(mocker):
+    """Test ContentClient._get_async_client() handles event loop changes."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Make a request to initialize the client
+    client._http_request("GET", "/v1/data", resp_type="json")
+    
+    # The client should have been created
+    assert hasattr(client._local_storage, "client")
+    
+    client.close()
+
+
+@respx.mock
+def test_content_client_close_async_context_warning(mocker):
+    """Test ContentClient.close() warns when called from async context."""
+    import asyncio
+    
+    mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(200, json={"result": "success"})
+    )
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Make a request to initialize the client
+    client._http_request("GET", "/v1/data", resp_type="json")
+    
+    # Mock the logger warning
+    mock_warning = mocker.patch.object(client.logger, "warning")
+    
+    async def test_async_close():
+        # This should trigger the warning
+        client.close()
+    
+    # Run in async context
+    asyncio.run(test_async_close())
+    
+    # Verify warning was called
+    mock_warning.assert_called_once()
+    assert "async context" in mock_warning.call_args[0][0]
+
+
+def test_content_client_get_async_client_http2_fallback(mocker):
+    """Test ContentClient._get_async_client() falls back to HTTP/1.1 when HTTP/2 unavailable."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+    
+    # Mock httpx.AsyncClient to raise ImportError on first call with http2=True
+    original_async_client = httpx.AsyncClient
+    call_count = [0]
+    
+    def mock_async_client(*args, **kwargs):
+        call_count[0] += 1
+        if kwargs.get("http2", False) and call_count[0] == 1:
+            raise ImportError("h2 not available")
+        return original_async_client(*args, **kwargs)
+    
+    mocker.patch.object(httpx, "AsyncClient", side_effect=mock_async_client)
+    
+    client = ContentClient(base_url="https://api.example.com")
+    
+    # Get the async client - should fall back to HTTP/1.1
+    async def get_client():
+        return client._get_async_client()
+    
+    import asyncio
+    asyncio.run(get_client())
+    
+    # Verify HTTP/2 is now disabled
+    assert client._http2_available is False
+    
+    client.close()
+
+
+def test_structured_log_entry_to_json():
+    """Test StructuredLogEntry.to_json() method."""
+    entry = StructuredLogEntry(
+        severity="INFO",
+        message="Test message",
+        client_name="TestClient"
+    )
+    
+    result = entry.to_json()
+    
+    # Should be valid JSON
+    parsed = json.loads(result)
+    assert parsed["severity"] == "INFO"
+    assert parsed["message"] == "Test message"
+
+
+def test_content_client_logger_new_request_id():
+    """Test ContentClientLogger.new_request_id() generates unique IDs."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    id1 = logger.new_request_id()
+    id2 = logger.new_request_id()
+    
+    assert id1 != id2
+    assert len(id1) == 8
+    assert len(id2) == 8
+
+
+def test_content_client_logger_get_request_id():
+    """Test ContentClientLogger.get_request_id() returns current ID."""
+    logger = ContentClientLogger("TestClient", diagnostic_mode=True)
+    
+    # Initially None
+    assert logger.get_request_id() is None
+    
+    # After generating
+    new_id = logger.new_request_id()
+    assert logger.get_request_id() == new_id

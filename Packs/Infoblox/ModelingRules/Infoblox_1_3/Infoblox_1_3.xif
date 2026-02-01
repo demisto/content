@@ -237,6 +237,25 @@ filter _raw_log ~= "httpd(?:\[\d+\])?:"
     xdm.source.user.groups = arraycreate(client_user_groups),
     xdm.source.user.username = client_user_username;
 
+/***************/
+// Threat Events /
+/***************/
+filter _raw_log = null or _raw_log ~= "CEF:0"
+| alter
+    xdm.event.type = "Threat",
+    xdm.alert.original_threat_id = cefDeviceEventClassId,
+    xdm.alert.name = cefName,
+    xdm.alert.subcategory = cat,
+    xdm.source.ipv4 = if(is_ipv4(src),src,null),
+    xdm.source.port = to_integer(spt),
+    xdm.event.outcome = if(act ~= "DROP|BLOCK", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = act,
+    xdm.alert.description = msg,
+    xdm.intermediate.ipv4 = if(is_ipv4(dst),dst,null),
+    xdm.intermediate.port = to_integer(dpt),
+    xdm.target.domain = if(fqdn != "NA",fqdn,null),
+    xdm.network.dns.dns_question.name = if(fqdn != "NA",fqdn,null);
+
 /**************************/
 // Fallback Mapping Events /
 /**************************/
@@ -245,7 +264,8 @@ filter // Exclude event types which are already mapped
     _raw_log !~= "httpd\[\d+\]" // NOT Audit 
     and _raw_log !~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query" // NOT DNS Query
     and _raw_log !~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:" // NOT DNS Response
-    and _raw_log !~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" and _raw_log ~= "DHCP\w+" // NOT DHCP
+    and _raw_log !~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" and _raw_log !~= "DHCP\w+" // NOT DHCP
+    and _raw_log != null and _raw_log !~= "CEF:0" // NOT Threat events
 | alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),

@@ -1,1 +1,10 @@
 [file:README.md]
+
+[file:Sanitize_File_-_CDR_-_ThreatZone_v2.yml]
+ignore=RM116
+
+[file:Analyze_File_-_Static_Scan_-_ThreatZone_v2.yml]
+ignore=RM116
+
+[file:Analyze_File_-_Sandbox_-_ThreatZone_v2.yml]
+ignore=RM116
