@@ -9308,10 +9308,10 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
         "product_type": "Cortex XSIAM",
         "description": "This is a detailed description that is at least 25 characters long.",
         "contact_number": "123456789",
-        "issue_impact": "Low",
+        "issue_impact": "P4",
         "issue_category": "Agent",
         "problem_concentration": "Communication",
-        "issue_frequency": "Once",
+        "issue_frequency": "Yes - Consistent",
         "most_recent_issue_start_time": "2023-01-01T00:00:00Z"
     }
 
@@ -9321,6 +9321,7 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
     assert result.outputs["description"] == args["description"]
     assert result.outputs["smeArea"] == "Agent"
     assert result.outputs["subGroupName"] == "Communication"
+    assert result.outputs["OngoingIssue"] == "Yes - Consistent"
     assert result.outputs_prefix == "CoreApiModule.SupportTicket"
 
 
@@ -9338,7 +9339,7 @@ def test_core_fill_support_ticket_command_invalid_product_type():
     args = {
         "product_type": "Invalid Product",
         "description": "This is a detailed description that is at least 25 characters long.",
-        "issue_impact": "Low",
+        "issue_impact": "P4",
         "issue_category": "Agent",
         "problem_concentration": "Communication"
     }
@@ -9362,9 +9363,10 @@ def test_core_fill_support_ticket_command_invalid_category_per_product():
     args = {
         "product_type": "Cortex XSIAM",
         "description": "This is a detailed description that is at least 25 characters long.",
-        "issue_impact": "Low",
+        "issue_impact": "P4",
         "issue_category": "AI Security (AISPM)",
-        "problem_concentration": "Communication"
+        "problem_concentration": "Communication",
+        "issue_frequency": "Not Applicable"
     }
 
     with pytest.raises(ValueError, match="Invalid issue category 'AI Security \(AISPM\)' for product type 'Cortex XSIAM'"):

@@ -4368,9 +4368,7 @@ def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandRes
 
     # 2. Validation Data Structures
     LEGIT_PRODUCT_TYPES = {"Cortex XSIAM", "Cortex Cloud", "Cortex XDR"}
-    LEGIT_IMPACTS = {
-        "Low", "Minor", "Major", "Critical", "Critical & Life/Operations at Risk"
-    }
+    LEGIT_IMPACTS = {"P4", "P3", "P2", "P1", "P0"}
 
     # Mapping of Product Type to allowed Categories
     PRODUCT_CATEGORY_MAPPING: Dict[str, Set[str]] = {
@@ -4459,9 +4457,14 @@ def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandRes
     # 3. Validation Logic
     # 3a. Check Product Type
     if product_type and product_type not in LEGIT_PRODUCT_TYPES:
-        raise ValueError(f"Invalid product type: '{product_type}'. Options are: {', '.join(LEGIT_PRODUCT_TYPES)}")
+        raise ValueError(f"Invalid product type: '{product_type}'. Options are: {', '.join(sorted(LEGIT_PRODUCT_TYPES))}")
 
-    # 3b. Check Description Length
+    # 3b. Check Frequency
+    LEGIT_FREQUENCIES = {"Yes - Consistent", "Yes - Intermittent", "Not Applicable"}
+    if issue_frequency and issue_frequency not in LEGIT_FREQUENCIES:
+        raise ValueError(f"Invalid issue frequency: '{issue_frequency}'. Options are: {', '.join(sorted(LEGIT_FREQUENCIES))}")
+
+    # 3c. Check Description Length
     if not (25 <= len(description) <= 32000):
         raise ValueError(f"Description length {len(description)} is invalid. Must be 25-32,000 chars.")
 
