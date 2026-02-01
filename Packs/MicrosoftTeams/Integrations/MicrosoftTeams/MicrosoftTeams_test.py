@@ -3787,6 +3787,8 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
     # Assert response
     assert response.status_code == 401
     assert response.data.decode() == "Authorization header validation failed"
+
+
 @pytest.mark.parametrize(
     "args, expected_response, expected_request_url, expected_outputs",
     [
