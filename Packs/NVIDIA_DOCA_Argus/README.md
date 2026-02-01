@@ -34,11 +34,11 @@ iso_8601 (*`2025-11-18T10:18:50.625005951+00:00`*)
 
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
-    | `Name`        | nvidia doca_argus Logs.            |
-    | `Compression` | Select the desired compression.     |
-    | `Log Format`  | Select json.     |
-    | `Vendor`      | Enter nvidia.                     |
-    | `Product`     | Enter doca_argus.                    |
+    | `Name`        | nvidia doca_argus Logs            |
+    | `Compression` | Select the desired compression     |
+    | `Log Format`  | Select json     |
+    | `Vendor`      | Enter nvidia                     |
+    | `Product`     | Enter doca_argus                    |
 
 4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 5. Click the 3 dots sign next to the newly created instance and copy the API URL, it will also be used later.
@@ -51,12 +51,12 @@ For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/
 * For Argus-specific deployment, refer to the [service container's page](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/doca/containers/doca_argus).
 * For offline deployment (no Internet access), see the Offline Deployment section in [DOCA Container Deployment Guide](https://docs.nvidia.com/doca/sdk/DOCA+Container+Deployment+Guide).
 
-For elaborated Information and Prerequisites, please refer to [**DOCA Argus Service Guide**](https://docs.nvidia.com/doca/sdk/doca-argus-service-guide/index.html#).
+For detailed Information and Prerequisites, please refer to [**DOCA Argus Service Guide**](https://docs.nvidia.com/doca/sdk/doca-argus-service-guide/index.html#).
 
 ### Fluent Bit side
 
 Fluent Bit is a lightweight, high-performance log processor and forwarder used to collect, parse, enrich, and route logs from systems, containers, and services to external destinations.
-In this integration, Fluent Bit acts as the log shipping layer between NVIDIA DOCA Argus and Cortex XSIAM
+In this integration, Fluent Bit acts as the log shipping layer between NVIDIA DOCA Argus and Cortex XSIAM.
 
 #### HTTP out to XSIAM — fill in your [OUTPUT] details
 
@@ -75,6 +75,6 @@ Edit Fluent Bit conf file **/fluent-bit/etc/fluent-bit.conf** and input the foll
   | `Header`     | Authorization Bearer **<your_http_collector_api_token>**                     |
   | `Retry_Limit`     | False                    |
 
-Refer to the [Fluent Bit manual](https://docs.fluentbit.io/manual/data-pipeline/outputs/output_formats) for details on additional output plugins and configurations
+Refer to the [Fluent Bit manual](https://docs.fluentbit.io/manual/data-pipeline/outputs/output_formats) for details on additional output plugins and configurations.
 
 </~XSIAM>
