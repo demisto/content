@@ -1,4 +1,5 @@
 category: Endpoint
+provider: CrowdStrike
 sectionorder:
 - Connect
 - Collect
@@ -60,6 +61,7 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  additionalinfo: Supported in Cortex XSOAR only.
   hidden:
   - marketplacev2
   - platform
@@ -70,7 +72,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Input a value between 1-500.
+  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
   - platform
@@ -145,6 +147,27 @@ configuration:
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: NGSIEM Detection fetch query
   name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM automated leads fetch query
+  name: automated_leads_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM cases fetch query
+  name: ngsiem_cases_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM incidents fetch query
+  name: ngsiem_incidents_fetch_query
   type: 0
   section: Collect
   required: false
@@ -245,6 +268,9 @@ configuration:
   - OFP Detection
   - Third Party Detection
   - NGSIEM Detection
+  - NGSIEM Automated Lead
+  - NGSIEM Case
+  - NGSIEM Incident (XDR Alert)
   hidden:
   - marketplacev2
   - platform
@@ -287,6 +313,7 @@ configuration:
 - display: 'Incidents Fetch Interval'
   defaultvalue: '1'
   name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR only.
   type: 19
   section: Collect
   advanced: true
@@ -4209,6 +4236,26 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       defaultValue: '600'
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4324,6 +4371,12 @@ script:
     - contextPath: CrowdStrike.ODSScan.last_updated
       description: The timestamp when the scan job was last updated.
       type: Date
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
+      type: Number
   - arguments:
     - description: A comma-separated list of host groups to be scanned.
       isArray: true
@@ -4382,6 +4435,26 @@ script:
       - Every other week
       - Every four weeks
       - Monthly
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
@@ -4465,6 +4538,12 @@ script:
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
       description: The machine learning prevention level for the cloud.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
       type: Number
   - arguments:
     - description: Comma-separated list of scheduled scan IDs to delete.
@@ -5188,7 +5267,7 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.5475267
+  dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false

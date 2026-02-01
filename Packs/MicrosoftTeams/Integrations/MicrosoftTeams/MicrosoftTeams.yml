@@ -1,4 +1,5 @@
 category: Messaging and Conferencing
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -630,7 +631,7 @@ script:
     description: |-
       Retrieves a list of messages in a chat.
 
-       Notes: 
+       Notes:
       - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-message-list
     outputs:
@@ -706,6 +707,119 @@ script:
     - contextPath: MicrosoftTeams.MessageListNextLink
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
+  - arguments:
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat.
+      name: conversation_id
+      required: true
+    - description: The channel's team. Required if specifying a channel name in the conversation_id argument.
+      name: team_name
+    - description: The number of results to retrieve.
+      name: limit
+      defaultValue: 50
+    - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
+      name: order_by
+      auto: PREDEFINED
+      predefined:
+      - 'lastModifiedDateTime'
+      - 'createdDateTime'
+      defaultValue: 'lastModifiedDateTime'
+    - description: A link that specifies a starting point to use for subsequent calls.
+      name: next_link
+    - description: Id of a message to retrieve its replies. Supported only for channels.
+      name: message_id
+    description: |-
+      Retrieves a list of messages in a chat or channel.
+
+      Notes:
+      - When retrieving messages from a chat, this command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+    name: microsoft-teams-list-messages
+    outputs:
+    - contextPath: MicrosoftTeams.MessagesList.conversationId
+      description: The conversation's unique identifier.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.id
+      description: Unique ID of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.replyToId
+      description: ID of the parent message or root message of the thread.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.etag
+      description: Version number of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.messageType
+      description: The type of message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.createdDateTime
+      description: Timestamp of when the message was created.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.lastModifiedDateTime
+      description: Timestamp when the message is created (initial setting) or modified, including when a reaction is added or removed.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.lastEditedDateTime
+      description: Timestamp when edits to the message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.deletedDateTime
+      description: Timestamp when the message was deleted, or null if not deleted.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.subject
+      description: The subject of the message, in plaintext.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.summary
+      description: Summary text of the message that could be used for push notifications and summary views or fall back views.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.chatId
+      description: If the message was sent in a chat, represents the identity of the chat.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.importance
+      description: The importance of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.locale
+      description: Locale of the message set by the client.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.webUrl
+      description: Link to the message in Microsoft Teams.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.channelIdentity
+      description: If the message was sent in a channel, represents the identity of the channel.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.policyViolation
+      description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.eventDetail
+      description: If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.from
+      description: Details of the sender of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.body.content
+      description: The content of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.body.contentType
+      description: Plaintext/HTML representation of the content of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.attachments
+      description: References to attached objects like files, tabs, meetings, etc.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.attachments.content
+      type: String
+      description: The content of the attachments.
+    - contextPath: MicrosoftTeams.MessagesList.messages.mentions
+      description: List of entities mentioned in the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.reactions
+      description: Reactions for this message (for example, Like).
+      type: String
+    - contextPath: MicrosoftTeams.MessagesListNextLink
+      description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesListMetadata.returned_count
+      description: |-
+        The actual number of messages returned in this specific execution.
+      type: Number
+    - contextPath: MicrosoftTeams.MessagesListMetadata.filtered_count
+      description: |-
+        The total number of messages in the system that match the specified filter criteria.
+      type: Number
   - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat

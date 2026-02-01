@@ -5,6 +5,7 @@ name: AlgoSec
 display: AlgoSec
 system: true
 category: Network Security
+provider: AlgoSec
 description: Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
