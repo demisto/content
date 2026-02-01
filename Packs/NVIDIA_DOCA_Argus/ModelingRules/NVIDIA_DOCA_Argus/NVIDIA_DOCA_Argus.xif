@@ -31,7 +31,6 @@ alter
     event_name = "Process_Terminated", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE,
     event_name = "File_Descriptor_Open", XDM_CONST.OPERATION_TYPE_FILE_OPEN,
     event_name in ("File_Descriptor_File_Content_Change", "New_File_Mapped"), XDM_CONST.OPERATION_TYPE_FILE_WRITE,
-    event_name in ("File_Descriptor_Close", "File_Unmapped"), null, // No standard FILE_CLOSE constant exists
     event_name in ("Foreign_Library_Loaded", "Foreign_Library_Loaded_File_Size_Mismatch"), XDM_CONST.OPERATION_TYPE_IMAGE_LOAD,
     event_name in (
         "Foreign_Binary_Executed", 
@@ -60,7 +59,9 @@ alter
         "Executable_Permissions_Removed", 
         "TCP_Network_Connection_State_Change",
         "Shell_History_Disabled",
-        "Shell_History_Cleared"
+        "Shell_History_Cleared",
+        "File_Descriptor_Close", 
+        "File_Unmapped"
     ), XDM_CONST.OPERATION_TYPE_UPDATE,
     event_name in (
         "OS_Identifier_Found",
