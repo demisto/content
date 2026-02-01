@@ -7,6 +7,7 @@ sectionorder:
 name: McAfee Active Response
 display: McAfee Active Response
 category: Endpoint
+provider: Trellix
 description: Connect to MAR using its DXL client.
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in instructions)
@@ -121,10 +122,10 @@ script:
       description: Filtering value of the `filter-by` field.
     outputs:
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information about possible output paths, run the command: ‘mar-collectors-list’.'
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information about possible output paths, run the command: 'mar-collectors-list'."
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information about possible output paths, run the command: ‘mar-collectors-list’.'
-    description: Search endpoint data.
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information about possible output paths, run the command: 'mar-collectors-list'."
+    description: Search endpoint data
   - name: mar-collectors-list
     arguments: []
     description: Returns a list of all collectors and their outputs.
@@ -211,8 +212,8 @@ script:
       description: Filtering value of the `filter-by` field.
     outputs:
     - contextPath: Mar.SearchMultiple
-      description: 'The result of the search query, For information about possible output paths, run the command: ‘mar-collectors-list’.'
-    description: Search endpoint data crossed by multiple collectors.
+      description: "The result of the search query, For information about possible output paths, run the command: 'mar-collectors-list'."
+    description: Search endpoint data crossed by multiple collectors
   - name: mar-search-services
     arguments:
     - name: filter-by
@@ -244,7 +245,7 @@ script:
       description: Service startup type.
     - contextPath: MAR.Services.User
       description: Service user.
-    description: Gets services information from McAfee Active Response.
+    description: Gets services information from McAfee Active Response
   - name: mar-search-processes
     arguments:
     - name: filter-by
@@ -292,7 +293,7 @@ script:
       description: Process user.
     - contextPath: MAR.Processes.User_id
       description: Process user id.
-    description: Gets processes information from McAfee Active Response.
+    description: Gets processes information from McAfee Active Response
   - name: mar-search-win-registry
     arguments:
     - name: filter-by
@@ -322,7 +323,7 @@ script:
       description: WinRegistry value data.
     - contextPath: MAR.WinRegistry.Valuetype
       description: WinRegistry value type.
-    description: Gets WinRegistry information from McAfee Active Response.
+    description: Gets WinRegistry information from McAfee Active Response
   - name: mar-search-files
     arguments:
     - name: filter-by
@@ -362,7 +363,7 @@ script:
       description: File created at.
     - contextPath: MAR.Files.Deleted_at
       description: File deleted at.
-    description: Gets files information from McAfee Active Response.
+    description: Gets files information from McAfee Active Response
   - name: mar-search-usb-connected-storage-devices
     arguments:
     - name: filter-by
@@ -400,7 +401,7 @@ script:
       description: Usb connected storage devices user name.
     - contextPath: MAR.UsbConnectedStorageDevices.Last_time_used_by_user
       description: Usb connected storage devices last time used by user.
-    description: Gets Usb connected devices information from McAfee Active Response.
+    description: Gets Usb connected devices information from McAfee Active Response
   - name: mar-search-user-profiles
     arguments:
     - name: filter-by
@@ -440,7 +441,7 @@ script:
       description: User profile sid.
     - contextPath: MAR.UserProfiles.Passwordexpires
       description: User profile password expired.
-    description: Gets user profiles information from McAfee Active Response.
+    description: Gets user profiles information from McAfee Active Response
   - name: mar-search-scheduled-tasks
     arguments:
     - name: filter-by
@@ -474,7 +475,7 @@ script:
       description: Scheduled tasks user name.
     - contextPath: MAR.ScheduledTasks.Schedule_on
       description: Scheduled tasks schedule on.
-    description: Gets scheduled tasks information from McAfee Active Response.
+    description: Gets scheduled tasks information from McAfee Active Response
   - name: mar-search-host-info
     arguments:
     - name: filter-by
@@ -502,8 +503,8 @@ script:
       description: Host Ip address.
     - contextPath: MAR.HostInfo.Os
       description: Host operation system.
-    description: Gets host information from McAfee Active Response.
-  dockerimage: demisto/dxl:1.0.0.5629082
+    description: Gets host information from McAfee Active Response
+  dockerimage: demisto/dxl:1.0.0.116949
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

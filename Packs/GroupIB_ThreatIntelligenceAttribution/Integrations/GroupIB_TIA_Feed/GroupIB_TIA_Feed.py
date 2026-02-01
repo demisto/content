@@ -869,8 +869,9 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.1.0",
+            integration_version="2.1.2",
         )
+        demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
 
     def create_update_generator_proxy_functions(
         self,
@@ -880,6 +881,11 @@ class Client(BaseClient):
         apply_hunting_rules: int | str | None = None,
         limit: int | str | None = None,
     ):
+        demisto.debug(
+            "[Client.create_update_generator_proxy_functions] Creating update generator: "
+            f"collection={collection_name}, date_from={date_from}, sequpdate={sequpdate}, "
+            f"apply_hunting_rules={apply_hunting_rules}, limit={limit}"
+        )
         return self.poller.create_update_generator(
             collection_name=collection_name,
             date_from=date_from,
@@ -889,7 +895,9 @@ class Client(BaseClient):
         )
 
     def get_available_collections_proxy_function(self) -> list:
-        return self.poller.get_available_collections()
+        collections = self.poller.get_available_collections()
+        demisto.debug(f"[Client.get_available_collections_proxy_function] Available collections: {collections}")
+        return collections
 
 
 def test_module(client: Client) -> str:
@@ -1169,6 +1177,10 @@ class DateHelper:
     @staticmethod
     def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+        demisto.debug(
+            f"[DateHelper.handle_first_time_fetch] collection={collection_name}, "
+            f"last_fetch_present={bool(last_fetch)}, first_fetch_time={first_fetch_time}"
+        )
 
         # Handle first time fetch
         date_from = None
@@ -1178,37 +1190,46 @@ class DateHelper:
             if date_from_for_mypy is None:
                 raise DemistoException(
                     "Inappropriate indicators_first_fetch format, "
-                    "please use something like this: 2020-01-01 or January 1 2020 or 3 days."
-                    f"It's now been received: {date_from}"
+                    "please use something like this: 2020-01-01 or January 1 2020 or 3 days. "
+                    f"Received: {first_fetch_time}"
                 )
             date_from = date_from_for_mypy.strftime("%Y-%m-%d")
         else:
             seq_update = last_fetch
-
+        demisto.debug(f"[DateHelper.handle_first_time_fetch] Result: date_from={date_from}, seq_update={seq_update}")
         return date_from, seq_update
 
 
 def validate_launch_get_indicators_command(limit, collection_name):
+    demisto.debug(f"[validate_launch_get_indicators_command] Raw inputs: limit={limit}, collection={collection_name}")
     try:
-        if limit > 50:
-            raise Exception("A limit should be lower than 50.")
-    except ValueError:
-        raise Exception("A limit should be a number, not a string.")
+        limit_int = int(limit)
+    except (TypeError, ValueError):
+        raise DemistoException("Limit should be a number.")
+
+    if limit_int <= 0:
+        raise DemistoException("Limit should be greater than 0.")
+    if limit_int > 50:
+        raise DemistoException("Limit should be lower than or equal to 50.")
 
     if collection_name not in COMMON_MAPPING:
-        raise Exception("Incorrect collection name. Please, choose one of the displayed options.")
+        raise DemistoException("Incorrect collection name. Please, choose one of the displayed options.")
+
+    demisto.debug(f"[validate_launch_get_indicators_command] Validation passed: limit={limit_int}, collection={collection_name}")
 
 
 """ Commands """
 
 
 def collection_availability_check(client: Client, collection_name: str) -> None:
+    demisto.debug(f"[collection_availability_check] Checking availability for collection={collection_name}")
     if collection_name not in client.get_available_collections_proxy_function():
         raise Exception(
             f"Collection {collection_name} is not available from you, "
             "please disable collection on it or contact Group-IB to grant access"
             f"{client.get_available_collections_proxy_function()}"
         )
+    demisto.debug(f"[collection_availability_check] Collection is available: {collection_name}")
 
 
 def fetch_indicators_command(
@@ -1218,6 +1239,7 @@ def fetch_indicators_command(
     indicator_collections: list,
     requests_count: int,
     common_fields: dict,
+    limit: int | None = None,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -1231,17 +1253,26 @@ def fetch_indicators_command(
 
     :return: next_run will be last_run in the next fetch-indicators; indicators will be created in Demisto.
     """
+    demisto.debug(
+        "[fetch-indicators] Starting fetch with params: "
+        f"collections={indicator_collections}, requests_count={requests_count}, first_fetch_time={first_fetch_time}, "
+        f"common_fields={common_fields}"
+    )
     indicators = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
 
     for collection_name in indicator_collections:
         collection_availability_check(client=client, collection_name=collection_name)
+        demisto.debug(f"[fetch-indicators] Processing collection={collection_name}")
         mapping: dict = COMMON_MAPPING.get(collection_name, {})
         requests_sent = 0
         date_from, seq_update = DateHelper.handle_first_time_fetch(
             last_run=last_run,
             collection_name=collection_name,
             first_fetch_time=first_fetch_time,
+        )
+        demisto.debug(
+            f"[fetch-indicators] Collection={collection_name} start params: date_from={date_from}, seq_update={seq_update}"
         )
 
         if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
@@ -1254,10 +1285,15 @@ def fetch_indicators_command(
             date_from=date_from,
             sequpdate=seq_update,
             apply_hunting_rules=hunting_rules,
+            limit=limit,
         )
-        # print('portions', portions)
+        demisto.debug(f"[fetch-indicators] Generator created for collection={collection_name}: {portions}")
         for portion in portions:
             seq_update = portion.sequpdate
+            demisto.debug(
+                f"[fetch-indicators] Portion received: collection={collection_name}, seqUpdate={seq_update}, "
+                f"portion_size={portion.portion_size}, count={portion.count}"
+            )
             parsed_json: list[dict] = portion.parse_portion(keys=mapping.get("parser_mapping"))  # type: ignore
             builded_indicators = IndicatorBuilding(
                 parsed_json=parsed_json,
@@ -1267,11 +1303,18 @@ def fetch_indicators_command(
             ).get_indicators()
 
             indicators.extend(builded_indicators)
+            demisto.debug(
+                f"[fetch-indicators] Added indicators from portion: added={len(builded_indicators)}, total={len(indicators)}"
+            )
             requests_sent += 1
             if requests_sent >= requests_count:
+                demisto.debug(
+                    f"[fetch-indicators] requests_count limit reached for collection={collection_name}: {requests_sent}"
+                )
                 break
 
         next_run["last_fetch"][collection_name] = seq_update
+        demisto.debug(f"[fetch-indicators] Updated next_run for collection={collection_name}: last_fetch={seq_update}")
 
     return next_run, indicators
 
@@ -1290,6 +1333,7 @@ def get_indicators_command(client: Client, args: dict[str, str]):
         int(args.get("limit", "50")),
     )
 
+    demisto.debug(f"[get_indicators_command] Called with args: id={id_}, collection={collection_name}, limit={limit}")
     validate_launch_get_indicators_command(limit, collection_name)
     mapping: dict = COMMON_MAPPING.get(collection_name, {})
 
@@ -1300,6 +1344,10 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             apply_hunting_rules = 1
         else:
             apply_hunting_rules = None
+        demisto.debug(
+            f"[get_indicators_command] Creating generator: collection={collection_name}, limit={limit}, "
+            f"apply_hunting_rules={apply_hunting_rules}"
+        )
         portions = client.create_update_generator_proxy_functions(
             collection_name=collection_name,
             limit=limit,
@@ -1316,10 +1364,12 @@ def get_indicators_command(client: Client, args: dict[str, str]):
                 build_for_comand=True,
             ).get_indicators()
             indicators.extend(builded_indicators)
+            demisto.debug(f"[get_indicators_command] Portion processed: added={len(builded_indicators)}, total={len(indicators)}")
 
             if len(indicators) >= limit:
                 break
     else:
+        demisto.debug(f"[get_indicators_command] Fetch by id: collection={collection_name}, id={id_}")
         portions = client.poller.search_feed_by_id(collection_name=collection_name, feed_id=id_)
         portions.get_iocs()
         parsed_json = portions.parse_portion(keys=mapping.get("parser_mapping"))
@@ -1332,6 +1382,9 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             build_for_comand=True,
         ).get_indicators()
         indicators.extend(builded_indicators)
+        demisto.debug(
+            f"[get_indicators_command] Built indicators by id: added={len(builded_indicators)}, total={len(indicators)}"
+        )
 
     return indicators
 
@@ -1353,11 +1406,20 @@ def main():  # pragma: no cover
         indicator_collections = params.get("indicator_collections", [])
         indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
         requests_count = int(params.get("requests_count", 2))
+        # New: limit (portion size)
+        limit_param = params.get("limit", 100)
+        limit = int(limit_param)
 
         args = demisto.args()
         command = demisto.command()
         LOG(f"Command being called is {command}")
         demisto.debug(f"Command being called is {command}")
+        demisto.debug(
+            "[main] Parsed params: "
+            f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
+            f"indicator_collections={indicator_collections}, first_fetch={indicators_first_fetch}, "
+            f"requests_count={requests_count}, limit={limit}"
+        )
 
         client = Client(
             base_url=base_url,
@@ -1366,6 +1428,7 @@ def main():  # pragma: no cover
             proxy=proxy,
             headers={"Accept": "*/*"},
         )
+        demisto.info("[main] TI Feed client created successfully")
 
         commands = {"gibtia-get-indicators": get_indicators_command}
 
@@ -1382,6 +1445,10 @@ def main():  # pragma: no cover
                 "trafficlightprotocol": tlp_color,
                 "tags": tags,
             }
+            demisto.debug(
+                "[main] Launching fetch-indicators with: "
+                f"collections={indicator_collections}, first_fetch={indicators_first_fetch}, requests_count={requests_count}"
+            )
             next_run, indicators = fetch_indicators_command(
                 client=client,
                 last_run=get_integration_context(),
@@ -1389,12 +1456,15 @@ def main():  # pragma: no cover
                 indicator_collections=indicator_collections,
                 requests_count=requests_count,
                 common_fields=common_fields,
+                limit=limit,
             )
-            demisto.debug(f"fetch-indicators lenght indicators: {len(indicators)}")
+            demisto.debug(f"[fetch-indicators] Indicators created this run: count={len(indicators)}")
 
             set_integration_context(next_run)
+            demisto.debug(f"[main] Updated integration context: {next_run}")
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
+            demisto.info("[main] Indicators created successfully")
 
         else:
             return_results(commands[command](client, args))

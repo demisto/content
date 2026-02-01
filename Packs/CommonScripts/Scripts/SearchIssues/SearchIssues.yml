@@ -156,7 +156,9 @@ args:
   - description: The assets ids related to the issue.
     isArray: true
     name: asset_ids
-  - description: The assignee of the issue.
+  - description: |
+      The assignee of the issue. Accepts a comma-separated list.
+      Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
     isArray: true
     name: assignee
 comment: Searches Cortex Issues.
@@ -169,9 +171,15 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
+  - contextPath: Core.Issue.case_id
+    description: The case ID associated with the issue.
+    type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
+  - contextPath: Core.Issue.agentsid
+    description: The agent (endpoint) IDs associated with the issue.
+    type: List
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
     type: String

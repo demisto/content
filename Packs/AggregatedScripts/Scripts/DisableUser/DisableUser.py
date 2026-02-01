@@ -124,7 +124,7 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[DisabledU
         func_res.append(
             DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
             if res_hr == f'user: "{user["Username"]}" account has been disabled successfully.'
-            else DisabledUserResult(Disabled=False, Result="Failed", Message=res["Content"])
+            else DisabledUserResult(Disabled=False, Result="Failed", Message=res["Contents"])
         )
     return func_res, hr
 
@@ -142,7 +142,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], s
     res_cmd, hr = run_command("okta-suspend-user", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
-        res_msg = res["Contents"]
+        res_msg = res["HumanReadable"] or res["Contents"]
         if res_msg == f"### {user['Username']} status is Suspended":
             dur = DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
         elif "Cannot suspend a user that is not active" in res_msg:

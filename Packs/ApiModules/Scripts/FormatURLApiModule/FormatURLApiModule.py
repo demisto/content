@@ -94,15 +94,12 @@ class URLCheck:
             # The URL seems to have a scheme indicated by presence of "//", "%3A" or "%2F"
             self.scheme_check()
 
-        host_end_position = -1
         special_chars = ("/", "?", "#")  # Any one of these states the end of the host / authority part in a URL
-
-        for char in special_chars:
-            try:
-                host_end_position = self.modified_url[self.base :].index(char)
-                break  # index for the end of the part found, breaking loop
-            except ValueError:
-                continue  # no reserved char found, URL has no path, query or fragment parts.
+        # Find the earliest occurrence of any special character
+        host_end_position = min(
+            (self.modified_url[self.base :].index(char) for char in special_chars if char in self.modified_url[self.base :]),
+            default=-1,
+        )
 
         try:
             if "@" in self.modified_url[:host_end_position]:
@@ -339,6 +336,7 @@ class URLCheck:
             self.url.hostname = ip.exploded
             self.output = self.output.replace(host, ip.exploded)
         self.url.hostname = str(parsed_ip)
+
         self.check_done(index)
 
     def port_check(self):
@@ -359,6 +357,7 @@ class URLCheck:
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         self.url.port = port
+
         self.check_done(index)
 
     def path_check(self):
@@ -386,6 +385,11 @@ class URLCheck:
             self.fragment = True
 
         self.output += path
+
+        # Add forward slash before query or fragment if path is empty and output doesn't end with /
+        if not path and not self.output.endswith("/") and self.modified_url[index] in ("?", "#"):
+            self.output += "/"
+
         self.output += self.modified_url[index]
         index += 1
         self.base = index
@@ -814,6 +818,7 @@ class URLFormatter:
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
         url = url.replace("%2F", "/").replace("%2f", "/")
+
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
