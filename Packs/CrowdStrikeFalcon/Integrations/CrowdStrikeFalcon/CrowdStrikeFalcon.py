@@ -1744,7 +1744,7 @@ def get_detections_entities(detections_ids: list):
     return {"resources": combined_resources}
 
 
-def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[str]]:
+def get_cases_data(url_filter: str = "", limit: int = 100, offset: int = 0) -> tuple[int, list[str]]:
     """
     Fetches NGSIEM Case ids with provided filter
     :param url_filter: URL filter
@@ -1755,7 +1755,7 @@ def get_cases_data(url_filter: str, limit: int, offset: int) -> tuple[int, list[
         tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
     """
     params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
-    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}"
+    endpoint_url = f"/cases/queries/cases/v1?filter={url_filter}" if url_filter else "/cases/queries/cases/v1"
     response = http_request("GET", endpoint_url, params)
     total_cases: int = demisto.get(response, "meta.pagination.total")
     ids: list[str] = demisto.get(response, "resources", [])
@@ -5980,7 +5980,7 @@ def list_case_summaries_command():
     args = demisto.args()
     ids = argToList(args.get("ids"))
     if not ids:
-        return CommandResults(readable_output="No cases were found.")
+        _, ids = get_cases_data()
 
     demisto.debug(f"About to call get_cases_entities with {ids=}")
     cases = get_cases_entities(ids)
