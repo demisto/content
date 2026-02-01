@@ -1103,7 +1103,6 @@ def get_remote_events(
     client: Client,
     offense_id: str,
     context_data: dict,
-    context_version: Any,
     events_columns: str,
     events_limit: int,
     fetch_mode: str,
@@ -1116,7 +1115,6 @@ def get_remote_events(
         client (Client): QRadar client
         offense_id (str): Offense id to update
         context_data (dict): The current context data
-        context_version (Any): The current context version
         events_columns (str): events columns of AQL
         events_limit (int): events limit of AQL
         fetch_mode (str): The fetch mode configure
@@ -4360,7 +4358,6 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                 client,
                 offense_id,
                 context_data,
-                context_version,
                 events_columns,
                 events_limit,
                 fetch_mode,
