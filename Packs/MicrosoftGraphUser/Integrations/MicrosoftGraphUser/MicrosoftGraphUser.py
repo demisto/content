@@ -2171,7 +2171,7 @@ def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_p
     return fileResult(zip_file_name, zip_content)
 
 
-def main():
+def main():  # pragma: no cover
     params: dict = demisto.params()
     azure_cloud = get_azure_cloud(params, "MicrosoftGraphUser")
     url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, f"/{API_VERSION}/")
