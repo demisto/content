@@ -1249,16 +1249,16 @@ def qradar_get_integration_context():
         context_data = get_integration_context()
     except AttributeError as e:
         demisto.error(f"Failed to get QRadar integration context due to its not a dict: {str(e)}")
-        sys.exit(1)
+        sys.exit(1)  # pylint: disable=E9001
     except Exception as e:
         demisto.error(f"Failed to get QRadar integration context: {str(e)}")
-        sys.exit(1)
+        sys.exit(1)  # pylint: disable=E9001
 
     if context_data and context_data.get(LAST_FETCH_KEY) and LAST_FETCHED_ID:
         ctx_last_fetch_id = int(context_data[LAST_FETCH_KEY])
         if ctx_last_fetch_id < int(LAST_FETCHED_ID):
             demisto.error(f"invalid QRadar integration context {ctx_last_fetch_id=} {LAST_FETCHED_ID=}")
-            sys.exit(1)
+            sys.exit(1)  # pylint: disable=E9001
 
     return context_data
 
