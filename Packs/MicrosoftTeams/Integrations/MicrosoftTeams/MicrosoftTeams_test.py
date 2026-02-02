@@ -3132,7 +3132,7 @@ def test_team_deleted_message_handler(mocker):
 
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
 
     APP.testing = True
     app = APP.test_client()
@@ -3206,7 +3206,7 @@ def test_team_renamed_message_handler(mocker):
 
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
 
     APP.testing = True
     app = APP.test_client()
@@ -3294,7 +3294,7 @@ def test_message_handler_filters_invalid_cache_entries(mocker, requests_mock):
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     mocker.patch("MicrosoftTeams.get_graph_access_token", return_value="mock_token")
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
     requests_mock.get(url, json=mock_team_query_response)
 
     APP.testing = True
@@ -3740,14 +3740,16 @@ def test_validate_auth_header_signature_verification(mocker):
     # 4. Run Tests
     # Test Valid Token
     headers_valid = {"Authorization": f"Bearer {valid_token}"}
-    assert validate_auth_header(headers_valid) is True
+    is_valid, error = validate_auth_header(headers_valid)
+    assert is_valid is True
+    assert error is None
 
     # Test Invalid Token
     headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
-    result = validate_auth_header(headers_invalid)
-    assert isinstance(result, tuple)
-    assert result[0] is False
-    assert "signature verification failed" in result[1].lower()
+    is_valid, error = validate_auth_header(headers_invalid)
+    assert is_valid is False
+    assert error is not None
+    assert "signature verification failed" in error.lower()
 
 
 def test_messages_endpoint_auth_header_validation_failure(mocker):

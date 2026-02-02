@@ -1147,7 +1147,7 @@ def integration_health():
     )
 
 
-def validate_auth_header(headers: dict) -> tuple[bool, str] | bool:
+def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
     """
     Validates authorization header provided in the bot activity object.
     Uses fail-close approach: returns True ONLY if ALL validations pass.
@@ -1186,14 +1186,14 @@ def validate_auth_header(headers: dict) -> tuple[bool, str] | bool:
             open_id_url: str = "https://login.botframework.com/v1/.well-known/openidconfiguration"
             response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
-                error_message = f"Authorization header validation failed failed to fetch open ID config - {response.reason}"
+                error_message = f"Authorization header validation failed to fetch open ID config - {response.reason}"
                 demisto.info(error_message)
                 return False, error_message
             response_json: dict = response.json()
             jwks_uri: str = response_json.get("jwks_uri", "")
             keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
-                error_message = f"Authorization header validation failed failed to fetch keys - {response.reason}"
+                error_message = f"Authorization header validation failed to fetch keys - {response.reason}"
                 demisto.info(error_message)
                 return False, error_message
             keys_response_json: dict = keys_response.json()
@@ -1267,19 +1267,14 @@ def validate_auth_header(headers: dict) -> tuple[bool, str] | bool:
     # Even though PyJWT validates these, we explicitly check as a second layer of security
     audience_claim: str = decoded_payload.get("aud", "")
     issuer_claim: str = decoded_payload.get("iss", "")
-    expiration: int = decoded_payload.get("exp", 0)
-    current_time: int = int(time.time())
 
     # Fail-close: ALL conditions must be satisfied for token to be valid
-    if audience_claim == BOT_ID and issuer_claim == "https://api.botframework.com" and current_time < expiration:
+    if audience_claim == BOT_ID and issuer_claim == "https://api.botframework.com":
         # All validations passed - token is valid
         integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
         set_integration_context(integration_context)
-        demisto.debug(
-            f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}, "
-            f"exp={expiration}, current_time={current_time}, time_remaining={expiration - current_time}s"
-        )
-        return True
+        demisto.debug(f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}")
+        return True, None
 
     # Explicit failure - log details for security auditing
     demisto.info(
@@ -1287,7 +1282,6 @@ def validate_auth_header(headers: dict) -> tuple[bool, str] | bool:
         f"audience: expected={BOT_ID}, actual={audience_claim}, match={audience_claim == BOT_ID} | "
         f"issuer: expected='https://api.botframework.com', actual={issuer_claim}, "
         f"match={issuer_claim == 'https://api.botframework.com'} | "
-        f"expiration: current_time={current_time}, token_exp={expiration}, valid={current_time < expiration}"
     )
     error_message = "Authorization header validation failed - JWT validation failed"
     return False, error_message
@@ -3203,10 +3197,9 @@ def messages() -> Response:
         demisto.debug("Processing POST query...")
         headers: dict = cast(dict[Any, Any], request.headers)
 
-        validation_result = validate_auth_header(headers)
-        if isinstance(validation_result, tuple) and validation_result[0] is False:
-            error_msg = validation_result[1]
-            return Response(response=error_msg, status=401)
+        is_valid, error = validate_auth_header(headers)
+        if is_valid is False:
+            return Response(response=error, status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
             integration_context: dict = get_integration_context()
