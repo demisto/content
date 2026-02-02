@@ -8377,7 +8377,7 @@ def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon
     result = update_remote_ngsiem_case(delta, inc_status, remote_id)
 
     if expected_status:
-        update_mock.assert_called_with("case1", expected_status)
+        update_mock.assert_called_with("case1", status=expected_status)
         assert result == "success"
     else:
         update_mock.assert_not_called()
@@ -8444,7 +8444,7 @@ def test_list_case_summaries_command_no_given_ids(mocker):
             "tags": ["tag1"],
             "version": "1",
         }
-]
+    ]
     # Mock get_cases_entities to return case details
     mocker.patch("CrowdStrikeFalcon.get_cases_entities", return_value=entity_response)
 
@@ -8589,7 +8589,7 @@ def test_resolve_case_command(requests_mock):
     assert "Unassigned" in result.readable_output
     assert requests_mock.last_request.json() == {
         "id": "case1",
-        "fields": {"assigned_to_uuid": ""},
+        "fields": {"remove_user_assignment": True},
     }
 
     # Test case 3: Invalid severity
