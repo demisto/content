@@ -3352,14 +3352,14 @@ script:
           description: User input parameters (for pending playbookTask items).
           type: Unknown
     - name: core-list-findings
-      description: Retrieves findings from the Cortex platform filtered by asset ID and asset name.
-      hidden: true
+      description: Retrieves findings from the Cortex platform.
+      hidden: false
       arguments:
         - name: asset_id
-          description: A comma-separated list of asset ID to filter by.
+          description: A comma-separated list of asset IDs to filter by.
           isArray: true
         - name: asset_name
-          description: A comma-separated list of asset name. to filter by.
+          description: A comma-separated list of asset names to filter by.
           isArray: true
         - name: page
           description: Page number for pagination.
