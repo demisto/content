@@ -3,7 +3,7 @@
 filter channel in ("System", "Application","Directory Service") or provider_name in("Microsoft-Windows-PowerShell", "Microsoft-Windows-TaskScheduler", "Microsoft-Windows-Windows Firewall With Advanced Security", "Microsoft-Windows-Windows Defender","Microsoft-Windows-ActiveDirectory_DomainService") or provider_name contains "Microsoft-Windows-Security-"
 | alter event_id_num = to_integer(event_id), // used for filtering by event id ranges
         event_id_string = to_string(event_id),
-        task_str = to_string(Task)
+        task_str = to_string(task)
 | alter // Extract fields 
         action = arrayindex(regextract(message, "Action:\s*(\S+)"), 0), 
         action_status = arrayindex(regextract(message, "Action Status:\s*(.+?)\s+(?:\w+\s+)?\w+:"), 0),
