@@ -6610,7 +6610,7 @@ Adds tags to the specified case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tags | A comma-separated list of tags. | Required |
-| id | The id of the case the tags will be added to. | Required |
+| id | The ID of the case the tags will be added to. | Required ### |
 
 #### Context Output
 
@@ -6629,7 +6629,7 @@ Deletes a tag from the specified case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The id of the case the tags will be deleted from. | Required |
+| id | The ID of the case the tags will be deleted from. | Required |
 | tag | The tag to delete. | Required |
 
 #### Context Output
@@ -6676,7 +6676,7 @@ Resolves or updates a case.
 | status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional |
 | assigned_to_uuid | A UUID of a user to assign the case to. | Optional |
 | description | A new description for the case. | Optional |
-| remove_user_assignment | Whether to remove case assignment from current user.<br/>If set to true and assigned_to_user_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional |
+| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_user_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional |
 | severity | The new case severity rating (10-100). | Optional |
 | template_id | The unique ID of the template to apply to the case. | Optional |
 | name | The new name for the case. | Optional |
