@@ -8429,7 +8429,7 @@ def test_list_case_summaries_command_no_given_ids(mocker):
 
     mocker.patch.object(demisto, "args", return_value={})
 
-# Mock get_cases_data to return IDs
+    # Mock get_cases_data to return IDs
     mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case_id_1"]))
 
     entity_response = [
