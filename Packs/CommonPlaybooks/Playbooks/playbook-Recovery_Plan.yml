@@ -278,7 +278,6 @@ marketplaces:
 - xpanse
 fromversion: 6.6.0
 supportedModules:
-- cloud
 - cloud_runtime_security
 - xsiam
 - edr

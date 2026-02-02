@@ -342,7 +342,6 @@ tests:
 fromversion: 5.5.0
 toversion: 6.7.9
 supportedModules:
-- cloud
 - cloud_runtime_security
 - xsiam
 - edr
