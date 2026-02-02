@@ -971,17 +971,9 @@ script:
     description: Blocks requested files that are not already on the block list or the allow list.
     name: core-blocklist-files
     supportedModules:
-    - C3
-    - X0
-    - X1
-    - X3
-    - X5
-    - ENT_PLUS
-    - cloud
     - cloud_runtime_security
-    - agentix
-    - xsiam
     - edr
+    - xsiam
     outputs:
     - contextPath: Core.blocklist.added_hashes
       description: Added file hash to the block list.
@@ -1761,17 +1753,9 @@ script:
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status.
     name: core-retrieve-files
     supportedModules:
-    - C3
-    - X0
-    - X1
-    - X3
-    - X5
-    - ENT_PLUS
-    - cloud
     - cloud_runtime_security
-    - agentix
-    - xsiam
     - edr
+    - xsiam
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -1889,17 +1873,9 @@ script:
     description: Views the file retrieved by the core-retrieve-files command using the action ID. Before running this command, use the core-action-status-get command to check if the action completed successfully.
     name: core-retrieve-file-details
     supportedModules:
-    - C3
-    - X0
-    - X1
-    - X3
-    - X5
-    - ENT_PLUS
-    - cloud
     - cloud_runtime_security
-    - agentix
-    - xsiam
     - edr
+    - xsiam
     outputs:
     - contextPath: File
       description: The file details returned by the command.
@@ -4007,17 +3983,9 @@ script:
       name: timeout_in_seconds
     name: core-terminate-causality
     supportedModules:
-    - C3
-    - X0
-    - X1
-    - X3
-    - X5
-    - ENT_PLUS
-    - cloud
     - cloud_runtime_security
-    - agentix
-    - xsiam
     - edr
+    - xsiam
     description: Terminates a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
