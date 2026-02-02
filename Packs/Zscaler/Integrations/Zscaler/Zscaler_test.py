@@ -161,6 +161,242 @@ def test_ip_command(mocker):
     )
 
 
+def test_domain_lookup_single(mocker):
+    """
+    Given:
+        - A single domain to lookup
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify the function returns a CommandResults object
+        - Verify domain extraction works correctly (splits on '|' and takes first part)
+        - Verify outputs_prefix is 'Zscaler.Domain'
+        - Verify Domain.Name context path is set correctly
+        - Verify DBotScore is created with correct type (DOMAIN)
+        - Verify domainClassifications is properly set
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    mock_response = json.dumps(
+        [
+            {
+                "url": "example.com|http://example.com/",
+                "urlClassifications": ["BUSINESS"],
+                "urlClassificationsWithSecurityAlert": [],
+            }
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response):
+        results = Zscaler.domain_lookup({"domain": "example.com"})
+
+    assert results
+    assert len(results) == 1
+    assert isinstance(results[0], CommonServerPython.CommandResults)
+
+    # Verify outputs_prefix
+    assert results[0].outputs_prefix == "Zscaler.Domain"
+
+    # Verify domain extraction from pipe format
+    assert results[0].indicator.domain == "example.com"
+
+    # Verify context outputs
+    assert results[0].outputs["Name"] == "example.com"
+    assert results[0].outputs["domainClassifications"] == "BUSINESS"
+
+    # Verify DBotScore
+    assert results[0].indicator.dbot_score.indicator == "example.com"
+    assert results[0].indicator.dbot_score.indicator_type == CommonServerPython.DBotScoreType.DOMAIN
+    assert results[0].indicator.dbot_score.score == CommonServerPython.Common.DBotScore.GOOD
+
+
+def test_domain_lookup_multiple(mocker):
+    """
+    Given:
+        - Multiple domains to lookup (comma-separated)
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify the function returns multiple CommandResults objects
+        - Verify each domain is processed correctly
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    mock_response = json.dumps(
+        [
+            {
+                "url": "example.com|http://example.com/",
+                "urlClassifications": ["BUSINESS"],
+                "urlClassificationsWithSecurityAlert": [],
+            },
+            {"url": "test.com|http://test.com/", "urlClassifications": ["TECHNOLOGY"], "urlClassificationsWithSecurityAlert": []},
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response):
+        results = Zscaler.domain_lookup({"domain": "example.com,test.com"})
+
+    assert results
+    assert len(results) == 2
+
+    # Verify first domain
+    assert results[0].indicator.domain == "example.com"
+    assert results[0].outputs["domainClassifications"] == "BUSINESS"
+
+    # Verify second domain
+    assert results[1].indicator.domain == "test.com"
+    assert results[1].outputs["domainClassifications"] == "TECHNOLOGY"
+
+
+def test_domain_lookup_with_security_alert(mocker):
+    """
+    Given:
+        - A domain with security alert classifications
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify domainClassificationsWithSecurityAlert is properly set
+        - Verify DBotScore is BAD for malicious domains
+        - Verify DBotScore is SUSPICIOUS for suspicious categories
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    # Test with malicious domain
+    mock_response_malicious = json.dumps(
+        [
+            {
+                "url": "malicious.com|http://malicious.com/",
+                "urlClassifications": ["MISCELLANEOUS_OR_UNKNOWN"],
+                "urlClassificationsWithSecurityAlert": ["MALWARE_SITE"],
+            }
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response_malicious):
+        results = Zscaler.domain_lookup({"domain": "malicious.com"})
+
+    assert results
+    assert len(results) == 1
+    assert results[0].outputs["domainClassificationsWithSecurityAlert"] == "MALWARE_SITE"
+    assert results[0].indicator.dbot_score.score == CommonServerPython.Common.DBotScore.BAD
+    assert results[0].indicator.dbot_score.malicious_description == "MALWARE_SITE"
+
+    # Test with suspicious domain
+    mock_response_suspicious = json.dumps(
+        [
+            {
+                "url": "suspicious.com|http://suspicious.com/",
+                "urlClassifications": [],
+                "urlClassificationsWithSecurityAlert": ["SUSPICIOUS_DESTINATION"],
+            }
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response_suspicious):
+        results = Zscaler.domain_lookup({"domain": "suspicious.com"})
+
+    assert results
+    assert len(results) == 1
+    assert results[0].outputs["domainClassificationsWithSecurityAlert"] == "SUSPICIOUS_DESTINATION"
+    assert results[0].indicator.dbot_score.score == CommonServerPython.Common.DBotScore.SUSPICIOUS
+
+
+def test_domain_lookup_miscellaneous_classification(mocker):
+    """
+    Given:
+        - A domain with MISCELLANEOUS_OR_UNKNOWN classification and no security alerts
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify DBotScore is NONE for miscellaneous domains without security alerts
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    mock_response = json.dumps(
+        [
+            {
+                "url": "unknown.com|http://unknown.com/",
+                "urlClassifications": ["MISCELLANEOUS_OR_UNKNOWN"],
+                "urlClassificationsWithSecurityAlert": [],
+            }
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response):
+        results = Zscaler.domain_lookup({"domain": "unknown.com"})
+
+    assert results
+    assert len(results) == 1
+    assert results[0].outputs["domainClassifications"] == "MISCELLANEOUS_OR_UNKNOWN"
+    assert results[0].indicator.dbot_score.score == CommonServerPython.Common.DBotScore.NONE
+
+
+def test_domain_lookup_pipe_extraction(mocker):
+    """
+    Given:
+        - API response with domain in pipe format "domain.com|http://domain.com/"
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify the function correctly extracts domain by splitting on '|' and taking first part
+        - Verify the extracted domain is used in all context outputs
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    mock_response = json.dumps(
+        [
+            {
+                "url": "google.com|http://google.com/",
+                "urlClassifications": ["SEARCH_ENGINES"],
+                "urlClassificationsWithSecurityAlert": [],
+            }
+        ]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response):
+        results = Zscaler.domain_lookup({"domain": "google.com"})
+
+    assert results
+    assert len(results) == 1
+
+    # Verify domain extraction from pipe format
+    assert results[0].indicator.domain == "google.com"
+    assert results[0].outputs["Name"] == "google.com"
+
+    # Verify the raw response has the domain field (not url)
+    assert "domain" in results[0].raw_response
+    assert results[0].raw_response["domain"] == "google.com|http://google.com/"
+
+
+def test_domain_lookup_empty_classifications(mocker):
+    """
+    Given:
+        - A domain with empty classifications arrays
+    When:
+        - domain_lookup is called
+    Then:
+        - Verify DBotScore is GOOD for domains with no classifications
+    """
+    import Zscaler
+    from unittest.mock import patch
+
+    mock_response = json.dumps(
+        [{"url": "clean.com|http://clean.com/", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}]
+    )
+
+    with patch.object(Zscaler, "lookup_request", return_value=mock_response):
+        results = Zscaler.domain_lookup({"domain": "clean.com"})
+
+    assert results
+    assert len(results) == 1
+    assert results[0].indicator.dbot_score.score == CommonServerPython.Common.DBotScore.GOOD
+
+
 def test_undo_blacklist_url_command(mocker):
     """zscaler-undo-blacklist-url"""
     import Zscaler

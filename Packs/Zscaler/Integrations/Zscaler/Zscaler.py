@@ -534,6 +534,88 @@ def ip_lookup(ip):
     return results or "No results found."
 
 
+def domain_lookup(args):
+    domain = args.get("domain", "")
+    multiple = argToBoolean(args.get("multiple", "true"))
+    response = lookup_request(domain, multiple)
+    raw_res = json.loads(response)
+
+    domains_list = argToList(domain)
+    results: List[CommandResults] = []
+
+    for data in raw_res:
+        res_domain = data.get("url")
+        # Extract the domain from the response by splitting on '|' and taking the first part
+        if "|" in res_domain:
+            res_domain = res_domain.split("|")[0]
+
+        for domain in domains_list:
+            # since zscaler expects to receive a domain without the protocol, we omit it in `lookup_request`
+            # in the response, the domain is returned as it was sent, so we add back the protocol by replacing
+            # the domain returned with the one we got as an argument
+            if "http://" + res_domain in domain or "https://" + res_domain in domain:
+                data["url"] = domain
+                res_domain = domain
+
+        ioc_context = {"Name": res_domain}
+        score = Common.DBotScore.GOOD
+
+        if len(data["urlClassifications"]) == 0:
+            data["domainClassifications"] = ""
+            ioc_context["domainClassifications"] = ""
+        else:
+            data["domainClassifications"] = "".join(data["urlClassifications"])
+            ioc_context["domainClassifications"] = data["domainClassifications"]
+            if data["domainClassifications"] == "MISCELLANEOUS_OR_UNKNOWN":
+                score = Common.DBotScore.NONE
+
+        del data["urlClassifications"]
+
+        if len(data["urlClassificationsWithSecurityAlert"]) == 0:
+            data["domainClassificationsWithSecurityAlert"] = ""
+            ioc_context["domainClassificationsWithSecurityAlert"] = ""
+        else:
+            data["domainClassificationsWithSecurityAlert"] = "".join(data["urlClassificationsWithSecurityAlert"])
+            ioc_context["domainClassificationsWithSecurityAlert"] = data["domainClassificationsWithSecurityAlert"]
+            if data["domainClassificationsWithSecurityAlert"] in SUSPICIOUS_CATEGORIES:
+                score = Common.DBotScore.SUSPICIOUS
+            else:
+                score = Common.DBotScore.BAD
+
+        del data["urlClassificationsWithSecurityAlert"]
+
+        data["domain"] = data.pop("url")
+
+        domain_indicator = Common.Domain(
+            domain=ioc_context["Name"],
+            dbot_score=Common.DBotScore(
+                indicator=ioc_context["Name"],
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=INTEGRATION_NAME,
+                malicious_description=data.get("domainClassificationsWithSecurityAlert", None),
+                score=score,
+                reliability=demisto.params().get("reliability"),
+            ),
+        )
+
+        results.append(
+            CommandResults(
+                outputs_prefix=f"{INTEGRATION_NAME}.Domain",
+                outputs_key_field="Name",
+                indicator=domain_indicator,
+                readable_output=tableToMarkdown(
+                    f'Zscaler Domain Lookup for {ioc_context["Name"]}',
+                    data,
+                    removeNull=True,
+                ),
+                outputs=createContext(data=ioc_context, removeNull=True),
+                raw_response=data,
+            )
+        )
+
+    return results or "No results found."
+
+
 def lookup_request(ioc, multiple=True):
     cmd_url = "/urlLookup"
     if multiple:
@@ -1239,6 +1321,8 @@ def main():  # pragma: no cover
                 return_results(url_lookup(args))
             elif command == "ip":
                 return_results(ip_lookup(args.get("ip")))
+            elif command == "domain":
+                return_results(domain_lookup(args))
             elif command == "zscaler-blacklist-url":
                 return_results(blacklist_url(args.get("url")))
             elif command == "zscaler-undo-blacklist-url":
