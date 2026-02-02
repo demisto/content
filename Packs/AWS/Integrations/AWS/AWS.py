@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, WaiterError
 from boto3 import Session
 from xml.sax.saxutils import escape
 import re
@@ -3400,11 +3400,13 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
-
-        waiter = client.get_waiter("snapshot_completed")
-        waiter.wait(**kwargs)
-
-        return CommandResults(readable_output="Snapshot is now completed.")
+        
+        try:
+            waiter = client.get_waiter("snapshot_completed")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Snapshot is now completed.")
+        except WaiterError as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
 
 
 class EKS:
