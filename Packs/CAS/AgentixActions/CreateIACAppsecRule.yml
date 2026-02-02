@@ -74,7 +74,7 @@ args:
 - name: frameworks
   underlyingargname: frameworks
   description: >
-    list of {name:string,definition:string} for the rule
+    array of json objects { name:string, definition:string } for the rule
     name Options: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM..
     The rule definition
     If definition not exist create one for yourself
