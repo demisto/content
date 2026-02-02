@@ -39,7 +39,7 @@ class Client(BaseClient):
         if result.get("IsPasswordExpired"):
             return_error("CyberArk is reporting that the user password is expired. Terminating script.")
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
-        self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
+        self._headers["Authorization"] = f"Basic {result.get('EPMAuthenticationResult')}"
 
     def get_sets(self) -> dict:
         return self._http_request("GET", url_suffix="Sets")
