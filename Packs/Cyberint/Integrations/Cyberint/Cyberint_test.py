@@ -5,8 +5,9 @@ from unittest.mock import Mock, patch
 import Cyberint
 import pytest
 from CommonServerPython import DemistoException, EntryType, GetModifiedRemoteDataResponse, GetRemoteDataResponse
+from Packs.Cyberint.Integrations.Cyberint.CommonServerPython import IncidentStatus
 
-BASE_URL = "https://test.cyberint.io"
+BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -25,363 +26,11 @@ def client():
     from Cyberint import Client
 
     return Client(
-        base_url=f"{BASE_URL}/us/alert/",
-        region="us",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-
-@pytest.fixture()
-def client_with_eu_region():
-    from Cyberint import Client
-
-    return Client(
-        base_url=f"{BASE_URL}/eu/alert/",
-        region="eu",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-
-@pytest.fixture()
-def client_without_region():
-    from Cyberint import Client
-
-    return Client(
-        base_url=f"{BASE_URL}/us/alert/",
-        region="",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-
-def test_client_initialization_with_region():
-    """
-    Scenario: Initialize client with a specific region.
-    Given:
-     - User provides a region parameter.
-    When:
-     - Client is initialized.
-    Then:
-     - Ensure the region is stored correctly in lowercase.
-    """
-    from Cyberint import Client
-
-    client = Client(
         base_url=BASE_URL,
-        region="US",
         access_token="xxx",
         verify_ssl=False,
         proxy=False,
     )
-
-    assert client._region == "us"
-
-
-def test_client_initialization_with_lowercase_region():
-    """
-    Scenario: Initialize client with a lowercase region.
-    Given:
-     - User provides a lowercase region parameter.
-    When:
-     - Client is initialized.
-    Then:
-     - Ensure the region is stored correctly.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=BASE_URL,
-        region="eu",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    assert client._region == "eu"
-
-
-def test_client_initialization_without_region():
-    """
-    Scenario: Initialize client without providing a region.
-    Given:
-     - User does not provide a region parameter (empty string).
-    When:
-     - Client is initialized.
-    Then:
-     - Ensure the region defaults to "us".
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=BASE_URL,
-        region="",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    assert client._region == "us"
-
-
-def test_client_initialization_with_none_region():
-    """
-    Scenario: Initialize client with None as region.
-    Given:
-     - User provides None as the region parameter.
-    When:
-     - Client is initialized.
-    Then:
-     - Ensure the region defaults to "us".
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=BASE_URL,
-        region=None,
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    assert client._region == "us"
-
-
-def test_list_alerts_with_region(requests_mock):
-    """
-    Scenario: List alerts with a specific region.
-    Given:
-     - User has provided valid credentials with a region.
-    When:
-     - list_alerts is called.
-    Then:
-     - Ensure the URL includes the region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/eu/alert/",
-        region="eu",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    mock_response = {"alerts": [], "total": 0}
-    requests_mock.post(f"{BASE_URL}/eu/alert/api/v1/alerts", json=mock_response)
-
-    result = client.list_alerts(
-        page="1",
-        page_size=10,
-        created_date_from=None,
-        created_date_to=None,
-        modification_date_from=None,
-        modification_date_to=None,
-        update_date_from=None,
-        update_date_to=None,
-        environments=None,
-        statuses=None,
-        severities=None,
-        types=None,
-    )
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/eu/alert/api/v1/alerts"
-
-
-def test_list_alerts_with_default_region(requests_mock):
-    """
-    Scenario: List alerts with default region (us).
-    Given:
-     - User has not provided a region (defaults to "us").
-    When:
-     - list_alerts is called.
-    Then:
-     - Ensure the URL includes the "us" region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/us/alert/",
-        region="",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    mock_response = {"alerts": [], "total": 0}
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
-
-    result = client.list_alerts(
-        page="1",
-        page_size=10,
-        created_date_from=None,
-        created_date_to=None,
-        modification_date_from=None,
-        modification_date_to=None,
-        update_date_from=None,
-        update_date_to=None,
-        environments=None,
-        statuses=None,
-        severities=None,
-        types=None,
-    )
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/us/alert/api/v1/alerts"
-
-
-def test_update_alerts_with_region(requests_mock):
-    """
-    Scenario: Update alerts with a specific region.
-    Given:
-     - User has provided valid credentials with a region.
-    When:
-     - update_alerts is called.
-    Then:
-     - Ensure the URL includes the region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/ap/alert/",
-        region="ap",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    mock_response = {}
-    requests_mock.put(f"{BASE_URL}/ap/alert/api/v1/alerts/status", json=mock_response)
-
-    result = client.update_alerts(
-        alerts=["alert1"],
-        status="acknowledged",
-    )
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/ap/alert/api/v1/alerts/status"
-
-
-def test_get_alert_with_region(requests_mock):
-    """
-    Scenario: Get a single alert with a specific region.
-    Given:
-     - User has provided valid credentials with a region.
-    When:
-     - get_alert is called.
-    Then:
-     - Ensure the URL includes the region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/eu/alert/",
-        region="EU",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    mock_response = {"alert": {"ref_id": "ARG-1"}}
-    requests_mock.get(f"{BASE_URL}/eu/alert/api/v1/alerts/ARG-1", json=mock_response)
-
-    result = client.get_alert("ARG-1")
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/eu/alert/api/v1/alerts/ARG-1"
-
-
-def test_get_alert_attachment_with_region(requests_mock):
-    """
-    Scenario: Get an alert attachment with a specific region.
-    Given:
-     - User has provided valid credentials with a region.
-    When:
-     - get_alert_attachment is called.
-    Then:
-     - Ensure the URL includes the region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/us/alert/",
-        region="us",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    with open("test_data/attachment_file_mock.png", "rb") as png_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", content=png_content_mock.read())
-
-    result = client.get_alert_attachment("ARG-3", "X")
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X"
-
-
-def test_get_analysis_report_with_region(requests_mock):
-    """
-    Scenario: Get an analysis report with a specific region.
-    Given:
-     - User has provided valid credentials with a region.
-    When:
-     - get_analysis_report is called.
-    Then:
-     - Ensure the URL includes the region prefix.
-    """
-    from Cyberint import Client
-
-    client = Client(
-        base_url=f"{BASE_URL}/eu/alert/",
-        region="eu",
-        access_token="xxx",
-        verify_ssl=False,
-        proxy=False,
-    )
-
-    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/eu/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
-
-    result = client.get_analysis_report("ARG-4")
-
-    assert result is not None
-    assert requests_mock.last_request.url == f"{BASE_URL}/eu/alert/api/v1/alerts/ARG-4/analysis_report"
-
-
-def test_region_case_insensitive():
-    """
-    Scenario: Verify that region parameter is case-insensitive.
-    Given:
-     - User provides region in different cases (upper, lower, mixed).
-    When:
-     - Client is initialized.
-    Then:
-     - Ensure the region is always stored in lowercase.
-    """
-    from Cyberint import Client
-
-    test_cases = [
-        ("US", "us"),
-        ("Eu", "eu"),
-        ("AP", "ap"),
-        ("UsA", "usa"),
-    ]
-
-    for input_region, expected_region in test_cases:
-        client = Client(
-            base_url=BASE_URL,
-            region=input_region,
-            access_token="xxx",
-            verify_ssl=False,
-            proxy=False,
-        )
-        assert client._region == expected_region, f"Expected {expected_region}, but got {client._region}"
 
 
 def test_cyberint_alerts_fetch_command(requests_mock, client):
@@ -399,9 +48,9 @@ def test_cyberint_alerts_fetch_command(requests_mock, client):
     from Cyberint import cyberint_alerts_fetch_command
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     result = cyberint_alerts_fetch_command(client, {})
     assert len(result.outputs) == 3
@@ -435,7 +84,7 @@ def test_cyberint_alerts_status_update_command(requests_mock, client):
     from Cyberint import cyberint_alerts_status_update
 
     mock_response = {}
-    requests_mock.put(f"{BASE_URL}/us/alert/api/v1/alerts/status", json=mock_response)
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json=mock_response)
 
     result = cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "acknowledged"})
     assert len(result.outputs) == 1
@@ -501,14 +150,14 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     from Cyberint import fetch_incidents
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
         client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
@@ -535,14 +184,14 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     from Cyberint import fetch_incidents
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(client, {}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False)
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
@@ -567,7 +216,7 @@ def test_fetch_incidents_empty_response(requests_mock, client):
     from Cyberint import fetch_incidents
 
     mock_response = json.loads(load_mock_response("empty.json"))
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
         client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
@@ -618,11 +267,11 @@ def test_extract_data_from_csv_stream(requests_mock, client):
     from Cyberint import CSV_FIELDS_TO_EXTRACT, extract_data_from_csv_stream
 
     mock_response = load_mock_response("csv_no_username.csv")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/alert_id/attachments/123", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/alert_id/attachments/123", json=mock_response)
     result = extract_data_from_csv_stream(client, "alert_id", "123")
     assert len(result) == 0
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/alert_id/attachments/123", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/alert_id/attachments/123", json=mock_response)
     result = extract_data_from_csv_stream(client, "alert_id", "123", delimiter=b"\\n")
     assert len(result) == 6
     assert list(result[0].keys()) == [value.lower() for value in CSV_FIELDS_TO_EXTRACT]
@@ -644,7 +293,7 @@ def test_cyberint_alerts_analysis_report_command(requests_mock, client):
     from Cyberint import cyberint_alerts_get_analysis_report_command
 
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
 
     result = cyberint_alerts_get_analysis_report_command(client, "ARG-4", "expert_analysis_mock.pdf")
     assert result["ContentsFormat"] == "text"
@@ -667,7 +316,7 @@ def test_cyberint_alerts_get_attachment_command(requests_mock, client):
     from Cyberint import cyberint_alerts_get_attachment_command
 
     with open("test_data/attachment_file_mock.png", "rb") as png_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", content=png_content_mock.read())
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", content=png_content_mock.read())
 
     result = cyberint_alerts_get_attachment_command(client, "ARG-3", "X", "attachment_file_mock.png")
     assert result["ContentsFormat"] == "text"
@@ -709,7 +358,7 @@ def test_test_module_ok(requests_mock, client):
     from Cyberint import test_module
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     result = test_module(client)
 
@@ -728,7 +377,7 @@ def test_test_module_invalid_token(requests_mock, client):
     """
 
     error_response = {"error": "Invalid token or token expired"}
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", status_code=401, json=error_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=401, json=error_response)
 
     assert (
         Cyberint.test_module(client)
@@ -748,7 +397,7 @@ def test_test_module_error(requests_mock, client):
     """
 
     error_response = {"error": "Not found"}
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", status_code=404, json=error_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=404, json=error_response)
 
     assert Cyberint.test_module(client) == 'Error in API call [404] - None\n{"error": "Not found"}'
 
@@ -756,7 +405,7 @@ def test_test_module_error(requests_mock, client):
 def test_get_alert_attachments_with_analysis_report(requests_mock, client):
     alert_id = "ARG-3"
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{alert_id}/analysis_report", content=pdf_content_mock.read())
+        requests_mock.get(f"{BASE_URL}/api/v1/alerts/{alert_id}/analysis_report", content=pdf_content_mock.read())
 
     attachment_list = [{"id": "123", "name": "report.pdf", "mimetype": "application/pdf"}]
 
@@ -803,7 +452,7 @@ def test_get_alert_attachments_with_attachment_type(requests_mock, client):
     attachment_list = [{"id": "456", "name": "file.txt", "mimetype": "text/plain"}]
     mock_response = load_mock_response("csv_example.csv")
 
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{alert_id}/attachments/456", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{alert_id}/attachments/456", json=mock_response)
 
     result = Cyberint.get_alert_attachments(client, attachment_list, "attachment", alert_id)
 
@@ -823,7 +472,7 @@ def test_get_alert_attachments_with_none_in_attachment_list(requests_mock, clien
     attachment_list = [{"id": "789", "name": "image.png", "mimetype": "image/png"}]
     mock_response = load_mock_response("csv_example.csv")
 
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/789", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/789", json=mock_response)
 
     result = Cyberint.get_alert_attachments(client, attachment_list, "attachment", alert_id)
 
@@ -848,7 +497,7 @@ def test_get_remote_data_command_with_open_incident(requests_mock, client):
     args = {"id": 123, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 123, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": False}
     mock_response = load_mock_response("alert_open.json")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{args['id']}", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
     response = get_remote_data_command(client, args, params)
 
@@ -861,7 +510,7 @@ def test_get_remote_data_command_with_closed_incident(requests_mock, client):
     args = {"id": 124, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 124, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": True}
     mock_response = load_mock_response("alert_closed.json")
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{args['id']}", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
     response = get_remote_data_command(client, args, params)
 
@@ -877,7 +526,7 @@ def test_get_remote_data_command_with_missing_update_date(requests_mock, client)
     mock_response = {
         "alert": {"id": "125", "status": "closed", "closure_reason": "Resolved", "closure_reason_description": "Issue mitigated"}
     }
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{args['id']}", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
     response = get_remote_data_command(client, args, params)
 
@@ -893,7 +542,7 @@ def test_get_remote_data_command_with_none_response(requests_mock, client, capfd
     params = {"close_incident": True}
 
     mock_response = "null"
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{args['id']}", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
     response = get_remote_data_command(client, args, params)
 
@@ -908,7 +557,7 @@ def test_get_remote_data_command_invalid_response(requests_mock, client):
     args = {"id": 126, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 126, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": True}
 
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/{args['id']}", text='{"invalid": "response"}')
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", text='{"invalid": "response"}')
 
     response = get_remote_data_command(client, args, params)
 
@@ -973,7 +622,7 @@ def test_cyberint_alerts_fetch_command_empty_response(requests_mock, client):
     from Cyberint import cyberint_alerts_fetch_command
 
     mock_response = {"alerts": []}
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     result = cyberint_alerts_fetch_command(client, {})
     assert result.outputs == []
@@ -992,7 +641,7 @@ def test_extract_data_from_csv_stream_malformed_csv(requests_mock, client):
     from Cyberint import extract_data_from_csv_stream
 
     malformed_csv_content = "username,email\ninvalid_row"
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/alert_id/attachments/123", text=malformed_csv_content)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/alert_id/attachments/123", text=malformed_csv_content)
 
     result = extract_data_from_csv_stream(client, "alert_id", "123")
     assert len(result) == 0
@@ -1010,7 +659,7 @@ def test_cyberint_alerts_get_attachment_command_not_found(requests_mock, client)
     """
     from Cyberint import cyberint_alerts_get_attachment_command
 
-    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/invalid", status_code=404)
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/invalid", status_code=404)
 
     with pytest.raises(DemistoException, match="Error in API call \\[404\\]"):
         cyberint_alerts_get_attachment_command(client, "ARG-3", "invalid", "missing_file.png")
@@ -1034,7 +683,7 @@ def test_edge_case_handling(requests_mock, client):
     """
     from Cyberint import cyberint_alerts_fetch_command
 
-    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json={})  # Empty response
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json={})  # Empty response
 
     result = cyberint_alerts_fetch_command(client, {})
 
@@ -1096,3 +745,80 @@ def test_get_modified_remote_data(
         severities=None,
         types=None,
     )
+
+
+def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
+    """
+    Test update_remote_system when XSOAR incident is closed (inc_status=2).
+    """
+    from Cyberint import update_remote_system
+
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-123",
+        "status": IncidentStatus.DONE,  # XSOAR closed status
+        "incidentChanged": True,
+        "delta": {"closure_reason": "resolved"},
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    req = requests_mock.last_request
+
+    assert req.method == "PUT"
+    assert req.url == f"{BASE_URL}/api/v1/alerts/status"
+
+    payload = req.json()
+    assert payload == {
+        "alert_ref_ids": ["INT-123"],
+        "data": {
+            "closure_reason": "resolved",
+            "closure_reason_description": "Closed from XSOAR",
+            "status": "closed",
+        },
+    }
+
+    assert result == "INT-123"
+
+
+def test_update_remote_system_status_closed_in_delta(requests_mock, client):
+    """
+    Test update_remote_system when status is closed in delta.
+    """
+    from Cyberint import update_remote_system
+
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-124",
+        "status": 1,
+        "incidentChanged": True,
+        "delta": {"status": "closed", "closure_reason": "other"},
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    assert result == "INT-124"
+
+
+def test_update_remote_system_cyberint_alert_already_closed(requests_mock, client):
+    """
+    Test update_remote_system when Cyberint alert is already closed.
+    """
+    from Cyberint import update_remote_system
+
+    mock_alert = {"alert": {"status": "closed", "closure_reason": "resolved", "closure_reason_description": "Already resolved"}}
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/INT-125", json=mock_alert)
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-125",
+        "status": 1,
+        "incidentChanged": True,
+        "delta": {},  # No status change
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    assert result == "INT-125"

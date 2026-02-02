@@ -1457,3 +1457,60 @@ Updates a message.
 ##### Human Readable Output
 
 Message was sent successfully.
+
+### microsoft-teams-list-messages
+
+***
+Retrieves a list of messages in a chat or channel.
+
+Notes:
+
+- When retrieving messages from a chat, this command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+#### Base Command
+
+`microsoft-teams-list-messages`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conversation_id | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat. | Required |
+| team_name | The channel's team. Required if specifying a channel name in the conversation_id argument. | Optional |
+| limit | The number of results to retrieve. Default is 50. | Optional |
+| order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional |
+| next_link | A link that specifies a starting point to use for subsequent calls. | Optional |
+| message_id | Id of a message to retrieve its replies. Supported only for channels. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.MessagesList.conversationId | String | The conversation's unique identifier. |
+| MicrosoftTeams.MessagesList.messages.id | String | Unique ID of the message. |
+| MicrosoftTeams.MessagesList.messages.replyToId | String | ID of the parent message or root message of the thread. |
+| MicrosoftTeams.MessagesList.messages.etag | String | Version number of the message. |
+| MicrosoftTeams.MessagesList.messages.messageType | String | The type of message. |
+| MicrosoftTeams.MessagesList.messages.createdDateTime | String | Timestamp of when the message was created. |
+| MicrosoftTeams.MessagesList.messages.lastModifiedDateTime | String | Timestamp when the message is created \(initial setting\) or modified, including when a reaction is added or removed. |
+| MicrosoftTeams.MessagesList.messages.lastEditedDateTime | String | Timestamp when edits to the message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. |
+| MicrosoftTeams.MessagesList.messages.deletedDateTime | String | Timestamp when the message was deleted, or null if not deleted. |
+| MicrosoftTeams.MessagesList.messages.subject | String | The subject of the message, in plaintext. |
+| MicrosoftTeams.MessagesList.messages.summary | String | Summary text of the message that could be used for push notifications and summary views or fall back views. |
+| MicrosoftTeams.MessagesList.messages.chatId | String | If the message was sent in a chat, represents the identity of the chat. |
+| MicrosoftTeams.MessagesList.messages.importance | String | The importance of the message. |
+| MicrosoftTeams.MessagesList.messages.locale | String | Locale of the message set by the client. |
+| MicrosoftTeams.MessagesList.messages.webUrl | String | Link to the message in Microsoft Teams. |
+| MicrosoftTeams.MessagesList.messages.channelIdentity | String | If the message was sent in a channel, represents the identity of the channel. |
+| MicrosoftTeams.MessagesList.messages.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. |
+| MicrosoftTeams.MessagesList.messages.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. |
+| MicrosoftTeams.MessagesList.messages.from | String | Details of the sender of the message. |
+| MicrosoftTeams.MessagesList.messages.body.content | String | The content of the message. |
+| MicrosoftTeams.MessagesList.messages.body.contentType | String | Plaintext/HTML representation of the content of the message. |
+| MicrosoftTeams.MessagesList.messages.attachments | String | References to attached objects like files, tabs, meetings, etc. |
+| MicrosoftTeams.MessagesList.messages.attachments.content | String | The content of the attachments. |
+| MicrosoftTeams.MessagesList.messages.mentions | String | List of entities mentioned in the message. |
+| MicrosoftTeams.MessagesList.messages.reactions | String | Reactions for this message \(for example, Like\). |
+| MicrosoftTeams.MessagesListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
+| MicrosoftTeams.MessagesListMetadata.returned_count | Number | The actual number of messages returned in this specific execution. |
+| MicrosoftTeams.MessagesListMetadata.filtered_count | Number | The total number of messages in the system that match the specified filter criteria. |

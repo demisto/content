@@ -385,6 +385,170 @@ class Client(BaseClient):
 
         return response
 
+    def search_messages_request(self, source, tenant_ids, filters, page_number=None, page_size=None):
+        """
+        Search for messages using the SOAR Message Search API.
+
+        Args:
+            source (str): Message source (abnormal|quarantine)
+            tenant_ids (list): List of tenant IDs
+            filters (dict): Search filters
+            page_number (int, optional): Page number (default 1)
+            page_size (int, optional): Page size (default 100, max 1000)
+
+        Returns:
+            dict: Search results with messages, pagination, and metadata
+        """
+        params = assign_params(pageNumber=page_number, pageSize=page_size)
+        headers = self._headers
+
+        json_data = {
+            "source": source,
+            "tenant_ids": tenant_ids,
+            "filters": filters,
+        }
+
+        response = self._http_request("post", "search", params=params, json_data=json_data, headers=headers)
+
+        return response
+
+    def remediate_messages_request(
+        self, action, tenant_ids, source, remediation_reason, messages=None, remediate_all=False, search_filters=None, **kwargs
+    ):
+        """
+        Remediate messages using the SOAR Message Remediation API.
+
+        Args:
+            action (str): Action to perform (delete|move_to_inbox|submit_to_d360|reclassify)
+            tenant_ids (list): List of tenant IDs
+            source (str): Message source (abnormal|quarantine)
+            remediation_reason (str): Reason for remediation
+            messages (list, optional): List of message objects to remediate
+            remediate_all (bool, optional): Whether to remediate all matching messages
+            search_filters (dict, optional): Search filters when remediate_all=True
+            **kwargs: Additional optional parameters (target_folder, submit_d360_case)
+
+        Returns:
+            dict: Remediation response with activity_log_id and metadata
+        """
+        headers = self._headers
+
+        json_data = {
+            "action": action,
+            "tenant_ids": tenant_ids,
+            "source": source,
+            "remediation_reason": remediation_reason,
+            "remediate_all": remediate_all,
+        }
+
+        if messages:
+            json_data["messages"] = messages
+        if search_filters:
+            json_data["search_filters"] = search_filters
+
+        # Add optional parameters
+        if "target_folder" in kwargs:
+            json_data["target_folder"] = kwargs["target_folder"]
+        if "submit_d360_case" in kwargs:
+            json_data["submit_d360_case"] = kwargs["submit_d360_case"]
+
+        response = self._http_request("post", "search/remediate", json_data=json_data, headers=headers)
+
+        return response
+
+    def get_activities_list_request(self, tenant_ids, action=None, page_number=None, page_size=None):
+        """
+        Get list of activity logs using the SOAR Activity Logs API.
+
+        Args:
+            tenant_ids (list): List of tenant IDs (passed as query parameters)
+            action (str, optional): Filter by action (search|remediation|csv_export)
+            page_number (int, optional): Page number (default 1)
+            page_size (int, optional): Page size (default 100, max 1000)
+
+        Returns:
+            dict: Activity logs with pagination and metadata
+        """
+        params = assign_params(action=action, pageNumber=page_number, pageSize=page_size, tenant_ids=tenant_ids)
+        headers = self._headers
+
+        response = self._http_request("get", "search/activities", params=params, headers=headers)
+
+        return response
+
+    def get_activity_status_request(self, activity_log_id, page=None, size=None):
+        """
+        Get status of a specific activity using the SOAR Activity Status API.
+
+        Args:
+            activity_log_id (str): Activity log ID
+            page (int, optional): Page number (default 1)
+            size (int, optional): Page size (default 100, max 1000)
+
+        Returns:
+            dict: Activity status with remediation details and metadata
+        """
+        params = assign_params(page=page, size=size)
+        headers = self._headers
+
+        response = self._http_request("get", f"search/activities/{activity_log_id}/status", params=params, headers=headers)
+
+        return response
+
+    def download_message_attachment_request(
+        self, message_id, attachment_name, tenant_id, raw_message_id, native_user_id, recipient_mailbox
+    ):
+        """
+        Download a message attachment using the SOAR Attachment Download API.
+
+        Args:
+            message_id (str): Abnormal message ID (can be negative)
+            attachment_name (str): Name of the attachment to download
+            tenant_id (int): Tenant ID for the message
+            raw_message_id (str): Cloud provider message ID (O365/GSuite)
+            native_user_id (str): Cloud provider user ID
+            recipient_mailbox (str): Mailbox email address
+
+        Returns:
+            Response: HTTP response object containing the attachment file
+        """
+        params = assign_params(
+            message_id=message_id,
+            attachment_name=attachment_name,
+            tenant_id=tenant_id,
+            raw_message_id=raw_message_id,
+            native_user_id=native_user_id,
+            recipient_mailbox=recipient_mailbox,
+        )
+        headers = self._headers
+
+        response = self._http_request(
+            "get", "search/messages/attachments/download", params=params, headers=headers, resp_type="response"
+        )
+
+        return response
+
+    def download_message_eml_request(self, cloud_message_id, quarantine_identity=None, recipient_mailbox=None):
+        """
+        Download a message in EML format using the SOAR EML Download API.
+
+        Args:
+            cloud_message_id (str): The cloud_message_id from search results (format: abx:CloudMessage:...)
+            quarantine_identity (str, optional): Quarantine identifier (required for quarantine messages)
+            recipient_mailbox (str, optional): Recipient email address (required for quarantine messages)
+
+        Returns:
+            Response: HTTP response object containing the EML file (RFC822 format)
+        """
+        params = assign_params(quarantineIdentity=quarantine_identity, recipientMailbox=recipient_mailbox)
+        headers = self._headers
+
+        response = self._http_request(
+            "get", f"search/messages/{cloud_message_id}/eml", params=params, headers=headers, resp_type="response"
+        )
+
+        return response
+
     def _remove_keys_from_response(self, response, keys_to_remove):
         """Removes specified keys from the response."""
         for key in keys_to_remove:
@@ -833,6 +997,291 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
+def search_messages_command(client, args):  # pragma: no cover
+    """
+    Search for messages using the SOAR Message Search API.
+    """
+    source = str(args.get("source", ""))
+    tenant_ids = argToList(args.get("tenant_ids", []))
+    page_number = arg_to_number(args.get("page_number"))
+    page_size = arg_to_number(args.get("page_size"))
+
+    # Build filters dictionary
+    filters = {}
+    if args.get("start_time"):
+        filters["start_time"] = str(args.get("start_time"))
+    if args.get("end_time"):
+        filters["end_time"] = str(args.get("end_time"))
+    if args.get("subject"):
+        filters["subject"] = str(args.get("subject"))
+    if args.get("sender_email"):
+        filters["sender_email"] = str(args.get("sender_email"))
+    if args.get("sender_name"):
+        filters["sender_name"] = str(args.get("sender_name"))
+    if args.get("recipient_email"):
+        filters["recipient_email"] = str(args.get("recipient_email"))
+    if args.get("recipient_name"):
+        filters["recipient_name"] = str(args.get("recipient_name"))
+    if args.get("attachment_name"):
+        filters["attachment_name"] = str(args.get("attachment_name"))
+    if args.get("attachment_md5_hash"):
+        filters["attachment_md5_hash"] = str(args.get("attachment_md5_hash"))
+    if args.get("internet_message_id"):
+        filters["internet_message_id"] = str(args.get("internet_message_id"))
+    if args.get("body_link"):
+        filters["body_link"] = str(args.get("body_link"))
+    if args.get("sender_ip"):
+        filters["sender_ip"] = str(args.get("sender_ip"))
+    if args.get("judgement"):
+        filters["judgement"] = str(args.get("judgement"))
+    if args.get("use_sender_regex") is not None:
+        filters["use_sender_regex"] = argToBoolean(args.get("use_sender_regex"))
+    if args.get("use_recipient_regex") is not None:
+        filters["use_recipient_regex"] = argToBoolean(args.get("use_recipient_regex"))
+    if args.get("show_graymail") is not None:
+        filters["show_graymail"] = argToBoolean(args.get("show_graymail"))
+
+    response = client.search_messages_request(source, tenant_ids, filters, page_number, page_size)
+
+    headers = [
+        "abnormal_message_id",
+        "subject",
+        "sender",
+        "mailbox_name",
+        "received_time",
+        "decision_category",
+        "judgement",
+    ]
+    markdown = tableToMarkdown(
+        f"Message Search Results (Total: {response.get('total', 0)})",
+        response.get("results", []),
+        headers=headers,
+        removeNull=True,
+    )
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="AbnormalSecurity.MessageSearch",
+        outputs_key_field="abnormal_message_id",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def remediate_messages_command(client, args):  # pragma: no cover
+    """
+    Remediate messages using the SOAR Message Remediation API.
+    """
+    action = str(args.get("action", ""))
+    tenant_ids = argToList(args.get("tenant_ids", []))
+    source = str(args.get("source", ""))
+    remediation_reason = str(args.get("remediation_reason", ""))
+    remediate_all = argToBoolean(args.get("remediate_all", False))
+
+    # Optional parameters
+    kwargs = {}
+    if args.get("target_folder"):
+        kwargs["target_folder"] = str(args.get("target_folder"))
+    if args.get("submit_d360_case") is not None:
+        kwargs["submit_d360_case"] = argToBoolean(args.get("submit_d360_case"))
+
+    # Handle messages or search_filters
+    messages = None
+    search_filters = None
+
+    if remediate_all:
+        # Build search filters for remediate_all
+        search_filters = {}
+        if args.get("start_time"):
+            search_filters["start_time"] = str(args.get("start_time"))
+        if args.get("end_time"):
+            search_filters["end_time"] = str(args.get("end_time"))
+        if args.get("subject"):
+            search_filters["subject"] = str(args.get("subject"))
+        if args.get("sender_email"):
+            search_filters["sender_email"] = str(args.get("sender_email"))
+        if args.get("sender_name"):
+            search_filters["sender_name"] = str(args.get("sender_name"))
+        if args.get("recipient_email"):
+            search_filters["recipient_email"] = str(args.get("recipient_email"))
+        if args.get("recipient_name"):
+            search_filters["recipient_name"] = str(args.get("recipient_name"))
+        if args.get("attachment_name"):
+            search_filters["attachment_name"] = str(args.get("attachment_name"))
+        if args.get("attachment_md5_hash"):
+            search_filters["attachment_md5_hash"] = str(args.get("attachment_md5_hash"))
+        if args.get("internet_message_id"):
+            search_filters["internet_message_id"] = str(args.get("internet_message_id"))
+        if args.get("body_link"):
+            search_filters["body_link"] = str(args.get("body_link"))
+        if args.get("sender_ip"):
+            search_filters["sender_ip"] = str(args.get("sender_ip"))
+        if args.get("judgement"):
+            search_filters["judgement"] = str(args.get("judgement"))
+        if args.get("use_sender_regex") is not None:
+            search_filters["use_sender_regex"] = argToBoolean(args.get("use_sender_regex"))
+        if args.get("use_recipient_regex") is not None:
+            search_filters["use_recipient_regex"] = argToBoolean(args.get("use_recipient_regex"))
+        if args.get("show_graymail") is not None:
+            search_filters["show_graymail"] = argToBoolean(args.get("show_graymail"))
+    else:
+        # Parse messages JSON
+        messages_json = args.get("messages")
+        if messages_json:
+            try:
+                messages = json.loads(messages_json) if isinstance(messages_json, str) else messages_json
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON format for messages: {e}")
+
+    response = client.remediate_messages_request(
+        action, tenant_ids, source, remediation_reason, messages, remediate_all, search_filters, **kwargs
+    )
+
+    markdown = f"## Message Remediation Initiated\n\n**Activity Log ID:** {response.get('activity_log_id', 'N/A')}"
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="AbnormalSecurity.MessageRemediation",
+        outputs_key_field="activity_log_id",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_activities_list_command(client, args):
+    """
+    Get list of activity logs using the SOAR Activity Logs API.
+    """
+    tenant_ids = argToList(args.get("tenant_ids", []))
+    action = args.get("action")
+    page_number = arg_to_number(args.get("page_number"))
+    page_size = arg_to_number(args.get("page_size"))
+
+    response = client.get_activities_list_request(tenant_ids, action, page_number, page_size)
+
+    headers = ["activity_id", "action", "status", "performed_by", "timestamp", "result_count"]
+    markdown = tableToMarkdown(
+        f"Activity Logs (Total: {response.get('total', 0)})", response.get("activities", []), headers=headers, removeNull=True
+    )
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="AbnormalSecurity.Activities",
+        outputs_key_field="activity_id",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def get_activity_status_command(client, args):
+    """
+    Get status of a specific activity using the SOAR Activity Status API.
+    """
+    activity_log_id = str(args.get("activity_log_id", ""))
+    page = arg_to_number(args.get("page"))
+    size = arg_to_number(args.get("size"))
+
+    response = client.get_activity_status_request(activity_log_id, page, size)
+
+    # Create markdown for activity summary
+    summary_headers = ["activity_id", "action", "status", "performed_by", "timestamp", "result_count"]
+    summary_data = {
+        "activity_id": response.get("activity_id"),
+        "action": response.get("action"),
+        "status": response.get("status") or "In Progress",
+        "performed_by": response.get("performed_by") or "N/A",
+        "timestamp": response.get("timestamp") or "N/A",
+        "result_count": response.get("result_count") if response.get("result_count") is not None else "N/A",
+    }
+    markdown = tableToMarkdown("Activity Status", [summary_data], headers=summary_headers)
+
+    # Add metadata information if available
+    if response.get("metadata"):
+        metadata = response.get("metadata")
+        markdown += f"\n**Trace ID:** {metadata.get('trace_id', 'N/A')}"
+        markdown += f"\n**Response Time:** {metadata.get('response_time', 'N/A')}"
+
+    # Add remediation details table if available
+    if response.get("remediation_details"):
+        detail_headers = [
+            "tenant_id",
+            "subject",
+            "sender",
+            "mailbox_name",
+            "status",
+            "date_remediated",
+        ]
+        markdown += "\n\n" + tableToMarkdown(
+            f"Remediation Details (Total: {response.get('total', 0)})",
+            response.get("remediation_details", []),
+            headers=detail_headers,
+            removeNull=True,
+        )
+    elif response.get("status") is None or response.get("result_count") is None:
+        # Activity is likely still in progress
+        markdown += "\n\n**Note:** Activity is in progress. Details will be available once the activity completes."
+
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="AbnormalSecurity.ActivityStatus",
+        outputs_key_field="activity_id",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
+def download_message_attachment_command(client, args):
+    """
+    Download a message attachment using the SOAR Attachment Download API.
+    """
+    message_id = str(args.get("message_id", ""))
+    attachment_name = str(args.get("attachment_name", ""))
+    tenant_id = arg_to_number(args.get("tenant_id"))
+    raw_message_id = str(args.get("raw_message_id", ""))
+    native_user_id = str(args.get("native_user_id", ""))
+    recipient_mailbox = str(args.get("recipient_mailbox", ""))
+
+    response = client.download_message_attachment_request(
+        message_id, attachment_name, tenant_id, raw_message_id, native_user_id, recipient_mailbox
+    )
+
+    # Return the file to XSOAR
+    file_content = response.content
+    results = fileResult(attachment_name, file_content)
+
+    return results
+
+
+def download_message_eml_command(client, args):
+    """
+    Download a message in EML format using the SOAR EML Download API.
+    """
+    cloud_message_id = str(args.get("cloud_message_id", ""))
+    quarantine_identity = args.get("quarantine_identity")
+    recipient_mailbox = args.get("recipient_mailbox")
+
+    response = client.download_message_eml_request(cloud_message_id, quarantine_identity, recipient_mailbox)
+
+    # Generate filename from cloud_message_id
+    # Replace special characters to create a valid filename
+    safe_filename = cloud_message_id.replace(":", "_").replace("/", "_")
+    filename = f"{safe_filename}.eml"
+
+    # Return the EML file to XSOAR
+    file_content = response.content
+    results = fileResult(filename, file_content)
+
+    return results
+
+
 def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime):
     incidents = []
     for threat in threats:
@@ -1041,13 +1490,20 @@ def main():  # pragma: nocover
             # Vendor case commands
             "abnormal-security-list-vendor-cases": get_a_list_of_vendor_cases_command,
             "abnormal-security-get-vendor-case-details": get_the_details_of_a_vendor_case_command,
+            # SOAR Message Search and Respond commands
+            "abnormal-security-search-messages": search_messages_command,
+            "abnormal-security-remediate-messages": remediate_messages_command,
+            "abnormal-security-list-activities": get_activities_list_command,
+            "abnormal-security-get-activity-status": get_activity_status_command,
+            "abnormal-security-download-message-attachment": download_message_attachment_command,
+            "abnormal-security-download-message-eml": download_message_eml_command,
         }
 
-        if command == "test-module":
+        if command == "test-module":  # pragma: no cover
             headers["Mock-Data"] = "True"
             test_client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
-        elif command == "fetch-incidents" and is_fetch:
+        elif command == "fetch-incidents" and is_fetch:  # pragma: no cover
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             fetch_threats = params.get("fetch_threats", False)
             # Get the polling lag time parameter
