@@ -69,7 +69,15 @@ def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict
             break  # No more data to fetch
 
         for alert in alerts:
-            incident_id = int(alert.get("alarmCode", 0))
+            incident_id = 0
+            raw_alarm_code = alert.get("alarmCode")
+            if raw_alarm_code is not None:
+                try:
+                    incident_id = int(raw_alarm_code)
+                except (ValueError, TypeError):
+                    demisto.debug(
+                        f"Invalid alarmCode value received from API: {raw_alarm_code}. "
+                        "Defaulting incident_id to 0.")
             title = alert.get("title", "Unknown Threat")
             description = alert.get("description", "No description available")
             severity = alert.get("severity", "Low")
