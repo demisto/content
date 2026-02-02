@@ -51,7 +51,7 @@ The limit per type is calculated using the following logic:
 - **Adjusted**: `100,000 / 4 = 25,000` per type
 - **Result**: Fetches up to 25,000 of each type (100,000 total)
 
-#### Example 3: Limit Within Total
+#### Example 3: Limit within Total
 
 - **Configuration**: Limit = 20,000, with 4 types selected
 - **Calculation**: `20,000 × 4 = 80,000 ≤ 100,000` (within total limit)
