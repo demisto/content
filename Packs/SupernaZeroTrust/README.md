@@ -29,15 +29,19 @@ Create an instance of **Superna Zero Trust** and set:
 - Superna
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+
 ### Pack Contributors:
 
 ---
- - Superna
+
+- Superna
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+
 ### Pack Contributors:
 
 ---
- - Superna
+
+- Superna
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

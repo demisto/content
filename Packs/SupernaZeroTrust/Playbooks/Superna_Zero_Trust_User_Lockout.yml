@@ -1,10 +1,8 @@
-id: ca35ab03-ad5a-4593-80bf-066944648c10
+id: Superna Zero Trust User Lockout
 version: -1
 name: Superna Zero Trust User Lockout
-fromversion: 6.10.0
-description: 'Supports Zero Trust incidents created by Superna Zerto Trust api integration
-  with Cortex, to extract the custom user ID field and run an API lockout of the user
-  listed in the alert.   '
+fromversion: 8.9.0
+description: 'Locks out a user from NAS storage access in response to Zero Trust incidents. Extracts the source username from the incident and executes lockout via Superna Zero Trust integration.'
 starttaskid: "0"
 tasks:
   "0":
@@ -118,7 +116,7 @@ tasks:
       - "1"
     scriptarguments:
       value:
-        simple: ${inputs.apiurl} and ${inputs.username}
+        simple: Locking out user ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -155,7 +153,8 @@ inputs:
       accessor: sourceusername
   required: false
   description: The source user name is populated by Superna Zero trust webhook integration
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 2e1317a3-5dcd-419c-8e68-83e41fce3e47
-quiet: true
+quiet: false
+tests:
+- No tests (auto formatted)

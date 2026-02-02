@@ -1,10 +1,8 @@
-id: 07c8367e-ecfb-4f6c-823c-22306272e91d
+id: Superna Zero Trust Request User Storage UnLockout
 version: -1
 name: Superna Zero Trust Request User Storage UnLockout
-fromversion: 6.10.0
-description: Offers an input question to accept the userID that should be unlocked
-  out of storage. This playbook can be run by any Secops workflow to unlock a user
-  that was previous locked out.
+fromversion: 8.9.0
+description: Offers an input question to accept the userID that should be unlocked out of storage. This playbook can be run by any Secops workflow to unlock a user that was previous locked out.
 starttaskid: "0"
 tasks:
   "0":
@@ -93,13 +91,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -123,10 +121,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: User NAS unlock request
-      description: This workflow allows secOPS to request a user is locked out of
-        NAS storage as a precaution and support SMB share auto permission detection
-        to deny the specific user access to storage until the security threat can
-        be resolve.
+      description: This workflow allows secOPS to request a user is locked out of NAS storage as a precaution and support SMB share auto permission detection to deny the specific user access to storage until the security threat can be resolve.
       sender: ""
       expired: false
       totalanswers: 0
@@ -142,8 +137,7 @@ tasks:
       id: 607201e1-b227-4e95-85e0-95456b744356
       version: -1
       name: url encode userid
-      description: 'Encodes a URL string by replacing special characters in the string
-        using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
+      description: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
       scriptName: URLEncode
       type: regular
       iscommand: false
@@ -219,5 +213,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 2e1317a3-5dcd-419c-8e68-83e41fce3e47
-quiet: true
+quiet: false
+tests:
+- No tests (auto formatted)

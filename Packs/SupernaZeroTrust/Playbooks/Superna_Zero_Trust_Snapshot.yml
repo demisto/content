@@ -1,8 +1,10 @@
-id: 561513b5-7126-4ae7-8801-dc093df556b9
+id: Superna Zero Trust Snapshot
 version: -1
 name: Superna Zero Trust Snapshot
-description: Create a snapshot of Superna critical paths for ransomware rapid recovery
-fromversion: 6.10.0
+description: |-
+  Creates a snapshot of Superna critical paths for ransomware rapid recovery.
+  This playbook should be triggered immediately upon detection of potential ransomware activity to preserve data state for recovery purposes.
+fromversion: 8.9.0
 starttaskid: "0"
 tasks:
   "0":
@@ -143,12 +145,8 @@ view: |-
       }
     }
   }
-inputs:
-- key: username
-  value:
-    simple: ${incident.username}
-  required: false
-  description: ""
-  playbookInputQuery: null
+inputs: []
 outputs: []
 quiet: false
+tests:
+- No tests (auto formatted)

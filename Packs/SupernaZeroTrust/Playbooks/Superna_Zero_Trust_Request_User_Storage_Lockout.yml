@@ -1,12 +1,8 @@
-id: 0cfd9de1-0e5b-4b21-8568-49f51d54c7b4
+id: Superna Zero Trust Request User Storage Lockout
 version: -1
 name: Superna Zero Trust Request User Storage Lockout
-fromversion: 6.10.0
-description: Offers an input question to accept the userID that should be locked out
-  of storage. This playbook can be run by any Secops workflow where the threat to
-  data is increased and a proactive step to ensure no data can be destroyed or it
-  can be used as step in a workflow when employees are leaving the company or have
-  been terminated.
+fromversion: 8.9.0
+description: Offers an input question to accept the userID that should be locked out of storage. This playbook can be run by any Secops workflow where the threat to data is increased and a proactive step to ensure no data can be destroyed or it can be used as step in a workflow when employees are leaving the company or have been terminated.
 starttaskid: "0"
 tasks:
   "0":
@@ -95,13 +91,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -125,10 +121,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: User NAS lock out request
-      description: This workflow allows secOPS to request a user is locked out of
-        NAS storage as a precaution and support SMB share auto permission detection
-        to deny the specific user access to storage until the security threat can
-        be resolve.
+      description: This workflow allows secOPS to request a user is locked out of NAS storage as a precaution and support SMB share auto permission detection to deny the specific user access to storage until the security threat can be resolve.
       sender: ""
       expired: false
       totalanswers: 0
@@ -144,8 +137,7 @@ tasks:
       id: c8ff4cc9-8cdd-4759-8d9d-e267f8554456
       version: -1
       name: url encode userid
-      description: 'Encodes a URL string by replacing special characters in the string
-        using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
+      description: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
       scriptName: URLEncode
       type: regular
       iscommand: false
@@ -221,5 +213,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 2e1317a3-5dcd-419c-8e68-83e41fce3e47
-quiet: true
+quiet: false
+tests:
+- No tests (auto formatted)
