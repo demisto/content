@@ -91,7 +91,7 @@ def get_relationships(args: dict) -> list:
                 returns filtered relationships where EntityA or EntityB type matches entities_types.
                 Returns empty list if no parameters are provided or no relationships found.
     """
-    entities_types = argToList(args.pop("entities_types", []))
+    entities_types = argToList(args.pop("related_entities_types", []))
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
     verbose = args.get("verbose", "false")
