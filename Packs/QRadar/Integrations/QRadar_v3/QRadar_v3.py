@@ -1248,7 +1248,7 @@ def qradar_get_integration_context():
     try:
         context_data = get_integration_context()
     except AttributeError as e:
-        demisto.error(f"Failed to get QRadar integration context due to its not a dict: {str(e)}")
+        demisto.error(f"Failed to retrieve the QRadar integration context because it is not a dictionary: {str(e)}")
         sys.exit(1)  # pylint: disable=E9001
     except Exception as e:
         demisto.error(f"Failed to get QRadar integration context: {str(e)}")
@@ -1270,9 +1270,9 @@ def qradar_set_integration_context(context_data):
     last_fetch_id = context_data.get(LAST_FETCH_KEY)
     if last_fetch_id:
         LAST_FETCHED_ID = last_fetch_id
-        demisto.info(f"LAST_FETCHED_ID variable set to {LAST_FETCHED_ID}")
+        demisto.debug(f"LAST_FETCHED_ID variable set to {LAST_FETCHED_ID}")
     else:
-        demisto.info("LAST_FETCH_KEY not found in context")
+        demisto.debug("LAST_FETCH_KEY not found in context")
 
 
 def safely_update_context_data_partial(
@@ -2149,7 +2149,7 @@ def is_reset_triggered(ctx: dict | None = None) -> bool:
     Returns True if a reset was triggered and handled, False otherwise.
     """
     if not ctx:
-        ctx = qradar_get_integration_context
+        ctx = qradar_get_integration_context()
 
     # RESET_KEY must be True if 'qradar-reset-last-run' command was called
     if isinstance(ctx, dict) and ctx.get(RESET_KEY) is True:
