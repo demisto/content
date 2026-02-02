@@ -3132,7 +3132,7 @@ def test_team_deleted_message_handler(mocker):
 
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
 
     APP.testing = True
     app = APP.test_client()
@@ -3206,7 +3206,7 @@ def test_team_renamed_message_handler(mocker):
 
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
 
     APP.testing = True
     app = APP.test_client()
@@ -3294,7 +3294,7 @@ def test_message_handler_filters_invalid_cache_entries(mocker, requests_mock):
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
     mocker.patch("MicrosoftTeams.get_graph_access_token", return_value="mock_token")
     set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(True, None))
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
     requests_mock.get(url, json=mock_team_query_response)
 
     APP.testing = True
@@ -3740,16 +3740,13 @@ def test_validate_auth_header_signature_verification(mocker):
     # 4. Run Tests
     # Test Valid Token
     headers_valid = {"Authorization": f"Bearer {valid_token}"}
-    is_valid, error = validate_auth_header(headers_valid)
+    is_valid = validate_auth_header(headers_valid)
     assert is_valid is True
-    assert error is None
 
     # Test Invalid Token
     headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
-    is_valid, error = validate_auth_header(headers_invalid)
+    is_valid = validate_auth_header(headers_invalid)
     assert is_valid is False
-    assert error is not None
-    assert "signature verification failed" in error.lower()
 
 
 def test_messages_endpoint_auth_header_validation_failure(mocker):
@@ -3757,16 +3754,15 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
     Given:
         - A POST request to the messages endpoint with invalid authorization headers.
     When:
-        - The validate_auth_header function returns (False, error_message).
+        - The validate_auth_header function returns False.
     Then:
         - The endpoint returns a 401 status code.
-        - The response contains the error message from validate_auth_header.
+        - The response contains a generic error message.
     """
     from MicrosoftTeams import APP
 
-    # Mock validate_auth_header to return tuple (False, error_message)
-    error_message = "Authorization header validation failed - JWT validation error"
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(False, error_message))
+    # Mock validate_auth_header to return False
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=False)
 
     # Mock demisto.info to avoid errors
     mocker.patch.object(demisto, "info")
@@ -3792,7 +3788,7 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
 
     # Assert response
     assert response.status_code == 401
-    assert response.data.decode() == error_message
+    assert response.data.decode() == "Authorization header validation failed - JWT validation error"
 
 
 @pytest.mark.parametrize(

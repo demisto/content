@@ -1147,7 +1147,7 @@ def integration_health():
     )
 
 
-def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
+def validate_auth_header(headers: dict) -> bool:
     """
     Validates authorization header provided in the bot activity object.
     Uses fail-close approach: returns True ONLY if ALL validations pass.
@@ -1158,13 +1158,13 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
     if len(parts) != 2:
         error_message = "Authorization header validation failed - invalid authorization header format"
         demisto.info(error_message)
-        return False, error_message
+        return False
     schema: str = parts[0]
     jwt_token: str = parts[1]
     if schema != "Bearer" or not jwt_token:
         error_message = "Authorization header validation failed - failed to verify schema"
         demisto.info(error_message)
-        return False, error_message
+        return False
 
     integration_context: dict = get_integration_context()
     open_id_metadata: dict = json.loads(integration_context.get("open_id_metadata", "{}"))
@@ -1188,27 +1188,27 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
             if not response.ok:
                 error_message = f"Authorization header validation failed to fetch open ID config - {response.reason}"
                 demisto.info(error_message)
-                return False, error_message
+                return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get("jwks_uri", "")
             keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
                 error_message = f"Authorization header validation failed to fetch keys - {response.reason}"
                 demisto.info(error_message)
-                return False, error_message
+                return False
             keys_response_json: dict = keys_response.json()
             keys = keys_response_json.get("keys", [])
             open_id_metadata["keys"] = keys
         except ValueError:
             error_message = "Authorization header validation failed - failed to parse keys response"
             demisto.info(error_message)
-            return False, error_message
+            return False
 
     if not keys:
         # Didn't get new keys
         error_message = "Authorization header validation failed - failed to get keys"
         demisto.info(error_message)
-        return False, error_message
+        return False
 
     # Find requested key in new keys
     for key in keys:
@@ -1220,13 +1220,13 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
         # Didn't find requested key in new keys
         error_message = "Authorization header validation failed - failed to find relevant key"
         demisto.info(error_message)
-        return False, error_message
+        return False
 
     endorsements: list = key_object.get("endorsements", [])
     if not endorsements or "msteams" not in endorsements:
         error_message = "Authorization header validation failed - failed to verify endorsements"
         demisto.info(error_message)
-        return False, error_message
+        return False
 
     public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
     public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
@@ -1245,23 +1245,23 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
     except jwt.InvalidSignatureError:
         error_message = "Authorization header validation failed - JWT signature verification failed"
         demisto.info(error_message)
-        return False, error_message
+        return False
     except jwt.ExpiredSignatureError:
         error_message = "Authorization header validation failed - JWT token has expired"
         demisto.info(error_message)
-        return False, error_message
+        return False
     except jwt.InvalidAudienceError:
         error_message = "Authorization header validation failed - Invalid audience claim"
         demisto.info(error_message)
-        return False, error_message
+        return False
     except jwt.InvalidIssuerError:
         error_message = "Authorization header validation failed - Invalid issuer claim"
         demisto.info(error_message)
-        return False, error_message
+        return False
     except jwt.PyJWTError as e:
         error_message = f"Authorization header validation failed - JWT validation error: {e}"
         demisto.info(error_message)
-        return False, error_message
+        return False
 
     # Explicit fail-close validation (defense-in-depth)
     # Even though PyJWT validates these, we explicitly check as a second layer of security
@@ -1274,7 +1274,7 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
         integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
         set_integration_context(integration_context)
         demisto.debug(f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}")
-        return True, None
+        return True
 
     # Explicit failure - log details for security auditing
     demisto.info(
@@ -1284,7 +1284,7 @@ def validate_auth_header(headers: dict) -> tuple[bool, str | None]:
         f"match={issuer_claim == 'https://api.botframework.com'} | "
     )
     error_message = "Authorization header validation failed - JWT validation failed"
-    return False, error_message
+    return False
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -3197,8 +3197,7 @@ def messages() -> Response:
         demisto.debug("Processing POST query...")
         headers: dict = cast(dict[Any, Any], request.headers)
 
-        is_valid, error = validate_auth_header(headers)
-        if is_valid is False:
+        if validate_auth_header(headers) is False:
             return Response(response="Authorization header validation failed - JWT validation error", status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
