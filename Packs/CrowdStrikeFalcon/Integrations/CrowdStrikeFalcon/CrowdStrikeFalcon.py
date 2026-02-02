@@ -6022,7 +6022,7 @@ def get_evidence_for_case_command(args: dict[str, Any]) -> CommandResults:
 
     readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
     markdown_output = tableToMarkdown(
-        "Case evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
+        "Case Evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
     )
     return CommandResults(
         outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
