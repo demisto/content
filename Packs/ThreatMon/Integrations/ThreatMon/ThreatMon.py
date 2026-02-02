@@ -81,9 +81,7 @@ def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict
                 try:
                     incident_id = int(raw_alarm_code)
                 except (ValueError, TypeError):
-                    demisto.debug(
-                        f"Invalid alarmCode value received from API: {raw_alarm_code}. "
-                        "Defaulting incident_id to 0.")
+                    demisto.debug(f"Invalid alarmCode value received from API: {raw_alarm_code}. " "Defaulting incident_id to 0.")
             title = alert.get("title", "Unknown Threat")
             description = alert.get("description", "No description available")
             severity = alert.get("severity", "Low")
