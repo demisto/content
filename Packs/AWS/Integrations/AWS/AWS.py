@@ -3670,6 +3670,465 @@ class EC2:
             raw_response=response,
         )
 
+    @staticmethod
+    def create_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Launches an EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet configuration parameters
+
+        Returns:
+            CommandResults: Results containing the created fleet ID
+        """
+        kwargs: Dict[str, Any] = {
+            "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+            "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
+            "Type": args.get("type"),
+            "ValidFrom": args.get("valid_from"),
+            "ValidUntil": args.get("valid_until"),
+            "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances"))
+        }
+
+        # Build SpotOptions
+        spot_options = {
+            "AllocationStrategy": args.get("spot_allocation_strategy"),
+            "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
+            "InstancePoolsToUseCount": args.get("spot_single_instance_type"),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("min_target_capacity"))
+        }
+
+        remove_nulls_from_dictionary(spot_options)
+        kwargs["SpotOptions"] = spot_options
+
+        # Build OnDemandOptions
+        on_demand_options = {
+            "AllocationStrategy": args.get("on_demand_allocation_strategy"),
+            "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
+            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
+            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity"))
+        }
+        remove_nulls_from_dictionary(on_demand_options)
+        kwargs["OnDemandOptions"] = on_demand_options
+
+
+        # Build LaunchTemplateConfigs
+        launch_template_spec = {
+            "LaunchTemplateId": args.get("launch_template_id"),
+            "LaunchTemplateName": args.get("launch_template_name"),
+            "Version": args.get("launch_template_version")
+        }
+
+        remove_nulls_from_dictionary(launch_template_spec)
+
+        # Build Overrides
+        overrides = []
+        override_fields = {
+            "override_instance_type": "InstanceType",
+            "override_max_price": "MaxPrice",
+            "override_subnet_id": "SubnetId",
+            "override_availability_zone": "AvailabilityZone",
+            "override_weighted_capacity": "WeightedCapacity",
+            "override_priority": "Priority",
+        }
+
+        # Get max length of override arrays
+        max_overrides = 0
+        for arg_name in override_fields.keys():
+            if args.get(arg_name):
+                override_list = argToList(args.get(arg_name))
+                max_overrides = max(max_overrides, len(override_list))
+
+        # Build override objects
+        for i in range(max_overrides):
+            override_obj = {}
+            for arg_name, api_name in override_fields.items():
+                if args.get(arg_name):
+                    override_list = argToList(args.get(arg_name))
+                    if i < len(override_list):
+                        value = override_list[i]
+                        # Convert numeric fields
+                        if api_name in ["WeightedCapacity", "Priority"]:
+                            override_obj[api_name] = arg_to_number(value)
+                        else:
+                            override_obj[api_name] = value
+            if override_obj:
+                overrides.append(override_obj)
+
+        launch_template_config = {
+            "LaunchTemplateSpecification": launch_template_spec,
+            "Overrides": overrides
+        }
+
+        remove_nulls_from_dictionary(launch_template_config)
+        kwargs["LaunchTemplateConfigs"] = [launch_template_config]
+
+        # Build TargetCapacitySpecification
+        target_capacity_spec = {
+            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+            "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
+        }
+        remove_nulls_from_dictionary(target_capacity_spec)
+        kwargs["TargetCapacitySpecification"] = target_capacity_spec
+
+        # Handle tags
+        if tags := args.get("tags"):
+            tag_specifications = []
+            # Parse tags format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2
+            for tag_spec_str in tags.split("#"):
+                if ":" in tag_spec_str:
+                    resource_type, tags_str = tag_spec_str.split(":", 1)
+                    tag_specifications.append({"ResourceType": resource_type, "Tags": parse_tag_field(tags_str)})
+            if tag_specifications:
+                kwargs["TagSpecifications"] = tag_specifications
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
+
+        response = client.create_fleet(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response
+        response = serialize_response_with_datetime_encoding(response)
+
+        # fleet_id = response.get("FleetId")
+        # outputs = {
+        #     "FleetId": fleet_id,
+        #     outputs["Errors"] = errors
+        # }
+        #
+        # # Add errors and instances if present
+        # if errors := response.get("Errors"):
+        #     outputs["Errors"] = errors
+        # if instances := response.get("Instances"):
+        #     outputs["Instances"] = instances
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Fleet",
+            response,
+            headers=["FleetId"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Fleet",
+            outputs_key_field="FleetId",
+            outputs=response,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet IDs and termination settings
+
+        Returns:
+            CommandResults: Results containing successful and unsuccessful fleet deletions
+        """
+        kwargs = {
+            "FleetIds": argToList(args.get("fleet_ids")),
+            "TerminateInstances": arg_to_bool_or_none(args.get("terminate_instances")),
+        }
+
+        print_debug_logs(client, f"Deleting fleets with parameters: {kwargs}")
+
+        response = client.delete_fleets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response
+        response = serialize_response_with_datetime_encoding(response)
+
+        # Build outputs from successful and unsuccessful deletions
+        outputs = {}
+        readable_data = []
+
+        if successful := response.get("SuccessfulFleetDeletions", []):
+            outputs["SuccessfulFleetDeletions"] = successful
+            for deletion in successful:
+                readable_data.append(
+                    {
+                        "FleetId": deletion.get("FleetId"),
+                        "CurrentFleetState": deletion.get("CurrentFleetState"),
+                        "PreviousFleetState": deletion.get("PreviousFleetState"),
+                    }
+                )
+
+        if unsuccessful := response.get("UnsuccessfulFleetDeletions", []):
+            outputs["UnsuccessfulFleetDeletions"] = unsuccessful
+            for deletion in unsuccessful:
+                readable_data.append(
+                    {
+                        "FleetId": deletion.get("FleetId"),
+                        "ErrorCode": deletion.get("Error", {}).get("Code"),
+                        "ErrorMessage": deletion.get("Error", {}).get("Message"),
+                    }
+                )
+
+        if not readable_data:
+            return CommandResults(readable_output="No fleets were deleted.")
+
+        readable_output = tableToMarkdown(
+            "AWS Deleted Fleets",
+            readable_data,
+            headers=["FleetId", "CurrentFleetState", "PreviousFleetState", "ErrorCode", "ErrorMessage"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.DeletedFleets",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_fleets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your EC2 Fleets.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet IDs and filters
+
+        Returns:
+            CommandResults: Results containing fleet information
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        if fleet_ids := args.get("fleet_ids"):
+            kwargs["FleetIds"] = argToList(fleet_ids)
+
+        # Add pagination if no fleet_ids specified
+        if not fleet_ids:
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
+
+        response = client.describe_fleets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response
+        response = serialize_response_with_datetime_encoding(response)
+
+        fleets = response.get("Fleets", [])
+        if not fleets:
+            return CommandResults(readable_output="No fleets were found.")
+
+        # Build readable output
+        readable_data = []
+        for fleet in fleets:
+            fleet_data = {
+                "ActivityStatus": fleet.get("ActivityStatus"),
+                "FleetId": fleet.get("FleetId"),
+                "FleetState": fleet.get("FleetState"),
+                "FulfilledCapacity": fleet.get("FulfilledCapacity"),
+                "FulfilledOnDemandCapacity": fleet.get("FulfilledOnDemandCapacity"),
+                "CreateTime": fleet.get("CreateTime"),
+                "TotalTargetCapacity": fleet.get("TargetCapacitySpecification", {}).get("TotalTargetCapacity"),
+                "OnDemandTargetCapacity": fleet.get("TargetCapacitySpecification", {}).get("OnDemandTargetCapacity"),
+                "SpotTargetCapacity": fleet.get("TargetCapacitySpecification", {}).get("SpotTargetCapacity"),
+                "DefaultTargetCapacityType": fleet.get("TargetCapacitySpecification", {}).get("DefaultTargetCapacityType"),
+                "TerminateInstancesWithExpiration": fleet.get("TerminateInstancesWithExpiration"),
+                "Type": fleet.get("Type"),
+                "InstanceInterruptionBehavior": fleet.get("SpotOptions", {}).get("InstanceInterruptionBehavior"),
+            }
+            # Get LaunchTemplateId from first config if available
+            if launch_configs := fleet.get("LaunchTemplateConfigs"):
+                if launch_configs and len(launch_configs) > 0:
+                    launch_spec = launch_configs[0].get("LaunchTemplateSpecification", {})
+                    fleet_data["LaunchTemplateId"] = launch_spec.get("LaunchTemplateId")
+
+            readable_data.append(remove_empty_elements(fleet_data))
+
+        # Build outputs with NextToken
+        outputs = {
+            "AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)": fleets,
+            "AWS.EC2(true)": {"FleetNextToken": response.get("NextToken")},
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Fleets",
+            readable_data,
+            headers=[
+                "ActivityStatus",
+                "FleetId",
+                "FleetState",
+                "FulfilledCapacity",
+                "FulfilledOnDemandCapacity",
+                "LaunchTemplateId",
+                "CreateTime",
+                "TotalTargetCapacity",
+                "OnDemandTargetCapacity",
+                "SpotTargetCapacity",
+                "DefaultTargetCapacityType",
+                "TerminateInstancesWithExpiration",
+                "Type",
+                "InstanceInterruptionBehavior",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_fleet_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the running instances for the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet ID and filters
+
+        Returns:
+            CommandResults: Results containing fleet instance information
+        """
+        kwargs = {"FleetId": args.get("fleet_id")}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        # Add pagination
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+        kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing fleet instances with parameters: {kwargs}")
+
+        response = client.describe_fleet_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize response
+        response = serialize_response_with_datetime_encoding(response)
+
+        active_instances = response.get("ActiveInstances", [])
+        fleet_id = response.get("FleetId")
+
+        if not active_instances:
+            return CommandResults(readable_output="No active instances were found.")
+
+        # Build readable output
+        readable_data = []
+        for instance in active_instances:
+            readable_data.append(
+                {
+                    "InstanceId": instance.get("InstanceId"),
+                    "InstanceType": instance.get("InstanceType"),
+                    "SpotInstanceRequestId": instance.get("SpotInstanceRequestId"),
+                    "FleetId": fleet_id,
+                    "Region": args.get("region"),
+                }
+            )
+
+        # Build outputs
+        outputs = {
+            "ActiveInstances": active_instances,
+            "NextToken": response.get("NextToken"),
+            "FleetId": fleet_id,
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Fleets Instances",
+            readable_data,
+            headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "FleetId", "Region"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Fleet",
+            outputs_key_field="FleetId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def modify_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the specified EC2 Fleet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including fleet ID and modification parameters
+
+        Returns:
+            CommandResults: Results of the modification operation
+        """
+        kwargs = {"FleetId": args.get("fleet_id")}
+
+        # ExcessCapacityTerminationPolicy
+        if excess_capacity_termination_policy := args.get("excess_capacity_termination_policy"):
+            kwargs["ExcessCapacityTerminationPolicy"] = excess_capacity_termination_policy
+
+        # Build TargetCapacitySpecification
+        target_capacity_spec = {}
+        if total_target_capacity := arg_to_number(args.get("total_target_capacity")):
+            target_capacity_spec["TotalTargetCapacity"] = total_target_capacity
+        if on_demand_target_capacity := arg_to_number(args.get("on_demand_target_capacity")):
+            target_capacity_spec["OnDemandTargetCapacity"] = on_demand_target_capacity
+        if spot_target_capacity := arg_to_number(args.get("spot_target_capacity")):
+            target_capacity_spec["SpotTargetCapacity"] = spot_target_capacity
+        if default_target_capacity_type := args.get("default_target_capacity_type"):
+            target_capacity_spec["DefaultTargetCapacityType"] = default_target_capacity_type
+
+        if target_capacity_spec:
+            kwargs["TargetCapacitySpecification"] = target_capacity_spec
+
+        # Context parameter
+        if context := args.get("context"):
+            kwargs["Context"] = context
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
+
+        response = client.modify_fleet(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        fleet_id = args.get("fleet_id")
+        return_value = response.get("Return", False)
+
+        readable_output = f"Successfully modified EC2 Fleet {fleet_id}" if return_value else f"Failed to modify EC2 Fleet {fleet_id}"
+
+        outputs = {"Return": return_value}
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Fleet",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
 
 class EKS:
     service = AWSServices.EKS
@@ -5240,6 +5699,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
+    "aws-ec2-fleet-create": EC2.create_fleet_command,
+    "aws-ec2-fleet-delete": EC2.delete_fleet_command,
+    "aws-ec2-fleets-describe": EC2.describe_fleets_command,
+    "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
+    "aws-ec2-fleet-modify": EC2.modify_fleet_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -5308,6 +5772,11 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:StopInstances",
     "ec2:TerminateInstances",
     "ec2:RunInstances",
+    "ec2:CreateFleet",
+    "ec2:DeleteFleets",
+    "ec2:DescribeFleets",
+    "ec2:DescribeFleetInstances",
+    "ec2:ModifyFleet",
     "eks:UpdateClusterConfig",
     "iam:PassRole",
     "iam:DeleteLoginProfile",
