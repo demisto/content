@@ -20,7 +20,7 @@ Base classes for building robust Cortex integrations with user-friendly validati
 ## Overview
 
 This API module provides foundational classes that integrations can use to:
-- Validate configuration parameters and command arguments with user-friendly error messages
+- Validate configuration parameters and command arguments with user-friendly error messages.
 - Manage common connection settings (proxy, SSL verification)
 - Centralize execution configuration to minimize redundant system calls
 
