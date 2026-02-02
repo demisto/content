@@ -7,6 +7,7 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 | Fetch indicators | Select this check box to fetch indicators \(default selected\). | True |
 | Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | True |
 | Indicator Types | Comma-separated list of indicator types to fetch \(File, IP, URL, Domain\). If not specified, all indicator types are fetched. | False |
+| Maximum Indicators Per Fetch | Maximum number of indicators to fetch per type. | False |
 | Source Reliability | Reliability of the source providing the intelligence context. | True |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation is to apply to indicators fetched from the feed. | False |
@@ -18,9 +19,9 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
-## How the Limit Parameter Works
+## How the Maximum Indicators Per Fetch Parameter Works
 
-The **Limit** parameter controls the maximum number of indicators fetched per type during each fetch cycle. The integration enforces a total limit of **100,000 indicators** across all types to ensure optimal performance.
+The **Maximum Indicators Per Fetch** parameter controls the maximum number of indicators fetched per type during each fetch cycle. The integration enforces a total limit of **100,000 indicators** across all types to ensure optimal performance.
 
 ### Limit Calculation Algorithm
 
@@ -74,7 +75,7 @@ When multiple types are configured, the integration fetches in the following pri
 4. **URL** indicators
 5. **File** indicators
 
-If any type returns fewer indicators than its allocated limit, the unused quota is added to the last type in the priority order, allowing it to fetch up to the total limit of 100,000 indicators.
+If any type returns fewer indicators than its allocated limit, the unused quota is added to the last enabled type in the priority order, allowing it to fetch up to the total limit of 100,000 indicators.
 
 ## Commands
 

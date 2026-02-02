@@ -825,7 +825,7 @@ def calculate_limit_per_type(limit: int | None, total_indicator_types: int) -> i
 
     # Otherwise, use the provided limit
     demisto.debug(f"UNIT42FEED: Using provided limit per type: {limit}")
-    return limit
+    return int(limit)
 
 
 def fetch_indicator_type(
@@ -884,11 +884,6 @@ def fetch_indicator_type(
             demisto.debug(f"UNIT42FEED: No more pages for {indicator_type}")
             break
 
-        # Safety check: if we got fewer results than requested, we're at the end
-        # if len(page_indicators) < page_limit:
-        #     demisto.debug("UNIT42FEED: Got fewer results than requested, stopping pagination")
-        #     break
-
     # Ensure we don't exceed the limit (safety check)
     return indicators[:limit]
 
@@ -945,11 +940,6 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
             demisto.debug("UNIT42FEED: No more pages for threat objects")
             break
 
-        # Safety check
-        # if len(page_objects) < page_limit:
-        #     demisto.debug("UNIT42FEED: Got fewer results than requested, stopping pagination")
-        #     break
-
     # Ensure we don't exceed the limit
     return threat_objects[:limit]
 
@@ -998,7 +988,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     if "Threat Objects" in feed_types:
         total_types += 1
     if "Indicators" in feed_types:
-        total_types += len(indicator_types)
+        total_types += len(set(indicator_types))
 
     # Parse limit from params and calculate limit per type
     requested_limit = arg_to_number(params.get("limit"))
