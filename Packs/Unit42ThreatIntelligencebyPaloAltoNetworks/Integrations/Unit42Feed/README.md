@@ -33,7 +33,7 @@ The limit per type is calculated using the following logic:
    - Adjusted limit per type = `100,000 / total_number_of_types`
 
 3. **Otherwise**:
-   - Use the specified limit per type
+   - Uses the specified limit per type.
 
 ### Examples
 
