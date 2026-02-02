@@ -31,7 +31,7 @@ DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "Success": "The command completed successfully.",
-    "Failed": "The command wasn't successfully on the managed node.",
+    "Failed": "The command failed to complete successfully on the managed node.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
     "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
     "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
@@ -251,7 +251,8 @@ def parse_target_field(target_string: str | None):
         if match_target is None:
             raise ValueError(
                 f"Could not parse target: {target}. Please make sure you provided "
-                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>... And the key matches the regex "
+                "pattern (^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name)"
             )
         demisto.debug(
             f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'

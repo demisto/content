@@ -2554,7 +2554,7 @@ Runs commands on one or more managed nodes.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | instance_ids | A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs. | Optional |
-| targets | One or more targets separated by ';' (for example, key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;,&lt;value4&gt;). An array of search criteria that targets managed nodes using a Key,Value combination. | Optional |
+| targets | One or more targets separated by ';' (for example, key=&lt;key1&gt;,values=&lt;value1&gt;,&lt;value2&gt;;key=&lt;key2&gt;,values=&lt;value3&gt;,&lt;value4&gt;). An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify. | Optional |
 | document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required |
 | document_version | The SSM document version to use in the request. You can specify $DEFAULT, $LATEST, or a specific version number. | Optional |
 | document_hash | The Sha256 hash created by the system when the document was created. | Optional |
@@ -2573,12 +2573,12 @@ Runs commands on one or more managed nodes.
 | --- | --- | --- |
 | AWS.SSM.Command.CommandId | String | A unique identifier for this command. |
 | AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. |
-| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document (SSM document) version. |
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. |
 | AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. |
 | AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. |
 | AWS.SSM.Command.Parameters | Object | The parameter values to be inserted in the document when running the command. |
 | AWS.SSM.Command.InstanceIds | Object | The managed node IDs against which this command was requested. |
-| AWS.SSM.Command.Targets | Object | An array of search criteria that targets managed nodes using a Key,Value combination that you specify. |
+| AWS.SSM.Command.Targets | Object | An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify. |
 | AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. |
 | AWS.SSM.Command.Status | String | The status of the command. |
 | AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. |
@@ -2590,9 +2590,9 @@ Runs commands on one or more managed nodes.
 | AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. |
 | AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. |
 | AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. |
-| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management (IAM) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. |
-| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name (ARN) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. |
-| AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for which you can receive notifications. |
+| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a tool in Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. |
+| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. |
+| AWS.SSM.Command.NotificationConfig.NotificationEvents | Object | The different events for which you can receive notifications. |
 | AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. |
 | AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. |
 | AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. |

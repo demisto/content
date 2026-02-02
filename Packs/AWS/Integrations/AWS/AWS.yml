@@ -7601,7 +7601,7 @@ script:
       - name: instance_ids
         description: A comma-separated list of IDs of the managed nodes where the command should run. Maximum of 50 IDs.
       - name: targets
-        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria that targets managed nodes using a Key,Value combination."
+        description: "One or more targets separated by ';' (for example, key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>,<value4>). An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify."
       - name: document_name
         description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
         required: true
@@ -7666,7 +7666,7 @@ script:
         description: The managed node IDs against which this command was requested.
         type: Object
       - contextPath: AWS.SSM.Command.Targets
-        description: An array of search criteria that targets managed nodes using a Key,Value combination that you specify.
+        description: An array of search criteria used to target managed nodes, where each criterion consists of a Key and a Value that you specify.
         type: Object
       - contextPath: AWS.SSM.Command.RequestedDateTime
         description: The date and time the command was requested.
