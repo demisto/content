@@ -45,7 +45,7 @@ args:
   underlyingargname: scanner
   description: >
     The type of security scanner used to detect findings of this rule. 
-    Options: IACS, IAC.
+    Options: SECRETS, IAC.
   type: string
   required: true
 - name: category
@@ -58,7 +58,6 @@ args:
 - name: sub_category
   underlyingargname: sub_category
   description: >
-    required only if scanner is IAC 
     Custom rule IAC sub_category
     Options: 
     if category is AI_ML: GUARDRAILS, RISKY_MODELS, PUBLIC_EXPOSURE, PERMISSIONS.
@@ -80,7 +79,23 @@ args:
     The rule definition
     If definition not exist create one for yourself
     Example:
-    "definition:\n   cond_type: 'IACs'\n   value:\n     - '(?<![A-Za-z0-9])[AK][A-Z0-9]{20}(?![A-Za-z0-9])'"
+    scope:
+      provider: '' # Optional - choose one: "alibaba_cloud"/"aws"/"azure"/"gcp"/"oci"
+    definition: # Define the configurations that will pass when running a scan. Any resource matching the specified resource type but not matching the defined attribute configuration and/or resource type will fail the check.
+      The example below checks for EC2s with an instance_type that is not t3.micro or t3.nano. For more examples please visit our docs - https://docs-cortex.paloaltonetworks.com/r/Cortex-CLOUD/Cortex-Cloud-Runtime-Security-Documentation/Configure-YAML-file-properties
+      or:
+        - cond_type: 'attribute'
+          resource_types:
+            - 'aws_instance'
+          attribute: 'instance_type'
+          operator: 'equals'
+          value: 't3.micro'
+        - cond_type: 'attribute'
+          resource_types:
+            - 'aws_instance'
+          attribute: 'instance_type'
+          operator: 'equals'
+          value: 't3.nano'
   type: string
 outputs:
 - name: Appsec.Rule.RULE_NAME
