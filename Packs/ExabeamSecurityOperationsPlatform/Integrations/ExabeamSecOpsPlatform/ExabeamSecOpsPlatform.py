@@ -1159,7 +1159,7 @@ def update_case_details(client: Client, args: dict) -> CommandResults:
         "queue": args.get("queue")
     }
 
-    if newargs["stage"] == "CLOSED" and newargs["closedReason"] == None:
+    if newargs["stage"] == "CLOSED" and newargs["closedReason"] is None:
         demisto.error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
         return_error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
 
@@ -1216,8 +1216,6 @@ def create_case_note(client: Client, args: dict) -> CommandResults:
     request_data = json.dumps(args)
     full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
     response = client.request(method="POST", full_url=full_url, data=request_data)
-    keys_to_remove = ['case_id','is_deleted','is_edited','last_modified_timestamp','text_rt']
-    filtered_response = []
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Notes",
