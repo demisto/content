@@ -54,7 +54,7 @@ subtype: python3
 dependson:
   must:
   - Azure|||azure-nsg-security-rules-list
-dockerimage: demisto/python3:3.12.12.6875480
+dockerimage: demisto/python3:3.12.12.6922358
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
