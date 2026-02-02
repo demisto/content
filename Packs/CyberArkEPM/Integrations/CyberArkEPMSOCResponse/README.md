@@ -72,4 +72,4 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.Endpoint.ID | String | The ID of the endpoint removed from the risk plan. |
+| CyberArkEPMSOCResponse.Endpoint_IDs | String | The ID of the endpoint removed from the risk plan. |
