@@ -3744,7 +3744,10 @@ def test_validate_auth_header_signature_verification(mocker):
 
     # Test Invalid Token
     headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
-    assert validate_auth_header(headers_invalid) is False
+    result = validate_auth_header(headers_invalid)
+    assert isinstance(result, tuple)
+    assert result[0] is False
+    assert "signature verification failed" in result[1].lower()
 
 
 def test_messages_endpoint_auth_header_validation_failure(mocker):
@@ -3752,15 +3755,16 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
     Given:
         - A POST request to the messages endpoint with invalid authorization headers.
     When:
-        - The validate_auth_header function returns False.
+        - The validate_auth_header function returns (False, error_message).
     Then:
         - The endpoint returns a 401 status code.
-        - The response contains "Authorization header validation failed" message.
+        - The response contains the error message from validate_auth_header.
     """
     from MicrosoftTeams import APP
 
-    # Mock validate_auth_header to return False
-    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=False)
+    # Mock validate_auth_header to return tuple (False, error_message)
+    error_message = "Authorization header validation failed - JWT signature verification failed"
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(False, error_message))
 
     # Mock demisto.info to avoid errors
     mocker.patch.object(demisto, "info")
@@ -3786,7 +3790,7 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
 
     # Assert response
     assert response.status_code == 401
-    assert response.data.decode() == "Authorization header validation failed"
+    assert response.data.decode() == error_message
 
 
 @pytest.mark.parametrize(
