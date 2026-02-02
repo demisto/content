@@ -15,7 +15,7 @@ RISK_PLAN_ACTION_REMOVE = "remove"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, application_id, set_name=None, verify=True, proxy=False):
+    def __init__(self, base_url, username, password, application_id, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
             "Accept": "application/json",
@@ -25,7 +25,6 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.application_id = application_id
-        self.set_name = set_name
         self.epm_auth_to_cyber_ark()
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
@@ -63,10 +62,7 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
     demisto.info(f"Endpoint Search filter: {search_filter}")
     data = {"filter": search_filter}
     sets = client.get_sets()
-    if client.set_name:
-        set_ids = [set["Id"] for set in sets.get("Sets", []) if client.set_name in set.get("Name")]
-    else:
-        set_ids = [set["Id"] for set in sets.get("Sets", [])]
+    set_ids = [set["Id"] for set in sets.get("Sets", [])]
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -155,14 +151,14 @@ def change_risk_plan_command(client: Client, args: Dict[str, Any]) -> CommandRes
         raw_result = remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
     else:
         raise DemistoException(f"Invalid action: {action}")
-    result_context = {"Endpoint_IDs": ",".join(endpoint_ids), "Risk_Plan": risk_plan, "Action": action}
+    result_context = {"EndpointIDs": ",".join(endpoint_ids), "RiskPlan": risk_plan, "Action": action}
     human_readable = tableToMarkdown(
-        name="Risk Plan changed successfully", t=result_context, headers=["Endpoint_IDs", "Risk_Plan", "Action"]
+        name="Risk Plan changed successfully", t=result_context, headers=["EndpointIDs", "RiskPlan", "Action"]
     )
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix="CyberArkEPMSOCResponse",
-        outputs_key_field="Endpoint_IDs",
+        outputs_key_field="EndpointIDs",
         outputs=result_context,
         raw_response=raw_result,
     )
@@ -192,11 +188,10 @@ def main():
     application_id = params.get("application_id")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
-    set_name = params.get("set_name")
 
     try:
         result: Any = None
-        client = Client(base_url=base_url, username=username, password=password, application_id=application_id, set_name=set_name)
+        client = Client(base_url=base_url, username=username, password=password, application_id=application_id)
         if command == "test-module":
             return_results(test_module(client))
         elif command == "cyberarkepm-activate-risk-plan":

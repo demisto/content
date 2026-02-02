@@ -50,7 +50,7 @@ def test_activate_risk_plan_command(requests_mock, mocker):
     args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id1", "Risk_Plan": "risk_plan1", "Action": "add"}
+    expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "add"}
     assert result.outputs == expected_outputs
 
 
@@ -87,7 +87,7 @@ def test_activate_multiple_endpoint_risk_plan_command(requests_mock, mocker):
     }
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id2,endpoint_id2", "Risk_Plan": "risk_plan1", "Action": "add"}
+    expected_outputs = {"EndpointIDs": "endpoint_id2,endpoint_id2", "RiskPlan": "risk_plan1", "Action": "add"}
 
     assert result.outputs == expected_outputs
 
@@ -112,5 +112,5 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
     args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id1", "Risk_Plan": "risk_plan1", "Action": "remove"}
+    expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "remove"}
     assert result.outputs == expected_outputs

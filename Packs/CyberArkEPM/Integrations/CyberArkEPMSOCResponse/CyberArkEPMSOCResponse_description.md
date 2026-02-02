@@ -1,4 +1,4 @@
-## CyberArk EPM Help
+## CyberArk EPM
 
 ### Authentication
 The authentication to EPM requires the following parameters:
@@ -10,7 +10,7 @@ The authentication to EPM requires the following parameters:
 
 ### Endpoint Information
 
-- To uniquely identify an endpoint the following command arguments are used: 
-    * Endpoint name.
-    * Endpoint External IP.
-  In addition to that a pre-defined risk plan must be provided (i.e. `Medium_Risk_Plan`)
+- To uniquely identify an endpoint, use the following command arguments: 
+    * endpoint_name.
+    * endpoint_external_ip.
+  In addition to that, a pre-defined risk plan must be provided (e.g. `Medium_Risk_Plan`)
