@@ -4089,7 +4089,7 @@ class AssetsDeviceHandler:
         try:
             # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
             response = await self.client._request(
-                method="POST", url_suffix="/devices/entities/devices/v2", json={"ids": aid_batch}
+                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
             )
 
             # Parse response
@@ -4809,7 +4809,7 @@ async def fetch_spotlight_assets():
 
 
 def fetch_cnapp_assets():
-    demisto.info("Strating fetch assets exeuction.")
+    demisto.info("Strating fetch assets 'CNAPP Alerts' exeuction.")
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
     demisto.debug(f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
