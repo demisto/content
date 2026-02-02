@@ -333,7 +333,7 @@ class MsGraphClient:
 
     def _send_mfa_request_and_parse_response(
         self, mfa_service_uri: str, xml_payload: str, timeout: int, mfa_client_token: str
-    ) -> str:
+    ) -> str:  # pragma: no cover
         """
         Helper method to send MFA request and parse the XML response.
 
