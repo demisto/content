@@ -772,7 +772,7 @@ def parse_threat_objects(threat_objects_data: list, feed_tags: list = [], tlp_co
 
 def sort_indicator_types_by_priority(indicator_types: list) -> list:
     """
-    Sort indicator types by priority.
+    Sort indicator types by priority (case-insensitive).
 
     Args:
         indicator_types: List of indicator types to sort
@@ -780,11 +780,11 @@ def sort_indicator_types_by_priority(indicator_types: list) -> list:
     Returns:
         Sorted list based on INDICATOR_TYPE_PRIORITY (IPs → Domains → URLs → Files)
     """
-    # Create priority map (lower index = higher priority)
-    priority_map = {indicator_type: idx for idx, indicator_type in enumerate(INDICATOR_TYPE_PRIORITY)}
+    # Create case-insensitive priority map (lower index = higher priority)
+    priority_map = {indicator_type.lower(): idx for idx, indicator_type in enumerate(INDICATOR_TYPE_PRIORITY)}
 
-    # Sort by priority (IPs=0, Domains=1, URLs=2, Files=3)
-    return sorted(indicator_types, key=lambda t: priority_map.get(t, len(INDICATOR_TYPE_PRIORITY)))
+    # Sort by priority using lowercase comparison (IPs=0, Domains=1, URLs=2, Files=3)
+    return sorted(indicator_types, key=lambda t: priority_map.get(t.lower(), len(INDICATOR_TYPE_PRIORITY)))
 
 
 def calculate_limit_per_type(limit: int | None, total_indicator_types: int) -> int:
