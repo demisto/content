@@ -5852,8 +5852,7 @@
         {
             "playbookID": "GetUserData - Test",
             "integrations": [
-                "Microsoft Graph User",
-                "AWS - IAM"
+                "Microsoft Graph User"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
@@ -6401,6 +6400,9 @@
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
         "CrowdStrike Falcon Basic Test",
+        "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data",
+        "Test Playbook - CrowdStrike Falcon - Retrieve File",
+        "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions",
         "TestDemistoRestAPI",
         "Test XDR Playbook execute script commands",
         "Test XDR Playbook quarantine file command",
