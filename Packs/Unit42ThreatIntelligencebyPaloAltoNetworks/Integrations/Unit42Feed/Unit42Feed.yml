@@ -57,7 +57,7 @@ configuration:
     4. URLs
     5. Files
     
-    Default (in total for all types): 100,000. Maximum (in total for all types): 100,000.
+    Default (total for all types): 100,000. Maximum (total for all types): 100,000.
   required: false
   section: Collect
   advanced: true
