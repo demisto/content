@@ -1227,7 +1227,7 @@ def test_fetch_incidents_no_held_message(mocker):
     Given:
     - Last run contains a timestamp '2025-03-16T05:45:02Z'.
     - FETCH_ATTACHMENTS and FETCH_HELD_MESSAGES are enabled.
-    - request_with_pagination returns a malicious attachment.
+    - http_request returns a malicious attachment.
     - fetch_held_messages_with_pagination returns a held message.
 
     When:
@@ -1245,7 +1245,9 @@ def test_fetch_incidents_no_held_message(mocker):
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
     mocker.patch.object(
-        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}], 1)
+        MimecastV2,
+        "http_request",
+        return_value={"data": [{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}], "meta": {"pagination": {}}},
     )
     mocker.patch.object(
         MimecastV2,
@@ -1279,7 +1281,7 @@ def test_fetch_incidents_first_fetch(mocker):
     Given:
     - No last run data is available.
     - FETCH_ATTACHMENTS and FETCH_HELD_MESSAGES are enabled.
-    - request_with_pagination returns a malicious attachment.
+    - http_request returns a malicious attachment.
     - fetch_held_messages_with_pagination returns a held message.
 
     When:
@@ -1297,8 +1299,10 @@ def test_fetch_incidents_first_fetch(mocker):
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
-    request_with_pagination = mocker.patch.object(
-        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], 1)
+    http_request_mock = mocker.patch.object(
+        MimecastV2,
+        "http_request",
+        return_value={"data": [{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], "meta": {"pagination": {}}},
     )
     fetch_held_messages_with_pagination = mocker.patch.object(
         MimecastV2,
@@ -1306,7 +1310,8 @@ def test_fetch_incidents_first_fetch(mocker):
         return_value=([{"id": "123456", "subject": "test_subject", "dateReceived": "2025-01-14T17:01:00+0000"}], 1, ""),
     )
     MimecastV2.fetch_incidents()
-    time_for_incidents = request_with_pagination.call_args[1].get("data")[0].get("from")
+    # Get the time used for attachment logs from the http_request call
+    time_for_incidents = http_request_mock.call_args[0][2]["data"][0].get("from")
     time_for_held_messages = fetch_held_messages_with_pagination.call_args[1].get("data")[0].get("start")
     assert time_for_incidents == time_for_held_messages
     set_last_run.assert_called_with(
@@ -1376,7 +1381,7 @@ def test_fetch_incidents_not_fetching_held_messages(mocker):
     Given:
     - No last run data is available.
     - FETCH_ATTACHMENTS is enabled.
-    - request_with_pagination returns a malicious attachment.
+    - http_request returns a malicious attachment.
 
     When:
     - fetch_incidents is executed for the first time.
@@ -1393,11 +1398,13 @@ def test_fetch_incidents_not_fetching_held_messages(mocker):
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = False
-    request_with_pagination = mocker.patch.object(
-        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], 1)
+    http_request_mock = mocker.patch.object(
+        MimecastV2,
+        "http_request",
+        return_value={"data": [{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], "meta": {"pagination": {}}},
     )
     MimecastV2.fetch_incidents()
-    time_for_incidents = request_with_pagination.call_args[1].get("data")[0].get("from")
+    time_for_incidents = http_request_mock.call_args[0][2]["data"][0].get("from")
     assert time_for_incidents == "2025-01-14T17:00:00+0000"
     set_last_run.assert_called_with({"time": "2025-01-14T17:01:01Z"})
     set_new_incidents.assert_called_with(
