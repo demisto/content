@@ -50,6 +50,7 @@ TAXII_REQUIRED_FILTER_FIELDS = {
     "issuer",
     "validitynotbefore",
     "validitynotafter",
+    "expiration"
 }
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
