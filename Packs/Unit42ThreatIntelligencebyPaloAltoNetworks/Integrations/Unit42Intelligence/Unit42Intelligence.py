@@ -63,6 +63,56 @@ VALID_REGIONS = {
 #### HELPER FUNCTIONS ####
 
 
+def parse_url_list(url_input: str | list | None) -> list[str]:
+    """
+    Parse URL input that may contain multiple URLs or a single URL with commas.
+
+    This function intelligently splits URLs by detecting URL patterns to avoid
+    incorrectly splitting URLs that contain commas in their parameters.
+    Supports list inputs (from playbooks), None inputs, and newline separators.
+
+    Args:
+        url_input: String, list, or None containing one or more URLs
+
+    Returns:
+        List of individual URLs
+
+    Examples:
+        >>> parse_url_list("http://example.com,https://test.com")
+        ['http://example.com', 'https://test.com']
+        >>> parse_url_list("https://fonts.googleapis.com/css?family=Roboto:100,100italic,200")
+        ['https://fonts.googleapis.com/css?family=Roboto:100,100italic,200']
+        >>> parse_url_list("http://a.com/path?x=1,2,http://b.com")
+        ['http://a.com/path?x=1,2', 'http://b.com']
+        >>> parse_url_list(["http://example.com", "https://test.com"])
+        ['http://example.com', 'https://test.com']
+        >>> parse_url_list(None)
+        []
+        >>> parse_url_list("ftp://example.com,http://test.com")
+        ['ftp://example.com', 'http://test.com']
+    """
+    if url_input is None:
+        return []
+
+    # Handle list input from playbooks
+    if isinstance(url_input, list):
+        return [url.strip() for url in argToList(url_input) if url and str(url).strip()]
+
+    # Handle string input - split by newlines, then intelligently by commas
+    url_input = str(url_input).strip()
+    if not url_input:
+        return []
+
+    # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
+    # This preserves commas within URL parameters
+    all_urls: list[str] = []
+    for line in url_input.split("\n"):
+        if line := line.strip():
+            all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
+
+    return all_urls
+
+
 def unit42_error_handler(res: requests.Response):
     """
     Custom error handler for Unit 42 API requests.
@@ -1219,7 +1269,8 @@ def main() -> None:
 
         elif command == "url":
             results = []
-            urls = argToList(args.get("url", ""))
+            # Use smart URL parsing to handle URLs with commas in parameters
+            urls = parse_url_list(args.get("url", ""))
             for url in urls:
                 args["url"] = url
                 results.append(url_command(client, args))
