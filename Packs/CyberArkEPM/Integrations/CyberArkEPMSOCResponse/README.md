@@ -42,7 +42,7 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.Endpoint.ID | String | The ID of the endpoint added to the risk plan. |
+| CyberArkEPMSOCResponse.Endpoint_IDs | String | The ID of the endpoint added to the risk plan. |
 
 ### cyberarkepm-deactivate-risk-plan
 
