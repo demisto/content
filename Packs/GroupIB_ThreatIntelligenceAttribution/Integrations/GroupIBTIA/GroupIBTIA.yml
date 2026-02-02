@@ -1061,19 +1061,22 @@ script:
       description: List of IPs.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor reporting the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: DBot score (0 unknown, 1 good, 2 suspicious, 3 bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
       type: String
   - name: domain
     description: Runs reputation on domains.
@@ -1084,19 +1087,22 @@ script:
       description: List of domains.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor reporting the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: DBot score (0 unknown, 1 good, 2 suspicious, 3 bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
       type: String
   - name: file
     description: Runs reputation on files.
@@ -1107,19 +1113,22 @@ script:
       description: List of files (hashes).
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor reporting the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: DBot score (0 unknown, 1 good, 2 suspicious, 3 bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability.
+      type: String
+    - contextPath: File.MD5
+      description: File MD5 hash.
       type: String
   - arguments:
     - description: |-
