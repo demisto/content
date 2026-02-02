@@ -3,7 +3,6 @@
 ### Authentication
 The authentication to EPM requires the following parameters:
 
-* EPM authentication
     - url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
     - username
     - password
