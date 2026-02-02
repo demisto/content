@@ -191,7 +191,6 @@ alter
         arrayindex(regextract(_raw_log, "\sclient_ip='([^']+)'"), 0),
         arrayindex(regextract(_raw_log, "\slast_known_client_ip='([^']+)'"), 0)
     ),
-    tmp_identity = arrayindex(regextract(_raw_log, "\sidentity='([^']+)'"), 0),
     tmp_url = arrayindex(regextract(_raw_log, "\surl=(\S+)"), 0),
     tmp_pattern = arrayindex(regextract(_raw_log, "pattern:\s*(.+)$"), 0),
     tmp_vap = arrayindex(regextract(_raw_log, "\svap='([^']+)'"), 0),
@@ -277,10 +276,8 @@ alter
         null
     ),
     xdm.source.host.mac_addresses = if(tmp_mac != null, arraycreate(tmp_mac), null),
-    xdm.source.user.username = tmp_identity,
     xdm.target.url = tmp_url,
     xdm.event.outcome = tmp_outcome,
-    xdm.network.rule = tmp_pattern,
     xdm.target.interface = tmp_vap,
     xdm.source.interface = tmp_radio,
     xdm.target.file.sha256 = tmp_sha256,
