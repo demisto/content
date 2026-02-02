@@ -3265,7 +3265,7 @@ class EC2:
                 "VolumeSize",
             ],
             removeNull=True,
-            headerTransform=pascalToSpace
+            headerTransform=pascalToSpace,
         )
 
         outputs = {
@@ -3345,7 +3345,9 @@ class EC2:
         if tags := response.get("Tags"):
             outputs["Tags"] = tags
 
-        readable_output = tableToMarkdown("Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True, headerTransform=pascalToSpace)
+        readable_output = tableToMarkdown(
+            "Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True, headerTransform=pascalToSpace
+        )
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Snapshots",
@@ -3400,7 +3402,7 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
-        
+
         try:
             waiter = client.get_waiter("snapshot_completed")
             waiter.wait(**kwargs)

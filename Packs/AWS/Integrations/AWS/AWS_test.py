@@ -7829,6 +7829,9 @@ def test_ec2_describe_snapshots_command_success(mocker):
     assert snapshots_key in result.outputs
     assert result.outputs[snapshots_key][0]["SnapshotId"] == "snap-12345678"
     assert "AWS EC2 Snapshots" in result.readable_output
+    mock_client.describe_snapshots.assert_called_once()
+    call_args = mock_client.describe_snapshots.call_args[1]
+    assert call_args["SnapshotIds"] == ["snap-12345678"]
 
 
 def test_ec2_describe_snapshots_command_with_filters(mocker):
@@ -8048,7 +8051,7 @@ def test_ec2_copy_snapshot_command_with_tags(mocker):
     """
     Given: A mocked boto3 EC2 client and snapshot copy arguments with tags.
     When: copy_snapshot_command is called with tag_specifications.
-    Then: It should configure tag specifications correctly.
+    Then: It should configure tag specifications correctly and response should contain the tags.
     """
     from AWS import EC2
 
@@ -8056,6 +8059,7 @@ def test_ec2_copy_snapshot_command_with_tags(mocker):
     mock_client.copy_snapshot.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "SnapshotId": "snap-tagged123",
+        "Tags": [{"Key": "Environment", "Value": "Production"}],
     }
 
     mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
@@ -8073,6 +8077,8 @@ def test_ec2_copy_snapshot_command_with_tags(mocker):
     call_args = mock_client.copy_snapshot.call_args[1]
     assert "TagSpecifications" in call_args
     assert call_args["TagSpecifications"][0]["ResourceType"] == "snapshot"
+    assert "Tags" in result.outputs
+    assert result.outputs["Tags"] == [{"Key": "Environment", "Value": "Production"}]
 
 
 def test_ec2_copy_snapshot_command_failure(mocker):
