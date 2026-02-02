@@ -29,7 +29,7 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 | --- | --- |--------------|
 | risk_plan | The name of the risk plan to activate. | True         |
 | endpoint_name | The name of the endpoint to target. | True         |
-| external_ip | The external IP address of the endpoint. | Fasle        |
+| external_ip | The external IP address of the endpoint. | False        |
 
 #### Human Readable Output
 
