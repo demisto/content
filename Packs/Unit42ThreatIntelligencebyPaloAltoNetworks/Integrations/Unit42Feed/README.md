@@ -74,7 +74,7 @@ When multiple types are configured, the integration fetches in the following pri
 4. **URL** indicators
 5. **File** indicators
 
-If any type returns fewer indicators than its allocated limit, the unused quota is added to the last type in the priority order, allowing it to fetch additional indicators up to the total limit of 100,000.
+If any type returns fewer indicators than its allocated limit, the unused quota is added to the last type in the priority order, allowing it to fetch up to the total limit of 100,000 indicators.
 
 ## Commands
 
