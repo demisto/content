@@ -3199,7 +3199,7 @@ def messages() -> Response:
 
         is_valid, error = validate_auth_header(headers)
         if is_valid is False:
-            return Response(response=error, status=401)
+            return Response(response="Authorization header validation failed - JWT validation error", status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
             integration_context: dict = get_integration_context()

@@ -3765,7 +3765,7 @@ def test_messages_endpoint_auth_header_validation_failure(mocker):
     from MicrosoftTeams import APP
 
     # Mock validate_auth_header to return tuple (False, error_message)
-    error_message = "Authorization header validation failed - JWT signature verification failed"
+    error_message = "Authorization header validation failed - JWT validation error"
     mocker.patch("MicrosoftTeams.validate_auth_header", return_value=(False, error_message))
 
     # Mock demisto.info to avoid errors
