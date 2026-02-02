@@ -1,5 +1,4 @@
 import os
-import shlex
 import shutil
 import sys
 import zipfile as z
@@ -124,10 +123,10 @@ def extract_using_unrar(file_path, dir_path, password=None):
     :param password: password if the zip file is encrypted
     """
     if password:
-        cmd = f"unrar x -p{password} {file_path} {dir_path}"
+        cmd = ["unrar", "x", f"-p{password}", file_path, dir_path]
     else:
-        cmd = f"unrar x -p- {file_path} {dir_path}"
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+        cmd = ["unrar", "x", "-p-", file_path, dir_path]
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
@@ -141,13 +140,13 @@ def extract_using_unrar(file_path, dir_path, password=None):
 
 def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     if ".tar.gz" in file_name:
-        cmd = f"tar -xzvf {file_path} -C {dir_path}"
+        cmd = ["tar", "-xzvf", file_path, "-C", dir_path]
     elif file_name.endswith(".tar"):
-        cmd = f"tar -xf {file_path} -C {dir_path}"
+        cmd = ["tar", "-xf", file_path, "-C", dir_path]
     else:
-        cmd = ""
+        cmd = []
         demisto.debug(f"{file_name=} didn't match any condition. {cmd=}")
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
     if stderr:
@@ -161,8 +160,8 @@ def extract_using_7z(file_path, dir_path, password=None):
     :param dir_path: directory that the file will be extract to
     :param password: password if the zip file is encrypted
     """
-    cmd = f"7z x -p{password} -o{dir_path} {file_path}"
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    cmd = ["7z", "x", f"-p{password}", f"-o{dir_path}", file_path]
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
