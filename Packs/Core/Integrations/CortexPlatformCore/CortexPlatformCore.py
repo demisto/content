@@ -3,7 +3,6 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-import dateparser
 import copy
 
 
@@ -64,6 +63,7 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-get-issues",
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
@@ -516,15 +516,11 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     return process(outputs)
 
 
-def filter_context_fields(output_keys: list, context: list):
+def filter_context_fields(output_keys: list, context: list) -> list:
     """
-    Filters only specific keys from the context dictionary based on provided output_keys.
+    Filters only specific keys from the context dictionary where values are not None.
     """
-    filtered_context = []
-    for alert in context:
-        filtered_context.append({key: alert.get(key) for key in output_keys})
-
-    return filtered_context
+    return [{k: v for k in output_keys if (v := alert.get(k)) is not None} for alert in context]
 
 
 class Client(CoreClient):
@@ -1734,7 +1730,7 @@ def get_cases_command(client, args):
     command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
+            outputs={"filtered_count": filter_count, "returned_count": returned_count},
         )
     ]
 
@@ -3527,6 +3523,18 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
+    response: list[CommandResults] = get_issues_by_filter_command(client, args)
+    output_keys = argToList(args.pop("output_keys", []))
+    if isinstance(response[0].outputs, list) and response[0].outputs:
+        response[0].outputs = [alert_to_issue(output) for output in response[0].outputs]
+
+        if output_keys:
+            response[0].outputs = filter_context_fields(output_keys, response[0].outputs)
+
+    return response
+
+
 def parse_frequency(day: str | None, time: str | None) -> str:
     """
     Convert day and time to cron-style frequency string
@@ -4546,31 +4554,7 @@ def main():  # pragma: no cover
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
-            # replace all dict keys that contain issue with alert
-            args = issue_to_alert(args)
-            # Extract output_keys before calling get_alerts_by_filter_command
-            output_keys = argToList(args.pop("output_keys", []))
-            assignees = argToList(args.get("assignee", "").lower())
-            if "assigned" in assignees or "unassigned" in assignees:
-                if len(assignees) > 1:
-                    raise DemistoException(
-                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
-                    )
-
-                # Swap assignee arg with the requested special operation
-                assignee_filter_option = args.pop("assignee", "")
-                args[assignee_filter_option] = True
-
-            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
-            # Convert alert keys to issue keys
-            if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
-
-            # Apply output_keys filtering if specified
-            if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
-
-            return_results(issues_command_results)
+            return_results(get_issues_command(client, args))
 
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))

@@ -15,6 +15,11 @@ from re import Match
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
+
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     "Other": "resolved_other",
     "Duplicate": "resolved_duplicate",
@@ -148,10 +153,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
+MAX_GET_ISSUES_LIMIT = 50
+ALERTS_TABLE = "ALERTS_VIEW_TABLE"
 
 # Filter object query operators
 EQ = "EQ"
@@ -1465,7 +1468,9 @@ class FilterBuilder:
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
+        IPLIST_MATCH = ("IPLIST_MATCH", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
@@ -1946,6 +1951,7 @@ def create_filter_from_args(args: dict) -> dict:
                     delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
                     search_value = str(delta_in_milliseconds)
 
+            demisto.debug(f"Processing search field: {arg_properties.search_field}")
             and_operator_list.append(
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
             )
@@ -4017,7 +4023,303 @@ ALERT_STATUS_TYPES = {
     "BLOCKED_TRIGGER_4": "prevented (on write)",
 }
 
+ISSUE_FIELDS = {
+    "action_local_port": "action_local_port",
+    "action_local_ip": "action_local_ip",
+    "action_remote_port": "action_remote_port",
+    "action_remote_ip": "action_remote_ip",
+    "actor_process_image_sha256": "actor_process_image_sha256",
+    "action_file_macro_sha256": "action_file_macro_sha256",
+    "issue_source": "alert_source",
+    "user_name": "actor_effective_username",
+    "asset_ids": "asset_ids",
+    "issue_action_status": "alert_action_status",
+    "issue_description": "alert_description",
+    "severity": "severity",
+    "issue_name": "alert_name",
+    "issue_category": "alert_category",
+    "issue_domain": "alert_domain",
+    "start_time": "source_insert_ts",
+    "starred": "starred",
+    "assignee": "assigned_to_pretty",
+    "assignee_mail": "assigned_to",
+    "issue_id": "internal_id",
+    "mitre_technique_id_and_name": "mitre_technique_id_and_name",
+    "status": "status.progress",
+    "actor_process_image_name": "actor_process_image_name",
+    "dst_action_external_hostname": "dst_action_external_hostname",
+    "os_actor_process_image_sha256": "os_actor_process_image_sha256",
+    "agent_id": "agent_id",
+    "Identity_type": "identity_type",
+    "action_external_hostname": "action_external_hostname",
+    "host_ip": "agent_ip_addresses",
+    "actor_process_command_line": "actor_process_command_line",
+    "action_process_image_command_line": "action_process_image_command_line",
+    "action_file_image_sha256": "action_file_sha256",
+    "action_registry_name": "action_registry_key_name",
+    "action_registry_key_data": "action_registry_data",
+    "rule_name": "fw_rule",
+    "rule_id": "fw_rule_id",
+    "causality_actor_process_image_command_line": "causality_actor_process_command_line",
+    "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
+    "action_process_image_sha256": "action_process_image_sha256",
+}
+
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
+
+
+def determine_email_or_name(assignee_list: list) -> str:
+    if not assignee_list:
+        return ""
+
+    assignee = assignee_list[0]
+
+    if "@" in assignee:
+        return "email"
+    else:
+        return "name"
+
+
+def determine_issue_assignee_filter_field(assignee_list: list) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (list): The assignee values to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if determine_email_or_name(assignee_list) == "email":
+        return ISSUE_FIELDS["assignee_email"]
+    else:
+        return ISSUE_FIELDS["assignee"]
+
+
+def create_issues_filter(args) -> dict:
+    """Build filter dictionary for alerts based on provided arguments."""
+    filter_builder = FilterBuilder()
+    if args.get("time_frame") and args.get("time_frame") != "custom":
+        filter_builder.add_time_range_field(
+            ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
+        )
+    filter_builder.add_time_range_field(
+        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
+    )
+    filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, args.get("starred"))
+    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("issue_id")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.CONTAINS, argToList(args.get("rule_id")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_command_line"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_command_line"], FilterType.CONTAINS, argToList(args.get("actor_process_image_command_line"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("agent_id")))
+    filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("action_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_sha256"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_sha256")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["action_registry_name"], FilterType.EQ, argToList(args.get("action_registry_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["host_ip"], FilterType.IPLIST_MATCH, argToList(args.get("host_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_ip"], FilterType.IP_MATCH, argToList(args.get("action_local_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_ip"], FilterType.IP_MATCH, argToList(args.get("action_remote_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_port"], FilterType.EQ, argToList(args.get("action_local_port")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_port"], FilterType.EQ, argToList(args.get("action_remote_port")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(args.get("issue_domain")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("issue_source"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
+    status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.EQ, status_values)
+    not_status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("not_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.NEQ, not_status_values)
+    severity_values = [SEVERITY_STATUSES.get(val, val) for val in argToList(args.get("severity"))]
+    filter_builder.add_field(ISSUE_FIELDS["severity"], FilterType.EQ, severity_values)
+    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
+    filter_builder.add_field_with_mappings(
+        determine_issue_assignee_filter_field(argToList(args.get("assignee", "").lower())),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"{filter_dict=}")
+    return filter_dict
+
+
+def get_issues_by_filter_command(client: CoreClient, args: Dict):
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    on_demand_fields = [
+        "action_file_sha256",
+        "action_file_macro_sha256",
+        "action_process_image_sha256",
+        "actor_process_image_sha256",
+        "os_actor_process_image_sha256",
+        "causality_actor_process_image_sha256",
+        "actor_process_command_line",
+        "action_file_path",
+        "alert_action_status",
+        "agent_ip_addresses",
+        "agent_hostname",
+        "identity_type",
+    ]
+    filter_dict = create_issues_filter(args)
+    custom_filter = {}
+    custom_filter_str = args.get("custom_filter", None)
+
+    if custom_filter_str:
+        try:
+            custom_filter = json.loads(custom_filter_str)
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
+        except Exception as e:
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if not filter_dict:
+            filter_dict = {"AND": []}
+        if "AND" in custom_filter:
+            filter_obj = custom_filter["AND"]
+            filter_dict["AND"].extend(filter_obj)
+        else:
+            filter_dict["AND"].append(custom_filter)
+
+    page = arg_to_number(args.get("offset")) or arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("limit")) or arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
+    start_index = page * page_size
+    end_index = start_index + page_size
+
+    sort_field = args.get("sort_field", "source_insert_ts")
+    sort_order = args.get("sort_order", "DESC")
+    request_data = build_webapp_request_data(
+        table_name=ALERTS_TABLE,
+        filter_dict=filter_dict,
+        limit=end_index,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=on_demand_fields,
+        start_page=start_index,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    demisto.debug(f"{reply=}")
+    data = reply.get("DATA", [])
+
+    filtered_count = int(reply.get("FILTER_COUNT", "0"))
+    returned_count = len(data)
+
+    for issue in data:
+        if "alert_action_status" in issue:
+            action_status = issue.get("alert_action_status")
+            issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+    human_readable = [
+        {
+            "Issue ID": alert.get("internal_id"),
+            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+            "Name": alert.get("alert_name"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
+            if is_platform()
+            else alert.get("status.progress"),
+            "Category": alert.get("alert_category"),
+            "Action": alert.get("alert_action_status_readable"),
+            "Description": alert.get("alert_description"),
+            "Host IP": alert.get("agent_ip_addresses"),
+            "Host Name": alert.get("agent_hostname"),
+        }
+        for alert in data
+    ]
+    command_results = []
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.Issue",
+            outputs_key_field="internal_id",
+            outputs=data,
+            readable_output=tableToMarkdown("Issue", human_readable),
+            raw_response=data,
+        )
+    )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.IssueMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
