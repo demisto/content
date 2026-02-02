@@ -26,7 +26,7 @@ The **Limit** parameter controls the maximum number of indicators fetched per ty
 
 The limit per type is calculated using the following logic:
 
-1. **If limit is not specified or is negative**:
+1. **If the limit is not specified or is negative**:
    - Default limit per type = `100,000 / total_number_of_types`
 
 2. **If the limit × total_number_of_types > 100,000**:
