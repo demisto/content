@@ -19,6 +19,7 @@ LUMINAR_TO_XSOAR_TYPES = {
     "windows-registry-key": FeedIndicatorType.Registry,
     "user-account": FeedIndicatorType.Account,
 }
+FORMATS = ["%Y-%m-%d", "%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%S.%f"]
 
 
 def enrich_incident_items(parent, childrens, feed_tags, tlp_color):
@@ -200,7 +201,7 @@ class Client(BaseClient):
         r = requests.post(req_url, headers=req_headers, data=req_data)
         return r.json()["access_token"]
 
-    def fetch_luminar_api_feeds(self, is_fetch_command=True):
+    def fetch_luminar_api_feeds(self, is_fetch_command=True, fetch_date=None):
         """
         This will fetch the luminar feed for FEED Command
         Returns:
@@ -215,9 +216,13 @@ class Client(BaseClient):
                     params = {"timestamp": int(last_run), "limit": self.limit}
                 else:
                     params = {"limit": self.limit, "offset": self.offset}
+                    if fetch_date:
+                        params["timestamp"] = self.to_unix_timestamp(fetch_date)
                     self.offset += self.limit
             else:
                 params = {"limit": self.limit, "offset": self.offset}
+                if fetch_date:
+                    params["timestamp"] = self.to_unix_timestamp(fetch_date)
                 self.offset += self.limit
             req_url = f"{self._base_url}/stix"
             req_headers = {"Authorization": f"Bearer {access_token}"}
@@ -266,13 +271,13 @@ class Client(BaseClient):
                     demisto.info(f"Type not handled : {parent_type}")
                     continue
 
-    def get_luminar_indicators_list(self):
+    def get_luminar_indicators_list(self, fetch_date=None):
         """
         This will get the indicators from Luminar for get-indicators method.
         Returns: list
         """
         luminar_indicators_list = []
-        for luminar_feed in self.fetch_luminar_api_feeds(is_fetch_command=False):
+        for luminar_feed in self.fetch_luminar_api_feeds(is_fetch_command=False, fetch_date=fetch_date):
             luminar_indicators = []
             if not luminar_feed:
                 continue
@@ -303,13 +308,13 @@ class Client(BaseClient):
                     luminar_indicators_list.append(indicator)
         return luminar_indicators_list
 
-    def get_luminar_leaked_credentials_list(self):
+    def get_luminar_leaked_credentials_list(self, fetch_date=None):
         """
         This will get the leaked records from Luminar for get-leaked-records method.
         Returns: list
         """
         luminar_leaked_credentials_list = []
-        for luminar_feed in self.fetch_luminar_api_feeds(is_fetch_command=False):
+        for luminar_feed in self.fetch_luminar_api_feeds(is_fetch_command=False, fetch_date=fetch_date):
             luminar_leaked_records = []
             if not luminar_feed:
                 continue
@@ -349,6 +354,18 @@ class Client(BaseClient):
         """
         return demisto.getIntegrationContext().get("last_modified_time")
 
+    @staticmethod
+    def to_unix_timestamp(date_str: str) -> int:
+        for fmt in FORMATS:
+            try:
+                dt = datetime.strptime(date_str, fmt)
+                dt = dt.replace(tzinfo=timezone.utc)
+                return int(dt.timestamp())
+            except ValueError:
+                continue
+
+        raise ValueError(f"Invalid date format: '{date_str}'. " f"Supported formats: {FORMATS}")
+
 
 def cognyte_luminar_get_leaked_records(client: Client, args: dict):
     """
@@ -361,7 +378,8 @@ def cognyte_luminar_get_leaked_records(client: Client, args: dict):
 
     """
     limit = arg_to_number(args.get("limit", 50), arg_name="limit")
-    leaked_records = client.get_luminar_leaked_credentials_list()
+    fetch_date = args.get("fetch_date")
+    leaked_records = client.get_luminar_leaked_credentials_list(fetch_date=fetch_date)
     leaked_records = leaked_records[:limit]
     if leaked_records:
         readable_output = tableToMarkdown(
@@ -393,7 +411,8 @@ def cognyte_luminar_get_indicators(client: Client, args: dict):
 
     """
     limit = arg_to_number(args.get("limit", 50), arg_name="limit")
-    indicators_list = client.get_luminar_indicators_list()
+    fetch_date = args.get("fetch_date")
+    indicators_list = client.get_luminar_indicators_list(fetch_date=fetch_date)
     indicators_list = indicators_list[:limit]
     if indicators_list:
         readable_output = tableToMarkdown(
