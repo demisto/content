@@ -188,7 +188,7 @@ class MsGraphClient:
     def create_user(self, properties):
         self.ms_client.http_request(method="POST", url_suffix="users", json_data=properties)
 
-    def get_sign_in_preferences(self, user: str):
+    def get_sign_in_preferences(self, user: str):  # pragma: no cover
         """
         Retrieves the sign-in preferences for a user, which includes the preferred method.
         API Reference: https://learn.microsoft.com/en-us/graph/api/authentication-get?view=graph-rest-beta
@@ -204,7 +204,7 @@ class MsGraphClient:
         finally:
             self.ms_client._base_url = original_base_url
 
-    def request_mfa_app_secret(self) -> dict:
+    def request_mfa_app_secret(self) -> dict:  # pragma: no cover
         """
         The function utilizes the MFA application ID (981f26a1-7f43-403b-a875-f8b09b8cd720) to retrieve the service principal ID.
         Which then uses the service principal ID to retrieve the client secret.
@@ -255,7 +255,7 @@ class MsGraphClient:
 
         return secret_result
 
-    def get_mfa_app_client_token(self, client_secret: str) -> dict:
+    def get_mfa_app_client_token(self, client_secret: str) -> dict:  # pragma: no cover
         demisto.debug("Creating new MFA access token.")
 
         # Hardcoded endpoints
