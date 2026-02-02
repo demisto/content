@@ -3941,7 +3941,7 @@ def save_spotlight_state(
     # Update only the spotlight_assets key, preserving all other context
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets("Saved Spotlight state to integration context")
+    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
 
 
 async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
@@ -4072,6 +4072,7 @@ class AssetsDeviceHandler:
             # Create async enrichment task
             task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
             self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
 
     async def enrich_and_ingest_batch(self, aid_batch: list[str]) -> None:
         """
@@ -4125,12 +4126,16 @@ class AssetsDeviceHandler:
 
             # Track task with callback to update last_saved_batch_number
             def update_last_saved(future):
-                nonlocal self
+                # 'self' is accessible from enclosing method scope - no nonlocal needed
                 try:
                     saved_batch_num = future.result()
                     if saved_batch_num > self.asset_last_saved_batch_number:
                         self.asset_last_saved_batch_number = saved_batch_num
                         log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
+                except asyncio.CancelledError:
+                    log_falcon_assets(
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting).",
+                        "debug")
                 except Exception as e:
                     log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
                 finally:
@@ -4160,21 +4165,20 @@ class AssetsDeviceHandler:
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
-        if self.running_tasks:
-            log_falcon_assets(
-                f"AssetsDeviceHandler: Waiting for {len(self.running_tasks)} enrichment/send tasks to complete", "info"
-            )
-            results = await asyncio.gather(*self.running_tasks, return_exceptions=True)
+        while self.running_tasks:
+            count = len(self.running_tasks)
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
 
-            # Check for errors
-            for res in results:
-                if isinstance(res, Exception):
-                    log_falcon_assets(f"AssetsDeviceHandler: Task failed: {res}", "error")
-                    raise res
+            # Create a snapshot of the current tasks
+            current_batch = list(self.running_tasks)
 
-            log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
-        else:
-            log_falcon_assets("AssetsDeviceHandler: No running tasks to wait for")
+            if not current_batch:
+                break
+
+            # Wait for this specific batch.
+            await asyncio.gather(*current_batch, return_exceptions=True)
+
+        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
 
     @staticmethod
     def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
@@ -4210,7 +4214,6 @@ async def xsiam_api_call_async(
     """
     Send data to XSIAM asynchronously with retry logic.
     Generic function for sending any type of data to XSIAM.
-    Adapted from Rapid7_Nexpose.py lines 7705-7761.
 
     Args:
         xsiam_url: XSIAM API endpoint URL (e.g., "https://api-{domain}")
