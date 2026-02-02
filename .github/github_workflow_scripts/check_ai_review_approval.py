@@ -1,7 +1,8 @@
 import sys
 import argparse
-from github import Github
+from github import Github, Auth
 from github.PullRequest import PullRequest
+from github.PullRequestReview import PullRequestReview
 import requests
 import urllib3
 from utils import timestamped_print
@@ -29,7 +30,7 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def get_reactions_query():
+def get_reactions_query() -> str:
     """Returns the GraphQL query to fetch reactions for a specific Node ID."""
     return """
     query($nodeId: ID!) {
@@ -45,6 +46,24 @@ def get_reactions_query():
       }
     }
     """
+
+
+def is_minimized_query() -> str:
+    """
+    Returns the GraphQL query to fetch minimization status.
+    We use '... on Comment' because both IssueComment and
+    PullRequestReviewComment implement the Comment interface.
+    """
+    return """
+        query($nodeId: ID!) {
+        node(id: $nodeId) {
+            ... on PullRequestReview {
+            isMinimized
+            minimizedReason
+            }
+        }
+        }
+        """
 
 
 def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
@@ -73,23 +92,55 @@ def fetch_reactions_via_graphql(node_id: str, token: str) -> list:
         return []
 
 
-def find_reaction_on_review(reviews, github_token):
-    ai_review_found = False
+def is_minimized_via_graphql(node_id: str, token: str) -> bool:
+    """
+    Uses GraphQL to understand if a review is minimized or not.
+    """
+    url = "https://api.github.com/graphql"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+    variables = {"nodeId": node_id}
+
+    try:
+        response = requests.post(url, json={"query": is_minimized_query(), "variables": variables}, headers=headers, verify=False)
+        response.raise_for_status()
+        data = response.json()
+        node_data = data.get("data", {}).get("node")
+
+        return node_data and node_data.get("isMinimized")
+    except Exception as e:
+        print(f"⚠️ GraphQL Request Failed for node {node_id}: {e}")
+        return False
+
+
+def find_reaction_on_review(reviews: list[PullRequestReview], github_token: str, pr_number: str):
+    if not reviews:
+        return False, False
+
+    print(f"Found {len(reviews)} AI review(s) from '{BOT_USERNAME}'. Checking for approvals...")
+
     for review in reviews:
-        if review.user and review.user.login == BOT_USERNAME and REQUIRED_TEXT in review.body:
-            ai_review_found = True
-            print(f"Found Bot Review (Node ID: {review.raw_data['node_id']}). Checking reactions via GraphQL...")
+        print(
+            f"Found Bot Review (Node ID: {review.raw_data['node_id']}, Review ID: {review.id}). Checking reactions via GraphQL..."
+        )
+        reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
 
-            reactions = fetch_reactions_via_graphql(review.raw_data["node_id"], github_token)
-            for reaction in reactions:
-                content = reaction.get("content")
+        thumb_up_found = False
+        for reaction in reactions:
+            if reaction.get("content") == "THUMBS_UP":
                 user = reaction.get("user", {}).get("login")
+                print(f"Found 👍 reaction from user: {user}")
+                thumb_up_found = True
+                break
 
-                if content == "THUMBS_UP":
-                    print(f"Found 👍 reaction from user: {user}")
-                    print("✅ AI Review approved.")
-                    sys.exit(0)
-    return ai_review_found
+        if not thumb_up_found:
+            review_link = f"https://github.com/demisto/content/pull/{pr_number}#pullrequestreview-{review.id}"
+            print(f"❌ No 👍 reaction found for review: {review_link}")
+            return True, False
+
+    return True, True
 
 
 def is_user_in_permitted_team(github_client: Github, username: str) -> bool:
@@ -189,7 +240,8 @@ def main():
     github_token = options.github_token
     print(f"Checking PR {pr_number}")
 
-    github_client = Github(github_token, verify=False)
+    auth = Auth.Token(github_token)
+    github_client = Github(auth=auth, verify=False)
     repo = github_client.get_repo(f"{ORG_NAME}/{REPO_NAME}")
     pr = repo.get_pull(int(pr_number))
 
@@ -199,14 +251,29 @@ def main():
     print("Fetching reviews...")
     reviews = pr.get_reviews()
 
-    ai_review_found = find_reaction_on_review(reviews, github_token)
+    relevant_reviews: list[PullRequestReview] = [
+        review
+        for review in reviews
+        if (
+            review.user
+            and review.user.login == BOT_USERNAME
+            and REQUIRED_TEXT in review.body
+            and not is_minimized_via_graphql(review.raw_data["node_id"], github_token)
+        )
+    ]
 
-    if ai_review_found:
-        print("❌ AI Review found, but no 👍 reaction detected.")
-        sys.exit(1)
-    else:
+    found_reviews, all_approved = find_reaction_on_review(relevant_reviews, github_token, pr_number)
+
+    if not found_reviews:
         print("❌ AI Review check failed. No AI Review comment found.")
         sys.exit(1)
+
+    if not all_approved:
+        print("❌ Not all AI reviews were approved with a 👍 reaction.")
+        sys.exit(1)
+
+    print("✅ All AI Reviews approved.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
