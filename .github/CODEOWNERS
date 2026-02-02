@@ -22,7 +22,7 @@
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
-/Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
@@ -109,8 +109,8 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Core @JudahSchwartz
 /Packs/CortexXDR @JudahSchwartz
 /Packs/SentinelOne @JudahSchwartz
-/Packs/CrowdstrikeFalcon @JudahSchwartz @talzich
-/Packs/CrowdstrikeFalconSandbox @JudahSchwartz
+/Packs/CrowdStrikeFalcon @JudahSchwartz @talzich
+/Packs/CrowdStrikeFalconSandbox @JudahSchwartz
 /Packs/CrowdStrikeFalconStreamingV2 @JudahSchwartz
 /Packs/MicrosoftExchangeOnline @JudahSchwartz @noydavidi
 /Packs/AggregatedScripts @JudahSchwartz
