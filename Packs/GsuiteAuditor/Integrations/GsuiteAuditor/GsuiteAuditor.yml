@@ -1,4 +1,5 @@
 category: IT Services
+provider: Google
 commonfields:
   id: GSuiteAuditor
   version: -1
@@ -99,7 +100,7 @@ script:
       description: Type of event.
       type: String
     - contextPath: GSuite.ActivitySearch.items.events.name
-      description: Name of the event
+      description: Name of the event.
       type: String
     - contextPath: GSuite.ActivitySearch.items.events.parameters.name
       description: The name of the parameter.

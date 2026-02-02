@@ -1435,7 +1435,7 @@ def test_fetch_command(mocker):
     expected_result = 1719671916
     mocker.patch.object(demisto, "getLastRun", return_value={"SRM:Request": {"last_create_time": "2021-06-29T14:38:36.000+0000"}})
     mocker.patch.object(BmcITSM, "fetch_relevant_tickets_by_ticket_type", return_value=mock_response)
-    incidents_result, last_run_result = BmcITSM.fetch_incidents(
+    _, last_run_result = BmcITSM.fetch_incidents(
         mock_client,
         max_fetch=2,
         first_fetch="2022-06-29T14:38:36.000+0000",
@@ -1448,3 +1448,145 @@ def test_fetch_command(mocker):
         mirror_direction="both",
     )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result
+
+
+@pytest.mark.parametrize(
+    "command_arguments,",
+    [
+        {
+            "incident_number": "INC000010381028",
+            "detailed_description": "Description TEST",
+            "view_access": "Public",
+            "worklog_type": "Chat",
+        },
+    ],
+)
+def test_worklog_add_command(
+    command_arguments,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Create incident.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may Provided filtering arguments.
+    When:
+     - bmc-itsm-incident-create command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import worklog_add_command
+
+    url = f"{BASE_URL}/api/arsys/v1/entry/HPD:WorkLog/"
+    requests_mock.post(url=url, status_code=201)
+
+    result = worklog_add_command(mock_client, command_arguments)
+    assert result.readable_output == "Worklog is successfully added"
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len",
+    [
+        (
+            "list_worklogs.json",
+            {
+                "ticket_ids": "INC000010381027",
+                "limit": 50,
+            },
+            1,
+        ),
+    ],
+)
+def test_worklog_list(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    requests_mock,
+    mock_client,
+):
+    """ """
+    from BmcITSM import worklog_list_command
+
+    ticket_id = command_arguments.get("ticket_ids")
+
+    mock_response = load_mock_response(response_file_name)
+    expected_worklog_id = mock_response.get("entries")[0].get("values").get("Work Log ID")
+
+    query = f"('Incident Number' = \"{ticket_id}\")"
+    url = f"{BASE_URL}/api/arsys/v1/entry/HPD:WorkLog?q={query}"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = worklog_list_command(mock_client, command_arguments)
+
+    assert len(result.outputs) == expected_outputs_len
+    assert result.outputs_prefix == "BmcITSM.WorkLog"
+    assert result.outputs[0].get("WorkLogID") == expected_worklog_id
+
+
+@pytest.mark.parametrize(
+    "command_arguments",
+    [
+        {
+            "association_type": "Caused",
+            "first_form_name": "incident",
+            "first_request_id": "INC000002405276",
+            "second_form_name": "incident",
+            "second_request_id": "INC000002405278",
+            "request_description": "Creating relationship",
+            "request_type": "Incident",
+            "bidirectional": True,
+        },
+    ],
+)
+def test_ticket_create_relationship(
+    command_arguments,
+    requests_mock,
+    mock_client,
+):
+    from BmcITSM import ticket_create_relationship_command
+
+    url = f"{BASE_URL}/api/arsys/v1/entry/HPD:Associations"
+    requests_mock.post(url=url, status_code=201, text="")
+
+    first_request_id = command_arguments.get("first_request_id")
+    second_request_id = command_arguments.get("second_request_id")
+    expected = f"Created relationship between {first_request_id} and {second_request_id}."
+
+    result = ticket_create_relationship_command(mock_client, command_arguments)
+    assert result.readable_output == expected
+
+
+@pytest.mark.parametrize(
+    "command_arguments",
+    [
+        {
+            "worklog_id": "WLG000002437503",
+        },
+    ],
+)
+def test_worklog_attachment_get(
+    command_arguments,
+    requests_mock,
+    mock_client,
+):
+    from BmcITSM import worklog_attachment_get_command
+
+    file_name = "attachment.txt"
+    file_contents = "FILE_BODY"
+    worklog_id = command_arguments.get("worklog_id")
+
+    base = f"{BASE_URL}/api/arsys/v1/entry/HPD:WorkLog/{worklog_id}/attach/z2AF Work Log"
+    first_url = f"{base}01"
+    requests_mock.get(
+        url=first_url, status_code=200, text=file_contents, headers={"Content-Disposition": f"attachment ;filename={file_name}"}
+    )
+
+    for suffix in ("02", "03"):
+        requests_mock.get(url=f"{base}{suffix}", status_code=200, text="")
+
+    result = worklog_attachment_get_command(mock_client, command_arguments)
+    assert result[0].get("File") == file_name

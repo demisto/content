@@ -1,4 +1,6 @@
 category: Email
+deprecated: true
+provider: Permira
 commonfields:
   id: Mimecast Event Collector
   version: -1
@@ -36,8 +38,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: ''
-display: Mimecast Event Collector
+description: Deprecated. Use Mimecast Event Collector v2 instead.
+display: Mimecast Event Collector (Deprecated)
 name: Mimecast Event Collector
 script:
   script: ""

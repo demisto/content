@@ -388,11 +388,11 @@ tasks:
       id: cdde9f89-b5ae-4db0-85e0-bbcebbb4fd1a
       version: -1
       name: Continue with the investigation
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      description: The AutoCloseAlert input is false, hence, a manual decision whether
+        to close it or investigate further is needed.
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "23"

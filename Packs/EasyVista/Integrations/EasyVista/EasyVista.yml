@@ -4,6 +4,7 @@ commonfields:
 name: EasyVista
 display: EasyVista
 category: IT Services
+provider: EasyVista
 description: EasyVista Service Manager manages the entire process of designing, managing and delivering IT services.
 configuration:
 - display: Server URL
