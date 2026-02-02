@@ -1049,7 +1049,6 @@ class AzureClient:
         Args:
             account_name (str): Name of the storage account.
             container_name (str): Name of the container.
-            headers (dict): Request Headers.
 
         Returns:
             Response: API response from Azure.

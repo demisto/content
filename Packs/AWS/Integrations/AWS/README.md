@@ -2490,7 +2490,7 @@ Returns a list of inventory items.
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | instance_id | The managed node ID for which you want inventory information. | Required |
 | type_name | The type of inventory item for which you want information. | Required |
-| limit | The maximum number of items to return for this call. Default is 50. | Optional |
+| limit | The maximum number of items to return for this call. The maximum value is 50. Default is 50. | Optional |
 | filters | One or more filters separated by ';' (for example, key=&lt;key&gt;,values=&lt;values&gt;,type=&lt;type&gt;;key=&lt;key&gt;,values=&lt;values&gt;,type=&lt;type&gt;). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists. | Optional |
 | next_token | The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken. | Optional |
 
@@ -2520,7 +2520,7 @@ Returns a list of all buckets owned by the authenticated sender of the request.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| limit | Maximum number of buckets to be returned in response. Default is 50. | Optional |
+| limit | Maximum number of buckets to be returned in response. The maximum value is 10000. Default is 50. | Optional |
 | next_token | The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken. | Optional |
 | prefix | Limits the response to bucket names that begin with the specified bucket name prefix. | Optional |
 | filter_by_region | A comma-separated list of regions that limits the response to buckets that are located in the specified Amazon Web Services Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |

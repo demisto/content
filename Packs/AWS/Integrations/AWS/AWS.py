@@ -273,6 +273,9 @@ def parse_key_values_2_dict(parameters_str: str) -> dict:
         A dictionary containing the parameters
         {"key1" : [ "string", "string"], "key2" : [ "string", "string"]}
     """
+    if not parameters_str:
+        return {}
+
     parameters = {}
     list_parameters = argToList(parameters_str, separator=";")
     regex = re.compile(

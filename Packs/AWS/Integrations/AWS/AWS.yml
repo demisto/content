@@ -7400,7 +7400,7 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: limit
-        description: Maximum number of buckets to be returned in response.
+        description: Maximum number of buckets to be returned in response. The maximum value is 10000.
         defaultValue: 50
         required: false
       - name: next_token
@@ -7524,7 +7524,7 @@ script:
         description: The type of inventory item for which you want information.
         required: true
       - name: limit
-        description: The maximum number of items to return for this call.
+        description: The maximum number of items to return for this call. The maximum value is 50.
         defaultValue: 50
         required: false
       - description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;key=<key>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
