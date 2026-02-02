@@ -42,7 +42,7 @@ configuration:
   type: 0
   defaultvalue: '100000'
   additionalinfo: |-
-    Maximum number of indicators to fetch PER TYPE. 
+    Maximum number of indicators to fetch per type. 
     Example: limit=20,000 with 4 types selected = 80,000 total indicators.
     
     The total (limit × number of types) is automatically capped at 100,000.
