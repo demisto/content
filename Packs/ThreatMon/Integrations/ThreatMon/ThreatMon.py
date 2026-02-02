@@ -49,7 +49,13 @@ def convert_to_demisto_severity(severity: str) -> int:
 def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Fetches new incidents from Threatmon API using pagination and latest lastIncidentId logic."""
 
-    last_incident_id = last_run.get("last_incident_id") or demisto.params().get("lastIncidentId") or 0
+    last_incident_id = last_run.get("last_incident_id")
+
+    if last_incident_id is None:
+        last_incident_id = demisto.params().get("lastIncidentId")
+
+    if last_incident_id is None:
+        last_incident_id = 0
 
     try:
         last_incident_id = int(last_incident_id)
