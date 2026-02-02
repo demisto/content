@@ -19,7 +19,6 @@ def filter_relationships_by_entity_types(
     Returns:
         list: Filtered relationships where EntityA or EntityB type matches entities_types
     """
-    demisto.info("filter_relationships_by_entity_types called with: " + f"entities={entities}, entities_types={entities_types}, relationships={relationships}, limit={limit}")
     filtered_relationships: list = []
     searchAfter = None
     iteration = 0
@@ -34,7 +33,6 @@ def filter_relationships_by_entity_types(
         if searchAfter:
             search_params["searchAfter"] = searchAfter
 
-        demisto.info("SearchIndicatorRelationships called with: " + f"search_params={search_params}")
         res = demisto.executeCommand("SearchIndicatorRelationships", search_params)
 
         if not res or len(res) == 0:
@@ -93,7 +91,6 @@ def get_relationships(args: dict) -> list:
                 returns filtered relationships where EntityA or EntityB type matches entities_types.
                 Returns empty list if no parameters are provided or no relationships found.
     """
-    demisto.info("get_relationships called")
     entities_types = argToList(args.pop("entities_types", []))
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
@@ -113,8 +110,6 @@ def get_relationships(args: dict) -> list:
         "revoked": revoked,
     }
     remove_nulls_from_dictionary(search_params)
-    
-    demisto.info("filter_relationships_by_entity_types called")
     if entities_types:
         filtered_relationships = filter_relationships_by_entity_types(
             entities, entities_types, relationships, limit, verbose, revoked
@@ -131,7 +126,6 @@ def get_relationships(args: dict) -> list:
 
 def main():
     try:
-        demisto.info("demisto.args()")
         args = demisto.args()
 
         relationships = get_relationships(args)
