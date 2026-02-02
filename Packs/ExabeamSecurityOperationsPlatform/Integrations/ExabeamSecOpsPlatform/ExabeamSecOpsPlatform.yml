@@ -47,20 +47,20 @@ configuration:
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
-  section: Collect
+  advanced: true
   required: false
+  section: Collect
+  defaultvalue: '1'
   hidden:
   - marketplacev2
   - platform
-  advanced: true
-  defaultvalue: '1'
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
   advanced: true
   required: false
-  section: Collect
   defaultvalue: '1'
+  section: Collect
   hidden:
   - xsoar
 - display: Maximum Incidents Per Fetch
@@ -70,44 +70,41 @@ configuration:
   type: 0
   section: Collect
   hidden:
-  - marketplacev2
-  - platform
+    - marketplacev2
+    - platform
 - display: Maximum Number of Cases Per Fetch
-  name: max_events_fetch # for fetch-incidents on XSOAR
-  defaultvalue: '30000'
+  name: max_events_fetch  # for fetch-events on XSIAM and PLATFORM
+  defaultvalue: 30000
   type: 0
   section: Collect
   hidden:
     - xsoar
-  required: false
 - display: Fetch query
-  name: fetch_query       # for fetch-events on XSIAM and PLATFORM
+  additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
+  name: fetch_query
   type: 0
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
-  additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
   advanced: true
-  required: false
+  hidden:
+    - marketplacev2
+    - platform
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
+  defaultvalue: 3 days
   type: 0
   section: Collect
   advanced: true
   hidden:
-  - marketplacev2
-  - platform
-  defaultvalue: 3 days
-  required: false
+    - marketplacev2
+    - platform
 - display: Incident type
   name: incidentType
   type: 13
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
   required: false
+  hidden:
+    - marketplacev2
+    - platform
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
@@ -120,16 +117,21 @@ script:
     - defaultValue: "today"
       description: The ending date for the search range.
       name: end_time
-    - description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High".'
+    - defaultValue: ""
+      description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High".'
       name: query
+      required: false
     - description: Comma-separated list of fields to be returned from the search.
       name: fields
+      required: false
       isArray: true
     - description: Comma-separated list of fields by which to group the results.
       name: group_by
       isArray: true
+      required: false
     - description: The maximal number of results to return. Maximum value is 3000.
       name: limit
+      required: false
     description: Get events from Exabeam Security Operations Platform.
     name: exabeam-platform-event-search
     outputs:
@@ -180,14 +182,16 @@ script:
       defaultValue: today
     - name: query
       description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW AND NOT stage:NEW'.
+      defaultValue: ""
     - name: fields
       description: List of fields to be returned from the search.
       isArray: true
+      defaultValue: ""
     - name: order_by
       description: Order results by a specified field. The default ordering is ascending (ASC). To sort in descending order, use "DESC" after the field, for example, "riskScore DESC"."
       isArray: true
     - name: limit
-      defaultValue: '50'
+      defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
       defaultValue: 'False'
@@ -340,14 +344,16 @@ script:
       defaultValue: today
     - name: query
       description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW'.
+      defaultValue: ""
     - name: fields
       description: List of fields to be returned from the search.
       isArray: true
+      defaultValue: ""
     - name: order_by
       description: Order results by a specified field. The default ordering is ascending (ASC). To sort in descending order, use "DESC" after the field, for example, "riskScore DESC"."
       isArray: true
     - name: limit
-      defaultValue: '50'
+      defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
       defaultValue: 'False'
@@ -481,7 +487,7 @@ script:
     - name: table_id
       description: Specify the ID of an existing context table.
     - name: limit
-      defaultValue: '50'
+      defaultValue: 50
       description: Limit the number of results returned from the request.
     - name: include_attributes
       description: If set to 'True', filters the context to include the "attributes" array related to the cases in the results.
@@ -547,7 +553,7 @@ script:
       description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
       required: true
     - name: limit
-      defaultValue: '50'
+      defaultValue: 50
       description: The number of records to return.
     - name: page
       description: The page number to retrieve.
@@ -572,10 +578,10 @@ script:
       - Replace
     - name: interval_in_seconds
       description: The interval in seconds between each poll.
-      defaultValue: '30'
+      defaultValue: 30
     - name: timeout
       description: The timeout in seconds until polling ends.
-      defaultValue: '600'
+      defaultValue: 600
     - name: tracker_id
       description: Specify the tracker ID from an upload request whose progress you want to track.
       hidden: true
@@ -652,18 +658,18 @@ script:
     description: Add a new note to the specified case.
     name: exabeam-platform-create-case-note
   runonce: false
-  script: ''
+  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.12.12.5490952
   # Fetch incidents
   isfetch: true
+  isfetch:marketplacev2: false
+  isfetch:platform: false
+  # Fetch events
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
-isfetch: true
-isfetch:marketplacev2: false
-isfetch:platform: false
-# Fetch events
-isfetchevents: true
-isfetchevents:xsoar: false
+defaultmapperin: "Exabeam Platform - Incoming Mapper"
