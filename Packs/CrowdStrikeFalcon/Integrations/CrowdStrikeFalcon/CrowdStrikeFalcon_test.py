@@ -8371,7 +8371,7 @@ def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon
     from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
 
     mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
-    update_mock = mocker.patch("CrowdStrikeFalcon.update_ngsiem_case_request", return_value="success")
+    update_mock = mocker.patch("CrowdStrikeFalcon.resolve_case", return_value="success")
 
     remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
     result = update_remote_ngsiem_case(delta, inc_status, remote_id)
@@ -8429,9 +8429,28 @@ def test_list_case_summaries_command_no_given_ids(mocker):
 
     mocker.patch.object(demisto, "args", return_value={})
 
-    result = list_case_summaries_command()
+# Mock get_cases_data to return IDs
+    mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case_id_1"]))
 
-    assert result.readable_output == "No cases were found."
+    entity_response = [
+        {
+            "assigned_to_name": "Test no ids",
+            "cid": "string",
+            "created_time": "2022-02-21T16:36:57.759Z",
+            "description": "string",
+            "id": "case_id_1",
+            "status": "new",
+            "severity": "High",
+            "tags": ["tag1"],
+            "version": "1",
+        }
+]
+    # Mock get_cases_entities to return case details
+    mocker.patch("CrowdStrikeFalcon.get_cases_entities", return_value=entity_response)
+
+    result = list_case_summaries_command()
+    assert result.outputs[0]["assigned_to_name"] == "Test no ids"
+    assert result.outputs[0]["id"] == "case_id_1"
 
 
 def test_list_case_summaries_command_with_given_ids(requests_mock, mocker):
