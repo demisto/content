@@ -1,6 +1,6 @@
-fromversion: 8.4.0 # Will be updated with XSIAM version updates
-name: NVIDIA DOCA Argus Modeling Rule
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
 id: NVIDIA__DOCA__Argus_ModelingRule
+name: NVIDIA DOCA Argus Modeling Rule
 rules: ''
 schema: ''
 tags: ''

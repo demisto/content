@@ -1,6 +1,5 @@
+fromversion: 8.4.0
 id: NVIDIA__DOCA__Argus_ParsingRule
-name: NVIDIA DOCA Argus Parsing Rule
-fromversion: 8.4.0   # Will be updated with XSIAM version updates  
-tags: []
+name:  NVIDIA DOCA Argus Parsing Rule
 rules: ''
-samples: ''
+tags: []
