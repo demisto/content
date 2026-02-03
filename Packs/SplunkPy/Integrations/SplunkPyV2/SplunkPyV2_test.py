@@ -3400,6 +3400,7 @@ def test_authentication_params(mocker):
     }
     mocker.patch.object(client, "connect")
     mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="unknown-command")
 
     with pytest.raises(NotImplementedError):
         splunk.main()
@@ -5309,3 +5310,143 @@ def test_test_module_duplicate_detection_with_unique_fields(mocker):
     # Verify error message mentions unique_id_fields
     assert "Unique ID Fields" in error_message or "unique_id_fields" in error_message
     assert "integration configuration" in error_message.lower() or "integration settings" in error_message.lower()
+
+
+# ========== ResponseSizeValidator Tests ==========
+
+
+def test_response_size_validator_no_warning_below_threshold(mocker):
+    """
+    Given:
+        - Data size below the 20 MB threshold
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is not called
+        - validated flag is set to True
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPyV2.return_results")
+
+    # Create data below threshold (1 MB) - as list of dicts
+    small_data = [{"data": "x" * (1 * 1024 * 1024)}]
+
+    validator.validate_and_report(small_data)
+
+    mock_return_results.assert_not_called()
+    assert validator.validated is True
+
+
+def test_response_size_validator_warning_above_threshold(mocker):
+    """
+    Given:
+        - Data size above the 20 MB threshold (e.g., 25 MB)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is called with warning message
+        - validated flag is set to True
+        - Warning message contains "WARNING" prefix
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPyV2.return_results")
+
+    # Create data above threshold (25 MB) - as list of dicts
+    large_data = [{"data": "x" * (25 * 1024 * 1024)}]
+
+    validator.validate_and_report(large_data)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert "WARNING" in warning
+    assert "25." in warning  # Size will be around 25 MB
+    assert "20" in warning
+    assert "normal usage size" in warning
+    assert validator.validated is True
+
+
+def test_response_size_validator_warning_shown_only_once(mocker):
+    """
+    Given:
+        - Multiple batches of data, all above threshold
+    When:
+        - ResponseSizeValidator validates each batch
+    Then:
+        - return_results is called only on the first validation
+        - Subsequent validations don't call return_results
+        - validated flag remains True after first validation
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPyV2.return_results")
+
+    # Create data above threshold (25 MB) - as list of dicts
+    large_data = [{"data": "x" * (25 * 1024 * 1024)}]
+
+    # First validation should call return_results
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+    # Second validation should not call return_results (already validated)
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+    # Third validation should also not call return_results
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+
+def test_response_size_validator_just_above_threshold(mocker):
+    """
+    Given:
+        - Data size just above the 20 MB threshold (20 MB + 1 byte)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is called with warning message
+        - validated flag is set to True
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPyV2.return_results")
+
+    # Create data just above threshold (20 MB + 1 byte) - as list of dicts
+    just_above_data = [{"data": "x" * (20 * 1024 * 1024 + 1)}]
+
+    validator.validate_and_report(just_above_data)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert "WARNING" in warning
+    assert validator.validated is True
+
+
+def test_response_size_validator_message_format(mocker):
+    """
+    Given:
+        - Data size of 30 MB (above threshold)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - Warning message contains all required elements:
+          * "WARNING" prefix
+          * Actual size in MB
+          * Threshold size in MB
+          * "normal usage size" phrase
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPyV2.return_results")
+
+    # Create data of 30 MB - as list of dicts
+    data_30mb = [{"data": "x" * (30 * 1024 * 1024)}]
+
+    validator.validate_and_report(data_30mb)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert warning.startswith("WARNING:")
+    assert "30." in warning  # Size will be around 30 MB
+    assert "20" in warning
+    assert "normal usage size" in warning
+    assert "exceeds" in warning.lower()
