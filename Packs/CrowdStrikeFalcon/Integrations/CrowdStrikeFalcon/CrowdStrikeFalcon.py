@@ -4051,6 +4051,7 @@ class AssetsDeviceHandler:
     async def receive_aids(self, new_aids: set[str]) -> None:
         """
         Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
+        Keeps at least 1 item in the buffer to ensure we can send the final count with the last batch.
 
         Args:
             new_aids: Set of AIDs extracted from vulnerability batch
@@ -4061,8 +4062,11 @@ class AssetsDeviceHandler:
 
         log_falcon_assets(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
 
-        # Trigger enrichment for full batches
-        while len(self.pending_buffer) >= self.batch_limit:
+        # Trigger enrichment for full batches, but keep at least 1 item for the final flush
+        # Threshold is batch_limit + 1 to ensure we always have leftovers for flush_remaining
+        threshold = self.batch_limit + 1
+
+        while len(self.pending_buffer) >= threshold:
             full_list = list(self.pending_buffer)
             batch = full_list[: self.batch_limit]
             self.pending_buffer = set(full_list[self.batch_limit :])
@@ -4074,12 +4078,13 @@ class AssetsDeviceHandler:
             self.running_tasks.add(task)
             task.add_done_callback(self.running_tasks.discard)
 
-    async def enrich_and_ingest_batch(self, aid_batch: list[str]) -> None:
+    async def enrich_and_ingest_batch(self, aid_batch: list[str], final_items_count: int = 1) -> None:
         """
         Enrich a batch of AIDs via Devices API and send to XSIAM.
 
         Args:
             aid_batch: List of AIDs to enrich
+            final_items_count: Total items count to send to XSIAM (1 for intermediate batches, actual total for final batch)
         """
         # Increment ASSET batch counter (separate from vulnerability chain)
         self.asset_batch_counter += 1
@@ -4114,7 +4119,7 @@ class AssetsDeviceHandler:
                 data=devices,
                 product=SPOTLIGHT_ASSETS_PRODUCT,
                 snapshot_id=self.snapshot_id,
-                items_count=1,
+                items_count=final_items_count,
                 batch_number=current_batch_number,
                 last_saved_batch_number=self.asset_last_saved_batch_number,
                 context_store=self.context_store,
@@ -4150,17 +4155,19 @@ class AssetsDeviceHandler:
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
             raise
 
-    async def flush_remaining(self) -> None:
+    async def flush_remaining(self, total_items_count: int) -> None:
         """
-        Flush remaining AIDs in buffer (< batch_limit) and wait for all enrichment tasks.
+        Flush remaining AIDs in buffer and wait for all enrichment tasks.
+        This is the FINAL batch, so we send the actual total_items_count.
 
-        Called after all vulnerability batches have been fetched to handle leftovers.
+        Args:
+            total_items_count: The final count of unique assets to report to XSIAM.
         """
         # Handle leftover AIDs that didn't reach batch_limit
         if self.pending_buffer:
-            log_falcon_assets(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs", "info")
+            log_falcon_assets(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}", "info")
             # Create task for remaining batch (fire-and-forget)
-            task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer)))
+            task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count))
             self.running_tasks.add(task)
             task.add_done_callback(self.running_tasks.discard)
             self.pending_buffer.clear()
@@ -4172,7 +4179,7 @@ class AssetsDeviceHandler:
             loop_counter += 1
             log_falcon_assets(f"AssetsDeviceHandler: entering flush remaining running {loop_counter=}.", "info")
             if loop_counter > 20:
-                log_falcon_assets(f"AssetsDeviceHandler: Forcing break for while loop.", "info")
+                log_falcon_assets(f"AssetsDeviceHandler: Forcing break for while loop.", "error")
                 break
             # Create a snapshot of the current tasks
             current_batch = list(self.running_tasks)
@@ -4454,59 +4461,6 @@ async def send_batch_to_xsiam_and_save_context(
         raise
 
 
-async def finalize_spotlight_snapshots(
-    snapshot_id: str,
-    total_vulns: int,
-    total_assets: int,
-    last_vuln_batch: int,
-    last_asset_batch: int,
-    context_store,
-    integration_context: dict,
-    spotlight_state,
-):
-    """
-    Sends a final empty batch with the ACTUAL total counts to 'seal' the snapshots
-    for both Vulnerabilities and Assets.
-
-    This must be awaited to ensure the server receives the closure signal.
-    """
-    log_falcon_assets(f"Finalizing Snapshots | Vulns: {total_vulns}, Assets: {total_assets}", "info")
-
-    # 1. Finalize Vulnerabilities Snapshot
-    vuln_seal_task = create_task_send_batch_to_xsiam_and_save_context(
-        data=[],  # Empty data acts as the seal
-        product=SPOTLIGHT_VULN_PRODUCT,
-        snapshot_id=snapshot_id,
-        items_count=total_vulns,
-        batch_number=last_vuln_batch + 1,
-        last_saved_batch_number=last_vuln_batch,
-        context_store=context_store,
-        integration_context=integration_context,
-        state=spotlight_state,
-        save_state_callback=save_spotlight_state,
-        data_type="assets",
-    )
-
-    # 2. Finalize Assets Snapshot
-    asset_seal_task = create_task_send_batch_to_xsiam_and_save_context(
-        data=[],  # Empty data acts as the seal
-        product=SPOTLIGHT_ASSETS_PRODUCT,
-        snapshot_id=snapshot_id,
-        items_count=total_assets,
-        batch_number=last_asset_batch + 1,
-        last_saved_batch_number=last_asset_batch,
-        context_store=context_store,
-        integration_context=integration_context,
-        state=spotlight_state,
-        save_state_callback=save_spotlight_state,
-        data_type="assets",
-    )
-
-    # Wait for both seal requests to complete
-    await asyncio.gather(vuln_seal_task, asset_seal_task)
-    log_falcon_assets("Successfully finalized and sealed both snapshots.", "info")
-
-
 def update_spotlight_state_and_metadata(
     spotlight_state: ContentClientState,
     cursor: str | None,
@@ -4708,11 +4662,15 @@ async def fetch_spotlight_assets():
                 processed_aids=asset_handler.processed_aids,
             )
 
+            # Determine if this is the last batch
+            is_last_batch = not new_after_token
+            items_count = total_fetched if is_last_batch else 1
+
             task = create_task_send_batch_to_xsiam_and_save_context(
                 data=vulnerabilities,
                 product=SPOTLIGHT_VULN_PRODUCT,
                 snapshot_id=snapshot_id,
-                items_count=1,
+                items_count=items_count,
                 batch_number=batch_counter,
                 last_saved_batch_number=last_saved_batch_number,
                 context_store=context_store,
@@ -4737,7 +4695,7 @@ async def fetch_spotlight_assets():
             log_falcon_assets(f"Created background task for vulnerability batch {batch_counter}")
 
             # Check if more pages exist
-            if not new_after_token:
+            if is_last_batch:
                 # No more pages - we're done fetching vulnerabilities!
                 log_falcon_assets(
                     f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}", "info"
@@ -4762,20 +4720,10 @@ async def fetch_spotlight_assets():
             log_falcon_assets("All background vulnerability send tasks completed successfully", "info")
 
         # Flush remaining AIDs and wait for all asset enrichment tasks
-        log_falcon_assets("Flushing remaining AIDs and waiting for asset enrichment tasks", "info")
-        await asset_handler.flush_remaining()
-
-        # send last time to XSIAM with correct number to update and close snapshot
-        await finalize_spotlight_snapshots(
-            snapshot_id=snapshot_id,
-            total_vulns=total_fetched,
-            total_assets=len(asset_handler.processed_aids),
-            last_vuln_batch=batch_counter,
-            last_asset_batch=asset_handler.asset_batch_counter,
-            context_store=context_store,
-            integration_context=integration_context,
-            spotlight_state=spotlight_state,
-        )
+        # We pass the total count of unique AIDs we found during this execution
+        total_assets_count = len(unique_aids)
+        log_falcon_assets(f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info")
+        await asset_handler.flush_remaining(total_items_count=total_assets_count)
 
         # Fetch completed successfully - reset state for next run
         log_falcon_assets("Resetting Spotlight state after successful complete fetch")
