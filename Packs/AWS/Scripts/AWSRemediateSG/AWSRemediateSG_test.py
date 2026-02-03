@@ -201,9 +201,13 @@ def test_aws_recreate_sg(mocker):
     readable_output = command_results.raw_response
     correct_output = {
         "ResourceID": "fake-instance-id",
-        "ReplacementSet": [{"new-sg": "sg-00000000000000001", "old-sg": "sg-00000000000000000"}],
+        "ReplacementSet": [
+            {"new-sg": "sg-00000000000000001", "old-sg": "sg-00000000000000000"}
+        ],
         "UpdatedSGList": ["sg-00000000000000001"],
+        "RemediationRequired": True,
     }
+
     assert readable_output == correct_output
 
 

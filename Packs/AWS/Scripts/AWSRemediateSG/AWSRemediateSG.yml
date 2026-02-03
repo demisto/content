@@ -96,3 +96,6 @@ outputs:
 - contextPath: AWSPublicExposure.SGReplacements.UpdatedSGList
   description: 'List of Security Groups to associate to the EC2 resource after remediation.'
   type: String
+- contextPath: AWSPublicExposure.SGReplacements.RemediationRequired
+  description: Indicates whether or not any of the provided Security Groups contained rules requiring remediation.
+  type: boolean

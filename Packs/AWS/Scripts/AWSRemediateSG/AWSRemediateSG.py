@@ -513,11 +513,24 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
         return CommandResults(
             outputs_prefix="AWSPublicExposure.SGReplacements",
             outputs_key_field="ResourceID",
-            outputs={"ResourceID": resource_id, "ReplacementSet": replace_list, "UpdatedSGList": updated_sg_list},
+            outputs={
+                "ResourceID": resource_id,
+                "ReplacementSet": replace_list,
+                "UpdatedSGList": updated_sg_list,
+                "RemediationRequired": True
+            },
         )
     else:
         return CommandResults(
+            outputs_prefix="AWSPublicExposure.SGReplacements",
+            outputs_key_field="ResourceID",
             readable_output="No security groups required remediation based on the provided inputs.",
+            outputs={
+                "ResourceID": resource_id,
+                "ReplacementSet": [],
+                "UpdatedSGList": "",
+                "RemediationRequired": False
+            },
         )
 
 
