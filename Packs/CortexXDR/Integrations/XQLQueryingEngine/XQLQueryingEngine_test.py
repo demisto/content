@@ -1163,7 +1163,7 @@ def test_xql_library_create_command(mocker):
         {
             "request_data": {
                 "xql_queries_override": True,
-                "xql_query_tags": ["test_tag"],
+                "xql_query_tags": "test_tag",
                 "xql_queries": [{"xql_query": "dataset = xdr_data", "xql_query_name": "test_query"}],
             }
         }
