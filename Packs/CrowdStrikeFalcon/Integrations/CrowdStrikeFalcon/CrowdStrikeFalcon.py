@@ -4168,8 +4168,9 @@ class AssetsDeviceHandler:
         # Wait for all enrichment and send tasks to complete
         loop_counter = 0
         while self.running_tasks:
+            # TODO: Remove this
             loop_counter += 1
-            log_falcon_assets(f"AssetsDeviceHandler: entering {loop_counter=}.", "info")
+            log_falcon_assets(f"AssetsDeviceHandler: entering flush remaining running {loop_counter=}.", "info")
             if loop_counter > 20:
                 log_falcon_assets(f"AssetsDeviceHandler: Forcing break for while loop.", "info")
                 break
@@ -4315,15 +4316,18 @@ def send_data_to_xsiam_async(
         return []
 
     # Convert list to newline-separated JSON strings
-    if data and isinstance(data, list):
+    if isinstance(data, list):
         log_falcon_assets(f"Sending {len(data)} {data_type} (data type) to XSIAM")
-        if isinstance(data[0], dict):
+        if data and isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
         data_str = "\n".join(data)
-    elif data and isinstance(data, str):
-        # Handle cases where data is empty list [] or None
-        data_str = data if data else ""
+    elif isinstance(data, str):
+        data_str = data
+    elif not data and data_type == "assets":
+        # Handle explicit None for assets seal
+        data_str = ""
     else:
+        # Unknown type or empty data for non-assets
         return []
 
     # Get XSIAM credentials
