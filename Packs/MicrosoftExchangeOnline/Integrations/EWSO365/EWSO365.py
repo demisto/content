@@ -118,7 +118,7 @@ def exchangelib_cleanup():  # pragma: no cover
             else:
                 demisto.info(f"Thread pool not found (ignoring terminate) in protocol dict: {dir(protocol.__dict__)}")
         except Exception as ex:
-            demisto.error(f"Error with thread_pool.terminate, ignoring: {ex}")
+            demisto.error(f"Error with thread_pool.terminate, ignorinddg: {ex}")
 
 
 """ LOGGING """
