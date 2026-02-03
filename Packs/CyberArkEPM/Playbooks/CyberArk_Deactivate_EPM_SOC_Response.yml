@@ -1,7 +1,7 @@
 id: CyberArk Deactivate EPM SOC Response
 version: -1
 name: CyberArk Deactivate EPM SOC Response
-description: Deactivates a specific CyberArk EPM SOC risk plan for a specified endpoint.
+description: Deactivates a specific CyberArk EPM SOC risk plan for a specific endpoint.
   This will reset to baseline EPM Policies, effective prior to SOC Response Action.
 marketplaces:
 - marketplacev2
