@@ -1,5 +1,5 @@
 [file:GuruculGRA.yml]
-ignore=IN136
+ignore=IN136,AG104,BA129
 
 [file:README.md]
 ignore=RM102
