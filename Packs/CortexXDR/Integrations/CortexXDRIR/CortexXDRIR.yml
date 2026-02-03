@@ -4191,8 +4191,7 @@ script:
       name: alert_name
     - description: Alert category.
       name: alert_category
-    - description: Alert fields.
-      isArray: true
+    - description: Alert fields. Can be a string or a dictionary.
       name: alert_fields
     - description: Alert domain.
       name: alert_domain
@@ -4271,7 +4270,7 @@ script:
       - discovery
     - description: Alert description.
       name: alert_description
-    - description: Alert fields.
+    - description: Alert fields. Can be a string or a dictionary.
       name: alert_fields
     - auto: PREDEFINED
       description: Whether execution mode is scheduled or real time.
@@ -4377,7 +4376,7 @@ script:
       - discovery
     - description: Alert description.
       name: alert_description
-    - description: Alert fields.
+    - description: Alert fields. Can be a string or a dictionary.
       name: alert_fields
     - auto: PREDEFINED
       description: Whether execution mode is scheduled or real time.
