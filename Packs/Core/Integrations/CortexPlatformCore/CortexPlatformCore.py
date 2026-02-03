@@ -669,12 +669,11 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-    def get_webapp_counts(self, request_data: dict, params: dict | None = None) -> dict:
+    def get_webapp_counts(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
-            url_suffix=f"{self._base_url}/get_counts",
+            url_suffix=f"/get_counts",
             json_data=request_data,
-            params=params,
         )
 
     def get_webapp_view_def(self, request_data: dict) -> dict:
@@ -4564,6 +4563,8 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     
     # Build request data for get_counts
     counts_request_data = {
+        "type": "grid",
+        "table_name": FINDINGS_TABLE,
         "extraData": None,
         "filter_data": {
             "sort": [],
@@ -4588,16 +4589,10 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
         ],
     }
     
-    # Build query parameters for get_counts
-    counts_params = {
-        "type": "grid",
-        "table_name": FINDINGS_TABLE,
-    }
-    
     # Get counts
-    #counts_response = client.get_webapp_counts(counts_request_data, counts_params)
-    #counts_reply = counts_response.get("reply", {})
-    #filter_count = counts_reply.get("FILTER_COUNT", 0)
+    counts_response = client.get_webapp_counts(counts_request_data)
+    counts_reply = counts_response.get("reply", {})
+    filtered_count = counts_reply.get("FILTER_COUNT", 0)
     
     # Process findings - extract ALL upper hierarchy fields
     findings = []
@@ -4621,7 +4616,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     
     # Create metadata
     metadata = {
-        "filtered_count": len(findings),
+        "filtered_count": filtered_count,
         "returned_count": len(findings),
     }
     
