@@ -91,7 +91,7 @@ inputs:
 - key: endpoint_name
   value: {}
   required: true
-  description: "FQDN of target endpoint"
+  description: "The FQDN of the target endpoint."
   playbookInputQuery: null
 - key: endpoint_external_ip
   value: {}
