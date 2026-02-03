@@ -9453,3 +9453,74 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_create_issue_command(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and valid arguments for creating an issue.
+    WHEN:
+        The create_issue_command function is called.
+    THEN:
+        The client.create_issue method is called with the correct payload.
+    """
+    from CortexPlatformCore import create_issue_command, Client, CaseManagement
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_issue = mocker.patch.object(mock_client, "create_issue", return_value={"reply": {"alert_id": "123"}})
+    mocker.patch("CortexPlatformCore.arg_to_timestamp", return_value="2023-10-26T12:00:00Z")
+
+    args = {
+        "name": "Test Issue",
+        "severity": "high",
+        "description": "Test Description",
+        "type": "Test Type",
+        "source": "Test Source",
+        "observation_time": "2023-10-26T12:00:00Z",
+        "domain": "Test Domain",
+        "category": "Test Category",
+        "owner": "Test Owner",
+        "asset_ids": "asset1,asset2",
+        "mitre_tactics": "tactic1",
+        "mitre_techniques": "technique1",
+        "extended_description": "Extended Description",
+        "impact": "High Impact",
+        "tags": "tag1,tag2",
+        "is_excluded": "false",
+        "is_starred": "true",
+        "assigned_to": "user@example.com",
+        "assigned_to_pretty": "User Name",
+        "normalized_fields": '{"field1": "value1"}',
+        "custom_fields": '{"custom1": "value1"}',
+    }
+
+    result = create_issue_command(mock_client, args)
+
+    assert result.readable_output == "Issue created successfully."
+    assert result.outputs == {"alert_id": "123"}
+
+    expected_issue_data = {
+        "name": "Test Issue",
+        "description": "Test Description",
+        "observation_time": "2023-10-26T12:00:00Z",
+        "domain": "Test Domain",
+        "category": "Test Category",
+        "severity": CaseManagement.SEVERITY["high"],
+        "type": "Test Type",
+        "source": "Test Source",
+        "owner": "Test Owner",
+        "asset_ids": ["asset1", "asset2"],
+        "mitre_tactics": ["tactic1"],
+        "mitre_techniques": ["technique1"],
+        "extended_description": "Extended Description",
+        "impact": "High Impact",
+        "tags": ["tag1", "tag2"],
+        "is_excluded": False,
+        "is_starred": True,
+        "assigned_to": "user@example.com",
+        "assigned_to_pretty": "User Name",
+        "normalized_fields": {"field1": "value1"},
+        "custom_fields": {"custom1": "value1"},
+    }
+
+    mock_create_issue.assert_called_once_with(expected_issue_data)

@@ -958,6 +958,20 @@ class Client(CoreClient):
             json_data={"case_id": case_id},
         )
 
+    def create_issue(self, issue_data: dict) -> dict:
+        """
+        Creates a new issue in Cortex XDR.
+        Args:
+            issue_data (dict): The issue data.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/issue",
+            json_data={"request_data": {"issue": issue_data}},
+        )
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
@@ -4508,6 +4522,55 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
+def create_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a new issue in Cortex XDR.
+    """
+    name = args.get("name")
+    severity = args.get("severity")
+    description = args.get("description")
+    issue_type = args.get("type")
+    source = args.get("source")
+    # playbook_id = args.get("playbook_id")
+    # if playbook_id:
+        # playbook_id = playbook_id.lower().replace(" ", "_")
+        
+    observation_time = int(time.time() * 1000)
+
+    issue_data = remove_empty_elements({
+        "name": name,
+        "description": description,
+        "observation_time": observation_time,
+        "issue_domain": args.get("domain"),
+        "category": args.get("category"),
+        "severity": severity,
+        # "custom_fields": {"playbookId": playbook_id},
+        "type": issue_type,
+        "source": source,
+        "owner": args.get("owner"),
+        "asset_ids": argToList(args.get("asset_ids")),
+        "mitre_tactics": argToList(args.get("mitre_tactics")),
+        "mitre_techniques": argToList(args.get("mitre_techniques")),
+        "extended_description": args.get("extended_description"),
+        "impact": args.get("impact"),
+        "tags": argToList(args.get("tags")),
+        "is_excluded": args.get("is_excluded"),
+        "is_starred": args.get("is_starred"),
+        "assigned_to": args.get("assigned_to"),
+        "assigned_to_pretty": args.get("assigned_to_pretty"),
+    })
+
+    response = client.create_issue(issue_data)
+    reply = response.get("reply", {})
+
+    return CommandResults(
+        readable_output="Issue created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CreatedIssue",
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4641,6 +4704,9 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-create-issue":
+            return_results(create_issue_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
