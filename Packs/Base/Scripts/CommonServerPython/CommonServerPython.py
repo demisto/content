@@ -12547,7 +12547,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12584,6 +12584,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12601,7 +12604,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads
+        multiple_threads=multiple_threads,
+        client_class=client_class if client_class else BaseClient
     )
 
 
@@ -12714,7 +12718,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       client_class=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12761,6 +12766,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
     Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -12854,8 +12862,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if client_class is None:
+        client_class = BaseClient
+    client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
