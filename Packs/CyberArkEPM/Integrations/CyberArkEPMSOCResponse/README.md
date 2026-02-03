@@ -1,13 +1,15 @@
-This integration allows you to automate risk plan management in CyberArk Endpoint Privilege Manager (EPM) by adding and removing endpoints from specified risk plans.
+Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
+This integration was integrated and tested with version xx of CyberArkEPMSOCResponse.
 
-## Configure CyberArk EPM SOC Response in Cortex
+## Configure CyberArk EPM SOC Response (Beta) in Cortex
 
-| **Parameter** | **Description**                                                                                                   | **Required** |
-| --- |-------------------------------------------------------------------------------------------------------------------| --- |
-| EPM Logon URL | Example: https://login.epm.cyberark.com.                                                                          | True |
-| Username |                                                                                                                   | True |
-| Password |                                                                                                                   | True |
-| Application ID | Required for local(EPM) authentication only.                                                                    | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| EPM Logon URL | Example: https://login.epm.cyberark.com | True |
+| Username |  | True |
+| Password |  | True |
+| Application ID | Required for local\(EPM\) authentication only. For more information on how to get the application ID, see https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm\#%23SpecifytheApplicationID | False |
 
 ## Commands
 
@@ -26,23 +28,18 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- |--------------|
-| risk_plan | The name of the risk plan to activate. | True         |
-| endpoint_name | The name of the endpoint to target. | True         |
-| external_ip | The external IP address of the endpoint. | False        |
-
-#### Human Readable Output
-
-### Risk Plan changed successfully
-|Endpoint IDs|Risk Plan|Action|
-|---|---|---|
-| endpoint_id1 | HighRisk | add |
+| --- | --- | --- |
+| risk_plan | The name of the risk plan to activate. | Required | 
+| endpoint_name | The name of the endpoint to target. | Required | 
+| external_ip | The external IP address of the endpoint. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.Endpoint_IDs | String | The ID of the endpoint added to the risk plan. |
+| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints added to the risk plan. | 
+| CyberArkEPMSOCResponse.RiskPlan | String | The name of activated risk plan. | 
+| CyberArkEPMSOCResponse.Action | String | The action performed on the risk plan \(add/remove\). | 
 
 ### cyberarkepm-deactivate-risk-plan
 
@@ -56,20 +53,13 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- |--------------|
-| risk_plan | The name of the risk plan to deactivate. | True         |
-| endpoint_name | The name of the endpoint to target. | True         |
-| external_ip | The external IP address of the endpoint. | False        |
-
-#### Human Readable Output
-
-### Risk Plan changed successfully
-|Endpoint IDs|Risk Plan|Action|
-|---|---|---|
-| endpoint_id1 | HighRisk | remove |
+| --- | --- | --- |
+| risk_plan | The name of the risk plan to deactivate. | Required | 
+| endpoint_name | The name of the endpoint to target. | Required | 
+| external_ip | The external IP address of the endpoint. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.Endpoint_IDs | String | The ID of the endpoint removed from the risk plan. |
+| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints removed from risk plan. | 

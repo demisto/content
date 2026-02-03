@@ -20,7 +20,7 @@ def mocked_client(requests_mock, mock_response_search_endpoints=None):
     requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/group_id1/Members/ids", json={})
     requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/group_id1/Members/ids/remove", json={})
 
-    return Client("https://url.com", "test", "123456", "1", "set_name")
+    return Client("https://url.com", "test", "123456", "1")
 
 
 def test_activate_risk_plan_command(requests_mock, mocker):
