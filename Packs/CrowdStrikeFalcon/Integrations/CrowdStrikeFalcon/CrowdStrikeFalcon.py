@@ -4162,22 +4162,26 @@ class AssetsDeviceHandler:
             # Create task for remaining batch (fire-and-forget)
             task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer)))
             self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
+        loop_counter = 0
         while self.running_tasks:
-            count = len(self.running_tasks)
-            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
-
+            loop_counter += 1
+            log_falcon_assets(f"AssetsDeviceHandler: entering {loop_counter=}.", "info")
+            if loop_counter > 20:
+                log_falcon_assets(f"AssetsDeviceHandler: Forcing break for while loop.", "info")
+                break
             # Create a snapshot of the current tasks
             current_batch = list(self.running_tasks)
-
             if not current_batch:
                 break
-
+            count = len(current_batch)
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
             # Wait for this specific batch.
             await asyncio.gather(*current_batch, return_exceptions=True)
-
+            self.running_tasks.difference_update(current_batch)
         log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
 
     @staticmethod
