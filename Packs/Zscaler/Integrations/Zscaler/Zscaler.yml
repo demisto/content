@@ -191,6 +191,8 @@ script:
       - 'false'
     description: Looks up the classification for each of the specified Domains.
     name: domain
+    compliantpolicies:
+    - User Soft Remediation
     outputs:
     - contextPath: Domain.Name
       description: The Domain that was searched.
