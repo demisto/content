@@ -180,7 +180,6 @@ alter
     tmp_dst_ip = arrayindex(regextract(_raw_log, "\sdst=([^\s:]+)"), 0),
     tmp_sport = arrayindex(regextract(_raw_log, "\ssport=(\d+)"), 0),
     tmp_dport = arrayindex(regextract(_raw_log, "\sdport=(\d+)"), 0),
-    tmp_protocol = arrayindex(regextract(_raw_log, "\sprotocol=(\w+)"), 0),
     tmp_event_description = arrayindex(regextract(_raw_log , "\<\d+\>\d+\s\S+\s\S+\s\S+\s(.*)"),0),
     tmp_mac = coalesce(
         arrayindex(regextract(_raw_log, "\smac='([^']+)'"), 0),
@@ -265,16 +264,6 @@ alter
     xdm.target.ipv6 = tmp_dst_ipv6,
     xdm.source.port = to_integer(tmp_sport),
     xdm.target.port = to_integer(coalesce(tmp_dport, tmp_peer_port)),
-    xdm.network.ip_protocol = if(
-        uppercase(tmp_protocol) = "TCP", XDM_CONST.IP_PROTOCOL_TCP,
-        uppercase(tmp_protocol) = "UDP", XDM_CONST.IP_PROTOCOL_UDP,
-        uppercase(tmp_protocol) = "ICMP", XDM_CONST.IP_PROTOCOL_ICMP,
-        uppercase(tmp_protocol) = "GRE", XDM_CONST.IP_PROTOCOL_GRE,
-        uppercase(tmp_protocol) = "ESP", XDM_CONST.IP_PROTOCOL_ESP,
-        uppercase(tmp_protocol) = "AH", XDM_CONST.IP_PROTOCOL_AH,
-        uppercase(tmp_protocol) = "IGMP", XDM_CONST.IP_PROTOCOL_IGMP,
-        null
-    ),
     xdm.source.host.mac_addresses = if(tmp_mac != null, arraycreate(tmp_mac), null),
     xdm.target.url = tmp_url,
     xdm.event.outcome = tmp_outcome,
