@@ -1,7 +1,7 @@
 ## CyberArk EPM
 
 ### Authentication
-The authentication to EPM requires the following parameters:
+To authenticate to EPM, provide the following:
 
     - url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
     - username
