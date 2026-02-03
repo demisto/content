@@ -1,6 +1,7 @@
 fromversion: 6.10.0
-id: VMwareESXi
-name: VMware ESXi
+id: VMware_ESXi_ModelingRule
+name: VMware ESXi Modeling Rule
 rules: ''
 schema: ''
 tags: VMwareESXi
+toversion: 8.12.0
