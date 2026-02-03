@@ -1650,16 +1650,13 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: 'A comma-separated list of XQL query strings. For example: "dataset = xdr_data |limit 1".'
-      isArray: true
+    - description: 'The new XQL query. For example: "dataset = xdr_data |limit 1".'
       name: xql_query
-    - description: A comma-separated list of new XQL query names. The XQL query name should be unique.
-      isArray: true
+    - description: The name of the new XQL query. The XQL query name should be unique.
       name: xql_query_name
-    - description: A comma-separated list of new XQL query tags.
-      isArray: true
+    - description: A new XQL query tags.
       name: xql_query_tag
-    description: Creates or updates XQL queries in the library.
+    description: Creates or updates XQL query in the library.
     name: xdr-xql-library-create
   - arguments:
     - description: A comma-separated list of XQL query names to delete. When using this argument, you cannot delete queries by xql_query_tag in the same request.

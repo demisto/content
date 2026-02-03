@@ -948,7 +948,7 @@ def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> Comman
 def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-XQL-queries
-    Creates or updates XQL queries in the library.
+    Creates or updates XQL query in the library.
     Args:
         client (Client): The Cortex XDR client.
         args (dict): The command arguments.
@@ -956,22 +956,15 @@ def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> Comm
         CommandResults: The results of the command.
     """
     override_existing = argToBoolean(args.get("override_existing"))
-    xql_query_list = argToList(args.get("xql_query", []))
-    xql_query_name_list = argToList(args.get("xql_query_name", []))
-    xql_query_tag = argToList(args.get("xql_query_tag", []))
-
-    if len(xql_query_list) != len(xql_query_name_list):
-        raise DemistoException("Please provide equal size lists of xql_query and xql_query_name.")
+    xql_query = args.get("xql_query")
+    xql_query_name = args.get("xql_query_name")
+    xql_query_tag = args.get("xql_query_tag")
 
     request_data = assign_params(
         xql_queries_override=override_existing,
         xql_query_tags=xql_query_tag,
+        xql_queries=[{"xql_query": xql_query, "xql_query_name": xql_query_name}]
     )
-    if xql_query_list:  # in case there is something in the lists
-        request_data["xql_queries"] = []
-        for i in range(0, len(xql_query_list)):
-            request_data["xql_queries"].append({"xql_query": xql_query_list[i], "xql_query_name": xql_query_name_list[i]})
-
     client.create_xql_queries({"request_data": request_data})
 
     return CommandResults(readable_output="XQL queries created successfully.")
