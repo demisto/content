@@ -169,7 +169,6 @@ def test_domain_lookup_single(mocker):
         - domain_lookup is called
     Then:
         - Verify the function returns a CommandResults object
-        - Verify domain extraction works correctly (splits on '|' and takes first part)
         - Verify outputs_prefix is 'Zscaler.Domain'
         - Verify Domain.Name context path is set correctly
         - Verify DBotScore is created with correct type (DOMAIN)
@@ -181,7 +180,7 @@ def test_domain_lookup_single(mocker):
     mock_response = json.dumps(
         [
             {
-                "url": "example.com|http://example.com/",
+                "url": "example.com",
                 "urlClassifications": ["BUSINESS"],
                 "urlClassificationsWithSecurityAlert": [],
             }
@@ -189,7 +188,7 @@ def test_domain_lookup_single(mocker):
     )
 
     with patch.object(Zscaler, "lookup_request", return_value=mock_response):
-        results = Zscaler.domain_lookup({"domain": "example.com"})
+        results = Zscaler.domain_lookup({"domain": "https://example.com"})
 
     assert results
     assert len(results) == 1
@@ -198,7 +197,7 @@ def test_domain_lookup_single(mocker):
     # Verify outputs_prefix
     assert results[0].outputs_prefix == "Zscaler.Domain"
 
-    # Verify domain extraction from pipe format
+    # Verify domain
     assert results[0].indicator.domain == "example.com"
 
     # Verify context outputs
@@ -227,11 +226,11 @@ def test_domain_lookup_multiple(mocker):
     mock_response = json.dumps(
         [
             {
-                "url": "example.com|http://example.com/",
+                "url": "example.com",
                 "urlClassifications": ["BUSINESS"],
                 "urlClassificationsWithSecurityAlert": [],
             },
-            {"url": "test.com|http://test.com/", "urlClassifications": ["TECHNOLOGY"], "urlClassificationsWithSecurityAlert": []},
+            {"url": "test.com", "urlClassifications": ["TECHNOLOGY"], "urlClassificationsWithSecurityAlert": []},
         ]
     )
 
@@ -268,7 +267,7 @@ def test_domain_lookup_with_security_alert(mocker):
     mock_response_malicious = json.dumps(
         [
             {
-                "url": "malicious.com|http://malicious.com/",
+                "url": "malicious.com",
                 "urlClassifications": ["MISCELLANEOUS_OR_UNKNOWN"],
                 "urlClassificationsWithSecurityAlert": ["MALWARE_SITE"],
             }
@@ -288,7 +287,7 @@ def test_domain_lookup_with_security_alert(mocker):
     mock_response_suspicious = json.dumps(
         [
             {
-                "url": "suspicious.com|http://suspicious.com/",
+                "url": "suspicious.com",
                 "urlClassifications": [],
                 "urlClassificationsWithSecurityAlert": ["SUSPICIOUS_DESTINATION"],
             }
@@ -319,7 +318,7 @@ def test_domain_lookup_miscellaneous_classification(mocker):
     mock_response = json.dumps(
         [
             {
-                "url": "unknown.com|http://unknown.com/",
+                "url": "unknown.com",
                 "urlClassifications": ["MISCELLANEOUS_OR_UNKNOWN"],
                 "urlClassificationsWithSecurityAlert": [],
             }
@@ -338,12 +337,11 @@ def test_domain_lookup_miscellaneous_classification(mocker):
 def test_domain_lookup_pipe_extraction(mocker):
     """
     Given:
-        - API response with domain in pipe format "domain.com|http://domain.com/"
+        - API response with domain
     When:
         - domain_lookup is called
     Then:
-        - Verify the function correctly extracts domain by splitting on '|' and taking first part
-        - Verify the extracted domain is used in all context outputs
+        - Verify the domain is used in all context outputs
     """
     import Zscaler
     from unittest.mock import patch
@@ -351,7 +349,7 @@ def test_domain_lookup_pipe_extraction(mocker):
     mock_response = json.dumps(
         [
             {
-                "url": "google.com|http://google.com/",
+                "url": "google.com",
                 "urlClassifications": ["SEARCH_ENGINES"],
                 "urlClassificationsWithSecurityAlert": [],
             }
@@ -364,13 +362,13 @@ def test_domain_lookup_pipe_extraction(mocker):
     assert results
     assert len(results) == 1
 
-    # Verify domain extraction from pipe format
+    # Verify domain
     assert results[0].indicator.domain == "google.com"
     assert results[0].outputs["Name"] == "google.com"
 
     # Verify the raw response has the domain field (not url)
     assert "domain" in results[0].raw_response
-    assert results[0].raw_response["domain"] == "google.com|http://google.com/"
+    assert results[0].raw_response["domain"] == "google.com"
 
 
 def test_domain_lookup_empty_classifications(mocker):
@@ -385,9 +383,7 @@ def test_domain_lookup_empty_classifications(mocker):
     import Zscaler
     from unittest.mock import patch
 
-    mock_response = json.dumps(
-        [{"url": "clean.com|http://clean.com/", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}]
-    )
+    mock_response = json.dumps([{"url": "clean.com", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}])
 
     with patch.object(Zscaler, "lookup_request", return_value=mock_response):
         results = Zscaler.domain_lookup({"domain": "clean.com"})

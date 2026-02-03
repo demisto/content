@@ -535,32 +535,20 @@ def ip_lookup(ip):
 
 
 def domain_lookup(args):
-    domain = args.get("domain", "")
+    domain_arg = args.get("domain", "")
     multiple = argToBoolean(args.get("multiple", "true"))
-    response = lookup_request(domain, multiple)
+    response = lookup_request(domain_arg, multiple)
     raw_res = json.loads(response)
 
-    domains_list = argToList(domain)
     results: List[CommandResults] = []
 
     for data in raw_res:
         res_domain = data.get("url")
-        # Extract the domain from the response by splitting on '|' and taking the first part
-        if "|" in res_domain:
-            res_domain = res_domain.split("|")[0]
-
-        for domain in domains_list:
-            # since zscaler expects to receive a domain without the protocol, we omit it in `lookup_request`
-            # in the response, the domain is returned as it was sent, so we add back the protocol by replacing
-            # the domain returned with the one we got as an argument
-            if "http://" + res_domain in domain or "https://" + res_domain in domain:
-                data["url"] = domain
-                res_domain = domain
 
         ioc_context = {"Name": res_domain}
         score = Common.DBotScore.GOOD
 
-        if len(data["urlClassifications"]) == 0:
+        if len(data.get("urlClassifications", [])) == 0:
             data["domainClassifications"] = ""
             ioc_context["domainClassifications"] = ""
         else:
@@ -569,9 +557,9 @@ def domain_lookup(args):
             if data["domainClassifications"] == "MISCELLANEOUS_OR_UNKNOWN":
                 score = Common.DBotScore.NONE
 
-        del data["urlClassifications"]
+        data.pop("urlClassifications", None)
 
-        if len(data["urlClassificationsWithSecurityAlert"]) == 0:
+        if len(data.get("urlClassificationsWithSecurityAlert", [])) == 0:
             data["domainClassificationsWithSecurityAlert"] = ""
             ioc_context["domainClassificationsWithSecurityAlert"] = ""
         else:
@@ -582,9 +570,9 @@ def domain_lookup(args):
             else:
                 score = Common.DBotScore.BAD
 
-        del data["urlClassificationsWithSecurityAlert"]
+        data.pop("urlClassificationsWithSecurityAlert", None)
 
-        data["domain"] = data.pop("url")
+        data["domain"] = data.pop("url", None)
 
         domain_indicator = Common.Domain(
             domain=ioc_context["Name"],

@@ -225,8 +225,13 @@ Looks up the classification for each of the specified domains.
         }
     ],
     "Domain": {
-        "Name": "example.com",
-        "domainClassifications": "REFERENCE_SITES"
+        "Name": "example.com"
+    },
+    "Zscaler": {
+        "Domain": {
+            "Name": "example.com",
+            "domainClassifications": "REFERENCE_SITES"
+        }
     }
 }
 ```
@@ -263,14 +268,24 @@ Looks up the classification for each of the specified domains.
     ],
     "Domain": [
         {
-            "Name": "example.com",
-            "domainClassifications": "REFERENCE_SITES"
+            "Name": "example.com"
         },
         {
-            "Name": "google.com",
-            "domainClassifications": "WEB_SEARCH"
+            "Name": "google.com"
         }
-    ]
+    ],
+    "Zscaler": {
+        "Domain": [
+            {
+                "Name": "example.com",
+                "domainClassifications": "REFERENCE_SITES"
+            },
+            {
+                "Name": "google.com",
+                "domainClassifications": "WEB_SEARCH"
+            }
+        ]
+    }
 }
 ```
 
