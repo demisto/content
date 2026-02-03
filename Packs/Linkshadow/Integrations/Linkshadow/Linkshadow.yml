@@ -4,6 +4,7 @@ commonfields:
 name: Linkshadow
 display: Linkshadow
 category: Data Enrichment & Threat Intelligence
+provider: LinkShadow
 description: Fetch Network Anomalies data from LinkShadow and execute the remediation Actions.
 detaileddescription: "\n## Linkshadow\n\nLinkshadow is a Next Generation Enterprise Security Analytics platform designed to manage threats in real-time with attacker behavior analytics, LinkShadow enhances organization's defenses against advanced cyber-attacks, zero-day malware and ransomware, while simultaneously gaining rapid insight into the effectiveness of their existing security investments. \n\nThis integration was integrated and tested with version 4.5.8 of Linkshadow.\nEnables LinkShadow to integrate with PaloAlto Cortex XSOAR Platform, It pushes Linkshadow Anomaly events to XSOAR to create a new Incident and trigger the relevant Playbook Actions.This pack includes configurations to combine the world-class threat detection of Linkshadow with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate.\n\nThis section explains how to configure the instance of Linkshadow in Cortex XSOAR.\n - API Key               : `Use API Token`\n - API Username  : `Use API Username`\n - Plugin ID            : `xsoar_integration_1604211382`\n - Action                 : `fetch_entity_anomalies`\n\n---\n"
 configuration:
@@ -63,65 +64,65 @@ script:
     arguments:
     - name: time_frame
       default: true
-      description: Period of minutes, to be fetched from Linkshadow
+      description: Period of minutes, to be fetched from Linkshadow.
       defaultValue: "60"
     outputs:
     - contextPath: Linkshadow.data.GlobalID
-      description: Unique ID of the Anomaly to track in Linkshadow
+      description: Unique ID of the Anomaly to track in Linkshadow.
       type: string
     - contextPath: Linkshadow.data.action_time
-      description: Time of Anomaly Send to XSOAR
+      description: Time of Anomaly Send to XSOAR.
       type: date
     - contextPath: Linkshadow.data.anomaly_flag
-      description: Anomaly Flag Value 1 - Means Active Anomaly, 0 Means Fixed Anomaly
+      description: Anomaly Flag Value 1 - Means Active Anomaly, 0 Means Fixed Anomaly.
       type: number
     - contextPath: Linkshadow.data.anomaly_id
-      description: Anomaly ID for LinkShadow
+      description: Anomaly ID for LinkShadow.
       type: number
     - contextPath: Linkshadow.data.anomaly_type
-      description: Incident Type
+      description: Incident Type.
       type: string
     - contextPath: Linkshadow.data.bandwidth
-      description: Bandwidth usage of the Anomalous session
+      description: Bandwidth usage of the Anomalous session.
       type: number
     - contextPath: Linkshadow.data.category
-      description: Anomaly Category - Incident Category
+      description: Anomaly Category - Incident Category.
       type: string
     - contextPath: Linkshadow.data.data
-      description: Additional Information for the anomaly
+      description: Additional Information for the anomaly.
       type: string
     - contextPath: Linkshadow.data.desc
-      description: Description of anomaly from linkshadow
+      description: Description of anomaly from linkshadow.
       type: string
     - contextPath: Linkshadow.data.dip
-      description: Destination Ip in the detected anomaly
+      description: Destination Ip in the detected anomaly.
       type: string
     - contextPath: Linkshadow.data.dmac
-      description: Destination mac address
+      description: Destination mac address.
       type: string
     - contextPath: Linkshadow.data.dport
-      description: Destination port number of the anomalous session
+      description: Destination port number of the anomalous session.
       type: number
     - contextPath: Linkshadow.data.id
-      description: NA
+      description: NA.
       type: string
     - contextPath: Linkshadow.data.inserted_time
-      description: Time of Anomaly added to the database
+      description: Time of Anomaly added to the database.
       type: date
     - contextPath: Linkshadow.data.score
-      description: Risk Score of the Anomaly - Typical value between 1-20
+      description: Risk Score of the Anomaly - Typical value between 1-20.
       type: number
     - contextPath: Linkshadow.data.sip
-      description: Source IP in the detected Anomaly
+      description: Source IP in the detected Anomaly.
       type: string
     - contextPath: Linkshadow.data.smac
-      description: Source Mac Address in the detected Anomaly
+      description: Source Mac Address in the detected Anomaly.
       type: string
     - contextPath: Linkshadow.data.sport
-      description: Source port number of the anomalous session
+      description: Source port number of the anomalous session.
       type: string
     - contextPath: Linkshadow.data.time_seen
-      description: Time of Anomaly seen
+      description: Time of Anomaly seen.
       type: date
     description: Return the full entity details for all devices referenced  by data in an API response. Use of this command will return the JSON structure of the API response .
   dockerimage: demisto/python3:3.12.8.3296088

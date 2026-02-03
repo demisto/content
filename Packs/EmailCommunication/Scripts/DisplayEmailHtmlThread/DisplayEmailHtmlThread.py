@@ -40,7 +40,23 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
     return single_reply
 
 
-def html_cleanup(full_thread_html):
+def rewrite_img_src(html: str, account_name: str = None) -> str:
+    """
+    Replace:
+      src="xsoar/entry/download/<id>"
+    With:
+      src="xsoar/<account_name>/entry/download/<id>"
+    """
+    if not account_name:
+        return html
+
+    pattern = r'src="xsoar/entry/download/([^"]+)"'
+    replacement = rf'src="xsoar/{account_name}/entry/download/\1"'
+
+    return re.sub(pattern, replacement, html)
+
+
+def html_cleanup(full_thread_html, account_name=None):
     """
         Moves various HTML tags so the final output is a single HTML document
     Args:
@@ -55,6 +71,9 @@ def html_cleanup(full_thread_html):
 
     # Place needed HTML tags in their appropriate locations
     final_html_result = f"<!DOCTYPE html>\n<html>\n<body>\n{full_thread_html}\n</body>\n</html>"
+
+    if account_name:
+        final_html_result = rewrite_img_src(final_html_result, account_name)
 
     return final_html_result
 
@@ -73,7 +92,7 @@ def remove_color_from_html_text(html_message):
         if "style" in tag.attrs and tag.attrs["style"] and "color" in tag.attrs["style"]:
             demisto.debug(f"The original style att {tag.attrs['style']=}")
             new_style = ""
-            style_attr = tag.attrs["style"].split(";")
+            style_attr = str(tag.attrs["style"]).split(";")
             for attr in style_attr:
                 if "color" not in attr:
                     new_style += f"{attr};"
@@ -91,7 +110,9 @@ def remove_color_from_html_text(html_message):
 
 
 def main():
+    args = demisto.args()
     incident = demisto.incident()
+    account_name = args.get("account_name", "")
     custom_fields = incident.get("CustomFields")
     thread_number = custom_fields.get("emailselectedthread", 0)
     incident_context = demisto.context()
@@ -137,7 +158,7 @@ def main():
             )
             full_thread_html += email_reply
 
-        final_html_result = html_cleanup(full_thread_html)
+        final_html_result = html_cleanup(full_thread_html, account_name)
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": final_html_result})
     else:
         return_error(f"An email thread of {thread_number} was not found. Please make sure this thread number is correct.")

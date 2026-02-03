@@ -3,6 +3,7 @@ sectionorder:
 - Collect
 defaultEnabled: true
 category: Endpoint
+provider: Palo Alto Networks
 commonfields:
   id: XQL Query Engine
   version: -1
@@ -1595,5 +1596,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - xsiam
-- agentix
 - edr

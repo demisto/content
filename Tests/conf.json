@@ -2073,6 +2073,24 @@
             "instance_names": "use_python_requests_handler"
         },
         {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy KV commands",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
+            "integrations": "SplunkPy v2",
+            "playbookID": "SplunkPy parse-raw - Test",
+            "memory_threshold": 200,
+            "instance_names": "splunkpy_v2_regular"
+        },
+        {
             "integrations": "McAfee NSM",
             "playbookID": "McAfeeNSMTest",
             "timeout": 400
@@ -2272,7 +2290,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "MSG-ediscovery-tpb",
-            "instance_names": "ms_graph_security_ediscovery"
+            "instance_names": "ms_graph_security_ediscovery",
+            "timeout": 600
         },
         {
             "integrations": "Microsoft Graph",
@@ -5833,8 +5852,7 @@
         {
             "playbookID": "GetUserData - Test",
             "integrations": [
-                "Microsoft Graph User",
-                "AWS - IAM"
+                "Microsoft Graph User"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
@@ -6129,7 +6147,8 @@
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
-        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
+        "Gmail Single User - Test": "CIAC-11417"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6241,6 +6260,7 @@
         "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "fortiweb_vm": "No instance - developed by Qmasters",
+        "Tenable.io": "No instance",
         "_comment2": "~~~ UNSTABLE ~~~",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
@@ -6380,7 +6400,16 @@
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
         "CrowdStrike Falcon Basic Test",
+        "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data",
+        "Test Playbook - CrowdStrike Falcon - Retrieve File",
+        "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions",
         "TestDemistoRestAPI",
+        "Test XDR Playbook execute script commands",
+        "Test XDR Playbook quarantine file command",
+        "Test XDR Playbook general commands",
+        "Test XDR Playbook retrieve file command",
+        "Cortex XDR - XQL Query - Test",
+        "Cortex XDR - IOC - Test",
         "Cortex XDR - IOC - Test without fetch",
         "Active Directory - automatic pagination check",
         "QRadar_v3-test",

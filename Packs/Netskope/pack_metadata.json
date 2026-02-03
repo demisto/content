@@ -2,7 +2,7 @@
     "name": "Netskope",
     "description": "Cloud access security broker that enables to find, understand, and secure cloud apps.",
     "support": "xsoar",
-    "currentVersion": "4.1.4",
+    "currentVersion": "4.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,7 +18,7 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "NetskopeEventCollector",
+    "defaultDataSource": "NetskopeEventCollector_v2",
     "supportedModules": [
         "X1",
         "X3",
