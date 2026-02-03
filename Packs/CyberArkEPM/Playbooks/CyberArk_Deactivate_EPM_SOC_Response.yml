@@ -109,7 +109,7 @@ inputSections:
   - endpoint_external_ip
   - risk_plan
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: A generic group for inputs.
 outputSections:
 - outputs: []
   name: General (Outputs group)
