@@ -4225,11 +4225,11 @@ script:
       description: Whether the correlation rule is enabled.
       type: Boolean
   - arguments:
-    - description: Correlation rule name.
+    - description: 'The correlation rule name. Example: name="This is a CR test 6"'
       name: name
       required: true
     - auto: PREDEFINED
-      description: Correlation rule severity.
+      description: 'The correlation rule severity. Example: severity=low'
       name: severity
       required: true
       predefined:
@@ -4237,21 +4237,18 @@ script:
       - low
       - medium
       - high
-    - description: Correlation rule XQL query.
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
       name: xql_query
       required: true
     - auto: PREDEFINED
-      description: Whether the correlation rule is enabled or disabled.
+      description: 'Whether the rule is enabled. Example: is_enabled=true'
       name: is_enabled
+      required: true
       predefined:
       - 'true'
       - 'false'
-    - description: Correlation rule description.
-      name: description
-    - description: Alert name.
-      name: alert_name
     - auto: PREDEFINED
-      description: Alert category.
+      description: 'The alert category. Example: alert_category=dropper'
       name: alert_category
       required: true
       predefined:
@@ -4271,36 +4268,48 @@ script:
       - file_privilege_manipulation
       - reconnaissance
       - discovery
-    - description: Alert description.
-      name: alert_description
-    - description: Alert fields. Can be a string or a dictionary.
-      name: alert_fields
     - auto: PREDEFINED
-      description: Whether execution mode is scheduled or real time.
+      description: 'The rule execution mode. Example: execution_mode=scheduled'
       name: execution_mode
       required: true
       predefined:
       - scheduled
       - real_time
-    - description: Amount of time for search window.
-      name: search_window
-    - description: Correlation rule schedule.
-      name: schedule
-    - description: Linux scheduling for correlation rule.
-      name: schedule_linux
-    - description: Correlation rule timezone.
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem"'
       name: timezone
+      required: true
     - auto: PREDEFINED
-      description: Whether suppression is enabled for correlation rule.
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours"'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes"'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *"'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
       name: suppression_enabled
       predefined:
       - 'true'
       - 'false'
     - description: Duration of correlation rule suppression.
       name: suppression_duration
-    - description: Suppration fields.
+    - description: Suppression fields.
       name: suppression_fields
-    - description: Correlation rule dataset.
+    - description: 'The correlation rule dataset. Example: dataset=alerts'
       name: dataset
     - description: User-defined severity.
       name: user_defined_severity
@@ -4310,15 +4319,8 @@ script:
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: Whether the drilldown query timeframe is query or alert.
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT"'
       name: drilldown_query_timeframe
-    - auto: PREDEFINED
-      description: Whether the mapping strategy is auto or custom.
-      name: mapping_strategy
-      required: true
-      predefined:
-      - auto
-      - custom
     description: Creates a new correlation rule.
     name: xdr-correlation-rule-create
     outputs:
@@ -4337,31 +4339,33 @@ script:
   - arguments:
     - description: Correlation rule ID.
       name: rule_id
-    - description: Correlation rule name.
+      required: true
+    - description: 'The correlation rule name. Example: name="This is a CR test 6"'
       name: name
+      required: true
     - auto: PREDEFINED
-      description: Correlation rule severity.
+      description: 'The correlation rule severity. Example: severity=low'
       name: severity
+      required: true
       predefined:
       - info
       - low
       - medium
       - high
-    - description: Correlation rule XQL query.
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
       name: xql_query
+      required: true
     - auto: PREDEFINED
-      description: Whether the correlation rule is enabled or disabled.
+      description: 'Whether the rule is enabled. Example: is_enabled=true'
       name: is_enabled
+      required: true
       predefined:
       - 'true'
       - 'false'
-    - description: Correlation rule description.
-      name: description
-    - description: Alert name.
-      name: alert_name
     - auto: PREDEFINED
-      description: Alert category.
+      description: 'The alert category. Example: alert_category=dropper'
       name: alert_category
+      required: true
       predefined:
       - other
       - persistence
@@ -4379,36 +4383,49 @@ script:
       - file_privilege_manipulation
       - reconnaissance
       - discovery
-    - description: Alert description.
-      name: alert_description
-    - description: Alert fields. Can be a string or a dictionary.
-      name: alert_fields
-    - auto: PREDEFINED
-      description: Whether execution mode is scheduled or real time.
+    - description: 'The rule execution mode. Example: execution_mode=scheduled'
       name: execution_mode
+      required: true
       predefined:
       - scheduled
       - real_time
-    - description: Amount of time for search window.
-      name: search_window
-    - description: Correlation rule schedule.
-      name: schedule
-    - description: Linux scheduling for correlation rule.
-      name: schedule_linux
-    - description: Correlation rule timezone.
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem"'
       name: timezone
+      required: true
     - auto: PREDEFINED
-      description: Whether suppression is enabled for correlation rule.
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto'
+      name: mapping_strategy
+      required: true
+      predefined:
+      - auto
+      - custom
+    - description: The correlation rule description.
+      name: description
+    - description: The alert name.
+      name: alert_name
+    - description: The alert description.
+      name: alert_description
+    - description: Alert fields (string or dictionary).
+      name: alert_fields
+    - description: 'The search window timeframe. Example: search_window="1 hours"'
+      name: search_window
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes"'
+      name: schedule
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *"'
+      name: schedule_linux
+    - auto: PREDEFINED
+      description: Whether suppression is enabled.
       name: suppression_enabled
       predefined:
       - 'true'
       - 'false'
     - description: Duration of correlation rule suppression.
       name: suppression_duration
-    - description: Suppration fields.
+    - description: Suppression fields.
       name: suppression_fields
-    - description: Correlation rule dataset.
+    - description: 'The correlation rule dataset. Example: dataset=alerts'
       name: dataset
+      required: true
     - description: User-defined severity.
       name: user_defined_severity
     - description: User-defined category.
@@ -4417,14 +4434,8 @@ script:
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: Whether the drilldown query timeframe is query or alert.
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT"'
       name: drilldown_query_timeframe
-    - auto: PREDEFINED
-      description: Whether the mapping strategy is auto or custom.
-      name: mapping_strategy
-      predefined:
-      - auto
-      - custom
     description: Updates an existing correlation rule.
     name: xdr-correlation-rule-update
     outputs:

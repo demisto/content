@@ -549,9 +549,9 @@ class Client(CoreClient):
             url_suffix="/correlations/get/",
             json_data=request_data,
         )
-        return reply.get("reply", {})
+        return reply
 
-    def insert_correlation_rules(self, request_data: dict):
+    def create_or_update_correlation_rules(self, request_data: dict):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/insert",
@@ -565,7 +565,7 @@ class Client(CoreClient):
             url_suffix="/correlations/delete",
             json_data={"request_data": request_data},
         )
-        return reply.get("reply", {})
+        return reply
 
 
 def extract_paths_and_names(paths: list) -> tuple:
@@ -1713,7 +1713,7 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     rules = reply.get("objects", [])
     readable_output = tableToMarkdown(name="Correlation Rules List",
                                       t=rules,
-                                      headers=["id", "name", "description", "is_enabled"],
+                                      headers=["rule_id", "name", "description", "is_enabled"],
                                       removeNull=True,
                                       headerTransform=string_to_table_header,
     )
@@ -1736,66 +1736,51 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults: The command results.
     """
-    rule_data = assign_params(
-        name=args.get("name"),  # required, can't be empty
-        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),  # required, can't be empty
-        xql_query=args.get("xql_query"),  # required, can't be empty
-        is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
-        description=args.get("description"),
-        alert_name=args.get("alert_name"),
-        action="ALERTS",
-        alert_category=args.get("alert_category").upper() if args.get("alert_category") else None,  # required, can't be empty
-        alert_description=args.get("alert_description"),
-        alert_fields=args.get("alert_fields"),
-        execution_mode=args.get("execution_mode").upper() if args.get("execution_mode") else None,  # required, can't be empty
-        search_window=args.get("search_window"),
-        crontab=args.get("schedule_linux"),
-        timezone=args.get("timezone"),
-        simple_schedule=args.get("schedule"),
-        suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
-        suppression_duration=args.get("suppression_duration"),
-        suppression_fields=args.get("suppression_fields"),
-        dataset=args.get("dataset"),
-        user_defined_severity=args.get("user_defined_severity"),
-        user_defined_category=args.get("user_defined_category"),
-        investigation_query_link=args.get("investigation_query_link"),
-        drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
-        mapping_strategy=args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,  # required, can't be empty
-    )
+    rule_data = {
+        # Required fields
+        "name": args.get("name"),
+        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
+        "xql_query": args.get("xql_query"),
+        "is_enabled": argToBoolean(args.get("is_enabled")),
+        "action": "ALERTS",
+        "timezone": args.get("timezone"),
+        "dataset": args.get("dataset"),
 
-    required_fields = [
-        "investigation_query_link",
-        # "user_defined_severity",
-        "alert_description",
-        "is_enabled",
-        "suppression_enabled",
-        "search_window",
-        "simple_schedule",
-        "suppression_duration",
-        "suppression_fields",
-        "description",
-        "alert_name",
-        "drilldown_query_timeframe",
-        "timezone",
-        "user_defined_category",
-        # "crontab"
-    ]
+        # Uppercase handling for Enum fields
+        "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
+        "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
+        "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
 
-    for field in required_fields:
-        if field not in rule_data:
-            rule_data[field] = ""
+        # Use 'or None' to convert empty strings ("") into JSON null. We must put a value for those fields.
+        "description": args.get("description") or None,
+        "alert_name": args.get("alert_name") or None,
+        "alert_description": args.get("alert_description") or None,
+        "search_window": args.get("search_window") or None,
+        "crontab": args.get("schedule_linux") or None,
+        "simple_schedule": args.get("schedule") or None,
+        "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
+        "investigation_query_link": args.get("investigation_query_link") or None,
+        "suppression_enabled": args.get("suppression_enabled") or None,
+        "suppression_duration": args.get("suppression_duration") or None,
+        "suppression_fields": args.get("suppression_fields") or None,
 
-    mitre_defs_json = args.get("mitre_defs_json") or "{}"
-    rule_data["mitre_defs"] = json.loads(mitre_defs_json)
+        # User Defined Severity (Must be None unless Severity is "User Defined")
+        "user_defined_severity": args.get("user_defined_severity") or None,
+        "user_defined_category": args.get("user_defined_category") or None,
 
-    alert_fields_json = args.get("alert_fields") or "{}"
-    rule_data["alert_fields"] = json.loads(alert_fields_json)
+        # Defaults to "{}" string if missing so json.loads doesn't fail
+        "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
+        "alert_fields": json.loads(args.get("alert_fields") or "{}")
+    }
 
-    reply = client.insert_correlation_rules({"request_data": [rule_data]})
+    reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
+    updated_objects = reply.get("added_objects")[0] if reply.get("added_objects") else {}
+    rule_id = updated_objects.get("id")
+    status = updated_objects.get("status")
     return CommandResults(
-        readable_output="Correlation rule created successfully.",
+        readable_output=status,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
-        outputs={"id": reply.get("id")},
+        outputs={"rule_id": rule_id},
         raw_response=reply,
     )
 
@@ -1809,40 +1794,56 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults: The command results.
     """
-    rule_data = assign_params(
-        rule_id=args.get("rule_id"),
-        name=args.get("name"),
-        severity=args.get("severity"),
-        xql_query=args.get("xql_query"),
-        is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
-        description=args.get("description"),
-        alert_name=args.get("alert_name"),
-        alert_category=args.get("alert_category"),
-        alert_description=args.get("alert_description"),
-        alert_fields=args.get("alert_fields"),
-        execution_mode=args.get("execution_mode"),
-        search_window=args.get("search_window"),
-        simple_schedule=args.get("schedule"),
-        crontab=args.get("schedule_linux"),
-        timezone=args.get("timezone"),
-        suppression_enabled=argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
-        suppression_duration=args.get("suppression_duration"),
-        suppression_fields=args.get("suppression_fields"),
-        dataset=args.get("dataset"),
-        user_defined_severity=args.get("user_defined_severity"),
-        user_defined_category=args.get("user_defined_category"),
-        investigation_query_link=args.get("investigation_query_link"),
-        drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
-        mapping_strategy=args.get("mapping_strategy"),
-    )
-    if mitre_defs_json := args.get("mitre_defs_json"):
-        rule_data["mitre_defs"] = json.loads(mitre_defs_json)
+    severity_arg = args.get("severity")
+    severity_mapped = BIOC_AND_CR_SEVERITY_MAPPING.get(severity_arg) if severity_arg else None
 
-    reply = client.insert_correlation_rules(rule_data)
+    rule_data = {
+        # Required fields
+        "rule_id": args.get("rule_id"),
+        "name": args.get("name"),
+        "severity": severity_mapped,
+        "xql_query": args.get("xql_query"),
+        "is_enabled": argToBoolean(args.get("is_enabled")),
+        "action": "ALERTS",
+        "timezone": args.get("timezone"),
+        "dataset": args.get("dataset"),
+
+        # Enums - Only .upper() if value exists
+        "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
+        "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
+        "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
+
+        # Optional fields
+        "description": args.get("description") or None,
+        "alert_name": args.get("alert_name") or None,
+        "alert_description": args.get("alert_description") or None,
+        "search_window": args.get("search_window") or None,
+        "crontab": args.get("schedule_linux") or None,
+        "simple_schedule": args.get("schedule") or None,
+        "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
+        "investigation_query_link": args.get("investigation_query_link") or None,
+        "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") is not None else None,
+        "suppression_duration": args.get("suppression_duration") or None,
+        "suppression_fields": args.get("suppression_fields") or None,
+
+        # User Defined Severity (Must be None unless Severity is "User Defined")
+        "user_defined_severity": args.get("user_defined_severity") or None,
+        "user_defined_category": args.get("user_defined_category") or None,
+
+        # Defaults to "{}" string if missing so json.loads doesn't fail
+        "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
+        "alert_fields": json.loads(args.get("alert_fields") or "{}")
+    }
+
+    reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
+    updated_objects = reply.get("updated_objects")[0] if reply.get("updated_objects") else {}
+    rule_id = updated_objects.get("id")
+    status = updated_objects.get("status")
+
     return CommandResults(
-        readable_output="Correlation rule created successfully.",
+        readable_output=status,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
-        outputs={"id": reply.get("id")},
+        outputs={"rule_id": rule_id},
         raw_response=reply,
     )
 
@@ -1857,8 +1858,28 @@ def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResult
         str: Success message.
     """
     rule_ids = argToList(args.get("rule_id"))
-    client.delete_correlation_rules({"rule_id_list": rule_ids})
-    return CommandResults(readable_output="Correlation rule deleted successfully")
+    rule_id_list = []
+    for rule_id in rule_ids:
+        try:
+            rule_id_list.append({"field": "rule_id", "operator": "EQ", "value": int(rule_id)})
+        except (ValueError, TypeError):
+            # If rule_id is None, "abc", or "", skip it safely
+            continue
+
+    reply = client.delete_correlation_rules({"filters": rule_id_list})
+    deleted_ids = reply.get("objects", [])
+    objects_count = reply.get("objects_count")
+
+    if objects_count == 0:
+        status = "Could not find any correlation rules to delete."
+    elif objects_count == 1:
+        status = f"Correlation Rule {deleted_ids[0]} was deleted."
+    else:
+        ids_str = ", ".join(map(str, deleted_ids))
+        status = f"Correlation Rules {ids_str} were deleted."
+
+    return CommandResults(readable_output=status,
+                          raw_response=reply)
 
 
 def main():  # pragma: no cover
