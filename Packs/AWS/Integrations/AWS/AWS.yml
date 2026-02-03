@@ -9005,6 +9005,9 @@ script:
     - name: on_demand_min_target_capacity
       description: The minimum target capacity for On-Demand Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
       required: false
+    - name: on_demand_min_target_capacity
+      description: The maximum amount per hour for On-Demand Instances that you're willing to pay.
+      required: false
     - name: excess_capacity_termination_policy
       description: Indicates whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
       required: false
@@ -9014,7 +9017,7 @@ script:
       - termination
     - name: launch_template_id
       description: The ID of the launch template.
-      required: true
+      required: false
     - name: launch_template_name
       description: The name of the launch template.
       required: false
@@ -9047,16 +9050,16 @@ script:
       isArray: true
     - name: total_target_capacity
       description: The number of units to request, filled using DefaultTargetCapacityType.
-      required: true
+      required: false
     - name: on_demand_target_capacity
       description: The number of On-Demand units to request.
-      required: true
+      required: false
     - name: spot_target_capacity
       description: The number of Spot units to request.
-      required: true
+      required: false
     - name: default_target_capacity_type
       description: The default TotalTargetCapacity, which is either Spot or On-Demand.
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - spot
@@ -9177,7 +9180,7 @@ script:
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Platform
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
-#
+
   - name: aws-ec2-fleet-delete
     description: Deletes the specified EC2 Fleet.
     execution: true

@@ -3709,11 +3709,11 @@ class EC2:
             "AllocationStrategy": args.get("on_demand_allocation_strategy"),
             "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
             "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
-            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity"))
+            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
+            "MaxTotalPrice": args.get("on_demand_max_total_price"),
         }
         remove_nulls_from_dictionary(on_demand_options)
         kwargs["OnDemandOptions"] = on_demand_options
-
 
         # Build LaunchTemplateConfigs
         launch_template_spec = {
@@ -3721,7 +3721,6 @@ class EC2:
             "LaunchTemplateName": args.get("launch_template_name"),
             "Version": args.get("launch_template_version")
         }
-
         remove_nulls_from_dictionary(launch_template_spec)
 
         # Build Overrides
@@ -3844,7 +3843,6 @@ class EC2:
         }
 
         print_debug_logs(client, f"Deleting fleets with parameters: {kwargs}")
-
         response = client.delete_fleets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -4083,30 +4081,22 @@ class EC2:
         Returns:
             CommandResults: Results of the modification operation
         """
-        kwargs = {"FleetId": args.get("fleet_id")}
-
-        # ExcessCapacityTerminationPolicy
-        if excess_capacity_termination_policy := args.get("excess_capacity_termination_policy"):
-            kwargs["ExcessCapacityTerminationPolicy"] = excess_capacity_termination_policy
+        kwargs = {
+            "FleetId": args.get("fleet_id"),
+            "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
+            "Context": args.get("context")
+        }
 
         # Build TargetCapacitySpecification
-        target_capacity_spec = {}
-        if total_target_capacity := arg_to_number(args.get("total_target_capacity")):
-            target_capacity_spec["TotalTargetCapacity"] = total_target_capacity
-        if on_demand_target_capacity := arg_to_number(args.get("on_demand_target_capacity")):
-            target_capacity_spec["OnDemandTargetCapacity"] = on_demand_target_capacity
-        if spot_target_capacity := arg_to_number(args.get("spot_target_capacity")):
-            target_capacity_spec["SpotTargetCapacity"] = spot_target_capacity
-        if default_target_capacity_type := args.get("default_target_capacity_type"):
-            target_capacity_spec["DefaultTargetCapacityType"] = default_target_capacity_type
+        target_capacity_spec = {
+            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+            "DefaultTargetCapacityType": args.get("default_target_capacity_type")
+        }
 
-        if target_capacity_spec:
-            kwargs["TargetCapacitySpecification"] = target_capacity_spec
-
-        # Context parameter
-        if context := args.get("context"):
-            kwargs["Context"] = context
-
+        remove_nulls_from_dictionary(target_capacity_spec)
+        kwargs["TargetCapacitySpecification"] = target_capacity_spec
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
 
