@@ -323,7 +323,7 @@ def get_ticket_fields(template, ticket_type):
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
         if input_arg:
-            if arg in ['impact', 'urgency', 'severity']:
+            if arg in ['impact', 'urgency', 'severitys']:
                 body[arg] = inv_severity.get(input_arg, input_arg)
             elif arg == 'priority':
                 body[arg] = inv_priority.get(input_arg, input_arg)
