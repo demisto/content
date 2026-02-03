@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 import traceback
-from typing import Any, cast
+from typing import Any
 
 import dateparser
 import urllib3
@@ -109,6 +109,7 @@ def fetch_incidents(
     # Get maxCaseId from integration context (HIDDEN from UI)
     integration_context = demisto.getIntegrationContext()
     maxCaseId = integration_context.get("maxCaseId", None)
+    tempMaxCaseId = maxCaseId
 
     case_status = "OPEN"
     url_access_time = int(datetime.now().timestamp())
@@ -117,11 +118,9 @@ def fetch_incidents(
 
     if last_fetch is None:
         last_fetch = first_fetch_time
-        startDate = datetime.fromtimestamp(int(last_fetch)).replace(
-            microsecond=0, second=0
-        ).strftime(API_DATE_FORMAT)
+        startDate = datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT)
     else:
-        startDate = datetime.fromtimestamp(int(last_fetch) + 1).strftime(API_DATE_FORMAT)
+        startDate = datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT)
 
     incidents: list[dict[str, Any]] = []
     page = 1
@@ -139,7 +138,7 @@ def fetch_incidents(
 
         # Only add maxCaseId if it exists
         if maxCaseId is not None:
-            params["maxCaseId"] = maxCaseId
+            params["maxCaseId"] = tempMaxCaseId
 
         case_data = client.fetch_command_result(case_url, params, None)
 
@@ -154,27 +153,26 @@ def fetch_incidents(
                 continue
 
             # Update maxCaseId to the highest value seen
-            if maxCaseId is None or case_id > maxCaseId:
-                maxCaseId = case_id
+            if tempMaxCaseId is None or case_id > tempMaxCaseId:
+                tempMaxCaseId = case_id
 
             incident_created_time_ms = int(datetime.now().timestamp() * 1000)
             record["incidentType"] = "GRACase"
 
-            incidents.append({
-                "name": record.get("entity"),
-                "occurred": timestamp_to_datestring(incident_created_time_ms),
-                "rawJSON": json.dumps(record),
-            })
+            incidents.append(
+                {
+                    "name": record.get("entity"),
+                    "occurred": timestamp_to_datestring(incident_created_time_ms),
+                    "rawJSON": json.dumps(record),
+                }
+            )
 
+    maxCaseId = tempMaxCaseId
     # Store maxCaseId in integration context (HIDDEN from UI)
-    demisto.setIntegrationContext({
-        "maxCaseId": maxCaseId
-    })
+    demisto.setIntegrationContext({"maxCaseId": maxCaseId})
 
     # Only last_fetch shown in UI
-    next_run = {
-        "last_fetch": url_access_time
-    }
+    next_run = {"last_fetch": url_access_time}
 
     return next_run, incidents
 
