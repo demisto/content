@@ -963,7 +963,7 @@ def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> Comm
     request_data = assign_params(
         xql_queries_override=override_existing,
         xql_query_tags=xql_query_tag,
-        xql_queries=[{"xql_query": xql_query, "xql_query_name": xql_query_name}]
+        xql_queries=[{"xql_query": xql_query, "xql_query_name": xql_query_name}],
     )
     client.create_xql_queries({"request_data": request_data})
 
