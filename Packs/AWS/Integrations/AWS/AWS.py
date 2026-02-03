@@ -3722,6 +3722,8 @@ class EC2:
             "Version": args.get("launch_template_version")
         }
         remove_nulls_from_dictionary(launch_template_spec)
+        if not launch_template_spec:
+            return CommandResults(readable_output="You must specify either the launch template ID or launch template name")
 
         # Build Overrides
         overrides = []

@@ -4571,7 +4571,7 @@ script:
       required: false
     - name: launch_template_version
       description: "The launch template version number, $Latest, or $Default."
-      required: false
+      required: true
     - name: tags
       description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
       required: false
@@ -9050,7 +9050,7 @@ script:
       isArray: true
     - name: total_target_capacity
       description: The number of units to request, filled using DefaultTargetCapacityType.
-      required: false
+      required: true
     - name: on_demand_target_capacity
       description: The number of On-Demand units to request.
       required: false
@@ -9059,7 +9059,7 @@ script:
       required: false
     - name: default_target_capacity_type
       description: The default TotalTargetCapacity, which is either Spot or On-Demand.
-      required: false
+      required: true
       auto: PREDEFINED
       predefined:
       - spot
