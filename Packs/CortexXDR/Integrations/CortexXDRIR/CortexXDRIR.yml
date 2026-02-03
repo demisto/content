@@ -4231,6 +4231,7 @@ script:
     - auto: PREDEFINED
       description: Correlation rule severity.
       name: severity
+      required: true
       predefined:
       - info
       - low
@@ -4238,6 +4239,7 @@ script:
       - high
     - description: Correlation rule XQL query.
       name: xql_query
+      required: true
     - auto: PREDEFINED
       description: Whether the correlation rule is enabled or disabled.
       name: is_enabled
@@ -4251,6 +4253,7 @@ script:
     - auto: PREDEFINED
       description: Alert category.
       name: alert_category
+      required: true
       predefined:
       - other
       - persistence
@@ -4275,6 +4278,7 @@ script:
     - auto: PREDEFINED
       description: Whether execution mode is scheduled or real time.
       name: execution_mode
+      required: true
       predefined:
       - scheduled
       - real_time
@@ -4311,6 +4315,7 @@ script:
     - auto: PREDEFINED
       description: Whether the mapping strategy is auto or custom.
       name: mapping_strategy
+      required: true
       predefined:
       - auto
       - custom

@@ -1737,17 +1737,17 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         CommandResults: The command results.
     """
     rule_data = assign_params(
-        name=args.get("name"),
-        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
-        xql_query=args.get("xql_query"),
+        name=args.get("name"),  # required, can't be empty
+        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),  # required, can't be empty
+        xql_query=args.get("xql_query"),  # required, can't be empty
         is_enabled=argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
         description=args.get("description"),
         alert_name=args.get("alert_name"),
         action="ALERTS",
-        alert_category=args.get("alert_category").upper() if args.get("alert_category") else None,
+        alert_category=args.get("alert_category").upper() if args.get("alert_category") else None,  # required, can't be empty
         alert_description=args.get("alert_description"),
         alert_fields=args.get("alert_fields"),
-        execution_mode=args.get("execution_mode").upper() if args.get("execution_mode") else None,
+        execution_mode=args.get("execution_mode").upper() if args.get("execution_mode") else None,  # required, can't be empty
         search_window=args.get("search_window"),
         crontab=args.get("schedule_linux"),
         timezone=args.get("timezone"),
@@ -1760,13 +1760,25 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         user_defined_category=args.get("user_defined_category"),
         investigation_query_link=args.get("investigation_query_link"),
         drilldown_query_timeframe=args.get("drilldown_query_timeframe"),
-        mapping_strategy=args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
+        mapping_strategy=args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,  # required, can't be empty
     )
 
     required_fields = [
-        "dataset", "investigation_query_link", "user_defined_severity",
-        "simple_schedule", "suppression_duration", "suppression_fields",
-        "drilldown_query_timeframe", "timezone", "user_defined_category", "crontab"
+        "investigation_query_link",
+        # "user_defined_severity",
+        "alert_description",
+        "is_enabled",
+        "suppression_enabled",
+        "search_window",
+        "simple_schedule",
+        "suppression_duration",
+        "suppression_fields",
+        "description",
+        "alert_name",
+        "drilldown_query_timeframe",
+        "timezone",
+        "user_defined_category",
+        # "crontab"
     ]
 
     for field in required_fields:
@@ -1778,10 +1790,6 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
 
     alert_fields_json = args.get("alert_fields") or "{}"
     rule_data["alert_fields"] = json.loads(alert_fields_json)
-
-    # If dataset is missing in args, send explicit empty string instead of letting it be removed
-    if "dataset" not in rule_data:
-        rule_data["dataset"] = ""
 
     reply = client.insert_correlation_rules({"request_data": [rule_data]})
     return CommandResults(
