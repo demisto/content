@@ -3447,8 +3447,10 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", "")
     assets_snapshot_id = ctx.get("assets_snapshot_id", "")
     demisto.debug(f"Preparing to update assets snapshot id {assets_snapshot_id} with a total of {assets_total} assets.")
-    demisto.debug(f"Preparing to update vulnerabilities snapshot id {vulnerabilities_snapshot_id} with a"
-                  f"total of {vulnerabilities_total} vulnerabilities.")
+    demisto.debug(
+        f"Preparing to update vulnerabilities snapshot id {vulnerabilities_snapshot_id} with a"
+        f"total of {vulnerabilities_total} vulnerabilities."
+    )
     if assets_snapshot_id:
         assets_coroutine = async_send_data_to_xsiam(
             data=[],
