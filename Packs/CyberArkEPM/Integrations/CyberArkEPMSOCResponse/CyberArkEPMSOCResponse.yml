@@ -44,7 +44,7 @@ script:
       description: The IDs of the endpoints added to the risk plan.
       type: String
     - contextPath: CyberArkEPMSOCResponse.RiskPlan
-      description: The name of activated Risk Plan.
+      description: The name of activated risk plan.
       type: String
     - contextPath: CyberArkEPMSOCResponse.Action
       description: The action performed on the risk plan (add/remove).
