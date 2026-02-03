@@ -147,12 +147,14 @@ def request_with_pagination(
 
 
 def fetch_url_logs_with_pagination(
-    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list = [], current_next_page: str = ""
+    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list | None = None, current_next_page: str = ""
 ):
     """
     Creates paging response for fetching URL logs.
     Uses composite key (url + date) for deduplication since URL logs don't have an id field.
     """
+    if dedup_messages is None:
+        dedup_messages = []
     demisto.debug(f"Sending request from fetch_url_logs_with_pagination with {limit=}, {data=}")
     payload: dict[str, Any] = {"meta": {}, "data": data}
     len_of_results = 0
@@ -172,15 +174,15 @@ def fetch_url_logs_with_pagination(
         if response_data and isinstance(response_data[0], dict):
             response_data = response_data[0].get("clickLogs", [])
         for entry in response_data:
-            # Create composite key for deduplication: url + date
-            entry_id = f"{entry.get('url')}_{entry.get('date')}"
-            if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
+            # Create composite key for deduplication: url + date + userEmailAddress
+            entry_id = f"{entry.get('url')}_{entry.get('date')}_{entry.get('userEmailAddress')}"
+            if entry_id and entry_id not in dedup_messages:  # Dedup for fetch
                 len_of_results += 1
                 results.append(entry)
             elif entry_id in dedup_messages:
                 dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-        next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
+        next_page = str(response.get("meta", {}).get("pagination", {}).get("next") or "")
         if not next_page or (limit and len_of_results >= limit):
             break
     demisto.debug(f"Dropped {dropped} incidents.")
@@ -188,12 +190,14 @@ def fetch_url_logs_with_pagination(
 
 
 def fetch_attachment_logs_with_pagination(
-    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list = [], current_next_page: str = ""
+    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list | None = None, current_next_page: str = ""
 ):
     """
     Creates paging response for fetching attachment logs.
     Uses composite key (fileName + date + senderAddress) for deduplication since attachment logs don't have an id field.
     """
+    if dedup_messages is None:
+        dedup_messages = []
     demisto.debug(f"Sending request from fetch_attachment_logs_with_pagination with {limit=}, {data=}")
     payload: dict[str, Any] = {"meta": {}, "data": data}
     len_of_results = 0
@@ -213,15 +217,15 @@ def fetch_attachment_logs_with_pagination(
         if response_data and isinstance(response_data[0], dict):
             response_data = response_data[0].get("attachmentLogs", [])
         for entry in response_data:
-            # Create composite key for deduplication: fileName + date + senderAddress
-            entry_id = f"{entry.get('fileName')}_{entry.get('date')}_{entry.get('senderAddress')}"
-            if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
+            # Create composite key for deduplication: fileName + date + senderAddress + recipientAddress
+            entry_id = f"{entry.get('fileName')}_{entry.get('date')}_{entry.get('senderAddress')}_{entry.get('recipientAddress')}"
+            if entry_id and entry_id not in dedup_messages:  # Dedup for fetch
                 len_of_results += 1
                 results.append(entry)
             elif entry_id in dedup_messages:
                 dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-        next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
+        next_page = str(response.get("meta", {}).get("pagination", {}).get("next") or "")
         if not next_page or (limit and len_of_results >= limit):
             break
     demisto.debug(f"Dropped {dropped} incidents.")
@@ -229,12 +233,14 @@ def fetch_attachment_logs_with_pagination(
 
 
 def fetch_impersonation_logs_with_pagination(
-    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list = [], current_next_page: str = ""
+    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list | None = None, current_next_page: str = ""
 ):
     """
     Creates paging response for fetching impersonation logs.
     Uses native 'id' field for deduplication (same as held messages).
     """
+    if dedup_messages is None:
+        dedup_messages = []
     demisto.debug(f"Sending request from fetch_impersonation_logs_with_pagination with {limit=}, {data=}")
     payload: dict[str, Any] = {"meta": {}, "data": data}
     len_of_results = 0
@@ -261,7 +267,7 @@ def fetch_impersonation_logs_with_pagination(
             elif entry_id in dedup_messages:
                 dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-        next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
+        next_page = str(response.get("meta", {}).get("pagination", {}).get("next") or "")
         if not next_page or (limit and len_of_results >= limit):
             break
     demisto.debug(f"Dropped {dropped} incidents.")
@@ -269,11 +275,13 @@ def fetch_impersonation_logs_with_pagination(
 
 
 def fetch_held_messages_with_pagination(
-    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list = [], current_next_page: str = ""
+    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list | None = None, current_next_page: str = ""
 ):
     """
     Creates paging response for fetching held_messages.
     """
+    if dedup_messages is None:
+        dedup_messages = []
     demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
     payload: dict[str, Any] = {"meta": {}, "data": data}
     len_of_results = 0
@@ -298,7 +306,7 @@ def fetch_held_messages_with_pagination(
             elif entry_id in dedup_messages:
                 dropped += 1
                 demisto.debug(f"Dropped {entry_id} as it already exists.")
-        next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
+        next_page = str(response.get("meta", {}).get("pagination", {}).get("next") or "")
         if not next_page or (limit and len_of_results >= limit):
             break
     demisto.debug(f"Dropped {dropped} incidents.")
@@ -2350,9 +2358,9 @@ def fetch_url_logs(
     Wrapper for fetching URL logs with pagination support.
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
-    search_params = {"from": last_fetch_date_time, "scanResult": "malicious"}
-    if current_next_page:
-        search_params["from"] = time_for_next_page_date_time
+    search_params = {"from": last_fetch_date_time, "scanResult": "malicious", "route": "all"}
+    # Note: When continuing pagination with a token, we don't update the 'from' time
+    # The pagination token already encodes the state, similar to held_messages
 
     url_logs, len_of_results, next_page = fetch_url_logs_with_pagination(
         api_endpoint="/api/ttp/url/get-logs",
@@ -2365,8 +2373,8 @@ def fetch_url_logs(
 
     for url_log in url_logs:
         incident = url_to_incident(url_log)
-        # Create composite key for deduplication: url + date
-        log_id = f"{url_log.get('url')}_{url_log.get('date')}"
+        # Create composite key for deduplication: url + date + userEmailAddress
+        log_id = f"{url_log.get('url')}_{url_log.get('date')}_{url_log.get('userEmailAddress')}"
         temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
 
         # update last run
@@ -2376,8 +2384,12 @@ def fetch_url_logs(
             dedup_messages = [log_id]
             demisto.debug(f"Increased last_fetch to {last_fetch}")
         elif temp_date == last_fetch:
-            dedup_messages.append(log_id)
-            demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            # In-batch deduplication check
+            if log_id not in dedup_messages:
+                dedup_messages.append(log_id)
+                demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            else:
+                demisto.debug(f"Skipped duplicate {log_id} in same batch")
         else:
             demisto.debug(f"dedup_messages and last_fetch remain the same for {log_id} as {temp_date=} < {last_fetch=}")
 
@@ -2404,9 +2416,9 @@ def fetch_attachment_logs(
     Wrapper for fetching attachment logs with pagination support.
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
-    search_params = {"from": last_fetch_date_time, "result": "malicious"}
-    if current_next_page:
-        search_params["from"] = time_for_next_page_date_time
+    search_params = {"from": last_fetch_date_time, "result": "malicious", "route": "all"}
+    # Note: When continuing pagination with a token, we don't update the 'from' time
+    # The pagination token already encodes the state, similar to held_messages
 
     attachment_logs, len_of_results, next_page = fetch_attachment_logs_with_pagination(
         api_endpoint="/api/ttp/attachment/get-logs",
@@ -2419,8 +2431,8 @@ def fetch_attachment_logs(
 
     for attachment_log in attachment_logs:
         incident = attachment_to_incident(attachment_log)
-        # Create composite key for deduplication: fileName + date + senderAddress
-        log_id = f"{attachment_log.get('fileName')}_{attachment_log.get('date')}_{attachment_log.get('senderAddress')}"
+        # Create composite key for deduplication: fileName + date + senderAddress + recipientAddress
+        log_id = f"{attachment_log.get('fileName')}_{attachment_log.get('date')}_{attachment_log.get('senderAddress')}_{attachment_log.get('recipientAddress')}"
         temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
 
         # update last run
@@ -2430,8 +2442,12 @@ def fetch_attachment_logs(
             dedup_messages = [log_id]
             demisto.debug(f"Increased last_fetch to {last_fetch}")
         elif temp_date == last_fetch:
-            dedup_messages.append(log_id)
-            demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            # In-batch deduplication check
+            if log_id not in dedup_messages:
+                dedup_messages.append(log_id)
+                demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            else:
+                demisto.debug(f"Skipped duplicate {log_id} in same batch")
         else:
             demisto.debug(f"dedup_messages and last_fetch remain the same for {log_id} as {temp_date=} < {last_fetch=}")
 
@@ -2459,8 +2475,8 @@ def fetch_impersonation_logs(
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
     search_params = {"from": last_fetch_date_time, "taggedMalicious": True}
-    if current_next_page:
-        search_params["from"] = time_for_next_page_date_time
+    # Note: When continuing pagination with a token, we don't update the 'from' time
+    # The pagination token already encodes the state, similar to held_messages
 
     impersonation_logs, len_of_results, next_page = fetch_impersonation_logs_with_pagination(
         api_endpoint="/api/ttp/impersonation/get-logs",
@@ -2483,8 +2499,12 @@ def fetch_impersonation_logs(
             dedup_messages = [log_id]
             demisto.debug(f"Increased last_fetch to {last_fetch}")
         elif temp_date == last_fetch:
-            dedup_messages.append(log_id)
-            demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            # In-batch deduplication check
+            if log_id not in dedup_messages:
+                dedup_messages.append(log_id)
+                demisto.debug(f"Appended {log_id} to dedup as temp_date=last_fetch={last_fetch}")
+            else:
+                demisto.debug(f"Skipped duplicate {log_id} in same batch")
         else:
             demisto.debug(f"dedup_messages and last_fetch remain the same for {log_id} as {temp_date=} < {last_fetch=}")
 

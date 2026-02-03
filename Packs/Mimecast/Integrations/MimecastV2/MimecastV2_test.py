@@ -1564,7 +1564,7 @@ def test_fetch_url_logs_next_token(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000"}],
+        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000", "userEmailAddress": "user@example.com"}],
         "meta": {"pagination": {"next": "test_next_token"}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1578,7 +1578,11 @@ def test_fetch_url_logs_next_token(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("test_next_token", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+    assert result == (
+        "test_next_token",
+        ["http://example.com_2025-03-13T15:31:00+0000_user@example.com"],
+        datetime(2025, 3, 13, 15, 31),
+    )
 
 
 def test_fetch_url_logs_prev_dedup(mocker):
@@ -1603,7 +1607,7 @@ def test_fetch_url_logs_prev_dedup(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"url": "http://example.com", "date": "2025-03-11T15:30:00+0000"}],
+        "data": [{"url": "http://example.com", "date": "2025-03-11T15:30:00+0000", "userEmailAddress": "user@example.com"}],
         "meta": {"pagination": {"next": "test_next"}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1617,7 +1621,11 @@ def test_fetch_url_logs_prev_dedup(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("test_next", ["prev_dedup", "http://example.com_2025-03-11T15:30:00+0000"], datetime(2025, 3, 11, 15, 30))
+    assert result == (
+        "test_next",
+        ["prev_dedup", "http://example.com_2025-03-11T15:30:00+0000_user@example.com"],
+        datetime(2025, 3, 11, 15, 30),
+    )
 
 
 def test_fetch_url_logs_no_next_token(mocker):
@@ -1640,7 +1648,9 @@ def test_fetch_url_logs_no_next_token(mocker):
     dedup_url_logs = ["prev_dedup"]
     current_next_page = ""
     incidents = []
-    mock_response = {"data": [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000"}]}
+    mock_response = {
+        "data": [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000", "userEmailAddress": "user@example.com"}]
+    }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     MimecastV2.MAX_FETCH = 1
     result = MimecastV2.fetch_url_logs(
@@ -1652,7 +1662,7 @@ def test_fetch_url_logs_no_next_token(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000"], datetime(2025, 3, 11, 15, 31))
+    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000_user@example.com"], datetime(2025, 3, 11, 15, 31))
 
 
 def test_fetch_url_logs_has_prev_next_token(mocker):
@@ -1670,7 +1680,7 @@ def test_fetch_url_logs_has_prev_next_token(mocker):
     - Dedup for next run is returned (added to the prev dedup array)
     - next fetch time is returned
     """
-    url_logs = [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000"}]
+    url_logs = [{"url": "http://example.com", "date": "2025-03-11T15:31:00+0000", "userEmailAddress": "user@example.com"}]
     fetch_url_logs_with_pagination = mocker.patch.object(
         MimecastV2, "fetch_url_logs_with_pagination", return_value=(url_logs, 1, "")
     )
@@ -1698,7 +1708,7 @@ def test_fetch_url_logs_has_prev_next_token(mocker):
         dedup_messages=[],
         current_next_page=["current_next_page"],
     )
-    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000"], datetime(2025, 3, 11, 15, 31))
+    assert result == ("", ["http://example.com_2025-03-11T15:31:00+0000_user@example.com"], datetime(2025, 3, 11, 15, 31))
 
 
 def test_fetch_url_logs_first_fetch(mocker):
@@ -1722,7 +1732,14 @@ def test_fetch_url_logs_first_fetch(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000", "action": "block"}],
+        "data": [
+            {
+                "url": "http://example.com",
+                "date": "2025-03-13T15:31:00+0000",
+                "action": "block",
+                "userEmailAddress": "user@example.com",
+            }
+        ],
         "meta": {"pagination": {}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1736,7 +1753,7 @@ def test_fetch_url_logs_first_fetch(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000_user@example.com"], datetime(2025, 3, 13, 15, 31))
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Mimecast malicious URL: http://example.com"
 
@@ -1757,11 +1774,11 @@ def test_fetch_url_logs_dedup(mocker):
     time_url_for_next_page = "2025-03-13T15:30:00+0000"
     last_fetch_url = datetime(2025, 3, 13, 15, 30, second=00)
     current_fetch_url = last_fetch_url
-    dedup_url_logs = ["http://example.com_2025-03-13T15:31:00+0000"]
+    dedup_url_logs = ["http://example.com_2025-03-13T15:31:00+0000_user@example.com"]
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000"}],
+        "data": [{"url": "http://example.com", "date": "2025-03-13T15:31:00+0000", "userEmailAddress": "user@example.com"}],
         "meta": {"pagination": {}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1775,7 +1792,7 @@ def test_fetch_url_logs_dedup(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000"], datetime(2025, 3, 13, 15, 31))
+    assert result == ("", ["http://example.com_2025-03-13T15:31:00+0000_user@example.com"], datetime(2025, 3, 13, 15, 31))
     assert len(incidents) == 0
 
 
@@ -1801,7 +1818,14 @@ def test_fetch_attachment_logs_next_token(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"fileName": "malware.exe", "date": "2025-03-13T15:31:00+0000", "senderAddress": "sender@example.com"}],
+        "data": [
+            {
+                "fileName": "malware.exe",
+                "date": "2025-03-13T15:31:00+0000",
+                "senderAddress": "sender@example.com",
+                "recipientAddress": "recipient@example.com",
+            }
+        ],
         "meta": {"pagination": {"next": "test_next_token"}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1817,7 +1841,7 @@ def test_fetch_attachment_logs_next_token(mocker):
     )
     assert result == (
         "test_next_token",
-        ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"],
+        ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com_recipient@example.com"],
         datetime(2025, 3, 13, 15, 31),
     )
 
@@ -1844,7 +1868,14 @@ def test_fetch_attachment_logs_prev_dedup(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"fileName": "malware.exe", "date": "2025-03-11T15:30:00+0000", "senderAddress": "sender@example.com"}],
+        "data": [
+            {
+                "fileName": "malware.exe",
+                "date": "2025-03-11T15:30:00+0000",
+                "senderAddress": "sender@example.com",
+                "recipientAddress": "recipient@example.com",
+            }
+        ],
         "meta": {"pagination": {"next": "test_next"}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -1860,7 +1891,7 @@ def test_fetch_attachment_logs_prev_dedup(mocker):
     )
     assert result == (
         "test_next",
-        ["prev_dedup", "malware.exe_2025-03-11T15:30:00+0000_sender@example.com"],
+        ["prev_dedup", "malware.exe_2025-03-11T15:30:00+0000_sender@example.com_recipient@example.com"],
         datetime(2025, 3, 11, 15, 30),
     )
 
@@ -1886,7 +1917,14 @@ def test_fetch_attachment_logs_no_next_token(mocker):
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"fileName": "malware.exe", "date": "2025-03-11T15:31:00+0000", "senderAddress": "sender@example.com"}]
+        "data": [
+            {
+                "fileName": "malware.exe",
+                "date": "2025-03-11T15:31:00+0000",
+                "senderAddress": "sender@example.com",
+                "recipientAddress": "recipient@example.com",
+            }
+        ]
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     MimecastV2.MAX_FETCH = 1
@@ -1899,7 +1937,11 @@ def test_fetch_attachment_logs_no_next_token(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com"], datetime(2025, 3, 11, 15, 31))
+    assert result == (
+        "",
+        ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com_recipient@example.com"],
+        datetime(2025, 3, 11, 15, 31),
+    )
 
 
 def test_fetch_attachment_logs_has_prev_next_token(mocker):
@@ -1917,7 +1959,14 @@ def test_fetch_attachment_logs_has_prev_next_token(mocker):
     - Dedup for next run is returned (added to the prev dedup array)
     - next fetch time is returned
     """
-    attachment_logs = [{"fileName": "malware.exe", "date": "2025-03-11T15:31:00+0000", "senderAddress": "sender@example.com"}]
+    attachment_logs = [
+        {
+            "fileName": "malware.exe",
+            "date": "2025-03-11T15:31:00+0000",
+            "senderAddress": "sender@example.com",
+            "recipientAddress": "recipient@example.com",
+        }
+    ]
     fetch_attachment_logs_with_pagination = mocker.patch.object(
         MimecastV2, "fetch_attachment_logs_with_pagination", return_value=(attachment_logs, 1, "")
     )
@@ -1945,7 +1994,11 @@ def test_fetch_attachment_logs_has_prev_next_token(mocker):
         dedup_messages=[],
         current_next_page=["current_next_page"],
     )
-    assert result == ("", ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com"], datetime(2025, 3, 11, 15, 31))
+    assert result == (
+        "",
+        ["malware.exe_2025-03-11T15:31:00+0000_sender@example.com_recipient@example.com"],
+        datetime(2025, 3, 11, 15, 31),
+    )
 
 
 def test_fetch_attachment_logs_first_fetch(mocker):
@@ -1974,6 +2027,7 @@ def test_fetch_attachment_logs_first_fetch(mocker):
                 "fileName": "malware.exe",
                 "date": "2025-03-13T15:31:00+0000",
                 "senderAddress": "sender@example.com",
+                "recipientAddress": "recipient@example.com",
                 "result": "virus",
             }
         ],
@@ -1990,7 +2044,11 @@ def test_fetch_attachment_logs_first_fetch(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"], datetime(2025, 3, 13, 15, 31))
+    assert result == (
+        "",
+        ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com_recipient@example.com"],
+        datetime(2025, 3, 13, 15, 31),
+    )
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Mimecast malicious attachment: malware.exe"
 
@@ -2011,11 +2069,18 @@ def test_fetch_attachment_logs_dedup(mocker):
     time_attachment_for_next_page = "2025-03-13T15:30:00+0000"
     last_fetch_attachment = datetime(2025, 3, 13, 15, 30, second=00)
     current_fetch_attachment = last_fetch_attachment
-    dedup_attachment_logs = ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"]
+    dedup_attachment_logs = ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com_recipient@example.com"]
     current_next_page = ""
     incidents = []
     mock_response = {
-        "data": [{"fileName": "malware.exe", "date": "2025-03-13T15:31:00+0000", "senderAddress": "sender@example.com"}],
+        "data": [
+            {
+                "fileName": "malware.exe",
+                "date": "2025-03-13T15:31:00+0000",
+                "senderAddress": "sender@example.com",
+                "recipientAddress": "recipient@example.com",
+            }
+        ],
         "meta": {"pagination": {}},
     }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
@@ -2029,7 +2094,11 @@ def test_fetch_attachment_logs_dedup(mocker):
         current_next_page,
         incidents,
     )
-    assert result == ("", ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com"], datetime(2025, 3, 13, 15, 31))
+    assert result == (
+        "",
+        ["malware.exe_2025-03-13T15:31:00+0000_sender@example.com_recipient@example.com"],
+        datetime(2025, 3, 13, 15, 31),
+    )
     assert len(incidents) == 0
 
 
