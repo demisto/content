@@ -1650,7 +1650,7 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: 'A comma-separated list of XQL query strings. For example: "dataset = xdr_data |limit 1"'
+    - description: 'A comma-separated list of XQL query strings. For example: "dataset = xdr_data |limit 1".'
       isArray: true
       name: xql_query
     - description: A comma-separated list of new XQL query names. The XQL query name should be unique.
