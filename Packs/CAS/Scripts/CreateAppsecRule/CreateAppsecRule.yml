@@ -70,7 +70,7 @@ args:
 - name: frameworks
   underlyingargname: frameworks
   description: >
-    array of json objects { name:string, definition:string } for the rule
+    array of json objects { name: string, definition: string, remediationDescription: string } for the rule
     name Options: 
     if scanner is IAC: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM.
     if scanner is SECRETS: GIT.
