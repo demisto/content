@@ -7401,6 +7401,8 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         "sensor_ml_level_prevention": arg_to_number(args.get("sensor_ml_level_prevention")),
         "cloud_ml_level_detection": arg_to_number(args.get("cloud_ml_level_detection")),
         "cloud_ml_level_prevention": arg_to_number(args.get("cloud_ml_level_prevention")),
+        "cloud_pup_adware_level_detection": arg_to_number(args.get("cloud_pup_adware_level_detection")),
+        "cloud_pup_adware_level_prevention": arg_to_number(args.get("cloud_pup_adware_level_prevention")),
         "max_duration": arg_to_number(args.get("max_duration")),
     }
 
