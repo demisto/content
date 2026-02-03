@@ -3271,6 +3271,8 @@ script:
       - description: Polling timeout in seconds when waiting for results. Default - 180 seconds.
         name: timeout_in_seconds
         defaultValue: 180
+      - description: The execution id of a previously executed query to fetch results from.
+        name: execution_id
       description: |-
         Execute an XQL query and retrieve a link to the query in the query center.
         If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
