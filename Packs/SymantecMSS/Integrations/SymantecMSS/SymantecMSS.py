@@ -50,7 +50,7 @@ def pfx_to_pem(pfx, pfx_password):
 
 
 def load_server_url():
-    """Cleans and loads the server url from the configuration"""
+    """Cleans and loads the server url from the configuration test"""
     url = demisto.params()["server"]
     url = re.sub("/[/]+$/", "", url)
     url = re.sub("/$", "", url)
