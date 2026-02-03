@@ -2928,6 +2928,20 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         images = response.get("Images", [])
 
+        # Build readable output data
+        readable_outputs = []
+        for image in images:
+            readable_data = {
+                "ImageId": image.get("ImageId"),
+                "Name": image.get("Name"),
+                "CreationDate": image.get("CreationDate"),
+                "State": image.get("State"),
+                "Public": image.get("Public"),
+                "Description": image.get("Description"),
+            }
+            readable_data = remove_empty_elements(readable_data)
+            readable_outputs.append(readable_data)
+
         outputs = {
             "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
             "AWS.EC2(true)": {
@@ -2942,7 +2956,7 @@ class EC2:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Images",
-                images,
+                outputs,
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
