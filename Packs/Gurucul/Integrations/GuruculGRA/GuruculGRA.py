@@ -99,12 +99,7 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 def fetch_incidents(
     client: Client, max_results: int, last_run: dict[str, int], first_fetch_time: int | None
 ) -> tuple[dict[str, int], list[dict]]:
-    """
-    Fetches incidents from GRA Cases API with maxCaseId tracking.
-    maxCaseId is stored internally and hidden from UI.
-    """
-
-    last_fetch = last_run.get("last_fetch")
+    last_fetch = last_run.get("last_fetch", None)
 
     # Get maxCaseId from integration context (HIDDEN from UI)
     integration_context = demisto.getIntegrationContext()
@@ -112,14 +107,14 @@ def fetch_incidents(
     tempMaxCaseId = maxCaseId
 
     case_status = "OPEN"
-    url_access_time = int(datetime.now().timestamp())
-    endDate = datetime.fromtimestamp(url_access_time).strftime(API_DATE_FORMAT)
+    url_access_time = datetime.now().timestamp()
+    endDate = datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT)
     case_url = "/cases/opendate"
-
     if last_fetch is None:
         last_fetch = first_fetch_time
         startDate = datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT)
     else:
+        last_fetch = int(last_fetch)
         startDate = datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT)
 
     incidents: list[dict[str, Any]] = []
@@ -146,7 +141,6 @@ def fetch_incidents(
             isContinue = False
         else:
             page += 1
-
         for record in case_data:
             case_id = record.get("caseId")
             if case_id is None:
@@ -156,7 +150,8 @@ def fetch_incidents(
             if tempMaxCaseId is None or case_id > tempMaxCaseId:
                 tempMaxCaseId = case_id
 
-            incident_created_time_ms = int(datetime.now().timestamp() * 1000)
+            incident_created_time = datetime.now().timestamp()
+            incident_created_time_ms = incident_created_time * 1000
             record["incidentType"] = "GRACase"
 
             incidents.append(
@@ -168,11 +163,10 @@ def fetch_incidents(
             )
 
     maxCaseId = tempMaxCaseId
-    # Store maxCaseId in integration context (HIDDEN from UI)
+
     demisto.setIntegrationContext({"maxCaseId": maxCaseId})
 
-    # Only last_fetch shown in UI
-    next_run = {"last_fetch": url_access_time}
+    next_run = {"last_fetch": int(url_access_time)}
 
     return next_run, incidents
 
