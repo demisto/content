@@ -3148,24 +3148,15 @@ script:
         - contextPath: Core.CaseGroupingGraph.nodes.display_name
           description: The human-readable name extracted from ISSUE_DATA or pretty_name.
           type: String
-        - contextPath: Core.CaseGroupingGraph.nodes.is_unlinked
+        - contextPath: Core.CaseGroupingGraph.nodes.data.UNLINKED
           description: Boolean flag indicating if the node is unlinked to the case (relevant for ISSUE type nodes).
           type: Boolean
-        - contextPath: Core.CaseGroupingGraph.nodes.is_linked
+        - contextPath: Core.CaseGroupingGraph.nodes.data.LINKED
           description: Boolean flag indicating if the node is linked to the case (relevant for ISSUE type nodes).
           type: Boolean
-        - contextPath: Core.CaseGroupingGraph.nodes.is_duplicate
+        - contextPath: Core.CaseGroupingGraph.nodes.data.DUPLICATE
           description: Boolean flag indicating if the node is duplicate in regards to the case (relevant for ISSUE type nodes).
           type: Boolean
-        - contextPath: Core.CaseGroupingGraph.nodes.neighbors
-          description: Adjacency object containing upstream and downstream relationships.
-          type: Unknown
-        - contextPath: Core.CaseGroupingGraph.nodes.neighbors.upstream_parents
-          description: List of nodes (id and name) pointing to this node.
-          type: Unknown
-        - contextPath: Core.CaseGroupingGraph.nodes.neighbors.downstream_targets
-          description: List of nodes (id and name) this node points to.
-          type: Unknown
         - contextPath: Core.CaseGroupingGraph.nodes.data
           description: Original raw metadata and additional information associated with the node.
           type: Unknown
@@ -3174,12 +3165,6 @@ script:
           type: String
         - contextPath: Core.CaseGroupingGraph.edges.target_id
           description: The ID of the target node.
-          type: String
-        - contextPath: Core.CaseGroupingGraph.edges.source_name
-          description: Readable name of the source node for graph labeling.
-          type: String
-        - contextPath: Core.CaseGroupingGraph.edges.target_name
-          description: Readable name of the target node for graph labeling.
           type: String
     - name: core-xql-generic-query-platform
       arguments:
