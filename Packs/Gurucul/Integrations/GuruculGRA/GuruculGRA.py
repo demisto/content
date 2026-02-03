@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 import traceback
-from typing import Any
+from typing import Any, cast
 
 import dateparser
 import urllib3
