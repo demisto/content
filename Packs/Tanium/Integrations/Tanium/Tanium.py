@@ -157,7 +157,7 @@ def getAllPendingActions(handler):
 def getAllPackages(handler):
     response = get_all_objects(handler, u'package')
     parsed = response.get('package_spec')
-    return create_entry('Tanium Packages', parsed, {'Tanium.Packages': parsed},
+    return create_entry('Tanium Packagess', parsed, {'Tanium.Packages': parsed},
                         ['id', 'name', 'creation_time', 'command', 'last_modified_by'])
 
 

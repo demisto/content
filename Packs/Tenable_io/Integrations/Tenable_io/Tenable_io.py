@@ -169,7 +169,7 @@ class Client(BaseClient):
         Args:
             limit: limit number of audit logs to get.
             from_date: date to fetch audit logs from.
-            to_date: date which until to fetch audit logs.
+            to_date: date which until to fetch audit logs. test
             actor_id: fetch audit logs with matching actor id.
             target_id:fetch audit logs with matching target id.
 
