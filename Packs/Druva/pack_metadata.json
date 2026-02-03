@@ -7,15 +7,25 @@
     "url": "",
     "email": "techpartners@druva.com",
     "categories": [
-        "Analytics & SIEM"
+        "Cloud Security"
     ],
-    "tags": [],
+    "tags": [
+        "Compliance",
+        "Incident Response",
+        "Security"
+    ],
     "created": "2020-05-12T14:29:24Z",
     "updated": "2023-03-13T19:29:24Z",
     "beta": false,
     "deprecated": false,
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Compliance",
+        "Incident Response",
+        "Ransomware"
+    ],
+    "keywords": [
+        "inSync"
+    ],
     "dependencies": {},
     "githubUser": [
         "sahilgoyaldruva"
