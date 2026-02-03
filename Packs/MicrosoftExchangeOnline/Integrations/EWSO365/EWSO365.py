@@ -330,20 +330,25 @@ def email_ec(item):
 def is_item_duplicate(item, exclude_ids, incident_filter):
     """
     Checks if an item is a duplicate based on ID and Timestamp.
-    
+
+    Note:
+    According to RFC 5322, Message-IDs should be enclosed in angle brackets (e.g., <id@domain>).
+    However, EWS search might return id@domain first, while subsequent fetches might add them.
+    This function normalizes both forms to prevent duplication caused by this inconsistency.
+
     Features:
     1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>).
     2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
     3. Timestamp Logic: Compares stored time vs item time.
-    
+
     Returns:
         bool: True if item is a duplicate (skip it), False if it should be processed.
     """
     if not item.message_id or not exclude_ids:
         return False
 
-    clean_id = item.message_id.strip().strip('<>')
-    
+    clean_id = item.message_id.strip().strip("<>")
+
     found_key = None
     if clean_id in exclude_ids:
         found_key = clean_id
@@ -361,9 +366,7 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
         return True
 
     current_item_time = (
-        item.datetime_created.ewsformat()
-        if incident_filter == RECEIVED_FILTER
-        else item.last_modified_time.ewsformat()
+        item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
     )
     return stored_time >= current_item_time
 
