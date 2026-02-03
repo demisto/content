@@ -10,7 +10,7 @@ The authentication to EPM requires the following parameters:
 
 ### Endpoint Information
 
-- To uniquely identify an endpoint, use the following command arguments: 
+- To specify an endpoint, use the following command arguments: 
     * endpoint_name.
     * endpoint_external_ip.
   In addition, provide a pre-defined risk plan (for example, `Medium_Risk_Plan`).
