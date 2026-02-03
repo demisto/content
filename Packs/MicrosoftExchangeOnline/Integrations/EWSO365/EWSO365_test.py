@@ -27,6 +27,7 @@ from EWSO365 import (
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
+    is_item_duplicate,
     parse_incident_from_item,
     parse_item_as_dict,
 )
@@ -1255,3 +1256,61 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
     assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
     assert results[2].get("content") == "mock mime content"
+
+
+def test_is_item_duplicate():
+    """
+    Tests the is_item_duplicate function logic including:
+    1. Smart ID Lookup (brackets vs clean)
+    2. Legacy handling (empty stored time)
+    3. Timestamp comparison
+    """
+    from EWSO365 import RECEIVED_FILTER
+
+    # Mock Message object
+    class MockMessage:
+        def __init__(self, message_id, time_str):
+            self.message_id = message_id
+            self.datetime_created = EWSDateTime.from_string(time_str)
+            self.last_modified_time = EWSDateTime.from_string(time_str)
+
+    base_time = "2021-01-01T12:00:00Z"
+    newer_time = "2021-01-01T13:00:00Z"
+    older_time = "2021-01-01T11:00:00Z"
+
+    # 1. Exact Match
+    msg = MockMessage("abc", base_time)
+    exclude = {"abc": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+
+    # 2. Smart Lookup: Item has brackets, stored clean
+    msg = MockMessage("<abc>", base_time)
+    exclude = {"abc": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+
+    # 3. Smart Lookup: Item clean, stored brackets
+    msg = MockMessage("abc", base_time)
+    exclude = {"<abc>": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+
+    # 4. Legacy: Stored time is empty/None
+    msg = MockMessage("abc", newer_time)
+    exclude = {"abc": ""}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+    exclude = {"abc": None}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+
+    # 5. Timestamp: Item is newer (Should NOT be duplicate)
+    msg = MockMessage("abc", newer_time)
+    exclude = {"abc": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is False
+
+    # 6. Timestamp: Item is older (Should be duplicate)
+    msg = MockMessage("abc", older_time)
+    exclude = {"abc": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
+
+    # 7. No ID match
+    msg = MockMessage("xyz", base_time)
+    exclude = {"abc": base_time}
+    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is False
