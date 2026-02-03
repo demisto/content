@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Cognyte
 commonfields:
   id: Luminar_IOCs_and_leaked_credentials
   version: -1
@@ -27,20 +28,19 @@ configuration:
 - additionalinfo: Trust any certificate (not secure)
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Use system proxy settings
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
+  type: 8
   name: feed
   required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -49,8 +49,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -64,125 +64,77 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: feedExpirationPolicy
+- display: ''
+  type: 17
   options:
   - never
   - interval
   - indicatorType
+  name: feedExpirationPolicy
   required: false
-  type: 17
-- name: feedExpirationInterval
-  required: false
+- display: ''
   type: 1
-- defaultvalue: '480'
-  display: Feed Fetch Interval
+  name: feedExpirationInterval
+  required: false
+- display: Feed Fetch Interval
+  defaultvalue: "480"
+  type: 19
   name: feedFetchInterval
   required: false
-  type: 19
-- additionalinfo: Supports CSV values.
-  display: Tags
+- display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
   name: feedTags
   required: false
-  type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
+- display: Traffic Light Protocol Color
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. As the determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, and only indicators that are
-    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
-    are labeled new or modified.
-  defaultvalue: 'true'
+  required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
-  hidden: true
   name: feedIncremental
-  required: false
+  defaultvalue: 'true'
   type: 8
-description: This connector allows integration of intelligence-based IOC data and
-  customer-related leaked records identified by Luminar.
+  hidden: true
+  required: false
+description: This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar.
 display: Luminar IOCs & leaked credentials
 name: Luminar_IOCs_and_leaked_credentials
 script:
   commands:
   - arguments:
-    - default: false
-      description: The maximum number of indicators to return. Default is 50.
-      isArray: false
+    - description: The maximum number of indicators to return. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: >
-        Start date/time in UTC to begin fetching threat intelligence data.
-        Supported formats:
-        YYYY-MM-DD,
-        YYYY-MM-DDTHH:MM,
-        YYYY-MM-DDTHH:MM:SS,
-        YYYY-MM-DDTHH:MM:SS.sss (milliseconds).
-        If only a date is provided, time defaults to 00:00:00 UTC.
-        Example: 2026-01-13T13:53:08.123
-      isArray: false
+    - description: Start date/time (UTC) to begin fetching records. Accepts ISO 8601 date or datetime formats including relative expressions like '3 days ago' or '1 hour'".
       name: fetch_date
-      required: false
-      secret: false
-    deprecated: false
     description: Gets Luminar Indicators
-    execution: false
     name: luminar-get-indicators
   - arguments:
-    - default: false
-      description: The maximum number of leaked records to return. Default is 50.
-      isArray: false
+    - description: The maximum number of leaked records to return. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: >
-        Start date/time in UTC to begin fetching threat intelligence data.
-        Supported formats:
-        YYYY-MM-DD,
-        YYYY-MM-DDTHH:MM,
-        YYYY-MM-DDTHH:MM:SS,
-        YYYY-MM-DDTHH:MM:SS.sss (milliseconds).
-        If only a date is provided, time defaults to 00:00:00 UTC.
-        Example: 2026-01-13T13:53:08.123
-      isArray: false
+    - description: Start date/time (UTC) to begin fetching records. Accepts ISO 8601 date or datetime formats including relative expressions like '3 days ago' or '1 hour'".
       name: fetch_date
-      required: false
-      secret: false
-    deprecated: false
     description: Gets Luminar Leaked Records
-    execution: false
     name: luminar-get-leaked-records
-  - deprecated: false
-    description: This command will reset your fetch history.
-    execution: false
+  - description: This command will reset your fetch history.
     name: luminar-reset-fetch-indicators
   dockerimage: demisto/python3:3.12.8.3296088
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - No tests (auto formatted)
-provider: Cognyte
 fromversion: 6.0.0

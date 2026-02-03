@@ -19,7 +19,6 @@ LUMINAR_TO_XSOAR_TYPES = {
     "windows-registry-key": FeedIndicatorType.Registry,
     "user-account": FeedIndicatorType.Account,
 }
-FORMATS = ["%Y-%m-%d", "%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%S.%f"]
 
 
 def enrich_incident_items(parent, childrens, feed_tags, tlp_color):
@@ -217,12 +216,12 @@ class Client(BaseClient):
                 else:
                     params = {"limit": self.limit, "offset": self.offset}
                     if fetch_date:
-                        params["timestamp"] = self.to_unix_timestamp(fetch_date)
+                        params["timestamp"] = int(fetch_date.timestamp())
                     self.offset += self.limit
             else:
                 params = {"limit": self.limit, "offset": self.offset}
                 if fetch_date:
-                    params["timestamp"] = self.to_unix_timestamp(fetch_date)
+                    params["timestamp"] = int(fetch_date.timestamp())
                 self.offset += self.limit
             req_url = f"{self._base_url}/stix"
             req_headers = {"Authorization": f"Bearer {access_token}"}
@@ -354,18 +353,6 @@ class Client(BaseClient):
         """
         return demisto.getIntegrationContext().get("last_modified_time")
 
-    @staticmethod
-    def to_unix_timestamp(date_str: str) -> int:
-        for fmt in FORMATS:
-            try:
-                dt = datetime.strptime(date_str, fmt)
-                dt = dt.replace(tzinfo=timezone.utc)
-                return int(dt.timestamp())
-            except ValueError:
-                continue
-
-        raise ValueError(f"Invalid date format: '{date_str}'. " f"Supported formats: {FORMATS}")
-
 
 def cognyte_luminar_get_leaked_records(client: Client, args: dict):
     """
@@ -378,7 +365,7 @@ def cognyte_luminar_get_leaked_records(client: Client, args: dict):
 
     """
     limit = arg_to_number(args.get("limit", 50), arg_name="limit")
-    fetch_date = args.get("fetch_date")
+    fetch_date = arg_to_datetime(args.get("fetch_date"), arg_name="fetch_date", is_utc=True, required=False, settings=None)
     leaked_records = client.get_luminar_leaked_credentials_list(fetch_date=fetch_date)
     leaked_records = leaked_records[:limit]
     if leaked_records:
@@ -411,7 +398,7 @@ def cognyte_luminar_get_indicators(client: Client, args: dict):
 
     """
     limit = arg_to_number(args.get("limit", 50), arg_name="limit")
-    fetch_date = args.get("fetch_date")
+    fetch_date = arg_to_datetime(args.get("fetch_date"), arg_name="fetch_date", is_utc=True, required=False, settings=None)
     indicators_list = client.get_luminar_indicators_list(fetch_date=fetch_date)
     indicators_list = indicators_list[:limit]
     if indicators_list:

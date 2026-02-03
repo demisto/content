@@ -48,97 +48,12 @@ Gets Luminar Indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| limit | The maximum number of indicators to return. Default is 50. | Optional | 
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command example
-
-```!luminar-get-indicators limit="3"```
-
-#### Context Example
-
-```json
-{
-    "Luminar": {
-        "Indicators": [
-            {
-                "Indicator Type": "File",
-                "Indicator Value": "a35866ff36a7ec0a226b8f814f3642185742020e",
-                "Malware Family": "SlayerRAT v0.4",
-                "rawJSON": {
-                    "created": "2016-02-15T00:00:00.000Z",
-                    "created_by_ref": "identity--cd3843c0-8119-4ac0-9409-cec757123a6a",
-                    "id": "indicator--88369314-3515-4c5c-a3e3-dba75e4ae964",
-                    "indicator_types": [
-                        "malicious-activity"
-                    ],
-                    "modified": "2016-02-15T00:00:00.000Z",
-                    "name": "SlayerRAT v0.4",
-                    "pattern": "[file:hashes.'SHA-1' = 'a35866ff36a7ec0a226b8f814f3642185742020e']",
-                    "pattern_type": "stix",
-                    "spec_version": "2.1",
-                    "type": "indicator",
-                    "valid_from": "2016-02-15T00:00:00.000Z"
-                }
-            },
-            {
-                "Indicator Type": "Domain",
-                "Indicator Value": "xbodyyellow.top",
-                "Malware Family": "Locky",
-                "rawJSON": {
-                    "created": "2016-02-22T00:00:00.000Z",
-                    "created_by_ref": "identity--cd3843c0-8119-4ac0-9409-cec757123a6a",
-                    "id": "indicator--0240fda0-1b77-4bde-86d8-eeb27203e4d7",
-                    "indicator_types": [
-                        "malicious-activity"
-                    ],
-                    "modified": "2016-02-22T00:00:00.000Z",
-                    "name": "Locky",
-                    "pattern": "[domain-name:value = 'xbodyyellow.top']",
-                    "pattern_type": "stix",
-                    "spec_version": "2.1",
-                    "type": "indicator",
-                    "valid_from": "2016-02-22T00:00:00.000Z"
-                }
-            },
-            {
-                "Indicator Type": "Email",
-                "Indicator Value": "javamaker@inbox.ru",
-                "Malware Family": "OilRig",
-                "rawJSON": {
-                    "created": "2016-10-10T00:00:00.000Z",
-                    "created_by_ref": "identity--cd3843c0-8119-4ac0-9409-cec757123a6a",
-                    "id": "indicator--a1ee47e7-fe49-4fae-8c20-7a14452c5da7",
-                    "indicator_types": [
-                        "malicious-activity"
-                    ],
-                    "modified": "2016-10-10T00:00:00.000Z",
-                    "name": "OilRig",
-                    "pattern": "[email-addr:value = 'javamaker@inbox.ru']",
-                    "pattern_type": "stix",
-                    "spec_version": "2.1",
-                    "type": "indicator",
-                    "valid_from": "2016-10-10T00:00:00.000Z"
-                }
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Indicators from Luminar
->
->|Indicator Type|Indicator Value|Malware Family|
->|---|---|---|
->| File | a35866ff36a7ec0a226b8f814f3642185742020e | SlayerRAT v0.4 |
->| Domain | xbodyyellow.top | Locky |
->| Email | javamaker@inbox.ru | OilRig |
-
 ### luminar-get-leaked-records
 
 ***
@@ -153,6 +68,7 @@ Gets Luminar Leaked Records
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of leaked records to return. Default is 50. | Optional |
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
 
 #### Context Output
 
@@ -224,25 +140,22 @@ There is no context output for this command.
 
 ### luminar-reset-fetch-indicators
 
+### luminar-get-leaked-records
+
 ***
-WARNING: This command will reset your fetch history.
+Gets Luminar Leaked Records
 
 #### Base Command
 
-`luminar-reset-fetch-indicators`
+`luminar-get-leaked-records`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of leaked records to return. Default is 50. | Optional | 
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command example
-
-```!luminar-reset-fetch-indicators```
-
-#### Human Readable Output
-
->Fetch history deleted successfully
