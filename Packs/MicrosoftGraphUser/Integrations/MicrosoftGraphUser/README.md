@@ -991,3 +991,374 @@ Retrieve a list of authentication methods registered to a user.
 | MSGraphUserAuthMethods.Methods.IsUsable | String | Indicates whether the authentication method is currently usable. |
 | MSGraphUserAuthMethods.Methods.IsUsableOnce | String | Indicates whether the authentication method can be used only once. |
 | MSGraphUserAuthMethods.Methods.MethodUsabilityReason | String | The reason why the authentication method is or is not usable. |
+
+### msgraph-user-owned-devices-list
+
+***
+Lists the devices that are owned by the user.
+Permission:User.Read.All, Directory.Read.All - Delegated
+Note: When using the XSOAR app, this command returns partial data. To retrieve full data, use a self-deployed Azure app with the appropriate permissions.
+
+#### Base Command
+
+`msgraph-user-owned-devices-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The Azure AD user ID. | Required |
+| limit | Number of devices in the list. Maximum is 50. Default is 50. | Optional |
+| next_page | The URL for the next page in the list. | Optional |
+| filter | Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.ID | String | User's ID. |
+| MSGraphUser.OwnedDevice.ID | String | Owned device's ID. |
+| MSGraphUser.OwnedDevice.PhysicalIds | String | Physical IDs of the device. |
+| MSGraphUser.OwnedDevice.DeviceVersion | String | The version of the device. |
+| MSGraphUser.OwnedDevice.ProfileType | String | The profile type of the device. |
+| MSGraphUser.OwnedDevice.CreatedDateTime | String | The date and time when the device was created. |
+| MSGraphUser.OwnedDevice.ApproximateLastSignInDateTime | String | The approximate date and time of the last sign-in. |
+| MSGraphUser.OwnedDevice.OperatingSystemVersion | String | The version of the operating system. |
+| MSGraphUser.OwnedDevice.AlternativeSecurityIds | String | Alternative security IDs of the device. |
+| MSGraphUser.OwnedDevice.DisplayName | String | The display name of the device. |
+| MSGraphUser.OwnedDevice.OperatingSystem | String | The operating system of the device. |
+| MSGraphUser.OwnedDevice.DeviceId | String | The unique identifier for the device. |
+| MSGraphUser.OwnedDevice.TrustType | String | The trust type of the device. |
+| MSGraphUser.OwnedDevice.RegistrationDateTime | String | The date and time when the device was registered. |
+
+### msgraph-user-fido2-method-list
+
+***
+Lists the FIDO2 authentication methods registered to a user, or retrieves a specific FIDO2 method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All
+
+#### Base Command
+
+`msgraph-user-fido2-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific FIDO2 authentication method to retrieve. | Optional |
+| limit | Maximum number of FIDO2 methods to return when listing all methods. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.FIDO2Method.ID | String | The unique identifier of the FIDO2 authentication method. |
+| MSGraphUser.FIDO2Method.DisplayName | String | The display name of the key as given by the user. |
+| MSGraphUser.FIDO2Method.CreatedDateTime | String | The timestamp when this key was registered. |
+| MSGraphUser.FIDO2Method.AaGuid | String | Authenticator Attestation GUID, an identifier that indicates the type of authenticator. |
+| MSGraphUser.FIDO2Method.Model | String | The manufacturer-assigned model of the FIDO2 security key. |
+| MSGraphUser.FIDO2Method.AttestationCertificates | String | The attestation certificate\(s\) attached to this security key. |
+| MSGraphUser.FIDO2Method.AttestationLevel | String | The attestation level of this FIDO2 security key. |
+
+### msgraph-user-fido2-method-delete
+
+***
+Deletes a FIDO2 authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-fido2-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the FIDO2 authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-email-method-list
+
+***
+Lists the email authentication methods registered to a user, or retrieves a specific email method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-email-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific email authentication method to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.EmailAuthMethod.ID | String | The unique identifier of the email authentication method. |
+| MSGraphUser.EmailAuthMethod.EmailAddress | String | The email address registered to this user. |
+
+### msgraph-user-email-method-delete
+
+***
+Deletes an email authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-email-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the email authentication method to delete. Default is 3ddfcfc8-9383-446f-83cc-3ab9be4be18f. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-authenticator-method-list
+
+***
+Lists the Microsoft Authenticator authentication methods registered to a user, or retrieves a specific method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-authenticator-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific Microsoft Authenticator authentication method to retrieve. | Optional |
+| limit | Maximum number of results to return when listing all methods. Default is 50. | Optional |
+| next_page | The URL for the next page in the list. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.UserAuthMethod.ID | String | The unique identifier of the Microsoft Authenticator authentication method. |
+| MSGraphUser.UserAuthMethod.DisplayName | String | The name of the device on which Microsoft Authenticator is registered. |
+| MSGraphUser.UserAuthMethod.PhoneAppVersion | String | The version of Microsoft Authenticator installed on the device. |
+| MSGraphUser.UserAuthMethod.DeviceTag | String | Tags containing app metadata. |
+| MSGraphUser.UserAuthMethod.CreatedDateTime | String | The timestamp when this method was registered to the user. |
+| MSGraphUser.UserAuthMethod.NextPage | String | A token to pass to the next list command to retrieve additional results. |
+
+### msgraph-user-authenticator-method-delete
+
+***
+Deletes a Microsoft Authenticator authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-authenticator-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the Microsoft Authenticator authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-phone-method-list
+
+***
+Lists the phone authentication methods registered to a user, or retrieves a specific phone method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-phone-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific phone authentication method to retrieve. | Optional |
+| next_page | The URL for the next page in the list. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.PhoneAuthMethod.ID | String | The unique identifier of the phone authentication method. |
+| MSGraphUser.PhoneAuthMethod.PhoneNumber | String | The phone number registered to this user. |
+| MSGraphUser.PhoneAuthMethod.PhoneType | String | The type of phone \(mobile, alternateMobile, or office\). |
+| MSGraphUser.PhoneAuthMethod.SmsSignInState | String | Whether the phone is ready to be used for SMS sign-in. |
+| MSGraphUser.PhoneAuthMethod.NextPage | String | A token to pass to the next list command to retrieve additional results. |
+
+### msgraph-user-phone-method-delete
+
+***
+Deletes a phone authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-phone-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the phone authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-software-oath-method-list
+
+***
+Lists the software OATH authentication methods registered to a user, or retrieves a specific method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-software-oath-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific software OATH authentication method to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.SoftOathAuthMethod.ID | String | The unique identifier of the software OATH authentication method. |
+
+### msgraph-user-software-oath-method-delete
+
+***
+Deletes a software OATH authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-software-oath-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the software OATH authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-windows-hello-method-list
+
+***
+Lists the Windows Hello for Business authentication methods registered to a user, or retrieves a specific method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-windows-hello-method-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of a specific Windows Hello for Business authentication method to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.WindowsHelloAuthMethod.ID | String | The unique identifier of the Windows Hello for Business authentication method. |
+| MSGraphUser.WindowsHelloAuthMethod.DisplayName | String | The name of the device on which Windows Hello is registered. |
+| MSGraphUser.WindowsHelloAuthMethod.KeyStrength | String | The key strength of the Windows Hello for Business key \(normal or weak\). |
+| MSGraphUser.WindowsHelloAuthMethod.CreatedDateTime | String | The timestamp when this method was registered to the user. |
+
+### msgraph-user-windows-hello-method-delete
+
+***
+Deletes a Windows Hello for Business authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-windows-hello-method-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+| method_id | The ID of the Windows Hello for Business authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-temp-access-pass-method-list
+
+***
+Lists the Temporary Access Pass authentication methods registered to a user, or retrieves a specific method by ID.
+Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-temp-access-pass-method-list`
+
+#### Input
+
+**Argument Name** | **Description** | **Required** |
+--- | --- | --- |
+user | User ID or userPrincipalName. | Required |
+method_id | The ID of a specific Temporary Access Pass authentication method to retrieve. | Optional |
+
+#### Context Output
+
+**Path** | **Type** | **Description** |
+--- | --- | --- |
+MSGraphUser.TempAccessPassAuthMethod.ID | String | The unique identifier of the Temporary Access Pass authentication method. |
+MSGraphUser.TempAccessPassAuthMethod.IsUsable | Bool | Indicates whether the authentication method is currently usable. |
+
+### msgraph-user-temp-access-pass-method-delete
+
+***
+Deletes a Temporary Access Pass authentication method from a user.
+Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+
+#### Base Command
+
+`msgraph-user-temp-access-pass-method-delete`
+
+#### Input
+
+**Argument Name** | **Description** | **Required** |
+--- | --- | --- |
+user | User ID or userPrincipalName. | Required |
+method_id | The ID of the Temporary Access Pass authentication method to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
