@@ -1,8 +1,4 @@
 category: Utilities
-provider: Palo Alto Networks
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: XSOAR-Web-Server
   version: -1
@@ -65,7 +61,9 @@ script:
   - arguments: []
     description: Clear the backend storage containing all session information.
     name: xsoar-ws-clear-cache
-  - arguments: []
+  - arguments:
+    - description: Returns partial matches - optional filter returns cache items that match this string.
+      name: userstring
     description: Show the details of all the setup actions from the backend.
     name: xsoar-ws-show-cache
   - arguments:
@@ -106,23 +104,13 @@ script:
       name: xsoarproxy
     description: setup a form submission job that can take multiple values from multiple users.
     name: xsoar-ws-setup-form-submission
-  dockerimage: demisto/bottle:1.0.0.3189500
+  dockerimage: demisto/bottle:1.0.0.6977863
   longRunning: true
   longRunningPort: true
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-triggers:
-  - conditions:
-      - name: engine
-        operator: not_exists
-      - name: isEngineGroup
-        operator: not_exists
-    effects:
-      - name: longRunningPort
-        action:
-          hidden: true
-          required: false
