@@ -96,7 +96,7 @@ inputs:
 - key: endpoint_external_ip
   value: {}
   required: true
-  description: "External IP of target endpoint"
+  description: "The external IP of the target endpoint."
   playbookInputQuery: null
 - key: risk_plan
   value: {}
