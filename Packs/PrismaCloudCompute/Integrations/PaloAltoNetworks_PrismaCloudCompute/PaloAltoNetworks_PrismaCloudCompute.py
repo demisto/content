@@ -305,7 +305,7 @@ class PrismaCloudComputeClient(BaseClient):
         params.update({"limit": MAX_API_LIMIT, "offset": 0})
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="response")
 
-        total_count = int(response.headers.get("Total-Count", -1))
+        total_count = int(response.headers.get("Total-Count", 1))
         response = response.json()
         current_count = len(response) if response else 0
         while current_count < total_count:
@@ -3446,7 +3446,8 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     ctx = get_integration_context()
     vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", "")
     assets_snapshot_id = ctx.get("assets_snapshot_id", "")
-
+    demisto.debug(f"Preparing to update assets snapshot id {assets_snapshot_id} with a total of {assets_total} assets.")
+    demisto.debug(f"Preparing to update vulnerabilities snapshot id {vulnerabilities_snapshot_id} with a total of {vulnerabilities_total} vulnerabilities.")
     if assets_snapshot_id:
         assets_coroutine = async_send_data_to_xsiam(
             data=[],
@@ -3537,7 +3538,7 @@ async def obtain_asset_data_from_prisma(
     """
     params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
     response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
-    asset_type_related_data.assets_total_count = int(response.headers.get("Total-Count", -1))
+    asset_type_related_data.assets_total_count = int(response.headers.get("Total-Count", 1))
     data = await response.json()
     return data
 
@@ -3566,7 +3567,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         snapshot_id=asset_type_related_data.assets_snapshot_id,
         data_size_expected_to_split_evenly=False,
         url_key="address",
-        items_count=-1,
+        items_count=1,
     )
     vulnerabilities_coroutine = async_send_data_to_xsiam(
         data=processed_vulnerabilities,
@@ -3579,7 +3580,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         snapshot_id=asset_type_related_data.vulnerabilities_snapshot_id,
         data_size_expected_to_split_evenly=False,
         url_key="address",
-        items_count=-1,
+        items_count=1,
     )
     if assets_coroutine:
         await assets_coroutine
