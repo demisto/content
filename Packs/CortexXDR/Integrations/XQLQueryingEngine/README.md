@@ -995,32 +995,32 @@ Gets a list of XQL queries from the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| extra_data | Whether to return an extended view. Possible values are: true, false. | Optional |
-| xql_query_name | A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call. | Optional |
-| xql_query_tag | A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call. | Optional |
+| extra_data | Whether to return an extended view. Possible values are: true, false. | Optional | 
+| xql_query_name | A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call. | Optional | 
+| xql_query_tag | A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.Library.id | Number | The unique identifier of the saved query. |
-| PaloAltoNetworksXQL.Library.name | String | The name of the XQL query. |
-| PaloAltoNetworksXQL.Library.description | String | A description of what the query searches for. |
-| PaloAltoNetworksXQL.Library.query_text | String | The actual XQL query syntax. |
-| PaloAltoNetworksXQL.Library.created_at | Date | The date and time when the query was created \(in Unix Epoch format\). |
-| PaloAltoNetworksXQL.Library.modified_at | Date | The date and time when the query was last modified \(in Unix Epoch format\). |
-| PaloAltoNetworksXQL.Library.created_by | String | The email address of the user who created the query. |
-| PaloAltoNetworksXQL.Library.modified_by | String | The email address of the user who last modified the query. |
-| PaloAltoNetworksXQL.Library.created_by_pretty | String | The display name that created the query. |
-| PaloAltoNetworksXQL.Library.modified_by_pretty | String | The display name that last modified the query. |
-| PaloAltoNetworksXQL.Library.is_private | Boolean | Whether the query is private to the user or shared. |
-| PaloAltoNetworksXQL.Library.content_global_id | String | The global content identifier. |
-| PaloAltoNetworksXQL.Library.labels | String | A list of labels associated with the query. |
+| PaloAltoNetworksXQL.Library.id | Number | The unique identifier of the saved query. | 
+| PaloAltoNetworksXQL.Library.name | String | The name of the XQL query. | 
+| PaloAltoNetworksXQL.Library.description | String | A description of what the query searches for. | 
+| PaloAltoNetworksXQL.Library.query_text | String | The actual XQL query syntax. | 
+| PaloAltoNetworksXQL.Library.created_at | Date | The date and time when the query was created \(in Unix Epoch format\). | 
+| PaloAltoNetworksXQL.Library.modified_at | Date | The date and time when the query was last modified \(in Unix Epoch format\). | 
+| PaloAltoNetworksXQL.Library.created_by | String | The email address of the user who created the query. | 
+| PaloAltoNetworksXQL.Library.modified_by | String | The email address of the user who last modified the query. | 
+| PaloAltoNetworksXQL.Library.created_by_pretty | String | The display name that created the query. | 
+| PaloAltoNetworksXQL.Library.modified_by_pretty | String | The display name that last modified the query. | 
+| PaloAltoNetworksXQL.Library.is_private | Boolean | Whether the query is private to the user or shared. | 
+| PaloAltoNetworksXQL.Library.content_global_id | String | The global content identifier. | 
+| PaloAltoNetworksXQL.Library.labels | String | A list of labels associated with the query. | 
 
 ### xdr-xql-library-create
 
 ***
-Creates or updates XQL queries in the library.
+Creates or updates XQL query in the library.
 
 #### Base Command
 
@@ -1030,15 +1030,14 @@ Creates or updates XQL queries in the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| override_existing | Whether to override existing queries. Possible values are: true, false. | Optional |
-| xql_query | A comma-separated list of XQL query strings. For example: "dataset = xdr_data \|limit 1". | Optional |
-| xql_query_name | A comma-separated list of new XQL query names. The XQL query name should be unique. | Optional |
-| xql_query_tag | A comma-separated list of new XQL query tags. | Optional |
+| override_existing | Whether to override existing queries. Possible values are: true, false. | Optional | 
+| xql_query | The new XQL query. For example: "dataset = xdr_data \|limit 1". | Optional | 
+| xql_query_name | The name of the new XQL query. The XQL query name should be unique. | Optional | 
+| xql_query_tag | A new XQL query tags. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### xdr-xql-library-delete
 
 ***
@@ -1052,8 +1051,8 @@ Deletes XQL queries from the library.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| xql_query_name | A comma-separated list of XQL query names to delete.When using this argument, you cannot delete queries by xql_query_tag in the same request. | Optional |
-| xql_query_tag | A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request. | Optional |
+| xql_query_name | A comma-separated list of XQL query names to delete. When using this argument, you cannot delete queries by xql_query_tag in the same request. | Optional | 
+| xql_query_tag | A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request. | Optional | 
 
 #### Context Output
 
