@@ -1053,40 +1053,130 @@ def test_file_command_unsupported_hash_type(client):
     """
     Given:
         - A Unit42Intelligence client
-        - A non-SHA256 hash (MD5 - 32 characters)
+        - An unsupported hash type (SHA512 - 128 characters)
     When:
         - Running file_command
     Then:
         - Returns CommandResults with error message about unsupported hash type
         - Does not make API call
     """
-    md5_hash = "a" * 32  # MD5 hash
+    sha512_hash = "a" * 128  # SHA512 hash
 
-    args = {"file": md5_hash, "create_relationships": True}
+    args = {"file": sha512_hash, "create_relationships": True}
     result = file_command(client, args)
 
-    assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
-    assert "md5" in result.readable_output
+    assert "Unit 42 Intelligence only supports SHA256, SHA1, and MD5 hashes" in result.readable_output
+    assert "sha512" in result.readable_output
 
 
-def test_file_command_sha1_unsupported(client):
+def test_file_command_md5_malicious(client, mocker):
     """
     Given:
         - A Unit42Intelligence client
-        - A SHA1 hash (40 characters)
+        - A mock API response with malicious verdict for MD5 hash
+        - An MD5 hash (32 characters)
     When:
-        - Running file_command
+        - Running file_command with create_relationships enabled
     Then:
-        - Returns CommandResults with error message about unsupported hash type
-        - Does not make API call
+        - Returns CommandResults with malicious verdict
+        - Creates proper File indicator with MD5 hash set
+        - Calls API with filehash_md5 endpoint
     """
-    sha1_hash = "a" * 40  # SHA1 hash
+    test_hash = "d41d8cd98f00b204e9800998ecf8427e"  # MD5 hash
+    mock_response = {
+        "indicator_value": test_hash,
+        "indicator_type": "file",
+        "verdict": "malicious",
+        "verdict_categories": [{"value": "trojan"}],
+        "first_seen": "2023-01-01T00:00:00Z",
+        "last_seen": "2023-12-31T23:59:59Z",
+        "sources": ["wildfire"],
+        "counts": [],
+        "threat_object_associations": [
+            {
+                "name": "Zeus",
+                "threat_object_class": "malware_family",
+            }
+        ],
+        "indicator_details": {
+            "file_hashes": {
+                "md5": test_hash,
+                "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            }
+        },
+    }
 
-    args = {"file": sha1_hash, "create_relationships": True}
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mock_lookup = mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"file": test_hash, "create_relationships": True}
     result = file_command(client, args)
 
-    assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
-    assert "sha1" in result.readable_output
+    # Verify API was called with correct endpoint
+    mock_lookup.assert_called_once_with("filehash_md5", test_hash)
+
+    assert result.outputs["Value"] == test_hash
+    assert result.outputs["Verdict"] == "Malicious"
+    assert result.indicator.md5 == test_hash
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_file_command_sha1_malicious(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with malicious verdict for SHA1 hash
+        - A SHA1 hash (40 characters)
+    When:
+        - Running file_command with create_relationships enabled
+    Then:
+        - Returns CommandResults with malicious verdict
+        - Creates proper File indicator with SHA1 hash set
+        - Calls API with filehash_sha1 endpoint
+    """
+    test_hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709"  # SHA1 hash
+    mock_response = {
+        "indicator_value": test_hash,
+        "indicator_type": "file",
+        "verdict": "malicious",
+        "verdict_categories": [{"value": "malware"}],
+        "first_seen": "2023-01-01T00:00:00Z",
+        "last_seen": "2023-12-31T23:59:59Z",
+        "sources": ["wildfire"],
+        "counts": [],
+        "threat_object_associations": [
+            {
+                "name": "Emotet",
+                "threat_object_class": "malware_family",
+            }
+        ],
+        "indicator_details": {
+            "file_hashes": {
+                "md5": "d41d8cd98f00b204e9800998ecf8427e",
+                "sha1": test_hash,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            }
+        },
+    }
+
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mock_lookup = mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"file": test_hash, "create_relationships": True}
+    result = file_command(client, args)
+
+    # Verify API was called with correct endpoint
+    mock_lookup.assert_called_once_with("filehash_sha1", test_hash)
+
+    assert result.outputs["Value"] == test_hash
+    assert result.outputs["Verdict"] == "Malicious"
+    assert result.indicator.sha1 == test_hash
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
 
 
 def test_build_threat_object_description():
