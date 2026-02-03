@@ -116,14 +116,14 @@ script:
   - arguments:
     - description: The maximum number of indicators to return. Default is 50.
       name: limit
-    - description: Start date/time (UTC) to begin fetching records. Accepts ISO 8601 date or datetime formats including relative expressions like '3 days ago' or '1 hour'".
+    - description: "Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats."
       name: fetch_date
     description: Gets Luminar Indicators
     name: luminar-get-indicators
   - arguments:
     - description: The maximum number of leaked records to return. Default is 50.
       name: limit
-    - description: Start date/time (UTC) to begin fetching records. Accepts ISO 8601 date or datetime formats including relative expressions like '3 days ago' or '1 hour'".
+    - description: "Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats."
       name: fetch_date
     description: Gets Luminar Leaked Records
     name: luminar-get-leaked-records

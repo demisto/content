@@ -48,12 +48,13 @@ Gets Luminar Indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional | 
-| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### luminar-get-leaked-records
 
 ***
@@ -68,7 +69,7 @@ Gets Luminar Leaked Records
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of leaked records to return. Default is 50. | Optional |
-| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional |
 
 #### Context Output
 
@@ -153,8 +154,8 @@ Gets Luminar Leaked Records
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of leaked records to return. Default is 50. | Optional | 
-| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional | 
+| limit | The maximum number of leaked records to return. Default is 50. | Optional |
+| fetch_date | Start date/time (UTC) to begin fetching records. Handles various formats including relative time expressions like '3 days ago', '1 hour ago', and standard date/time formats. | Optional |
 
 #### Context Output
 
