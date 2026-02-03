@@ -113,6 +113,6 @@ inputSections:
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: A generic group for outputs.
 outputs: []
 sourceplaybookid: e78740e3-c7c4-4f56-81ec-7879abc846ec
