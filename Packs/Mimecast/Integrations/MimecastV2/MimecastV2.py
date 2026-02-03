@@ -2358,9 +2358,7 @@ def fetch_url_logs(
     Wrapper for fetching URL logs with pagination support.
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
-    search_params = {"from": last_fetch_date_time, "scanResult": "malicious", "route": "all"}
-    # Note: When continuing pagination with a token, we don't update the 'from' time
-    # The pagination token already encodes the state, similar to held_messages
+    search_params = {"from": last_fetch_date_time, "scanResult": "malicious"}
 
     url_logs, len_of_results, next_page = fetch_url_logs_with_pagination(
         api_endpoint="/api/ttp/url/get-logs",
@@ -2416,9 +2414,7 @@ def fetch_attachment_logs(
     Wrapper for fetching attachment logs with pagination support.
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
-    search_params = {"from": last_fetch_date_time, "result": "malicious", "route": "all"}
-    # Note: When continuing pagination with a token, we don't update the 'from' time
-    # The pagination token already encodes the state, similar to held_messages
+    search_params = {"from": last_fetch_date_time, "scanResult": "malicious"}
 
     attachment_logs, len_of_results, next_page = fetch_attachment_logs_with_pagination(
         api_endpoint="/api/ttp/attachment/get-logs",
@@ -2432,7 +2428,11 @@ def fetch_attachment_logs(
     for attachment_log in attachment_logs:
         incident = attachment_to_incident(attachment_log)
         # Create composite key for deduplication: fileName + date + senderAddress + recipientAddress
-        log_id = f"{attachment_log.get('fileName')}_{attachment_log.get('date')}_{attachment_log.get('senderAddress')}_{attachment_log.get('recipientAddress')}"
+        # Using both sender and recipient to prevent data loss when same file is sent to different recipients
+        log_id = (
+            f"{attachment_log.get('fileName')}_{attachment_log.get('date')}_"
+            f"{attachment_log.get('senderAddress')}_{attachment_log.get('recipientAddress')}"
+        )
         temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
 
         # update last run
@@ -2475,8 +2475,6 @@ def fetch_impersonation_logs(
     Returns tuple of (next_page, dedup_messages, new_last_fetch)
     """
     search_params = {"from": last_fetch_date_time, "taggedMalicious": True}
-    # Note: When continuing pagination with a token, we don't update the 'from' time
-    # The pagination token already encodes the state, similar to held_messages
 
     impersonation_logs, len_of_results, next_page = fetch_impersonation_logs_with_pagination(
         api_endpoint="/api/ttp/impersonation/get-logs",
