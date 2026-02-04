@@ -394,7 +394,7 @@ Get case information based on the specified filters.
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
 | limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
 | case_domain | A comma-separated list of domains to filter cases by. | Optional |
-| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, under_investigation, resolved. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, in_progress, resolved. | Optional |
 | severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
 | asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
 | asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
