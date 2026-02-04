@@ -158,6 +158,7 @@ configuration:
   - location
   - vulnerability
   - x509-certificate
+  - software
   additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
   section: Collect
 - display: Certificate File as Text
