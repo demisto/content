@@ -1514,3 +1514,54 @@ Notes:
 | MicrosoftTeams.MessagesListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
 | MicrosoftTeams.MessagesListMetadata.returned_count | Number | The actual number of messages returned in this specific execution. |
 | MicrosoftTeams.MessagesListMetadata.filtered_count | Number | The total number of messages in the system that match the specified filter criteria. |
+
+### microsoft-teams-send-proactive-message
+
+***
+Sends a proactive message to any Microsoft Teams user across the organization.
+This command enables direct communication with users without requiring them to be in a specific team or channel.
+
+The command will:
+1. Resolve the user identifier to the actual user ID using Microsoft Graph API
+2. Create or retrieve an existing conversation with the user
+3. Send the message or adaptive card via the Bot Framework API
+
+**Use Case Example**: A user attempts to download a malicious file. An XSOAR playbook is triggered by a security event, and as part of the automated response, the playbook uses this command to send an Adaptive Card to the user. The card explains that the file has been quarantined, provides a brief security tip, and asks for confirmation that the user did not intentionally download the file.
+
+##### Base Command
+
+`microsoft-teams-send-proactive-message`
+
+##### Required Permissions
+
+This command uses the Bot Framework API and does not require specific Graph API permissions beyond the basic bot setup.
+
+However, to resolve user identifiers, the bot requires:
+- `User.Read.All` - *Application* (for user resolution via Graph API)
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user identifier to send the message to. Can be one of the following:<br/>- User ID (GUID): e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"<br/>- Email address: e.g., "user@example.com"<br/>- User Principal Name: e.g., "user@domain.onmicrosoft.com"<br/>- Display Name: e.g., "John Doe" | Required |
+| message | The text message to send to the user. | Optional |
+| adaptive_card | The Microsoft Teams adaptive card to send (in JSON format). | Optional |
+
+**Note**: Either `message` or `adaptive_card` must be provided, but not both.
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ProactiveMessage.conversationId | String | The ID of the conversation created or used. |
+| MicrosoftTeams.ProactiveMessage.userId | String | The resolved user ID. |
+| MicrosoftTeams.ProactiveMessage.activityId | String | The ID of the sent message activity. |
+| MicrosoftTeams.ProactiveMessage.userIdentifier | String | The original user identifier provided. |
+
+##### Command Example
+
+```!microsoft-teams-send-proactive-message user_id="user@example.com" message="Your file has been quarantined due to security concerns."```
+
+##### Human Readable Output
+
+Message was sent successfully.
