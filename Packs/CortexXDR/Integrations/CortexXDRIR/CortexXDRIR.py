@@ -1924,6 +1924,7 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
 
 def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
     Updates an existing correlation rule.
     Args:
         client (Client): The client to use.
@@ -1946,6 +1947,7 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
 
 def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResults:
     """
+    API Docs  https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-Correlation-Rules
     Deletes correlation rules.
     Args:
         client (Client): The client to use.

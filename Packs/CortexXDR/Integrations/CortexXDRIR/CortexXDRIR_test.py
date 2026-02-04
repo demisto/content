@@ -2785,3 +2785,169 @@ def test_replace_dots_in_keys():
     # Test with non-dict/list input
     assert replace_dots_in_keys("string.with.dots") == "string.with.dots"
     assert replace_dots_in_keys(123) == 123
+
+
+def test_bioc_list_command(mocker):
+    """
+    Given:
+        - Arguments for filtering BIOCs.
+    When:
+        - Running bioc_list_command.
+    Then:
+        - Verify the client.get_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_list_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": [{"rule_id": "1", "name": "test_bioc", "type": "host", "severity": "high", "status": "enabled"}]}
+    mocker.patch.object(Client, "get_biocs", return_value=mock_reply)
+
+    args = {"name": "test_bioc", "severity": "high"}
+    res = bioc_list_command(client, args)
+
+    assert res.outputs == mock_reply["objects"]
+    assert "test_bioc" in res.readable_output
+
+
+def test_bioc_create_command(mocker):
+    """
+    Given:
+        - Arguments for creating a BIOC.
+    When:
+        - Running bioc_create_command.
+    Then:
+        - Verify the client.insert_or_update_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_create_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"added_objects": [{"id": "1", "status": "BIOC created successfully"}]}
+    mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
+
+    args = {"name": "test_bioc", "severity": "high", "indicator": '{"field": "value"}'}
+    res = bioc_create_command(client, args)
+
+    assert res.outputs == {"rule_id": "1"}
+    assert res.readable_output == "BIOC created successfully"
+
+
+def test_bioc_update_command(mocker):
+    """
+    Given:
+        - Arguments for updating a BIOC.
+    When:
+        - Running bioc_update_command.
+    Then:
+        - Verify the client.insert_or_update_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_update_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"updated_objects": [{"id": "1", "status": "BIOC updated successfully"}]}
+    mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
+
+    args = {"rule_id": "1", "name": "test_bioc", "severity": "high"}
+    res = bioc_update_command(client, args)
+
+    assert res.outputs == {"rule_id": "1"}
+    assert res.readable_output == "BIOC updated successfully"
+
+
+def test_bioc_delete_command(mocker):
+    """
+    Given:
+        - Arguments for deleting a BIOC.
+    When:
+        - Running bioc_delete_command.
+    Then:
+        - Verify the client.delete_biocs is called and results are correct.
+    """
+    from CortexXDRIR import Client, bioc_delete_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": ["1"]}
+    mocker.patch.object(Client, "delete_biocs", return_value=mock_reply)
+
+    args = {"name": "test_bioc"}
+    res = bioc_delete_command(client, args)
+
+    assert res == "BIOC with id 1 deleted successfully."
+
+
+def test_correlation_rule_list_command(mocker):
+    """
+    Given:
+        - Arguments for filtering correlation rules.
+    When:
+        - Running correlation_rule_list_command.
+    Then:
+        - Verify the client.get_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_list_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": [{"rule_id": "1", "name": "test_rule", "description": "desc", "is_enabled": True}]}
+    mocker.patch.object(Client, "get_correlation_rules", return_value=mock_reply)
+
+    args = {"name": "test_rule"}
+    res = correlation_rule_list_command(client, args)
+
+    assert res.outputs == mock_reply["objects"]
+    assert "test_rule" in res.readable_output
+
+
+def test_correlation_rule_create_command(mocker):
+    """
+    Given:
+        - Arguments for creating a correlation rule.
+    When:
+        - Running correlation_rule_create_command.
+    Then:
+        - Verify the client.create_or_update_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_create_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"added_objects": [{"id": "1", "status": "Rule created successfully"}]}
+    mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
+
+    args = {"name": "test_rule", "severity": "high", "xql_query": "dataset = xdr_data", "is_enabled": "true"}
+    res = correlation_rule_create_command(client, args)
+
+    assert res.outputs == {"rule_id": "1"}
+    assert res.readable_output == "Rule created successfully"
+
+
+def test_correlation_rule_update_command(mocker):
+    """
+    Given:
+        - Arguments for updating a correlation rule.
+    When:
+        - Running correlation_rule_update_command.
+    Then:
+        - Verify the client.create_or_update_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_update_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"updated_objects": [{"id": "1", "status": "Rule updated successfully"}]}
+    mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
+
+    args = {"rule_id": "1", "name": "test_rule", "severity": "high"}
+    res = correlation_rule_update_command(client, args)
+
+    assert res.outputs == {"rule_id": "1"}
+    assert res.readable_output == "Rule updated successfully"
+
+
+def test_correlation_rule_delete_command(mocker):
+    """
+    Given:
+        - Arguments for deleting a correlation rule.
+    When:
+        - Running correlation_rule_delete_command.
+    Then:
+        - Verify the client.delete_correlation_rules is called and results are correct.
+    """
+    from CortexXDRIR import Client, correlation_rule_delete_command
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_reply = {"objects": ["1"], "objects_count": 1}
+    mocker.patch.object(Client, "delete_correlation_rules", return_value=mock_reply)
+
+    args = {"rule_id": "1"}
+    res = correlation_rule_delete_command(client, args)
+
+    assert res.readable_output == "Correlation Rule 1 was deleted."
