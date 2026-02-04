@@ -4180,18 +4180,51 @@ script:
     - contextPath: PaloAltoNetworksXDR.Case.severity
       description: The severity of the case.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Case.status
-      description: The status of the case.
+    - contextPath: PaloAltoNetworksXDR.Case.status_progress
+      description: The progress status of the case (e.g., New, Under Investigation).
       type: String
-    - contextPath: PaloAltoNetworksXDR.Case.creation_time
-      description: The timestamp when the case was created.
-      type: Date
+    - contextPath: PaloAltoNetworksXDR.Case.description
+      description: A detailed description of the case and involved entities.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.low_severity_issue_count
+      description: The number of low severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.med_severity_issue_count
+      description: The number of medium severity issues associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.case_domain
+      description: The security domain of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.xdr_url
+      description: The direct URL to the incident view in the XDR console.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.is_blocked
+      description: Indicates if the threat was blocked.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.aggregated_score
+      description: The overall risk score calculated for the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.host_count
+      description: The number of hosts involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.user_count
+      description: The number of users involved in the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.wildfire_hits
+      description: The number of WildFire malware hits associated with the case.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.tags
+      description: A list of tags associated with the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.starred
+      description: Whether the case has been starred/flagged.
+      type: Boolean
   - arguments:
     - description: The ID of the case to update.
       name: case_id
       required: true
     - auto: PREDEFINED
-      description: The status to set for the case.
+      description: The status to set for the case. if the status is updated to "resolved", resolution_reason must be provided.
       name: status
       predefined:
       - new
@@ -4204,7 +4237,7 @@ script:
       - resolved_known_issue
       - resolved_duplicate
       - resolved_false_positive
-      - resolved_other
+      - "Resolved - Other"
       - resolved_true_positive
       - resolved_security_testing
       - resolved_fixed

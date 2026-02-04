@@ -631,18 +631,20 @@ class Client(CoreClient):
         res = self._http_request(
             method="POST",
             url_suffix="/case/search",
-            json_data={"request_data": request_data},
+            json_data=request_data,
         )
         return res.get("reply", {}).get("DATA", [])
 
     def update_case(self, case_id: str, request_data: dict):
         """
         API Endpoint: POST /public_api/v1/case/update/{case-id}
+        In case of success the API returns 204
         """
         return self._http_request(
             method="POST",
             url_suffix=f"/case/update/{case_id}",
-            json_data={"request_data": request_data},
+            json_data=request_data,
+            resp_type="response"
         )
 
     def get_case_artifacts(self, case_id: str):
@@ -651,10 +653,9 @@ class Client(CoreClient):
         """
         res = self._http_request(
             method="GET",
-            url_suffix="/case/artifacts",
-            params={"case_id": case_id},
+            url_suffix=f"/case/artifacts/{case_id}",
         )
-        return res.get("reply", {}).get("DATA", {})
+        return res
 
 
 def extract_paths_and_names(paths: list) -> tuple:
@@ -1914,28 +1915,36 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
     Returns a list of cases.
+
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
     """
     case_ids = argToList(args.get("case_id"))
     case_domains = argToList(args.get("case_domain"))
     severities = argToList(args.get("severity"))
     statuses = argToList(args.get("status"))
-    created_before = arg_to_timestamp(args.get("created_before")) if args.get("created_before") else None
-    created_after = arg_to_timestamp(args.get("created_after")) if args.get("created_after") else None
+    created_before = arg_to_timestamp(args.get("created_before"), "created_before") if args.get("created_before") else None
+    created_after = arg_to_timestamp(args.get("created_after"), "created_after") if args.get("created_after") else None
     sort_field = args.get("sort_field")
     sort_order = args.get("sort_order")
-    limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
+    page_size = arg_to_number(args.get("page_size")) if args.get("page_size") else limit
+    page = arg_to_number(args.get("page")) if args.get("page_size") else 0
 
     filters = []
     if case_ids:
-        filters.append({"field": "case_id", "operator": "in", "value": case_ids})
+        converted_ids = list(map(int, case_ids))
+        filters.append({"field": "case_id", "operator": "in", "value": converted_ids})
     if case_domains:
         filters.append({"field": "case_domain", "operator": "in", "value": case_domains})
     if severities:
         filters.append({"field": "severity", "operator": "in", "value": severities})
     if statuses:
-        filters.append({"field": "status", "operator": "in", "value": statuses})
+        filters.append({"field": "status_progress", "operator": "in", "value": statuses})
     if created_before:
         filters.append({"field": "creation_time", "operator": "lte", "value": created_before})
     if created_after:
@@ -1944,17 +1953,19 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     request_data: Dict[str, Any] = {
         "search_from": page * page_size,
         "search_to": min((page + 1) * page_size, (page * page_size) + limit),
+        "filters": filters,
     }
-    if filters:
-        request_data["filters"] = filters
     if sort_field:
         request_data["sort"] = {"field": sort_field, "keyword": sort_order or "desc"}
+    else:
+        request_data["sort"] = {}
 
-    cases = client.search_cases(request_data)
+    cases = client.search_cases({"request_data": request_data})
 
     readable_output = tableToMarkdown(
         name="Cortex XDR Cases",
         t=cases,
+        date_fields=["creation_time", "modification_time"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -1972,19 +1983,26 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-existing-case
     Updates an existing case.
+
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
     """
-    case_id = args.get("case_id", "")
-    status = args.get("status")
-    resolve_reason = args.get("resolve_reason")
-    resolve_comment = args.get("resolve_comment")
+    case_id = args.get("case_id")  # required
+    status = args.get("status").upper() if args.get("status") else None
+    resolve_reason = args.get("resolve_reason").upper() if args.get("resolve_reason") else None
+    resolve_comment = args.get("resolve_comment").upper() if args.get("resolve_comment") else None
 
     update_data = assign_params(
-        status=status,
+        status_progress=status,
         resolve_reason=resolve_reason,
         resolve_comment=resolve_comment,
     )
 
-    client.update_case(case_id, update_data)
+    client.update_case(case_id, request_data={"request_data": {"update_data": update_data}})
 
     return CommandResults(readable_output=f"Case {case_id} updated successfully")
 
@@ -1993,9 +2011,17 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-Case-Artifacts-by-Case-Id
     Retrieves artifacts for a specific case.
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
     """
-    case_id = args.get("case_id", "")
+    case_id = args.get("case_id")
     artifacts = client.get_case_artifacts(case_id)
+    if isinstance(artifacts, list):
+        artifacts = artifacts[0]
 
     network_artifacts = artifacts.get("network_artifacts", {}).get("DATA", [])
     file_artifacts = artifacts.get("file_artifacts", {}).get("DATA", [])
@@ -2008,15 +2034,15 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     readable_output = ""
     if network_artifacts:
         readable_output += tableToMarkdown(
-            f"Network Artifacts for Case {case_id}",
-            network_artifacts,
+            name=f"Network Artifacts for Case {case_id}",
+            t=network_artifacts,
             headerTransform=string_to_table_header,
             removeNull=True,
         )
     if file_artifacts:
         readable_output += tableToMarkdown(
-            f"File Artifacts for Case {case_id}",
-            file_artifacts,
+            name=f"File Artifacts for Case {case_id}",
+            t=file_artifacts,
             headerTransform=string_to_table_header,
             removeNull=True,
         )
@@ -2030,7 +2056,9 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     if file_artifacts:
         outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact"] = file_artifacts
 
-    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=artifacts)
+    return CommandResults(readable_output=readable_output,
+                          outputs=outputs,
+                          raw_response=artifacts)
 
 
 def main():  # pragma: no cover
