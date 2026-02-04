@@ -18,9 +18,21 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-
     tmp_timezone_offset ~= "[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_formatted_timestamp)) // [+-HH:MM], e.g, 2024-10-28T14:30:55.123+02:00
 | fields - tmp*;
 
+/*
+Standard Linux ISO-8601 Extended Timestamp Parser Description: > This parsing rule extracts and normalizes timestamps in the YYYY-MM-DD HH:mm:ss ZZZ format. It specifically handles the 24-hour clock format used in standard Linux system logs and resolves the verbal offset for example:"CST"(UTC-6) timezone suffix to ensure accurate temporal indexing across distributed environments.
+The parser treats incoming data as UTC (-00:00) by deafult to maintain a standardized temporal baseline.
+Users can manually adjust the timezone offset to align with specific regional preferences or local server requirements.
+*/
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+" /* Timestamp format: 2026-01-20 03:16:49 CST*/ and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
+| alter 
+    tmp_timestamp_without_offset = arrayindex(regextract(_raw_log ,"\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"),0) 
+| alter 
+    _time =parse_timestamp("%Y-%m-%d %H:%M:%S%Ez",concat(tmp_timestamp_without_offset,"-00:00")) // Here you can adjust your timezone offset preferences for example change "-00:00" to "-05:00".
+| fields -tmp*;
+
 /* Filter applies to RFC 3164 style syslog records (logs timestamp does not contain an explicit timezone nor year), which are ingested via the Broker VM syslog applet 
    Log records which are ingested via the XDR Filebeat collector or excluded since their timestamp assignment is handled in the backend within the XDRC based on the Filebeat @timestamp entity. */
-filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
+filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+"
 | alter // construct timestamp basted on log timestamp and current year, assuming timestamp is given in UTC 
     tmp_current_year = format_timestamp("%Y", _insert_time), 
     tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0) // RFC 3164 compatible timestamp, e.g., Oct 28 14:30:55
