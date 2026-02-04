@@ -1,0 +1,142 @@
+category: Analytics & SIEM
+provider: Halcyon
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Halcyon
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://api.halcyon.ai
+  type: 0
+  additionalinfo: 'The Halcyon API server URL.'
+  section: Connect
+- name: credentials
+  display: Username
+  required: true
+  type: 9
+  additionalinfo: 'Username and password associated with your Halcyon account.'
+  displaypassword: Password
+  section: Connect
+  hiddenusername: false
+- name: tenant_id
+  display: Tenant ID
+  required: true
+  type: 0
+  additionalinfo: 'The Halcyon Tenant ID for your organization.'
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+  required: false
+- name: event_types_to_fetch
+  display: Log types to fetch
+  required: true
+  defaultvalue: Alerts,Events
+  type: 16
+  options:
+  - Alerts
+  - Events
+  additionalinfo: 'Select which log types to fetch from Halcyon.'
+  section: Collect
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  section: Collect
+  required: false
+- name: max_fetch_alerts
+  display: Maximum number of alerts per fetch
+  type: 0
+  defaultvalue: '1000'
+  additionalinfo: 'Maximum number of alerts to fetch per fetch cycle. Large amounts may cause performance issues.'
+  section: Collect
+  required: false
+- name: max_fetch_events
+  display: Maximum number of events per fetch
+  type: 0
+  defaultvalue: '1000'
+  additionalinfo: 'Maximum number of events to fetch per fetch cycle. Large amounts may cause performance issues.'
+  section: Collect
+  required: false
+- defaultvalue: 1
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Halcyon is a device management platform that helps organizations monitor, control, and secure their network of devices. It provides centralized tools for overseeing hardware and software inventory, deploying updates, enforcing security policies, and ensuring compliance across device environments.
+display: Halcyon
+name: Halcyon
+script:
+  commands:
+  - name: halcyon-get-alerts
+    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    arguments:
+    - name: limit
+      description: The maximum number of alerts to return.
+      defaultValue: '1000'
+    - name: start_time
+      description: 'Filter alerts last seen after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+    - name: end_time
+      description: 'Filter alerts last seen before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command creates events in XSIAM; otherwise, it only displays them.
+      predefined:
+        - 'true'
+        - 'false'
+    outputs: []
+  - name: halcyon-get-events
+    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return.
+      defaultValue: '1000'
+    - name: start_time
+      description: 'Filter events that occurred after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+    - name: end_time
+      description: 'Filter events that occurred before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command creates events in XSIAM; otherwise, it only displays them.
+      predefined:
+        - 'true'
+        - 'false'
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/fastapi:0.123.5.6111791
+  dependson:
+    ContentClientApiModule: ''
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
