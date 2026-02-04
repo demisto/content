@@ -112,3 +112,10 @@ pipeline_jobs_folder/
 
 # Ignore AI configuration file
 AGENTS.md
+plan.md
+report.md
+plans/
+
+# IDEX custom tools and rules
+.roomodes
+.roo/

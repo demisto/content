@@ -5,6 +5,7 @@ deprecated: true
 name: Zendesk
 display: Zendesk - (Deprecated)
 category: Case Management
+provider: Zendesk
 description: Deprecated. Use the Zendesk v2 integration instead.
 configuration:
 - display: Zendesk address (e.g. https://demisto.zendesk.com)

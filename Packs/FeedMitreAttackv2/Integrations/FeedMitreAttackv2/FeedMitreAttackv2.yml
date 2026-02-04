@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: MITRE Corporation
 sectionorder:
 - Connect
 - Collect
@@ -34,7 +35,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
   section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.

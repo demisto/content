@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The <code>ctix-delete-tag</code> command has been removed. Any Playbooks or Automations using this command may break and need to be updated.</li><li>The <code>ctix-get-indicator-relations</code> command has been renamed to <code>ctix-get-object-relations</code>. Any Playbooks or Automations using this command may break and need to be updated.</li><li>The <code>query</code> argument has been removed from the <code>ctix-saved-result-set</code> command. Playbooks or Automations using this argument may break and need to be updated.</li></ul>Make sure to check and update any Playbooks/Scripts that use the above commands or arguments."
+}

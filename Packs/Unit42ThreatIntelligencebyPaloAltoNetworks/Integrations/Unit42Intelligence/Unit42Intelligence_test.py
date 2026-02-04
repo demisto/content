@@ -26,6 +26,7 @@ from Unit42Intelligence import (
     create_location_indicators_and_relationships,
     get_threat_object_score,
     unit42_error_handler,
+    parse_url_list,
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
@@ -201,7 +202,11 @@ def test_file_command_malicious(client, mocker):
         "sources": ["wildfire", "source2"],
         "counts": [],
         "threat_object_associations": [
-            {"name": "Zeus", "threat_object_class": "malware_family", "aliases": ["Zbot"]},
+            {
+                "name": "Zeus",
+                "threat_object_class": "malware_family",
+                "aliases": ["Zbot"],
+            },
             {"name": "APT28", "threat_object_class": "actor"},
         ],
     }
@@ -382,7 +387,10 @@ def test_create_dbot_score_malicious():
         - Returns DBotScore with BAD score and malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="1.2.3.4", indicator_type="ip", verdict="malicious", reliability="A - Completely reliable"
+        indicator="1.2.3.4",
+        indicator_type="ip",
+        verdict="malicious",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "1.2.3.4"
@@ -402,7 +410,10 @@ def test_create_dbot_score_benign():
         - Returns DBotScore with GOOD score and no malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="example.com", indicator_type="domain", verdict="benign", reliability="A - Completely reliable"
+        indicator="example.com",
+        indicator_type="domain",
+        verdict="benign",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "example.com"
@@ -422,7 +433,10 @@ def test_create_dbot_score_suspicious():
         - Returns DBotScore with SUSPICIOUS score and no malicious description
     """
     dbot_score = create_dbot_score(
-        indicator="suspicious.com", indicator_type="domain", verdict="suspicious", reliability="A - Completely reliable"
+        indicator="suspicious.com",
+        indicator_type="domain",
+        verdict="suspicious",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "suspicious.com"
@@ -445,7 +459,10 @@ def test_create_dbot_score_unknown():
         - Reliability is correctly assigned
     """
     dbot_score = create_dbot_score(
-        indicator="unknown.com", indicator_type="domain", verdict="unknown", reliability="A - Completely reliable"
+        indicator="unknown.com",
+        indicator_type="domain",
+        verdict="unknown",
+        reliability="A - Completely reliable",
     )
 
     assert dbot_score.indicator == "unknown.com"
@@ -723,10 +740,19 @@ def test_create_relationships_mitre_technique_prefix_removal():
         - Creates relationships with clean technique names
     """
     threat_objects = [
-        {"name": "T1590 - Gather Victim Network Information", "threat_object_class": "attack pattern"},
+        {
+            "name": "T1590 - Gather Victim Network Information",
+            "threat_object_class": "attack pattern",
+        },
         {"name": "T1566 - Phishing", "threat_object_class": "technique"},
-        {"name": "Regular Attack Pattern", "threat_object_class": "malicious_behavior"},  # No prefix
-        {"name": "T123 - Invalid Format", "threat_object_class": "attack pattern"},  # Invalid format (not digit after T)
+        {
+            "name": "Regular Attack Pattern",
+            "threat_object_class": "malicious_behavior",
+        },  # No prefix
+        {
+            "name": "T123 - Invalid Format",
+            "threat_object_class": "attack pattern",
+        },  # Invalid format (not digit after T)
     ]
 
     relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
@@ -779,7 +805,11 @@ def test_file_hash_detection():
     mock_response_obj.json.return_value = mock_response
 
     with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
-        args = {"file": sha256_hash, "create_relationships": True, "create_threat_object_indicators": False}
+        args = {
+            "file": sha256_hash,
+            "create_relationships": True,
+            "create_threat_object_indicators": False,
+        }
         result = file_command(client, args)
         assert result.indicator.sha256 == sha256_hash
         # MD5 and SHA1 are empty strings, not None
@@ -952,10 +982,12 @@ def test_create_threat_object_indicators():
             "aliases": ["Cozy Bear"],
             "publications": [{"title": "APT29 Report", "url": "http://example.com"}],
         },
-        {"name": "Cobalt Strike", "threat_object_class": "malware_family", "source": "Unit42"},
         {
-            "threat_object_class": "actor"  # Missing name, should be skipped
+            "name": "Cobalt Strike",
+            "threat_object_class": "malware_family",
+            "source": "Unit42",
         },
+        {"threat_object_class": "actor"},  # Missing name, should be skipped
     ]
 
     indicators = create_threat_object_indicators(threat_objects, "A - Completely reliable")
@@ -1138,7 +1170,12 @@ def test_create_publications():
         - Uses default source when not provided
     """
     publications_data = [
-        {"created": "2023-01-01T00:00:00Z", "title": "Threat Report 1", "url": "https://example.com/report1", "source": "Unit42"},
+        {
+            "created": "2023-01-01T00:00:00Z",
+            "title": "Threat Report 1",
+            "url": "https://example.com/report1",
+            "source": "Unit42",
+        },
         {
             "created": "2023-02-01T00:00:00Z",
             "title": "Threat Report 2",
@@ -1230,7 +1267,12 @@ def test_create_campaigns_relationships():
     """
     threat_obj = {
         "battlecard_details": {
-            "campaigns": ["Campaign Alpha", "Campaign Beta", "", "  "]  # Include empty/whitespace
+            "campaigns": [
+                "Campaign Alpha",
+                "Campaign Beta",
+                "",
+                "  ",
+            ]  # Include empty/whitespace
         }
     }
 
@@ -1254,8 +1296,14 @@ def test_create_attack_patterns_relationships():
         "battlecard_details": {
             "attack_patterns": [
                 {"mitreid": "T1566", "name": "Phishing (enterprise)"},
-                {"mitreid": "T1566.001", "name": "Spear Phishing"},  # Should be skipped (has dot)
-                {"mitreid": "T1059", "name": "Command and Scripting Interpreter (enterprise)"},
+                {
+                    "mitreid": "T1566.001",
+                    "name": "Spear Phishing",
+                },  # Should be skipped (has dot)
+                {
+                    "mitreid": "T1059",
+                    "name": "Command and Scripting Interpreter (enterprise)",
+                },
             ]
         }
     }
@@ -1363,7 +1411,10 @@ def test_create_actor_relationships():
         "battlecard_details": {
             "malware_family_details": {
                 "actor_associations": [
-                    {"aliases": ["Actor Alias 1", "Actor Alias 2"], "name": "Actor Name"},
+                    {
+                        "aliases": ["Actor Alias 1", "Actor Alias 2"],
+                        "name": "Actor Name",
+                    },
                     {"name": "Solo Actor"},  # No aliases
                     {"aliases": []},  # Empty aliases, should use name
                 ]
@@ -1484,3 +1535,418 @@ def test_unit42_error_handler_with_request_id(mocker):
     demisto.debug.assert_called_once_with(
         f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
     )
+
+
+def test_url_command_with_special_characters(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters like < and >
+    When:
+        - Running url_command
+    Then:
+        - The URL is properly double-encoded before being sent to the API
+        - The lookup_indicator method is called with the correctly encoded URL
+        - Returns CommandResults with proper verdict
+    """
+
+    # URL with < and > characters
+    test_url = "https://example.com/?token=<REDACTED>"
+
+    mock_response = {
+        "indicator_value": test_url,
+        "indicator_type": "url",
+        "verdict": "malicious",
+        "verdict_categories": [{"value": "phishing"}],
+        "first_seen": "2023-01-01T00:00:00Z",
+        "last_seen": "2023-12-31T23:59:59Z",
+        "sources": ["source1"],
+        "counts": [],
+        "threat_object_associations": [],
+    }
+
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+
+    # Spy on the lookup_indicator method to verify the encoding
+    mock_lookup = mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"url": test_url, "create_relationships": True}
+    result = url_command(client, args)
+
+    # Verify the command executed successfully
+    assert result.outputs["Value"] == test_url
+    assert result.outputs["Verdict"] == "Malicious"
+
+    # Verify lookup_indicator was called with the original URL
+    # The encoding happens inside lookup_indicator
+    mock_lookup.assert_called_once_with("url", test_url)
+
+    # Verify the result indicator
+    assert result.indicator.url == test_url
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_client_lookup_indicator_url_encoding(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters < and >
+    When:
+        - Calling client.lookup_indicator with indicator_type='url'
+    Then:
+        - The URL is double-encoded correctly:
+          1. Query parameters with < and > are encoded first (< becomes %3C, > becomes %3E)
+          2. The entire URL is then encoded again for the API path
+        - The final encoded URL should have %253C and %253E (double-encoded < and >)
+    """
+    import urllib.parse
+
+    # URL with < and > in query parameter
+    test_url = "https://example.com/search?query=<test>"
+
+    # Mock the _http_request to capture what URL is actually sent
+    mock_http_request = mocker.patch.object(client, "_http_request")
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_http_request.return_value = mock_response
+
+    # Call lookup_indicator
+    client.lookup_indicator("url", test_url)
+
+    # Verify _http_request was called
+    assert mock_http_request.called
+
+    # Get the url_suffix that was passed to _http_request
+    call_args = mock_http_request.call_args
+    url_suffix = call_args[1]["url_suffix"]
+
+    # The URL should be double-encoded:
+    # Step 1: query=<test> becomes query=%3Ctest%3E
+    # Step 2: https://example.com/search?query=%3Ctest%3E becomes
+    #         https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+
+    # Verify the URL contains double-encoded special characters
+    assert "%253C" in url_suffix  # Double-encoded <
+    assert "%253E" in url_suffix  # Double-encoded >
+
+    # Verify the full expected encoding
+    expected_encoded_url = urllib.parse.quote("https://example.com/search?query=%3Ctest%3E", safe="")
+    assert expected_encoded_url in url_suffix
+
+
+def test_parse_url_list_single_url_with_commas():
+    """
+    Given:
+        - A single URL containing commas in its query parameters (e.g., Google Fonts URL)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with a single URL
+        - The URL is not split at the commas
+    """
+    url_input = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == url_input
+
+
+def test_parse_url_list_multiple_urls():
+    """
+    Given:
+        - Multiple URLs separated by commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Each URL is properly trimmed
+    """
+    url_input = "http://google.com/path,https://amazon.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://google.com/path"
+    assert result[1] == "https://amazon.com/path"
+
+
+def test_parse_url_list_multiple_urls_with_spaces():
+    """
+    Given:
+        - Multiple URLs separated by commas with extra whitespace
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated and trimmed
+    """
+    url_input = "http://google.com/path , https://amazon.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://google.com/path"
+    assert result[1] == "https://amazon.com/path"
+
+
+def test_parse_url_list_mixed_urls_with_commas():
+    """
+    Given:
+        - Multiple URLs where one contains commas in parameters and others don't
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - URLs with commas in parameters are not split
+    """
+    url_input = "http://example.com/path?x=1,2,3,https://fonts.googleapis.com/css?family=Roboto:100,200,300,http://test.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com/path?x=1,2,3"
+    assert result[1] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
+    assert result[2] == "http://test.com"
+
+
+def test_parse_url_list_single_url_no_commas():
+    """
+    Given:
+        - A single URL without commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with a single URL
+    """
+    url_input = "https://example.com/path"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == "https://example.com/path"
+
+
+def test_parse_url_list_empty_string():
+    """
+    Given:
+        - An empty string
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns an empty list
+    """
+    url_input = ""
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 0
+
+
+def test_parse_url_list_https_only():
+    """
+    Given:
+        - Multiple HTTPS URLs separated by commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all HTTPS URLs correctly separated
+    """
+    url_input = "https://site1.com,https://site2.com,https://site3.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "https://site1.com"
+    assert result[1] == "https://site2.com"
+    assert result[2] == "https://site3.com"
+
+
+def test_parse_url_list_none_input():
+    """
+    Given:
+        - None as input
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns an empty list without errors
+    """
+    result = parse_url_list(None)
+
+    assert result == []
+
+
+def test_parse_url_list_list_input():
+    """
+    Given:
+        - A list of URLs (as would come from playbooks)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns the list with URLs properly trimmed
+    """
+    url_input = ["http://example.com", "https://test.com", "  https://trimmed.com  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "https://trimmed.com"
+
+
+def test_parse_url_list_list_input_with_empty_strings():
+    """
+    Given:
+        - A list of URLs with empty strings and None values
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns only non-empty URLs
+    """
+    url_input = ["http://example.com", "", "https://test.com", None, "  "]
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_newline_separator():
+    """
+    Given:
+        - URLs separated by newlines (supported by argToList)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com\nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_mixed_separators():
+    """
+    Given:
+        - URLs separated by both newlines and commas
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+    """
+    url_input = "http://example.com\nhttps://test.com,ftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_non_http_schemes():
+    """
+    Given:
+        - URLs with non-HTTP schemes (ftp, ftps, file, etc.)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports various URL schemes beyond http/https
+    """
+    url_input = "ftp://files.com,ftps://secure.com,file:///local/path,ssh://server.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 4
+    assert result[0] == "ftp://files.com"
+    assert result[1] == "ftps://secure.com"
+    assert result[2] == "file:///local/path"
+    assert result[3] == "ssh://server.com"
+
+
+def test_parse_url_list_mixed_schemes_with_commas_in_params():
+    """
+    Given:
+        - Multiple URLs with different schemes where some have commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - URLs with commas in parameters are not split
+    """
+    url_input = "http://example.com/path?x=1,2,3,ftp://files.com/data,https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com/path?x=1,2,3"
+    assert result[1] == "ftp://files.com/data"
+    assert result[2] == "https://fonts.googleapis.com/css?family=Roboto:100,200"
+
+
+def test_parse_url_list_newline_with_commas_in_params():
+    """
+    Given:
+        - URLs separated by newlines where URLs contain commas in parameters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Commas within URL parameters are preserved
+    """
+    url_input = "https://fonts.googleapis.com/css?family=Roboto:100,200,300\nhttp://example.com/path?x=1,2,3"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://fonts.googleapis.com/css?family=Roboto:100,200,300"
+    assert result[1] == "http://example.com/path?x=1,2,3"
+
+
+def test_parse_url_list_whitespace_handling():
+    """
+    Given:
+        - URLs with various whitespace (spaces, tabs, newlines)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs properly trimmed
+        - Empty lines are ignored
+    """
+    url_input = "  http://example.com  \n\n  https://test.com  \n  \nftp://files.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "http://example.com"
+    assert result[1] == "https://test.com"
+    assert result[2] == "ftp://files.com"
+
+
+def test_parse_url_list_custom_scheme():
+    """
+    Given:
+        - URLs with custom schemes (e.g., custom://)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with all URLs correctly separated
+        - Supports custom URL schemes
+    """
+    url_input = "custom://example.com,myscheme://test.com,http://normal.com"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 3
+    assert result[0] == "custom://example.com"
+    assert result[1] == "myscheme://test.com"
+    assert result[2] == "http://normal.com"

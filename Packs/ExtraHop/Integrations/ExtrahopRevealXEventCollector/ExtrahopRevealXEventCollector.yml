@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Bain Capital Private Equity
 sectionorder:
 - Connect
 - Collect
@@ -42,7 +43,7 @@ configuration:
   defaultvalue: "25000"
   display: Maximum number of events per fetch
   name: max_events_per_fetch
-  required: true
+  required: false
   type: 0
   section: Collect
   advanced: true

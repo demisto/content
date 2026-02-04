@@ -5,11 +5,11 @@ Support and maintenance for this integration are provided by the author. Please 
 - **Email**: [integrations@trendmicro.com](mailto:integrations@trendmicro.com)
 
 ***
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
 
-## Obtaining Trend Micro Vision One V3 API Credentials
+## Obtaining Trend Vision One v3 API Credentials
 
-Configuring the Trend Micro Vision One integration requires API credentials generated in Trend Micro Vision One. It is recommended that a new role be created with just the permissions required for this integration. You can create a new role for this integration by following these steps in Trend Micro Vision One.
+Configuring the Trend Vision One integration requires API credentials generated in Trend Vision One. It is recommended that a new role be created with just the permissions required for this integration. You can create a new role for this integration by following these steps in Trend Vision One.
 
 1. Navigate to **Administration** > **User Roles**
 2. Click on the **Add** button
@@ -37,7 +37,7 @@ Configuring the Trend Micro Vision One integration requires API credentials gene
 | Response Management | Response Management          | Edit network exceptions                 |
 | Response Management | Response Management          | Submit to sandbox                       |
 
-You can then create a user account and generate an API key to be used for the Cortex XSOAR integration by following these steps in Trend Micro Vision One.
+You can then create a user account and generate an API key to be used for the Cortex XSOAR integration by following these steps in Trend Vision One.
 
 1. Navigate to **Administration** > **User Accounts**
 2. Click on the **Add Account** button
@@ -45,23 +45,24 @@ You can then create a user account and generate an API key to be used for the Co
 4. Complete the account creation process by following the steps in the email sent
 5. This will generate an **Authentication token** that can then be used to configure the Cortex XSOAR integration
 
-## Configure Trend Micro Vision One V3 on Cortex XSOAR
+## Configure Trend Vision One v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Vision One.
+2. Search for Trend Vision One.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**            | **Description**                                                               | **Required** |
-    | ------------------------ | ----------------------------------------------------------------------------- | ------------ |
-    | Name                     | Unique name for this Trend Micro Vision One instance                          | True         |
-    | Fetch Incidents          | Choose if the integration should sync incidents                               | True         |
-    | Incident Type            | Ensure the "Trend Micro Vision One XDR Incident" type is selected             | True         |
-    | Mapper (Incoming)        | Ensure the "Trend Micro Vision One V3 XDR - Incoming Mapper" type is selected | True         |
-    | API URL                  | Base URL for Trend Micro Vision One API                                       | True         |
-    | API Key                  | API token for authentication                                                  | True         |
-    | Incidents Fetch Interval | How often do you want to check for new incidents                              | False        |
-    | Sync On First Run (days) | How many days to go back during first sync                                    | False        |
-    | Max Incidents            | Maximum Number of Workbenches to Retrieve                                     | False        |
+| **Parameter**            | **Description**                                                               | **Required** |
+| ------------------------ | ----------------------------------------------------------------------------- | ------------ |
+| Name                     | Unique name for this Trend Vision One instance                                | True         |
+| Fetch Incidents          | Choose if the integration should sync incidents                               | True         |
+| Incident Type            | Ensure the "Trend Micro Vision One XDR Incident" type is selected             | True         |
+| Mapper (Incoming)        | Ensure the "Trend Micro Vision One V3 XDR - Incoming Mapper" type is selected | True         |
+| API URL                  | Base URL for Trend Vision One API                                             | True         |
+| API Key                  | API token for authentication                                                  | True         |
+| Incidents Fetch Interval | How often do you want to check for new incidents                              | False        |
+| Sync On First Run (days) | How many days to go back during first sync                                    | False        |
+| Max Incidents            | Maximum Number of Workbenches to Retrieve                                     | False        |
+| Incident Mirroring Direction | Choose the direction to mirror incidents between XSOAR and Vision One. Options: None, Incoming, Outgoing, Incoming And Outgoing. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

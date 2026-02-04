@@ -40,7 +40,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -660
+          "y": -880
         }
       }
     note: false
@@ -109,7 +109,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": -70
+          "y": -290
         }
       }
     note: false
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -230
+          "y": -450
         }
       }
     note: false
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 410
+          "y": 190
         }
       }
     note: false
@@ -238,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": 280
+          "y": 60
         }
       }
     note: false
@@ -295,7 +295,7 @@ tasks:
       {
         "position": {
           "x": 620,
-          "y": 110
+          "y": -110
         }
       }
     note: false
@@ -350,16 +350,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
       - "45"
       - "38"
+      - "58"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 890,
-          "y": 590
+          "y": 370
         }
       }
     note: false
@@ -738,7 +738,7 @@ tasks:
       {
         "position": {
           "x": 1300,
-          "y": 730
+          "y": 510
         }
       }
     note: false
@@ -757,7 +757,7 @@ tasks:
       version: -1
       name: Get entity alerts by MITRE tactics
       description: |-
-        This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+        This playbook searches XDR alerts related to specific entities, on a given timeframe, based on MITRE tactics.
         Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Get entity alerts by MITRE tactics
       type: playbook
@@ -772,6 +772,21 @@ tasks:
           root: alert
           accessor: username
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.actor_primary_username
+                iscontext: true
+              raw: {}
+          - operator: RemoveMatches
+            args:
+              delimiter: {}
+              filters:
+                value:
+                  simple: NT AUTHORITY\\SYSTEM
+              ignore_case: {}
+              match_exact: {}
           - operator: uniq
       EntityType:
         simple: username
@@ -810,11 +825,12 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
+      forEach: true
     view: |-
       {
         "position": {
           "x": 890,
-          "y": 730
+          "y": 720
         }
       }
     note: false
@@ -848,6 +864,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Azure - User Investigation
     nexttasks:
       '#none#':
       - "52"
@@ -877,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 730
+          "y": 510
         }
       }
     note: false
@@ -889,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: b8f759b1-e17c-4cf5-8af4-33d34b33410a
+    taskid: 05141279-39e6-407a-83bd-32b25b078c20
     type: playbook
     task:
-      id: b8f759b1-e17c-4cf5-8af4-33d34b33410a
+      id: 05141279-39e6-407a-83bd-32b25b078c20
       version: -1
       name: Cloud Credentials Rotation - Azure
       description: |-
@@ -913,6 +930,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cloud Credentials Rotation - Azure
     nexttasks:
       '#none#':
       - "30"
@@ -975,7 +993,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -380
+          "y": -600
         }
       }
     note: false
@@ -1471,7 +1489,7 @@ tasks:
       {
         "position": {
           "x": 620,
-          "y": -80
+          "y": -300
         }
       }
     note: false
@@ -1507,7 +1525,68 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -530
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6e46dd7e-a830-4395-ab38-ee31ff20dce2
+    type: condition
+    task:
+      id: 6e46dd7e-a830-4395-ab38-ee31ff20dce2
+      version: -1
+      name: Verify User is not Empty
+      description: Checks if the username input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: username
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Core.OriginalAlert.raw_abioc.event.actor_primary_username
+                      iscontext: true
+                - operator: RemoveMatches
+                  args:
+                    delimiter: {}
+                    filters:
+                      value:
+                        simple: NT AUTHORITY\\SYSTEM
+                    ignore_case: {}
+                    match_exact: {}
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 510
         }
       }
     note: false
@@ -1532,10 +1611,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3450,
+        "height": 3670,
         "width": 2240,
         "x": -540,
-        "y": -660
+        "y": -880
       }
     }
   }

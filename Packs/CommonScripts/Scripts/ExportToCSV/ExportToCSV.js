@@ -6,7 +6,7 @@ function valueToValidString(value) {
         value = JSON.stringify(value);
     }
     value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
-    if (value && value.indexOf(',') > -1) {
+    if (value && (value.includes(',') || value.includes('\r') || value.includes('\n'))) {
         value = '"' + value + '"';
     }
     return value;

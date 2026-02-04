@@ -672,6 +672,51 @@
     "priority": "first_match",
     "context": {},
     "flags": "",
+    "compare_fields": "false",
+    "wildcards": "*",
+    "mappings": {
+      "..=val.score < 30": "low - ${.value}",
+      "..=val.score < 50": "medium - ${.value}",
+      "..=val.score >= 50": "high - ${.value}",
+      "*": "unknown - ${.value}"
+    },
+    "patterns": [
+      {
+        "value": {
+          "score": 10,
+          "value": "192.168.1.1"
+        },
+        "result": "low - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 40,
+          "value": "192.168.1.1"
+        },
+        "result": "medium - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": 70,
+          "value": "192.168.1.1"
+        },
+        "result": "high - 192.168.1.1"
+      },
+      {
+        "value": {
+          "score": "x",
+          "value": "192.168.1.1"
+        },
+        "result": "unknown - 192.168.1.1"
+      }
+    ]
+  },
+  {
+    "algorithm": "dt",
+    "caseless": "",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
     "compare_fields": "true",
     "wildcards": "*",
     "mappings": {

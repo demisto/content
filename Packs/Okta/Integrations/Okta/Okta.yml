@@ -5,6 +5,7 @@ deprecated: true
 name: okta
 display: okta (Deprecated)
 category: Authentication & Identity Management
+provider: Okta
 description: Deprecated. Use the Okta v2 integration instead.
 configuration:
 - display: Okta URL (https://<domain>.okta.com)

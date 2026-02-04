@@ -27,7 +27,7 @@ Can be used to find duplicate emails for incidents of type phishing, including  
 | emailFrom | Incident fields contains the email from value. |
 | fromPolicy | Whether to take into account the email from field for deduplication. "TextOnly" - incidents will be considered as duplicated based on test similarity only, ignoring the sender's address. "Exact" - incidents will be considered as duplicated if their text is similar and their sender is the same. "Domain" -  incidents will be considered as duplicated if their text is similar and their senders' address has the same domain. Default is "Domain". |
 | statusScope | Whether to compare the new incident to past closed or non closed incidents only. |
-| closeAsDuplicate | Whether to close the current incident if a duplicate incident is found. |
+| closeAsDuplicate | Whether to close the current incident if a duplicate incident is found. Only supported in Cortex XSOAR. |
 | threshold | Threshold to consider incident as duplication, number between 0-1 |
 | maxIncidentsToReturn | Maximum number of duplicate incidents IDs to return. |
 | populateFields | A comma-separated list of incident fields to populate. |

@@ -1663,11 +1663,12 @@ def test_health_check_service_connectivity_failure(mocker):
 
     # Should return HealthCheckError for service connectivity failure
     assert result is not None
-    assert result.account_id == project_id
-    assert result.connector_id == connector_id
-    assert "Sample check failed" in result.message
-    assert "Network timeout occurred" in result.message
-    assert result.error_type == "Connectivity Error"
+    assert len(result) == 1
+    assert result[0].account_id == project_id
+    assert result[0].connector_id == connector_id
+    assert "Sample check failed" in result[0].message
+    assert "Network timeout occurred" in result[0].message
+    assert result[0].error_type == "Connectivity Error"
 
 
 def test_health_check_service_permission_failure_ignored(mocker):
@@ -1724,6 +1725,36 @@ def test_health_check_credentials_creation_failure(mocker):
     assert result.connector_id == connector_id
     assert "Invalid token format" in result.message
     assert result.error_type == "Connectivity Error"
+
+
+def test_health_check_service_multiple_failures(mocker):
+    """
+    Given: Valid credentials but services fail with errors
+    When: health_check is called and service tests fail with errors
+    Then: The function should return a list of HealthCheckError
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "valid-token-123"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock service test failure (permission related - should be ignored)
+    mock_service_results = [
+        ("compute", True, ""),
+        ("storage", False, "Request is prohibited by organization's policy"),
+        ("container", False, "Request is prohibited by organization's policy"),
+    ]
+
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return a list of HealthCheckError
+    assert isinstance(result, list)
+    assert len(result) == 2
 
 
 def test_parse_labels_valid_2_inputs():

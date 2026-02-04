@@ -671,13 +671,34 @@ class TestCommands:
             assert disable_ioc.call_count == 1, "disable command not called"
 
     def test_sync(self, mocker):
-        http_request = mocker.patch.object(Client, "http_request")
+        http_request = mocker.patch.object(Client, "http_request", return_value={"reply": True})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, "txt")
         mocker.patch.object(demisto, "searchIndicators", returnvalue=iocs)
         mocker.patch("CoreIOCs.return_outputs")
         mocker.patch("CoreIOCs.upload_file_to_bucket")
+        mocker.patch.object(demisto, "setIntegrationContext")
         sync(client)
         assert http_request.call_args.kwargs["url_suffix"] == "sync_tim_iocs", "sync command url changed"
+
+    def test_sync_failure_reply(self, mocker):
+        """
+        Given:
+            - A client and a scenario where the sync http_request returns a reply that is not True.
+        When:
+            - The sync function is called.
+        Then:
+            - A DemistoException should be raised with the appropriate error message.
+        """
+        error_message = "Sync failed due to an internal error."
+        mocker.patch.object(Client, "http_request", return_value={"reply": error_message})
+        mocker.patch.object(demisto, "searchIndicators", returnvalue={"total": 0, "iocs": []})
+        mocker.patch("CoreIOCs.return_outputs")
+        mocker.patch("CoreIOCs.upload_file_to_bucket")
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        with pytest.raises(DemistoException) as e:
+            sync(client)
+        assert str(e.value) == f"Unable to sync IOCs:\n{error_message}"
 
     def test_get_sync_file(self, mocker):
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, "txt")
@@ -702,7 +723,7 @@ class TestCommands:
 
     @freeze_time("2020-06-03T02:00:00Z")
     def test_iocs_to_keep(self, mocker):
-        http_request = mocker.patch.object(Client, "http_request")
+        http_request = mocker.patch.object(Client, "http_request", return_value={"reply": True})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, "txt")
         mocker.patch.object(demisto, "searchIndicators", returnvalue=iocs)
         mocker.patch("CoreIOCs.upload_file_to_bucket")

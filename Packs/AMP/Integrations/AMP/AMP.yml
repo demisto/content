@@ -4,7 +4,8 @@ commonfields:
 name: AMP
 display: AMP
 category: Endpoint
-description: Uses CISCO AMP Endpoint
+provider: Cisco Systems
+description: Uses CISCO AMP Endpoint.
 configuration:
 - display: Server URL (e.g. https://api.amp.cisco.com)
   name: server
@@ -85,7 +86,7 @@ script:
     - name: limit
       description: Maximum number of results to return.
     - name: offset
-      description: offset
+      description: offset.
     description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_computer_actvity
     deprecated: true
@@ -97,7 +98,7 @@ script:
     - name: limit
       description: Maximum number of results to return.
     - name: offset
-      description: offset
+      description: offset.
     description: This endpoint enables you to search all computers across your organization for any events or activities associated with a file or network operation, and returns computers that match the specified criteria. You can then query the /computers/{connector-guid}/trajectory endpoint for specific details.
   - name: amp_get_events
     arguments:
@@ -184,7 +185,7 @@ script:
     - name: file_list_guid
       required: true
       default: true
-      description: The file_list_guid to retrieve information about a particular file_list
+      description: The file_list_guid to retrieve information about a particular file_list.
     - name: sha256
       required: true
       description: SHA256 hash.
@@ -192,16 +193,16 @@ script:
   - name: amp_get_groups
     arguments:
     - name: limit
-      description: amount of results
+      description: amount of results.
     - name: name
-      description: name of the group
+      description: name of the group.
     description: Returns basic information about groups in your organization. You can map group names to GUIDs for filtering on the events endpoint.
   - name: amp_get_group
     arguments:
     - name: group_guid
       required: true
       default: true
-      description: The particular group guid
+      description: The particular group guid.
     description: Returns a particular group
   - name: amp_set_group_policy
     arguments:

@@ -24,25 +24,27 @@ CUSTOM_VAL_KEY = "indicatorValue"
 
 CUSTOM_TYPE_KEY = "indicatorType"
 
-CUSTOM_HIT = {CUSTOM_VAL_KEY: "5.5.5.5", CUSTOM_TYPE_KEY: "IP"}
+CUSTOM_HIT = {"id": "abc", CUSTOM_VAL_KEY: "5.5.5.5", CUSTOM_TYPE_KEY: "IP"}
 
-CUSTOM_HIT_ELASTIC_V7 = {"_source": {CUSTOM_VAL_KEY: "5.5.5.5", CUSTOM_TYPE_KEY: "IP"}}
+CUSTOM_HIT_ELASTIC_V7 = {"_source": {"id": "abc", CUSTOM_VAL_KEY: "5.5.5.5", CUSTOM_TYPE_KEY: "IP"}}
 
-INSIGHT_HIT_ELASTIC_V7 = {"_source": {"name": "5.5.5.5", "type": "IP"}}
+INSIGHT_HIT_ELASTIC_V7 = {"_id": "123", "_source": {"name": "5.5.5.5", "type": "IP"}}
 
 PARSED_INSIGHT_HIT_ELASTIC_V7 = {
+    "id": "123",
     "name": "5.5.5.5",
     "type": "IP",
     "value": "5.5.5.5",
-    "rawJSON": {"name": "5.5.5.5", "type": "IP", "value": "5.5.5.5"},
+    "rawJSON": {"id": "123", "name": "5.5.5.5", "type": "IP", "value": "5.5.5.5"},
     "fields": {},
 }
 
 PARSED_CUSTOM_HIT = {
+    "id": "abc",
     "indicatorValue": "5.5.5.5",
     "indicatorType": "IP",
     "value": "5.5.5.5",
-    "rawJSON": {"indicatorValue": "5.5.5.5", "indicatorType": "IP", "value": "5.5.5.5"},
+    "rawJSON": {"id": "abc", "indicatorValue": "5.5.5.5", "indicatorType": "IP", "value": "5.5.5.5"},
     "type": "IP",
     "fields": {"tags": ["tag1", "tag2"], "trafficlightprotocol": "AMBER"},
 }

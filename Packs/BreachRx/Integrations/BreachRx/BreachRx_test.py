@@ -14,7 +14,6 @@ from BreachRx import (
     import_incident_command,
 )
 from CommonServerPython import json
-from graphql.language import print_ast
 
 
 def util_load_json(path):
@@ -27,23 +26,33 @@ def introspection_matcher(request):
 
 
 def create_incident_matcher(request):
-    return request.json().get("query") == print_ast(create_incident_mutation)
+    from graphql import print_ast
+
+    return request.json().get("query") == print_ast(create_incident_mutation.document)
 
 
 def get_severities_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_severities)
+    from graphql import print_ast
+
+    return request.json().get("query") == print_ast(get_incident_severities.document)
 
 
 def get_types_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_types)
+    from graphql import print_ast
+
+    return request.json().get("query") == print_ast(get_incident_types.document)
 
 
 def get_incident_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_by_name)
+    from graphql import print_ast
+
+    return request.json().get("query") == print_ast(get_incident_by_name.document)
 
 
 def get_actions_matcher(request):
-    return request.json().get("query") == print_ast(get_actions_for_incident)
+    from graphql import print_ast
+
+    return request.json().get("query") == print_ast(get_actions_for_incident.document)
 
 
 def set_up_mocker(m, found_incident=True):

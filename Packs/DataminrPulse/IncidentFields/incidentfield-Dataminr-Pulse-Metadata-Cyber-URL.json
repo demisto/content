@@ -1,0 +1,51 @@
+{
+    "id": "incident_dataminrpulsemetadatacyberurl",
+    "version": -1,
+    "modified": "2025-09-05T13:07:36.563973032+05:30",
+    "name": "Dataminr Pulse Metadata Cyber URL",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsemetadatacyberurl",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -23,6 +23,7 @@ from utils import (
     get_support_level,
     get_content_roles,
     get_metadata,
+    post_ai_review_introduction,
 )
 from demisto_sdk.commands.common.tools import get_pack_name
 from urllib3.exceptions import InsecureRequestWarning
@@ -381,7 +382,8 @@ def get_user_from_pr_body(pr: PullRequest) -> str:
     Returns:
     - Found User
     """
-    body = pr.body
+    print(f"PR body: {type(pr.body)=} | {pr.body} ")
+    body = pr.body or ""
     matcher = re.search(PR_AUTHOR_PATTERN, body)
     if matcher:
         return matcher.groups()[0]
@@ -625,6 +627,8 @@ def main():
         )
     if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != "1.0.0":
         pr.create_issue_comment(contributors_body)
+
+    post_ai_review_introduction(pr, reviewers, t)
 
 
 if __name__ == "__main__":

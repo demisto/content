@@ -1,0 +1,10 @@
+{
+    "raw_response": {
+        "from": "DUMMY_CURSOR02",
+        "to": "DUMMY_CURSOR01"
+    },
+    "outputs": {
+        "from": "DUMMY_CURSOR02",
+        "to": "DUMMY_CURSOR01"
+    }
+}

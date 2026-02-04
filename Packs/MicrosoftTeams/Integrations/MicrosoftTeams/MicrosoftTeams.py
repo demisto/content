@@ -129,6 +129,7 @@ class GraphPermissions(str, Enum):
     CHANNEL_CREATE = "Channel.Create"
     CHANNELMEMBER_READ_ALL = "ChannelMember.Read.All"
     CHANNELMEMBER_READWRITE_ALL = "ChannelMember.ReadWrite.All"
+    CHANNELMESSAGE_READ_ALL = "ChannelMessage.Read.All"
     CHANNELMESSAGE_SEND = "ChannelMessage.Send"
     CHAT_READ = "Chat.Read"
     CHAT_READBASIC = "Chat.ReadBasic"
@@ -204,6 +205,11 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ],
+        "microsoft-teams-list-messages": [
+            Perms.USER_READ_ALL,
+            Perms.CHAT_READ,
+            Perms.CHANNELMESSAGE_READ_ALL,
+        ],
         "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -255,6 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
+        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -1512,6 +1519,21 @@ def get_messages_list(chat_id: str, odata_params: dict) -> dict[str, Any]:
     return cast(dict[str, Any], http_request("GET", url, params=odata_params))
 
 
+def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict, message_id: str = "") -> dict[str, Any]:
+    """
+    Retrieve the list of messages in a channel.
+    :param team_id: The team_id
+    :param channel_id: The channel_id
+    :param odata_params: The OData query parameters.
+    :param message_id: The message_id to get its replies.
+    :return: The response body - collection of chatMessage objects.
+    """
+    url = f"{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/messages"
+    if message_id:
+        url = f"{url}/{message_id}/replies"
+    return cast(dict[str, Any], http_request("GET", url, params=odata_params))
+
+
 def get_chat_members(chat_id: str) -> list[dict[str, Any]]:
     """
     Retrieves chat members given a chat
@@ -1893,6 +1915,130 @@ def chat_message_list_command():
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
+        },
+    )
+    return_results(result)
+
+
+def resolve_chat_or_channel(
+    chat_or_channel: str,
+    team_name: str,
+) -> tuple[str, str | None]:
+    """
+    Resolve whether the identifier refers to a chat or a channel.
+
+    Returns:
+        ("chat", chat_id) or ("channel", channel_id)
+
+    Raises:
+        ValueError if channel is intended but team is missing.
+    """
+    # First, try to resolve as channel if team_name is provided
+    if team_name:
+        try:
+            team_id = get_team_aad_id(team_name)
+            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+            demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
+            return "channel", channel_id
+        except Exception:
+            pass
+
+    # If not channel, try to resolve as chat
+    try:
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            # Client Credentials flow cannot resolve chats, so we skip this check
+            pass
+        else:
+            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+            if chat_id:
+                demisto.debug(f"Resolved {chat_or_channel} as chat.")
+                return "chat", chat_id
+    except Exception:
+        pass
+
+    error_message = "Failed to find chat or channel."
+    if not team_name:
+        error_message += " If you are trying to get messages from a channel, please provide the 'team_name'."
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
+
+    raise DemistoException(error_message)
+
+
+def fetch_channel_messages(
+    channel_id: str,
+    team_name: str,
+    top: int,
+    message_id: str = "",
+) -> dict[str, Any]:
+    team_id = get_team_aad_id(team_name)
+    demisto.debug(f"Fetching messages from channel {channel_id} in team {team_name}.")
+    return get_channel_messages_list(
+        team_id=team_id,
+        channel_id=channel_id,
+        odata_params={"$top": top},
+        message_id=message_id,
+    )
+
+
+def list_messages_command():
+    """
+    Retrieve the list of messages in a chat or channel.
+    """
+    args = demisto.args()
+    chat_or_channel = args.get("conversation_id", "")
+    team_name = args.get("team_name", "")
+    message_id = args.get("message_id", "")
+    next_link = args.get("next_link", "")
+
+    limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
+    top = min(MAX_ITEMS_PER_RESPONSE, limit)
+    order_by = args.get("order_by", "lastModifiedDateTime")
+
+    if next_link:
+        messages_list_response = cast(dict[str, Any], http_request("GET", next_link))
+    else:
+        entity_type, resolved_id = resolve_chat_or_channel(chat_or_channel, team_name)
+        if not resolved_id:
+            raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
+
+        if entity_type == "chat":
+            demisto.debug(f"Fetching messages from chat {resolved_id}.")
+            messages_list_response = get_messages_list(
+                chat_id=resolved_id,
+                odata_params={
+                    "$orderBy": f"{order_by} desc",
+                    "$top": top,
+                },
+            )
+        else:
+            messages_list_response = fetch_channel_messages(
+                channel_id=resolved_id,
+                team_name=team_name,
+                top=top,
+                message_id=message_id,
+            )
+
+    messages_data, next_link = pages_puller(messages_list_response, limit)
+
+    hr = [get_message_human_readable(message) for message in messages_data]
+    result = CommandResults(
+        readable_output=tableToMarkdown(f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True)
+        + (
+            f"\nThere are more results than shown. "
+            f"For more data please enter the next_link argument:\n "
+            f"next_link={next_link}"
+            if next_link
+            else ""
+        ),
+        outputs_key_field="conversationId",
+        outputs={
+            "MicrosoftTeams(true)": {"MessagesListNextLink": next_link},
+            "MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)": {
+                "messages": messages_data,
+                "conversationId": chat_or_channel,
+            },
+            "MicrosoftTeams.MessagesListMetadata": {"returned_count": len(messages_data), "filtered_count": limit},
         },
     )
     return_results(result)
@@ -3594,6 +3740,7 @@ def main():  # pragma: no cover
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
+        "microsoft-teams-list-messages": list_messages_command,
     }
 
     commands_auth_code: dict = {
@@ -3609,7 +3756,6 @@ def main():  # pragma: no cover
 
     """ EXECUTION """
     command: str = demisto.command()
-
     if command != "test-module":  # skipping test-module since it doesn't have integration context
         auth_type_switch_handling()  # handles auth type switch cases
 

@@ -431,16 +431,9 @@ get_remote_detection = (
     None,
     "in_progress",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "in_progress",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
@@ -450,16 +443,9 @@ get_remote_detection_update = (
     None,
     "reopened",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "reopened",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [{"Contents": {"dbotIncidentReopen": True}, "ContentsFormat": "json", "Type": EntryType.NOTE}],
 )
@@ -469,16 +455,9 @@ get_remote_detection_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [
         {
@@ -494,16 +473,10 @@ get_remote_detection_no_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
+
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
@@ -741,66 +714,6 @@ incident_closed = (
     set(),
     True,
 )
-detection_changed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.PENDING,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_no_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_param_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.ACTIVE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    True,
-)
-detection_closed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"closeReason": "Other"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "closed")],
-    remote_detection_id,
-    None,
-    True,
-)
 
 update_remote_system_command_args = [
     incident_changed_status,
@@ -809,10 +722,6 @@ update_remote_system_command_args = [
     incident_changed_no_close,
     incident_changed_param_close,
     incident_closed,
-    detection_changed,
-    detection_changed_no_close,
-    detection_changed_param_close,
-    detection_closed,
 ]
 
 # delta, close_in_cs_falcon_param, to_close

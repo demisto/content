@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 commonfields:
   id: Cortex Core - IOC
   version: -1
@@ -24,13 +25,6 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- display: API Key ID
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: false
-  section: Connect
-  displaypassword: API Key
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   name: severity
@@ -39,14 +33,15 @@ configuration:
   - low
   - medium
   - high
-  required: true
+  required: false
+  defaultvalue: low
   type: 15
   section: Connect
 - additionalinfo: The query used to collect indicators to sync from Cortex.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   name: query
-  required: true
+  required: false
   type: 0
   section: Collect
 description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
@@ -112,7 +107,6 @@ supportedModules:
 - X5
 - ENT_PLUS
 - xsiam
-- agentix
 - cloud
 - cloud_posture
 - cloud_runtime_security

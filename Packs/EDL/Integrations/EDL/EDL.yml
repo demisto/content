@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Palo Alto Networks
 sectionorder:
 - Connect
 - Collect
@@ -45,7 +46,7 @@ configuration:
   defaultvalue: '2500'
   display: List Size
   name: edl_size
-  required: true
+  required: false
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
@@ -362,6 +363,7 @@ script:
     arguments:
     - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators.
       name: query
+      required: true
     - auto: PREDEFINED
       defaultValue: PAN-OS (text)
       description: The format of the exported list.

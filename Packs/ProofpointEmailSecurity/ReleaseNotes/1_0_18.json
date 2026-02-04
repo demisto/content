@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The \"Fetch Events\" checkbox must be checked to enable fetching of new events using the Proofpoint Email Security Event Collector."
+}
