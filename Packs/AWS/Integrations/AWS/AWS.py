@@ -3245,7 +3245,7 @@ class EC2:
         readable_output = tableToMarkdown(
             "AWS EC2 Volumes",
             volumes,
-            headers=["AvailabilityZone", "Encrypted", "State", "VolumeId", "VolumeType", "CreateTime"],
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "Encrypted", "State", "CreateTime"],
             removeNull=True,
         )
 
@@ -3299,6 +3299,7 @@ class EC2:
             "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
             "Modification": volume_modification,
         }
+        remove_nulls_from_dictionary(outputs)
 
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Modification",
@@ -3367,8 +3368,8 @@ class EC2:
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         readable_output = tableToMarkdown(
             "AWS EC2 Volumes",
-            [outputs],
-            headers=["AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "VolumeId", "Iops", "VolumeType"],
+            outputs,
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "Iops"],
             removeNull=True,
         )
 
@@ -3410,7 +3411,7 @@ class EC2:
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
             outputs,
-            headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
             removeNull=True,
         )
 
@@ -3455,7 +3456,7 @@ class EC2:
         readable_output = tableToMarkdown(
             "AWS EC2 Volume Attachments",
             outputs,
-            headers=["AttachTime", "Device", "InstanceId", "State", "VolumeId", "DeleteOnTermination"],
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
             removeNull=True,
         )
 
