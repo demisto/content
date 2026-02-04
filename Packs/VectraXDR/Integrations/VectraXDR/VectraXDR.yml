@@ -388,7 +388,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -494,7 +494,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1015,7 +1015,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1086,6 +1086,9 @@ script:
     - contextPath: Vectra.Detection.Notes.note_id
       description: ID of the note.
       type: Number
+    - contextPath: Vectra.Detection.Notes.id
+      description: ID of the note.
+      type: Number
     - contextPath: Vectra.Detection.Notes.date_created
       description: Date when the note was created.
       type: Date
@@ -1097,7 +1100,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1152,7 +1155,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the detection.
+      description: Specify the ID of the detection.
       isArray: false
       name: detection_id
       required: true
@@ -1178,6 +1181,9 @@ script:
       description: ID of the detection associated with the note.
       type: String
     - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.id
       description: ID of the note.
       type: Number
     - contextPath: Vectra.Detection.Notes.date_created
@@ -1263,7 +1269,7 @@ script:
     name: vectra-detections-unmark-fixed
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1303,7 +1309,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1343,7 +1349,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1777,8 +1783,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Specify the type of the entity.
+      description: Specify the type of the entity.
       isArray: false
       name: entity_type
       required: false
@@ -1788,8 +1793,7 @@ script:
       - account
       - host
     - default: false
-      description: |-
-        Filter by resolved status.
+      description: Filter by resolved status.
       isArray: false
       name: resolved
       required: false
@@ -1799,15 +1803,13 @@ script:
       - 'True'
       - 'False'
     - default: false
-      description: |-
-        Filter by user ids of the assignment. Comma-separated values supported.
+      description: Filter by user ids of the assignment. Comma-separated values supported.
       isArray: false
       name: assignees
       required: false
       secret: false
     - default: false
-      description: |-
-        Filter by outcome ids of the resolution. Comma-separated values supported.
+      description: Filter by outcome ids of the resolution. Comma-separated values supported.
       isArray: false
       name: resolution
       required: false
@@ -1819,8 +1821,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Enables the caller to specify a particular page of results.
+      description: Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
@@ -2042,11 +2043,8 @@ script:
     - contextPath: Vectra.Detection.Notes.note
       description: Content of the note.
       type: String
-    - contextPath: Vectra.Detection.Notes.entity_id
-      description: ID of the entity associated with the note.
-      type: String
-    - contextPath: Vectra.Detection.Notes.entity_type
-      description: Type of the entity associated with the note.
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
       type: String
   - arguments:
     - description: Filter by group type.
@@ -2136,7 +2134,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters by the user id who made the most recent modification to the group.
+      description: Filters by the user ID who made the most recent modification to the group.
       isArray: false
       name: last_modified_by
       required: false
@@ -2446,7 +2444,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -2462,7 +2460,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Reset the given entity to refetch incidents.
+    description: Resets the given entity to refetch incidents.
     execution: false
     name: vectra-entity-reset-fetch
   dockerimage: demisto/python3:3.12.12.6391686
