@@ -3877,6 +3877,7 @@ class EC2:
         except WaiterError as e:
             raise DemistoException(f"Waiter error: {str(e)}")
 
+
 class EKS:
     service = AWSServices.EKS
 
