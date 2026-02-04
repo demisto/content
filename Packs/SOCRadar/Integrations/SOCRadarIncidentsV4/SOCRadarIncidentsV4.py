@@ -38,7 +38,7 @@ MESSAGES = {
 }
 
 
-def convert_to_demisto_severity(severity: str) -> int:
+def convert_to_demisto_severity(severity: str) -> int | float:
     """Convert SOCRadar severity to Demisto severity level"""
     return {
         "LOW": IncidentSeverity.LOW,
@@ -478,9 +478,10 @@ def fetch_incidents(
         start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
         demisto.debug(f"[SOCRadar] Subsequent fetch: Using fetch_interval of {fetch_interval_minutes} minutes")
     else:
-        start_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
-        if not start_datetime:
+        start_datetime_temp = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
+        if not start_datetime_temp:
             raise ValueError("Failed to parse first_fetch_time")
+        start_datetime = start_datetime_temp
         demisto.debug("[SOCRadar] First fetch: Using first_fetch_time")
 
     start_date = start_datetime.strftime("%Y-%m-%d")
