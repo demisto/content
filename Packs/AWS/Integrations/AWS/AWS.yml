@@ -8546,6 +8546,674 @@ script:
       description: The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses.
       required: false
 
+  - name: aws-ec2-instances-monitor
+    description: Enables detailed monitoring on one or more running Amazon EC2 instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to enable monitoring for.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: The monitoring state (disabled | disabling | enabled | pending).
+      type: String
+
+  - name: aws-ec2-instances-unmonitor
+    description: Disables detailed monitoring for one or more running Amazon EC2 instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to disable monitoring for.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: The monitoring state (disabled | disabling | enabled | pending).
+      type: String
+
+  - name: aws-ec2-instances-reboot
+    description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to reboot.
+      required: true
+      isArray: true
+
+  - name: aws-ec2-instance-running-waiter
+    description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`)."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-instance-status-ok-waiter
+    description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds, to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+    - name: include_all_instances
+      description: When true, includes the health status for all instances. When false, includes the health status for running instances only.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+
+  - name: aws-ec2-instance-stopped-waiter
+    description: Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-instance-terminated-waiter
+    description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_ids
+      description: A comma-separated list of instance IDs to wait for.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default is 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default is 40.
+      defaultValue: "40"
+
+  - name: aws-ec2-iam-instance-profile-associations-describe
+    description: Describes IAM instance profile associations.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: association_ids
+      description: A comma-separated list of IAM instance profile association IDs.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: limit
+      description: The maximum number of results to return. Minimum value of 5. Maximum value of 1000.
+      defaultValue: 50
+    - name: next_token
+      description: The token for the next set of results.
+    outputs:
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
+      description: The ID of the association.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
+      description: The state of the association.
+      type: String
+    - contextPath: AWS.EC2.IamInstanceProfileAssociationsNextToken
+      description: The token for the next set of results.
+      type: String
+
+  - name: aws-ec2-password-data-get
+    description: Retrieves the encrypted administrator password for a running Windows instance.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: instance_id
+      description: The ID of the Windows instance.
+      required: true
+    outputs:
+    - contextPath: AWS.EC2.Instances.PasswordData.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
+      description: The password of the instance. Returns an empty string if the password is not available.
+      type: String
+    - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
+      description: The time the data was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+
+  - name: aws-ec2-reserved-instances-describe
+    description: Describes one or more of the Reserved Instances that you purchased.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: reserved_instances_ids
+      description: A comma-separated list of Reserved Instance IDs.
+      isArray: true
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>).
+    - name: offering_class
+      description: The offering class of the Reserved Instance.
+      auto: PREDEFINED
+      predefined:
+      - standard
+      - convertible
+    - name: offering_type
+      description: The Reserved Instance offering type.
+      auto: PREDEFINED
+      predefined:
+        - Heavy Utilization
+        - Medium Utilization
+        - Light Utilization
+        - No Upfront
+        - Partial Upfront
+        - All Upfront
+    outputs:
+    - contextPath: AWS.EC2.ReservedInstances.ReservedInstancesId
+      description: The ID of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.InstanceType
+      description: The instance type on which the Reserved Instance can be used.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.AvailabilityZone
+      description: The Availability Zone in which the Reserved Instance can be used.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Start
+      description: The date and time the Reserved Instance started.
+      type: Date
+    - contextPath: AWS.EC2.ReservedInstances.End
+      description: The time when the Reserved Instance expires.
+      type: Date
+    - contextPath: AWS.EC2.ReservedInstances.Duration
+      description: The duration of the Reserved Instance, in seconds.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.UsagePrice
+      description: The usage price of the Reserved Instance, per hour.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.FixedPrice
+      description: The purchase price of the Reserved Instance.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.InstanceCount
+      description: The number of reservations purchased.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.ProductDescription
+      description: The Reserved Instance product platform description.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.State
+      description: The state of the Reserved Instance purchase.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.CurrencyCode
+      description: The currency of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.InstanceTenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.OfferingClass
+      description: The offering class of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.OfferingType
+      description: The Reserved Instance offering type.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Amount
+      description: The amount of the recurring charge.
+      type: Number
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Frequency
+      description: The frequency of the recurring charge.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Scope
+      description: The scope of the Reserved Instance.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Value
+      description: The value of the tag.
+      type: String
+
   isfetch: false
   runonce: false
   script: '-'

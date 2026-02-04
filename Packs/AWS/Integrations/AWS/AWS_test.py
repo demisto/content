@@ -7792,6 +7792,1093 @@ def test_ec2_image_available_waiter_command_waiter_error(mocker):
         EC2.image_available_waiter_command(mock_client, args)
 
 
+def test_ec2_monitor_instances_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid instance IDs.
+    When: monitor_instances_command is called successfully.
+    Then: It should return CommandResults with success message and monitoring state.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.monitor_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceMonitorings": [
+            {"InstanceId": "i-1234567890abcdef0", "Monitoring": {"State": "enabled"}},
+            {"InstanceId": "i-0987654321fedcba0", "Monitoring": {"State": "pending"}},
+        ],
+    }
+
+    args = {"instance_ids": "i-1234567890abcdef0,i-0987654321fedcba0"}
+
+    result = EC2.monitor_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully enabled monitoring for instances" in result.readable_output
+    assert result.outputs_prefix == "AWS.EC2.Instances"
+    assert len(result.outputs) == 2
+    mock_client.monitor_instances.assert_called_once_with(InstanceIds=["i-1234567890abcdef0", "i-0987654321fedcba0"])
+
+
+def test_ec2_monitor_instances_command_empty_instance_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and empty instance_ids parameter.
+    When: monitor_instances_command is called with empty instance IDs.
+    Then: It should raise ValueError indicating resource ID cannot be empty.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"instance_ids": None}
+
+    with pytest.raises(ValueError, match="Resource ID cannot be empty"):
+        EC2.monitor_instances_command(mock_client, args)
+
+
+def test_ec2_monitor_instances_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: monitor_instances_command encounters a client error.
+    Then: It should raise the ClientError (no error handler called in current implementation).
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"},
+        "ResponseMetadata": {"HTTPStatusCode": 404},
+    }
+    client_error = ClientError(error_response, "MonitorInstances")
+    mock_client.monitor_instances.side_effect = client_error
+
+    args = {"instance_ids": "i-nonexistent123"}
+
+    with pytest.raises(ClientError):
+        EC2.monitor_instances_command(mock_client, args)
+
+
+def test_ec2_monitor_instances_command_http_error_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: monitor_instances_command is called with failed HTTP response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.monitor_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"instance_ids": "i-1234567890abcdef0", "account_id": "123456789012"}
+
+    EC2.monitor_instances_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_unmonitor_instances_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid instance IDs.
+    When: unmonitor_instances_command is called successfully.
+    Then: It should return CommandResults with monitoring data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.unmonitor_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceMonitorings": [
+            {"InstanceId": "i-1234567890abcdef0", "Monitoring": {"State": "disabled"}},
+            {"InstanceId": "i-0987654321fedcba0", "Monitoring": {"State": "disabled"}},
+        ],
+    }
+
+    args = {"instance_ids": "i-1234567890abcdef0, i-0987654321fedcba0", "region": "us-east-1"}
+
+    result = EC2.unmonitor_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Instances"
+    assert len(result.outputs) == 2
+    assert "Successfully disabled monitoring" in result.readable_output
+
+
+def test_ec2_unmonitor_instances_command_single_instance(mocker):
+    """
+    Given: A mocked boto3 EC2 client and single instance ID.
+    When: unmonitor_instances_command is called with one instance.
+    Then: It should return CommandResults with single instance monitoring data.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.unmonitor_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceMonitorings": [{"InstanceId": "i-1234567890abcdef0", "Monitoring": {"State": "disabled"}}],
+    }
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.unmonitor_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["InstanceId"] == "i-1234567890abcdef0"
+
+
+def test_ec2_unmonitor_instances_command_empty_instance_ids(mocker):
+    """
+    Given: Empty instance_ids argument.
+    When: unmonitor_instances_command is called with empty instance IDs.
+    Then: It should raise ValueError about empty resource ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"instance_ids": None, "region": "us-east-1"}
+
+    with pytest.raises(ValueError, match="Resource ID cannot be empty"):
+        EC2.unmonitor_instances_command(mock_client, args)
+
+
+def test_ec2_unmonitor_instances_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: unmonitor_instances_command encounters a client error.
+    Then: It should raise the ClientError (no error handler called in current implementation).
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"},
+        "ResponseMetadata": {"HTTPStatusCode": 404},
+    }
+    mock_client.unmonitor_instances.side_effect = ClientError(error_response, "UnmonitorInstances")
+
+    args = {"instance_ids": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.unmonitor_instances_command(mock_client, args)
+
+
+def test_ec2_unmonitor_instances_command_http_error_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: unmonitor_instances_command receives failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.unmonitor_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.unmonitor_instances_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_reboot_instances_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid instance IDs.
+    When: reboot_instances_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.reboot_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"instance_ids": "i-1234567890abcdef0, i-0987654321fedcba0", "region": "us-east-1"}
+
+    result = EC2.reboot_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully initiated reboot for instances" in result.readable_output
+    assert "i-1234567890abcdef0" in result.readable_output
+
+
+def test_ec2_reboot_instances_command_single_instance(mocker):
+    """
+    Given: A mocked boto3 EC2 client and single instance ID.
+    When: reboot_instances_command is called with one instance.
+    Then: It should return CommandResults with success message for single instance.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.reboot_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.reboot_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully initiated reboot for instances" in result.readable_output
+
+
+def test_ec2_reboot_instances_command_empty_instance_ids(mocker):
+    """
+    Given: Empty instance_ids argument.
+    When: reboot_instances_command is called with empty instance IDs.
+    Then: It should raise ValueError about empty resource ID.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"instance_ids": None, "region": "us-east-1"}
+
+    with pytest.raises(ValueError, match="Resource ID cannot be empty"):
+        EC2.reboot_instances_command(mock_client, args)
+
+
+def test_ec2_reboot_instances_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: reboot_instances_command encounters a client error.
+    Then: It should raise the ClientError (no error handler called in current implementation).
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidInstanceID.Malformed", "Message": "Invalid instance ID"},
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+    }
+    mock_client.reboot_instances.side_effect = ClientError(error_response, "RebootInstances")
+
+    args = {"instance_ids": "invalid-id", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.reboot_instances_command(mock_client, args)
+
+
+def test_ec2_reboot_instances_command_http_error_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: reboot_instances_command receives failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.reboot_instances.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.FORBIDDEN}}
+
+    mock_error_handler = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.reboot_instances_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_instance_running_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with successful waiter.
+    When: instance_running_waiter_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.instance_running_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Instance(s) are now running" in result.readable_output
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_instance_running_waiter_command_with_custom_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client and custom waiter configuration.
+    When: instance_running_waiter_command is called with custom delay and max attempts.
+    Then: It should use the custom waiter configuration.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1", "waiter_delay": "30", "waiter_max_attempts": "20"}
+
+    result = EC2.instance_running_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_waiter.wait.call_args[1]
+    assert call_kwargs["WaiterConfig"]["Delay"] == 30
+    assert call_kwargs["WaiterConfig"]["MaxAttempts"] == 20
+
+
+def test_ec2_instance_running_waiter_command_waiter_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError.
+    When: instance_running_waiter_command encounters a waiter error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.side_effect = WaiterError("instance_running", "Max attempts exceeded", {})
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_running_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_running_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: instance_running_waiter_command encounters a client error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    error_response = {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}
+    mock_waiter.wait.side_effect = ClientError(error_response, "DescribeInstances")
+
+    args = {"instance_ids": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_running_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_status_ok_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with successful waiter.
+    When: instance_status_ok_waiter_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.instance_status_ok_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Instance status is now OK" in result.readable_output
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_instance_status_ok_waiter_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: instance_status_ok_waiter_command is called with filters.
+    Then: It should pass filters to the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"filters": "name=instance-state-name,values=running", "region": "us-east-1"}
+
+    result = EC2.instance_status_ok_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_kwargs
+
+
+def test_ec2_instance_status_ok_waiter_command_waiter_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError.
+    When: instance_status_ok_waiter_command encounters a waiter error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.side_effect = WaiterError("instance_status_ok", "Timeout", {})
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_status_ok_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_status_ok_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: instance_status_ok_waiter_command encounters a client error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    error_response = {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}
+    mock_waiter.wait.side_effect = ClientError(error_response, "DescribeInstanceStatus")
+
+    args = {"instance_ids": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_status_ok_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_stopped_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with successful waiter.
+    When: instance_stopped_waiter_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.instance_stopped_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Instance(s) are now stopped" in result.readable_output
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_instance_stopped_waiter_command_multiple_instances(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple instance IDs.
+    When: instance_stopped_waiter_command is called with multiple instances.
+    Then: It should wait for all instances to stop.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0, i-0987654321fedcba0", "region": "us-east-1"}
+
+    result = EC2.instance_stopped_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_waiter.wait.call_args[1]
+    assert len(call_kwargs["InstanceIds"]) == 2
+
+
+def test_ec2_instance_stopped_waiter_command_waiter_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError.
+    When: instance_stopped_waiter_command encounters a waiter error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.side_effect = WaiterError("instance_stopped", "Failed", {})
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_stopped_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_stopped_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: instance_stopped_waiter_command encounters a client error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    error_response = {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}
+    mock_waiter.wait.side_effect = ClientError(error_response, "DescribeInstances")
+
+    args = {"instance_ids": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_stopped_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_terminated_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with successful waiter.
+    When: instance_terminated_waiter_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.instance_terminated_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Instance(s) are now terminated" in result.readable_output
+    mock_waiter.wait.assert_called_once()
+
+
+def test_ec2_instance_terminated_waiter_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: instance_terminated_waiter_command is called with filters.
+    Then: It should pass filters to the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"filters": "name=tag:Environment,values=test", "region": "us-east-1"}
+
+    result = EC2.instance_terminated_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_kwargs
+
+
+def test_ec2_instance_terminated_waiter_command_waiter_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises WaiterError.
+    When: instance_terminated_waiter_command encounters a waiter error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import WaiterError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    mock_waiter.wait.side_effect = WaiterError("instance_terminated", "Error", {})
+
+    args = {"instance_ids": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_terminated_waiter_command(mock_client, args)
+
+
+def test_ec2_instance_terminated_waiter_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: instance_terminated_waiter_command encounters a client error.
+    Then: It should raise DemistoException with waiter error message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+    error_response = {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}
+    mock_waiter.wait.side_effect = ClientError(error_response, "DescribeInstances")
+
+    args = {"instance_ids": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(DemistoException, match="Waiter error"):
+        EC2.instance_terminated_waiter_command(mock_client, args)
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid association IDs.
+    When: describe_iam_instance_profile_associations_command is called successfully.
+    Then: It should return CommandResults with association data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_iam_instance_profile_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IamInstanceProfileAssociations": [
+            {
+                "AssociationId": "iip-assoc-1234567890abcdef0",
+                "InstanceId": "i-1234567890abcdef0",
+                "IamInstanceProfile": {"Arn": "arn:aws:iam::123456789012:instance-profile/MyProfile", "Id": "AIPAI123456789"},
+                "State": "associated",
+            }
+        ],
+    }
+
+    args = {"association_ids": "iip-assoc-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)" in result.outputs
+    assert (
+        len(result.outputs["AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)"])
+        == 1
+    )
+    assert "AWS IAM Instance Profile Associations" in result.readable_output
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_iam_instance_profile_associations_command is called with filters.
+    Then: It should pass filters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_iam_instance_profile_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IamInstanceProfileAssociations": [],
+    }
+
+    args = {"filters": "name=instance-id,values=i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.describe_iam_instance_profile_associations.call_args[1]
+    assert "Filters" in call_kwargs
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_empty_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty associations list.
+    When: describe_iam_instance_profile_associations_command is called.
+    Then: It should return CommandResults with message about no associations found.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_iam_instance_profile_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IamInstanceProfileAssociations": [],
+    }
+
+    args = {"region": "us-east-1"}
+
+    result = EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No IAM instance profile associations were found."
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_multiple_associations(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple association IDs.
+    When: describe_iam_instance_profile_associations_command is called with multiple IDs.
+    Then: It should return CommandResults with all associations data.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_iam_instance_profile_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IamInstanceProfileAssociations": [
+            {
+                "AssociationId": "iip-assoc-1234567890abcdef0",
+                "InstanceId": "i-1234567890abcdef0",
+                "IamInstanceProfile": {"Arn": "arn:aws:iam::123456789012:instance-profile/Profile1"},
+                "State": "associated",
+            },
+            {
+                "AssociationId": "iip-assoc-0987654321fedcba0",
+                "InstanceId": "i-0987654321fedcba0",
+                "IamInstanceProfile": {"Arn": "arn:aws:iam::123456789012:instance-profile/Profile2"},
+                "State": "associating",
+            },
+        ],
+    }
+
+    args = {"association_ids": "iip-assoc-1234567890abcdef0, iip-assoc-0987654321fedcba0", "region": "us-east-1"}
+
+    result = EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert (
+        len(result.outputs["AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)"])
+        == 2
+    )
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: describe_iam_instance_profile_associations_command encounters a client error.
+    Then: It should raise the ClientError (no error handler called in current implementation).
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidAssociationID.NotFound", "Message": "Association not found"}}
+    mock_client.describe_iam_instance_profile_associations.side_effect = ClientError(
+        error_response, "DescribeIamInstanceProfileAssociations"
+    )
+
+    args = {"association_ids": "iip-assoc-invalid", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+
+
+def test_ec2_describe_iam_instance_profile_associations_command_http_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: describe_iam_instance_profile_associations_command receives failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_iam_instance_profile_associations.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.FORBIDDEN},
+        "IamInstanceProfileAssociations": [],
+    }
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"region": "us-east-1"}
+
+    EC2.describe_iam_instance_profile_associations_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_get_password_data_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid instance ID.
+    When: get_password_data_command is called successfully.
+    Then: It should return CommandResults with password data and proper outputs.
+    """
+    from AWS import EC2
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.get_password_data.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceId": "i-1234567890abcdef0",
+        "PasswordData": "encrypted-password-data",
+        "Timestamp": datetime(2023, 10, 15, 14, 30, 45),
+    }
+
+    args = {"instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.get_password_data_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Instances"
+    assert result.outputs["InstanceId"] == "i-1234567890abcdef0"
+    assert "AWS EC2 Instance Password Data" in result.readable_output
+
+
+def test_ec2_get_password_data_command_empty_password(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty password data.
+    When: get_password_data_command is called for instance without password.
+    Then: It should return CommandResults with empty password data.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_password_data.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceId": "i-1234567890abcdef0",
+        "PasswordData": "",
+    }
+
+    args = {"instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.get_password_data_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PasswordData"]["PasswordData"] == ""
+
+
+def test_ec2_get_password_data_command_with_timestamp(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning password data with timestamp.
+    When: get_password_data_command is called successfully.
+    Then: It should return CommandResults with properly serialized timestamp.
+    """
+    from AWS import EC2
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceId": "i-1234567890abcdef0",
+        "PasswordData": "encrypted-data",
+        "Timestamp": datetime(2023, 10, 15, 14, 30, 45),
+    }
+    mock_client.get_password_data.return_value = mock_response
+
+    # Mock serialize to return serialized response with string timestamp
+    serialized_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "InstanceId": "i-1234567890abcdef0",
+        "PasswordData": "encrypted-data",
+        "Timestamp": "2023-10-15T14:30:45",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_response)
+
+    args = {"instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.get_password_data_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["InstanceId"] == "i-1234567890abcdef0"
+    assert result.outputs["PasswordData"]["Timestamp"] == "2023-10-15T14:30:45"
+
+
+def test_ec2_get_password_data_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: get_password_data_command encounters a client error.
+    Then: It should raise the ClientError (no error handler called in current implementation).
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}
+    mock_client.get_password_data.side_effect = ClientError(error_response, "GetPasswordData")
+
+    args = {"instance_id": "i-invalid", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.get_password_data_command(mock_client, args)
+
+
+def test_ec2_get_password_data_command_http_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: get_password_data_command receives failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_password_data.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "InstanceId": "i-1234567890abcdef0",
+    }
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"instance_id": "i-1234567890abcdef0", "region": "us-east-1"}
+
+    EC2.get_password_data_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_describe_reserved_instances_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid reserved instance IDs.
+    When: describe_reserved_instances_command is called successfully.
+    Then: It should return CommandResults with reserved instances data and proper outputs.
+    """
+    from AWS import EC2
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [
+            {
+                "ReservedInstancesId": "ri-1234567890abcdef0",
+                "InstanceType": "t3.micro",
+                "AvailabilityZone": "us-east-1a",
+                "Start": datetime(2023, 1, 1),
+                "End": datetime(2024, 1, 1),
+                "Duration": 31536000,
+                "InstanceCount": 1,
+                "State": "active",
+            }
+        ],
+    }
+
+    serialized_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [
+            {
+                "ReservedInstancesId": "ri-1234567890abcdef0",
+                "InstanceType": "t3.micro",
+                "AvailabilityZone": "us-east-1a",
+                "Start": "2023-01-01T00:00:00",
+                "End": "2024-01-01T00:00:00",
+                "Duration": 31536000,
+                "InstanceCount": 1,
+                "State": "active",
+            }
+        ],
+    }
+
+    mock_client.describe_reserved_instances.return_value = mock_response
+
+    # Mock serialize to return serialized response with datetime strings
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=serialized_response)
+
+    args = {"reserved_instance_ids": "ri-1234567890abcdef0", "region": "us-east-1"}
+
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
+    assert result.outputs_key_field == "ReservedInstancesId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ReservedInstancesId"] == "ri-1234567890abcdef0"
+    assert result.outputs[0]["InstanceType"] == "t3.micro"
+    assert result.outputs[0]["State"] == "active"
+    assert "AWS EC2 Reserved Instances" in result.readable_output
+
+
+def test_ec2_describe_reserved_instances_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_reserved_instances_command is called with filters.
+    Then: It should pass filters to the API call and return empty results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_reserved_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [],
+    }
+
+    args = {"filters": "name=state,values=active", "region": "us-east-1"}
+
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Reserved Instances were found."
+    call_kwargs = mock_client.describe_reserved_instances.call_args[1]
+    assert "Filters" in call_kwargs
+
+
+def test_ec2_describe_reserved_instances_command_empty_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty reserved instances list.
+    When: describe_reserved_instances_command is called.
+    Then: It should return CommandResults with message about no instances found.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_reserved_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [],
+    }
+
+    args = {"region": "us-east-1"}
+
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Reserved Instances were found."
+
+
+def test_ec2_describe_reserved_instances_command_multiple_instances(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple reserved instance IDs.
+    When: describe_reserved_instances_command is called with multiple IDs.
+    Then: It should return CommandResults with all reserved instances data.
+    """
+    from AWS import EC2
+
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [
+            {"ReservedInstancesId": "ri-1234567890abcdef0", "InstanceType": "t3.micro", "State": "active"},
+            {"ReservedInstancesId": "ri-0987654321fedcba0", "InstanceType": "t3.small", "State": "retired"},
+        ],
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.describe_reserved_instances.return_value = mock_response
+
+    # Mock serialize to return the full response with serialized data
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"reserved_instance_ids": "ri-1234567890abcdef0, ri-0987654321fedcba0", "region": "us-east-1"}
+
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.ReservedInstances"
+    assert result.outputs_key_field == "ReservedInstancesId"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ReservedInstancesId"] == "ri-1234567890abcdef0"
+    assert result.outputs[1]["ReservedInstancesId"] == "ri-0987654321fedcba0"
+    assert "AWS EC2 Reserved Instances" in result.readable_output
+
+
+def test_ec2_describe_reserved_instances_command_with_offering_type(mocker):
+    """
+    Given: A mocked boto3 EC2 client and offering_type filter.
+    When: describe_reserved_instances_command is called with offering_type.
+    Then: It should pass offering_type to the API call and return empty results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_reserved_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ReservedInstances": [],
+    }
+
+    args = {"filters": "name=offering-type,values=All Upfront", "region": "us-east-1"}
+
+    result = EC2.describe_reserved_instances_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Reserved Instances were found."
+
+
+def test_ec2_describe_reserved_instances_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: describe_reserved_instances_command encounters a client error.
+    Then: It should raise the ClientError.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "InvalidReservedInstancesId.NotFound", "Message": "Reserved instance not found"},
+        "ResponseMetadata": {"HTTPStatusCode": 404},
+    }
+    mock_client.describe_reserved_instances.side_effect = ClientError(error_response, "DescribeReservedInstances")
+
+    args = {"reserved_instance_ids": "ri-invalid", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.describe_reserved_instances_command(mock_client, args)
+
+
+def test_ec2_describe_reserved_instances_command_http_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK HTTP status.
+    When: describe_reserved_instances_command receives failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_reserved_instances.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.FORBIDDEN},
+        "ReservedInstances": [],
+    }
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"region": "us-east-1"}
+
+    EC2.describe_reserved_instances_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
 def test_ec2_describe_snapshots_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client and valid snapshot description arguments.
