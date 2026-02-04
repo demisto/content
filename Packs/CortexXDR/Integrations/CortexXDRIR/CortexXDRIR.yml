@@ -3973,7 +3973,6 @@ script:
     - auto: PREDEFINED
       description: The BIOC type.
       name: type
-      required: true
       predefined:
       - other
       - persistence
@@ -3999,11 +3998,9 @@ script:
       - 'false'
     - description: The BIOC comment.
       name: comment
-      required: true
     - auto: PREDEFINED
       description: The BIOC status.
       name: status
-      required: true
       predefined:
       - enabled
       - disabled
@@ -4013,7 +4010,6 @@ script:
         For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
       isArray: true
       name: indicator
-      required: true
     - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_technique_id_and_name

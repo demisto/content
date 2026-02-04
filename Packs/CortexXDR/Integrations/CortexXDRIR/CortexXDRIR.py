@@ -1587,27 +1587,35 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
-    bioc_data = assign_params(
-        rule_id=args.get("rule_id"),  # for update only
-        name=args.get("name"),
-        severity=BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
-        type=args.get("type"),
-        is_xql=argToBoolean(args.get("is_xql", False)),
-        comment=args.get("comment"),
-        status=args.get("status"),
-    )
-
-    indicator = args.get("indicator")
+    """
+    Creates or updates BIOC indicators based on provided arguments.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments containing rule configuration.
+    Returns:
+        dict: The raw response from the client containing the update/creation results.
+    """
+    bioc_data = {
+        # required for updating
+        "rule_id": args.get("rule_id"),
+        # required fields
+        "name": args.get("name"),
+        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
+        # not required but need to be null
+        "type": args.get("type"),
+        "is_xql": argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        "comment": args.get("comment"),
+        "status": args.get("status"),
+        "mitre_technique_id_and_name": args.get("mitre_technique_id_and_name") or [],
+        "mitre_tactic_id_and_name": args.get("mitre_tactic_id_and_name") or [],
+    }
+    indicator = args.get("indicator")  # required
     if indicator:
         try:
             indicator = json.loads(indicator)
             bioc_data["indicator"] = indicator
         except ValueError:
             raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
-
-    # required fields but can be empty
-    bioc_data["mitre_technique_id_and_name"] = argToList(args.get("mitre_technique_id_and_name")) or []
-    bioc_data["mitre_tactic_id_and_name"] = argToList(args.get("mitre_tactic_id_and_name")) or []
 
     return client.insert_or_update_biocs({"request_data": [bioc_data]})
 
@@ -1776,9 +1784,9 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
     reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
     updated_objects = reply.get("added_objects")[0] if reply.get("added_objects") else {}
     rule_id = updated_objects.get("id")
-    status = updated_objects.get("status")
+    message = updated_objects.get("status")
     return CommandResults(
-        readable_output=status,
+        readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
         outputs={"rule_id": rule_id},
         raw_response=reply,
@@ -1838,10 +1846,10 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
     reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
     updated_objects = reply.get("updated_objects")[0] if reply.get("updated_objects") else {}
     rule_id = updated_objects.get("id")
-    status = updated_objects.get("status")
+    message = updated_objects.get("status")
 
     return CommandResults(
-        readable_output=status,
+        readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
         outputs={"rule_id": rule_id},
         raw_response=reply,
