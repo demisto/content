@@ -1152,7 +1152,7 @@ def validate_auth_header(headers: dict) -> bool:
     Validates authorization header provided in the bot activity object.
     Uses fail-close approach: returns True ONLY if ALL validations pass.
     :param headers: Bot activity headers
-    :return: True if authorized, else tuple of (False, error_message)
+    :return: True if authorized, else False
     """
     parts: list = headers.get("Authorization", "").split(" ")
     if len(parts) != 2:
@@ -1283,7 +1283,6 @@ def validate_auth_header(headers: dict) -> bool:
         f"issuer: expected='https://api.botframework.com', actual={issuer_claim}, "
         f"match={issuer_claim == 'https://api.botframework.com'} | "
     )
-    error_message = "Authorization header validation failed - JWT validation failed"
     return False
 
 
