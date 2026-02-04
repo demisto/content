@@ -2470,6 +2470,177 @@ Adds the specified inbound (egress) rules to a security group.
 #### Context Output
 
 There is no context output for this command.
+### aws-ec2-instances-reboot
+
+***
+Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+
+#### Base Command
+
+`aws-ec2-instances-reboot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| instance_ids | A comma-separated list of instance IDs to reboot. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-instance-stopped-waiter
+
+***
+Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+
+#### Base Command
+
+`aws-ec2-instance-stopped-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional | 
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional | 
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional | 
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-address-release
+
+***
+Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+
+#### Base Command
+
+`aws-ec2-address-release`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| allocation_id | The allocation ID. Required for VPC. | Optional | 
+| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-function-delete
+
+***
+Deletes a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function or version. | Required | 
+| qualifier | Specify a version to delete. You can't delete a version that an alias references. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ec2-address-associate
+
+***
+Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+
+#### Base Command
+
+`aws-ec2-address-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| allocation_id | The allocation ID. | Required | 
+| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional | 
+| network_interface_id | The ID of the network interface. | Optional | 
+| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional | 
+| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. | 
+| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. | 
+
+### aws-lambda-layer-version-delete
+
+***
+Deletes a version of a Lambda layer.
+
+#### Base Command
+
+`aws-lambda-layer-version-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required | 
+| version_number | The version number to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-layer-version-publish
+
+***
+Creates a Lambda layer from a ZIP archive.
+
+#### Base Command
+
+`aws-lambda-layer-version-publish`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| layer_name | The name of the layer. | Required | 
+| description | The description of the version. | Optional | 
+| zip_file | The entry ID of the uploaded ZIP file containing the layer code. | Optional | 
+| s3_bucket | The Amazon S3 bucket of the layer archive. | Optional | 
+| s3_key | The Amazon S3 key of the layer archive. | Optional | 
+| s3_object_version | For versioned objects, the version of the layer archive object to use. | Optional | 
+| compatible_runtimes | A list of compatible function runtimes. | Optional | 
+| compatible_architectures | A list of compatible instruction set architectures. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Layers.Versions.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.Layers.Versions.LayerArn | string | The ARN of the layer. | 
+| AWS.Lambda.Layers.Versions.Description | string | The description of the version. | 
+| AWS.Lambda.Layers.Versions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. | 
+| AWS.Lambda.Layers.Versions.Version | number | The version number. | 
+| AWS.Lambda.Layers.Versions.CompatibleRuntimes | array | The layer's compatible runtimes. | 
+| AWS.Lambda.Layers.Versions.CompatibleArchitectures | array | A list of compatible instruction set architectures. | 
+| AWS.Lambda.Layers.Versions.Region | string | The AWS Region. | 
+
 ### aws-ec2-addresses-describe
 
 ***
@@ -2509,50 +2680,6 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. | 
 | AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address associated. | 
 
-### aws-ec2-instances-monitor
-
-***
-Enables detailed monitoring on one or more running Amazon EC2 instances.
-
-#### Base Command
-
-`aws-ec2-instances-monitor`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_ids | A comma-separated list of instance IDs to enable monitoring for. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
-| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). | 
-
-### aws-ec2-instances-reboot
-
-***
-Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
-
-#### Base Command
-
-`aws-ec2-instances-reboot`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_ids | A comma-separated list of instance IDs to reboot. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
 ### aws-ec2-instance-running-waiter
 
 ***
@@ -2576,14 +2703,14 @@ Waits until the specified EC2 instances reach the 'running' state. Checks the st
 #### Context Output
 
 There is no context output for this command.
-### aws-ec2-instance-stopped-waiter
+### aws-ec2-instance-terminated-waiter
 
 ***
-Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
 
 #### Base Command
 
-`aws-ec2-instance-stopped-waiter`
+`aws-ec2-instance-terminated-waiter`
 
 #### Input
 
@@ -2623,173 +2750,6 @@ Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds
 #### Context Output
 
 There is no context output for this command.
-### aws-ec2-address-allocate
-
-***
-Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
-
-#### Base Command
-
-`aws-ec2-address-allocate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional | 
-| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional | 
-| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional | 
-| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional | 
-| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. | 
-| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. | 
-| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). | 
-| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. | 
-| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. | 
-| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. | 
-| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. | 
-| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. | 
-
-### aws-lambda-layer-version-publish
-
-***
-Creates a Lambda layer from a ZIP archive.
-
-#### Base Command
-
-`aws-lambda-layer-version-publish`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| layer_name | The name of the layer. | Required | 
-| description | The description of the version. | Optional | 
-| zip_file | The entry ID of the uploaded ZIP file containing the layer code. | Optional | 
-| s3_bucket | The Amazon S3 bucket of the layer archive. | Optional | 
-| s3_key | The Amazon S3 key of the layer archive. | Optional | 
-| s3_object_version | For versioned objects, the version of the layer archive object to use. | Optional | 
-| compatible_runtimes | A list of compatible function runtimes. | Optional | 
-| compatible_architectures | A list of compatible instruction set architectures. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Lambda.Layers.Versions.LayerVersionArn | string | The ARN of the layer version. | 
-| AWS.Lambda.Layers.Versions.LayerArn | string | The ARN of the layer. | 
-| AWS.Lambda.Layers.Versions.Description | string | The description of the version. | 
-| AWS.Lambda.Layers.Versions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. | 
-| AWS.Lambda.Layers.Versions.Version | number | The version number. | 
-| AWS.Lambda.Layers.Versions.CompatibleRuntimes | array | The layer's compatible runtimes. | 
-| AWS.Lambda.Layers.Versions.CompatibleArchitectures | array | A list of compatible instruction set architectures. | 
-| AWS.Lambda.Layers.Versions.Region | string | The AWS Region. | 
-
-### aws-ec2-instance-terminated-waiter
-
-***
-Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
-
-#### Base Command
-
-`aws-ec2-instance-terminated-waiter`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_ids | A comma-separated list of instance IDs to wait for. | Optional | 
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional | 
-| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional | 
-| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### aws-lambda-function-delete
-
-***
-Deletes a Lambda function.
-
-#### Base Command
-
-`aws-lambda-function-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| function_name | The name of the Lambda function or version. | Required | 
-| qualifier | Specify a version to delete. You can't delete a version that an alias references. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### aws-ec2-instances-unmonitor
-
-***
-Disables detailed monitoring for one or more running Amazon EC2 instances.
-
-#### Base Command
-
-`aws-ec2-instances-unmonitor`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_ids | A comma-separated list of instance IDs to disable monitoring for. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
-| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). | 
-
-### aws-ec2-address-associate
-
-***
-Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
-
-#### Base Command
-
-`aws-ec2-address-associate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| allocation_id | The allocation ID. | Required | 
-| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional | 
-| network_interface_id | The ID of the network interface. | Optional | 
-| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional | 
-| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. | 
-| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. | 
-
 ### aws-ec2-reserved-instances-describe
 
 ***
@@ -2835,14 +2795,14 @@ Describes one or more of the Reserved Instances that you purchased.
 | AWS.EC2.ReservedInstances.Tags.Key | String | The key of the tag. | 
 | AWS.EC2.ReservedInstances.Tags.Value | String | The value of the tag. | 
 
-### aws-ec2-password-data-get
+### aws-ec2-address-allocate
 
 ***
-Retrieves the encrypted administrator password for a running Windows instance.
+Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
 
 #### Base Command
 
-`aws-ec2-password-data-get`
+`aws-ec2-address-allocate`
 
 #### Input
 
@@ -2850,16 +2810,24 @@ Retrieves the encrypted administrator password for a running Windows instance.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| instance_id | The ID of the Windows instance. | Required | 
+| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional | 
+| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional | 
+| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional | 
+| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional | 
+| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Instances.PasswordData.InstanceId | String | The ID of the instance. | 
-| AWS.EC2.Instances.PasswordData.PasswordData | String | The password of the instance. Returns an empty string if the password is not available. | 
-| AWS.EC2.Instances.PasswordData.Timestamp | Date | The time the data was last updated. | 
-| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
+| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. | 
+| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. | 
+| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). | 
+| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. | 
+| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. | 
+| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. | 
+| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. | 
+| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. | 
 
 ### aws-ec2-address-disassociate
 
@@ -2881,14 +2849,14 @@ Disassociates an Elastic IP address from the instance or network interface it's 
 #### Context Output
 
 There is no context output for this command.
-### aws-lambda-layer-version-delete
+### aws-ec2-instances-monitor
 
 ***
-Deletes a version of a Lambda layer.
+Enables detailed monitoring on one or more running Amazon EC2 instances.
 
 #### Base Command
 
-`aws-lambda-layer-version-delete`
+`aws-ec2-instances-monitor`
 
 #### Input
 
@@ -2896,33 +2864,15 @@ Deletes a version of a Lambda layer.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required | 
-| version_number | The version number to delete. | Required | 
+| instance_ids | A comma-separated list of instance IDs to enable monitoring for. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-### aws-ec2-address-release
-
-***
-Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
-
-#### Base Command
-
-`aws-ec2-address-release`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| allocation_id | The allocation ID. Required for VPC. | Optional | 
-| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional | 
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). | 
 
-#### Context Output
-
-There is no context output for this command.
 ### aws-ec2-iam-instance-profile-associations-describe
 
 ***
@@ -2987,4 +2937,54 @@ Lists the versions of an Lambda layer.
 | AWS.Lambda.Layers.Versions.CompatibleRuntimes | array | The layer's compatible runtimes. | 
 | AWS.Lambda.Layers.Versions.LicenseInfo | string | The layer's open-source license. | 
 | AWS.Lambda.Layers.Versions.CompatibleArchitectures | array | A list of compatible instruction set architectures. | 
+
+### aws-ec2-password-data-get
+
+***
+Retrieves the encrypted administrator password for a running Windows instance.
+
+#### Base Command
+
+`aws-ec2-password-data-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| instance_id | The ID of the Windows instance. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.PasswordData.InstanceId | String | The ID of the instance. | 
+| AWS.EC2.Instances.PasswordData.PasswordData | String | The password of the instance. Returns an empty string if the password is not available. | 
+| AWS.EC2.Instances.PasswordData.Timestamp | Date | The time the data was last updated. | 
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
+
+### aws-ec2-instances-unmonitor
+
+***
+Disables detailed monitoring for one or more running Amazon EC2 instances.
+
+#### Base Command
+
+`aws-ec2-instances-unmonitor`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| instance_ids | A comma-separated list of instance IDs to disable monitoring for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. | 
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). | 
 
