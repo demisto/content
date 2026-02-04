@@ -2971,23 +2971,22 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         # Build output data
-        # output_data = {
-        #     "ImageId": response.get("ImageId"),
-        #     "Name": args.get("name"),
-        #     "InstanceId": args.get("instance_id"),
-        #     "Region": args.get("region"),
-        # }
-        # output_data = remove_empty_elements(output_data)
+        output_data = {
+            "ImageId": response.get("ImageId"),
+            "Name": args.get("name"),
+            "InstanceId": args.get("instance_id"),
+            "Region": args.get("region"),
+        }
+        output_data = remove_empty_elements(output_data)
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Images",
             outputs_key_field="ImageId",
-            outputs=outputs,
+            outputs=output_data,
             readable_output=tableToMarkdown(
                 "AWS EC2 Image Created",
-                outputs,
+                output_data,
                 headers=["ImageId", "Name", "InstanceId", "Region"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -3470,26 +3469,6 @@ class EC2:
         if not associations:
             return CommandResults(readable_output="No IAM instance profile associations were found.")
 
-        # # Format output data
-        # readable_data = []
-        # for association in associations:
-        #     readable_data.append(
-        #         {
-        #             "AssociationId": association.get("AssociationId"),
-        #             "InstanceId": association.get("InstanceId"),
-        #             "State": association.get("State"),
-        #             "IamInstanceProfile": association.get("IamInstanceProfile"),
-        #         }
-        #     )
-
-        # readable_output = tableToMarkdown(
-        #     "AWS IAM Instance Profile Associations",
-        #     readable_data,
-        #     headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
-        #     headerTransform=pascalToSpace,
-        #     removeNull=True,
-        # )
-
         outputs = {
             "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
             "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
@@ -3594,23 +3573,6 @@ class EC2:
 
         if not reserved_instances:
             return CommandResults(readable_output="No Reserved Instances were found.")
-
-        # Format output data
-        # readable_data = []
-        # for reservation in reserved_instances:
-        #     readable_data.append(
-        #         {
-        #             "ReservedInstancesId": reservation.get("ReservedInstancesId"),
-        #             "InstanceType": reservation.get("InstanceType"),
-        #             "InstanceCount": reservation.get("InstanceCount"),
-        #             "State": reservation.get("State"),
-        #             "Start": reservation.get("Start"),
-        #             "End": reservation.get("End"),
-        #             "Duration": reservation.get("Duration"),
-        #             "OfferingClass": reservation.get("OfferingClass"),
-        #             "Scope": reservation.get("Scope"),
-        #         }
-        #     )
 
         readable_output = tableToMarkdown(
             "AWS EC2 Reserved Instances",
