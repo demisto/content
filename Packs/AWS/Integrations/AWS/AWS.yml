@@ -6237,7 +6237,7 @@ script:
     - name: presigned_url
       description: When you copy an encrypted source snapshot using the Amazon EC2 Query API, you must supply a pre-signed URL.
     - name: tag_specifications
-      description: The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val
+      description: The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val".
       isArray: true
     outputs:
     - contextPath: AWS.EC2.Snapshots.SnapshotId
