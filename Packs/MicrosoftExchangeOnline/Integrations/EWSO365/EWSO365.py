@@ -1804,16 +1804,15 @@ def fetch_last_emails(
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
-            if item.message_id in exclude_ids:
+            if is_item_duplicate(item, exclude_ids, incident_filter):
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
-                if is_item_duplicate(item, exclude_ids, incident_filter):
-                    demisto.debug(
-                        f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
-                        f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
-                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
-                    )
-                    continue
+                demisto.debug(
+                    f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
+                    f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
+                    f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
+                )
+                continue
             demisto.debug(f"Appending {item.subject=}")
             result.append(item)
             if len(result) >= client.max_fetch:
