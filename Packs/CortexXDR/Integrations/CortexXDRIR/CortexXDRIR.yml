@@ -4216,13 +4216,13 @@ script:
       description: BIOC status.
       type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.is_xql
-      description:
+      description: Whether the BIOC is XQL.
       type: Bool
     - contextPath: PaloAltoNetworksXDR.BIOC.comment
-      description:
+      description: The BIOC comment.
       type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.indicator
-      description:
+      description: The BIOC indicator.
       type: Unknown
   - arguments:
     - description: The BIOC name.
