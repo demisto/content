@@ -377,6 +377,7 @@ There is no context output for this command.
 >| _time | alertId | approxLogTime | caseCreationTimestamp | caseId | caseNumber | destHost | destIp | hasAttachments | lastModifiedTimestamp | mitres | name | priority | product | queue | riskScore | rules | srcHost | srcIp | stage | subscriptionCode | tags | useCases | user | vendor |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2025-08-31T22:49:43Z | 8ccd4479-aaaa-bbbb-9a29-aaed1b7e4d69 | 1756658220000000 | 1756680583393478 | 573d2e67-aaaa-bbbb-1122-11998166047e | 1449 | | | false | 1756724116013483 | | Hello_world_rule | HIGH | Correlation Rule | Tier 1 Analyst | 200 | [ ] | | | NEW | 1234 | | | | Exabeam |
+>
 ### exabeam-get-threat-summary
 
 ***
@@ -390,13 +391,14 @@ Retrieve the Copilot Threat Summary for an individual alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alertId to fetch a threat summary for. | Required | 
+| alert_id | The alertId to fetch a threat summary for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ExabeamPlatform.Alert.Summary | string | Threat Summary of the Exabeam Alert. | 
+| ExabeamPlatform.Alert.Summary | string | Threat Summary of the Exabeam Alert. |
+
 ### exabeam-update-case-details
 
 ***
@@ -410,19 +412,20 @@ Update details for a specific case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | ID of the case to be updated. | Required | 
-| alert_description | Alert description in either plaintext or HTML format. Length &lt;=1024. | Optional | 
-| alert_name | Alert name. Length &lt;= 128. | Optional | 
-| priority | Alert priority. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional | 
-| stage | Case stage. Possible values are: NEW, INVESTIGATION, REMEDIATION, CLOSED. | Optional | 
-| closed_reason | Reason for case closure. Possible values are: Already Mitigated or Resolved, False Positive or Duplicate, Low Risk, Rule Misconfiguration, Policy or Setup Issue, Other. | Optional | 
-| supporting_reason | Supporting reason for case closure. | Optional | 
-| assignee | Assignee for the case. | Optional | 
-| queue | Queue for the case. | Optional | 
+| case_id | ID of the case to be updated. | Required |
+| alert_description | Alert description in either plaintext or HTML format. Length &lt;=1024. | Optional |
+| alert_name | Alert name. Length &lt;= 128. | Optional |
+| priority | Alert priority. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional |
+| stage | Case stage. Possible values are: NEW, INVESTIGATION, REMEDIATION, CLOSED. | Optional |
+| closed_reason | Reason for case closure. Possible values are: Already Mitigated or Resolved, False Positive or Duplicate, Low Risk, Rule Misconfiguration, Policy or Setup Issue, Other. | Optional |
+| supporting_reason | Supporting reason for case closure. | Optional |
+| assignee | Assignee for the case. | Optional |
+| queue | Queue for the case. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### exabeam-platform-list-case-notes
 
 ***
@@ -436,11 +439,12 @@ Retrieve a list of notes associated with the specified caseId.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique ID that identifies a case. | Required | 
+| case_id | Unique ID that identifies a case. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### exabeam-platform-create-case-note
 
 ***
@@ -454,8 +458,8 @@ Add a new note to the specified case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique ID that identifies a case. | Required | 
-| note | Note text. | Required | 
+| case_id | Unique ID that identifies a case. | Required |
+| note | Note text. | Required |
 
 #### Context Output
 
