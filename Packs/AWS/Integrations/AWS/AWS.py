@@ -2956,7 +2956,7 @@ class EC2:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Images",
-                outputs,
+                readable_outputs,
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -3202,6 +3202,473 @@ class EC2:
             return CommandResults(readable_output="Image is now available.")
         except Exception as e:
             raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def monitor_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Enables detailed monitoring for one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to monitor
+
+        Returns:
+            CommandResults: Results of the operation with monitoring status information
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Monitoring instance(s): {instance_ids}")
+        response = client.monitor_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were monitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
+
+        readable_output = tableToMarkdown(
+            "Successfully enabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def unmonitor_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Disables detailed monitoring for one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to unmonitor
+
+        Returns:
+            CommandResults: Results of the operation with monitoring status information
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Unmonitoring instance(s): {instance_ids}")
+        response = client.unmonitor_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        instance_monitorings = response.get("InstanceMonitorings", [])
+
+        if not instance_monitorings:
+            return CommandResults(readable_output="No instances were unmonitored.")
+
+        # Format output data
+        readable_data = []
+        for monitoring in instance_monitorings:
+            readable_data.append(
+                {"InstanceId": monitoring.get("InstanceId"), "MonitoringState": monitoring.get("Monitoring", {}).get("State")}
+            )
+
+        readable_output = tableToMarkdown(
+            "Successfully disabled monitoring for instances",
+            readable_data,
+            headers=["InstanceId", "MonitoringState"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=instance_monitorings,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def reboot_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Requests a reboot of one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str): Comma-separated list of instance IDs to reboot
+
+        Returns:
+            CommandResults: Results of the operation with reboot confirmation
+        """
+        instance_ids = parse_resource_ids(args.get("instance_ids"))
+        print_debug_logs(client, f"Rebooting instance(s): {instance_ids}")
+        response = client.reboot_instances(InstanceIds=instance_ids)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}", raw_response=response
+        )
+
+    @staticmethod
+    def instance_running_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'running' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are running
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_running")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now running.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_status_ok_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instance status checks pass.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - include_all_instances (bool, optional): Specifies whether to include the health status for all
+                 instances or only for those currently running.
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instance status is OK
+        """
+        kwargs = {"IncludeAllInstances": arg_to_bool_or_none(args.get("include_all_instances"))}
+        # IncludeAllInstances
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            waiter = client.get_waiter("instance_status_ok")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance status is now OK.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_stopped_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'stopped' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are stopped
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_stopped")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now stopped.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def instance_terminated_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Waits until EC2 instances are in the 'terminated' state.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_ids (str, optional): Comma-separated list of instance IDs
+                - filters (str, optional): Filters for instances
+                - waiter_delay (int, optional): Delay between attempts in seconds (default: 15)
+                - waiter_max_attempts (int, optional): Maximum number of attempts (default: 40)
+
+        Returns:
+            CommandResults: Results indicating instances are terminated
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = parse_resource_ids(instance_ids)
+
+        waiter_config = {
+            "Delay": arg_to_number(args.get("waiter_delay", "15")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts", "40")),
+        }
+        kwargs["WaiterConfig"] = waiter_config
+
+        try:
+            waiter = client.get_waiter("instance_terminated")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Instance(s) are now terminated.")
+        except Exception as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
+    @staticmethod
+    def describe_iam_instance_profile_associations_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes IAM instance profile associations.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - association_ids (str, optional): Comma-separated list of association IDs
+                - filters (str, optional): Filters for associations
+                - limit (int, optional): Maximum number of results
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing IAM instance profile association information
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if association_ids := args.get("association_ids"):
+            kwargs["AssociationIds"] = parse_resource_ids(association_ids)
+
+        pagination_kwargs = build_pagination_kwargs(args)
+        kwargs.update(pagination_kwargs)
+
+        print_debug_logs(client, f"Describe IAM instance profile associations parameters: {kwargs}")
+        response = client.describe_iam_instance_profile_associations(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        associations = response.get("IamInstanceProfileAssociations", [])
+
+        if not associations:
+            return CommandResults(readable_output="No IAM instance profile associations were found.")
+
+        # Format output data
+        readable_data = []
+        for association in associations:
+            readable_data.append(
+                {
+                    "AssociationId": association.get("AssociationId"),
+                    "InstanceId": association.get("InstanceId"),
+                    "State": association.get("State"),
+                    "IamInstanceProfile": association.get("IamInstanceProfile"),
+                }
+            )
+
+        readable_output = tableToMarkdown(
+            "AWS IAM Instance Profile Associations",
+            readable_data,
+            headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        outputs = {
+            "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
+
+    @staticmethod
+    def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the encrypted administrator password for a running Windows instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - instance_id (str): The ID of the Windows instance
+
+        Returns:
+            CommandResults: Results containing the password data
+        """
+        instance_id = args.get("instance_id")
+        print_debug_logs(client, f"Get password data for instance {instance_id}")
+        response = client.get_password_data(InstanceId=instance_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize datetime
+        response = serialize_response_with_datetime_encoding(response)
+
+        password_data = {
+            "InstanceId": response.get("InstanceId"),
+            "PasswordData": response.get("PasswordData"),
+            "Timestamp": response.get("Timestamp"),
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Instance Password Data",
+            password_data,
+            headers=["InstanceId", "PasswordData", "Timestamp"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        outputs = {"PasswordData": password_data, "InstanceId": password_data.get("InstanceId")}
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances",
+            outputs_key_field="InstanceId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_reserved_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes one or more Reserved Instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing:
+                - reserved_instances_ids (str, optional): Comma-separated list of Reserved Instance IDs
+                - filters (str, optional): Filters for Reserved Instances
+                - offering_class (str, optional): The offering class (standard or convertible)
+                - offering_type (str, optional): The offering type (Heavy Utilization |
+                 Medium Utilization | Light Utilization | No Upfront | Partial Upfront | All Upfront)
+
+        Returns:
+            CommandResults: Results containing Reserved Instance information
+        """
+        kwargs = {"OfferingClass": args.get("offering_class"), "OfferingType": args.get("offering_type")}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if reserved_instances_ids := args.get("reserved_instances_ids"):
+            kwargs["ReservedInstancesIds"] = parse_resource_ids(reserved_instances_ids)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Describing reserved instances with parameters: {kwargs}")
+        response = client.describe_reserved_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        # Serialize datetime objects
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        reserved_instances = serialized_response.get("ReservedInstances", [])
+        print_debug_logs(client, f"Reserved Instances: {reserved_instances}")
+
+        if not reserved_instances:
+            return CommandResults(readable_output="No Reserved Instances were found.")
+
+        # Format output data
+        readable_data = []
+        for reservation in reserved_instances:
+            readable_data.append(
+                {
+                    "ReservedInstancesId": reservation.get("ReservedInstancesId"),
+                    "InstanceType": reservation.get("InstanceType"),
+                    "InstanceCount": reservation.get("InstanceCount"),
+                    "State": reservation.get("State"),
+                    "Start": reservation.get("Start"),
+                    "End": reservation.get("End"),
+                    "Duration": reservation.get("Duration"),
+                    "OfferingClass": reservation.get("OfferingClass"),
+                    "Scope": reservation.get("Scope"),
+                }
+            )
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Reserved Instances",
+            readable_data,
+            headers=[
+                "ReservedInstancesId",
+                "InstanceType",
+                "InstanceCount",
+                "State",
+                "Start",
+                "End",
+                "Duration",
+                "OfferingClass",
+                "Scope",
+            ],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.ReservedInstances",
+            outputs_key_field="ReservedInstancesId",
+            outputs=reserved_instances,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
     @staticmethod
     def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -4999,6 +5466,16 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-image-deregister": EC2.deregister_image_command,
     "aws-ec2-image-copy": EC2.copy_image_command,
     "aws-ec2-image-available-waiter": EC2.image_available_waiter_command,
+    "aws-ec2-instances-monitor": EC2.monitor_instances_command,
+    "aws-ec2-instances-unmonitor": EC2.unmonitor_instances_command,
+    "aws-ec2-instances-reboot": EC2.reboot_instances_command,
+    "aws-ec2-instance-running-waiter": EC2.instance_running_waiter_command,
+    "aws-ec2-instance-status-ok-waiter": EC2.instance_status_ok_waiter_command,
+    "aws-ec2-instance-stopped-waiter": EC2.instance_stopped_waiter_command,
+    "aws-ec2-instance-terminated-waiter": EC2.instance_terminated_waiter_command,
+    "aws-ec2-iam-instance-profile-associations-describe": EC2.describe_iam_instance_profile_associations_command,
+    "aws-ec2-password-data-get": EC2.get_password_data_command,
+    "aws-ec2-reserved-instances-describe": EC2.describe_reserved_instances_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
@@ -5107,10 +5584,17 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DisassociateAddress",
     "ec2:ReleaseAddress",
     "ec2:DescribeInstances",
+    "ec2:DescribeInstanceStatus",
     "ec2:DescribeSecurityGroups",
     "ec2:AuthorizeSecurityGroupEgress",
     "ec2:AuthorizeSecurityGroupIngress",
     "ec2:ModifyInstanceMetadataOptions",
+    "ec2:MonitorInstances",
+    "ec2:UnmonitorInstances",
+    "ec2:RebootInstances",
+    "ec2:DescribeIamInstanceProfileAssociations",
+    "ec2:GetPasswordData",
+    "ec2:DescribeReservedInstances",
     "ec2:DescribeInstances",
     "ec2:StartInstances",
     "ec2:StopInstances",
