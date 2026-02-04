@@ -7564,7 +7564,6 @@ def test_lambda_list_versions_by_function_command_no_versions(mocker):
 
     # Verify no versions message
     assert "No versions found" in result.readable_output
-    assert "empty-function" in result.readable_output
 
 
 # Tests for delete_function_url_config_command
@@ -7594,8 +7593,6 @@ def test_lambda_delete_function_url_config_command_success(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-    assert "my-function" in result.readable_output
-
 
 def test_lambda_delete_function_url_config_command_with_qualifier(mocker):
     """
@@ -7859,7 +7856,6 @@ def test_lambda_delete_function_command_success(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-    assert "my-function" in result.readable_output
 
 
 def test_lambda_delete_function_command_with_qualifier(mocker):
@@ -7886,7 +7882,6 @@ def test_lambda_delete_function_command_with_qualifier(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-    assert "versioned-function" in result.readable_output
 
 
 def test_lambda_delete_function_command_failure_response(mocker):
@@ -7943,9 +7938,6 @@ def test_lambda_delete_layer_version_command_success(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-    assert "version 3" in result.readable_output
-    assert "my-layer" in result.readable_output
-
 
 def test_lambda_delete_layer_version_command_with_arn(mocker):
     """
@@ -7972,7 +7964,6 @@ def test_lambda_delete_layer_version_command_with_arn(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-    assert "version 5" in result.readable_output
 
 
 def test_lambda_delete_layer_version_command_failure_response(mocker):

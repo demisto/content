@@ -6774,7 +6774,7 @@ script:
       description: The name of the Lambda function, version, or alias.
     - name: qualifier
       description: Specify a version or alias to get details about a published version of the function.
-    description: Returns information about the function or function version, with a link to download the deployment package that's valid for 10 minutes. If you specify a function version, only details that are specific to that version are returned.
+    description: Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
     outputs:
     - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
       description: The name of the function.
