@@ -3808,12 +3808,9 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        outputs = {"SnapshotId": response.get("SnapshotId"), "Region": args.get("region")}
-        if tags := response.get("Tags"):
-            outputs["Tags"] = tags
-
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         readable_output = tableToMarkdown(
-            "Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId", "Region"], removeNull=True, headerTransform=pascalToSpace
+            "Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId"], removeNull=True, headerTransform=pascalToSpace
         )
 
         return CommandResults(

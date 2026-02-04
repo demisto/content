@@ -6243,9 +6243,6 @@ script:
     - contextPath: AWS.EC2.Snapshots.SnapshotId
       description: The ID of the new snapshot.
       type: string
-    - contextPath: AWS.EC2.Snapshots.Region
-      description: The region of the new snapshot.
-      type: string
     - contextPath: AWS.EC2.Snapshots.Tags.Key
       description: The key of the tag.
       type: string
