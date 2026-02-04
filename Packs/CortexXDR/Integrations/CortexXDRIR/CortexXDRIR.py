@@ -50,12 +50,8 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
-BIOC_AND_CR_SEVERITY_MAPPING = {
-    "info": "SEV_010_INFO",
-    "low": "SEV_020_LOW",
-    "medium": "SEV_030_MEDIUM",
-    "high": "SEV_040_HIGH"
-}
+BIOC_AND_CR_SEVERITY_MAPPING = {"info": "SEV_010_INFO", "low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH"}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1685,11 +1681,13 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     )
     reply = client.get_biocs({"request_data": request_data})
     biocs = reply.get("objects", [])
-    readable_output = tableToMarkdown(name="BIOCs List",
-                                      t=biocs,
-                                      headerTransform=string_to_table_header,
-                                      headers=["rule_id", "name", "type", "severity", "status"],
-                                      removeNull=True)
+    readable_output = tableToMarkdown(
+        name="BIOCs List",
+        t=biocs,
+        headerTransform=string_to_table_header,
+        headers=["rule_id", "name", "type", "severity", "status"],
+        removeNull=True,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
@@ -1832,11 +1830,12 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     )
     reply = client.get_correlation_rules({"request_data": request_data})
     rules = reply.get("objects", [])
-    readable_output = tableToMarkdown(name="Correlation Rules List",
-                                      t=rules,
-                                      headers=["rule_id", "name", "description", "is_enabled"],
-                                      removeNull=True,
-                                      headerTransform=string_to_table_header,
+    readable_output = tableToMarkdown(
+        name="Correlation Rules List",
+        t=rules,
+        headers=["rule_id", "name", "description", "is_enabled"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1869,12 +1868,10 @@ def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict
         "action": "ALERTS",
         "timezone": args.get("timezone"),
         "dataset": args.get("dataset"),
-
         # Uppercase handling for Enum fields
         "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
         "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
         "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
-
         # Use 'or None' to convert empty strings ("") into JSON null. We must put a value for those fields.
         "description": args.get("description") or None,
         "alert_name": args.get("alert_name") or None,
@@ -1887,14 +1884,12 @@ def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict
         "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
         "suppression_duration": args.get("suppression_duration") or None,
         "suppression_fields": args.get("suppression_fields") or None,
-
         # User Defined Severity (Must be None unless Severity is "User Defined")
         "user_defined_severity": args.get("user_defined_severity") or None,
         "user_defined_category": args.get("user_defined_category") or None,
-
         # Defaults to "{}" string if missing so json.loads doesn't fail
         "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
-        "alert_fields": json.loads(args.get("alert_fields") or "{}")
+        "alert_fields": json.loads(args.get("alert_fields") or "{}"),
     }
 
     return client.create_or_update_correlation_rules({"request_data": [rule_data]})
@@ -1976,8 +1971,7 @@ def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResult
         ids_str = ", ".join(map(str, deleted_ids))
         status = f"Correlation Rules {ids_str} were deleted."
 
-    return CommandResults(readable_output=status,
-                          raw_response=reply)
+    return CommandResults(readable_output=status, raw_response=reply)
 
 
 def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:

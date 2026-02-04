@@ -2797,6 +2797,7 @@ def test_bioc_list_command(mocker):
         - Verify the client.get_biocs is called and results are correct.
     """
     from CortexXDRIR import Client, bioc_list_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"objects": [{"rule_id": "1", "name": "test_bioc", "type": "host", "severity": "high", "status": "enabled"}]}
     mocker.patch.object(Client, "get_biocs", return_value=mock_reply)
@@ -2818,6 +2819,7 @@ def test_bioc_create_command(mocker):
         - Verify the client.insert_or_update_biocs is called and results are correct.
     """
     from CortexXDRIR import Client, bioc_create_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"added_objects": [{"id": "1", "status": "BIOC created successfully"}]}
     mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
@@ -2839,6 +2841,7 @@ def test_bioc_update_command(mocker):
         - Verify the client.insert_or_update_biocs is called and results are correct.
     """
     from CortexXDRIR import Client, bioc_update_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"updated_objects": [{"id": "1", "status": "BIOC updated successfully"}]}
     mocker.patch.object(Client, "insert_or_update_biocs", return_value=mock_reply)
@@ -2860,6 +2863,7 @@ def test_bioc_delete_command(mocker):
         - Verify the client.delete_biocs is called and results are correct.
     """
     from CortexXDRIR import Client, bioc_delete_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"objects": ["1"]}
     mocker.patch.object(Client, "delete_biocs", return_value=mock_reply)
@@ -2880,6 +2884,7 @@ def test_correlation_rule_list_command(mocker):
         - Verify the client.get_correlation_rules is called and results are correct.
     """
     from CortexXDRIR import Client, correlation_rule_list_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"objects": [{"rule_id": "1", "name": "test_rule", "description": "desc", "is_enabled": True}]}
     mocker.patch.object(Client, "get_correlation_rules", return_value=mock_reply)
@@ -2901,6 +2906,7 @@ def test_correlation_rule_create_command(mocker):
         - Verify the client.create_or_update_correlation_rules is called and results are correct.
     """
     from CortexXDRIR import Client, correlation_rule_create_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"added_objects": [{"id": "1", "status": "Rule created successfully"}]}
     mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
@@ -2922,6 +2928,7 @@ def test_correlation_rule_update_command(mocker):
         - Verify the client.create_or_update_correlation_rules is called and results are correct.
     """
     from CortexXDRIR import Client, correlation_rule_update_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"updated_objects": [{"id": "1", "status": "Rule updated successfully"}]}
     mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
@@ -2943,6 +2950,7 @@ def test_correlation_rule_delete_command(mocker):
         - Verify the client.delete_correlation_rules is called and results are correct.
     """
     from CortexXDRIR import Client, correlation_rule_delete_command
+
     client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
     mock_reply = {"objects": ["1"], "objects_count": 1}
     mocker.patch.object(Client, "delete_correlation_rules", return_value=mock_reply)
