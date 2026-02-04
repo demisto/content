@@ -1,5 +1,5 @@
 !confluence-create-space name=test description="testing space" key=TEST
-!confluence-create-content space=DemistoContent title="test confluence integration" type=page body=testing
+!confluence-create-content space=DemistoContent title="test confluence integration" type=page ancestorid=0 body=testing
 !confluence-list-spaces
 !confluence-get-content key=DemistoContent title="test confluence integration"
 !confluence-delete-content id=172723162

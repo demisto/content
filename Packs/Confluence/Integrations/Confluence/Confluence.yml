@@ -85,6 +85,10 @@ script:
     - name: space
       required: true
       description: Space key to add content to a specific space.
+    - name: ancestorid
+      required: false
+      description: ID of parent folder or parent page, 0 to append the content to the space root.
+      defaultValue: 0
     - name: body
       description: Confluence page body to add.
     outputs:

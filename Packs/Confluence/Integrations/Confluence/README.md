@@ -58,6 +58,7 @@ Creates Confluence content for a given space.
 | title | Confluence page title. | Required |
 | type | Confluence content type. Can be "page" or "blogpost". Possible values are: page, blogpost. Default is page. | Required |
 | space | Space key to add content to a specific space. | Required |
+| ancestorid | ID of parent folder or parent page, 0 to append the content to the space root. | Optional |
 | body | Confluence page body to add. | Optional |
 
 #### Context Output

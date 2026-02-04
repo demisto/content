@@ -146,11 +146,12 @@ def update_content_command():
     )
 
 
-def create_content(content_type, content_title, space_key, content_body):
+def create_content(content_type, content_title, space_key, ancestor_id, content_body):
     content_data = {
         "type": content_type,
         "space": {"key": space_key},
         "title": content_title,
+        "ancestors": [{"id":ancestor_id}],
         "body": {"storage": {"value": content_body, "representation": "storage"}},
     }
 
@@ -168,6 +169,7 @@ def create_content_command():
     content_type = demisto.args().get("type")
     content_title = demisto.args().get("title")
     space_key = demisto.args().get("space")
+    ancestor_id = demisto.args().get("ancestor_id", 0)
     content_body = demisto.args().get("body")
 
     raw_content = create_content(content_type, content_title, space_key, content_body)

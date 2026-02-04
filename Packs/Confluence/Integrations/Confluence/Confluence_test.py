@@ -36,11 +36,11 @@ def test_create_content_command(mocker):
     mocker.patch.object(
         demisto, "params", return_value={"url": "url", "credentials": {"identifier": "identifier", "password": "password"}}
     )
-    mocker.patch.object(demisto, "args", return_value={"type": "type", "title": "title", "space": "space", "body": "body"})
+    mocker.patch.object(demisto, "args", return_value={"type": "type", "title": "title", "space": "space", "ancestorid": "ancestorid", "body": "body"})
 
     import Confluence
 
-    mocker.patch.object(Confluence, "http_request", return_value={"id": "id", "title": "title", "space": "space", "body": "body"})
+    mocker.patch.object(Confluence, "http_request", return_value={"id": "id", "title": "title", "space": "space", "ancestorid": "ancestorid", "body": "body"})
 
     Confluence.create_content_command()
 
