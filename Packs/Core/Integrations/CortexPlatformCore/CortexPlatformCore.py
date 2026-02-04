@@ -4534,6 +4534,10 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     # Parse arguments
     asset_ids = argToList(args.get("asset_id"))
     asset_names = argToList(args.get("asset_name"))
+    asset_category = argToList(args.get("asset_category"))
+    asset_class = argToList(args.get("asset_class"))
+    category = argToList(args.get("category"))
+    finding_source = argToList(args.get("finding_source"))
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 100
     
@@ -4541,7 +4545,11 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     filter_builder = FilterBuilder()
     filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.CONTAINS, asset_ids)
     filter_builder.add_field("XDM_FINDING_ASSET_NAME", FilterType.CONTAINS, asset_names)
-    
+    filter_builder.add_field("XDM_FINDING_ASSET_CLASS", FilterType.EQ, asset_class)
+    filter_builder.add_field("XDM_FINDING_ASSET_CATEGORY", FilterType.EQ, asset_category)
+    filter_builder.add_field("XDM_FINDING_CATEGORY", FilterType.EQ, category)
+    filter_builder.add_field("xdm.finding_sources", FilterType.CONTAINS, finding_source)
+
     # Calculate pagination
     start_index = page * page_size
     end_index = start_index + page_size
