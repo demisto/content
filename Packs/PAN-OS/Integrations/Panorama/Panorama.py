@@ -15847,7 +15847,7 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
         -> KEEP (It's a new log from the same second, but with a higher ID)
     ELSE
         -> DROP (beacuse Log_ID > largest_id)
- 
+
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
         id_dict (LastIDs): a dictionary of devices and their largest id so far
@@ -15873,7 +15873,10 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
             for log in logs:
                 seqno = arg_to_number(log.get("seqno"))
                 device_name = log.get("device_name", "")
-                time_generated = dateparser.parse(log.get("time_generated", ""), settings={"TIMEZONE": "UTC"},)
+                time_generated = dateparser.parse(
+                    log.get("time_generated", ""),
+                    settings={"TIMEZONE": "UTC"},
+                )
 
                 if not seqno or not device_name or not time_generated:
                     demisto.debug(f"{debug_prefix}Could not parse seqno or device_name or time_generated fields.\nSkipping{log=}")
@@ -15888,22 +15891,30 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
 
                 # Keep the log, time_generated is after last_fetch_time, no seqno comparison is required.
                 if not last_fetch_time or (time_generated > last_fetch_time):
-                    demisto.debug(f"{debug_prefix}{log_info}\nKeeping log because it's a new log.\n(time_generated is after {str(last_fetch_time)=})")
+                    demisto.debug(
+                        f"{debug_prefix}{log_info}\nKeeping log because it's a new log.\n(time_generated is after {str(last_fetch_time)=})"
+                    )
                     new_entries_dict.setdefault(log_type, []).append(log)
 
                 # time_generated == last_fetch_time, seqno comparison is required.
                 else:
                     latest_id_per_device = cast(int, dict_safe_get(id_dict, (log_type, device_name), 0))
 
-                    if (seqno > arg_to_number(latest_id_per_device)): # type: ignore
-                        demisto.debug(f"{debug_prefix}{log_info}\nKeeping log because its seqno bigger then {latest_id_per_device=}")
+                    if seqno > arg_to_number(latest_id_per_device):  # type: ignore
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nKeeping log because its seqno bigger then {latest_id_per_device=}"
+                        )
                         new_entries_dict.setdefault(log_type, []).append(log)
 
                     # This is the only case where an anomaly could cause new logs that aren’t duplicates to be filtered out.
                     else:
-                        demisto.debug(f"{debug_prefix}{log_info}\nDropped log because time_generated equal to {str(last_fetch_time)=} and its seqno smaller then {latest_id_per_device=}")
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nDropped log because time_generated equal to {str(last_fetch_time)=} and its seqno smaller then {latest_id_per_device=}"
+                        )
 
-        demisto.debug(f"{debug_prefix}Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries.")
+        demisto.debug(
+            f"{debug_prefix}Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries."
+        )
 
     return new_entries_dict
 
@@ -16165,7 +16176,9 @@ def fetch_incidents(
     update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict, last_fetch_dict=last_fetch_dict)  # type: ignore[arg-type]
+    unique_incident_entries_dict = filter_fetched_entries(
+        entries_dict=incident_entries_dict, id_dict=last_id_dict, last_fetch_dict=last_fetch_dict
+    )  # type: ignore[arg-type]
 
     parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 

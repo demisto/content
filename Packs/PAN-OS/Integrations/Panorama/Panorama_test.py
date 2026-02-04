@@ -7255,10 +7255,10 @@ def test_filter_fetched_entries(mocker):
     - list of dictionaries representing raw entries with seqno, device_name, and time_generated fields
     - dictionary with the largest id per device (id_dict)
     - dictionary with last fetch times per log type (last_fetch_dict)
-    
+
     When:
     - filter_fetched_entries is called with the new timestamp-based filtering logic
-    
+
     Then:
     - return a dictionary with entries filtered based on:
       1. Logs with time_generated > last_fetch_time are always kept (no seqno comparison)
@@ -7287,17 +7287,17 @@ def test_filter_fetched_entries(mocker):
             {"seqno": "000000007", "time_generated": "2022-01-01 12:00:00"},
         ],
     }
-    
+
     id_dict = LastIDs(
         log_type1={"dummy_device1": "000000003", "dummy_device2": "000000001"}  # type: ignore[typeddict-item]
     )
-    
+
     last_fetch_dict = LastFetchTimes(
         log_type1="2022-01-01 13:00:00"  # type: ignore[typeddict-item]
     )
-    
+
     res = filter_fetched_entries(raw_entries, id_dict, last_fetch_dict)
-    
+
     # Expected: only entries that pass the new filtering logic
     assert res == {
         "log_type1": [
@@ -7311,7 +7311,7 @@ def test_filter_fetched_entries(mocker):
             {"device_name": "dummy_device3", "seqno": "000000004", "time_generated": "2022-01-01 12:00:00"}
         ],
     }
-    
+
     # Test case 2: Correlation log type (uses @logid instead of seqno)
     corr_entries = {
         "Correlation": [
@@ -7320,12 +7320,12 @@ def test_filter_fetched_entries(mocker):
             {"@logid": "3", "match_time": "2022-01-01 14:00:00"},
         ]
     }
-    
+
     corr_id_dict = LastIDs(Correlation=1)  # type: ignore[typeddict-item]
     corr_last_fetch_dict = LastFetchTimes()
-    
+
     corr_res = filter_fetched_entries(corr_entries, corr_id_dict, corr_last_fetch_dict)
-    
+
     # Expected: only entries with @logid > 1
     assert corr_res == {
         "Correlation": [
