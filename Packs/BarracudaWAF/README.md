@@ -20,12 +20,17 @@ In Barracuda WAF appliance:
 - Log Timestamp and Hostname – Set to Yes if you want to log the date and time of the event, and the hostname configured in the **BASIC** > **IP Configuration** > **Domain Configuration** section.  
 
 3. In the Logs Format section, specify values for the following fields:
-   - Syslog Header –  ArcSight Log Header
-   - Web Firewall Logs Format –  HPE ArcSight CEF:0
-   - Access Logs Format – HPE ArcSight CEF:0
-   - Audit Logs Format – HPE ArcSight CEF:0
-   - Network Firewall Logs Format - HPE ArcSight CEF:0
-   - System Logs Format - HPE ArcSight CEF:0
+- **Syslog Header** – *ArcSight Log Header*
+- **Web Firewall Logs Format** – *Default (raw syslog)*
+- **Access Logs Format** – *Default (raw syslog)*
+- **Audit Logs Format** – *Default (raw syslog)*
+- **Network Firewall Logs Format** – *Default (raw syslog)*
+- **System Logs Format** – *Default (raw syslog)*
+
+**Supported log formats:** raw syslog
+
+For [more information](https://campus.barracuda.com/product/webapplicationfirewall/doc/92767349/exporting-log-formats/) on exporting log formats
+
 4. Click **Save**.
 
 ## Collect Events from Vendor
