@@ -9545,7 +9545,7 @@ script:
       - name: volume_id
         description: The ID of the volume.
         required: true
-    outputs: []
+    outputs: [ ]
 
   isfetch: false
   runonce: false
