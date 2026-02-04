@@ -2349,7 +2349,6 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     client.update_asset_group(group_id, request_data=request_data)
 
     return CommandResults(readable_output="Asset group updated successfully")
->>>>>>> master
 
 
 def main():  # pragma: no cover
