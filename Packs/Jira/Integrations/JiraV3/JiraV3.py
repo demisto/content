@@ -4925,7 +4925,7 @@ def main():  # pragma: no cover
                 pat=personal_access_token,
             )
         demisto.debug(f"The configured Jira client is: {type(client)}")
-
+        a: dict = 2
         if command == "test-module":
             return_results(jira_test_module(client=client, params=params))
         elif command in commands:
