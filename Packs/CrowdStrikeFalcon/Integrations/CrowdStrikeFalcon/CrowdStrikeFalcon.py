@@ -6136,7 +6136,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
         "template_id": args.get("template_id"),
     }
 
-    resolve_case(case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value), **changed_fields)
+    resolve_case(case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields)
 
     readable_output = f"Case {case_id} was changed successfully"
     table = tableToMarkdown(
