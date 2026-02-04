@@ -23,7 +23,7 @@ Standard Linux ISO-8601 Extended Timestamp Parser Description: > This parsing ru
 The parser treats incoming data as UTC (-00:00) by deafult to maintain a standardized temporal baseline.
 Users can manually adjust the timezone offset to align with specific regional preferences or local server requirements.
 */
-filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+" /* Timestamp format: 2026-01-20 03:16:49 CST*/ and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]{3}" /* Timestamp format: 2026-01-20 03:16:49 CST*/ and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
 | alter 
     tmp_timestamp_without_offset = arrayindex(regextract(_raw_log ,"\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"),0) 
 | alter 
