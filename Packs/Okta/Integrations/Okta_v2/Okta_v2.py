@@ -483,9 +483,10 @@ class Client(OktaClient):
         uri = f"/api/v1/users/{encode_string_results(user_term)}"
         return self.http_request(method="DELETE", url_suffix=uri, resp_type="text")
 
-    def clear_user_sessions(self, user_id):
+    def clear_user_sessions(self, user_id, revoke_oauth_tokens=False):
         uri = f"/api/v1/users/{user_id}/sessions"
-        return self.http_request(method="DELETE", url_suffix=uri, resp_type="text")
+        params = {"oauthTokens": "true"} if revoke_oauth_tokens else None
+        return self.http_request(method="DELETE", url_suffix=uri, params=params, resp_type="text")
 
     def get_zone(self, zoneID):
         uri = f"/api/v1/zones/{zoneID}"
@@ -1030,7 +1031,8 @@ def delete_user_command(client, args):
 
 def clear_user_sessions_command(client, args):
     user_id = args.get("userId")
-    raw_response = client.clear_user_sessions(user_id)
+    revoke_oauth_tokens = argToBoolean(args.get("revoke_oauth_tokens", False))
+    raw_response = client.clear_user_sessions(user_id, revoke_oauth_tokens)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,
     }

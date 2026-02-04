@@ -1557,6 +1557,13 @@ script:
     - description: Okta User ID.
       name: userId
       required: true
+    - description: When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      name: revoke_oauth_tokens
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     description: |-
       Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
       For more information and examples:
