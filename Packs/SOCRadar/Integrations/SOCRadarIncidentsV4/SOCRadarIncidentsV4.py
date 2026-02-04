@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 urllib3.disable_warnings()
 
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
-SOCRADAR_SEVERITIES = ["INFO","LOW", "MEDIUM", "HIGH", "CRITICAL"]
+SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
 
@@ -121,9 +121,9 @@ class Client(BaseClient):
         if end_date:
             params["end_date"] = end_date
         if excluded_alarm_main_types:
-            params['excluded_alarm_main_types'] = excluded_alarm_main_types
+            params["excluded_alarm_main_types"] = excluded_alarm_main_types
         if excluded_alarm_sub_types:
-            params['excluded_alarm_sub_types'] = excluded_alarm_sub_types
+            params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
 
         url_suffix = f"/company/{self.company_id}/incidents/v4"
 
@@ -178,7 +178,9 @@ class Client(BaseClient):
             demisto.error(f"[SOCRadar] Traceback: {traceback.format_exc()}")
             raise
 
-    def change_alarm_status(self, alarm_ids: list[int], status_reason: str, comments: str | None = None, company_id: str | None = None) -> dict[str, Any]:
+    def change_alarm_status(
+        self, alarm_ids: list[int], status_reason: str, comments: str | None = None, company_id: str | None = None
+    ) -> dict[str, Any]:
         """Change status of alarms"""
         if status_reason not in STATUS_REASON_MAP:
             raise ValueError(f"Invalid status reason: {status_reason}")
@@ -219,7 +221,11 @@ class Client(BaseClient):
         )
 
     def add_alarm_assignee(
-        self, alarm_id: int, user_ids: list[int] | None = None, user_emails: list[str] | None = None, company_id: str | None = None
+        self,
+        alarm_id: int,
+        user_ids: list[int] | None = None,
+        user_emails: list[str] | None = None,
+        company_id: str | None = None,
     ) -> dict[str, Any]:
         """Add assignee(s) to an alarm"""
         effective_company_id = company_id or self.company_id
@@ -384,10 +390,10 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
     incident = {
         "name": incident_name,
         "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
-        "rawJSON": json.dumps(alarm), 
+        "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
-        "dbotMirrorId": str(alarm_id) if alarm_id else None, 
+        "dbotMirrorId": str(alarm_id) if alarm_id else None,
         "CustomFields": {
             "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
             "socradarstatus": alarm_status,
@@ -626,7 +632,9 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
     if not alarm_id:
         raise ValueError("alarm_id is required")
 
-    response = client.change_alarm_status([int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id)
+    response = client.change_alarm_status(
+        [int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id
+    )
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
 
@@ -867,7 +875,6 @@ def main() -> None:
                     excluded_alarm_main_types = [x.strip() for x in excluded_alarm_main_types_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar] Invalid excluded_alarm_main_types format: {excluded_alarm_main_types_str}")
-
 
             demisto.debug(
                 f"[SOCRadar] Fetch config - max_fetch: {max_fetch}, "
