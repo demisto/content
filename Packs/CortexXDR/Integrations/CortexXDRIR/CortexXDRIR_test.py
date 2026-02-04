@@ -2933,7 +2933,7 @@ def test_correlation_rule_update_command(mocker):
     mock_reply = {"updated_objects": [{"id": "1", "status": "Rule updated successfully"}]}
     mocker.patch.object(Client, "create_or_update_correlation_rules", return_value=mock_reply)
 
-    args = {"rule_id": "1", "name": "test_rule", "severity": "high"}
+    args = {"rule_id": "1", "name": "test_rule", "severity": "high", "is_enabled": "true"}
     res = correlation_rule_update_command(client, args)
 
     assert res.outputs == {"rule_id": "1"}
