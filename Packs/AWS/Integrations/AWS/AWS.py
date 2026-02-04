@@ -3483,7 +3483,7 @@ class EC2:
                 headerTransform=pascalToSpace,
                 removeNull=True,
             ),
-            raw_response=response
+            raw_response=response,
         )
 
     @staticmethod
