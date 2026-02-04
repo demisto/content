@@ -6968,7 +6968,7 @@ script:
     - contextPath: AWS.Lambda.Functions.Region
       description: The AWS Region.
       type: string
-    - contextPath: AWS.Lambda.Functions.FunctionsNextToken
+    - contextPath: AWS.Lambda.FunctionsNextToken
       description: Token to use for pagination in subsequent requests.
       type: string
 
@@ -7019,9 +7019,14 @@ script:
     - description: The name of the Lambda function.
       name: function_name
       required: true
-    - description: If you specify this optional parameter, the API returns only the aliases that are pointing to the specific Lambda function version, otherwise the API returns all of the aliases created for the Lambda function.
+    - description: Specify a function version to only list aliases that invoke that version.
       name: function_version
-    description: Returns a list of aliases created for a Lambda function. For each alias, the response includes information such as the alias ARN, description, alias name, and the function version to which it points.
+    - description: The maximum number of aliases to return (default is 50, maximum is 50).
+      name: limit
+      defaultValue: "50"
+    - description: Specify the pagination token that was returned by a previous request to retrieve the next page of results.
+      name: next_token
+    description: Returns a list of aliases created for a Lambda function.
     outputs:
     - contextPath: AWS.Lambda.Functions.Aliases.AliasArn
       description: Lambda function ARN that is qualified using the alias name as the suffix.
@@ -7040,6 +7045,9 @@ script:
       type: string
     - contextPath: AWS.Lambda.Functions.Aliases.RevisionId
       description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the Lambda function.
       type: string
 
   - name: aws-lambda-account-settings-get
@@ -7086,7 +7094,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Retrieves details about your account's limits and usage in an AWS Region.
+    description: Retrieves details about the account's limits and usage in an AWS Region.
     outputs:
     - contextPath: AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize
       description: The amount of storage space that you can use for all deployment packages and layer archives.
@@ -7165,103 +7173,97 @@ script:
       required: true
     - description: Specify the pagination token that's returned by a previous request to retrieve the next page of results.
       name: next_token
-    - description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
+    - description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
       name: limit
       defaultValue: "50"
     description: Returns a list of versions, with the version-specific configuration of each.
     outputs:
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.NextMarker
+    - contextPath: AWS.Lambda.Functions.FunctionVersionsNextMarker
       description: The pagination token that's included if more results are available.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.FunctionName
-      description: The name of the function.
-      type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.FunctionArn
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.FunctionArn
       description: The function's Amazon Resource Name (ARN).
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Runtime
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Runtime
       description: The identifier of the function's runtime. Runtime is required if the deployment package is a .zip file archive.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Role
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Role
       description: The function's execution role.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Handler
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Handler
       description: The function that Lambda calls to begin running your function.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.CodeSize
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSize
       description: The size of the function's deployment package, in bytes.
       type: Number
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Description
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Description
       description: The function's description.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Timeout
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Timeout
       description: The amount of time in seconds that Lambda allows a function to run before stopping it.
       type: Number
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.MemorySize
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MemorySize
       description: The amount of memory available to the function at runtime.
       type: Number
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.LastModified
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastModified
       description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.CodeSha256
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.CodeSha256
       description: The SHA256 hash of the function's deployment package.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Version
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Version
       description: The version of the Lambda function.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.VpcConfig.SubnetIds
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SubnetIds
       description: A list of VPC subnet IDs.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.VpcConfig.SecurityGroupIds
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.SecurityGroupIds
       description: A list of VPC security group IDs.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.VpcConfig.VpcId
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.VpcConfig.VpcId
       description: The ID of the VPC.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.DeadLetterConfig.TargetArn
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.DeadLetterConfig.TargetArn
       description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Environment.Variables
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Variables
       description: Environment variable key-value pairs. Omitted from CloudTrail logs.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Environment.Error.ErrorCode
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.ErrorCode
       description: The error code for environment variables that couldn't be applied.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.Environment.Error.Message
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.Environment.Error.Message
       description: The error message for environment variables that couldn't be applied.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.KMSKeyArn
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.KMSKeyArn
       description: The ARN of the KMS key used to encrypt the function's environment variables.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.TracingConfig.Mode
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.TracingConfig.Mode
       description: The tracing mode for the Lambda function.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.MasterArn
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.MasterArn
       description: The ARN of the main function for Lambda@Edge functions.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.State
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.State
       description: The current state of the function. When the state is Inactive, you can reactivate the function by invoking it.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.StateReason
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReason
       description: The reason for the function's current state.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.StateReasonCode
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.StateReasonCode
       description: The reason code for the current state of the function.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.LastUpdateStatus
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatus
       description: The status of the last update that was performed on the function. This is first set to Successful after function creation completes.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.LastUpdateStatusReason
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReason
       description: The reason for the last update that was performed on the function.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.LastUpdateStatusReasonCode
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReasonCode
       description: The reason code for the last update operation status.
       type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Versions.PackageType
+    - contextPath: AWS.Lambda.Functions.FunctionVersions.PackageType
       description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
-      type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.FunctionName
-      description: The name of the function.
       type: String
     - contextPath: AWS.Lambda.Functions.FunctionVersions.Region
       description: The AWS Region.
@@ -7384,10 +7386,10 @@ script:
     - name: description
       description: A description of the function.
     - name: function_timeout
-      description: The amount of time that Lambda allows a function to run before stopping it.
+      description: The amount of time (in seconds) that Lambda allows a function to run before stopping it.
       defaultValue: "3"
     - name: memory_size
-      description: The amount of memory available to the function at runtime.
+      description: The amount of memory (in MB) available to the function at runtime.
       defaultValue: "128"
     - name: publish
       description: Set to true to publish the first version of the function during creation.
@@ -7395,8 +7397,18 @@ script:
       predefined:
       - "true"
       - "false"
-    - name: vpc_config
-      description: JSON string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs, and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic.
+    - name: subnet_ids
+      description: A comma-separated list of VPC subnet IDs.
+      isArray: true
+    - name: security_group_ids
+      description: A comma-separated list of VPC security group IDs.
+      isArray: true
+    - name: ipv6_allowed_for_dual_stack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
     - name: package_type
       description: The type of deployment package.
       auto: PREDEFINED
@@ -7404,12 +7416,16 @@ script:
       - "Image"
       - "Zip"
     - name: environment
-      description: The environment variables for the function. Should be given as key-value pairs in a JSON string.
+      description: The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true".
     - name: tracing_config
       description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
       defaultValue: "Active"
+      auto: PREDEFINED
+      predefined:
+      - "Active"
+      - "PassThrough"
     - name: tags
-      description: The list of tags to apply to the function as a JSON string.
+      description: The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
     - name: layers
       description: A list of function layers to add to the function's execution environment.
       isArray: true
@@ -7523,28 +7539,28 @@ script:
     - name: compatible_architecture
       description: The compatible instruction set architecture.
     outputs:
-    - contextPath: AWS.Lambda.LayerVersionsNextToken
+    - contextPath: AWS.Lambda.Layer.VersionsNextToken
       description: A pagination token returned when the response doesn't contain all versions.
       type: string
     - contextPath: AWS.Lambda.Layers.LayerVersionArn
       description: The ARN of the layer version.
       type: string
-    - contextPath: AWS.Lambda.Layers.Version
+    - contextPath: AWS.Lambda.Layers.Versions.Version
       description: The version number.
       type: number
-    - contextPath: AWS.Lambda.Layers.Description
+    - contextPath: AWS.Lambda.Layers.Versions.Description
       description: The description of the version.
       type: string
-    - contextPath: AWS.Lambda.Layers.CreatedDate
+    - contextPath: AWS.Lambda.Layers.Versions.CreatedDate
       description: The date that the version was created, in ISO 8601 format.
       type: string
-    - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
+    - contextPath: AWS.Lambda.Layers.Versions.CompatibleRuntimes
       description: The layer's compatible runtimes.
       type: array
-    - contextPath: AWS.Lambda.Layers.LicenseInfo
+    - contextPath: AWS.Lambda.Layers.Versions.LicenseInfo
       description: The layer's open-source license.
       type: string
-    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+    - contextPath: AWS.Lambda.Layers.Versions.CompatibleArchitectures
       description: A list of compatible instruction set architectures.
       type: array
 
@@ -7710,34 +7726,34 @@ script:
     - name: s3_object_version
       description: For versioned objects, the version of the layer archive object to use.
     - name: compatible_runtimes
-      description: A list of compatible function runtimes. Used for filtering with ListLayers and ListLayerVersions.
+      description: A list of compatible function runtimes.
       isArray: true
     - name: compatible_architectures
       description: A list of compatible instruction set architectures.
       isArray: true
     outputs:
-    - contextPath: AWS.Lambda.Layers.LayerVersionArn
+    - contextPath: AWS.Lambda.Layers.Versions.LayerVersionArn
       description: The ARN of the layer version.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerArn
+    - contextPath: AWS.Lambda.Layers.Versions.LayerArn
       description: The ARN of the layer.
       type: string
-    - contextPath: AWS.Lambda.Layers.Description
+    - contextPath: AWS.Lambda.Layers.Versions.Description
       description: The description of the version.
       type: string
-    - contextPath: AWS.Lambda.Layers.CreatedDate
+    - contextPath: AWS.Lambda.Layers.Versions.CreatedDate
       description: The date that the layer version was created, in ISO 8601 format.
       type: string
-    - contextPath: AWS.Lambda.Layers.Version
+    - contextPath: AWS.Lambda.Layers.Versions.Version
       description: The version number.
       type: number
-    - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
+    - contextPath: AWS.Lambda.Layers.Versions.CompatibleRuntimes
       description: The layer's compatible runtimes.
       type: array
-    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+    - contextPath: AWS.Lambda.Layers.Versions.CompatibleArchitectures
       description: A list of compatible instruction set architectures.
       type: array
-    - contextPath: AWS.Lambda.Layers.Region
+    - contextPath: AWS.Lambda.Layers.Versions.Region
       description: The AWS Region.
       type: string
 

@@ -7227,48 +7227,45 @@ def test_lambda_list_aliases_command_success(mocker):
     """
     from AWS import Lambda
 
-    # Mock client and paginator
+    # Mock client
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    # Mock paginated response
-    mock_pages = [
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Aliases": [
-                {
-                    "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:prod",
-                    "Name": "prod",
-                    "FunctionVersion": "1",
-                    "Description": "Production alias",
-                },
-                {
-                    "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:dev",
-                    "Name": "dev",
-                    "FunctionVersion": "2",
-                    "Description": "Development alias",
-                },
-            ],
-        }
-    ]
+    # Mock response
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Aliases": [
+            {
+                "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:prod",
+                "Name": "prod",
+                "FunctionVersion": "1",
+                "Description": "Production alias",
+            },
+            {
+                "AliasArn": "arn:aws:lambda:us-east-1:123456789012:function:my-function:dev",
+                "Name": "dev",
+                "FunctionVersion": "2",
+                "Description": "Development alias",
+            },
+        ],
+    }
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_aliases.return_value = mock_response
 
     args = {"function_name": "my-function", "region": "us-east-1", "account_id": "123456789012"}
 
     result = Lambda.list_aliases_command(mock_client, args)
 
-    # Verify paginator was used correctly
-    mock_client.get_paginator.assert_called_once_with("list_aliases")
-    mock_paginator.paginate.assert_called_once_with(FunctionName="my-function")
+    # Verify list_aliases was called correctly
+    mock_client.list_aliases.assert_called_once_with(FunctionName="my-function", MaxItems=50)
 
     # Verify CommandResults structure
-    assert result.outputs_prefix == "AWS.Lambda.Functions.Aliases"
-    assert result.outputs_key_field == "AliasArn"
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["Name"] == "prod"
-    assert result.outputs[1]["Name"] == "dev"
+    assert "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)" in result.outputs
+    assert "AWS.Lambda(true)" in result.outputs
+    function_data = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    assert function_data["FunctionName"] == "my-function"
+    assert len(function_data["Aliases"]) == 2
+    assert function_data["Aliases"][0]["Name"] == "prod"
+    assert function_data["Aliases"][1]["Name"] == "dev"
     assert "prod" in result.readable_output
     assert "dev" in result.readable_output
 
@@ -7284,31 +7281,28 @@ def test_lambda_list_aliases_command_with_function_version(mocker):
     from AWS import Lambda
 
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    mock_pages = [
-        {
-            "ResponseMetadata": {"HTTPStatusCode": 200},
-            "Aliases": [
-                {
-                    "AliasArn": "arn:aws:lambda:us-west-2:123456789012:function:test-func:stable",
-                    "Name": "stable",
-                    "FunctionVersion": "5",
-                }
-            ],
-        }
-    ]
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Aliases": [
+            {
+                "AliasArn": "arn:aws:lambda:us-west-2:123456789012:function:test-func:stable",
+                "Name": "stable",
+                "FunctionVersion": "5",
+            }
+        ],
+    }
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_aliases.return_value = mock_response
 
     args = {"function_name": "test-func", "function_version": "5", "region": "us-west-2", "account_id": "123456789012"}
 
     result = Lambda.list_aliases_command(mock_client, args)
 
     # Verify FunctionVersion was passed to API
-    mock_paginator.paginate.assert_called_once_with(FunctionName="test-func", FunctionVersion="5")
-    assert result.outputs[0]["FunctionVersion"] == "5"
+    mock_client.list_aliases.assert_called_once_with(FunctionName="test-func", FunctionVersion="5", MaxItems=50)
+    function_data = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    assert function_data["Aliases"][0]["FunctionVersion"] == "5"
 
 
 def test_lambda_list_aliases_command_no_aliases(mocker):
@@ -7322,16 +7316,17 @@ def test_lambda_list_aliases_command_no_aliases(mocker):
     from AWS import Lambda
 
     mock_client = mocker.Mock()
-    mock_paginator = mocker.Mock()
 
-    mock_pages = [{"ResponseMetadata": {"HTTPStatusCode": 200}, "Aliases": []}]
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": 200}, "Aliases": []}
 
-    mock_paginator.paginate.return_value = mock_pages
-    mock_client.get_paginator.return_value = mock_paginator
+    mock_client.list_aliases.return_value = mock_response
 
     args = {"function_name": "no-aliases-function", "region": "ap-south-1", "account_id": "123456789012"}
 
     result = Lambda.list_aliases_command(mock_client, args)
+
+    # Verify list_aliases was called correctly
+    mock_client.list_aliases.assert_called_once_with(FunctionName="no-aliases-function", MaxItems=50)
 
     assert "No aliases found for function no-aliases-function" in result.readable_output
 
@@ -7372,7 +7367,7 @@ def test_lambda_get_account_settings_command_success(mocker):
 
     # Verify CommandResults structure
     assert result.outputs_prefix == "AWS.Lambda.AccountSettings"
-    assert result.outputs_key_field == ["AccountId", "Region"]
+    assert result.outputs_key_field == "AccountId"
     assert result.outputs["Region"] == "us-east-1"
     assert result.outputs["AccountId"] == "123456789012"
     assert result.outputs["AccountLimit"]["TotalCodeSize"] == 80530636800
@@ -7478,12 +7473,15 @@ def test_lambda_list_versions_by_function_command_success(mocker):
     mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function", MaxItems=50)
 
     # Verify outputs structure
-    assert result.outputs_prefix == "AWS.Lambda.Functions.FunctionVersions"
-    assert result.outputs_key_field == "FunctionName"
-    assert "Versions" in result.outputs
-    assert len(result.outputs["Versions"]) == 2
-    assert result.outputs["FunctionName"] == "my-function"
-    assert result.outputs["Region"] == "us-east-1"
+    assert "AWS.Lambda.Functions.FunctionVersions(val.FunctionName && val.FunctionName == obj.FunctionName)" in result.outputs
+    assert "AWS.Lambda(true)" in result.outputs
+    function_versions = result.outputs[
+        "AWS.Lambda.Functions.FunctionVersions(val.FunctionName && val.FunctionName == obj.FunctionName)"
+    ]
+    assert "Versions" in function_versions
+    assert len(function_versions["Versions"]) == 2
+    assert function_versions["FunctionName"] == "my-function"
+    assert function_versions["Region"] == "us-east-1"
 
     # Verify readable output contains expected data
     assert "my-function" in result.readable_output
@@ -7540,11 +7538,9 @@ def test_lambda_list_versions_by_function_command_with_pagination(mocker):
         FunctionName="my-function", Marker="previous-token", MaxItems=10
     )
 
-    # Verify NextMarker is in outputs
-    assert result.outputs["NextMarker"] == "next-page-token-123"
-
-    # Verify pagination note in readable output
-    assert "next-page-token-123" in result.readable_output
+    # Verify NextMarker is in AWS.Lambda(true)
+    assert "AWS.Lambda(true)" in result.outputs
+    assert result.outputs["AWS.Lambda(true)"]["FunctionVersionsNextToken"] == "next-page-token-123"
 
 
 def test_lambda_list_versions_by_function_command_no_versions(mocker):
@@ -7684,11 +7680,12 @@ def test_lambda_create_function_command_success_with_s3(mocker):
     assert call_kwargs["Handler"] == "index.handler"
     assert call_kwargs["Code"]["S3Bucket"] == "my-code-bucket"
 
-    # Verify outputs
+    # Verify outputs (response is serialized and ResponseMetadata is removed)
     assert result.outputs_prefix == "AWS.Lambda.Functions"
     assert result.outputs_key_field == "FunctionArn"
     assert result.outputs["FunctionName"] == "my-new-function"
-    assert result.outputs["Region"] == "us-east-1"
+    assert result.outputs["FunctionArn"] == "arn:aws:lambda:us-east-1:123456789012:function:my-new-function"
+    assert result.outputs["Runtime"] == "python3.9"
 
     # Verify readable output
     assert "my-new-function" in result.readable_output
@@ -7725,15 +7722,14 @@ def test_lambda_create_function_command_with_vpc_config(mocker):
 
     mock_client.create_function.return_value = mock_response
 
-    vpc_config = {"SubnetIds": ["subnet-123", "subnet-456"], "SecurityGroupIds": ["sg-789"]}
-
     args = {
         "function_name": "vpc-function",
         "runtime": "nodejs18.x",
         "role": "arn:aws:iam::123456789012:role/lambda-role",
         "handler": "index.handler",
         "s3_bucket": "my-code-bucket",
-        "vpc_config": json.dumps(vpc_config),
+        "subnet_ids": "subnet-123,subnet-456",
+        "security_group_ids": "sg-789",
         "memory_size": "512",
         "function_timeout": "60",
         "region": "us-east-1",
@@ -7742,13 +7738,18 @@ def test_lambda_create_function_command_with_vpc_config(mocker):
 
     result = Lambda.create_function_command(mock_client, args)
 
-    # Verify VPC config was passed
+    # Verify VPC config was passed to API call
     call_kwargs = mock_client.create_function.call_args[1]
     assert "VpcConfig" in call_kwargs
     assert call_kwargs["VpcConfig"]["SubnetIds"] == ["subnet-123", "subnet-456"]
+    assert call_kwargs["VpcConfig"]["SecurityGroupIds"] == ["sg-789"]
 
-    # Verify VPC details in readable output
-    assert "subnet-123" in result.readable_output or "SubnetIds" in result.readable_output
+    # Verify VPC config is in outputs (full response is returned as outputs)
+    assert result.outputs["VpcConfig"]["SubnetIds"] == ["subnet-123", "subnet-456"]
+    assert result.outputs["VpcConfig"]["SecurityGroupIds"] == ["sg-789"]
+
+    # Verify function name in readable output
+    assert "vpc-function" in result.readable_output
 
 
 # Tests for list_layer_versions_command
@@ -7784,7 +7785,7 @@ def test_lambda_list_layer_versions_command_with_pagination(mocker):
 
     args = {
         "layer_name": "test-layer",
-        "marker": "previous-token",
+        "next_token": "previous-token",
         "limit": "10",
         "compatible_runtime": "java17",
         "compatible_architecture": "arm64",
@@ -7803,8 +7804,8 @@ def test_lambda_list_layer_versions_command_with_pagination(mocker):
     assert call_kwargs["CompatibleArchitecture"] == "arm64"
 
     # Verify NextMarker is in context
-    assert "AWS.Lambda(true)" in result.outputs
-    assert result.outputs["AWS.Lambda(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
+    assert "AWS.Lambda.Layers(true)" in result.outputs
+    assert result.outputs["AWS.Lambda.Layers(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
 
 
 def test_lambda_list_layer_versions_command_no_versions(mocker):
@@ -10100,3 +10101,107 @@ def test_ec2_describe_reserved_instances_command_http_error(mocker):
 
     EC2.describe_reserved_instances_command(mock_client, args)
     mock_error_handler.assert_called_once()
+
+
+# Tests for prepare_create_function_kwargs
+
+
+def test_prepare_create_function_kwargs_with_code_path(mocker):
+    """
+    Test prepare_create_function_kwargs with code parameter (ZIP file).
+
+    Given: Arguments with code entry ID
+    When: prepare_create_function_kwargs is called
+    Then: Should read ZIP file and include ZipFile in Code parameter with default values
+    """
+    from AWS import prepare_create_function_kwargs
+    import tempfile
+    import os
+
+    # Create a temp ZIP file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tf:
+        tf.write(b"PK\x03\x04")  # ZIP file magic bytes
+        tmp_path = tf.name
+
+    try:
+        # Mock demisto.getFilePath to return our temp file
+        mocker.patch("AWS.demisto.getFilePath", return_value={"path": tmp_path})
+
+        args = {
+            "code": "123@abc",
+            "function_name": "test-function",
+            "runtime": "python3.9",
+            "role": "arn:aws:iam::123456789012:role/lambda-role",
+            "handler": "index.handler",
+        }
+
+        result = prepare_create_function_kwargs(args)
+
+        # Verify Code contains ZipFile
+        assert "Code" in result
+        assert "ZipFile" in result["Code"]
+        assert isinstance(result["Code"]["ZipFile"], bytes)
+        assert result["Code"]["ZipFile"] == b"PK\x03\x04"
+
+        # Verify default values
+        assert result["TracingConfig"]["Mode"] == "Active"
+        assert result["MemorySize"] == 128
+        assert result["Timeout"] == 3
+
+    finally:
+        os.unlink(tmp_path)
+
+
+def test_prepare_create_function_kwargs_with_s3_and_all_optional_params():
+    """
+    Test prepare_create_function_kwargs with S3 bucket and all optional parameters.
+
+    Given: Arguments with s3_bucket and all optional parameters
+    When: prepare_create_function_kwargs is called
+    Then: Should include all parameters with custom values in kwargs
+    """
+    from AWS import prepare_create_function_kwargs
+
+    expected_env_vars = {"DB_HOST": "localhost", "DEBUG": "true"}
+    expected_tags = [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "DevOps"}]
+
+    args = {
+        "s3_bucket": "my-lambda-bucket",
+        "function_name": "full-function",
+        "runtime": "python3.11",
+        "role": "arn:aws:iam::123456789012:role/lambda-role",
+        "handler": "app.main",
+        "description": "Full function test",
+        "package_type": "Zip",
+        "tracing_config": "PassThrough",
+        "memory_size": "1024",
+        "function_timeout": "120",
+        "publish": "true",
+        "environment": "key=DB_HOST,value=localhost;key=DEBUG,value=true",
+        "tags": "key=Environment,value=Production;key=Team,value=DevOps",
+        "layers": "arn:aws:lambda:us-east-1:123456789012:layer:layer1:1,arn:aws:lambda:us-east-1:123456789012:layer:layer2:2",
+        "subnet_ids": "subnet-123",
+        "security_group_ids": "sg-456",
+        "ipv6_allowed_for_dual_stack": "true",
+    }
+
+    result = prepare_create_function_kwargs(args)
+
+    # Verify all parameters
+    assert result["Code"]["S3Bucket"] == "my-lambda-bucket"
+    assert result["FunctionName"] == "full-function"
+    assert result["Runtime"] == "python3.11"
+    assert result["Role"] == "arn:aws:iam::123456789012:role/lambda-role"
+    assert result["Handler"] == "app.main"
+    assert result["Description"] == "Full function test"
+    assert result["PackageType"] == "Zip"
+    assert result["TracingConfig"]["Mode"] == "PassThrough"
+    assert result["MemorySize"] == 1024
+    assert result["Timeout"] == 120
+    assert result["Publish"] is True
+    assert result["Environment"]["Variables"] == expected_env_vars
+    assert result["Tags"] == expected_tags
+    assert len(result["Layers"]) == 2
+    assert result["VpcConfig"]["SubnetIds"] == ["subnet-123"]
+    assert result["VpcConfig"]["SecurityGroupIds"] == ["sg-456"]
+    assert result["VpcConfig"]["Ipv6AllowedForDualStack"] is True
