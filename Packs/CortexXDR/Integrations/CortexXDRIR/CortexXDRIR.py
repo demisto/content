@@ -2030,11 +2030,7 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     if file_artifacts:
         outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact"] = file_artifacts
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs=outputs,
-        raw_response=artifacts
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=artifacts)
 
 
 def main():  # pragma: no cover
