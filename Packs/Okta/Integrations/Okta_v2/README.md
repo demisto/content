@@ -543,6 +543,7 @@ Enrolls and verifies a push factor for the specified user.
 | factorId | The push factor ID. | Required |
 | polling_time | Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds. | Optional |
 | max_polling_calls | Maximum number of polling calls. Default value is 10. | Optional |
+| polling | Whether to poll for the push factor challenge result. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -550,6 +551,7 @@ Enrolls and verifies a push factor for the specified user.
 | --- | --- | --- |
 | Account.ID | String | Okta user ID. |
 | Account.VerifyPushResult | String | Okta user push factor result. |
+| Okta.PollingStatusURL | String | The polling URL for the push factor challenge. |
 | Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
 | Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
 | Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
@@ -605,6 +607,39 @@ Enrolls and verifies a push factor for the specified user.
     }
 }
 ```
+
+### okta-verify-mfa-status
+
+***
+Verifies the status of a push factor challenge.
+
+#### Base Command
+
+`okta-verify-mfa-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| polling_url | The polling URL for the push factor challenge. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.FactorResult.ID | String | The push factor challenge ID. |
+| Okta.FactorResult.factorResult | String | The result of the factor challenge. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
+
+##### Command Example
+
+```!okta-verify-mfa-status polling_url="https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID"```
+
+##### Human Readable Output
+>
+>The status of the push factor is SUCCESS
 
 ### okta-search
 
