@@ -624,6 +624,38 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def search_cases(self, request_data: dict):
+        """
+        API Endpoint: POST /public_api/v1/case/search
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/case/search",
+            json_data={"request_data": request_data},
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def update_case(self, case_id: str, request_data: dict):
+        """
+        API Endpoint: POST /public_api/v1/case/update/{case-id}
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/case/update/{case_id}",
+            json_data={"request_data": request_data},
+        )
+
+    def get_case_artifacts(self, case_id: str):
+        """
+        API Endpoint: GET /public_api/v1/case/artifacts
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/case/artifacts",
+            params={"case_id": case_id},
+        )
+        return res.get("reply", {}).get("DATA", {})
+
 
 def extract_paths_and_names(paths: list) -> tuple:
     """
@@ -1878,6 +1910,133 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
+    Returns a list of cases.
+    """
+    case_ids = argToList(args.get("case_id"))
+    case_domains = argToList(args.get("case_domain"))
+    severities = argToList(args.get("severity"))
+    statuses = argToList(args.get("status"))
+    created_before = arg_to_timestamp(args.get("created_before")) if args.get("created_before") else None
+    created_after = arg_to_timestamp(args.get("created_after")) if args.get("created_after") else None
+    sort_field = args.get("sort_field")
+    sort_order = args.get("sort_order")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    filters = []
+    if case_ids:
+        filters.append({"field": "case_id", "operator": "in", "value": case_ids})
+    if case_domains:
+        filters.append({"field": "case_domain", "operator": "in", "value": case_domains})
+    if severities:
+        filters.append({"field": "severity", "operator": "in", "value": severities})
+    if statuses:
+        filters.append({"field": "status", "operator": "in", "value": statuses})
+    if created_before:
+        filters.append({"field": "creation_time", "operator": "lte", "value": created_before})
+    if created_after:
+        filters.append({"field": "creation_time", "operator": "gte", "value": created_after})
+
+    request_data: Dict[str, Any] = {
+        "search_from": page * page_size,
+        "search_to": min((page + 1) * page_size, (page * page_size) + limit),
+    }
+    if filters:
+        request_data["filters"] = filters
+    if sort_field:
+        request_data["sort"] = {"field": sort_field, "keyword": sort_order or "desc"}
+
+    cases = client.search_cases(request_data)
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Cases",
+        t=cases,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=cases,
+        raw_response=cases,
+    )
+
+
+def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-existing-case
+    Updates an existing case.
+    """
+    case_id = args.get("case_id", "")
+    status = args.get("status")
+    resolve_reason = args.get("resolve_reason")
+    resolve_comment = args.get("resolve_comment")
+
+    update_data = assign_params(
+        status=status,
+        resolve_reason=resolve_reason,
+        resolve_comment=resolve_comment,
+    )
+
+    client.update_case(case_id, update_data)
+
+    return CommandResults(readable_output=f"Case {case_id} updated successfully")
+
+
+def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-Case-Artifacts-by-Case-Id
+    Retrieves artifacts for a specific case.
+    """
+    case_id = args.get("case_id", "")
+    artifacts = client.get_case_artifacts(case_id)
+
+    network_artifacts = artifacts.get("network_artifacts", {}).get("DATA", [])
+    file_artifacts = artifacts.get("file_artifacts", {}).get("DATA", [])
+
+    for artifact in network_artifacts:
+        artifact["case_id"] = case_id
+    for artifact in file_artifacts:
+        artifact["case_id"] = case_id
+
+    readable_output = ""
+    if network_artifacts:
+        readable_output += tableToMarkdown(
+            f"Network Artifacts for Case {case_id}",
+            network_artifacts,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+    if file_artifacts:
+        readable_output += tableToMarkdown(
+            f"File Artifacts for Case {case_id}",
+            file_artifacts,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+
+    if not readable_output:
+        readable_output = f"No artifacts found for case {case_id}"
+
+    outputs = {}
+    if network_artifacts:
+        outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact"] = network_artifacts
+    if file_artifacts:
+        outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact"] = file_artifacts
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=artifacts
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2374,6 +2533,15 @@ def main():  # pragma: no cover
 
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-case-list":
+            return_results(case_list_command(client, args))
+
+        elif command == "xdr-case-update":
+            return_results(case_update_command(client, args))
+
+        elif command == "xdr-case-artifact-list":
+            return_results(case_artifact_list_command(client, args))
 
     except Exception as err:
         return_error(str(err))

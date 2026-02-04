@@ -4132,6 +4132,100 @@ script:
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update
+  - arguments:
+    - description: A comma-separated list of case IDs.
+      isArray: true
+      name: case_id
+    - description: A comma-separated list of case domains.
+      isArray: true
+      name: case_domain
+    - description: A comma-separated list of severities.
+      isArray: true
+      name: severity
+    - description: Filters cases that were created before this date. Supports English expressions like "in a year".
+      name: created_before
+    - description: Filters cases that were created after this date. Supports English expressions like "in a year".
+      name: created_after
+    - description: A comma-separated list of statuses.
+      isArray: true
+      name: status
+    - auto: PREDEFINED
+      description: The field by which to sort the results.
+      name: sort_field
+      predefined:
+      - case_id
+      - severity
+      - creation_time
+    - auto: PREDEFINED
+      description: The order in which to sort the results.
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: Maximum number of cases to return.
+      name: limit
+    - description: Page size for pagination.
+      name: page_size
+    - description: Page number for pagination.
+      name: page
+    description: Returns a list of cases based on filters.
+    name: xdr-case-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Case.case_id
+      description: The unique identifier of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.case_name
+      description: The name of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.status
+      description: The status of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.creation_time
+      description: The timestamp when the case was created.
+      type: Date
+  - arguments:
+    - description: The ID of the case to update.
+      name: case_id
+      required: true
+    - auto: PREDEFINED
+      description: The status to set for the case.
+      name: status
+      predefined:
+      - new
+      - under_investigation
+      - resolved
+    - auto: PREDEFINED
+      description: The reason for resolving the case.
+      name: resolve_reason
+      predefined:
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_false_positive
+      - resolved_other
+      - resolved_true_positive
+      - resolved_security_testing
+      - resolved_fixed
+      - resolved_dismissed
+    - description: A comment explaining the resolution.
+      name: resolve_comment
+    description: Updates an existing case.
+    name: xdr-case-update
+  - arguments:
+    - description: The ID of the case for which to retrieve artifacts.
+      name: case_id
+      required: true
+    description: Retrieves artifacts for a specific case.
+    name: xdr-case-artifact-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.case_id
+      description: The ID of the case associated with the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.case_id
+      description: The ID of the case associated with the artifact.
+      type: String
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false
