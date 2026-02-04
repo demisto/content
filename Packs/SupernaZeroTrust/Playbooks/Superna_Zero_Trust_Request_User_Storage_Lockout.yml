@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -26,6 +26,43 @@ tasks:
         "position": {
           "x": 470,
           "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f1e2d3c4-b5a6-4978-8e9f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: f1e2d3c4-b5a6-4978-8e9f-0a1b2c3d4e5f
+      version: -1
+      name: Is Superna Zero Trust integration enabled?
+      description: Verify that the Superna Zero Trust integration is available before executing playbook
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: SupernaZeroTrust
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -50
         }
       }
     note: false
@@ -53,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 590
+          "y": 720
         }
       }
     note: false
@@ -84,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -60
+          "y": 70
         }
       }
     note: false
@@ -154,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 120
+          "y": 250
         }
       }
     note: false
@@ -189,7 +226,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 340
+          "y": 470
         }
       }
     note: false
@@ -204,7 +241,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 825,
+        "height": 955,
         "width": 380,
         "x": 470,
         "y": -170

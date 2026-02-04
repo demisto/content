@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -26,6 +26,43 @@ tasks:
         "position": {
           "x": 470,
           "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c9d8e7f6-a5b4-4c3d-9e8f-7a6b5c4d3e2f
+    type: condition
+    task:
+      id: c9d8e7f6-a5b4-4c3d-9e8f-7a6b5c4d3e2f
+      version: -1
+      name: Is Superna Zero Trust integration enabled?
+      description: Verify that the Superna Zero Trust integration is available before executing playbook
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: SupernaZeroTrust
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -50
         }
       }
     note: false
@@ -60,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 190
+          "y": 250
         }
       }
     note: false
@@ -88,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 440
+          "y": 500
         }
       }
     note: false
@@ -123,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -40
+          "y": 80
         }
       }
     note: false
@@ -138,7 +175,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 675,
+        "height": 735,
         "width": 390,
         "x": 460,
         "y": -170
