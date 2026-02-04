@@ -292,7 +292,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "workday-get-activity-logging":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
+            should_push_events = argToBoolean(args.get("should_push_events", "false"))
             activity_loggings, results = get_activity_logging_command(
                 client=client,
                 from_date=args.get("from_date"),
