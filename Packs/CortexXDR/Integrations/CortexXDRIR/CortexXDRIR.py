@@ -1847,20 +1847,23 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
+def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict:
     """
-    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
-    Creates a new correlation rule.
+    Creates or updates correlation rules based on provided arguments.
     Args:
         client (Client): The client to use.
-        args (Dict): The command arguments.
+        args (Dict): The command arguments containing rule configuration.
     Returns:
-        CommandResults: The command results.
+        dict: The raw response from the client containing the update/creation results.
     """
+    severity_arg = args.get("severity")
+    severity_mapped = BIOC_AND_CR_SEVERITY_MAPPING.get(severity_arg) if severity_arg else None
+
     rule_data = {
         # Required fields
+        "rule_id": args.get("rule_id"),
         "name": args.get("name"),
-        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
+        "severity": severity_mapped,
         "xql_query": args.get("xql_query"),
         "is_enabled": argToBoolean(args.get("is_enabled")),
         "action": "ALERTS",
@@ -1881,7 +1884,7 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         "simple_schedule": args.get("schedule") or None,
         "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
         "investigation_query_link": args.get("investigation_query_link") or None,
-        "suppression_enabled": args.get("suppression_enabled") or None,
+        "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
         "suppression_duration": args.get("suppression_duration") or None,
         "suppression_fields": args.get("suppression_fields") or None,
 
@@ -1894,10 +1897,23 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         "alert_fields": json.loads(args.get("alert_fields") or "{}")
     }
 
-    reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
-    updated_objects = reply.get("added_objects")[0] if reply.get("added_objects") else {}
-    rule_id = updated_objects.get("id")
-    message = updated_objects.get("status")
+    return client.create_or_update_correlation_rules({"request_data": [rule_data]})
+
+
+def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
+    Creates a new correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = correlation_rule_create_or_update_helper(client, args)
+    added_objects = reply.get("added_objects")[0] if reply.get("added_objects") else {}
+    rule_id = added_objects.get("id")
+    message = added_objects.get("status")
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
@@ -1915,48 +1931,7 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults: The command results.
     """
-    severity_arg = args.get("severity")
-    severity_mapped = BIOC_AND_CR_SEVERITY_MAPPING.get(severity_arg) if severity_arg else None
-
-    rule_data = {
-        # Required fields
-        "rule_id": args.get("rule_id"),
-        "name": args.get("name"),
-        "severity": severity_mapped,
-        "xql_query": args.get("xql_query"),
-        "is_enabled": argToBoolean(args.get("is_enabled")),
-        "action": "ALERTS",
-        "timezone": args.get("timezone"),
-        "dataset": args.get("dataset"),
-
-        # Enums - Only .upper() if value exists
-        "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
-        "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
-        "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
-
-        # Optional fields
-        "description": args.get("description") or None,
-        "alert_name": args.get("alert_name") or None,
-        "alert_description": args.get("alert_description") or None,
-        "search_window": args.get("search_window") or None,
-        "crontab": args.get("schedule_linux") or None,
-        "simple_schedule": args.get("schedule") or None,
-        "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
-        "investigation_query_link": args.get("investigation_query_link") or None,
-        "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") is not None else None,
-        "suppression_duration": args.get("suppression_duration") or None,
-        "suppression_fields": args.get("suppression_fields") or None,
-
-        # User Defined Severity (Must be None unless Severity is "User Defined")
-        "user_defined_severity": args.get("user_defined_severity") or None,
-        "user_defined_category": args.get("user_defined_category") or None,
-
-        # Defaults to "{}" string if missing so json.loads doesn't fail
-        "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
-        "alert_fields": json.loads(args.get("alert_fields") or "{}")
-    }
-
-    reply = client.create_or_update_correlation_rules({"request_data": [rule_data]})
+    reply = correlation_rule_create_or_update_helper(client, args)
     updated_objects = reply.get("updated_objects")[0] if reply.get("updated_objects") else {}
     rule_id = updated_objects.get("id")
     message = updated_objects.get("status")
@@ -2001,6 +1976,7 @@ def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResult
 
     return CommandResults(readable_output=status,
                           raw_response=reply)
+
 
 def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
