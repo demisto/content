@@ -40,8 +40,8 @@ args:
   description: The type of the issue.
 - name: source
   description: The source of the issue.
-- name: owner
-  description: The owner of the issue.
+# - name: owner
+#   description: The owner of the issue.
 - name: asset_ids
   description: A comma-separated list of asset IDs related to the issue.
   isArray: true
@@ -55,9 +55,9 @@ args:
   description: Extended description of the issue.
 - name: impact
   description: The impact of the issue.
-- name: tags
-  description: A comma-separated list of tags.
-  isArray: true
+# - name: tags
+#   description: A comma-separated list of tags.
+#   isArray: true
 - name: is_excluded
   type: boolean
   description: Whether the issue is excluded.
@@ -79,6 +79,10 @@ args:
 - name: playbook_id
   required: true
   description: "The ID of the playbook to run on the created issue. For example: Create Jira Issue, Field Polling - Generic."
+- name: key
+  description: The field key to update.
+- name: value
+  description: The value of the key argument to update.
 outputs:
 - name: Core.CreatedIssueLink.issue_link
   description: Link to the issue created.

@@ -71,7 +71,8 @@ WEBAPP_COMMANDS = [
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses", "core-set-issue-context"]
+AGENTIX_COMMANDS = ["core-create-artifact"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -970,6 +971,48 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/issue",
             json_data={"request_data": {"issue": issue_data}},
+        )
+
+    def create_artifact(self, conversation_id: str, artifact_id: str, artifact_type: str, artifact: dict) -> dict:
+        """
+        Creates a new artifact in Cortex XDR.
+        Args:
+            conversation_id (str): The conversation ID.
+            artifact_id (str): The artifact ID.
+            artifact_type (str): The artifact type.
+            artifact (str): The artifact.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/conversations/{conversation_id}/artifact",
+            json_data={
+                "artifact_id": artifact_id,
+                "artifact_type": artifact_type,
+                "artifact": artifact,
+            },
+        )
+
+    def set_issue_context(self, issue_ids: list, key: str, value: str) -> dict:
+        """
+        Sets context data for specific issues.
+        Args:
+            issue_ids (list): List of issue IDs.
+            key (str): The context key to set.
+            value (str): The value to set for the key.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/xsoar/incident/batchExecute",
+            json_data={
+                "all": False,
+                "filter": {},
+                "ids": issue_ids,
+                "line": f'!Set key={key} value={value}',
+            },
         )
 
 
@@ -4449,6 +4492,7 @@ def init_client(api_type: str) -> Client:
         "appsec": f"{webapp_root}/public_api/appsec",
         "xsoar": "/xsoar",
         "agents": f"{webapp_root}/agents",
+        "agentix": "/api/v1/stream/agentix",
     }
 
     # Fallback to public API if the type isn't recognized
@@ -4533,7 +4577,7 @@ def create_issue_command(client: Client, args: dict) -> CommandResults:
     source = args.get("source")
     # playbook_id = args.get("playbook_id")
     # if playbook_id:
-        # playbook_id = playbook_id.lower().replace(" ", "_")
+    #     playbook_id = playbook_id.lower().replace(" ", "_")
         
     observation_time = int(time.time() * 1000)
 
@@ -4571,6 +4615,43 @@ def create_issue_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def create_artifact_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a new artifact in Cortex XDR.
+    """
+    conversation_id = args.get("conversation_id", "")
+    artifact = args.get("artifact", "")
+    artifact_id = args.get("artifact_id", "")
+    artifact_type = args.get("artifact_type", "")
+
+    response = client.create_artifact(conversation_id, artifact, artifact_id, artifact_type)
+
+    return CommandResults(
+        readable_output="Artifact created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Artifact",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def set_issue_context_command(client: Client, args: dict) -> CommandResults:
+    """
+    Sets context data for specific issues.
+    """
+    issue_ids = argToList(args.get("issue_ids"))
+    key = args.get("key")
+    value = args.get("value")
+
+    response = client.set_issue_context(issue_ids, key, value)
+
+    return CommandResults(
+        readable_output=f"Successfully set context for issues: {', '.join(issue_ids)}",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SetIssueContext",
+        outputs={"issue_ids": issue_ids},
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4592,6 +4673,8 @@ def main():  # pragma: no cover
         api_type = "agents"
     elif command in XSOAR_COMMANDS:
         api_type = "xsoar"
+    elif command in AGENTIX_COMMANDS:
+        api_type = "agentix"
     else:
         api_type = "public"
 
@@ -4707,6 +4790,12 @@ def main():  # pragma: no cover
 
         elif command == "core-create-issue":
             return_results(create_issue_command(client, args))
+
+        elif command == "core-create-artifact":
+            return_results(create_artifact_command(client, args))
+
+        elif command == "core-set-issue-context":
+            return_results(set_issue_context_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

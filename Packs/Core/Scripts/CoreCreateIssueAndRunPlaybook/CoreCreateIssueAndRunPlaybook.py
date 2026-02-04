@@ -20,6 +20,7 @@ def main():
         if is_error(get_issues_res) or not get_issues_res or len(get_issues_res) < 1:
             return_error(f"Failed to get issue details: {get_error(get_issues_res)}")
             
+            
         # Assuming the first issue is the correct one as external_id should be unique
         issues = get_issues_res[0].get('Contents', {}).get('alerts')
         if not issues:
@@ -34,7 +35,11 @@ def main():
         if not issue_id:
             return_error(f"Could not find internal_id for issue with external_id: {external_id}")
 
-        # 3. Run Playbook
+        # 3. Set fields in the issue context
+        demisto.executeCommand("core-set-issue-context", {'issue_ids': issue_id, 'key':args.get("key"),
+                                                                              'value': args.get("value")})
+        
+        # 4. Run Playbook
         playbook_id = args.get('playbook_id')
         run_playbook_res = demisto.executeCommand("core-run-playbook", {'issue_ids': issue_id, 'playbook_id': playbook_id})
         if is_error(run_playbook_res):
