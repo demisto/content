@@ -6075,7 +6075,7 @@ def resolve_case(
     name: str | None = None,
     assigned_to_uuid: str | None = None,
     description: str | None = None,
-    remove_user_assignment: bool = False,
+    remove_user_assignment: bool | None = None,
     severity: int | None = None,
     template_id: str | None = None,
 ) -> dict:
@@ -6094,21 +6094,17 @@ def resolve_case(
     Returns:
         dict: The response from the API.
     """
-    fields: dict[str, Any] = {}
-    if status:
-        fields["status"] = status
-    if name:
-        fields["name"] = name
-    if assigned_to_uuid:
-        fields["assigned_to_user_uuid"] = assigned_to_uuid
-    if description:
-        fields["description"] = description
-    if severity:
-        fields["severity"] = severity
-    if template_id:
-        fields["template"] = {"id": template_id}
-    if remove_user_assignment:
-        fields["remove_user_assignment"] = remove_user_assignment
+    # Build fields dict with API field names, filtering out None values
+    fields = {
+        "status": status,
+        "name": name,
+        "assigned_to_user_uuid": assigned_to_uuid,
+        "description": description,
+        "severity": severity,
+        "template": {"id": template_id} if template_id else None,
+        "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
+    }
+    fields = {k: v for k, v in fields.items() if v is not None}
 
     payload = {"id": case_id, "fields": fields}
     return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
@@ -6119,49 +6115,37 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
     Command function for cs-falcon-resolve-case.
     """
     case_id = args.get("id")
-    status = args.get("status")
-    name = args.get("name")
-    assigned_to_uuid = args.get("assigned_to_uuid")
-    description = args.get("description")
-    remove_user_assignment = argToBoolean(args.get("remove_user_assignment", False))
-    severity = arg_to_number(args.get("severity"))
-    template_id = args.get("template_id")
 
     if not case_id:
         raise ValueError("The 'id' argument is required.")
 
+    severity = arg_to_number(args.get("severity"))
     if severity is not None and not (10 <= severity <= 100):
         raise ValueError("Severity must be an integer between 10 and 100.")
 
-    resolve_case(
-        case_id=case_id,
-        status=status,
-        name=name,
-        assigned_to_uuid=assigned_to_uuid,
-        description=description,
-        remove_user_assignment=remove_user_assignment,
-        severity=severity,
-        template_id=template_id,
-    )
+    # We take care of that value seperatly so that it won't appear in the HR unless passed by the user
+    remove_user_assignment_str_value = args.get("remove_user_assignment")
+    
+    # Collect changed fields for both API call and display
+    changed_fields = {
+        "status": args.get("status"),
+        "name": args.get("name"),
+        "assigned_to_uuid": args.get("assigned_to_uuid"),
+        "description": args.get("description"),
+        "severity": severity,
+        "template_id": args.get("template_id"),
+    }
 
-    changed_fields = {"ID": case_id}
-    if status:
-        changed_fields["Status"] = status
-    if name:
-        changed_fields["Name"] = name
-    if assigned_to_uuid:
-        changed_fields["Assigned To UUID"] = assigned_to_uuid
-    if description:
-        changed_fields["Description"] = description
-    if severity:
-        changed_fields["Severity"] = severity
-    if template_id:
-        changed_fields["Template ID"] = template_id
-    if remove_user_assignment:
-        changed_fields["Assigned To UUID"] = "Unassigned"
+    resolve_case(case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value), **changed_fields)
 
     readable_output = f"Case {case_id} was changed successfully"
-    table = tableToMarkdown("", changed_fields, headers=list(changed_fields.keys()))
+    table = tableToMarkdown(
+        "Edited Case",
+        {"id": case_id, "remove_user_assginment": remove_user_assignment_str_value, **changed_fields},
+        headers=list(changed_fields.keys()),
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
 
     return CommandResults(readable_output=f"{readable_output}\n{table}")
 
