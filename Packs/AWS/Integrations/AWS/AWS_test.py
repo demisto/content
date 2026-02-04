@@ -7594,6 +7594,7 @@ def test_lambda_delete_function_url_config_command_success(mocker):
     # Verify success message
     assert "Successfully deleted" in result.readable_output
 
+
 def test_lambda_delete_function_url_config_command_with_qualifier(mocker):
     """
     Test Lambda.delete_function_url_config_command with qualifier parameter.
@@ -7938,6 +7939,7 @@ def test_lambda_delete_layer_version_command_success(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
+
 
 def test_lambda_delete_layer_version_command_with_arn(mocker):
     """
