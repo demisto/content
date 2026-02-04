@@ -1,5 +1,4 @@
 category: Authentication & Identity Management
-provider: Delinea
 commonfields:
   id: DelineaSS
   version: -1
@@ -31,6 +30,7 @@ configuration:
 description: Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 display: DelineaSS
 name: DelineaSS
+provider: Delinea
 script:
   commands:
   - arguments:
