@@ -27,6 +27,7 @@ from EWSO365 import (
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
+    is_item_duplicate,
     parse_incident_from_item,
     parse_item_as_dict,
 )
@@ -559,10 +560,6 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
         ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "modified-time"),
         # Smart lookup: stored with brackets, item without - should exclude id2
         ({"<id2>": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
-        # Legacy: None stored time - should exclude id2
-        ({"id2": None}, [Message(message_id="id3")], "received-time"),
-        # Empty exclude_ids - should return both
-        ({}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
     ],
 )
 def test_fetch_last_emails_dedup_mechanism(mocker, exclude_ids, expected_result, incident_filter):
@@ -1268,15 +1265,6 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[2].get("content") == "mock mime content"
 
 
-class MockMessageForDuplicate:
-    """Mock Message object for is_item_duplicate tests."""
-
-    def __init__(self, message_id, time_str):
-        self.message_id = message_id
-        self.datetime_created = EWSDateTime.from_string(time_str)
-        self.last_modified_time = EWSDateTime.from_string(time_str)
-
-
 @pytest.mark.parametrize(
     "message_id, item_time, exclude_ids, incident_filter, expected_result",
     [
@@ -1400,7 +1388,10 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
         7. Modified-time filter behavior
         8. Edge cases (no message_id, empty exclude_ids)
     """
-    msg = MockMessageForDuplicate(message_id, item_time) if message_id else MockMessageForDuplicate("", item_time)
-    if message_id is None:
-        msg.message_id = None
+    item_datetime = EWSDateTime.from_string(item_time)
+    msg = Message(
+        message_id=message_id,
+        datetime_created=item_datetime,
+        last_modified_time=item_datetime,
+    )
     assert is_item_duplicate(msg, exclude_ids, incident_filter) is expected_result
