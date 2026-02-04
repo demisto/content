@@ -1991,9 +1991,16 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
+    resolve_reason_mapper = {
+        "resolved_known_issue": "Resolved - Known Issue",
+        "resolved_duplicate": "Resolved - Duplicate Issue",
+        "resolved_false_positive": "Resolved - False Positive",
+        "resolved_other": "Resolved - Other"
+    }
+
     case_id = args.get("case_id")  # required
     status = args.get("status").upper() if args.get("status") else None
-    resolve_reason = args.get("resolve_reason").upper() if args.get("resolve_reason") else None
+    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason"))
     resolve_comment = args.get("resolve_comment").upper() if args.get("resolve_comment") else None
 
     update_data = assign_params(
@@ -2007,7 +2014,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output=f"Case {case_id} updated successfully")
 
 
-def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-Case-Artifacts-by-Case-Id
     Retrieves artifacts for a specific case.
@@ -2016,7 +2023,7 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     - args (dict): The command arguments.
 
     Returns:
-    - CommandResults: A CommandResults object.
+    - List[CommandResults]: A list of CommandResults objects.
     """
     case_id = args.get("case_id")
     artifacts = client.get_case_artifacts(case_id)
@@ -2031,34 +2038,38 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     for artifact in file_artifacts:
         artifact["case_id"] = case_id
 
-    readable_output = ""
+    command_results = []
+
     if network_artifacts:
-        readable_output += tableToMarkdown(
-            name=f"Network Artifacts for Case {case_id}",
-            t=network_artifacts,
-            headerTransform=string_to_table_header,
-            removeNull=True,
-        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(
+                name=f"Network Artifacts for Case {case_id}",
+                t=network_artifacts,
+                headerTransform=string_to_table_header,
+                removeNull=True,
+            ),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact",
+            outputs=network_artifacts,
+            raw_response=network_artifacts
+        ))
+
     if file_artifacts:
-        readable_output += tableToMarkdown(
-            name=f"File Artifacts for Case {case_id}",
-            t=file_artifacts,
-            headerTransform=string_to_table_header,
-            removeNull=True,
-        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(
+                name=f"File Artifacts for Case {case_id}",
+                t=file_artifacts,
+                headerTransform=string_to_table_header,
+                removeNull=True,
+            ),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact",
+            outputs=file_artifacts,
+            raw_response=file_artifacts
+        ))
 
-    if not readable_output:
-        readable_output = f"No artifacts found for case {case_id}"
+    if not command_results:
+        command_results.append(CommandResults(readable_output=f"No artifacts found for case {case_id}"))
 
-    outputs = {}
-    if network_artifacts:
-        outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact"] = network_artifacts
-    if file_artifacts:
-        outputs[f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact"] = file_artifacts
-
-    return CommandResults(readable_output=readable_output,
-                          outputs=outputs,
-                          raw_response=artifacts)
+    return command_results
 
 
 def main():  # pragma: no cover

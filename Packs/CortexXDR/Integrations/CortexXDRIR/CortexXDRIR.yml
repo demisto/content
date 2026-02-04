@@ -4237,11 +4237,7 @@ script:
       - resolved_known_issue
       - resolved_duplicate
       - resolved_false_positive
-      - "Resolved - Other"
-      - resolved_true_positive
-      - resolved_security_testing
-      - resolved_fixed
-      - resolved_dismissed
+      - resolved_other
     - description: A comment explaining the resolution.
       name: resolve_comment
     description: Updates an existing case.
@@ -4254,11 +4250,53 @@ script:
     name: xdr-case-artifact-list
     outputs:
     - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.case_id
-      description: The ID of the case associated with the artifact.
+      description: The ID of the case associated with the network artifact.
       type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_ip
+      description: The remote IP address involved in the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_port
+      description: The remote port used in the network connection.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.alert_count
+      description: Number of alerts associated with this network artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.type
+      description: The type of network artifact (e.g., IP).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.is_manual
+      description: Indicates if the artifact was added manually.
+      type: Boolean
     - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.case_id
-      description: The ID of the case associated with the artifact.
+      description: The ID of the case associated with the file artifact.
       type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_name
+      description: The name of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_wildfire_verdict
+      description: The verdict from WildFire (e.g., MALWARE, BENIGN).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_malicious
+      description: Whether the file has been identified as malicious.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.is_process
+      description: Indicates if the file was a running process.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_vendor_name
+      description: The vendor name from the file signature.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.file_signature_status
+      description: The status of the digital signature (e.g., SIGNATURE_SIGNED).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.alert_count
+      description: Number of alerts associated with this file artifact.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.CaseFileArtifact.low_confidence
+      description: Indicates if the detection confidence is low.
+      type: Boolean
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false
