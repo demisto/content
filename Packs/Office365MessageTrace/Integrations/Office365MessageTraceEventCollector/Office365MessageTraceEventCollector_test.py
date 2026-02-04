@@ -73,7 +73,7 @@ def test_get_message_trace_response(mock_http_request):
 @patch("Office365MessageTraceEventCollector.demisto")
 def test_fetch_events_command(mock_demisto, mock_http_request, mock_send_events):
     """Test fetch_events_command function"""
-    from Office365MessageTraceEventCollector import Client, office365_message_trace_fetch_events_command
+    from Office365MessageTraceEventCollector import Client, fetch_events
 
     # Mock response data
     mock_response = util_load_json("./test_data/message_trace_fetch_response.json")
@@ -87,7 +87,7 @@ def test_fetch_events_command(mock_demisto, mock_http_request, mock_send_events)
 
     # Mock _get_access_token to avoid actual token request
     with patch.object(client, "_get_access_token", return_value="test_token"):
-        office365_message_trace_fetch_events_command(client)
+        fetch_events(client)
 
     # Assertions
     assert mock_demisto.setLastRun.called

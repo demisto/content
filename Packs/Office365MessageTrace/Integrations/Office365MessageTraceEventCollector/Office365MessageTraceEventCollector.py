@@ -1,26 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""Office 365 Message Trace Integration for Cortex XSOAR
-
-This integration provides access to the Office 365 Message Trace API to retrieve
-email message tracking information from the Office 365 reporting web service.
-
-API Documentation: https://learn.microsoft.com/en-us/previous-versions/office/developer/o365-enterprise-developers/jj984335(v=office.15)
-
-"""
-
 from typing import Any
 import time
 import uuid
 from datetime import datetime, timedelta, UTC
 import dateparser
 from urllib.parse import urlencode
-
-try:
-    import jwt
-except ImportError:
-    jwt = None  # Will handle this in the authentication method
+import jwt
 import urllib3
 
 
@@ -29,6 +16,7 @@ urllib3.disable_warnings()
 
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+LOOKBACK = "3 hours"  # Default lookback for first fetch
 OFFICE365_LOGIN_URL = "https://login.microsoftonline.com"
 OFFICE365_REPORTS_URL = "https://reports.office365.com/ecp/reportingwebservice/reporting.svc"
 OFFICE365_RESOURCE = "https://outlook.office365.com"
@@ -68,8 +56,11 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.certificate_thumbprint = certificate_thumbprint
         self.private_key = private_key
-        self.access_token: str = ""
-        self.token_expires_at: int = 0
+
+        # Load token from integration context if available
+        ctx = get_integration_context() or {}
+        self.access_token: str = ctx.get("access_token", "")
+        self.token_expires_at: int = ctx.get("token_expires_at", 0)
 
     def _get_access_token(self) -> str:
         """Get a valid access token, refreshing if necessary"""
@@ -105,12 +96,26 @@ class Client(BaseClient):
 
         response = self._http_request(method="POST", full_url=token_url, headers=headers, data=urlencode(data))
 
-        demisto.debug(f"res: {response}")
+        if not isinstance(response, dict):
+            raise ValueError("Invalid response from Azure token endpoint")
+
+        redacted_response = response.copy()
+        if "access_token" in redacted_response:
+            redacted_response["access_token"] = "**REDACTED**"
+        demisto.debug(f"Azure token response: {redacted_response}")
+
         self.access_token = response.get("access_token", "")
         if not self.access_token:
             raise ValueError("Failed to obtain access token from Azure")
         expires_in = response.get("expires_in", "3600")
         self.token_expires_at = int(time.time()) + int(expires_in) - 60  # Refresh 1 min early
+
+        # Save token to integration context
+        ctx = {
+            "access_token": self.access_token,
+            "token_expires_at": self.token_expires_at,
+        }
+        set_integration_context(ctx)
 
         return self.access_token
 
@@ -144,8 +149,8 @@ class Client(BaseClient):
 
     def get_message_trace(
         self,
-        start_date: str | None = None,
-        end_date: str | None = None,
+        start_date: str,
+        end_date: str,
         sender_address: str | None = None,
         recipient_address: str | None = None,
         message_trace_id: str | None = None,
@@ -162,7 +167,7 @@ class Client(BaseClient):
             recipient_address: Email address of the recipient
             message_trace_id: Specific message trace ID to search for
             status: Message status (e.g., 'Delivered', 'Failed', 'Pending')
-            page_size: Number of results to return (max 5000)
+            top: Number of results to return (max 5000)
 
         Returns:
             Dictionary containing message trace results
@@ -170,14 +175,8 @@ class Client(BaseClient):
         # Build OData filter
         filters = []
 
-        if start_date and end_date:
-            filters.append(f"StartDate eq datetime'{start_date}' and EndDate eq datetime'{end_date}'")
-        elif start_date:
-            # If only start date provided, search for last 48 hours from start date
-            start_dt = datetime.strptime(start_date, DATE_FORMAT)
-            end_dt = start_dt + timedelta(hours=48)
-            end_date = end_dt.strftime(DATE_FORMAT)
-            filters.append(f"StartDate eq datetime'{start_date}' and EndDate eq datetime'{end_date}'")
+
+        filters.append(f"StartDate eq datetime'{start_date}' and EndDate eq datetime'{end_date}'")
 
         if sender_address:
             filters.append(f"SenderAddress eq '{sender_address}'")
@@ -202,32 +201,6 @@ class Client(BaseClient):
 
         return self._make_authenticated_request("GET", "/MessageTrace", params)
 
-    def get_message_trace_detail(
-        self, message_trace_id: str, recipient_address: str, sender_address: str, start_date: str, end_date: str
-    ) -> dict[str, Any]:
-        """Get detailed message trace information for a specific message
-
-        Args:
-            message_trace_id: Message trace ID from MessageTrace report
-            recipient_address: Recipient email address
-            sender_address: Sender email address
-            start_date: Start date for the search
-            end_date: End date for the search
-
-        Returns:
-            Dictionary containing detailed message trace information
-        """
-        filters = [
-            f"MessageTraceId eq guid'{message_trace_id}'",
-            f"RecipientAddress eq '{recipient_address}'",
-            f"SenderAddress eq '{sender_address}'",
-            f"StartDate eq datetime'{start_date}' and EndDate eq datetime'{end_date}'",
-        ]
-
-        params = {"$filter": " and ".join(filters), "$format": "json"}
-
-        return self._make_authenticated_request("GET", "/MessageTraceDetail", params)
-
     def test_connection(self) -> str:
         """Test the connection to Office 365 API"""
         try:
@@ -236,7 +209,7 @@ class Client(BaseClient):
             values = result.get("value", [])
             if isinstance(values, list):
                 if len(values) == 1:
-                    return ""
+                    return "ok"
                 elif len(values) == 0:
                     return "Test connection failed: No message trace data found"
                 else:
@@ -249,16 +222,47 @@ class Client(BaseClient):
             return failure_msg
 
 
+def get_skiptoken(next_link: str) -> int:
+    """Extract skiptoken from odata.nextLink URL
+
+    Args:
+        next_link: odata.nextLink URL
+    Returns:
+        skiptoken value or 0 if not found/invalid
+    """
+    from urllib.parse import urlparse, parse_qs
+    # Parse the URL and query string
+    parsed = urlparse(next_link)
+    params = parse_qs(parsed.query)
+
+    # Safely get skiptoken value
+    skiptoken_values = params.get("$skiptoken")
+
+    if skiptoken_values:
+        raw_value = skiptoken_values[0]
+
+        # Validate it's a number
+        if raw_value.isdigit():
+            skiptoken = int(raw_value)
+            demisto.debug(f"Valid skiptoken: {skiptoken}")
+            return skiptoken
+        else:
+            demisto.debug("Invalid skiptoken: not a number")
+    else:
+        demisto.debug("No skiptoken provided")
+
+    return 0
+
+
 def office365_message_trace_list_paging(
     client: Client,
-    start_date: str | None = None,
-    end_date: str | None = None,
+    start_date: str,
+    end_date: str,
     sender_address: str | None = None,
     recipient_address: str | None = None,
     message_trace_id: str | None = None,
     status: str | None = None,
-    top: int = 0,
-    limit: int = 0,
+    top: int = 0
 ) -> list[dict[str, Any]]:
     """Retrieve message trace data with pagination handling
 
@@ -299,54 +303,9 @@ def office365_message_trace_list_paging(
         # Paging data was provided, grab the skip token to
         # grab the next page in the next iteration
         next_link = result.get("odata.nextLink", "")
-        next_link_pieces = next_link.split("&")
-        for piece in next_link_pieces:
-            if "skiptoken" in piece:
-                demisto.debug(f"skiptoken piece found: {piece}")
-                skip_token_pieces = piece.split("=")
-                skip_token_str = skip_token_pieces[1]
-                if skip_token_str.isnumeric():
-                    demisto.debug(f"skiptoken: {skip_token_str}")
-                    skip_token = int(skip_token_str)
-
-    # This is outside the loop for now since the fetching
-    # gets newer items first which means all items need to be
-    # fetched before cutting down to the limit. This allows for
-    # cutting down to the oldest entries instead of newest entries
-    # and when used in a fetch operation, avoids missing values
-    demisto.debug(f"Checking limit {limit} exists")
-    if limit:
-        demisto.debug(f"Checking limit {limit} is less than results {len(results)}")
-        if len(results) >= limit:
-            # Drop results down to the limit
-            # Results are newest to oldest so grab oldest values up to limit
-            # example: limit is 3
-            # >>> limit = 3
-            # >>> l = [1,2,3,4,5,6,7]
-            # >>> total = len(l)
-            # >>> start = total - limit
-            # >>> l[start:]
-            # [5, 6, 7]
-            demisto.debug(f"Enforcing limit of {limit}")
-            total = len(results)
-            demisto.debug(f"{total=}")
-            start = total - limit
-            demisto.debug(f"{start=}")
-            discards = results[:start]
-            results = results[start:]
-
-            # Since the next fetch will increment a microsecond
-            # grab any straggler values which are next to the most
-            # recent value with a matching date in the limited results
-            recent_date = results[0].get("Received")
-            demisto.debug(f"{recent_date=}")
-            for discard in reversed(discards):
-                if discard.get("Received") == recent_date:
-                    demisto.debug(f"Stragler found: {json.dumps(discard)}")
-                    results.insert(0, discard)
-                else:
-                    break
-            demisto.debug(f"Result count to return {len(results)}")
+        skip_token = get_skiptoken(next_link)
+        if skip_token == 0:
+            break
 
     return results
 
@@ -384,35 +343,19 @@ def parse_message_trace_date_range(date_range: str | None = None, processing_del
     return start_date.strftime(DATE_FORMAT), end_date.strftime(DATE_FORMAT)
 
 
-def format_message_trace_results(data: list[dict[str, Any]], for_dataset: bool = False) -> list[dict[str, Any]]:
+def format_message_trace_results(data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Format message trace results for XSOAR/XSIAM output
 
     Args:
         data: Raw API response data
 
     Returns:
-        Formatted list of message trace entries
+        List of message trace entries with _time field added
     """
     results = []
     for entry in data:
-        formatted_entry = {
-            "MessageTraceId": entry.get("MessageTraceId", ""),
-            "Organization": entry.get("Organization", ""),
-            "MessageId": entry.get("MessageId", ""),
-            "Received": entry.get("Received", ""),
-            "SenderAddress": entry.get("SenderAddress", ""),
-            "RecipientAddress": entry.get("RecipientAddress", ""),
-            "Subject": entry.get("Subject", ""),
-            "Status": entry.get("Status", ""),
-            "FromIP": entry.get("FromIP", ""),
-            "ToIP": entry.get("ToIP", ""),
-            "Size": entry.get("Size", 0),
-        }
-
-        # If posting to a dataset, rename the Received key to _time
-        if for_dataset:
-            formatted_entry["_time"] = entry.get("Received")
-            formatted_entry.pop("Received")
+        formatted_entry = entry.copy()
+        formatted_entry["_time"] = entry.get("Received")
         results.append(formatted_entry)
 
     return results
@@ -433,10 +376,7 @@ def test_module(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        if client.test_connection():
-            return "ok"
-        else:
-            return "Test failed: Unable to connect to Office 365 API"
+        return client.test_connection()
     except Exception as e:
         return f"Test failed: {str(e)}"
 
@@ -460,15 +400,30 @@ def office365_message_trace_list_command(client: Client, args: dict[str, Any]) -
     message_trace_id = args.get("message_trace_id")
     status = args.get("status")
     top = arg_to_number(args.get("top", 0)) or 0
+    should_push_events = argToBoolean(args.get("should_push_events", "false"))
 
     # Handle date range
-    if not start_date and not end_date:
+    if not start_date and not end_date and date_range:
         start_date, end_date = parse_message_trace_date_range(date_range)
     elif start_date and not end_date:
         # If only start date provided, search for 48 hours from start
-        start_dt = datetime.strptime(start_date, DATE_FORMAT)
+        # Validate start_date format
+        try:
+            start_dt = datetime.strptime(start_date, DATE_FORMAT)
+        except ValueError:
+            raise ValueError(f"start_date must be in format {DATE_FORMAT}")
         end_dt = start_dt + timedelta(hours=48)
         end_date = end_dt.strftime(DATE_FORMAT)
+    else:
+        # No dates provided, default to last 48 hours
+        start_date, end_date = parse_message_trace_date_range("48 hours")
+
+    # Validate end_date format
+    if end_date:
+        try:
+            datetime.strptime(end_date, DATE_FORMAT)
+        except ValueError:
+            raise ValueError(f"end_date must be in format {DATE_FORMAT}")
 
     # Call the API
     results = office365_message_trace_list_paging(
@@ -483,6 +438,9 @@ def office365_message_trace_list_command(client: Client, args: dict[str, Any]) -
     )
 
     formatted_results = format_message_trace_results(results)
+    if should_push_events:
+        demisto.debug(f"Pushing {len(formatted_results)} events to dataset")
+        send_events_to_xsiam(formatted_results, VENDOR, PRODUCT)
 
     # Create readable output
     readable_output = tableToMarkdown(
@@ -522,7 +480,7 @@ def get_events(client: Client, last_timestamp: str, processing_delay: int) -> tu
     result = office365_message_trace_list_paging(client=client, start_date=last_timestamp, end_date=end_date)
 
     # Clean up results into a full array of formatted events
-    events = format_message_trace_results(result, for_dataset=True)
+    events = format_message_trace_results(result)
     demisto.debug(f"Events: {json.dumps(events)}")
 
     # Grab new last values
@@ -543,7 +501,7 @@ def get_events(client: Client, last_timestamp: str, processing_delay: int) -> tu
     return events, new_last_timestamp
 
 
-def office365_message_trace_fetch_events_command(client: Client):
+def fetch_events(client: Client, last_timestamp: str = "") -> str:
     """Fetches events and sends them to XSIAM
 
     Args:
@@ -551,21 +509,16 @@ def office365_message_trace_fetch_events_command(client: Client):
     """
     params = demisto.params()
     processing_delay = int(params.get("processing_delay", "1440"))
-    first_fetch = params.get("first_fetch", "1 day ago")
 
-    last_run = demisto.getLastRun()
-    last_timestamp = last_run.get("last_timestamp", "")
     if not last_timestamp:
-        last_timestamp, _ = parse_message_trace_date_range(first_fetch, processing_delay)
+        last_timestamp, _ = parse_message_trace_date_range(LOOKBACK, processing_delay)
     demisto.debug(f"Last timestamp: {last_timestamp}")
     events, new_last_timestamp = get_events(client=client, last_timestamp=last_timestamp, processing_delay=processing_delay)
 
     demisto.debug(f"Sending {len(events)} events to send_events_to_xsiam")
     send_events_to_xsiam(events, VENDOR, PRODUCT)
-    new_last_run = {"last_timestamp": new_last_timestamp}
-    demisto.debug(f"New last run: {json.dumps(new_last_run)}")
-    demisto.setIntegrationContext({"last_run": new_last_run})
-    demisto.setLastRun(new_last_run)
+
+    return new_last_timestamp
 
 
 def main():
@@ -612,10 +565,14 @@ def main():
             return_results(result)
         elif command == "office365-mt-get-events":
             return_results(office365_message_trace_list_command(client, args))
-        # elif command == "office365-message-trace-get":
-        #     return_results(office365_message_trace_get_command(client, args))
         elif command == "fetch-events":
-            office365_message_trace_fetch_events_command(client)
+            last_run = demisto.getLastRun()
+            demisto.debug(f"Last run: {json.dumps(last_run)}")
+            last_timestamp = last_run.get("last_timestamp", "")
+            new_last_timestamp = fetch_events(client, last_timestamp=last_timestamp)
+            new_last_run = {"last_timestamp": new_last_timestamp}
+            demisto.debug(f"New last run: {json.dumps(new_last_run)}")
+            demisto.setLastRun(new_last_run)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

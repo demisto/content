@@ -56,12 +56,6 @@ configuration:
   type: 8
   section: Connect
 - section: Collect
-  display: First fetch time
-  name: first_fetch
-  defaultvalue: 1 day
-  type: 0
-  required: true
-- section: Collect
   additionalinfo: Office 365 can take up to 24 hours to process message trace events. Specify how many minutes to delay event processing (1440 minutes = 24 hours). Higher values ensure events are fully processed but increase latency.
   defaultvalue: "1440"
   display: Processing Delay (minutes)
@@ -91,42 +85,11 @@ script:
       name: status
     - description: Number of results to return, will impact paging.
       name: top
-    description: Retrieve message trace data from Office 365 for troubleshooting email delivery issues.
+    - description: If true, pushes the results into the dataset.
+      name: should_push_events
+    description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: office365-mt-get-events
-    outputs:
-    - contextPath: Office365.MessageTrace.MessageTraceId
-      description: Unique identifier for the message trace.
-      type: String
-    - contextPath: Office365.MessageTrace.Organization
-      description: The organization domain that processed the message.
-      type: String
-    - contextPath: Office365.MessageTrace.MessageId
-      description: The Internet MessageID header of the message.
-      type: String
-    - contextPath: Office365.MessageTrace.Received
-      description: Date and time when the message was received.
-      type: Date
-    - contextPath: Office365.MessageTrace.SenderAddress
-      description: SMTP email address of the sender.
-      type: String
-    - contextPath: Office365.MessageTrace.RecipientAddress
-      description: SMTP email address of the recipient.
-      type: String
-    - contextPath: Office365.MessageTrace.Subject
-      description: Subject line of the message.
-      type: String
-    - contextPath: Office365.MessageTrace.Status
-      description: Status of the message (e.g., Delivered, Failed).
-      type: String
-    - contextPath: Office365.MessageTrace.FromIP
-      description: IP address that transmitted the message to Office 365.
-      type: String
-    - contextPath: Office365.MessageTrace.ToIP
-      description: IP address that Office 365 sent the message to.
-      type: String
-    - contextPath: Office365.MessageTrace.Size
-      description: Size of the message in bytes.
-      type: Number
+    outputs: []
   dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   subtype: python3

@@ -43,22 +43,6 @@ Retrieve message trace data from Office 365 for troubleshooting email delivery i
 | status | Message status to filter results (e.g., Delivered, Failed, Pending). | Optional |
 | top | Number of results to return, will impact paging. | Optional |
 
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Office365.MessageTrace.MessageTraceId | String | Unique identifier for the message trace. |
-| Office365.MessageTrace.Organization | String | The organization domain that processed the message. |
-| Office365.MessageTrace.MessageId | String | The Internet MessageID header of the message. |
-| Office365.MessageTrace.Received | Date | Date and time when the message was received. |
-| Office365.MessageTrace.SenderAddress | String | SMTP email address of the sender. |
-| Office365.MessageTrace.RecipientAddress | String | SMTP email address of the recipient. |
-| Office365.MessageTrace.Subject | String | Subject line of the message. |
-| Office365.MessageTrace.Status | String | Status of the message \(e.g., Delivered, Failed\). |
-| Office365.MessageTrace.FromIP | String | IP address that transmitted the message to Office 365. |
-| Office365.MessageTrace.ToIP | String | IP address that Office 365 sent the message to. |
-| Office365.MessageTrace.Size | Number | Size of the message in bytes. |
-
 #### Command Example
 
 ```!office365-mt-get-events date_range="1 hour ago" top=1```
