@@ -13,10 +13,6 @@ Please contact your ANY.RUN account manager to get your API key.
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Insert ANY.RUN TI Feeds API key into the **Password** parameter.
+4. Insert ANY.RUN API Key without prefix into the **Password** parameter.
 5. Please use "ANY.RUN" as username.
 6. Click **Test** to validate the URLs, token, and connection.
-
-| **Parameter**    | **Description**                  | **Required** |
-|------------------|----------------------------------| --- |
-| Password         | Example: WmNfqnpo...2Sjon7mtvm8e | True |
