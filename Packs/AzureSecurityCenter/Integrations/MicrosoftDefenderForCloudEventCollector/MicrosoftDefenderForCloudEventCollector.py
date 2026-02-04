@@ -104,6 +104,21 @@ class MsClient:
         return events
 
 
+def get_alert_name(event: dict) -> str:
+    """
+    Extracts the alert name (GUID) from an event.
+    The 'name' field contains just the alert GUID, while 'id' contains the full resource path
+    which can differ by location (e.g., centralus vs eastus2) for the same alert.
+
+    Args:
+        event (dict): The event dictionary from the API
+
+    Returns:
+        str: The alert name/GUID, or empty string if not found
+    """
+    return event.get("name", "") or ""
+
+
 def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     """
     Args:
@@ -117,13 +132,13 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
         return events
 
     last_run_time = last_run.get("last_run", "")
-    dup_ids = last_run.get("dup_digested_time_id", [])
-    demisto.debug(f"{LOG_PREFIX} Filtering events with last_run_time={last_run_time}, dup_ids count={len(dup_ids)}")
+    dup_names = last_run.get("dup_digested_time_id", [])
+    demisto.debug(f"{LOG_PREFIX} Filtering events with last_run_time={last_run_time}, dup_names count={len(dup_names)}")
 
     filtered_events = [
         event
         for event in events
-        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time and event.get("id", "") not in dup_ids
+        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time and get_alert_name(event) not in dup_names
     ]
 
     demisto.debug(f"{LOG_PREFIX} Filtered {len(events)} events down to {len(filtered_events)} events.")
@@ -215,7 +230,8 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
 
     # Log event timestamps before sorting for debugging
     event_times = [
-        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")} for event in events_list
+        {"name": get_alert_name(event), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
+        for event in events_list
     ]
     demisto.debug(f"{LOG_PREFIX} Event timestamps before sorting: {event_times}")
 
@@ -225,16 +241,19 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
 
     # Log event timestamps after sorting for debugging
     sorted_event_times = [
-        {"id": event.get("id"), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")} for event in sorted_events
+        {"name": get_alert_name(event), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
+        for event in sorted_events
     ]
     demisto.debug(f"{LOG_PREFIX} Event timestamps after sorting: {sorted_event_times}")
 
     next_run = sorted_events[0].get("properties", {}).get("startTimeUtc", "")
-    id_same_next_run_list = [
-        event.get("id") for event in events_list if event.get("properties", {}).get("startTimeUtc") == next_run
+    # Use alert name (GUID) instead of full id for deduplication
+    # This prevents duplicates when the same alert appears from different locations (e.g., centralus vs eastus2)
+    names_same_next_run_list = [
+        get_alert_name(event) for event in events_list if event.get("properties", {}).get("startTimeUtc") == next_run
     ]
-    demisto.info(f"{LOG_PREFIX} Setting next run time to {next_run}, events with same time are {id_same_next_run_list}.")
-    return {"last_run": next_run, "dup_digested_time_id": id_same_next_run_list}
+    demisto.info(f"{LOG_PREFIX} Setting next run time to {next_run}, alert names with same time are {names_same_next_run_list}.")
+    return {"last_run": next_run, "dup_digested_time_id": names_same_next_run_list}
 
 
 def fetch_events(client: MsClient, last_run: dict) -> list:
