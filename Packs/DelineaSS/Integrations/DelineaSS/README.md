@@ -1089,6 +1089,50 @@ Delete a Secret Server user by ID
 }
 ```
 
+### delinea-secret-server-user-get
+
+***
+Get Secret Server users list
+
+#### Base Command
+
+`delinea-secret-server-user-get`
+
+#### Input
+
+This command has no input arguments.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Delinea.Secret.Server.User | String | User object |
+
+#### Command Example
+
+```!delinea-secret-server-user-get```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Secret": {
+            "Server": {
+                "User": [
+                    {
+                        "id": 1,
+                        "userName": "admin",
+                        "displayName": "Administrator",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
 ### delinea-secret-rpc-changepassword
 
 ***
