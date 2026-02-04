@@ -278,7 +278,7 @@ alter
 
 /* Fallback for mapping all other event types */
 alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"), 0)
-| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted")
+| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted","events")
 | alter 
     appliance_name = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+(\S+)"), 0),
     event_description = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+\S+\s+(.+)"), 0)
