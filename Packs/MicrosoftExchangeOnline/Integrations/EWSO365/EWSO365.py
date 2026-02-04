@@ -342,10 +342,12 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     3. Timestamp Logic: Compares stored time vs item time.
 
     Returns:
-        bool: True if item is a duplicate (skip it), False if it should be processed.
+        tuple[bool, str | None]: A tuple containing:
+            - is_duplicate (bool): True if item is a duplicate (skip it), False if it should be processed.
+            - stored_time (str | None): The stored fetch time for the item, or None if not found/not a duplicate.
     """
     if not item.message_id or not exclude_ids:
-        return False
+        return False, None
 
     clean_id = item.message_id.strip().strip("<>")
 
@@ -356,19 +358,19 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
         found_key = f"<{clean_id}>"
 
     if found_key is None:
-        return False
+        return False, None
 
     stored_time = exclude_ids[found_key]
 
     # If stored_time is "" or None, it means it was from an old fetch (List format).
     # We treat it as an existing duplicate and SKIP it.
     if not stored_time:
-        return True
+        return True, stored_time
 
     current_item_time = (
         item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
     )
-    return stored_time >= current_item_time
+    return stored_time >= current_item_time, stored_time
 
 
 def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
@@ -1804,12 +1806,13 @@ def fetch_last_emails(
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
-            if is_item_duplicate(item, exclude_ids, incident_filter):
+            is_duplicate, previous_fetch_time = is_item_duplicate(item, exclude_ids, incident_filter)
+            if is_duplicate:
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
                 demisto.debug(
                     f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
-                    f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
+                    f"{previous_fetch_time}, (if no time - because of the transition from list to dict). "
                     f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
                 )
                 continue

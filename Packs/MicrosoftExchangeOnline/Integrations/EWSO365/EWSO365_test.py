@@ -1375,8 +1375,10 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
     When:
         - Checking if an item is a duplicate during fetch.
     Then:
-        - Returns True if the item should be skipped (is a duplicate).
-        - Returns False if the item should be processed (not a duplicate).
+        - Returns a tuple (is_duplicate, stored_time) where:
+            - is_duplicate is True if the item should be skipped (is a duplicate).
+            - is_duplicate is False if the item should be processed (not a duplicate).
+            - stored_time is the stored fetch time for the item, or None if not found.
 
     Test cases cover:
         1. Exact ID match with same timestamp - duplicate
@@ -1394,4 +1396,5 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
         datetime_created=item_datetime,
         last_modified_time=item_datetime,
     )
-    assert is_item_duplicate(msg, exclude_ids, incident_filter) is expected_result
+    is_duplicate, _ = is_item_duplicate(msg, exclude_ids, incident_filter)
+    assert is_duplicate is expected_result
