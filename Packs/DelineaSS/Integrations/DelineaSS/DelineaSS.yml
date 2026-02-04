@@ -600,6 +600,9 @@ script:
     - contextPath: Delinea.Secret.Server.User.Update
       description: User object.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: User ID.
       name: id
@@ -610,6 +613,9 @@ script:
     - contextPath: Delinea.Secret.Server.User.Delete
       description: User object.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments: []
     description: Get Secret Server users list.
     execution: false
@@ -695,6 +701,9 @@ script:
       - contextPath: Delinea.Platform.User.Delete
         description: User object.
         type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
       - description: Mobile number of the user.
         name: MobileNumber
