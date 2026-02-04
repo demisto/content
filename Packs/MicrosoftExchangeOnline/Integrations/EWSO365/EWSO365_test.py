@@ -27,7 +27,6 @@ from EWSO365 import (
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
-    is_item_duplicate,
     parse_incident_from_item,
     parse_item_as_dict,
 )
@@ -548,11 +547,22 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
 @pytest.mark.parametrize(
     "exclude_ids, expected_result, incident_filter",
     [
+        # Legacy: empty stored time - ID not in results, should return both
         ({"id1": ""}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # ID not in results (id1 not in id2/id3), should return both
         ({"id1": "2021-05-23T13:19:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # ID in results with newer stored time - should exclude id2
         ({"id2": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
+        # ID in results with older stored time - should include id2 (item is newer)
         ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # Same as above but with modified-time filter
         ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "modified-time"),
+        # Smart lookup: stored with brackets, item without - should exclude id2
+        ({"<id2>": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
+        # Legacy: None stored time - should exclude id2
+        ({"id2": None}, [Message(message_id="id3")], "received-time"),
+        # Empty exclude_ids - should return both
+        ({}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
     ],
 )
 def test_fetch_last_emails_dedup_mechanism(mocker, exclude_ids, expected_result, incident_filter):
@@ -1258,59 +1268,139 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[2].get("content") == "mock mime content"
 
 
-def test_is_item_duplicate():
+class MockMessageForDuplicate:
+    """Mock Message object for is_item_duplicate tests."""
+
+    def __init__(self, message_id, time_str):
+        self.message_id = message_id
+        self.datetime_created = EWSDateTime.from_string(time_str)
+        self.last_modified_time = EWSDateTime.from_string(time_str)
+
+
+@pytest.mark.parametrize(
+    "message_id, item_time, exclude_ids, incident_filter, expected_result",
+    [
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="exact_match_same_time_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="smart_lookup_item_has_brackets_stored_clean",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"<abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="smart_lookup_item_clean_stored_brackets",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": ""},
+            "received-time",
+            True,
+            id="legacy_empty_stored_time_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": None},
+            "received-time",
+            True,
+            id="legacy_none_stored_time_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="item_newer_than_stored_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T11:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_older_than_stored_is_duplicate",
+        ),
+        pytest.param(
+            "xyz",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="no_id_match_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "modified-time",
+            False,
+            id="modified_filter_item_newer_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T11:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "modified-time",
+            True,
+            id="modified_filter_item_older_is_duplicate",
+        ),
+        pytest.param(
+            None,
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="no_message_id_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {},
+            "received-time",
+            False,
+            id="empty_exclude_ids_not_duplicate",
+        ),
+    ],
+)
+def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, expected_result):
     """
-    Tests the is_item_duplicate function logic including:
-    1. Smart ID Lookup (brackets vs clean)
-    2. Legacy handling (empty stored time)
-    3. Timestamp comparison
+    Tests the is_item_duplicate function logic.
+
+    Given:
+        - Various combinations of message IDs, timestamps, and exclude_ids dictionaries.
+    When:
+        - Checking if an item is a duplicate during fetch.
+    Then:
+        - Returns True if the item should be skipped (is a duplicate).
+        - Returns False if the item should be processed (not a duplicate).
+
+    Test cases cover:
+        1. Exact ID match with same timestamp - duplicate
+        2. Smart ID lookup (brackets vs clean) - duplicate
+        3. Legacy handling (empty/None stored time) - duplicate
+        4. Item newer than stored time - not duplicate
+        5. Item older than stored time - duplicate
+        6. No ID match - not duplicate
+        7. Modified-time filter behavior
+        8. Edge cases (no message_id, empty exclude_ids)
     """
-    from EWSO365 import RECEIVED_FILTER
-
-    # Mock Message object
-    class MockMessage:
-        def __init__(self, message_id, time_str):
-            self.message_id = message_id
-            self.datetime_created = EWSDateTime.from_string(time_str)
-            self.last_modified_time = EWSDateTime.from_string(time_str)
-
-    base_time = "2021-01-01T12:00:00Z"
-    newer_time = "2021-01-01T13:00:00Z"
-    older_time = "2021-01-01T11:00:00Z"
-
-    # 1. Exact Match
-    msg = MockMessage("abc", base_time)
-    exclude = {"abc": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-
-    # 2. Smart Lookup: Item has brackets, stored clean
-    msg = MockMessage("<abc>", base_time)
-    exclude = {"abc": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-
-    # 3. Smart Lookup: Item clean, stored brackets
-    msg = MockMessage("abc", base_time)
-    exclude = {"<abc>": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-
-    # 4. Legacy: Stored time is empty/None
-    msg = MockMessage("abc", newer_time)
-    exclude = {"abc": ""}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-    exclude = {"abc": None}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-
-    # 5. Timestamp: Item is newer (Should NOT be duplicate)
-    msg = MockMessage("abc", newer_time)
-    exclude = {"abc": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is False
-
-    # 6. Timestamp: Item is older (Should be duplicate)
-    msg = MockMessage("abc", older_time)
-    exclude = {"abc": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is True
-
-    # 7. No ID match
-    msg = MockMessage("xyz", base_time)
-    exclude = {"abc": base_time}
-    assert is_item_duplicate(msg, exclude, RECEIVED_FILTER) is False
+    msg = MockMessageForDuplicate(message_id, item_time) if message_id else MockMessageForDuplicate("", item_time)
+    if message_id is None:
+        msg.message_id = None
+    assert is_item_duplicate(msg, exclude_ids, incident_filter) is expected_result
