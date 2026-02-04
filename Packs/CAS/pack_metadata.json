@@ -2,7 +2,7 @@
   "name": "CAS",
   "description": "Development pack for CAS integration. This pack utilizes the core-generic-api-call command to facilitate API interactions during the initial development phase. Note: This is a bridge solution to unblock development prior to official managed content support.",
   "support": "developer",
-  "currentVersion": "1.0.35",
+  "currentVersion": "1.0.6",
   "author": "",
   "url": "",
   "email": "",

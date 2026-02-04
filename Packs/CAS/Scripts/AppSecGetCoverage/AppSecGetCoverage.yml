@@ -1,7 +1,7 @@
 commonfields:
-  id: GetAppSecCoverage
+  id: AppSecGetCoverage
   version: -1
-name: GetAppSecCoverage
+name: AppSecGetCoverage
 script: ''
 type: python
 tags:

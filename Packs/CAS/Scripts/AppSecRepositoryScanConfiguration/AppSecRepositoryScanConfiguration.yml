@@ -1,0 +1,90 @@
+commonfields:
+  id: AppSecRepositoryScanConfiguration
+  version: -1
+name: AppSecRepositoryScanConfiguration
+script: ''
+type: python
+tags:
+- Utilities
+comment: Enable or disable scanners with the specified configuration.
+enabled: true
+args:
+- name: repository_ids
+  description: List of repository asset IDs to configure scanners for.
+  isArray: true
+  required: true
+- name: enable_scanners
+  description: List of scanners to enable.
+  auto: PREDEFINED
+  isArray: true
+  predefined:
+    - SECRETS
+    - IAC
+    - SCA
+- name: disable_scanners
+  description: List of scanners to disable.
+  auto: PREDEFINED
+  isArray: true
+  predefined:
+    - SECRETS
+    - IAC
+    - SCA
+- name: secret_validation
+  description: Enable live validation of discovered secrets. This argument only relevant when SECRETS scanner is enabled.
+  type: boolean
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+- name: enable_git_history
+  description: Enable git history secrets scan. This argument only relevant when SECRETS scanner is enabled.
+  type: boolean
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+- name: pr_scanning
+  description: Enable scanning on pull requests.
+  type: boolean
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+- name: block_on_error
+  description: Block deployment on scanner errors.
+  auto: PREDEFINED  
+  type: boolean
+  predefined:
+    - "true"
+    - "false"
+- name: tag_resource_blocks
+  description: Enable tagging of resource blocks.
+  auto: PREDEFINED
+  type: boolean
+  predefined:
+    - "true"
+    - "false"
+- name: tag_module_blocks
+  description: Enable tagging of module blocks.
+  auto: PREDEFINED  
+  type: boolean
+  predefined:
+    - "true"
+    - "false"
+- name: exclude_paths
+  description: List of file paths to exclude from scanning.
+  isArray: true
+outputs:
+- contextPath: Cas.RepositoryScanConfiguration
+  isArray: true
+  description: The repository IDs that have been changed
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+isInternal: false
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

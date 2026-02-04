@@ -70,7 +70,7 @@ def build_asset_coverage_filter(args: dict, extra_filters: list[dict] | None = N
 
     def add_filter(field, search_type, value):
         if value:
-            if not isinstance(value, list):
+            if search_type in ("ARRAY_CONTAINS", "CONTAINS") and not isinstance(value, list):
                 value = [value]
             filter_fields.append({
                 "SEARCH_FIELD": field,
@@ -305,22 +305,11 @@ def main() -> None:
         scanner_histograms, coverage_percentage, coverage_with_non_onboarded_percentage = transform_scanner_histograms_outputs(repo_histograms, non_repo_histograms, total_repos_count)
         status_histogram = transform_status_coverage_histogram_output(merged_histograms)
 
-        user_provided_filters = set(args.keys()) - {'limit'}
-        
-        recommended_next_steps = []
-        if not user_provided_filters:
-            recommended_next_steps = [
-                "Ignore not-onboarded assets in the coverage calculation.",
-                "Break down my coverage by asset type.",
-                "Show me a breakdown of scan health."
-            ]
-
         outputs = {
             "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
             "number_returned_assets": len(assets),
             "coverage_percentage": coverage_percentage,
             "coverage_with_non_onboarded_percentage": coverage_with_non_onboarded_percentage,
-            "recommended_next_steps": recommended_next_steps,
             "Metrics": {**scanner_histograms, **status_histogram},
             "Asset": assets,
         }

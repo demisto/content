@@ -1,0 +1,78 @@
+commonfields:
+  id: CasRepositoryScanConfiguration
+  version: -1
+name: CasRepositoryScanConfiguration
+display: CAS - Repository Scan Configuration
+description: >
+  Update repository scanners with the specified configuration for a list of repository asset IDs.
+category: Utilities
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture
+tags:
+  - Utilities
+  - ASPM
+  - Repository
+  - Scan
+args:
+  - name: repository_ids
+    required: true
+    type: string
+    description: A comma-separated list of repository asset IDs to configure scanners for.
+    underlyingargname: repository_ids
+  - name: enable_scanners
+    type: string
+    description: |
+      A comma-separated list of scanners to enable.
+      Options: SECRETS, SCA, IAC.
+    underlyingargname: enable_scanners
+  - name: disable_scanners
+    type: string
+    description: |
+      A comma-separated list of scanners to disable.
+      Options: SECRETS, SCA, IAC.
+    underlyingargname: disable_scanners
+  - name: secret_validation
+    type: boolean
+    description: Enable live validation of discovered secrets. This argument is only relevant when the SECRETS scanner is enabled.
+    underlyingargname: secret_validation
+  - name: enable_git_history
+    type: boolean
+    description: Enable git history secrets scan. This argument only relevant when SECRETS scanner is enabled.
+    underlyingargname: enable_git_history
+  - name: pr_scanning
+    type: boolean
+    description: Enable scanning on pull requests.
+    underlyingargname: pr_scanning
+  - name: block_on_error
+    type: boolean
+    description: Block deployment on scanner errors.
+    underlyingargname: block_on_error
+  - name: tag_resource_blocks
+    type: boolean
+    description: Enable tagging of resource blocks.
+    underlyingargname: tag_resource_blocks
+  - name: tag_module_blocks
+    type: boolean
+    description: Enable tagging of module blocks.
+    underlyingargname: tag_module_blocks
+  - name: exclude_paths
+    type: string
+    description: A comma-separated List of file paths to exclude from scanning.
+    underlyingargname: exclude_paths
+outputs:
+  - underlyingoutputcontextpath: Cas.RepositoryScanConfiguration
+    description: The repository IDs that have been changed
+    type: String
+    name: Cas.RepositoryScanConfiguration
+underlyingcontentitem:
+  id: AppSecRepositoryScanConfiguration
+  name: AppSecRepositoryScanConfiguration
+  type: script
+  version: -1
+  command: ""
+
