@@ -242,40 +242,60 @@ def get_incidents_batch_by_time_request(client, params):
         "created_before": created_before.isoformat().split(".")[0] + "Z",
     }
 
-    # while loop relevant for fetching old incidents
-    while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        demisto.info(
-            f"Entered the batch loop , with fetch_limit {fetch_limit} and events list "
-            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
-            f"with created_after {request_params['created_after']} and "
-            f"created_before {request_params['created_before']}"
-        )
+    demisto.info(
+        f"[BATCH_START] Starting get_incidents_batch_by_time_request with state={params.get('state')}, "
+        f"fetch_limit={fetch_limit}, last_fetched_id={last_fetched_id}, fetch_delta={fetch_delta}, "
+        f"created_after={request_params['created_after']}, current_time={current_time.isoformat()}"
+    )
 
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
+    iteration_count = 0
 
-        # advancing fetch time by given fetch delta time
-        created_after = created_before
-        created_before = created_before + time_delta
+    # Simplified loop: fetch until we reach current_time OR hit fetch_limit
+    while created_after < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
+        iteration_count += 1
 
-        # updating params according to the new times
+        # Set created_before to the minimum of (created_after + time_delta) or current_time
+        # This ensures we always fetch up to current_time in the last iteration
+        created_before = min(created_after + time_delta, current_time)
+
         request_params["created_after"] = created_after.isoformat().split(".")[0] + "Z"
         request_params["created_before"] = created_before.isoformat().split(".")[0] + "Z"
-        demisto.debug(f"End of the current batch loop with {len(incidents_list)!s} events")
 
-    # fetching the last batch when created_before is bigger then current time = fetching new events
-    if len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        # fetching the last batch
-        request_params["created_before"] = current_time.isoformat().split(".")[0] + "Z"
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
-
-        demisto.debug(
-            f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
-            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}"
+        demisto.info(
+            f"[BATCH_LOOP_START] Iteration #{iteration_count}: fetch_limit={fetch_limit}, "
+            f"current_incidents_count={len(incidents_list)}, "
+            f"created_after={request_params['created_after']}, "
+            f"created_before={request_params['created_before']}"
         )
 
+        demisto.info(f"[API_CALL_START] Iteration #{iteration_count}: Calling get_new_incidents...")
+        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
+        demisto.info(f"[API_CALL_END] Iteration #{iteration_count}: get_new_incidents returned {len(new_incidents)} incidents")
+
+        incidents_list.extend(new_incidents)
+
+        demisto.info(
+            f"[BATCH_LOOP_END] Iteration #{iteration_count}: total_incidents={len(incidents_list)}, "
+            f"new_incidents_added={len(new_incidents)}"
+        )
+
+        # Advance to next time window
+        created_after = created_before
+
+    demisto.info(
+        f"[BATCH_COMPLETE] Batch processing completed after {iteration_count} iterations, "
+        f"total_incidents={len(incidents_list)}, fetch_limit={fetch_limit}, "
+        f"reached_current_time={created_after >= current_time}"
+    )
+
     incidents_list_limit = incidents_list[:fetch_limit]
+
+    demisto.info(
+        f"[BATCH_END] get_incidents_batch_by_time_request completed, "
+        f"total_iterations={iteration_count}, final_incident_count={len(incidents_list_limit)}, "
+        f"incidents_truncated={len(incidents_list) > (fetch_limit or 0)}"
+    )
+
     return incidents_list_limit
 
 
