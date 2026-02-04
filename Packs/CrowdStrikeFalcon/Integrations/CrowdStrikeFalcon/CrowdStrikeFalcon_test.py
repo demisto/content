@@ -1893,35 +1893,6 @@ class TestFetchFunctionsTimestampFormatting:
         except Exception as e:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
 
-    def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
-        """
-        Tests that detection["created_timestamp"] timestamps are filtered out if they are not after the start_fetch_time.
-        Given:
-            start_fetch_time is "2025-07-25T01:01:00.000000000Z"
-            Two detections with created_timestamps, one is before the start_fetch_time and the other is not.
-        When:
-            Fetching endpoint detections
-        Then:
-            Only the detection that occurred after the start_fetch_time is returned.
-        """
-        from CrowdStrikeFalcon import fetch_endpoint_detections
-
-        mocked_res = [
-            {"created_timestamp": "2025-07-25T23:59:59.999999Z", "composite_id": "123"},
-            {"created_timestamp": "2025-07-24T01:01:00.000001Z", "composite_id": "456"},
-        ]
-        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
-        mocker.patch(
-            "CrowdStrikeFalcon.get_detections_entities",
-            return_value={"resources": mocked_res},
-        )
-
-        start_fetch_time = "2025-07-25T01:01:00.000000000Z"
-
-        results, _ = fetch_endpoint_detections({"time": start_fetch_time}, 2, False)
-        assert len(results) == 1
-        assert results[0]["occurred"] == mocked_res[0]["created_timestamp"]
-
     @pytest.mark.parametrize(
         "product_type, detection_name_prefix",
         [
@@ -2428,6 +2399,7 @@ class TestIncidentFetch:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        mocker.patch.object(demisto, "params", return_value={"fetch_incidents_or_detections": ["Endpoint Incident"]})
 
         _, incidents = fetch_items()
         for incident in incidents:
@@ -4208,7 +4180,7 @@ def test_find_incident_type():
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
-    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
+    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM_DETECTION
     assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
 
@@ -4344,7 +4316,8 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     "detection_type, incident_type, entity_modifications",
     [
         ("ngsiem", "ngsiem_detection", {}),
-        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+        ("Detection", "detection", {"type": "ldt", "product": "epp"}),
+        ("ofp", "OFP detection", {"type": "ofp"}),
     ],
 )
 def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
@@ -4358,15 +4331,15 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     """
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
 
+    generic_detection_id = input_data.remote_ngsiem_detection_id
+
     detection_entity = input_data.response_ngsiem_detection.copy()
     detection_entity.update(entity_modifications)
 
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
     mocker.patch.object(demisto, "debug", return_value=None)
 
-    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
-        input_data.remote_ngsiem_detection_id
-    )
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(generic_detection_id)
 
     assert mirrored_data == detection_entity
     assert returned_detection_type == detection_type
@@ -7937,6 +7910,9 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_INCIDENTS, data={"NGSIEM INCIDENT ID:": 11})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data={"AUTOMATED LEAD ID:": 12})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_CASES, data={"NGSIEM CASE ID:": 13})
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)
@@ -7948,27 +7924,6 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
     assert last_run_identifiers_result == last_run_identifiers
-
-
-def test_is_detection_occurred_before_fetch_time():
-    """
-    Given:
-        - A detection with a created timestamp.
-        - A start time for fetching.
-    When:
-        - Running is_detection_occurred_before_fetch_time.
-    Then:
-        - Validate that the function returns True if the detection was before the start time, False otherwise.
-    """
-    from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
-
-    detection = {"created_timestamp": "2020-05-16T17:30:38Z"}
-    start_fetch_time = "2020-05-17T17:30:38Z"
-    assert is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
-
-    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
-    start_fetch_time = "2020-05-17T17:30:38Z"
-    assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
 
 
 def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
@@ -8330,3 +8285,156 @@ def test_fetch_detections_by_product_type_builds_grouped_filter(
     )
 
     assert get_detections_ids_mocker.call_args[1]["filter_arg"] == expected_filter
+
+
+def test_get_cases_data(mocker):
+    """
+    Given:
+        - Filter, limit and offset.
+    When:
+        - Running get_cases_data.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct total cases and ids.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 10}}, "resources": ["case1", "case2"]}
+    )
+
+    total, ids = get_cases_data("some_filter", 10, 0)
+
+    assert total == 10
+    assert ids == ["case1", "case2"]
+    http_request_mock.assert_called_with(
+        "GET", "/cases/queries/cases/v1?filter=some_filter", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+    )
+
+
+def test_get_cases_details(mocker):
+    """
+    Given:
+        - List of case IDs.
+    When:
+        - Running get_cases_details.
+    Then:
+        - Verify that the http_request is called with the correct arguments.
+        - Verify that the function returns the correct case details.
+    """
+    from CrowdStrikeFalcon import get_cases_details
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"resources": [{"id": "case1", "status": "new"}]}
+    )
+
+    details = get_cases_details(["case1"])
+
+    assert details == [{"id": "case1", "status": "new"}]
+    http_request_mock.assert_called_with("POST", "/cases/entities/cases/v2", data=json.dumps({"ids": ["case1"]}))
+
+
+@pytest.mark.parametrize("status, expected_exception", [("new", False), ("invalid_status", True)])
+def test_update_ngsiem_case_request(mocker, status, expected_exception):
+    """
+    Given:
+        - Case ID and status.
+    When:
+        - Running update_ngsiem_case_request.
+    Then:
+        - Verify that the http_request is called with the correct arguments if status is valid.
+        - Verify that DemistoException is raised if status is invalid.
+    """
+    from CrowdStrikeFalcon import update_ngsiem_case_request
+
+    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request")
+
+    if expected_exception:
+        with pytest.raises(DemistoException):
+            update_ngsiem_case_request("case1", status)
+    else:
+        update_ngsiem_case_request("case1", status)
+        http_request_mock.assert_called_with(
+            "PATCH", "/cases/entities/cases/v2", data=json.dumps({"fields": {"status": status}, "id": "case1"})
+        )
+
+
+def test_get_remote_ngsiem_case_data(mocker):
+    """
+    Given:
+        - Remote case ID.
+    When:
+        - Running get_remote_ngsiem_case_data.
+    Then:
+        - Verify that get_cases_details is called with the correct ID.
+        - Verify that the function returns the correct mirrored case and updated object.
+    """
+    from CrowdStrikeFalcon import get_remote_ngsiem_case_data, IncidentType
+
+    mocker.patch("CrowdStrikeFalcon.get_cases_details", return_value=[{"id": "case1", "status": "new", "state": "open"}])
+
+    remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
+    mirrored_case, updated_object = get_remote_ngsiem_case_data(remote_id)
+
+    assert mirrored_case == {"id": "case1", "status": "new", "state": "open"}
+    assert updated_object == {"incident_type": "ngsiem_case", "status": "new", "state": "open"}
+
+
+@pytest.mark.parametrize(
+    "delta, inc_status, close_in_cs_falcon_param, expected_status",
+    [({"status": "in_progress"}, IncidentStatus.ACTIVE, False, "in_progress"), ({}, IncidentStatus.ACTIVE, False, None)],
+)
+def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon_param, expected_status):
+    """
+    Given:
+        - Delta, incident status, and close_in_cs_falcon parameter.
+    When:
+        - Running update_remote_ngsiem_case.
+    Then:
+        - Verify that update_remote_ngsiem_case is called with the correct status if applicable.
+    """
+    from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
+
+    mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
+    update_mock = mocker.patch("CrowdStrikeFalcon.update_ngsiem_case_request", return_value="success")
+
+    remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
+    result = update_remote_ngsiem_case(delta, inc_status, remote_id)
+
+    if expected_status:
+        update_mock.assert_called_with("case1", expected_status)
+        assert result == "success"
+    else:
+        update_mock.assert_not_called()
+        assert result == ""
+
+
+def test_fetch_ngsiem_cases(mocker):
+    """
+    Given:
+        - Last run object, look back, and fetch query.
+    When:
+        - Running fetch_ngsiem_cases.
+    Then:
+        - Verify that the function calls dependencies correctly.
+        - Verify that it returns the correct cases and last run object.
+    """
+    from CrowdStrikeFalcon import fetch_ngsiem_cases
+
+    mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=("start_time", "end_time"))
+    mocker.patch("CrowdStrikeFalcon.get_cases_data", return_value=(1, ["case1"]))
+    mocker.patch(
+        "CrowdStrikeFalcon.get_cases_details",
+        return_value=[{"id": "case1", "created_timestamp": "2023-01-01T00:00:00.000Z", "severity": "High"}],
+    )
+    mocker.patch(
+        "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit", side_effect=lambda incidents_res, **kwargs: incidents_res
+    )
+    mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={"offset": 1})
+
+    cases, last_run = fetch_ngsiem_cases({}, 3, "some_query")
+
+    assert len(cases) == 1
+    assert cases[0]["name"] == "ngsiem_case ID: case1"
+    assert cases[0]["severity"] == "High"
+    assert last_run == {"offset": 1}

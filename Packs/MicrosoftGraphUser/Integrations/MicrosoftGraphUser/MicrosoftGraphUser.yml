@@ -441,6 +441,163 @@ script:
       description: The account entity type.
       type: String
   - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Retrieves the groups a user is part of.
+    name: msgraph-user-get-groups
+    outputs:
+    - contextPath: MSGraphUserGroups.ID
+      description: The user ID.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.Classification
+      description: Value used to classify data types in your groups.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.@Odata.Type
+      description: A string value that can be used to classify the user's groups.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.CreatedDateTime
+      description: Group creation date and time.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.CreationOptions
+      description: Group creation options.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.DeletedDateTime
+      description: Group deletion date and time.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.Description
+      description: Group description string.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.DisplayName
+      description: Group display name.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ExpirationDateTime
+      description: Group expiration date and time.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.GroupTypes
+      description: The types assigned to the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ID
+      description: Group id.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.IsAssignableToRole
+      description: Indicates whether the group can be assigned to roles.
+      type: Bool
+    - contextPath: MSGraphUserGroups.Groups.Mail
+      description: Group associated mail.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.MailEnabled
+      description: Indicates whether the group has mail enabled.
+      type: Bool
+    - contextPath: MSGraphUserGroups.Groups.MailNickname
+      description: Mail nickname of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.MembershipRule
+      description: Membership rule applied to the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.MembershipRuleProcessingState
+      description: Processing state of the group’s membership rule.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesDomainName
+      description: On-premises domain name associated with the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesLastSyncDateTime
+      description: Date and time when the group was last synchronized from on-premises.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesNetBiosName
+      description: On-premises NetBIOS name of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesProvisioningErrors
+      description: Errors encountered during on-premises provisioning of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSamAccountName
+      description: SAM account name of the group in on-premises Active Directory.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSecurityIdentifier
+      description: Security identifier (SID) of the group in on-premises Active Directory.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.OnPremisesSyncEnabled
+      description: Indicates whether the group is synchronized from on-premises.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.PreferredDataLocation
+      description: Preferred geographic location for the group’s data.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.PreferredLanguage
+      description: Preferred language for the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ProxyAddresses
+      description: Email addresses associated with the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.RenewedDateTime
+      description: Date and time the group was last renewed.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ResourceBehaviorOptions
+      description: Options defining the group’s behavior as a resource.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ResourceProvisioningOptions
+      description: Options used for provisioning the group as a resource.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.SecurityEnabled
+      description: Indicates whether the group is security-enabled.
+      type: Bool
+    - contextPath: MSGraphUserGroups.Groups.SecurityIdentifier
+      description: Security identifier of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.ServiceProvisioningErrors
+      description: Errors encountered during service provisioning of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.Theme
+      description: Theme associated with the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.UniqueName
+      description: Unique name of the group.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.Visibility
+      description: Groups visibility.
+      type: String
+    - contextPath: MSGraphUserGroups.Groups.WellKnownObject
+      description: Indicates if the group is a well-known system object.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Retrieve a list of authentication methods registered to a user.
+    name: msgraph-user-get-auth-methods
+    outputs:
+    - contextPath: MSGraphUserAuthMethods.ID
+      description: The user ID.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.CreatedDateTime
+      description: Authentication method's creation date and time.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.ID
+      description: The unique identifier for the authentication method.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.@Odata.Type
+      description: The type of the authentication method.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.Password
+      description: The password associated with the authentication method, if applicable.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.DisplayName
+      description: Authentication methods displayName.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.DeviceTag
+      description: The device tag associated with the authentication method.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.IsUsable
+      description: Indicates whether the authentication method is currently usable.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.IsUsableOnce
+      description: Indicates whether the authentication method can be used only once.
+      type: String
+    - contextPath: MSGraphUserAuthMethods.Methods.MethodUsabilityReason
+      description: The reason why the authentication method is or is not usable.
+      type: String
+  - arguments:
     - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
       name: properties
     - description: The URL for the next page in the list.
@@ -702,7 +859,8 @@ script:
       Forces a user to reset their password the next time they log in.
       Note that this action does not terminate the user’s current session.
       If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
-      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+      This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All and User-PasswordProfile.ReadWrite.All delegated permissions. For further info, see https://learn.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0&tabs=http#example-3-update-the-passwordprofile-of-a-user-and-reset-their-password
+      Furthermore, the signed in user must have a higher privileged administrator role than the user who's password is being reset. The admin hierarchy table can be viewed here: https://learn.microsoft.com/en-us/graph/api/resources/users?view=graph-rest-1.0#who-can-reset-passwords
     name: msgraph-user-force-reset-password
     prettyname: Force Reset Password [EntraID]
     quickaction: false
@@ -811,6 +969,318 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
+  - arguments:
+    - description: The Azure AD user ID.
+      name: user
+      required: true
+    - description: Number of devices in the list. Maximum is 50.
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: The URL for the next page in the list.
+      name: next_page
+    - description: 'Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
+      name: filter
+    description: |-
+      Lists the devices that are owned by the user.
+      Permission: User.Read.All,Directory.Read.All - Delegated 
+    name: msgraph-user-owned-devices-list
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.ID
+      description: Owned device's ID.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.PhysicalIds
+      description: Physical IDs of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DeviceVersion
+      description: The version of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.ProfileType
+      description: The profile type of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.CreatedDateTime
+      description: The date and time the device was created.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.ApproximateLastSignInDateTime
+      description: The approximate date and time of the last sign-in.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.OperatingSystemVersion
+      description: The version of the operating system.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.AlternativeSecurityIds
+      description: Alternative security IDs of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DisplayName
+      description: The display name of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.OperatingSystem
+      description: The operating system of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.DeviceId
+      description: The unique identifier for the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.TrustType
+      description: The trust type of the device.
+      type: String
+    - contextPath: MSGraphUser.OwnedDevice.RegistrationDateTime
+      description: The date and time when the device was registered.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific FIDO2 authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the FIDO2 authentication methods registered to a user or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All
+    name: msgraph-user-fido2-method-list
+    outputs:
+    - contextPath: MSGraphUser.FIDO2Method.ID
+      description: The unique identifier of the FIDO2 authentication method.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.DisplayName
+      description: The display name of the key as given by the user.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.CreatedDateTime
+      description: The timestamp when this key was registered.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.AaGuid
+      description: Authenticator Attestation GUID, an identifier that indicates the type of authenticator.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.Model
+      description: The manufacturer-assigned model of the FIDO2 security key.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.AttestationCertificates
+      description: The attestation certificate(s) attached to this security key.
+      type: String
+    - contextPath: MSGraphUser.FIDO2Method.AttestationLevel
+      description: The attestation level of this FIDO2 security key.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the FIDO2 authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a FIDO2 authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-fido2-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific email authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the email authentication methods registered to a user, or retrieves a specific email method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-email-method-list
+    outputs:
+    - contextPath: MSGraphUser.EmailAuthMethod.ID
+      description: The unique identifier of the email authentication method.
+      type: String
+    - contextPath: MSGraphUser.EmailAuthMethod.EmailAddress
+      description: The email address registered to this user.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the email authentication method to delete.
+      name: method_id
+      required: false
+      defaultValue: 3ddfcfc8-9383-446f-83cc-3ab9be4be18f
+    description: |-
+      Deletes an email authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-email-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Microsoft Authenticator authentication method to retrieve.
+      name: method_id
+      required: false
+    - description: Maximum number of results to return when listing all methods.
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: The URL for the next page in the list.
+      name: next_page
+      required: false
+    description: |-
+      Lists the Microsoft Authenticator authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-authenticator-method-list
+    outputs:
+    - contextPath: MSGraphUser.UserAuthMethod.ID
+      description: The unique identifier of the Microsoft Authenticator authentication method.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.DisplayName
+      description: The name of the device on which Microsoft Authenticator is registered.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.PhoneAppVersion
+      description: The version of Microsoft Authenticator installed on the device.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.DeviceTag
+      description: Tags containing app metadata.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.CreatedDateTime
+      description: The timestamp when this method was registered to the user.
+      type: String
+    - contextPath: MSGraphUser.UserAuthMethod.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Microsoft Authenticator authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Microsoft Authenticator authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-authenticator-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific phone authentication method to retrieve.
+      name: method_id
+      required: false
+    - description: The URL for the next page in the list.
+      name: next_page
+      required: false
+    description: |-
+      Lists the phone authentication methods registered to a user, or retrieves a specific phone method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-phone-method-list
+    outputs:
+    - contextPath: MSGraphUser.PhoneAuthMethod.ID
+      description: The unique identifier of the phone authentication method.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.PhoneNumber
+      description: The phone number registered to this user.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.PhoneType
+      description: The type of phone (mobile, alternateMobile, or office).
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.SmsSignInState
+      description: Whether the phone is ready to be used for SMS sign-in.
+      type: String
+    - contextPath: MSGraphUser.PhoneAuthMethod.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the phone authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a phone authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-phone-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific software OATH authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the software OATH authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-software-oath-method-list
+    outputs:
+    - contextPath: MSGraphUser.SoftOathAuthMethod.ID
+      description: The unique identifier of the software OATH authentication method.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the software OATH authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a software OATH authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-software-oath-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Windows Hello for Business authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the Windows Hello for Business authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-windows-hello-method-list
+    outputs:
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.ID
+      description: The unique identifier of the Windows Hello for Business authentication method.
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.DisplayName
+      description: The name of the device on which Windows Hello is registered.
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.KeyStrength
+      description: The key strength of the Windows Hello for Business key (normal or weak).
+      type: String
+    - contextPath: MSGraphUser.WindowsHelloAuthMethod.CreatedDateTime
+      description: The timestamp when this method was registered to the user.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Windows Hello for Business authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Windows Hello for Business authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-windows-hello-method-delete
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of a specific Temporary Access Pass authentication method to retrieve.
+      name: method_id
+      required: false
+    description: |-
+      Lists the Temporary Access Pass authentication methods registered to a user, or retrieves a specific method by ID.
+      Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-temp-access-pass-method-list
+    outputs:
+    - contextPath: MSGraphUser.TempAccessPassAuthMethod.ID
+      description: The unique identifier of the Temporary Access Pass authentication method.
+      type: String
+    - contextPath: MSGraphUser.TempAccessPassAuthMethod.IsUsable
+      description: Indicates whether the authentication method is currently usable.
+      type: Bool
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: The ID of the Temporary Access Pass authentication method to delete.
+      name: method_id
+      required: true
+    description: |-
+      Deletes a Temporary Access Pass authentication method from a user.
+      Permission: UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+    name: msgraph-user-temp-access-pass-method-delete
   dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'

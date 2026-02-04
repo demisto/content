@@ -1175,6 +1175,10 @@ script:
     - name: url_sufix
       required: true
       description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
+      deprecated: true
+    - name: url_suffix
+      required: true
+      description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
     - name: parameters
       description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
       type: keyValue

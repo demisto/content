@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Twilio
 commonfields:
   id: Twilio SendGrid
   version: -1

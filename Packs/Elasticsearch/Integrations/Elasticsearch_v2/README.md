@@ -1,4 +1,4 @@
-Search for and analyze data in real time.
+Elasticsearch_v2 integration is used to search for and analyze data in real time.
 Supports version 6 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
@@ -14,19 +14,23 @@ The permissions required to use this integration depends on which operations you
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200. | True |
-| Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
+| Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | False |
+| Authorization type | Select the authentication type and enter the appropriate credentials:<br/>- Basic Auth: Enter Username and Password.<br/>- Bearer Auth: Enter Username and Password.<br/>- API Key Auth: Enter the API Key ID and API Key. | True |
+| API key ID | Use for API key auth | False |
+| API Key | Use for API key auth | False |
+| Username | Use for API Key auth. Optionally you can use Username as an API key ID and Password as an API key for Basic auth. | False |
+| Password | Use for API Key auth. Optionally you can use Username as an API key ID and Password as an API key for Basic auth. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the 'OpenSearch' client type. | False |
-| Index from which to fetch incidents (CSV) |  | False |
-| Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
-| Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
-| Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
-| Time field type |  | False |
+| Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+| Index to fetch incidents from | CSV | False |
+| Query String | Query string uses the Lucene syntax.<br/>For more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax).<br/>The query will be used when fetching incidents. Index time field will be used as a filter in the query.<br/><br/>The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '\!es-integration-health-check' command. | False |
+| Index time field | The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation. | False |
+| Raw Query | Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.<br/>Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.<br/>For more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).<br/><br/>The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '\!es-integration-health-check' command. | False |
+| Time field type | 3 formats supported:<br/> *Simple-Date - A plain date string. You must specify the format in which the date is stored.<br/>For more information about time formatting, see [here](http://strftime.org/).<br/>* Timestamp-Second - A numeric value representing the number of seconds since the Unix epoch (00:00:00 UTC on 1 January 1970). Example: '1572164838'<br/> * Timestamp-Milliseconds - A numeric value representing the number of milliseconds since the Unix epoch. Example: '1572164838123' | False |
 | Map JSON fields into labels |  | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| The maximum number of results to return per fetch. |  | False |
+| First fetch timestamp | &lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days | False |
+| The maximum number of results per fetch |  | False |
 | Request timeout (in seconds). |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |

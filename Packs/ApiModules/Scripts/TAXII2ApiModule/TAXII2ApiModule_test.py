@@ -1077,6 +1077,70 @@ class TestParsingIndicators:
         taxii_2_client.update_custom_fields = True
         assert taxii_2_client.parse_sco_mutex_indicator(mutex_obj) == xsoar_expected_response_with_update_custom_fields
 
+    def test_parse_software_sco_indicator(self, taxii_2_client):
+        """
+        Given:
+         - software object (STIX 2.1 SCO)
+
+        When:
+         - parsing the software into a format XSOAR knows to read.
+
+        Then:
+         - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
+        """
+        software_obj = {
+            "type": "software",
+            "spec_version": "2.1",
+            "id": "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "Microsoft Word",
+            "cpe": "cpe:2.3:a:microsoft:word:2016:*:*:*:*:*:*:*",
+            "vendor": "Microsoft",
+            "version": "2016",
+            "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}},
+        }
+
+        xsoar_expected_response = [
+            {
+                "fields": {
+                    "description": "",
+                    "firstseenbysource": "",
+                    "modified": "",
+                    "stixid": "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "tags": [],
+                    "trafficlightprotocol": "GREEN",
+                },
+                "rawJSON": software_obj,
+                "score": Common.DBotScore.NONE,
+                "type": "Software",
+                "value": "Microsoft Word",
+            }
+        ]
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                "fields": {
+                    "description": "test",
+                    "firstseenbysource": "",
+                    "modified": "",
+                    "stixid": "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "tags": ["test"],
+                    "trafficlightprotocol": "GREEN",
+                },
+                "rawJSON": software_obj,
+                "score": Common.DBotScore.NONE,
+                "type": "Software",
+                "value": "Microsoft Word",
+            }
+        ]
+
+        # Test using the dedicated parse_sco_software_indicator method
+        assert taxii_2_client.parse_sco_software_indicator(software_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_software_indicator(software_obj) == xsoar_expected_response_with_update_custom_fields
+
     def test_parse_sco_windows_registry_key_indicator(self, taxii_2_client):
         """
         Given:
@@ -1626,6 +1690,80 @@ class TestParsingObjects:
             for relationship in report.get("relationships"):
                 assert relationship.get("entityBType") in STIX_2_TYPES_TO_CORTEX_TYPES.values()
                 assert relationship.get("entityAType") in STIX_2_TYPES_TO_CORTEX_TYPES.values()
+
+
+class TestParsingSoftwareObjects:
+    """
+    Scenario: Test parsing software SCO objects from STIX 2.1 bundles
+    """
+
+    def test_load_software_from_envelope(self):
+        """
+        Scenario: Test loading software SCO objects from envelope
+
+        Given:
+        - Envelope with software STIX 2.1 SCO objects
+
+        When:
+        - load_stix_objects_from_envelope is called
+
+        Then:
+        - Software objects are properly parsed and returned as Software indicators
+        """
+        software_envelope = [
+            {
+                "objects": [
+                    {
+                        "type": "software",
+                        "spec_version": "2.1",
+                        "id": "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "Microsoft Word",
+                        "cpe": "cpe:2.3:a:microsoft:word:2016:*:*:*:*:*:*:*",
+                        "vendor": "Microsoft",
+                        "version": "2016",
+                    },
+                    {
+                        "type": "software",
+                        "spec_version": "2.1",
+                        "id": "software--b2c3d4e5-f6a7-8901-bcde-f23456789012",
+                        "name": "Adobe Acrobat Reader",
+                        "vendor": "Adobe",
+                        "version": "2023.001.20093",
+                    },
+                ],
+                "more": False,
+            }
+        ]
+
+        mock_client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[]
+        )
+
+        result = mock_client.load_stix_objects_from_envelope(software_envelope, -1)
+
+        assert len(result) == 2
+        assert result[0]["type"] == "Software"
+        assert result[0]["value"] == "Microsoft Word"
+        assert result[0]["fields"]["stixid"] == "software--a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        assert result[1]["type"] == "Software"
+        assert result[1]["value"] == "Adobe Acrobat Reader"
+        assert result[1]["fields"]["stixid"] == "software--b2c3d4e5-f6a7-8901-bcde-f23456789012"
+
+    def test_software_type_in_stix_2_types_to_cortex_types(self):
+        """
+        Scenario: Verify software type is properly mapped in STIX_2_TYPES_TO_CORTEX_TYPES
+
+        Given:
+        - The STIX_2_TYPES_TO_CORTEX_TYPES dictionary
+
+        When:
+        - Checking if software type is present
+
+        Then:
+        - Software type should be mapped to FeedIndicatorType.Software
+        """
+        assert "software" in STIX_2_TYPES_TO_CORTEX_TYPES
+        assert STIX_2_TYPES_TO_CORTEX_TYPES["software"] == "Software"
 
 
 @pytest.mark.parametrize("limit, element_count, return_value", [(8, 8, True), (8, 9, True), (8, 0, False), (-1, 10, False)])
