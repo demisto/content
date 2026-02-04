@@ -20,6 +20,7 @@ In Barracuda WAF appliance:
 - Log Timestamp and Hostname – Set to Yes if you want to log the date and time of the event, and the hostname configured in the **BASIC** > **IP Configuration** > **Domain Configuration** section.  
 
 3. In the Logs Format section, specify values for the following fields:
+
 - **Syslog Header** – *ArcSight Log Header*
 - **Web Firewall Logs Format** – *Default (raw syslog)*
 - **Access Logs Format** – *Default (raw syslog)*
