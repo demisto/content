@@ -4143,6 +4143,7 @@ script:
       - low
       - medium
       - high
+      - critical
     - auto: PREDEFINED
       description: 'The BIOC type to filter by.'
       name: type
@@ -4182,7 +4183,7 @@ script:
     - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_technique_id_and_name
-    - description: "The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
+    - description: "The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']."
       isArray: true
       name: mitre_tactic_id_and_name
     - auto: PREDEFINED
@@ -4217,13 +4218,13 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.is_xql
       description: Whether the BIOC is XQL.
-      type: Bool
+      type: Boolean
     - contextPath: PaloAltoNetworksXDR.BIOC.comment
       description: The BIOC comment.
       type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.indicator
       description: The BIOC indicator.
-      type: Unknown
+      type: String
   - arguments:
     - description: The BIOC name.
       name: name
@@ -4237,10 +4238,10 @@ script:
       - low
       - medium
       - high
+      - critical
     - auto: PREDEFINED
       description: The BIOC type.
       name: type
-#      required: true
       predefined:
       - other
       - persistence
@@ -4266,11 +4267,9 @@ script:
       - 'false'
     - description: The BIOC comment.
       name: comment
-#      required: true
     - auto: PREDEFINED
       description: The BIOC status.
       name: status
-#      required: true
       predefined:
       - enabled
       - disabled
@@ -4290,17 +4289,8 @@ script:
     description: Creates a new BIOC.
     name: xdr-bioc-create
     outputs:
-    - contextPath: PaloAltoNetworksXDR.BIOC.name
-      description: BIOC name.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.type
-      description: BIOC type.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.severity
-      description: BIOC severity.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.status
-      description: BIOC status.
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
       type: String
   - arguments:
     - description: BIOC rule ID.
@@ -4318,10 +4308,10 @@ script:
       - low
       - medium
       - high
+      - critical
     - auto: PREDEFINED
       description: BIOC type.
       name: type
-#      required: true
       predefined:
       - other
       - persistence
@@ -4347,11 +4337,9 @@ script:
       - 'false'
     - description: BIOC comment.
       name: comment
-#      required: true
     - auto: PREDEFINED
       description: BIOC status.
       name: status
-#      required: true
       predefined:
       - enabled
       - disabled
@@ -4371,17 +4359,8 @@ script:
     description: Updates an existing BIOC.
     name: xdr-bioc-update
     outputs:
-    - contextPath: PaloAltoNetworksXDR.BIOC.name
-      description: BIOC name.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.type
-      description: BIOC type.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.severity
-      description: BIOC severity.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.BIOC.status
-      description: BIOC status.
+    - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
+      description: BIOC ID.
       type: String
   - arguments:
     - description: BIOC name.
@@ -4394,6 +4373,7 @@ script:
       - low
       - medium
       - high
+      - critical
     - auto: PREDEFINED
       description: BIOC type.
       name: type
@@ -4444,6 +4424,7 @@ script:
       - low
       - medium
       - high
+      - critical
     - description: Correlation rule XQL query.
       name: xql_query
     - auto: PREDEFINED
@@ -4479,7 +4460,7 @@ script:
     description: Returns a list of correlation rules.
     name: xdr-correlation-rule-list
     outputs:
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.id
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
       description: Correlation rule ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
@@ -4504,6 +4485,7 @@ script:
       - low
       - medium
       - high
+      - critical
     - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
       name: xql_query
       required: true
@@ -4578,6 +4560,7 @@ script:
       name: suppression_fields
     - description: 'The correlation rule dataset. Example: dataset=alerts'
       name: dataset
+      required: true
     - description: User-defined severity.
       name: user_defined_severity
     - description: User-defined category.
@@ -4591,18 +4574,9 @@ script:
     description: Creates a new correlation rule.
     name: xdr-correlation-rule-create
     outputs:
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.id
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
       description: Correlation rule ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
-      description: Correlation rule name.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.description
-      description: Correlation rule description.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.is_enabled
-      description: Whether the correlation rule is enabled.
-      type: Boolean
   - arguments:
     - description: Correlation rule ID.
       name: rule_id
@@ -4619,6 +4593,7 @@ script:
       - low
       - medium
       - high
+      - critical
     - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
       name: xql_query
       required: true
@@ -4709,15 +4684,6 @@ script:
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.id
       description: Correlation rule ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
-      description: Correlation rule name.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.description
-      description: Correlation rule description.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.is_enabled
-      description: Whether the correlation rule is enabled.
-      type: Boolean
   - arguments:
     - description: Correlation rule ID.
       isArray: true

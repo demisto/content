@@ -50,7 +50,12 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
-BIOC_AND_CR_SEVERITY_MAPPING = {"info": "SEV_010_INFO", "low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH"}
+BIOC_AND_CR_SEVERITY_MAPPING = {"info": "SEV_010_INFO",
+                                "low": "SEV_020_LOW",
+                                "medium": "SEV_030_MEDIUM",
+                                "high": "SEV_040_HIGH",
+                                "critical": "SEV_050_CRITICAL"
+                                }
 
 
 def convert_epoch_to_milli(timestamp):
@@ -568,7 +573,7 @@ class Client(CoreClient):
     def get_biocs(self, request_data: dict):
         reply = self._http_request(
             method="POST",
-            url_suffix="/bioc/get/",
+            url_suffix="/bioc/get",
             json_data=request_data,
         )
         return reply
@@ -576,7 +581,7 @@ class Client(CoreClient):
     def insert_or_update_biocs(self, request_data):
         reply = self._http_request(
             method="POST",
-            url_suffix="/bioc/insert/",
+            url_suffix="/bioc/insert",
             json_data=request_data,
         )
         return reply
@@ -592,7 +597,7 @@ class Client(CoreClient):
     def get_correlation_rules(self, request_data: dict):
         reply = self._http_request(
             method="POST",
-            url_suffix="/correlations/get/",
+            url_suffix="/correlations/get",
             json_data=request_data,
         )
         return reply
@@ -609,7 +614,7 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             url_suffix="/correlations/delete",
-            json_data={"request_data": request_data},
+            json_data=request_data,
         )
         return reply
 
@@ -1645,7 +1650,11 @@ def create_filters_for_bioc_and_correlation_rules(args: dict) -> list:
     if user_defined_category := args.get("user_defined_category"):
         filters.append({"field": "user_defined_category", "operator": "EQ", "value": user_defined_category})
     if mitre_defs := args.get("mitre_defs_json"):
-        filters.append({"field": "mitre_defs", "operator": "EQ", "value": json.loads(mitre_defs)})
+        try:
+            mitre_defs_json = json.loads(mitre_defs)
+        except ValueError:
+            raise DemistoException("Unable to parse 'mitre_defs'. Please use the JSON format.")
+        filters.append({"field": "mitre_defs", "operator": "EQ", "value": mitre_defs_json})
     if investigation_query_link := args.get("investigation_query_link"):
         filters.append({"field": "investigation_query_link", "operator": "EQ", "value": investigation_query_link})
     if drilldown_query_timeframe := args.get("drilldown_query_timeframe"):
@@ -1691,7 +1700,7 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
-        outputs_key_field="name",
+        outputs_key_field="rule_id",
         outputs=biocs,
         raw_response=reply,
     )
@@ -1785,7 +1794,7 @@ def bioc_update_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def bioc_delete_command(client: Client, args: Dict) -> str:
+def bioc_delete_command(client: Client, args: Dict) -> CommandResults:
     """
     API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-BIOCs
     Deletes a BIOC.
@@ -1802,14 +1811,14 @@ def bioc_delete_command(client: Client, args: Dict) -> str:
     count = len(rule_ids)
 
     if count == 1:
-        return f"BIOC with id {rule_ids[0]} deleted successfully."
+        return CommandResults(readable_output=f"BIOC with id {rule_ids[0]} deleted successfully.")
 
     elif count > 1:
         ids_str = ", ".join(map(str, rule_ids))
-        return f"BIOCs with ids {ids_str} deleted successfully."
+        return CommandResults(readable_output=f"BIOCs with ids {ids_str} deleted successfully.")
 
     else:
-        return "No BIOCs were found to delete."
+        return CommandResults(readable_output="No BIOCs were found to delete.")
 
 
 def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1823,7 +1832,11 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     """
     filters = create_filters_for_bioc_and_correlation_rules(args)
     if filter_json := args.get("filter_json"):
-        filters.extend(json.loads(filter_json))
+        try:
+            filter_json = json.loads(filter_json)
+            filters.extend(filter_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
 
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or 50
@@ -1840,14 +1853,14 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Correlation Rules List",
         t=rules,
-        headers=["rule_id", "name", "description", "is_enabled"],
+        headers=["rule_id", "name", "severity", "description", "is_enabled"],
         removeNull=True,
         headerTransform=string_to_table_header,
     )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
-        outputs_key_field="id",
+        outputs_key_field="rule_id",
         outputs=rules,
         raw_response=reply,
     )
@@ -1921,6 +1934,7 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
         outputs=outputs,
         raw_response=reply,
     )
@@ -1946,6 +1960,7 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
         outputs=outputs,
         raw_response=reply,
     )
@@ -1970,7 +1985,7 @@ def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResult
             # If rule_id is None, "abc", or "", skip it safely
             continue
 
-    reply = client.delete_correlation_rules({"filters": rule_id_list})
+    reply = client.delete_correlation_rules({"request_data": {"filters": rule_id_list}})
     deleted_ids = reply.get("objects", [])
     objects_count = reply.get("objects_count")
 
