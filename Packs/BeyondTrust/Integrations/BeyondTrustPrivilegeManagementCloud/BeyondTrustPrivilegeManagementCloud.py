@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Any
+from urllib.parse import urlencode
+import requests
 
 """ CONSTANTS """
 
@@ -36,24 +38,73 @@ class Client(BaseClient):
         demisto.debug(f"{INTEGRATION_NAME}: Attempting to get OAuth token")
         demisto.debug(f"{INTEGRATION_NAME}: Base URL: {self._base_url}")
         demisto.debug(f"{INTEGRATION_NAME}: Client ID length: {len(self.client_id) if self.client_id else 0}")
-        demisto.debug(f"{INTEGRATION_NAME}: Client Secret length: {len(self.client_secret) if self.client_secret else 0}")
-        demisto.debug(f"{INTEGRATION_NAME}: Client ID (first 4 chars): {self.client_id[:4] if self.client_id else 'N/A'}")
+        secret_len = len(self.client_secret) if self.client_secret else 0
+        demisto.debug(f"{INTEGRATION_NAME}: Client Secret length: {secret_len}")
+        
+        # Log first few chars for debugging (safe since these are partial)
+        id_preview = self.client_id[:4] if self.client_id else 'N/A'
+        demisto.debug(f"{INTEGRATION_NAME}: Client ID (first 4 chars): {id_preview}")
+        
+        secret_preview = 'N/A'
+        if self.client_secret and len(self.client_secret) >= 4:
+            secret_preview = self.client_secret[:4]
+        demisto.debug(f"{INTEGRATION_NAME}: Client Secret (first 4 chars): {secret_preview}")
 
-        data = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        # The token endpoint is /oauth/connect/token relative to the base URL, but the base URL for API calls
-        # might be different or the same. Based on documentation:
-        # https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/oauth/connect/token
-        # https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com/management-api/v3/...
-        # So we can use the base URL.
+        # Build the OAuth token request data as a dict - requests will handle encoding
+        data = {
+            "grant_type": "client_credentials",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret
+        }
+        
+        # Log encoded data length for debugging
+        encoded_data = urlencode(data)
+        demisto.debug(f"{INTEGRATION_NAME}: Encoded data length: {len(encoded_data)}")
+        
         token_url = "/oauth/connect/token"
         full_url = f"{self._base_url}{token_url}"
         demisto.debug(f"{INTEGRATION_NAME}: Full token URL: {full_url}")
+        
+        # Log the actual encoded request body (secrets will be scrubbed by XSOAR)
+        demisto.debug(f"{INTEGRATION_NAME}: Request body (URL-encoded): {encoded_data}")
 
         try:
-            response = self._http_request(method="POST", url_suffix=token_url, data=data, headers=headers, resp_type="json")
+            # Use requests directly to have full control over the OAuth request
+            # This bypasses BaseClient which may have issues with form-encoded data
+            req_headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            demisto.debug(f"{INTEGRATION_NAME}: Request headers: {req_headers}")
+            
+            # Use PreparedRequest to see exactly what will be sent
+            from requests import Request, Session
+            session = Session()
+            req = Request('POST', full_url, data=data, headers=req_headers)
+            prepared = session.prepare_request(req)
+            
+            # Log the prepared request details
+            demisto.debug(f"{INTEGRATION_NAME}: Prepared request URL: {prepared.url}")
+            demisto.debug(f"{INTEGRATION_NAME}: Prepared request headers: {dict(prepared.headers)}")
+            demisto.debug(f"{INTEGRATION_NAME}: Prepared request body: {prepared.body}")
+            demisto.debug(f"{INTEGRATION_NAME}: Prepared request body type: {type(prepared.body)}")
+            
+            # Send the prepared request
+            response = session.send(prepared, verify=self._verify, timeout=30)
+            
+            demisto.debug(f"{INTEGRATION_NAME}: Token response status: {response.status_code}")
+            demisto.debug(f"{INTEGRATION_NAME}: Token response headers: {dict(response.headers)}")
+            
+            if response.status_code != 200:
+                demisto.debug(f"{INTEGRATION_NAME}: Token response body: {response.text}")
+                raise DemistoException(
+                    f"Error in API call [{response.status_code}] - {response.reason}\n"
+                    f"{response.text}"
+                )
+            
+            result = response.json()
             demisto.debug(f"{INTEGRATION_NAME}: Token request successful")
-            return response.get("access_token")
+            return result.get("access_token")
+        except requests.exceptions.RequestException as e:
+            demisto.debug(f"{INTEGRATION_NAME}: Token request failed with error: {str(e)}")
+            raise DemistoException(f"Failed to get OAuth token: {str(e)}")
         except Exception as e:
             demisto.debug(f"{INTEGRATION_NAME}: Token request failed with error: {str(e)}")
             raise
@@ -63,7 +114,7 @@ class Client(BaseClient):
         method: str,
         url_suffix: str = "",
         params: dict | None = None,
-        data: dict | None = None,
+        data: dict | str | None = None,
         headers: dict | None = None,
         resp_type: str = "json",
         timeout: int = 10,
