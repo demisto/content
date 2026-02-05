@@ -172,7 +172,7 @@ def create_content_command():
     ancestor_id = demisto.args().get("ancestor_id", 0)
     content_body = demisto.args().get("body")
 
-    raw_content = create_content(content_type, content_title, space_key, content_body)
+    raw_content = create_content(content_type, content_title, space_key, ancestor_id, content_body)
 
     content = {
         "ID": raw_content["id"],
