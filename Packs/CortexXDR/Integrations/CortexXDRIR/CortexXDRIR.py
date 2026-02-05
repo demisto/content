@@ -1868,7 +1868,6 @@ def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict
         "action": "ALERTS",
         "timezone": args.get("timezone"),
         "dataset": args.get("dataset"),
-        # Uppercase handling for Enum fields
         "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
         "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
         "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,

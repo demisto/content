@@ -4240,7 +4240,7 @@ script:
     - auto: PREDEFINED
       description: The BIOC type.
       name: type
-      required: true
+#      required: true
       predefined:
       - other
       - persistence
@@ -4266,11 +4266,11 @@ script:
       - 'false'
     - description: The BIOC comment.
       name: comment
-      required: true
+#      required: true
     - auto: PREDEFINED
       description: The BIOC status.
       name: status
-      required: true
+#      required: true
       predefined:
       - enabled
       - disabled
@@ -4321,7 +4321,7 @@ script:
     - auto: PREDEFINED
       description: BIOC type.
       name: type
-      required: true
+#      required: true
       predefined:
       - other
       - persistence
@@ -4347,11 +4347,11 @@ script:
       - 'false'
     - description: BIOC comment.
       name: comment
-      required: true
+#      required: true
     - auto: PREDEFINED
       description: BIOC status.
       name: status
-      required: true
+#      required: true
       predefined:
       - enabled
       - disabled
