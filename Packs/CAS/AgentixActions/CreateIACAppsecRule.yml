@@ -19,6 +19,7 @@ args:
 - name: rule_name
   underlyingargname: rule_name
   description: >
+    Must be unique if exist generate new one
     A unique name for the AppSec rule following the organization's naming conventions.
   type: string
   required: true
@@ -33,7 +34,7 @@ args:
   description: >
     A comma-separated list of rule labels to apply the rule to.
   type: string
-  required: false
+  required: true
 - name: severity
   underlyingargname: severity
   description: >
@@ -74,28 +75,24 @@ args:
 - name: frameworks
   underlyingargname: frameworks
   description: >
-    array of json objects { name: string, definition: string, remediationDescription: string } for the rule
-    name Options: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM..
-    The rule definition
-    If definition not exist create one for yourself
-    Example:
-    scope:
-      provider: '' # Optional - choose one: "alibaba_cloud"/"aws"/"azure"/"gcp"/"oci"
-    definition: # Define the configurations that will pass when running a scan. Any resource matching the specified resource type but not matching the defined attribute configuration and/or resource type will fail the check.
-      The example below checks for EC2s with an instance_type that is not t3.micro or t3.nano. For more examples please visit our docs - https://docs-cortex.paloaltonetworks.com/r/Cortex-CLOUD/Cortex-Cloud-Runtime-Security-Documentation/Configure-YAML-file-properties
-      or:
-        - cond_type: 'attribute'
-          resource_types:
-            - 'aws_instance'
-          attribute: 'instance_type'
-          operator: 'equals'
-          value: 't3.micro'
-        - cond_type: 'attribute'
-          resource_types:
-            - 'aws_instance'
-          attribute: 'instance_type'
-          operator: 'equals'
-          value: 't3.nano'
+    An array of JSON objects defining framework-specific rules.
+    Each object requires:
+    - 'name': Framework type (Options: ARM, BICEP, CLOUDFORMATION, KUBERNETES, TERRAFORM).
+    - 'remediationDescription': String explaining how to fix the violation.
+    - 'definition': A stringified YAML block. If missing, you MUST generate it based on the security goal using this structure:
+
+        scope:
+            provider: "String (alibaba_cloud|aws|azure|gcp|oci)" # Optional
+        definition:
+            [and|or|not]:
+                - cond_type: "attribute"
+                    resource_types: ["String"]
+                    attribute: "String"
+                    operator: "String"
+                    value: "String"
+
+    Example 'definition' string:
+    "scope:\n  provider: 'aws'\ndefinition:\n  or:\n      - cond_type: 'attribute'\n          resource_types: ['aws_instance']\n          attribute: 'instance_type'\n          operator: 'equals'\n          value: 't3.micro'"  
   type: string
 outputs:
 - name: Appsec.Rule.RULE_NAME
