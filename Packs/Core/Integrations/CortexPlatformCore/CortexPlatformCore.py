@@ -241,9 +241,7 @@ class AppsecIssues:
             "ISSUES_SECRETS",
             {"urgency", "repository", "file_path", "sla", "validation"},
         ),
-        AppsecIssueType(
-            "ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}
-        ),
+        AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_CI_CD", {"sla"}),
@@ -487,9 +485,7 @@ def arg_to_float(arg: Optional[str]):
 
 def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
-    args["limit"] = min(
-        int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT
-    )
+    args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
     args = issue_to_alert(case_to_incident(args))
     demisto.debug(f"after preprocess_get_cases_args args: {args}")
     return args
@@ -508,13 +504,9 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     def process(output: dict | str):
         if isinstance(output, dict):
             if "incident" in output:
-                output["incident"] = alert_to_issue(
-                    incident_to_case(output.get("incident", {}))
-                )
+                output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
             alerts_data = output.get("alerts", {}).get("data", {})
-            modified_alerts_data = [
-                alert_to_issue(incident_to_case(alert)) for alert in alerts_data
-            ]
+            modified_alerts_data = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
             if "alerts" in output and isinstance(output["alerts"], dict):
                 output["alerts"]["data"] = modified_alerts_data
         return alert_to_issue(incident_to_case(output))
@@ -577,18 +569,14 @@ class Client(CoreClient):
         """
         data = json.dumps(json_data) if json_data is not None else data
 
-        response = demisto._platformAPICall(
-            path=url_suffix, method=method, params=params, data=data, timeout=timeout
-        )
+        response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
 
         if ok_codes and response.get("status") not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
             return json.loads(response["data"])
         except json.JSONDecodeError:
-            demisto.debug(
-                f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}"
-            )
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response["data"]
 
     def test_module(self):
@@ -600,9 +588,7 @@ class Client(CoreClient):
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
-                raise DemistoException(
-                    f"{err!s} please validate that your both XSOAR and Core server clocks are in sync"
-                )
+                raise DemistoException(f"{err!s} please validate that your both XSOAR and Core server clocks are in sync")
             else:
                 raise
 
@@ -617,9 +603,7 @@ class Client(CoreClient):
         return reply
 
     def update_issue(self, filter_data):
-        return self._http_request(
-            method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts"
-        )
+        return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
 
     def link_issue_to_cases(self, issue_id, case_ids: list) -> dict:
         """Link an issue to one or more cases.
@@ -883,9 +867,7 @@ class Client(CoreClient):
         Returns:
             dict: Response from the API for the case update.
         """
-        request_data = {
-            "request_data": {"newIncidentInterface": True, "case_id": case_id}
-        }
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id}}
 
         return self._http_request(
             method="POST",
@@ -1023,11 +1005,7 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
-    if (
-        fix_suggestion
-        and isinstance(fix_suggestion, dict)
-        and fix_suggestion.get("suggestedCodeBlock")
-    ):
+    if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
                 "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
@@ -1073,9 +1051,7 @@ def populate_playbook_and_quick_action_suggestions(
 
     # Quick action suggestion
     quick_action_id = suggestions.get("quick_action_id", None)
-    quick_action_suggestion_rule_id = suggestions.get(
-        "quick_action_suggestion_rule_id", None
-    )
+    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id", None)
 
     if quick_action_id:
         recommendation["quick_action_suggestions"] = {
@@ -1140,16 +1116,12 @@ def map_pb_id_to_data(pbs_metadata) -> dict:
     for pb_metadata in pbs_metadata:
         pb_id = pb_metadata.get("id")
         if pb_id:
-            pb_id_to_data[pb_id] = remove_empty_elements(
-                {"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")}
-            )
+            pb_id_to_data[pb_id] = remove_empty_elements({"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")})
 
     return pb_id_to_data
 
 
-def create_issue_recommendations_readable_output(
-    issue_ids: list[str], all_recommendations: list[dict]
-) -> str:
+def create_issue_recommendations_readable_output(issue_ids: list[str], all_recommendations: list[dict]) -> str:
     """
     Create readable output for issue recommendations with dynamic headers based on content.
 
@@ -1179,29 +1151,18 @@ def create_issue_recommendations_readable_output(
     # Single loop to both check for headers and create readable recommendations
     for recommendation in all_recommendations:
         # Check what headers we need to append
-        if not append_appsec_headers and (
-            "existing_code_block" in recommendation
-            or "suggested_code_block" in recommendation
-        ):
+        if not append_appsec_headers and ("existing_code_block" in recommendation or "suggested_code_block" in recommendation):
             append_appsec_headers = True
-        if (
-            not append_playbook_suggestions_header
-            and "playbook_suggestions" in recommendation
-        ):
+        if not append_playbook_suggestions_header and "playbook_suggestions" in recommendation:
             append_playbook_suggestions_header = True
-        if (
-            not append_quick_action_suggestions_header
-            and "quick_action_suggestions" in recommendation
-        ):
+        if not append_quick_action_suggestions_header and "quick_action_suggestions" in recommendation:
             append_quick_action_suggestions_header = True
 
         # Create readable recommendation
         readable_rec = recommendation.copy()
 
         # Simplify playbook suggestions for readable output (show only name)
-        if "playbook_suggestions" in readable_rec and isinstance(
-            readable_rec["playbook_suggestions"], dict
-        ):
+        if "playbook_suggestions" in readable_rec and isinstance(readable_rec["playbook_suggestions"], dict):
             pb_suggestions = readable_rec["playbook_suggestions"]
             readable_rec["playbook_suggestions"] = {
                 "name": pb_suggestions.get("name", ""),
@@ -1209,9 +1170,7 @@ def create_issue_recommendations_readable_output(
             }
 
         # Simplify quick action suggestions for readable output (show only pretty_name)
-        if "quick_action_suggestions" in readable_rec and isinstance(
-            readable_rec["quick_action_suggestions"], dict
-        ):
+        if "quick_action_suggestions" in readable_rec and isinstance(readable_rec["quick_action_suggestions"], dict):
             qa_suggestions = readable_rec["quick_action_suggestions"]
             readable_rec["quick_action_suggestions"] = {
                 "name": qa_suggestions.get("name", ""),
@@ -1340,17 +1299,13 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         FilterType.CONTAINS,
         argToList(args.get("name")),
     )
-    filter_builder.add_field(
-        ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type")
-    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
     filter_builder.add_field(
         ASSET_GROUP_FIELDS["asset_group_description"],
         FilterType.CONTAINS,
         argToList(args.get("description")),
     )
-    filter_builder.add_field(
-        ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id"))
-    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
 
     request_data = build_webapp_request_data(
         table_name=ASSET_GROUPS_TABLE,
@@ -1364,21 +1319,12 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     data = reply.get("DATA", [])
 
     data = [
-        {
-            (
-                k.replace("XDM__ASSET_GROUP__", "")
-                if k.startswith("XDM__ASSET_GROUP__")
-                else k
-            ).lower(): v
-            for k, v in item.items()
-        }
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
         for item in data
     ]
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "AssetGroups", data, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
         outputs_key_field="id",
         outputs=data,
@@ -1386,9 +1332,7 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def build_histogram_request_data(
-    table_name: str, filter_dict: dict, max_values_per_column: int, columns: list
-) -> dict:
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
     """
     Builds the request data for the generic /api/webapp//get_histograms endpoint.
     """
@@ -1414,26 +1358,16 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     sort_order = args.get("sort_order", "DESC")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field(
-        "CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id"))
-    )
-    filter_builder.add_field(
-        "CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte"))
-    )
-    filter_builder.add_field(
-        "EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte"))
-    )
+    filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
+    filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
+    filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
     filter_builder.add_field(
         "INTERNET_EXPOSED",
         FilterType.EQ,
         arg_to_bool_or_none(args.get("internet_exposed")),
     )
-    filter_builder.add_field(
-        "EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable"))
-    )
-    filter_builder.add_field(
-        "HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev"))
-    )
+    filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
+    filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field(
         "AFFECTED_SOFTWARE",
         FilterType.CONTAINS,
@@ -1450,12 +1384,8 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         FilterType.CONTAINS_IN_LIST,
         argToList(args.get("finding_sources")),
     )
-    filter_builder.add_field(
-        "ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id"))
-    )
-    filter_builder.add_time_range_field(
-        "LAST_OBSERVED", args.get("start_time"), args.get("end_time")
-    )
+    filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
         "ASSIGNED_TO",
         FilterType.CONTAINS,
@@ -1517,9 +1447,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "OS_FAMILY",
         "IMAGE",
     ]
-    filtered_data = [
-        {k: v for k, v in item.items() if k in output_keys} for item in data
-    ]
+    filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
     readable_output = tableToMarkdown(
         "Vulnerabilities",
@@ -1553,15 +1481,11 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     asset_id = args.get("asset_id")
     response = client.get_asset_details(asset_id)
     if not response:
-        raise DemistoException(
-            f"Failed to fetch asset details for {asset_id}. Ensure the asset ID is valid."
-        )
+        raise DemistoException(f"Failed to fetch asset details for {asset_id}. Ensure the asset ID is valid.")
 
     reply = response.get("reply")
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "Asset Details", reply, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Asset Details", reply, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
         outputs=reply,
         raw_response=reply,
@@ -1585,11 +1509,7 @@ def extract_ids(case_extra_data: dict) -> list:
     field_name = "issue_id"
     issues = case_extra_data.get("issues", {})
     issues_data = issues.get("data", {}) if issues else {}
-    issue_ids = [
-        issue.get(field_name)
-        for issue in issues_data
-        if isinstance(issue, dict) and field_name in issue
-    ]
+    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
     demisto.debug(f"Extracted issue ids: {issue_ids}")
     return issue_ids
 
@@ -1609,9 +1529,7 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    case_extra_data = get_extra_data_for_case_id_command(
-        init_client("public"), args
-    ).outputs
+    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
@@ -1672,14 +1590,10 @@ def map_case_format(case_list):
             "creation_time": case_data.get("CREATION_TIME"),
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
-            "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS")))
-            .split("_")[-1]
-            .lower(),
+            "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
             "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
-            "original_tags": [
-                tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])
-            ],
+            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
             "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
             "issue_count": case_data.get("ACC_ALERT_COUNT"),
             "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
@@ -1694,9 +1608,7 @@ def map_case_format(case_list):
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
             "resolve_comment": case_data.get("RESOLVED_COMMENT"),
-            "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split(
-                "_"
-            )[-1],
+            "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
             "custom_fields": case_data.get("EXTENDED_FIELDS"),
@@ -1726,36 +1638,19 @@ def map_case_format(case_list):
 
 def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
-    since_creation_end_time = (
-        datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        if since_creation_start_time
-        else None
-    )
+    since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
     since_modification_start_time = args.get("since_modification_time")
-    since_modification_end_time = (
-        datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        if since_modification_start_time
-        else None
-    )
+    since_modification_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_modification_start_time else None
     gte_creation_time = args.get("gte_creation_time")
     lte_creation_time = args.get("lte_creation_time")
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
 
-    status_values = [
-        CaseManagement.STATUS[status] for status in argToList(args.get("status"))
-    ]
-    severity_values = [
-        CaseManagement.SEVERITY[severity]
-        for severity in argToList(args.get("severity"))
-    ]
-    tag_values = [
-        CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))
-    ]
+    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
-    filter_builder.add_time_range_field(
-        CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time
-    )
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
     filter_builder.add_time_range_field(
         CaseManagement.FIELDS["last_updated"],
         gte_modification_time,
@@ -1771,12 +1666,8 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
         since_modification_start_time,
         since_modification_end_time,
     )
-    filter_builder.add_field(
-        CaseManagement.FIELDS["status"], FilterType.EQ, status_values
-    )
-    filter_builder.add_field(
-        CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values
-    )
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
     filter_builder.add_field(
         CaseManagement.FIELDS["case_id_list"],
         FilterType.EQ,
@@ -1817,9 +1708,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
         FilterType.CASE_HOST_EQ,
         argToList(args.get("hosts")),
     )
-    filter_builder.add_field(
-        CaseManagement.FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values
-    )
+    filter_builder.add_field(CaseManagement.FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
     filter_builder.add_field_with_mappings(
         determine_assignee_filter_field(argToList(args.get("assignee"))),
         FilterType.CONTAINS,
@@ -1852,9 +1741,7 @@ def get_cases_command(client, args):
     limit = page * MAX_GET_CASES_LIMIT + limit
     page = page * MAX_GET_CASES_LIMIT
 
-    sort_field, sort_order = get_cases_sort_order(
-        args.get("sort_by_creation_time"), args.get("sort_by_modification_time")
-    )
+    sort_field, sort_order = get_cases_sort_order(args.get("sort_by_creation_time"), args.get("sort_by_modification_time"))
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
         filter_dict=build_get_cases_filter(args).to_dict(),
@@ -1894,9 +1781,7 @@ def get_cases_command(client, args):
                 if case_name := reply.get("case_name"):
                     data[0]["case_name"] = case_name
         except Exception as e:
-            demisto.debug(
-                f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}"
-            )
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
@@ -1908,9 +1793,7 @@ def get_cases_command(client, args):
 
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown(
-                    "Cases", case_extra_data, headerTransform=string_to_table_header
-                ),
+                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
                 outputs_prefix="Core.Case",
                 outputs_key_field="case_id",
                 outputs=case_extra_data,
@@ -1932,9 +1815,7 @@ def get_cases_command(client, args):
 
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown(
-                    "Cases", data, headerTransform=string_to_table_header
-                ),
+                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
                 outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
                 outputs_key_field="case_id",
                 outputs=data,
@@ -1947,9 +1828,7 @@ def get_cases_command(client, args):
 
 def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
     if sort_by_creation_time and sort_by_modification_time:
-        raise ValueError(
-            "Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both"
-        )
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
 
     if sort_by_creation_time:
         sort_field = "CREATION_TIME"
@@ -2035,16 +1914,8 @@ def update_issue_command(client: Client, args: dict):
     }
     severity_value = args.get("severity")
     status = args.get("status")
-    link_cases = (
-        [int(case_id) for case_id in argToList(args.get("link_cases"))]
-        if args.get("link_cases")
-        else []
-    )
-    unlink_cases = (
-        [int(case_id) for case_id in argToList(args.get("unlink_cases"))]
-        if args.get("unlink_cases")
-        else []
-    )
+    link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
+    unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
 
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
@@ -2110,14 +1981,10 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
                 if case_name := reply.get("case_name"):
                     case["case_name"] = case_name
         except Exception as e:
-            demisto.debug(
-                f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}"
-            )
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "Case", mapped_response, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
         outputs=mapped_response,
         raw_response=mapped_response,
@@ -2159,9 +2026,7 @@ def search_assets_command(client: Client, args):
                          - asset_realms (list[str]): List of asset realms to search for.
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
-    asset_group_ids = get_asset_group_ids_from_names(
-        client, argToList(args.get("asset_groups", ""))
-    )
+    asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     software_package_versions = args.get("software_package_versions", "")
     kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
@@ -2180,9 +2045,7 @@ def search_assets_command(client: Client, args):
         FilterType.JSON_WILDCARD,
         safe_load_json(args.get("asset_tags", [])),
     )
-    filter.add_field(
-        ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", ""))
-    )
+    filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
     filter.add_field(
         ASSET_FIELDS["asset_providers"],
         FilterType.EQ,
@@ -2193,9 +2056,7 @@ def search_assets_command(client: Client, args):
         FilterType.EQ,
         argToList(args.get("asset_realms", "")),
     )
-    filter.add_field(
-        ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids
-    )
+    filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
     filter.add_field(
         ASSET_FIELDS["asset_categories"],
         FilterType.EQ,
@@ -2228,17 +2089,11 @@ def search_assets_command(client: Client, args):
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
 
-    raw_response = (
-        client.search_assets(filter_str, page_number, page_size, on_demand_fields)
-        .get("reply", {})
-        .get("data", [])
-    )
+    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "Assets", response, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
         outputs_key_field="id",
         outputs=response,
@@ -2260,9 +2115,7 @@ def validate_scanner_name(scanner_name: str):
         ValueError: If the scanner name is not in the list of allowed scanners.
     """
     if scanner_name.upper() not in ALLOWED_SCANNERS:
-        raise ValueError(
-            f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}"
-        )
+        raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
 
 
 def build_scanner_config_payload(args: dict) -> dict:
@@ -2297,9 +2150,7 @@ def build_scanner_config_payload(args: dict) -> dict:
 
     overlap = set(enabled_scanners) & set(disabled_scanners)
     if overlap:
-        raise ValueError(
-            f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}"
-        )
+        raise ValueError(f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}")
 
     # Build scanners configuration
     scanners = {}
@@ -2329,21 +2180,10 @@ def build_scanner_config_payload(args: dict) -> dict:
             **({"blockOnError": block_on_error} if block_on_error is not None else {}),
         }
 
-    if (
-        args.get("tag_resource_blocks") is not None
-        or args.get("tag_module_blocks") is not None
-    ):
+    if args.get("tag_resource_blocks") is not None or args.get("tag_module_blocks") is not None:
         scan_configuration["taggingBot"] = {
-            **(
-                {"tagResourceBlocks": tag_resource_blocks}
-                if tag_resource_blocks is not None
-                else {}
-            ),
-            **(
-                {"tagModuleBlocks": tag_module_blocks}
-                if tag_module_blocks is not None
-                else {}
-            ),
+            **({"tagResourceBlocks": tag_resource_blocks} if tag_resource_blocks is not None else {}),
+            **({"tagModuleBlocks": tag_module_blocks} if tag_module_blocks is not None else {}),
         }
 
     if exclude_paths:
@@ -2402,22 +2242,12 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 
     groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
 
-    group_ids = [
-        group.get("XDM.ASSET_GROUP.ID")
-        for group in groups
-        if group.get("XDM.ASSET_GROUP.ID")
-    ]
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
 
     if len(group_ids) != len(group_names):
-        found_groups = [
-            group.get("XDM.ASSET_GROUP.NAME")
-            for group in groups
-            if group.get("XDM.ASSET_GROUP.ID")
-        ]
+        found_groups = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
         missing_groups = [name for name in group_names if name not in found_groups]
-        raise DemistoException(
-            f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid."
-        )
+        raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
 
     return group_ids
 
@@ -2449,10 +2279,7 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
         current_response = client.appsec_remediate_issue(request_body)
         if current_response and isinstance(current_response, dict):
             current_triggered_prs = current_response.get("triggeredPrs")
-            if (
-                isinstance(current_triggered_prs, list)
-                and len(current_triggered_prs) > 0
-            ):
+            if isinstance(current_triggered_prs, list) and len(current_triggered_prs) > 0:
                 triggered_prs.append(current_triggered_prs[0])
 
     return CommandResults(
@@ -2466,20 +2293,14 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
 
 def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
-    filter_builder.add_field(
-        "asset_id", FilterType.CONTAINS, argToList(args.get("asset_id"))
-    )
-    filter_builder.add_field(
-        "asset_name", FilterType.CONTAINS, argToList(args.get("asset_name"))
-    )
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
     filter_builder.add_field(
         "business_application_names",
         FilterType.ARRAY_CONTAINS,
         argToList(args.get("business_application_names")),
     )
-    filter_builder.add_field(
-        "status_coverage", FilterType.EQ, argToList(args.get("status_coverage"))
-    )
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
     filter_builder.add_field(
         "is_scanned_by_vulnerabilities",
         FilterType.EQ,
@@ -2495,29 +2316,17 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
         FilterType.EQ,
         argToList(args.get("is_scanned_by_secrets")),
     )
-    filter_builder.add_field(
-        "is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac"))
-    )
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
     filter_builder.add_field(
         "is_scanned_by_malware",
         FilterType.EQ,
         argToList(args.get("is_scanned_by_malware")),
     )
-    filter_builder.add_field(
-        "is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd"))
-    )
-    filter_builder.add_field(
-        "last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status"))
-    )
-    filter_builder.add_field(
-        "asset_type", FilterType.EQ, argToList(args.get("asset_type"))
-    )
-    filter_builder.add_field(
-        "unified_provider", FilterType.EQ, argToList(args.get("asset_provider"))
-    )
-    filter_builder.add_field(
-        "asset_provider", FilterType.EQ, argToList(args.get("vendor_name"))
-    )
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
 
     return filter_builder
 
@@ -2525,28 +2334,20 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
 def build_exception_rules_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
     filter_builder.add_field("ID", FilterType.CONTAINS, argToList(args.get("id")))
-    filter_builder.add_field(
-        "NAME", FilterType.CONTAINS, argToList(args.get("rule_name"))
-    )
+    filter_builder.add_field("NAME", FilterType.CONTAINS, argToList(args.get("rule_name")))
     filter_builder.add_field("PLATFORM", FilterType.EQ, argToList(args.get("platform")))
-    filter_builder.add_field(
-        "CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions"))
-    )
-    filter_builder.add_field(
-        "CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by"))
-    )
-    filter_builder.add_field(
-        "USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email"))
-    )
+    filter_builder.add_field("CONDITIONS_PRETTY", FilterType.CONTAINS, argToList(args.get("conditions")))
+    filter_builder.add_field("CREATED_BY", FilterType.CONTAINS, argToList(args.get("created_by")))
+    filter_builder.add_field("USER_EMAIL", FilterType.CONTAINS, argToList(args.get("user_email")))
     start_modification_time_str, end_modification_time_str = (
         args.get("start_modification_time"),
         args.get("end_modification_time"),
     )
     if end_modification_time_str and not start_modification_time_str:
-        start_modification_time_str = "1970-01-01"  # The standard "beginning of time" for most systems - beginning_of_unix = datetime.fromtimestamp(0)
-    filter_builder.add_time_range_field(
-        "MODIFICATION_TIME", start_modification_time_str, end_modification_time_str
-    )
+        start_modification_time_str = (
+            "1970-01-01"  # The standard "beginning of time" for most systems - beginning_of_unix = datetime.fromtimestamp(0)
+        )
+    filter_builder.add_time_range_field("MODIFICATION_TIME", start_modification_time_str, end_modification_time_str)
     filter_builder.add_field("STATUS", FilterType.EQ, argToList(args.get("status")))
     filter_builder.add_field("SUBTYPE", FilterType.EQ, argToList(args.get("rule_type")))
     return filter_builder
@@ -2600,10 +2401,7 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
 
     response = client.get_webapp_histograms(request_data)
     reply = response.get("reply", {})
-    outputs = [
-        {"column_name": column_name, "data": data}
-        for column_name, data in reply.items()
-    ]
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
 
     readable_output = "\n".join(
         tableToMarkdown(
@@ -2643,11 +2441,7 @@ def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
     fb = FilterBuilder()
     fb.add_field("ruleName", FilterType.EQ, rule_names)
     data = (
-        client.get_webapp_data(
-            build_webapp_request_data(
-                APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName"
-            )
-        )
+        client.get_webapp_data(build_webapp_request_data(APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName"))
         .get("reply", {})
         .get("DATA", [])
         or []
@@ -2704,9 +2498,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
 
     # Ensure at least one trigger is enabled
     if not any(trigger.get("isEnabled") for trigger in triggers.values()):
-        raise DemistoException(
-            "At least one trigger (periodic, PR, or CI/CD) must be enabled for the policy."
-        )
+        raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be enabled for the policy.")
 
     payload = {
         "name": policy_name,
@@ -2721,9 +2513,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
 
     client.create_policy(payload)
 
-    return CommandResults(
-        readable_output=f"AppSec policy '{policy_name}' created successfully."
-    )
+    return CommandResults(readable_output=f"AppSec policy '{policy_name}' created successfully.")
 
 
 def create_policy_build_conditions(client: Client, args: dict) -> dict:
@@ -2749,18 +2539,14 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         # Default to all finding types if none specified
         finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
 
-    builder.add_field(
-        "Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING
-    )
+    builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
 
     # Severity
     if severities := argToList(args.get("conditions_severity")):
         builder.add_field("Severity", FilterType.EQ, severities)
 
     # Developer Suppression
-    if dev_supp := arg_to_bool_or_none(
-        args.get("conditions_respect_developer_suppression")
-    ):
+    if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
     # Backlog
@@ -2853,24 +2639,16 @@ def create_policy_build_scope(args: dict) -> dict:
 
     # Category
     if categories := argToList(args.get("scope_category", [])):
-        builder.add_field(
-            "category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING
-        )
+        builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
 
     # Business application names - use the exact field name
     if business_app_names := argToList(args.get("scope_business_application_names")):
-        filter_type = (
-            FilterType.ARRAY_CONTAINS
-            if len(business_app_names) > 1
-            else FilterType.CONTAINS
-        )
+        filter_type = FilterType.ARRAY_CONTAINS if len(business_app_names) > 1 else FilterType.CONTAINS
         builder.add_field("business_application_names", filter_type, business_app_names)
 
     # Application business criticality
     if app_criticality := args.get("scope_application_business_criticality"):
-        builder.add_field(
-            "application_business_criticality", FilterType.CONTAINS, app_criticality
-        )
+        builder.add_field("application_business_criticality", FilterType.CONTAINS, app_criticality)
 
     # Repository name
     if repo_name := args.get("scope_repository_name"):
@@ -2923,9 +2701,7 @@ def create_policy_build_triggers(args: dict) -> dict:
         for that trigger type.
     """
     # Periodic trigger
-    periodic_report_issue = argToBoolean(
-        args.get("triggers_periodic_report_issue", False)
-    )
+    periodic_report_issue = argToBoolean(args.get("triggers_periodic_report_issue", False))
     periodic_override = args.get("triggers_periodic_override_severity")
 
     # If override is set, reportIssue must be True
@@ -2944,9 +2720,7 @@ def create_policy_build_triggers(args: dict) -> dict:
     if pr_override:
         pr_report_issue = True
 
-    pr_enabled = (
-        pr_report_issue or pr_block_pr or pr_report_comment or bool(pr_override)
-    )
+    pr_enabled = pr_report_issue or pr_block_pr or pr_report_comment or bool(pr_override)
 
     # CI/CD trigger
     cicd_report_issue = argToBoolean(args.get("triggers_cicd_report_issue", False))
@@ -2958,9 +2732,7 @@ def create_policy_build_triggers(args: dict) -> dict:
     if cicd_override:
         cicd_report_issue = True
 
-    cicd_enabled = (
-        cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
-    )
+    cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
     triggers = {
         "periodic": {
@@ -2986,17 +2758,13 @@ def create_policy_build_triggers(args: dict) -> dict:
     }
 
     # Add override severity if specified (and set to null if not specified)
-    triggers["periodic"]["overrideIssueSeverity"] = (
-        periodic_override if periodic_override else None
-    )
+    triggers["periodic"]["overrideIssueSeverity"] = periodic_override if periodic_override else None
     triggers["pr"]["overrideIssueSeverity"] = pr_override if pr_override else None
     triggers["cicd"]["overrideIssueSeverity"] = cicd_override if cicd_override else None
 
     # Ensure at least one trigger is enabled
     if not any(t["isEnabled"] for t in triggers.values()):
-        raise DemistoException(
-            "At least one trigger (periodic, PR, or CI/CD) must be set."
-        )
+        raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be set.")
 
     return triggers
 
@@ -3013,9 +2781,7 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
             - A list of applicable issue type table names
             - A FilterBuilder instance with configured filters
     """
-    special_filter_args = {
-        filter for filter in args if filter in AppsecIssues.SPECIAL_FILTERS
-    }
+    special_filter_args = {filter for filter in args if filter in AppsecIssues.SPECIAL_FILTERS}
     tables_filters = {}
     filter_builder = FilterBuilder()
 
@@ -3024,9 +2790,7 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
             tables_filters[issue_type.table_name] = filter_builder
 
     if not tables_filters:
-        raise DemistoException(
-            f"No matching issue type found for the given filter combination: {special_filter_args}"
-        )
+        raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
     filter_builder.add_field(
         "cas_issues_cvss_score",
@@ -3038,9 +2802,7 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
         FilterType.GTE,
         arg_to_float(args.get("epss_score_gte")),
     )
-    filter_builder.add_field(
-        "cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev"))
-    )
+    filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field(
         "cas_sla_status",
         FilterType.EQ,
@@ -3052,9 +2814,7 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
         FilterType.EQ,
         arg_to_bool_or_none(args.get("automated_fix_available")),
     )
-    filter_builder.add_field(
-        "cas_issues_validation", FilterType.EQ, argToList(args.get("validation"))
-    )
+    filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
     filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
     filter_builder.add_field(
         "severity",
@@ -3062,30 +2822,14 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
         argToList(args.get("severity")),
         AppsecIssues.SEVERITY_MAPPINGS,
     )
-    filter_builder.add_field(
-        "internal_id", FilterType.CONTAINS, argToList(args.get("issue_id"))
-    )
-    filter_builder.add_field(
-        "alert_name", FilterType.CONTAINS, argToList(args.get("issue_name"))
-    )
-    filter_builder.add_field(
-        "cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name"))
-    )
-    filter_builder.add_field(
-        "cas_issues_repository", FilterType.CONTAINS, argToList(args.get("repository"))
-    )
-    filter_builder.add_field(
-        "cas_issues_file_path", FilterType.CONTAINS, argToList(args.get("file_path"))
-    )
-    filter_builder.add_field(
-        "cas_issues_git_user", FilterType.CONTAINS, argToList(args.get("collaborator"))
-    )
-    filter_builder.add_field(
-        "status_progress", FilterType.EQ, argToList(args.get("status"))
-    )
-    filter_builder.add_time_range_field(
-        "local_insert_ts", args.get("start_time"), args.get("end_time")
-    )
+    filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field("cas_issues_repository", FilterType.CONTAINS, argToList(args.get("repository")))
+    filter_builder.add_field("cas_issues_file_path", FilterType.CONTAINS, argToList(args.get("file_path")))
+    filter_builder.add_field("cas_issues_git_user", FilterType.CONTAINS, argToList(args.get("collaborator")))
+    filter_builder.add_field("status_progress", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_time_range_field("local_insert_ts", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
         "assigned_to_pretty",
         FilterType.CONTAINS,
@@ -3099,14 +2843,10 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     if "backlog_status" in args and "ISSUES_CI_CD" in tables_filters:
         # backlog filter is different for the CI/CD issue table
         cicd_filter_builder = copy.deepcopy(filter_builder)
-        cicd_filter_builder.add_field(
-            "issue_backlog_status", FilterType.EQ, argToList(args.get("backlog_status"))
-        )
+        cicd_filter_builder.add_field("issue_backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
         tables_filters["ISSUES_CI_CD"] = cicd_filter_builder
 
-    filter_builder.add_field(
-        "backlog_status", FilterType.EQ, argToList(args.get("backlog_status"))
-    )
+    filter_builder.add_field("backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
 
     return tables_filters
 
@@ -3142,9 +2882,7 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "assignee": {"path": ["assigned_to_pretty"]},
         "time_added": {"path": ["source_insert_ts"]},
         "epss_score": {"path": ["cas_issues_extended_fields", "epss_score"]},
-        "cvss_score": {
-            "path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]
-        },
+        "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
         "has_kev": {"path": ["cas_issues_is_kev"]},
         "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
         "sla_status": {
@@ -3153,19 +2891,11 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         },
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
-        "repository_name": {
-            "path": ["cas_issues_normalized_fields", "xdm.repository.name"]
-        },
-        "repository_organization": {
-            "path": ["cas_issues_normalized_fields", "xdm.repository.organization"]
-        },
+        "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
         "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
-        "collaborator": {
-            "path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]
-        },
-        "is_deployed": {
-            "path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]
-        },
+        "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
+        "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
         "backlog_status": {"path": ["backlog_status"]},
     }
     appsec_issue = {}
@@ -3176,11 +2906,7 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
             current_value = current_value.get(key, {})
 
         if current_value:
-            value = (
-                current_value
-                if "mapper" not in output_info
-                else output_info.get("mapper", {}).get(current_value)
-            )
+            value = current_value if "mapper" not in output_info else output_info.get("mapper", {}).get(current_value)
             appsec_issue[output_key] = value
 
     return appsec_issue
@@ -3204,9 +2930,7 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     group_action_id = reply.get("group_action_id")
 
     if not group_action_id:
-        raise DemistoException(
-            "No group_action_id found. Please ensure that valid endpoint IDs are provided."
-        )
+        raise DemistoException("No group_action_id found. Please ensure that valid endpoint IDs are provided.")
 
     readable_output = f"Endpoint support file request submitted successfully. Group Action ID: {group_action_id}"
 
@@ -3227,9 +2951,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     sort_field = args.get("sort_field", "severity")
     sort_order = args.get("sort_order", "DESC")
 
-    tables_filters: dict[str, FilterBuilder] = create_appsec_issues_filter_and_tables(
-        args
-    )
+    tables_filters: dict[str, FilterBuilder] = create_appsec_issues_filter_and_tables(args)
 
     all_appsec_issues: list[dict] = []
     for table_name, filter_builder in tables_filters.items():
@@ -3247,9 +2969,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
             data = reply.get("DATA", [])
             all_appsec_issues.extend(data)
         except Exception as e:
-            raise DemistoException(
-                f"Failed to retrieve issues from the {table_name} table: {e}"
-            )
+            raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
 
     sorted_issues = sorted(
         all_appsec_issues,
@@ -3257,9 +2977,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
         reverse=(sort_order == "DESC"),
     )
     sorted_issues = sorted_issues[:limit]
-    filtered_appsec_issues = [
-        normalize_and_filter_appsec_issue(issue) for issue in sorted_issues
-    ]
+    filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
 
     readable_output = tableToMarkdown(
         "Application Security Issues",
@@ -3297,38 +3015,25 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
 
-    if status == "resolved" and (
-        not resolve_reason
-        or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)
-    ):
-        raise ValueError(
-            "In order to set the case to resolved, you must provide a resolve reason."
-        )
+    if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
 
-    if (
-        resolve_reason or resolve_all_alerts or resolved_comment
-    ) and not status == "resolved":
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
             "'resolved'."
         )
 
     if status and not CaseManagement.STATUS.get(status):
-        raise ValueError(
-            f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}"
-        )
+        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
 
-    if user_defined_severity and not CaseManagement.SEVERITY.get(
-        user_defined_severity, False
-    ):
+    if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
         raise ValueError(
             f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
             f"{list(CaseManagement.SEVERITY.keys())}"
         )
 
-    valid_fields_to_update, error_messages = validate_custom_fields(
-        custom_fields, client
-    )
+    valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
 
     # Build request_data with mapped and filtered values
     case_update_payload = {
@@ -3338,12 +3043,8 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "notes": notes if notes else None,
         "starred": argToBoolean(starred) if starred else None,
         "status": CaseManagement.STATUS.get(status) if status else None,
-        "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity)
-        if user_defined_severity
-        else None,
-        "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason)
-        if resolve_reason
-        else None,
+        "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
+        "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
         "CustomFields": valid_fields_to_update if valid_fields_to_update else None,
@@ -3381,16 +3082,10 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
         target = []
         for raw_case in case_list:
-            raw_status = (
-                str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", "")))
-                .split("_")[-1]
-                .lower()
-            )
+            raw_status = str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", ""))).split("_")[-1].lower()
             status_key = raw_status.replace("investigation", "under_investigation")
             raw_severity = str(raw_case.get("SEVERITY", "")).split("_")[-1].lower()
-            raw_grouping = (
-                str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
-            )
+            raw_grouping = str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
 
             target.append(
                 {
@@ -3448,17 +3143,13 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                         "reason": None,
                     },
                     "hasAttachment": raw_case.get("HAS_ATTACHMENT", False),
-                    "internalStatus": raw_case.get(
-                        "INTERNAL_STATUS", "STATUS_010_NONE"
-                    ),
+                    "internalStatus": raw_case.get("INTERNAL_STATUS", "STATUS_010_NONE"),
                 }
             )
 
         return target
 
-    demisto.info(
-        f"Executing case update for cases {case_ids} with request data: {case_update_payload}"
-    )
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
     replies = []
     if is_bulk_update_allowed(case_update_payload):
         demisto.debug("Performing bulk case update")
@@ -3480,9 +3171,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
             limit=len(case_ids),
             sort_field="CREATION_TIME",
         )
-        demisto.debug(
-            f"request_data to retrieve cases that were updated via bulk: {request_data}"
-        )
+        demisto.debug(f"request_data to retrieve cases that were updated via bulk: {request_data}")
         response = client.get_webapp_data(request_data)
         reply = response.get("reply", {})
         data = reply.get("DATA", [])
@@ -3493,17 +3182,13 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         if assignee == "unassigned":
             for case_id in case_ids:
                 client.unassign_case(case_id)
-        responses = [
-            client.update_case(case_update_payload, case_id) for case_id in case_ids
-        ]
+        responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
         replies = []
         for resp in responses:
             replies.append(process_case_response(resp))
 
     command_results = CommandResults(
-        readable_output=tableToMarkdown(
-            "Cases", replies, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=replies,
@@ -3517,9 +3202,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     return command_results
 
 
-def validate_custom_fields(
-    fields_to_validate: dict, client: Client
-) -> tuple[dict, str]:
+def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[dict, str]:
     """
     Validates custom fields against system metadata.
 
@@ -3539,16 +3222,12 @@ def validate_custom_fields(
         return {}, "No Fields are defined in the system."
 
     system_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get(
-            "CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]
-        )
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get(
-            "CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]
-        )
+        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
@@ -3601,10 +3280,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
         error_messages.append(f"Issue ID {issue_id}: {error_message}")
 
     demisto.debug(f"Playbook run errors: {error_messages}")
-    raise ValueError(
-        f"Playbook '{playbook_id}' failed for following issues:\n"
-        + "\n".join(error_messages)
-    )
+    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
 def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
@@ -3623,13 +3299,8 @@ def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
         argToList(args.get("script_name")),
     )
 
-    platforms = [
-        ScriptManagement.PLATFORMS[platform]
-        for platform in argToList(args.get("supported_platforms"))
-    ]
-    filter_builder.add_field(
-        ScriptManagement.FIELDS["supported_platforms"], FilterType.CONTAINS, platforms
-    )
+    platforms = [ScriptManagement.PLATFORMS[platform] for platform in argToList(args.get("supported_platforms"))]
+    filter_builder.add_field(ScriptManagement.FIELDS["supported_platforms"], FilterType.CONTAINS, platforms)
 
     request_data = build_webapp_request_data(
         table_name=SCRIPTS_TABLE,
@@ -3653,9 +3324,7 @@ def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
             "macos_supported": "AGENT_OS_MAC" in str(script.get("PLATFORM", "")),
             "script_uid": script.get("GUID"),
             "script_id": script.get("ID"),
-            "script_inputs": script.get("ENTRY_POINT_DEFINITION", {}).get(
-                "input_params", []
-            ),
+            "script_inputs": script.get("ENTRY_POINT_DEFINITION", {}).get("input_params", []),
         }
         mapped_scripts.append(mapped_script)
 
@@ -3667,9 +3336,7 @@ def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
     command_results = []
     command_results.append(
         CommandResults(
-            readable_output=tableToMarkdown(
-                "Scripts", mapped_scripts, headerTransform=string_to_table_header
-            ),
+            readable_output=tableToMarkdown("Scripts", mapped_scripts, headerTransform=string_to_table_header),
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Scripts",
             outputs=mapped_scripts,
             outputs_key_field="script_id",
@@ -3709,9 +3376,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
         raise ValueError("You must specify either script_uid or script_name.")
 
     if endpoint_ids and endpoint_names:
-        raise ValueError(
-            "Please provide either endpoint_ids or endpoint_names, not both."
-        )
+        raise ValueError("Please provide either endpoint_ids or endpoint_names, not both.")
 
     if not endpoint_ids and not endpoint_names:
         raise ValueError("You must specify either endpoint_ids or endpoint_names.")
@@ -3722,7 +3387,9 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
-            error_message = "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            error_message = (
+                "Multiple scripts found. Please specify the exact script by providing one of the following script_uid:\n\n"
+            )
             for script in scripts:
                 error_message += (
                     f"Script UID: {script['script_uid']}\n"
@@ -3740,9 +3407,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
             script = scripts[0]
             script_uid = script["script_uid"]
             script_inputs = script["script_inputs"]
-            script_inputs_names = [
-                input_param.get("name") for input_param in script_inputs
-            ]
+            script_inputs_names = [input_param.get("name") for input_param in script_inputs]
             if script["script_inputs"] and not parameters:
                 raise ValueError(
                     f"Script '{script_name}' requires the following input parameters: {', '.join(script_inputs_names)}, "
@@ -3754,17 +3419,13 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
             raise ValueError(f"No scripts found with the name: {script_name}")
 
     if endpoint_names:
-        endpoint_results = core_list_endpoints_command(
-            client, {"endpoint_name": endpoint_names}
-        )
+        endpoint_results = core_list_endpoints_command(client, {"endpoint_name": endpoint_names})
         endpoints = endpoint_results.outputs or []
         demisto.debug(f"Endpoint results: {endpoints}")
         endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints]  # type: ignore
 
     if not endpoint_ids:
-        raise ValueError(
-            f"No endpoints found with the specified names: {', '.join(endpoint_names)}"
-        )
+        raise ValueError(f"No endpoints found with the specified names: {', '.join(endpoint_names)}")
 
     client._base_url = "/api/webapp/public_api/v1"
     return script_run_polling_command(
@@ -3794,17 +3455,11 @@ def map_endpoint_format(endpoint_list: list) -> list:
 
     map_output_endpoint_status = {v: k for k, v in Endpoints.ENDPOINT_STATUS.items()}
 
-    map_output_endpoint_platform = {
-        v: k for k, v in Endpoints.ENDPOINT_PLATFORM.items()
-    }
+    map_output_endpoint_platform = {v: k for k, v in Endpoints.ENDPOINT_PLATFORM.items()}
 
-    map_output_endpoint_operational_status = {
-        v: k for k, v in Endpoints.ENDPOINT_OPERATIONAL_STATUS.items()
-    }
+    map_output_endpoint_operational_status = {v: k for k, v in Endpoints.ENDPOINT_OPERATIONAL_STATUS.items()}
 
-    map_output_assigned_prevention_policy = {
-        v: k for k, v in Endpoints.ASSIGNED_PREVENTION_POLICY.items()
-    }
+    map_output_assigned_prevention_policy = {v: k for k, v in Endpoints.ASSIGNED_PREVENTION_POLICY.items()}
 
     # A dispatcher for easy lookup:
     nested_mappers = {
@@ -3854,40 +3509,24 @@ def build_endpoint_filters(args: dict):
         Endpoints.ENDPOINT_OPERATIONAL_STATUS[operational_status]
         for operational_status in argToList(args.get("operational_status"))
     ]
-    endpoint_type = [
-        Endpoints.ENDPOINT_TYPE[endpoint_type]
-        for endpoint_type in argToList(args.get("endpoint_type"))
-    ]
-    endpoint_status = [
-        Endpoints.ENDPOINT_STATUS[status]
-        for status in argToList(args.get("endpoint_status"))
-    ]
-    platform = [
-        Endpoints.ENDPOINT_PLATFORM[platform]
-        for platform in argToList(args.get("platform"))
-    ]
+    endpoint_type = [Endpoints.ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get("endpoint_type"))]
+    endpoint_status = [Endpoints.ENDPOINT_STATUS[status] for status in argToList(args.get("endpoint_status"))]
+    platform = [Endpoints.ENDPOINT_PLATFORM[platform] for platform in argToList(args.get("platform"))]
     assigned_prevention_policy = [
-        Endpoints.ASSIGNED_PREVENTION_POLICY[assigned]
-        for assigned in argToList(args.get("assigned_prevention_policy"))
+        Endpoints.ASSIGNED_PREVENTION_POLICY[assigned] for assigned in argToList(args.get("assigned_prevention_policy"))
     ]
     agent_eol = args.get("agent_eol")
     supported_version = arg_to_bool_or_none(agent_eol) if agent_eol else None
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
     filter_builder.add_field(
         Endpoints.ENDPOINT_FIELDS["operational_status"],
         FilterType.EQ,
         operational_status,
     )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type
-    )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["platform"], FilterType.EQ, platform
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
     filter_builder.add_field(
         Endpoints.ENDPOINT_FIELDS["assigned_prevention_policy"],
         FilterType.EQ,
@@ -3923,9 +3562,7 @@ def build_endpoint_filters(args: dict):
         FilterType.EQ,
         argToList(args.get("domain")),
     )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags"))
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
     filter_builder.add_field(
         Endpoints.ENDPOINT_FIELDS["endpoint_id"],
         FilterType.EQ,
@@ -3941,9 +3578,7 @@ def build_endpoint_filters(args: dict):
         FilterType.EQ,
         argToList(args.get("cloud_region")),
     )
-    filter_builder.add_field(
-        Endpoints.ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version
-    )
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
     filter_dict = filter_builder.to_dict()
 
     return filter_dict
@@ -3984,9 +3619,7 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
     demisto.debug(f"Endpoint data after mapping and formatting: {data}")
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "Endpoints", data, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
         outputs_key_field="endpoint_id",
         outputs=data,
@@ -4105,9 +3738,7 @@ def list_compliance_standards_payload(
     payload: dict = {"request_data": {"filters": []}}
 
     if name:
-        payload["request_data"]["filters"].append(
-            {"field": "name", "operator": "contains", "value": name}
-        )
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
 
     if created_by:
         payload["request_data"]["filters"].append(
@@ -4120,9 +3751,7 @@ def list_compliance_standards_payload(
 
     if labels:
         for label in labels:
-            payload["request_data"]["filters"].append(
-                {"field": "labels", "operator": "contains", "value": label}
-            )
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
 
     payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
 
@@ -4178,16 +3807,8 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
     filter_str = filter.to_dict()
     groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
-    group_ids = [
-        group.get("XDM.ASSET_GROUP.ID")
-        for group in groups
-        if group.get("XDM.ASSET_GROUP.ID")
-    ]
-    group_names = [
-        group.get("XDM.ASSET_GROUP.NAME")
-        for group in groups
-        if group.get("XDM.ASSET_GROUP.NAME")
-    ]
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
 
     if not group_ids:
         return_error("No asset group found matching the provided name.")
@@ -4223,9 +3844,7 @@ def core_add_assessment_profile_command(client: Client, args: dict) -> CommandRe
     )
 
 
-def core_list_compliance_standards_command(
-    client: Client, args: dict
-) -> list[CommandResults]:
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Lists compliance standards with optional filtering.
 
@@ -4246,14 +3865,7 @@ def core_list_compliance_standards_command(
     name = args.get("name", "")
     created_by = args.get("created_by", "")
     labels = argToList(args.get("labels", ""))
-    labels = [
-        "alibaba_cloud"
-        if label == "Alibaba Cloud"
-        else "on_prem"
-        if label == "On Prem"
-        else label
-        for label in labels
-    ]
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
     page = arg_to_number(args.get("page", "0"))
     page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
 
@@ -4321,9 +3933,7 @@ def validate_start_end_times(start_time, end_time):
         DemistoException: If only one of the times is provided or the time range is less than two hours.
     """
     if (start_time and not end_time) or (end_time and not start_time):
-        raise DemistoException(
-            "Both start_time and end_time must be provided together."
-        )
+        raise DemistoException("Both start_time and end_time must be provided together.")
 
     if start_time and end_time:
         start_dt = datetime.strptime(start_time, "%H:%M")
@@ -4333,9 +3943,7 @@ def validate_start_end_times(start_time, end_time):
             diff += SECONDS_IN_DAY
 
         if diff < MIN_DIFF_SECONDS:
-            raise DemistoException(
-                "Start and end times must be at least two hours apart (midnight crossing is supported)."
-            )
+            raise DemistoException("Start and end times must be at least two hours apart (midnight crossing is supported).")
 
 
 def transform_distributions(response):
@@ -4350,11 +3958,7 @@ def transform_distributions(response):
     for platform, items in distributions.items():
         for item in items:
             unsupported_os = arg_to_number(item.get("unsupported_os"))
-            if (
-                item.get("is_beta")
-                or item.get("less") == 0
-                or (unsupported_os != 0 and unsupported_os == total_count)
-            ):
+            if item.get("is_beta") or item.get("less") == 0 or (unsupported_os != 0 and unsupported_os == total_count):
                 continue
 
             new_item = remove_empty_elements(
@@ -4448,9 +4052,7 @@ def update_endpoint_version_command(client, args):
         "upgrade_to_pkg_manager": False,
         "schedule_data": {"START_TIME": start_time, "END_TIME": end_time, "DAYS": days},
     }
-    demisto.debug(
-        f"Request data of the command core-update-endpoint-version: {request_data}"
-    )
+    demisto.debug(f"Request data of the command core-update-endpoint-version: {request_data}")
     response = client.update_endpoint_version(request_data)
     demisto.debug(f"Response of the command core-update-endpoint-version: {response}")
     group_action_id = response.get("reply", {}).get("group_action_id")
@@ -4518,24 +4120,16 @@ def combine_pretty_names(list_of_criteria: list[list[dict[str, Any]]]) -> list[s
 
 def postprocess_exception_rules_response(view_def, data):
     view_def_data = view_def[0]
-    mappings = extract_mappings_from_view_def(
-        view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP
-    )
+    mappings = extract_mappings_from_view_def(view_def_data, EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP)
     for record in data:
         for field in EXCEPTION_RULES_OUTPUT_FIELDS_TO_MAP:
-            record[field] = [
-                mappings.get(field, {}).get(val, val) for val in record.get(field, [])
-            ]
-        record["ASSOCIATED_TARGETS"] = combine_pretty_names(
-            record.get("ASSOCIATED_TARGETS", [])
-        )
+            record[field] = [mappings.get(field, {}).get(val, val) for val in record.get(field, [])]
+        record["ASSOCIATED_TARGETS"] = combine_pretty_names(record.get("ASSOCIATED_TARGETS", []))
         record["CONDITIONS"] = record.get("CONDITIONS_PRETTY")
         record["RULE_TYPE"] = record.get("SUBTYPE")
         record["CREATION_TIMESTAMP"] = record.get("CREATION_TIME")
         record["MODIFICATION_TIMESTAMP"] = record.get("MODIFICATION_TIME")
-        record["MODIFICATION_TIME"] = timestamp_to_datestring(
-            record["MODIFICATION_TIMESTAMP"]
-        )
+        record["MODIFICATION_TIME"] = timestamp_to_datestring(record["MODIFICATION_TIMESTAMP"])
         record["CREATION_TIME"] = timestamp_to_datestring(record["CREATION_TIMESTAMP"])
         record.pop("CONDITIONS_PRETTY", None)
         record.pop("SUBTYPE", None)
@@ -4607,9 +4201,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandRe
     sort_field = args.get("sort_field", "MODIFICATION_TIME")
     sort_order = args.get("sort_order", "DESC")
 
-    default_limit = (
-        arg_to_number(args.get("page_size")) or MAX_GET_EXCEPTION_RULES_LIMIT
-    )
+    default_limit = arg_to_number(args.get("page_size")) or MAX_GET_EXCEPTION_RULES_LIMIT
     page_number = arg_to_number(args.get("page", 0)) or 0
     offset = page_number * default_limit if args.get("page") else 0
     retrieve_all = argToBoolean(args.get("retrieve_all", False))
@@ -4652,9 +4244,7 @@ def list_exception_rules_command(client, args: dict[str, Any]) -> list[CommandRe
             all_outputs.extend(records)
             readable_output_lines.append(hr_output)
         else:
-            readable_output_lines.append(
-                f"No data found for {table_name} matching the filter."
-            )
+            readable_output_lines.append(f"No data found for {table_name} matching the filter.")
 
     final_readable_output = "\n".join(readable_output_lines)
 
@@ -4696,9 +4286,7 @@ def list_system_users_command(client, args):
         data = data[:MAX_GET_SYSTEM_USERS_LIMIT]
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "System Users", data, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("System Users", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.User",
         outputs_key_field="user_email",
         outputs=data,
@@ -4785,9 +4373,7 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
             ok_codes=[200],
         )
         if isinstance(query_data, str):
-            response["results"] = [
-                json.loads(line) for line in query_data.split("\n") if line.strip()
-            ]
+            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
         else:
             response["results"] = query_data
 
@@ -4800,17 +4386,13 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
                 "format": "json",
             }
         }
-        res = client._http_request(
-            method="POST", url_suffix="/xql/get_query_results", json_data=data
-        )
+        res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
         response["error_details"] = res.get("reply", "")
 
     return response
 
 
-def get_xql_query_results_platform_polling(
-    client: Client, execution_id: str, timeout: int
-) -> dict:
+def get_xql_query_results_platform_polling(client: Client, execution_id: str, timeout: int) -> dict:
     """Retrieve results of an executed XQL query using Platform API with polling.
 
     Args:
@@ -4946,9 +4528,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     }
 
     demisto.debug(f"Calling xql_queries/submit with {data=}")
-    res = client.platform_http_request(
-        url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200]
-    )
+    res = client.platform_http_request(url_suffix="/xql_queries/submit/", method="POST", json_data=data, ok_codes=[200])
     return str(res)
 
 
@@ -4970,20 +4550,14 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     clean_query, view_graph_clause = remove_view_graph_clause(query)
     query_with_limit = handle_xql_limit(clean_query, MAX_QUERY_LIMIT)
     full_query = query_with_limit + view_graph_clause
-    timeframe = convert_timeframe_string_to_json(
-        args.get("timeframe", "24 hours") or "24 hours"
-    )
+    timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = args.get("execution_id", "") or start_xql_query_platform(
-        client, query_with_limit, timeframe
-    )
+    execution_id = args.get("execution_id", "") or start_xql_query_platform(client, query_with_limit, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
 
-    query_url = "/".join(
-        [demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id]
-    )
+    query_url = "/".join([demisto.demistoUrls().get("server", ""), "xql/xql-search", execution_id])
     outputs = {
         "execution_id": execution_id,
         "query_url": query_url,
@@ -4997,11 +4571,7 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
         timeout_in_secs = int(args.get("timeout_in_seconds", 180))
-        outputs.update(
-            get_xql_query_results_platform_polling(
-                client, execution_id, timeout_in_secs
-            )
-        )
+        outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
 
         if view_graph_clause:
             demisto.debug("Getting additional query data for view graph")
@@ -5127,9 +4697,7 @@ def get_case_resolution_statuses(client, args):
         raw_responses.append(response)
         outputs.append(postprocess_case_resolution_statuses(client, response))
     return CommandResults(
-        readable_output=tableToMarkdown(
-            "Case Resolution Statuses", outputs, headerTransform=string_to_table_header
-        ),
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseResolutionStatus",
         outputs=outputs,
         raw_response=raw_responses,
@@ -5138,9 +4706,7 @@ def get_case_resolution_statuses(client, args):
 
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
-        raise DemistoException(
-            "This command is not available for this platform version"
-        )
+        raise DemistoException("This command is not available for this platform version")
 
 
 def main():  # pragma: no cover
@@ -5196,20 +4762,14 @@ def main():  # pragma: no cover
                 assignee_filter_option = args.pop("assignee", "")
                 args[assignee_filter_option] = True
 
-            issues_command_results: CommandResults = get_alerts_by_filter_command(
-                client, args
-            )
+            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [
-                    alert_to_issue(output) for output in issues_command_results.outputs
-                ]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(
-                    output_keys, issues_command_results.outputs
-                )  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 
