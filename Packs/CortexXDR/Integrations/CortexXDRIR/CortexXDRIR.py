@@ -1674,11 +1674,11 @@ def bioc_list_command(client: Client, args: Dict) -> CommandResults:
     extended_view = argToBoolean(args.get("extra_data", False))
 
     request_data = assign_params(
-        filters=filters,
         extended_view=extended_view,
         search_from=page * page_size,
         search_to=(page + 1) * page_size,
     )
+    request_data["filters"] = filters
     reply = client.get_biocs({"request_data": request_data})
     biocs = reply.get("objects", [])
     readable_output = tableToMarkdown(
@@ -1822,12 +1822,16 @@ def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
     if filter_json := args.get("filter_json"):
         filters.extend(json.loads(filter_json))
 
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+
     request_data = assign_params(
-        filters=filters,
         extended_view=argToBoolean(args.get("extra_data", False)),
-        search_from=arg_to_number(args.get("page")),
-        search_to=arg_to_number(args.get("limit")),
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
     )
+    request_data["filters"] = filters
     reply = client.get_correlation_rules({"request_data": request_data})
     rules = reply.get("objects", [])
     readable_output = tableToMarkdown(

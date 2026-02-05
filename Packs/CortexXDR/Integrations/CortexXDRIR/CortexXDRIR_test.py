@@ -2808,7 +2808,6 @@ def test_replace_dots_in_keys():
             {},
             {
                 "request_data": {
-                    "filters": [],
                     "extended_view": False,
                     "search_from": 0,
                     "search_to": 50,
@@ -2979,8 +2978,8 @@ def test_bioc_delete_command(mocker, mock_reply, expected_output):
                 "request_data": {
                     "filters": [{"field": "name", "operator": "EQ", "value": "test_rule"}],
                     "extended_view": True,
-                    "search_from": 10,
-                    "search_to": 20,
+                    "search_from": 1,
+                    "search_to": 10,
                 }
             },
         ),
@@ -2990,8 +2989,6 @@ def test_bioc_delete_command(mocker, mock_reply, expected_output):
                 "request_data": {
                     "filters": [{"field": "name", "operator": "EQ", "value": "test_rule"}],
                     "extended_view": False,
-                    "search_from": 0,
-                    "search_to": 50,
                 }
             },
         ),
