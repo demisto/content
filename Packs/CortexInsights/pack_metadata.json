@@ -1,0 +1,18 @@
+{
+  "name": "Cortex Insights",
+  "description": "Cortex Insights dashboards for environment health metrics and trends",
+  "support": "Community",
+  "currentVersion": "1.0.0",
+  "author": "Palo Alto Networks Technical Services",
+  "url": "",
+  "email": "",
+  "categories": [],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ],
+  "githubUser": []
+}
