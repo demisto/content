@@ -2027,16 +2027,17 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     """
     case_id = args.get("case_id")
     artifacts = client.get_case_artifacts(case_id)
+    # TODO to remove the mock before merging
+    demisto.debug(f"Full list of artifacts: {artifacts}")
+    mocked_artifacts = [{'case_id': 52686,
+                         'file_artifacts': {'DATA': [{'type': 'HASH', 'alert_count': 746, 'is_manual': False, 'is_malicious': True, 'is_process': True, 'file_name': 'svchost.exe', 'file_sha256': 'b0b36bff7ae4057f687d839cd4b3d81159ab646f1ee1b22106a927e93decbb61', 'file_signature_status': 'SIGNATURE_SIGNED', 'file_signature_vendor_name': 'Microsoft Corporation', 'file_wildfire_verdict': 'MALWARE', 'low_confidence': False, 'case_id': 52686}], 'TOTAL_COUNT': 1},
+                         'network_artifacts': {'DATA': [{'type': 'IP', 'alert_count': 1, 'is_manual': False, 'network_domain': None, 'network_remote_ip': '2.2.2.2', 'network_remote_port': 8000, 'network_country': None, 'case_id': 52686}], 'TOTAL_COUNT': 1}}]
+    artifacts = mocked_artifacts
     if isinstance(artifacts, list):
         artifacts = artifacts[0]
 
     network_artifacts = artifacts.get("network_artifacts", {}).get("DATA", [])
     file_artifacts = artifacts.get("file_artifacts", {}).get("DATA", [])
-
-    for artifact in network_artifacts:
-        artifact["case_id"] = case_id
-    for artifact in file_artifacts:
-        artifact["case_id"] = case_id
 
     command_results = []
 
