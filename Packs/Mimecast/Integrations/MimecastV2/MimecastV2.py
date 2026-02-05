@@ -2320,8 +2320,8 @@ def fetch_incidents():
         )
 
     # Build new last run state
-    time = last_fetch.isoformat().split(".")[0] + "Z"
-    new_last_run = {"time": time}
+    time_ = last_fetch.isoformat().split(".")[0] + "Z"
+    new_last_run = {"time": time_}
 
     # Save pagination states for all log types
     save_pagination_state(
@@ -2332,7 +2332,13 @@ def fetch_incidents():
         new_last_fetch_held_messages,
         fetch_times["held_messages"],
     )
-    save_pagination_state(new_last_run, "url", url_next_page, next_dedup_url_logs, new_last_fetch_url, fetch_times["url"])
+    save_pagination_state(
+        new_last_run,
+        "url", url_next_page,
+        next_dedup_url_logs,
+        new_last_fetch_url,
+        fetch_times["url"]
+    )
     save_pagination_state(
         new_last_run,
         "attachment",
@@ -2437,7 +2443,7 @@ def generic_fetch_logs(
         Tuple of (next_page, dedup_messages, new_last_fetch)
     """
     demisto.debug(f"Starting generic_fetch_logs for {log_type_name} with {last_fetch_date_time=}, {current_next_page=}")
-    search_params = {"from": last_fetch_date_time}
+    search_params = {"from": last_fetch_date_time, "oldestFirst": True}
     if search_params_extra:
         search_params.update(search_params_extra)
         demisto.debug(f"Added extra search params: {search_params_extra}")
