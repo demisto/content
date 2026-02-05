@@ -1,10 +1,10 @@
 Threat Intelligence Feed provide data on the known indicators of compromise: malicious IPs, URLs, Domains
 
-## Generate your API key 
+## Generate your API key
 
 Please contact your ANY.RUN account manager to get your API key.
 > **Warning**
-> 
+>
 > Prefixed API keys and Basic Authentication for TI Feeds will not be supported in future releases.
 
 ## Configure ANY.RUN Feed in Cortex
