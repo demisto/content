@@ -34,6 +34,8 @@ INDICATOR_TYPE_MAPPING = {
     "url": FeedIndicatorType.URL,
     "file": FeedIndicatorType.File,
     "filehash_sha256": FeedIndicatorType.File,
+    "filehash_sha1": FeedIndicatorType.File,
+    "filehash_md5": FeedIndicatorType.File,
     "exploit": FeedIndicatorType.CVE,
     "malware_family": ThreatIntel.ObjectsNames.MALWARE,
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
@@ -182,7 +184,7 @@ class Client(BaseClient):
         Lookup an indicator in Unit 42 Intelligence
 
         Args:
-            indicator_type: Type of indicator (ip, domain, url, filehash_sha256)
+            indicator_type: Type of indicator (ip, domain, url, filehash_sha256, filehash_sha1, filehash_md5)
             indicator_value: Value of the indicator
 
         Returns:
@@ -1151,14 +1153,18 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     create_relationships_flag = argToBoolean(args.get("create_relationships", True))
     create_threat_object_indicators_flag = argToBoolean(args.get("create_threat_object_indicators", False))
 
-    # Validate hash type - Unit 42 Intelligence only supports SHA256
+    # Validate hash type - Unit 42 Intelligence supports SHA256, SHA1, and MD5
     hash_type = get_hash_type(file_hash)
-    if hash_type != "sha256":
+    if hash_type not in ("sha256", "sha1", "md5"):
         return CommandResults(
-            readable_output=f"Unit 42 Intelligence only supports SHA256 hashes. Provided hash type: {hash_type}"
+            readable_output=f"Unit 42 Intelligence only supports SHA256, SHA1, and MD5 hashes. Provided hash type: {hash_type}"
         )
 
-    response = client.lookup_indicator("filehash_sha256", file_hash)
+    # Map hash type to API endpoint parameter
+    hash_type_mapping = {"sha256": "filehash_sha256", "sha1": "filehash_sha1", "md5": "filehash_md5"}
+    indicator_type = hash_type_mapping[hash_type]
+
+    response = client.lookup_indicator(indicator_type, file_hash)
 
     if response.status_code == 404:
         response_data = construct_404_response(file_hash, "File")
@@ -1174,18 +1180,29 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     malware_families = extract_malware_families_from_threat_objects(threat_objects)
 
     # Create enriched File indicator with proper hash field assignment
-    file_indicator = Common.File(
-        size=demisto.get(response_data, "indicator_details.file_size", ""),
-        file_type=demisto.get(response_data, "indicator_details.file_type", ""),
-        imphash=demisto.get(response_data, "indicator_details.file_hashes.imphash", ""),
-        md5=demisto.get(response_data, "indicator_details.file_hashes.md5", ""),
-        sha1=demisto.get(response_data, "indicator_details.file_hashes.sha1", ""),
-        sha256=file_hash,
-        ssdeep=demisto.get(response_data, "indicator_details.file_hashes.ssdeep", ""),
-        dbot_score=dbot_score,
-        tags=tags,
-        malware_family=malware_families,
-    )
+    # Set the appropriate hash field based on the input hash type
+    file_indicator_kwargs = {
+        "size": demisto.get(response_data, "indicator_details.file_size", ""),
+        "file_type": demisto.get(response_data, "indicator_details.file_type", ""),
+        "imphash": demisto.get(response_data, "indicator_details.file_hashes.imphash", ""),
+        "md5": demisto.get(response_data, "indicator_details.file_hashes.md5", ""),
+        "sha1": demisto.get(response_data, "indicator_details.file_hashes.sha1", ""),
+        "sha256": demisto.get(response_data, "indicator_details.file_hashes.sha256", ""),
+        "ssdeep": demisto.get(response_data, "indicator_details.file_hashes.ssdeep", ""),
+        "dbot_score": dbot_score,
+        "tags": tags,
+        "malware_family": malware_families,
+    }
+
+    # Ensure the queried hash is set in the appropriate field
+    if hash_type == "sha256":
+        file_indicator_kwargs["sha256"] = file_hash
+    elif hash_type == "sha1":
+        file_indicator_kwargs["sha1"] = file_hash
+    elif hash_type == "md5":
+        file_indicator_kwargs["md5"] = file_hash
+
+    file_indicator = Common.File(**file_indicator_kwargs)
 
     # Create relationships
     relationships = create_relationships(file_hash, FeedIndicatorType.File, threat_objects, create_relationships_flag)
