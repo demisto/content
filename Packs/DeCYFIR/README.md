@@ -1,4 +1,4 @@
-## Cyfirma DeCYFIR Content Pack
+# Cyfirma DeCYFIR Content Pack
 
 CYFIRMA’s core platform, DeCYFIR, combines cyber threat intelligence with attack surface discovery and digital risk protection to deliver predictive, personalized, contextual, outside-in, and multi-layered cyber-intelligence.
 With DeCYFIR’s APIs, security teams obtain a complete view of their external threat landscape and receive actionable insights to ensure their cybersecurity posture is robust, resilient, and able to counter emerging cyber threats.
@@ -6,8 +6,8 @@ With DeCYFIR’s APIs, security teams obtain a complete view of their external t
 #### This packs empowers security teams with the following capabilities
 
 - Monitor your entire external attack surfaces as they emerge.
-- Gain knowledge of vulnerabilities and understand the threat actors, campaigns, attack methods which could be used by adversaries.
-- Stay informed of data breach/leaks and this includes company email addresses, intellectual property info, confidential data.
+- Gain knowledge of vulnerabilities and understand the threat actors, campaigns, and attack methods used by adversaries.
+- Stay informed of data breach/leaks, including company email addresses, intellectual property information, and confidential data.
 - Be alerted to impersonation of company domains and executives across public and social platforms.
 - Prioritize remedial actions with insights from external threat landscape.de
 - Use the insights to expedite threat hunting and accelerate incident response activities.
@@ -15,24 +15,23 @@ With DeCYFIR’s APIs, security teams obtain a complete view of their external t
 <~XSOAR>
 
 **Note:**
-Support and maintenance for this integration is provided by **[Cyfirma](https://www.cyfirma.com)**.
-Please contact us for more details on this email **_contact@cyfirma.com_**.
+Support and maintenance for this content pack is provided by **[Cyfirma](https://www.cyfirma.com)**.
 
 </~XSOAR>
 
 <~XSIAM>
 
-Collects event logs from DeCYFIR for ingestion into Cortex XSIAM.
+This content pack contains an integration that collects event logs from DeCYFIR for ingestion into Cortex XSIAM.
 
-Once configured, the integration periodically fetches event logs from DeCYFIR’s APIs and sends them to **Cortex XSIAM** for ingestion, normalization and analysis.
+Once configured, the integration periodically fetches event logs from DeCYFIR’s APIs and sends them to Cortex XSIAM for ingestion, normalization and analysis.
 
 - Events are fetched in real time (starting from the moment the integration is enabled).
 
 - Each event type (`Access Logs`, `Assets Logs`, `Digital Risk Keywords Logs`) is fetched separately using its own pagination and limit.
 
-- The integration automatically tracks and stores the last fetched timestamp and event IDs to prevent duplication.
+- - To prevent duplication, the integration automatically tracks and stores the last fetched timestamp and event IDs.
 
-## Configure DeCYFIR Event Collector in Cortex
+## Configure the DeCYFIR Event Collector Integration in Cortex
 
 | **Parameter** | **Required** |
 | --- | --- |
