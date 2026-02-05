@@ -1,7 +1,7 @@
 {
     "name": "CyberArk Endpoint Privilege Manager",
     "description": "Endpoint Privilege Manager helps remove local admin rights while improving user experience and optimizing IT operations.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
