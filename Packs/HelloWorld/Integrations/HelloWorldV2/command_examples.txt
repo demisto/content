@@ -1,8 +1,8 @@
-helloworld-say-hello name="Dbot"
-ip ip="8.8.8.8"
-helloworld-alert-list limit="3" severity="low"
-helloworld-alert-list alert_id=2
-helloworld-alert-note-create alert_id=2 note_text=test
-helloworld-get-events severity="low" limit="3" start_time="2026-01-25T00:00:00Z"
-helloworld-get-assets limit="10"
-helloworld-get-vulnerabilities limit="10"
+¡helloworld-say-hello name="Dbot"
+!ip "8.8.8.8"
+!helloworld-alert-list limit="3" severity="low"
+!helloworld-alert-list alert_id=2
+!helloworld-alert-note-create alert_id=2 note_text=test
+!helloworld-get-events severity="low" limit="3" start_time="2026-01-25T00:00:00Z"
+!helloworld-get-assets limit="10"
+!helloworld-get-vulnerabilities limit="10"

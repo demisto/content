@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
 from collections.abc import Awaitable
-from pydantic import AnyUrl, Field, SecretStr, validator, root_validator
+from pydantic import AnyUrl, Field, SecretStr, validator, root_validator  # pylint: disable=no-name-in-module
 
 import demistomock as demisto
 
@@ -381,7 +381,7 @@ class HelloWorldParams(BaseParams):
         return max_fetch
 
     @validator("url", allow_reuse=True)
-    def clean_url(cls, v):
+    def clean_url(cls, v):  # pylint: disable=no-self-argument
         """Remove trailing forward slash from the 'URL' parameter"""
         return v.rstrip("/")
 
@@ -407,7 +407,7 @@ class HelloWorldAuthHandler(APIKeyAuthHandler):
             api_key (SecretStr): The API key for authentication.
         """
 
-        super().__init__(key=api_key._secret_value, header_name="X-HelloWorld-API-Key")
+        super().__init__(key=api_key.get_secret_value(), header_name="X-HelloWorld-API-Key")
         self.validate_api_key()
 
     def validate_api_key(self) -> None:
@@ -464,7 +464,7 @@ class HelloWorldClient(ContentClient):
         # - `self.post(endpoint, json_body)` for POST requests
         # Alternatively, call the legacy "_http_request" method:
         # - `self._http_request("GET", url_suffix=endpoint, params=params)`
-        return self._http_request("GET", url_suffix=f"/api/endpoint/{item_id}", params=params)
+        return self.get(url_suffix=f"/api/endpoint/{item_id}", params=params)
 
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Get IP reputation (dummy response for demonstration purposes).
@@ -1538,14 +1538,14 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
     should_push_events: bool = False
 
     @validator("start_time", allow_reuse=True)
-    def validate_start_time(cls, v) -> str | None:
+    def validate_start_time(cls, v) -> str | None:  # pylint: disable=no-self-argument
         """Convert start_time to ISO 8601 timestamp string."""
         if v:
             return cast(datetime, arg_to_datetime(v)).isoformat()  # Raises ValueError / AttributeError if invalid
         return None
 
     @validator("should_push_events", allow_reuse=True)
-    def validate_should_push_events(cls, v):
+    def validate_should_push_events(cls, v):  # pylint: disable=no-self-argument
         """Ensure should_push_events is valid for the current tenant."""
         should_push_events = argToBoolean(v)
         if should_push_events and not CAN_SEND_EVENTS:
@@ -1596,7 +1596,7 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
     note_text: str
 
     @validator("alert_id", allow_reuse=True)
-    def validate_alert_id(cls, v):
+    def validate_alert_id(cls, v):   # pylint: disable=no-self-argument
         """Ensure alert_id is a valid positive integer."""
         if v is None or v <= 0:
             raise ValueError("[Args validation] Please provide a valid 'alert_id' argument (must be positive).")
@@ -2007,9 +2007,9 @@ def main() -> None:  # pragma: no cover
 
             case "ip":
                 # Validate command arguments, such as the validity of `ip` addresses
-                args = execution.ip_args
+                ip_args = execution.ip_args
                 # Run command and get its results
-                return_results(ip_reputation_command(client, args, params))
+                return_results(ip_reputation_command(client, ip_args, params))
 
             case "fetch-incidents" | "fetch-events":
                 # Implement command(s) that are invoked when fetch is enabled in the integration instance configuration
@@ -2040,53 +2040,53 @@ def main() -> None:  # pragma: no cover
 
             case "helloworld-get-events":
                 # Validate command arguments
-                args = execution.get_events_args
+                get_events_args = execution.get_events_args
                 # Run command and get a list of events and its results
-                results = get_events_command(client, args)
+                results = get_events_command(client, get_events_args)
                 return_results(results)
 
             case "helloworld-get-assets":
                 # Validate command arguments
-                args = execution.get_assets_args
+                get_assets_args = execution.get_assets_args
                 # Run command and get its results
-                return_results(get_assets_command(client, args))
+                return_results(get_assets_command(client, get_assets_args))
 
             case "helloworld-get-vulnerabilities":
                 # Validate command arguments
-                args = execution.get_vulnerabilities_args
+                get_vulnerabilities_args = execution.get_vulnerabilities_args
                 # Run command and get its results
-                return_results(get_vulnerabilities_command(client, args))
+                return_results(get_vulnerabilities_command(client, get_vulnerabilities_args))
 
             case "helloworld-alert-list":
                 # Validate command arguments, such as the existence of `alert_id` or `severity`
-                args = execution.alert_list_args
+                alert_list_args = execution.alert_list_args
                 # Run command and get its results
-                return_results(alert_list_command(client, args))
+                return_results(alert_list_command(client, alert_list_args))
 
             case "helloworld-alert-note-create":
                 # Validate command arguments, such as `alert_id` > 0
-                args = execution.alert_note_create_args
+                alert_note_create_args = execution.alert_note_create_args
                 # Run command and get its results
-                return_results(alert_note_create_command(client, args))
+                return_results(alert_note_create_command(client, alert_note_create_args))
 
             case "helloworld-say-hello":
                 # Validate command arguments, such as mandatory `name` string
-                args = execution.say_hello_args
+                say_hello_args = execution.say_hello_args
                 # Run command and get its results
-                return_results(say_hello_command(client, args))
+                return_results(say_hello_command(client, say_hello_args))
 
             case "helloworld-job-submit":
                 # Submit a job and initiate polling
-                args = execution.job_submit_args
+                job_submit_args = execution.job_submit_args
                 # Run command and get its results
-                return_results(job_submit_command(client, args))
+                return_results(job_submit_command(client, job_submit_args))
 
             case "helloworld-job-poll":
                 # Periodically polls the status of a process being executed on a remote host.
                 # When the process execution is done, the final result is returned and polling stops.
-                args = execution.job_poll_args
+                job_poll_args = execution.job_poll_args
                 # Run command, schedule next polling run, and return final result when complete
-                return_results(job_poll_command(args, client))
+                return_results(job_poll_command(job_poll_args, client))
 
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")

@@ -6,19 +6,19 @@ This is the Hello World v2 integration for getting started.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.dummy-example.com) |  | True |
+| Server URL (e.g., https://api.dummy-example.com) | Default is https://api.dummy-example.com. | True |
 | API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\). | False |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
-| First fetch time | The timestamp from which to start fetching alerts, expressed as relative time \(for example, '3 hours ago'\) or as absolute time in the ISO 8601 format \(for example, '2025-12-01T00:00:00Z'\). Default is "3 days". Supported in Cortex XSOAR only. | False |
-| Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default value is high. | False |
+| Score threshold for IP reputation command | The minimum HelloWorld score required to mark an IP as malicious \(0-100\). Default is 65. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Possible values are: A+ - 3rd party enrichment, A - Completely reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged. Default is C - Fairly reliable. | False |
+| First fetch time | The time from which to start fetching alerts. Supports relative time \(e.g., "3 hours ago"\) or ISO 8601 format \(e.g., "2025-12-01T00:00:00Z"\). Default is 3 days. | False |
+| Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default is high. | False |
 | Fetch incidents | Fetch HelloWorld alerts as incidents in Cortex XSOAR. Supported in Cortex XSOAR only. | False |
-| Maximum number of incidents per fetch | Default value is 10. Supported in Cortex XSOAR only. | False |
+| Maximum number of incidents per fetch | Default is 10. Supported in Cortex XSOAR only. | False |
 | Fetch events | Fetch HelloWorld alerts as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
-| Maximum number of events per fetch | Default value is 1000. Supported in Cortex XSIAM only. | False |
-| Fetch assets and vulnerabilities | Fetch assets and vulnerabilities found in the HelloWorld environment. Supported in Cortex XSIAM only. | False |
+| Maximum number of events per fetch | Default is 1000. Supported in Cortex XSIAM only. | False |
+| Fetch assets and vulnerabilities |  | False |
 
 ## Commands
 
@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### helloworld-say-hello
 
 ***
-Hello command - prints hello to anyone.
+Prints hello to a specified name.
 
 #### Base Command
 
@@ -38,7 +38,7 @@ Hello command - prints hello to anyone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of whom you want to say hello to. | Optional |
+| name | The name of the person you want to say hello to. | Optional |
 
 #### Context Output
 
@@ -64,12 +64,12 @@ Hello command - prints hello to anyone.
 
 #### Human Readable Output
 
->## Hello Hello Dbot
+>## Hello Dbot
 
 ### helloworld-alert-list
 
 ***
-Lists the example alerts as it would be fetched from the API.
+Lists example alerts as they would appear in a fetch operation.
 
 #### Base Command
 
@@ -79,7 +79,7 @@ Lists the example alerts as it would be fetched from the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional |
+| alert_id | Filter the fetch by alert ID. If not specified, all alert IDs will be retrieved. | Optional |
 | limit | How many alerts to fetch. Default is 10. | Optional |
 | severity | The severity by which to filter the alerts. Possible values are: low, medium, high, critical. | Optional |
 
@@ -170,7 +170,7 @@ Lists the example alerts as it would be fetched from the API.
 ### helloworld-alert-note-create
 
 ***
-Example of creating a new item in the API.
+Create a note in the API.
 
 #### Base Command
 
@@ -180,15 +180,15 @@ Example of creating a new item in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert's ID to add the note to. | Required |
-| note_text | The comment to add to the note. | Required |
+| alert_id | The alert ID to add the note to. | Required |
+| note_text | The text to add to the note. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.Note.status | String | The status of the note creation. |
-| HelloWorld.Note.msg | String | Message from the note creation response. |
+| HelloWorld.Note.status | String | The note creation status. |
+| HelloWorld.Note.msg | String | The message from the note creation response. |
 
 #### Command example
 
@@ -214,7 +214,7 @@ Example of creating a new item in the API.
 ### ip
 
 ***
-Return IP information and reputation.
+The returned IP information and reputation.
 
 #### Base Command
 
@@ -224,8 +224,8 @@ Return IP information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IPs. | Optional |
-| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used. Default is 65. | Optional |
+| ip | A comma-separated list of IPs. | Required |
+| threshold | The score threshold used to determine if an IP is malicious. If not provided, the default threshold from the instance configuration is used. Default is 65. | Optional |
 
 #### Context Output
 
@@ -235,45 +235,45 @@ Return IP information and reputation.
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-| HelloWorld.IP.asn | String | The autonomous system name for the IP address. |
-| HelloWorld.IP.asn_cidr | String | The ASN CIDR. |
-| HelloWorld.IP.asn_country_code | String | The ASN country code. |
-| HelloWorld.IP.asn_date | Date | The date on which the ASN was assigned. |
+| HelloWorld.IP.asn | String | The autonomous system name \(ASN\) for the IP address. |
+| HelloWorld.IP.asn_cidr | String | The network routing prefix in CIDR notation associated with the ASN. |
+| HelloWorld.IP.asn_country_code | String | The two letter ISO country code associated with the ASN. |
+| HelloWorld.IP.asn_date | Date | The date the ASN was assigned. |
 | HelloWorld.IP.asn_description | String | The ASN description. |
 | HelloWorld.IP.asn_registry | String | The registry the ASN belongs to. |
 | HelloWorld.IP.entities | String | Entities associated to the IP. |
 | HelloWorld.IP.ip | String | The actual IP address. |
-| HelloWorld.IP.network.cidr | String | Network CIDR for the IP address. |
-| HelloWorld.IP.network.country | Unknown | The country of the IP address. |
+| HelloWorld.IP.network.cidr | String | The network CIDR for the IP address. |
+| HelloWorld.IP.network.country | String | The country of the IP address. |
 | HelloWorld.IP.network.end_address | String | The last IP address of the CIDR. |
-| HelloWorld.IP.network.events.action | String | The action that happened on the event. |
-| HelloWorld.IP.network.events.actor | Unknown | The actor that performed the action on the event. |
-| HelloWorld.IP.network.events.timestamp | String | The timestamp when the event occurred. |
-| HelloWorld.IP.network.handle | String | The handle of the network. |
+| HelloWorld.IP.network.events.action | String | The specific action recorded for the network \(for example, registration or modification\). |
+| HelloWorld.IP.network.events.actor | Unknown | The actor \(identifier or entity name\) that performed the recorded action on the network. |
+| HelloWorld.IP.network.events.timestamp | String | The date and time the event occurred. |
+| HelloWorld.IP.network.handle | String | The unique registry identifier assigned to the network block. |
 | HelloWorld.IP.network.ip_version | String | The IP address version. |
 | HelloWorld.IP.network.links | String | Links associated to the IP address. |
 | HelloWorld.IP.network.name | String | The name of the network. |
 | HelloWorld.IP.network.notices.description | String | The description of the notice. |
-| HelloWorld.IP.network.notices.links | Unknown | Links associated with the notice. |
-| HelloWorld.IP.network.notices.title | String | Title of the notice. |
-| HelloWorld.IP.network.parent_handle | String | Handle of the parent network. |
+| HelloWorld.IP.network.notices.links | Unknown | A list of URLs providing additional information or documentation related to the network notice. |
+| HelloWorld.IP.network.notices.title | String | The title of a specific notice related to the network. |
+| HelloWorld.IP.network.parent_handle | String | The unique registry identifier of the parent network from which this block was allocated. |
 | HelloWorld.IP.network.raw | Unknown | Additional raw data for the network. |
 | HelloWorld.IP.network.remarks | Unknown | Additional remarks for the network. |
 | HelloWorld.IP.network.start_address | String | The first IP address of the CIDR. |
-| HelloWorld.IP.network.status | String | Status of the network. |
+| HelloWorld.IP.network.status | String | The network status. |
 | HelloWorld.IP.network.type | String | The type of the network. |
-| HelloWorld.IP.query | String | IP address that was queried. |
+| HelloWorld.IP.query | String | The IP address that was queried. |
 | HelloWorld.IP.raw | Unknown | Additional raw data for the IP address. |
-| HelloWorld.IP.score | Number | Reputation score from HelloWorld for this IP \(0 to 100, where higher is worse\). |
-| IP.Address | String | IP address. |
+| HelloWorld.IP.score | Number | The reputation score from HelloWorld for this IP \(0 to 100, where higher is worse\). |
+| IP.Address | String | The IP address. |
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. |
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. |
 | IP.ASN | String | The autonomous system name for the IP address. |
 | IP.Relationships.EntityA | string | The source of the relationship. |
 | IP.Relationships.EntityB | string | The destination of the relationship. |
 | IP.Relationships.Relationship | string | The name of the relationship. |
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| IP.Relationships.EntityAType | string | The relationship source type. |
+| IP.Relationships.EntityBType | string | The relationship destination type. |
 
 #### Command example
 
@@ -343,7 +343,7 @@ Return IP information and reputation.
 ### helloworld-get-events
 
 ***
-Retrieves alerts from the HelloWorld API.  Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+Retrieves alerts from the HelloWorld API. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
@@ -354,9 +354,9 @@ Retrieves alerts from the HelloWorld API.  Use this command for development and 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | severity | The severity by which to filter the alerts. Possible values are: low, medium, high, critical. | Required |
-| start_time | The start time for retrieving alerts, expressed as relative time \(for example, '3 hours ago'\) or as absolute time in the ISO 8601 format \(for example, '2025-12-01T00:00:00Z'\). | Optional |
+| start_time | The time from which to start fetching alerts. Supports relative time \(e.g., "3 hours ago"\) or ISO 8601 format \(e.g., "2025-12-01T00:00:00Z"\). | Optional |
 | limit | Maximum number of alerts to retrieve. Default is 10. | Optional |
-| should_push_events | Whether to push events to XSIAM (only works on XSIAM tenants). Possible values are: true, false. Default is false. | Optional |
+| should_push_events | Whether to push events to Cortex XSIAM \(for Cortex XSIAM tenants only\). Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -379,7 +379,7 @@ There is no context output for this command.
 ### helloworld-job-submit
 
 ***
-Submits a job to the HelloWorld API and polls for completion. This command demonstrates the polling pattern for long-running operations.
+Submits a job to the HelloWorld API and polls for completion. Used for asynchronous APIs and long-running operations.
 
 #### Base Command
 
@@ -441,7 +441,7 @@ Retrieves resources and assets in the HelloWorld environment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of assets to retrieve. Default value is 10. | Optional |
+| limit | Maximum number of assets to retrieve. Default is 10. | Optional |
 
 #### Context Output
 
@@ -474,7 +474,7 @@ Retrieves vulnerabilities found in the HelloWorld environment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of vulnerabilities to retrieve. Default value is 10. | Optional |
+| limit | Maximum number of vulnerabilities to retrieve. Default is 10. | Optional |
 
 #### Context Output
 

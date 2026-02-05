@@ -33,7 +33,7 @@ configuration:
 - name: threshold_ip
   display: Score threshold for IP reputation command
   defaultvalue: '65'
-  additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100).
+  additionalinfo: The minimum HelloWorld score required to mark an IP as malicious (0-100).
   type: 0
   required: false
   section: Collect
@@ -57,7 +57,7 @@ configuration:
 - name: first_fetch
   display: First fetch time
   defaultvalue: "3 days"
-  additionalinfo: The timestamp from which to start fetching alerts, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z').
+  additionalinfo: The time from which to start fetching alerts. Supports relative time (e.g., "3 hours ago") or ISO 8601 format (e.g., "2025-12-01T00:00:00Z").
   type: 0
   required: false
   section: Collect
@@ -121,24 +121,24 @@ configuration:
   section: Collect
   hidden:
     - xsoar
-description: This is the Hello World v2 integration for getting started.
+description: Use the Hello World v2 integration to learn how to build and configure Cortex integrations.
 display: Hello World v2
 name: HelloWorldV2
 script:
   commands:
   - name: helloworld-say-hello
-    description: Hello command - prints hello to anyone.
+    description: Prints hello to a specified name.
     arguments:
-    - description: The name of whom you want to say hello to.
+    - description: The name of the person you want to say hello to.
       name: name
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here.
+    - contextPath: HelloWorld.name
+      description: The greeting message returned by the command.
       type: String
   - name: helloworld-alert-list
-    description: Lists the example alerts as it would be fetched from the API.
+    description: Lists example alerts as they would appear in a fetch operation.
     arguments:
-    - description: Filter by alert item ID. If not provided, all IDs will be retrieved.
+    - description: Filter the fetch by alert ID. If not specified, all alert IDs will be retrieved.
       name: alert_id
     - description: How many alerts to fetch. Default is 10.
       name: limit
@@ -167,30 +167,30 @@ script:
       description: The status of the alert.
       type: String
   - name: helloworld-alert-note-create
-    description: Example of creating a new item in the API.
+    description: Create a note in the API.
     arguments:
-    - description: The alert's ID to add the note to.
+    - description: The alert ID to add the note to.
       name: alert_id
       required: true
-    - description: The comment to add to the note.
+    - description: The text to add to the note.
       name: note_text
       required: true
     outputs:
     - contextPath: HelloWorld.Note.status
-      description: The status of the note creation.
+      description: The note creation status.
       type: String
     - contextPath: HelloWorld.Note.msg
-      description: Message from the note creation response.
+      description: The message from the note creation response.
       type: String
   - name: ip
-    description: Return IP information and reputation.
+    description: The returned IP information and reputation.
     arguments:
     - description: A comma-separated list of IPs.
       name: ip
       default: true
       isArray: true
       required: true
-    - description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
+    - description: The score threshold used to determine if an IP is malicious. If not provided, the default threshold from the instance configuration is used.
       name: threshold
       defaultValue: 65
     outputs:
@@ -207,16 +207,16 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: HelloWorld.IP.asn
-      description: The autonomous system name for the IP address.
+      description: The autonomous system name (ASN) for the IP address.
       type: String
     - contextPath: HelloWorld.IP.asn_cidr
-      description: The ASN CIDR.
+      description: The network routing prefix in CIDR notation associated with the ASN.
       type: String
     - contextPath: HelloWorld.IP.asn_country_code
-      description: The ASN country code.
+      description: The two letter ISO country code associated with the ASN.
       type: String
     - contextPath: HelloWorld.IP.asn_date
-      description: The date on which the ASN was assigned.
+      description: The date the ASN was assigned.
       type: Date
     - contextPath: HelloWorld.IP.asn_description
       description: The ASN description.
@@ -231,25 +231,25 @@ script:
       description: The actual IP address.
       type: String
     - contextPath: HelloWorld.IP.network.cidr
-      description: Network CIDR for the IP address.
+      description: The network CIDR for the IP address.
       type: String
     - contextPath: HelloWorld.IP.network.country
       description: The country of the IP address.
-      type: Unknown
+      type: String
     - contextPath: HelloWorld.IP.network.end_address
       description: The last IP address of the CIDR.
       type: String
     - contextPath: HelloWorld.IP.network.events.action
-      description: The action that happened on the event.
+      description: The specific action recorded for the network (for example, registration or modification).
       type: String
     - contextPath: HelloWorld.IP.network.events.actor
-      description: The actor that performed the action on the event.
+      description: The actor (identifier or entity name) that performed the recorded action on the network.
       type: Unknown
     - contextPath: HelloWorld.IP.network.events.timestamp
-      description: The timestamp when the event occurred.
+      description: The date and time the event occurred.
       type: String
     - contextPath: HelloWorld.IP.network.handle
-      description: The handle of the network.
+      description: The unique registry identifier assigned to the network block.
       type: String
     - contextPath: HelloWorld.IP.network.ip_version
       description: The IP address version.
@@ -264,13 +264,13 @@ script:
       description: The description of the notice.
       type: String
     - contextPath: HelloWorld.IP.network.notices.links
-      description: Links associated with the notice.
+      description: A list of URLs providing additional information or documentation related to the network notice.
       type: Unknown
     - contextPath: HelloWorld.IP.network.notices.title
-      description: Title of the notice.
+      description: The title of a specific notice related to the network.
       type: String
     - contextPath: HelloWorld.IP.network.parent_handle
-      description: Handle of the parent network.
+      description: The unique registry identifier of the parent network from which this block was allocated.
       type: String
     - contextPath: HelloWorld.IP.network.raw
       description: Additional raw data for the network.
@@ -282,22 +282,22 @@ script:
       description: The first IP address of the CIDR.
       type: String
     - contextPath: HelloWorld.IP.network.status
-      description: Status of the network.
+      description: The network status.
       type: String
     - contextPath: HelloWorld.IP.network.type
       description: The type of the network.
       type: String
     - contextPath: HelloWorld.IP.query
-      description: IP address that was queried.
+      description: The IP address that was queried.
       type: String
     - contextPath: HelloWorld.IP.raw
       description: Additional raw data for the IP address.
       type: Unknown
     - contextPath: HelloWorld.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      description: The reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
       type: Number
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -318,10 +318,10 @@ script:
       description: The name of the relationship.
       type: string
     - contextPath: IP.Relationships.EntityAType
-      description: The type of the source of the relationship.
+      description: The relationship source type.
       type: string
     - contextPath: IP.Relationships.EntityBType
-      description: The type of the destination of the relationship.
+      description: The relationship destination type.
       type: string
   - name: helloworld-get-events
     description: Retrieves alerts from the HelloWorld API. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
@@ -335,12 +335,12 @@ script:
       - medium
       - high
       - critical
-    - description: The start time for retrieving alerts, expressed as relative time (for example, '3 hours ago') or as absolute time in the ISO 8601 format (for example, '2025-12-01T00:00:00Z').
+    - description: The time from which to start fetching alerts. Supports relative time (e.g., "3 hours ago") or ISO 8601 format (e.g., "2025-12-01T00:00:00Z").
       name: start_time
     - description: Maximum number of alerts to retrieve.
       name: limit
       defaultValue: "10"
-    - description: Whether to push events to XSIAM (only works on XSIAM tenants).
+    - description: Whether to push events to Cortex XSIAM (for Cortex XSIAM tenants only).
       name: should_push_events
       auto: PREDEFINED
       predefined:
@@ -348,7 +348,7 @@ script:
       - "false"
       defaultValue: "false"
   - name: helloworld-job-submit
-    description: Submits a job to the HelloWorld API and polls for completion. This command demonstrates the polling pattern for long-running operations.
+    description: Submits a job to the HelloWorld API and polls for completion. Used for asynchronous APIs and long-running operations.
     polling: true
     arguments:
     - description: Interval in seconds between each poll.

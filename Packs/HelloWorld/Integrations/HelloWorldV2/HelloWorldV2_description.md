@@ -1,6 +1,6 @@
 ## Hello World v2
 
-This section explains how to configure the instance of the Hello World v2 integration in Cortex.
+This section explains how to configure a **Hello World v2** integration instance in Cortex.
 
 > 💡 **Integration Developer Tip**:
 >
@@ -10,4 +10,4 @@ This section explains how to configure the instance of the Hello World v2 integr
 
 ## API Key
 
-Use `dummy-key` to emulate successful authentication. Otherwise, the "Test" button would fail.
+Use `dummy-key` to simulate successful authentication. Otherwise, the **Test** button fails.

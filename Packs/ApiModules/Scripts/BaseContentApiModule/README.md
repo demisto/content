@@ -12,7 +12,7 @@ Base classes for building robust Cortex integrations with user-friendly validati
   - [ContentBaseModel](#contentbasemodel)
   - [BaseParams](#baseparams)
   - [BaseExecutionConfig](#baseexecutionconfig)
-- [Complete Integration Example](#-complete-integration-example)
+- [Complete Integration Example](#complete-integration-example)
 - [API Reference](#api-reference)
 
 ---
@@ -20,9 +20,12 @@ Base classes for building robust Cortex integrations with user-friendly validati
 ## Overview
 
 This API module provides foundational classes that integrations can use to:
-- Validate configuration parameters and command arguments with user-friendly error messages.
-- Manage common connection settings (proxy, SSL verification)
-- Centralize execution configuration to minimize redundant system calls
+
+- Validate configuration parameters and command arguments with user-friendly error messages
+
+- Manage common connection settings (proxy, SSL verification).
+
+- Centralize execution configuration to minimize redundant system calls.
 
 These classes work seamlessly with `ContentClient` from `ContentClientApiModule` to provide a complete foundation for building production-ready integrations.
 
@@ -32,11 +35,11 @@ These classes work seamlessly with `ContentClient` from `ContentClientApiModule`
 
 | Feature | Description |
 |---------|-------------|
-| **User-Friendly Validation** | Pydantic-based validation with clear, actionable error messages |
-| **Common Connection Settings** | Standardized proxy and SSL verification parameters |
-| **Centralized Configuration** | Single entry point for command, params, args, and last_run |
-| **Type Safety** | Full type hints and validation for integration parameters |
-| **Minimal Boilerplate** | Reduce redundant `demisto` class calls |
+| **User-Friendly Validation** | Pydantic-based validation with clear, actionable error messages. |
+| **Common Connection Settings** | Standardized proxy and SSL verification parameters. |
+| **Centralized Configuration** | Single entry point for command, params, args, and last_run. |
+| **Type Safety** | Full type hints and validation for integration parameters. |
+| **Minimal Boilerplate** | Code streamlining with reduced redundant `demisto` class calls. |
 
 ---
 
@@ -52,7 +55,7 @@ from BaseContentApiModule import *
 
 ## Quick Start
 
-### Minimal Example
+### Basic Example
 
 ```python
 from BaseContentApiModule import ContentBaseModel, BaseParams, BaseExecutionConfig
@@ -108,8 +111,10 @@ Base Pydantic model with enhanced validation error formatting.
 #### Usage
 
 ```python
+from CommonServerPython import *
 from BaseContentApiModule import ContentBaseModel
 from pydantic import Field
+
 
 class MyArgs(ContentBaseModel):
     """Arguments for my-command."""
@@ -192,25 +197,29 @@ print(params.verify)  # False (inverse of insecure)
 
 ### BaseExecutionConfig
 
-Centralized entry point for integration execution that holds command, params, args, and last_run.
+Centralized entry point for integration execution that holds commands, parameters, arguments, and last_run.  
 
 #### Features
 
-- Encapsulates all information needed to execute a command
-- Centralizes `demisto` class usages to avoid redundant system calls
-- Provides type-safe access to configuration via properties
-- Automatically retrieves last_run for fetch commands
-- Supports both regular fetch and fetch-assets commands
+- Contains all the information needed to execute a command.
+
+- Centralizes `demisto` class usages to avoid redundant system calls.
+
+- Provides type-safe access to configuration via properties.
+
+- Automatically retrieves last_run for fetch commands.
+
+- Supports both regular fetch and fetch-assets commands.
 
 #### Attributes
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `_raw_command` | `str` | The command being executed |
-| `_raw_params` | `dict` | Raw integration parameters dictionary |
-| `_raw_args` | `dict` | Raw command arguments dictionary |
-| `_raw_last_run` | `dict` | State from previous fetch execution |
-| `_raw_assets_last_run` | `dict` | State from previous fetch-assets execution |
+| `_raw_command` | `str` | The command being executed. |
+| `_raw_params` | `dict` | Raw integration parameters dictionary. |
+| `_raw_args` | `dict` | Raw command arguments dictionary. |
+| `_raw_last_run` | `dict` | State from previous fetch execution. |
+| `_raw_assets_last_run` | `dict` | State from previous fetch-assets execution. |
 
 #### Usage
 
@@ -267,16 +276,18 @@ def main():
 
 ---
 
-## 🔧 Complete Integration Example
+## Complete Integration Example
 
-Here's a complete example of a production-ready integration using BaseContentApiModule with ContentClient:
+The following is an end-to-end example of a production-ready integration using the `BaseContentApiModule` with `ContentClient`:  
 
 ```python
-from BaseContentApiModule import ContentBaseModel, BaseParams, BaseExecutionConfig
-from ContentClientApiModule import ContentClient, BearerTokenAuthHandler, RetryPolicy
-from pydantic import AnyUrl, Field, validator
 import demistomock as demisto
 from CommonServerPython import *
+
+from BaseContentApiModule import *
+from ContentClientApiModule import *
+
+from pydantic import AnyUrl, Field, validator
 
 
 # ===== Parameters =====
@@ -424,17 +435,17 @@ Base Pydantic model with user-friendly validation error formatting.
 
 | Method | Description |
 |--------|-------------|
-| `__init__(**data)` | Initialize model with validation |
-| `__str__()` | String representation using aliases |
-| `__repr__()` | Representation using aliases |
-| `dict(by_alias=True)` | Convert to dictionary |
+| `__init__(**data)` | Initialize model with validation. |
+| `__str__()` | String representation using aliases. |
+| `__repr__()` | Representation using aliases. |
+| `dict(by_alias=True)` | Convert to dictionary. |
 
 #### Configuration
 
 | Setting | Value | Description |
 |---------|-------|-------------|
-| `extra` | `Extra.ignore` | Ignore extra fields not defined in model |
-| `allow_population_by_field_name` | `True` | Allow both field names and aliases |
+| `extra` | `Extra.ignore` | Ignore extra fields not defined in model. |
+| `allow_population_by_field_name` | `True` | Allow both field names and aliases. |
 
 #### Example
 
@@ -475,9 +486,9 @@ Base class for integration parameters with common connection settings.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `insecure` | `bool` | `False` | Skip SSL certificate verification |
-| `proxy` | `bool` | `False` | Use system proxy settings |
-| `verify` | `bool` (property) | `not insecure` | SSL verification (computed) |
+| `insecure` | `bool` | `False` | Skip SSL certificate verification. |
+| `proxy` | `bool` | `False` | Use system proxy settings. |
+| `verify` | `bool` (property) | `not insecure` | SSL verification (computed). |
 
 #### Example
 
@@ -531,17 +542,17 @@ Centralized entry point for integration execution.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `_raw_command` | `str` | Current command being executed |
-| `_raw_params` | `dict` | Raw integration parameters |
-| `_raw_args` | `dict` | Raw command arguments |
-| `_raw_last_run` | `dict` | State from previous fetch |
-| `_raw_assets_last_run` | `dict` | State from previous fetch-assets |
+| `_raw_command` | `str` | Current command being executed. |
+| `_raw_params` | `dict` | Raw integration parameters. |
+| `_raw_args` | `dict` | Raw command arguments. |
+| `_raw_last_run` | `dict` | State from previous fetch. |
+| `_raw_assets_last_run` | `dict` | State from previous the fetch-assets execution. |
 
 #### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `command` | `str` | Current command name |
+| `command` | `str` | The current command name. |
 
 #### Example
 
@@ -603,20 +614,20 @@ def main():
 
 ## Dependencies
 
-- **pydantic**: Data validation and settings management
-- **CommonServerPython**: Cortex XSOAR/XSIAM utilities
-- **demistomock**: Offline testing support
+- **pydantic**: Data validation and settings management.
+- **CommonServerPython**: Common integration utilities.
+- **demistomock**: Local debugging support.
 
 ---
 
 ## Best Practices
 
-1. **Always inherit from ContentBaseModel** for parameter and argument classes to get user-friendly error messages
-2. **Use BaseParams** as the base for integration parameters to get common connection settings
-3. **Create one ExecutionConfig instance** in main() to minimize redundant system calls
-4. **Define properties** in your ExecutionConfig subclass for each command's arguments
-5. **Use validators** to add custom validation logic and data cleaning
-6. **Document your models** with docstrings and type hints for better IDE support
+1. Inherit from **ContentBaseModel** for parameter and argument classes to get user-friendly error messages.
+2. Inherit from **BaseParams** to automatically include common connection settings in integration parameters.
+3. Create one **ExecutionConfig instance** in main() to minimize redundant system calls.
+4. Define properties in the **ExecutionConfig** subclass for each command's arguments and for fetch last run.
+5. Use **validators** to add custom validation logic and data cleaning.
+6. Document your models** with **docstrings** and **type hints** for better IDE and linter support.
 
 ---
 
@@ -628,5 +639,5 @@ See the Hello World v2 integration for a complete example of using these base cl
 
 ## Related Modules
 
-- **ContentClientApiModule**: High-performance HTTP client with retry logic, rate limiting, and authentication
-- **CommonServerPython**: Core utilities and helper functions for Cortex integrations
+- **ContentClientApiModule**: High-performance HTTP client with retry logic, rate limiting, and authentication.
+- **CommonServerPython**: Core utilities and helper functions for Cortex integrations.
