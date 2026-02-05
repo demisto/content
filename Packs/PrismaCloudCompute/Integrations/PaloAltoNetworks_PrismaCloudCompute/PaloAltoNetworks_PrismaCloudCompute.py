@@ -1091,6 +1091,8 @@ class AssetTypeRelatedData:
     limit: int = MAX_API_LIMIT
     assets_total_count: int = 0
     vulnerabilities_total_count: int = 0
+    added_one_asset = False
+    added_one_vulnerability = False
 
     def next_page(self):
         self.offset += self.limit
@@ -1108,6 +1110,22 @@ class AssetTypeRelatedData:
                 "assets_total_count": self.assets_total_count,
                 "vulnerabilities_total_count": self.vulnerabilities_total_count,
             }
+            set_integration_context(ctx)
+
+    async def safe_update_last_assets(self, assets):
+        async with self.ctx_lock:
+            ctx = get_integration_context()
+            assets_collection = ctx.get("last_assets_request", [])
+            assets_collection.append(assets[-1])
+            ctx["last_assets_request"] = assets_collection
+            set_integration_context(ctx)
+
+    async def safe_update_last_vulnerabilities(self, vulnerabilities):
+        async with self.ctx_lock:
+            ctx = get_integration_context()
+            vulnerabilities_collection = ctx.get("last_vulnerabilities_request", [])
+            vulnerabilities_collection.append(vulnerabilities[-1])
+            ctx["last_vulnerabilities_request"] = vulnerabilities_collection
             set_integration_context(ctx)
 
 
@@ -3446,14 +3464,16 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
     ctx = get_integration_context()
     vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", "")
     assets_snapshot_id = ctx.get("assets_snapshot_id", "")
+    last_assets_request = ctx.get("last_assets_request", [])
+    last_vulnerabilities_request = ctx.get("last_vulnerabilities_request", [])
     demisto.debug(f"Preparing to update assets snapshot id {assets_snapshot_id} with a total of {assets_total} assets.")
     demisto.debug(
         f"Preparing to update vulnerabilities snapshot id {vulnerabilities_snapshot_id} with a"
         f"total of {vulnerabilities_total} vulnerabilities."
     )
-    if assets_snapshot_id:
+    if assets_snapshot_id and last_assets_request:
         assets_coroutine = async_send_data_to_xsiam(
-            data=[],
+            data=last_assets_request,
             vendor=VENDOR,
             product=ASSETS_PRODUCT,
             num_of_attempts=3,
@@ -3468,9 +3488,9 @@ async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncCl
         if assets_coroutine:
             await assets_coroutine
 
-    if vulnerabilities_snapshot_id:
+    if vulnerabilities_snapshot_id and last_vulnerabilities_request:
         vulnerabilities_coroutine = async_send_data_to_xsiam(
-            data=[],
+            data=last_vulnerabilities_request,
             vendor=VENDOR,
             product=VULNERABILITIES_PRODUCT,
             num_of_attempts=3,
@@ -3523,7 +3543,6 @@ async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient
     asset_type_related_data.write_debug_log(
         f"Finished obtaining and sending a total of {asset_type_related_data.assets_total_count} assets to xsiam."
     )
-
     await remove_related_data_from_ctx(asset_type_related_data)
 
 
@@ -3558,6 +3577,14 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
     """
     processed_assets, processed_vulnerabilities = process_results(data)
     asset_type_related_data.vulnerabilities_total_count += len(processed_vulnerabilities)
+    if not asset_type_related_data.added_one_asset and processed_assets:
+        await asset_type_related_data.safe_update_last_assets(processed_assets)
+        asset_type_related_data.added_one_asset = True
+        processed_assets.pop()
+    if not asset_type_related_data.added_one_vulnerability and processed_vulnerabilities:
+        await asset_type_related_data.safe_update_last_vulnerabilities(processed_vulnerabilities)
+        asset_type_related_data.added_one_vulnerability = True
+        processed_vulnerabilities.pop()
 
     assets_coroutine = async_send_data_to_xsiam(
         data=processed_assets,
