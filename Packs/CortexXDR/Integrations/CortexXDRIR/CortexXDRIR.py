@@ -1711,7 +1711,7 @@ def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
         "rule_id": args.get("rule_id"),
         # required fields
         "name": args.get("name"),
-        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity")),
+        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity", "")),
         # not required but need to be null
         "type": args.get("type"),
         "is_xql": argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
@@ -1742,9 +1742,13 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
         CommandResults: The command results.
     """
     reply = bioc_create_or_update_helper(client, args)
-    added_objects = reply.get("added_objects")
-    message = added_objects[0].get("status")
-    outputs = {"rule_id": added_objects[0].get("id")}
+    added_objects: List[Dict[str, Any]] = reply.get("added_objects", [])
+    if added_objects:
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "Could not create the BIOC."
+        outputs = {}
 
     return CommandResults(
         readable_output=message,
@@ -1868,7 +1872,7 @@ def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict
         "name": args.get("name"),
         "severity": severity_mapped,
         "xql_query": args.get("xql_query"),
-        "is_enabled": argToBoolean(args.get("is_enabled")),
+        "is_enabled": argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
         "action": "ALERTS",
         "timezone": args.get("timezone"),
         "dataset": args.get("dataset"),
