@@ -2967,7 +2967,7 @@ def test_bioc_delete_command(mocker, mock_reply, expected_output):
     args = {"name": "test_bioc"}
     res = bioc_delete_command(client, args)
 
-    assert res == expected_output
+    assert res.readable_output == expected_output
 
 
 @pytest.mark.parametrize(
@@ -2979,8 +2979,8 @@ def test_bioc_delete_command(mocker, mock_reply, expected_output):
                 "request_data": {
                     "filters": [{"field": "name", "operator": "EQ", "value": "test_rule"}],
                     "extended_view": True,
-                    "search_from": 0,
-                    "search_to": 50,
+                    "search_from": 10,
+                    "search_to": 20,
                 }
             },
         ),
@@ -3176,30 +3176,32 @@ def test_correlation_rule_update_command(mocker, args, expected_request_data, ex
             {"objects": ["1"], "objects_count": 1},
             {"rule_id": "1"},
             "Correlation Rule 1 was deleted.",
-            {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]},
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
         ),
         (
             {"objects": ["1", "2"], "objects_count": 2},
             {"rule_id": "1,2"},
             "Correlation Rules 1, 2 were deleted.",
             {
-                "filters": [
-                    {"field": "rule_id", "operator": "EQ", "value": 1},
-                    {"field": "rule_id", "operator": "EQ", "value": 2},
-                ]
+                "request_data": {
+                    "filters": [
+                        {"field": "rule_id", "operator": "EQ", "value": 1},
+                        {"field": "rule_id", "operator": "EQ", "value": 2},
+                    ]
+                }
             },
         ),
         (
             {"objects": [], "objects_count": 0},
             {"rule_id": "1"},
             "Could not find any correlation rules to delete.",
-            {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]},
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
         ),
         (
             {"objects": ["1"], "objects_count": 1},
             {"rule_id": "1,invalid"},
             "Correlation Rule 1 was deleted.",
-            {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]},
+            {"request_data": {"filters": [{"field": "rule_id", "operator": "EQ", "value": 1}]}},
         ),
     ],
 )

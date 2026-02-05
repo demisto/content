@@ -50,12 +50,13 @@ XDR_TO_XSOAR = "XDR -> XSOAR"
 
 XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
 
-BIOC_AND_CR_SEVERITY_MAPPING = {"info": "SEV_010_INFO",
-                                "low": "SEV_020_LOW",
-                                "medium": "SEV_030_MEDIUM",
-                                "high": "SEV_040_HIGH",
-                                "critical": "SEV_050_CRITICAL"
-                                }
+BIOC_AND_CR_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH",
+    "critical": "SEV_050_CRITICAL",
+}
 
 
 def convert_epoch_to_milli(timestamp):
