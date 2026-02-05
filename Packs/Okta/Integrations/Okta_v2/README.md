@@ -2161,7 +2161,7 @@ Deletes the specified user.
 ### okta-clear-user-sessions
 
 ***
-Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. By default, OpenID Connect and OAuth refresh and access tokens issued to the user are revoked. Token revocation can be disabled if needed.
 For more information and examples:
 https://developer.okta.com/docs/reference/api/users/#user-sessions
 
