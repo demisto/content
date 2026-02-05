@@ -68,7 +68,7 @@ alter
 	check_eventdata_TargetImage_exe = arraystring(regextract(get_eventdata_TargetImage, "[^\\]+\.[a-z]+$"), ""),
 	check_eventdata_IntegrityLevel = to_integer(if(get_eventdata_IntegrityLevel = "Untrusted", "0", get_eventdata_IntegrityLevel = "Low", "1", get_eventdata_IntegrityLevel = "Medium", "2", get_eventdata_IntegrityLevel = "High", "3", get_eventdata_IntegrityLevel = "System", "4", null))
 | alter
-	clean_task = lowercase(task),
+	clean_task = lowercase(get_task_str),
 	clean_log_level = lowercase(log_level),
 	clean_eventdata_details = lowercase(get_eventdata_Details),
 	clean_target_localip_10 = incidr(check_avilable_ip,"10.0.0.0/8"),
