@@ -6,15 +6,14 @@ This integration provides threat intelligence and security analysis using the AP
 
 To configure the APIVoid integration in Cortex XSOAR:
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**
-2. Search for **APIVoid**
-3. Click **Add instance** to create and configure a new integration instance
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for **APIVoid**.
+3. Click **Add instance** to create and configure a new integration instance.
 
-#### Required Parameters
+#### Required Parameter
 
-- **API KEY**: Your APIVoid API key
-  - Obtain your API key from [APIVoid Dashboard](https://dash.apivoid.com/api-keys/)
+**API KEY**: Obtain your APIVoid API key from [APIVoid Dashboard](https://dash.apivoid.com/api-keys/).
 
 ### API Rate Limits
 
-Please note that APIVoid has rate limits based on your subscription plan. Refer to your [APIVoid plan details](https://www.apivoid.com/pricing/) for specific limits.
+APIVoid has rate limits based on your subscription plan. See your [APIVoid plan details](https://www.apivoid.com/pricing/) for specific limits.
