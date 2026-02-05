@@ -624,6 +624,29 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def list_issues(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/issue/search",
+            json_data=request_data,
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def create_issue(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/issue",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def update_issue(self, issue_id: str, request_data: dict):
+        self._http_request(
+            method="POST",
+            url_suffix=f"/issue/{issue_id}",
+            json_data=request_data,
+        )
+
 
 def extract_paths_and_names(paths: list) -> tuple:
     """
@@ -1878,6 +1901,202 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+def list_issues_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of issues.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the issues.
+    """
+    filters = []
+    if issue_id := argToList(args.get("issue_id")):
+        filters.append({"field": "issue_id", "operator": "in", "value": issue_id})
+    if external_id := argToList(args.get("external_id")):
+        filters.append({"field": "external_id", "operator": "in", "value": external_id})
+    if detection_method := args.get("detection_method"):
+        filters.append({"field": "detection_method", "operator": "eq", "value": detection_method})
+    if domain := args.get("domain"):
+        filters.append({"field": "domain", "operator": "eq", "value": domain})
+    if severity := args.get("severity"):
+        filters.append({"field": "severity", "operator": "eq", "value": severity})
+    if insert_time := args.get("insert_time"):
+        timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
+        filters.append({"field": "insert_time", "operator": "gte", "value": timestamp})
+    if status := argToList(args.get("status")):
+        filters.append({"field": "status", "operator": "in", "value": status})
+
+    sort_field = args.get("sort_field")
+    sort_order = args.get("sort_order", "asc").lower()
+
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    request_data = {
+        "request_data": {
+            "search_from": page * page_size,
+            "search_to": (page + 1) * page_size,
+        }
+    }
+
+    if filters:
+        request_data["request_data"]["filters"] = filters
+
+    if sort_field:
+        request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
+
+    issues = client.list_issues(request_data)
+
+    readable_output = tableToMarkdown(
+        name="Issues",
+        t=issues,
+        headers=["issue_id", "name", "type", "severity", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
+        outputs_key_field="issue_id",
+        outputs=issues,
+        raw_response=issues
+    )
+
+
+def create_issue_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates a new issue.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the created issue.
+    """
+    name = args.get("name")
+    description = args.get("description")
+    observation_time = args.get("observation_time")
+    domain = args.get("domain")
+    category = args.get("category")
+
+    # Optional
+    asset_id = argToList(args.get("asset_id"))
+    mitre_tactic = argToList(args.get("mitre_tactic"))
+    mitre_tecnique = argToList(args.get("mitre_tecnique"))
+    type_ = args.get("type")
+    extended_description = args.get("extended_description")
+    impact = args.get("impact")
+    tags = argToList(args.get("tags"))
+    is_excluded = argToBoolean(args.get("is_excluded")) if args.get("is_excluded") else None
+    is_starred = argToBoolean(args.get("is_starred")) if args.get("is_starred") else None
+    assigned_to = args.get("assigned_to")
+    assigned_to_pretty = args.get("assigned_to_pretty")
+    severity = args.get("severity")
+
+    normalized_fields_json = args.get("normalized_fields_json")
+    custom_fields_json = args.get("custom_fields_json")
+
+    issue_data = {
+        "name": name,
+        "description": description,
+        "observation_time": arg_to_timestamp(observation_time, arg_name="observation_time"),
+        "domain": domain,
+        "category": category
+    }
+
+    if asset_id:
+        issue_data["asset_id"] = asset_id
+    if mitre_tactic:
+        issue_data["mitre_tactic"] = mitre_tactic
+    if mitre_tecnique:
+        issue_data["mitre_technique"] = mitre_tecnique
+    if type_:
+        issue_data["type"] = type_
+    if extended_description:
+        issue_data["extended_description"] = extended_description
+    if impact:
+        issue_data["impact"] = impact
+    if tags:
+        issue_data["tags"] = tags
+    if is_excluded is not None:
+        issue_data["is_excluded"] = is_excluded
+    if is_starred is not None:
+        issue_data["is_starred"] = is_starred
+    if assigned_to:
+        issue_data["assigned_to"] = assigned_to
+    if assigned_to_pretty:
+        issue_data["assigned_to_pretty"] = assigned_to_pretty
+    if severity:
+        issue_data["severity"] = severity
+
+    if normalized_fields_json:
+        try:
+            issue_data["normalized_fields"] = json.loads(normalized_fields_json)
+        except ValueError:
+            raise DemistoException("Invalid JSON for normalized_fields_json")
+
+    if custom_fields_json:
+        try:
+            issue_data["custom_fields"] = json.loads(custom_fields_json)
+        except ValueError:
+            raise DemistoException("Invalid JSON for custom_fields_json")
+
+    request_data = {"request_data": issue_data}
+
+    result = client.create_issue(request_data)
+
+    readable_output = tableToMarkdown(
+        name="Created Issue",
+        t=result,
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
+        outputs_key_field="issue_id",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def update_issue_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing issue.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    issue_id = args.get("issue_id")
+    update_data = {}
+
+    if severity := args.get("severity"):
+        update_data["severity"] = severity
+    if status := args.get("status"):
+        update_data["status"] = status
+    if resolve_reason := args.get("resolve_reason"):
+        update_data["resolve_reason"] = resolve_reason
+    if resolve_comment := args.get("resolve_comment"):
+        update_data["resolve_comment"] = resolve_comment
+
+    request_data = {"request_data": update_data}
+
+    client.update_issue(issue_id, request_data)
+
+    return CommandResults(readable_output="Issue updated successfully")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2374,6 +2593,15 @@ def main():  # pragma: no cover
 
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-issue-list":
+            return_results(list_issues_command(client, args))
+
+        elif command == "xdr-issue-create":
+            return_results(create_issue_command(client, args))
+
+        elif command == "xdr-issue-update":
+            return_results(update_issue_command(client, args))
 
     except Exception as err:
         return_error(str(err))
