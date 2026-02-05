@@ -217,6 +217,27 @@ script:
       description: Alarm ID.
       type: String
 
+  - name: socradar-change-assignee
+    deprecated: true
+    description: add the assignee(s) of an alarm.
+    arguments:
+    - name: alarm_id
+      description: Alarm ID to add assignee for.
+      required: true
+    - name: user_emails
+      description: Comma-separated list of user email addresses to assign.
+      required: true
+    - name: company_id
+      description: Optional company_id to specify company.
+      required: false
+    outputs:
+    - contextPath: SOCRadar.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: SOCRadar.Alarm.Assignees
+      description: New assignees.
+      type: String
+
   - name: socradar-add-assignee
     description: add the assignee(s) of an alarm.
     arguments:
