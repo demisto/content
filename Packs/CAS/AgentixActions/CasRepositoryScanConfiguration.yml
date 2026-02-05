@@ -2,7 +2,7 @@ commonfields:
   id: CasRepositoryScanConfiguration
   version: -1
 name: CasRepositoryScanConfiguration
-display: CAS - Repository Scan Configuration
+display: Application Security - Repository Scan Configuration
 description: >
   Update repository scanners with the specified configuration for a list of repository asset IDs.
 category: Utilities

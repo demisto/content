@@ -2,7 +2,7 @@ commonfields:
   id: CasListAppSecCoverage
   version: -1
 name: CasListAppSecCoverage
-display: CAS - List AppSec Coverage
+display: Application Security - List AppSec Coverage
 description: |
   Retrieves Application Security Posture Management (ASPM) coverage statistics and detailed asset information
   based on provided filters.

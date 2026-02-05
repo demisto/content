@@ -1,0 +1,74 @@
+commonfields:
+  id: CasCreateApplication
+  version: -1
+name: CasCreateApplication
+display: Application Security - Create Application
+description: >
+  Creates a new Business Application.
+  This action allows to logically group source code repositories into a single application entity.
+  By grouping repositories, users can manage risk, track compliance, and assign business criticality and ownership at the application level.
+category: Utilities
+requiresuserapproval: true
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - cloud_posture
+tags:
+  - Utilities
+  - ASPM
+  - Application
+args:
+  - name: application_name
+    underlyingargname: application_name
+    description: >
+      application name.
+    type: string
+    required: true
+  - name: asset_identifiers
+    underlyingargname: asset_identifiers
+    description: >
+      A comma-separated list of asset identifiers (Repository IDs or Organization URLs) to include in the application.
+    type: string
+    required: true
+  - name: filter_type
+    underlyingargname: filter_type
+    description: >
+      The type of assets provided in asset_identifiers.
+      Options: REPOSITORY, ORGANIZATION.
+    type: string
+    required: true
+    defaultvalue: "REPOSITORY"
+  - name: provider
+    underlyingargname: provider
+    type: string
+    description: >
+      Options: AWS_CODE_COMMIT, GITHUB, GITLAB, BITBUCKET, AZURE_REPOS.
+    required: true
+  - name: business_criticality
+    underlyingargname: business_criticality
+    type: string
+    description: >
+      business criticality for the created application.
+      Options: Critical, High, Medium, Low.
+    required: false
+    defaultvalue: "Medium"
+  - name: business_owner
+    underlyingargname: business_owner
+    type: string
+    description: >
+      A comma-separated list of application business owners.
+    required: false
+outputs:
+  - underlyingoutputcontextpath: Cas.Application.applicationId
+    description: The created application ID.
+    type: String
+    name: Cas.Application.applicationId
+underlyingcontentitem:
+  id: AppSecCreateApplication
+  name: AppSecCreateApplication
+  type: script
+  version: -1
+  command: ""
+

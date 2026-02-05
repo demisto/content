@@ -10,20 +10,18 @@ VALID_ARGS: set[str] = {
 
 def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
     res = demisto.executeCommand("core-generic-api-call", args)
+    path = args.get('path')
     if is_error(res):
-        return_error(f"Error in core-generic-api-call to {args.get("path")}: {get_error(res)}")
+        return_error(f"Error in core-generic-api-call to {path}: {get_error(res)}")
 
     try:
         context = res[0]["EntryContext"]
         raw_data = context.get("data")
-        demisto.info(f"REPOSITORY_SCAN - raw_data: {raw_data=}")
         if isinstance(raw_data, str):
-            data_dict = json.loads(raw_data)
-        else:
-            data_dict = raw_data
-        return data_dict
+            return json.loads(raw_data)
+        return raw_data
     except Exception as ex:
-        raise Exception(f"Failed to parse API response from {args.get("path")}. Error: {str(ex)}")
+        raise Exception(f"Failed to parse API response from {path}. Error: {str(ex)}")
 
 
 def trigger_repository_scan(args: dict):

@@ -1,0 +1,62 @@
+commonfields:
+  id: AppSecCreateApplication
+  version: -1
+name: AppSecCreateApplication
+script: ''
+type: python
+tags:
+- Utilities
+comment: Creates a new Business Application by grouping source code repositories or organizations.
+enabled: true
+args:
+- name: application_name
+  description: Desired application name.
+  required: true
+- name: asset_identifiers
+  description: A comma-separated list of asset identifiers (Repository IDs or Organization URLs) to include in the application.
+  isArray: true
+  required: true
+- name: filter_type
+  description: The type of assets provided in asset_identifiers. Options are REPOSITORY or ORGANIZATION.
+  auto: PREDEFINED
+  predefined:
+    - "REPOSITORY"
+    - "ORGANIZATION"
+  defaultValue: "REPOSITORY"
+  required: true
+- name: provider
+  description: Provider of the repositories.
+  auto: PREDEFINED
+  predefined:
+    - "GITHUB"
+    - "GITLAB"
+    - "BITBUCKET"
+    - "AZURE_REPOS"
+    - "AWS_CODE_COMMIT"
+  required: true
+- name: business_criticality
+  description: Define the business criticality for the created application.
+  auto: PREDEFINED
+  predefined:
+    - "Critical"
+    - "High"
+    - "Medium"
+    - "Low"
+- name: business_owner
+  description: List of business owners.
+  isArray: true
+  required: false
+outputs:
+- contextPath: Cas.Application.applicationId
+  isArray: false
+  description: The created application ID.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+isInternal: false
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

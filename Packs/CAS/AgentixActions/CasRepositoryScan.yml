@@ -2,7 +2,7 @@ commonfields:
   id: CasRepositoryScan
   version: -1
 name: CasRepositoryScan
-display: CAS - Trigger Repository Scan
+display: Application Security - Trigger Repository Scan
 description: Trigger Repository Periodic Scan
 category: Utilities
 requiresuserapproval: true
