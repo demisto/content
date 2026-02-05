@@ -14,7 +14,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Enable Agentless Scanning\" xaxis = status yaxis = ads_enabled_accounts default_limit = `false` headcolor = \"#eaeaeb\" word_color = \"#ab4141\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Enable Agentless Scanning\" xaxis = status yaxis = ads_enabled_accounts default_limit = `false` headcolor = \"#eaeaeb\" word_color = \"#ab4141\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -94,7 +94,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown  < 0 and percent_burndown < -25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n| view graph type = wordcloud header = \"25% Reduction in Risky Attack Paths\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown  \u003c 0 and percent_burndown \u003c -25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n| view graph type = wordcloud header = \"25% Reduction in Risky Attack Paths\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -227,7 +227,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"Cloud Connector enabled with DSPM\" xaxis = status yaxis = dspm_enabled_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"Cloud Connector enabled with DSPM\" xaxis = status yaxis = dspm_enabled_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -286,7 +286,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio > 75, \"Achieved \", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"75% percent of data stores classified\" xaxis = status yaxis = classified_dspm_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio \u003e 75, \"Achieved \", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"75% percent of data stores classified\" xaxis = status yaxis = classified_dspm_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -345,7 +345,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 453,
-                                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(percent_burndown  <0 and percent_burndown  < -20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Data Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(percent_burndown  \u003c0 and percent_burndown  \u003c -20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Data Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -414,7 +414,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage) | alter status = if(ciem_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboarded Cloud Data Source with CIEM\" xaxis = status yaxis = ciem_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage) | alter status = if(ciem_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboarded Cloud Data Source with CIEM\" xaxis = status yaxis = ciem_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -473,7 +473,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage) |alter status = if(resolved_identity_issues_percentage > 50, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"50% of IAM Alerts Remediated\" xaxis = status yaxis = resolved_identity_issues_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage) |alter status = if(resolved_identity_issues_percentage \u003e 50, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"50% of IAM Alerts Remediated\" xaxis = status yaxis = resolved_identity_issues_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -532,7 +532,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract( num_of_issues, previous_issues ), previous_issues),100)) | alter issues_resolved = subtract( num_of_issues, previous_issues ) | alter status = if(percent_burndown <0 and percent_burndown <-20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Identity Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract( num_of_issues, previous_issues ), previous_issues),100)) | alter issues_resolved = subtract( num_of_issues, previous_issues ) | alter status = if(percent_burndown \u003c0 and percent_burndown \u003c-20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Identity Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -601,7 +601,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -30, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"30% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -30, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"30% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -665,7 +665,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -60, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"60% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -60, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"60% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -729,7 +729,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -90, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n\n\n| view graph type = wordcloud header = \"90% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -90, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n\n\n| view graph type = wordcloud header = \"90% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -798,7 +798,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts > 1 | alter status = if(cspm_enabled_accounts  > 1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboard cloud accounts\" xaxis = status yaxis = cspm_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts \u003e 1 | alter status = if(cspm_enabled_accounts  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboard cloud accounts\" xaxis = status yaxis = cspm_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -857,7 +857,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage) |alter status = if(shadow_assets_percentage > 30, \"Not Currently Passing\", \"Achieved\")\n\n| view graph type = wordcloud header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" xaxis = status yaxis = shadow_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage) |alter status = if(shadow_assets_percentage \u003e 30, \"Not Currently Passing\", \"Achieved\")\n\n| view graph type = wordcloud header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" xaxis = status yaxis = shadow_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -916,7 +916,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 400,
-                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues, previous_issues ) | alter status = if(percent_burndown  < 0 and percent_burndown < 20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n| view graph type = wordcloud header = \"Reduction of Critical Misconfigurations by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues, previous_issues ) | alter status = if(percent_burndown  \u003c 0 and percent_burndown \u003c 20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n| view graph type = wordcloud header = \"Reduction of Critical Misconfigurations by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -991,7 +991,7 @@
             "creation_time": 1769718599892,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts > 1 | alter status = if(cspm_enabled_accounts  > 1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboard cloud accounts\" xaxis = status yaxis = cspm_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as cspm_enabled_accounts | filter cspm_enabled_accounts \u003e 1 | alter status = if(cspm_enabled_accounts  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboard cloud accounts\" xaxis = status yaxis = cspm_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1049,10 +1049,7 @@
                     "cloud_health_auditing"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769571329113",
@@ -1060,7 +1057,7 @@
             "creation_time": 1769718601185,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(percent_burndown  <0 and percent_burndown  < -20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Data Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d | dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"DATA\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues ), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues ) | alter status = if(percent_burndown  \u003c0 and percent_burndown  \u003c -20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Data Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -1123,10 +1120,7 @@
                     "issues"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769546209438",
@@ -1134,7 +1128,7 @@
             "creation_time": 1769718603637,
             "description": "Point in Time",
             "data": {
-                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown  < 0 and percent_burndown < -25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n| view graph type = wordcloud header = \"25% Reduction in Risky Attack Paths\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"ATTACK_PATH\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(percent_burndown  \u003c 0 and percent_burndown \u003c -25, \"Achieved\", \"Not Currently Passing\" )  | filter previous_issues != null\n\n\n| view graph type = wordcloud header = \"25% Reduction in Risky Attack Paths\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -1197,10 +1191,7 @@
                     "issues"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769551741051",
@@ -1208,7 +1199,7 @@
             "creation_time": 1769718602440,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"Cloud Connector enabled with DSPM\" xaxis = status yaxis = dspm_enabled_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = cloud_health_auditing  | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"DSPM\" and classification= \"Success\", account, null)) as dspm_enabled_accounts | alter dspm_enabled_ratio = divide(dspm_enabled_accounts , total_accounts ) | alter dspm_enabled_percentage = multiply(dspm_enabled_ratio , 100) | alter dspm_enabled_percentage = round(dspm_enabled_percentage) | alter status = if(dspm_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"Cloud Connector enabled with DSPM\" xaxis = status yaxis = dspm_enabled_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1266,10 +1257,7 @@
                     "cloud_health_auditing"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769547003370",
@@ -1340,10 +1328,7 @@
                     "cases"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769493468661",
@@ -1351,7 +1336,7 @@
             "creation_time": 1769718600054,
             "description": "Point in Time - Bronze-Posture-Exposure and Risk Management-Enable ADS",
             "data": {
-                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Enable Agentless Scanning\" xaxis = status yaxis = ads_enabled_accounts default_limit = `false` headcolor = \"#eaeaeb\" word_color = \"#ab4141\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = cloud_health_auditing | comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"ADS\" and classification= \"Scanned\", account, null)) as ads_enabled_accounts | alter ads_enabled_ratio = divide(ads_enabled_accounts , total_accounts ) | alter agentless_enabled_percentage = multiply(ads_enabled_ratio , 100) | alter agentless_enabled_percentage = round(agentless_enabled_percentage ) | alter status = if(agentless_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Enable Agentless Scanning\" xaxis = status yaxis = ads_enabled_accounts default_limit = `false` headcolor = \"#eaeaeb\" word_color = \"#ab4141\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1430,10 +1415,7 @@
                     "cloud_health_auditing"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769573543727",
@@ -1441,7 +1423,7 @@
             "creation_time": 1769718602976,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage) |alter status = if(shadow_assets_percentage > 30, \"Not Currently Passing\", \"Achieved\")\n\n| view graph type = wordcloud header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" xaxis = status yaxis = shadow_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = asset_inventory | comp count_distinct(xdm.asset.id ) as total_assets, count_distinct(if(xdm.asset.type.class = \"External Surface\", xdm.asset.id , null)) as shadow_asset_count | alter shadow_assets_ratio = divide(shadow_asset_count , total_assets ) | alter shadow_assets_percentage = multiply(shadow_assets_ratio , 100) | alter shadow_assets_percentage = round(shadow_assets_percentage) |alter status = if(shadow_assets_percentage \u003e 30, \"Not Currently Passing\", \"Achieved\")\n\n| view graph type = wordcloud header = \"Unmanaged/Shadow IT Assets are less than 30% of the assets\" xaxis = status yaxis = shadow_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1499,10 +1481,7 @@
                     "asset_inventory"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769572967342",
@@ -1510,7 +1489,7 @@
             "creation_time": 1769718602789,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -30, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"30% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -30, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"30% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -1573,10 +1552,7 @@
                     "incidents"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769573209373",
@@ -1584,7 +1560,7 @@
             "creation_time": 1769718602220,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -90, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n\n\n| view graph type = wordcloud header = \"90% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -90, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n\n\n| view graph type = wordcloud header = \"90% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -1647,10 +1623,7 @@
                     "incidents"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769551966365",
@@ -1658,7 +1631,7 @@
             "creation_time": 1769718601885,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio > 75, \"Achieved \", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"75% percent of data stores classified\" xaxis = status yaxis = classified_dspm_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = asset_inventory | join type = left (dataset = dspm_asset_data_profiles) as dspm xdm.asset.id = dspm.asset_id | filter xdm.asset.type.class = \"Data\" | comp count_distinct(asset_id ) as classified_assets, count_distinct(xdm.asset.id ) as total_dspm_assets | alter classified_dspm_assets_ratio = divide(classified_assets , total_dspm_assets ) | alter classified_dspm_assets_percentage = multiply(classified_dspm_assets_ratio  , 100)| alter classified_dspm_assets_percentage = round(classified_dspm_assets_percentage )  | alter status = if(classified_dspm_assets_ratio \u003e 75, \"Achieved \", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"75% percent of data stores classified\" xaxis = status yaxis = classified_dspm_assets_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1717,10 +1690,7 @@
                     "asset_inventory"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769571788713",
@@ -1728,7 +1698,7 @@
             "creation_time": 1769718603156,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage) | alter status = if(ciem_enabled_percentage >0, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboarded Cloud Data Source with CIEM\" xaxis = status yaxis = ciem_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset = cloud_health_auditing |  comp count_distinct(account) as total_accounts, count_distinct(if(capability = \"Identity Security\" and classification= \"Success\", account, null)) as ciem_enabled_accounts | alter ciem_enabled_ratio = divide(ciem_enabled_accounts , total_accounts ) | alter ciem_enabled_percentage = multiply(ciem_enabled_ratio , 100) | alter ciem_enabled_percentage = round(ciem_enabled_percentage) | alter status = if(ciem_enabled_percentage \u003e0, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"Onboarded Cloud Data Source with CIEM\" xaxis = status yaxis = ciem_enabled_accounts multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1786,10 +1756,7 @@
                     "cloud_health_auditing"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769572000809",
@@ -1797,7 +1764,7 @@
             "creation_time": 1769718604283,
             "description": "Point in time",
             "data": {
-                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage) |alter status = if(resolved_identity_issues_percentage > 50, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"50% of IAM Alerts Remediated\" xaxis = status yaxis = resolved_identity_issues_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "dataset =  issues | filter xdm.issue.category  = \"IDENTITY\" | comp count_distinct(xdm.issue.id ) as total_identity_issues, count_distinct(if(xdm.issue.status.progress = \"RESOLVED\",xdm.issue.id , 0)) as resolved_identity_issues | alter resolved_identity_issues_ratio = divide(resolved_identity_issues , total_identity_issues ) | alter resolved_identity_issues_percentage = multiply(resolved_identity_issues_ratio  , 100) |  alter resolved_identity_issues_percentage = round(resolved_identity_issues_percentage) |alter status = if(resolved_identity_issues_percentage \u003e 50, \"Achieved\", \"Not Currently Passing\")\n| view graph type = wordcloud header = \"50% of IAM Alerts Remediated\" xaxis = status yaxis = resolved_identity_issues_percentage multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -1855,10 +1822,7 @@
                     "issues"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769572349743",
@@ -1866,7 +1830,7 @@
             "creation_time": 1769718600474,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract( num_of_issues, previous_issues ), previous_issues),100)) | alter issues_resolved = subtract( num_of_issues, previous_issues ) | alter status = if(percent_burndown <0 and percent_burndown <-20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Identity Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"IDENTITY\" and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract( num_of_issues, previous_issues ), previous_issues),100)) | alter issues_resolved = subtract( num_of_issues, previous_issues ) | alter status = if(percent_burndown \u003c0 and percent_burndown \u003c-20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n\n| view graph type = wordcloud header = \"Number of Identity Issues has gone down by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -1929,10 +1893,7 @@
                     "issues"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769573124259",
@@ -1940,7 +1901,7 @@
             "creation_time": 1769718603894,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") < 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown <0 and percent_burndown < -60, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"60% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d | dataset = incidents | filter timestamp_diff(current_time(),creation_time,\"DAY\") \u003c 31 | bin creation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", creation_time ) | filter resolved_ts != null and creation_time != null  | alter resolution_time_in_days = timestamp_diff(resolved_ts, creation_time , \"DAY\") |  comp avg(ceil(resolution_time_in_days)) as MTTR_in_days by creation_time  | sort desc creation_time | windowcomp lag(MTTR_in_days ) sort asc creation_time  as previous_MTTR | alter percent_burndown = round(multiply(divide(subtract(MTTR_in_days , previous_MTTR), previous_MTTR),100)) | alter issues_resolved = subtract(MTTR_in_days  , previous_MTTR) | alter query_status = if(percent_burndown \u003c0 and percent_burndown \u003c -60, \"Achieved\", \"Not Currently Passing\")  | filter previous_MTTR != null\n| view graph type = wordcloud header = \"60% change in Issue MTTR\" xaxis = query_status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -2003,10 +1964,7 @@
                     "incidents"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1769573665596",
@@ -2014,7 +1972,7 @@
             "creation_time": 1769718604778,
             "description": "Point in time",
             "data": {
-                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues, previous_issues ) | alter status = if(percent_burndown  < 0 and percent_burndown < 20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n| view graph type = wordcloud header = \"Reduction of Critical Misconfigurations by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d |dataset in (issues) | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.category = \"CONFIGURATION\" and xdm.issue.severity = ENUM.CRITICAL and xdm.issue.status.progress = \"NEW\" | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues, previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues, previous_issues ) | alter status = if(percent_burndown  \u003c 0 and percent_burndown \u003c 20, \"Achieved\", \"Not Currently Passing\")  | filter previous_issues != null\n| view graph type = wordcloud header = \"Reduction of Critical Misconfigurations by 20%\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -2077,12 +2035,8 @@
                     "issues"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         }
     ],
-    "id": "548583625c2a4479b6d125a098c6152d",
-    "name": "Cortex Cloud Posture Badges"
+    "fromVersion": "6.10.0"
 }
