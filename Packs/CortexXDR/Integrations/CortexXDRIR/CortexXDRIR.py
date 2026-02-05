@@ -1941,7 +1941,7 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
         message = updated_objects[0].get("status")
         outputs = {"rule_id": updated_objects[0].get("id")}
     else:
-        message = "No BIOCs updated."
+        message = "No Correlation Rules updated."
         outputs = {}
     return CommandResults(
         readable_output=message,
