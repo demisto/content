@@ -3978,6 +3978,7 @@ class RDS:
                 "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
                 if args.get("backup_retention_period")
                 else None,
+                "VpcSecurityGroupIds": argToList(args.get("vpc_security_group_ids")),
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
