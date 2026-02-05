@@ -7,6 +7,7 @@ from Okta_v2 import (
     Client,
     apply_zone_updates,
     assign_group_to_app_command,
+    clear_user_sessions_command,
     create_group_command,
     create_user_command,
     create_zone_command,
@@ -1402,7 +1403,8 @@ def test_clear_user_sessions_with_oauth_tokens(mocker):
     mock_http_request = mocker.patch.object(client, "http_request", return_value="")
     client.request_metadata = {}
 
-    client.clear_user_sessions("TestUserID456", revoke_oauth_tokens=True)
+    args = {"userId": "TestUserID456", "revokeOauthTokens": "true"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
 
     mock_http_request.assert_called_once_with(
         method="DELETE",
@@ -1410,12 +1412,13 @@ def test_clear_user_sessions_with_oauth_tokens(mocker):
         params={"oauthTokens": "true"},
         resp_type="text",
     )
+    assert "TestUserID456" in readable_output
 
 
 def test_clear_user_sessions_without_oauth_tokens(mocker):
     """
     Given:
-        - Arguments for clear_user_sessions_command with revokeOauthTokens set to false (default).
+        - Arguments for clear_user_sessions_command with revokeOauthTokens set to false.
     When:
         - Running clear_user_sessions_command.
     Then:
@@ -1425,7 +1428,8 @@ def test_clear_user_sessions_without_oauth_tokens(mocker):
     mock_http_request = mocker.patch.object(client, "http_request", return_value="")
     client.request_metadata = {}
 
-    client.clear_user_sessions("TestUserID789", revoke_oauth_tokens=False)
+    args = {"userId": "TestUserID789", "revokeOauthTokens": "false"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
 
     mock_http_request.assert_called_once_with(
         method="DELETE",
@@ -1433,3 +1437,4 @@ def test_clear_user_sessions_without_oauth_tokens(mocker):
         params=None,
         resp_type="text",
     )
+    assert "TestUserID789" in readable_output
