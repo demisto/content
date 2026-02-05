@@ -1596,7 +1596,7 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
     note_text: str
 
     @validator("alert_id", allow_reuse=True)
-    def validate_alert_id(cls, v):   # pylint: disable=no-self-argument
+    def validate_alert_id(cls, v):  # pylint: disable=no-self-argument
         """Ensure alert_id is a valid positive integer."""
         if v is None or v <= 0:
             raise ValueError("[Args validation] Please provide a valid 'alert_id' argument (must be positive).")
