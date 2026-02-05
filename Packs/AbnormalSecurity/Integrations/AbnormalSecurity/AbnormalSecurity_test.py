@@ -48,6 +48,8 @@ class MockResponse:
         self.data = data
         self.text = str(data)
         self.status_code = status_code
+        # Add content attribute for file downloads
+        self.content = data if isinstance(data, bytes) else str(data).encode("utf-8")
 
 
 def util_load_json(path):
@@ -1153,3 +1155,343 @@ def test_get_paginated_abusecampaigns_list(mocker):
 
     # Verify that the underlying method was not called
     assert get_campaigns_mock.call_count == 0
+
+
+def test_search_messages_command(mocker):
+    """
+    Test the search_messages_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import search_messages_command
+
+    # Create mock response
+    mock_response = {
+        "results": [
+            {
+                "customer_id": 12345,
+                "tenant_id": 1,
+                "received_time": "2024-01-15T10:30:00Z",
+                "subject": "Test Message",
+                "sender": "sender@example.com",
+                "mailbox_name": "user@company.com",
+                "abnormal_message_id": "abnormal-uuid-123",
+                "decision_category": "malicious",
+                "judgement": "attack",
+            }
+        ],
+        "total": 1,
+        "pageNumber": 1,
+        "nextPageNumber": None,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "source": "abnormal",
+        "tenant_ids": "1,2,3",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2024-01-31T23:59:59Z",
+        "subject": "Test",
+        "sender_email": "sender@example.com",
+        "page_number": 1,
+        "page_size": 100,
+    }
+
+    results = search_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageSearch"
+    assert results.outputs_key_field == "abnormal_message_id"
+    assert results.outputs.get("total") == 1
+    assert len(results.outputs.get("results", [])) == 1
+    assert results.outputs["results"][0]["abnormal_message_id"] == "abnormal-uuid-123"
+
+
+def test_remediate_messages_command(mocker):
+    """
+    Test the remediate_messages_command to verify:
+    1. It correctly handles remediation requests
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import remediate_messages_command
+
+    # Create mock response
+    mock_response = {"activity_log_id": 12345, "metadata": {"trace_id": "abc-123-def", "response_time": "150ms"}}
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "action": "delete",
+        "tenant_ids": "1,2,3",
+        "source": "abnormal",
+        "remediation_reason": "false_negative",
+        "messages": json.dumps(
+            [
+                {
+                    "tenant_id": 1,
+                    "raw_message_id": "msg-123",
+                    "abnormal_message_id": "abnormal-uuid-123",
+                    "mailbox_name": "user@company.com",
+                    "subject": "Test Message",
+                    "sender": "sender@example.com",
+                    "received_time": "2024-01-15T10:30:00Z",
+                }
+            ]
+        ),
+    }
+
+    results = remediate_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageRemediation"
+    assert results.outputs_key_field == "activity_log_id"
+    assert results.outputs.get("activity_log_id") == 12345
+
+
+def test_remediate_messages_command_remediate_all(mocker):
+    """
+    Test the remediate_messages_command with remediate_all option.
+    """
+    from AbnormalSecurity import remediate_messages_command
+
+    # Create mock response
+    mock_response = {"activity_log_id": 12346, "metadata": {"trace_id": "xyz-456-def", "response_time": "200ms"}}
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "action": "delete",
+        "tenant_ids": "1",
+        "source": "abnormal",
+        "remediation_reason": "false_negative",
+        "remediate_all": "true",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2024-01-31T23:59:59Z",
+        "subject": "Phishing",
+        "sender_email": "attacker@example.com",
+    }
+
+    results = remediate_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageRemediation"
+    assert results.outputs.get("activity_log_id") == 12346
+
+
+def test_get_activities_list_command(mocker):
+    """
+    Test the get_activities_list_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import get_activities_list_command
+
+    # Create mock response
+    mock_response = {
+        "activities": [
+            {
+                "activity_id": 12345,
+                "action": "remediate",
+                "status": "success",
+                "performed_by": "user@company.com",
+                "timestamp": "2024-01-15T10:30:00Z",
+                "result_count": 25,
+            }
+        ],
+        "total": 1,
+        "page": 1,
+        "size": 100,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "tenant_ids": "1,2,3",
+        "action": "remediate",
+        "status": "success",
+        "start_date": "2024-01-01T00:00:00Z",
+        "end_date": "2024-01-31T23:59:59Z",
+        "page": 1,
+        "size": 100,
+    }
+
+    results = get_activities_list_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.Activities"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("total") == 1
+    assert len(results.outputs.get("activities", [])) == 1
+    assert results.outputs["activities"][0]["activity_id"] == 12345
+
+
+def test_get_activity_status_command(mocker):
+    """
+    Test the get_activity_status_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure with remediation details
+    """
+    from AbnormalSecurity import get_activity_status_command
+
+    # Create mock response
+    mock_response = {
+        "activity_id": 12345,
+        "action": "remediate",
+        "status": "success",
+        "performed_by": "user@company.com",
+        "timestamp": "2024-01-15T10:30:00Z",
+        "result_count": 2,
+        "remediation_details": [
+            {
+                "tenant_id": 1,
+                "raw_message_id": "msg-123",
+                "subject": "Test Message 1",
+                "sender": "sender1@example.com",
+                "mailbox_name": "user@company.com",
+                "status": "success",
+                "date_remediated": "2024-01-15T10:35:00Z",
+            },
+            {
+                "tenant_id": 1,
+                "raw_message_id": "msg-124",
+                "subject": "Test Message 2",
+                "sender": "sender2@example.com",
+                "mailbox_name": "user@company.com",
+                "status": "success",
+                "date_remediated": "2024-01-15T10:35:00Z",
+            },
+        ],
+        "total": 2,
+        "page": 1,
+        "size": 100,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"activity_log_id": "12345", "page": 1, "size": 100}
+
+    results = get_activity_status_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.ActivityStatus"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("activity_id") == 12345
+    assert results.outputs.get("status") == "success"
+    assert len(results.outputs.get("remediation_details", [])) == 2
+    assert results.outputs.get("total") == 2
+
+
+def test_get_activity_status_command_in_progress(mocker):
+    """
+    Test the get_activity_status_command when activity is in progress with null values
+    """
+    from AbnormalSecurity import get_activity_status_command
+
+    # Create mock response with null values (activity in progress)
+    mock_response = {
+        "activity_id": 179049,
+        "action": "remediation",
+        "status": None,
+        "performed_by": None,
+        "timestamp": None,
+        "result_count": None,
+        "remediation_details": None,
+        "total": None,
+        "pageNumber": None,
+        "pageSize": None,
+        "metadata": {"trace_id": "2b8009b3784f4b5aa92fa203d59196f5", "response_time": "12.537802ms"},
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"activity_log_id": "179049"}
+
+    results = get_activity_status_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.ActivityStatus"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("activity_id") == 179049
+    assert results.outputs.get("action") == "remediation"
+    assert results.outputs.get("metadata", {}).get("trace_id") == "2b8009b3784f4b5aa92fa203d59196f5"
+    # Verify readable output contains in-progress message
+    assert "In Progress" in results.readable_output or "in progress" in results.readable_output
+
+
+def test_download_message_attachment_command(mocker):
+    """
+    Test the download_message_attachment_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns a file result
+    """
+    from AbnormalSecurity import download_message_attachment_command
+
+    # Create mock response for file download
+    mock_file_content = b"Mock attachment file content"
+    mock_response = MockResponse(mock_file_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "message_id": "abnormal-uuid-123",
+        "attachment_name": "invoice.pdf",
+        "tenant_id": 1,
+        "raw_message_id": "msg-123",
+        "native_user_id": "user-456",
+        "recipient_mailbox": "user@company.com",
+    }
+
+    results = download_message_attachment_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "invoice.pdf"
+    assert results["FileID"] is not None
+
+
+def test_download_message_eml_command(mocker):
+    """
+    Test the download_message_eml_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns a file result with EML format
+    """
+    from AbnormalSecurity import download_message_eml_command
+
+    # Create mock response for EML file download
+    mock_eml_content = b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Test\r\n\r\nTest email body"
+    mock_response = MockResponse(mock_eml_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"cloud_message_id": "abx:CloudMessage:12345:67890"}
+
+    results = download_message_eml_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "abx_CloudMessage_12345_67890.eml"
+    assert results["FileID"] is not None
+
+
+def test_download_message_eml_command_with_quarantine(mocker):
+    """
+    Test the download_message_eml_command with quarantine parameters.
+    """
+    from AbnormalSecurity import download_message_eml_command
+
+    # Create mock response for EML file download
+    mock_eml_content = b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Test\r\n\r\nTest email body"
+    mock_response = MockResponse(mock_eml_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "cloud_message_id": "abx:CloudMessage:12345:67890",
+        "quarantine_identity": "quarantine-id-123",
+        "recipient_mailbox": "user@company.com",
+    }
+
+    results = download_message_eml_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "abx_CloudMessage_12345_67890.eml"
+    assert results["FileID"] is not None
