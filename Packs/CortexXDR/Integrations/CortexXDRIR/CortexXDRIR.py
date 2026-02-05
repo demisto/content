@@ -1742,12 +1742,11 @@ def bioc_create_command(client: Client, args: Dict) -> CommandResults:
         CommandResults: The command results.
     """
     reply = bioc_create_or_update_helper(client, args)
-    added_objects: List[Dict[str, Any]] = reply.get("added_objects", [])
-    if added_objects:
+    if added_objects := reply.get("added_objects", []):
         message = added_objects[0].get("status")
         outputs = {"rule_id": added_objects[0].get("id")}
     else:
-        message = "Could not create the BIOC."
+        message = "No BIOCs created."
         outputs = {}
 
     return CommandResults(
@@ -1876,9 +1875,9 @@ def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict
         "action": "ALERTS",
         "timezone": args.get("timezone"),
         "dataset": args.get("dataset"),
-        "alert_category": args.get("alert_category").upper() if args.get("alert_category") else None,
-        "execution_mode": args.get("execution_mode").upper() if args.get("execution_mode") else None,
-        "mapping_strategy": args.get("mapping_strategy").upper() if args.get("mapping_strategy") else None,
+        "alert_category": args.get("alert_category", "").upper() if args.get("alert_category") else None,
+        "execution_mode": args.get("execution_mode", "").upper() if args.get("execution_mode") else None,
+        "mapping_strategy": args.get("mapping_strategy", "").upper() if args.get("mapping_strategy") else None,
         # Use 'or None' to convert empty strings ("") into JSON null. We must put a value for those fields.
         "description": args.get("description") or None,
         "alert_name": args.get("alert_name") or None,
@@ -1913,13 +1912,16 @@ def correlation_rule_create_command(client: Client, args: Dict) -> CommandResult
         CommandResults: The command results.
     """
     reply = correlation_rule_create_or_update_helper(client, args)
-    added_objects = reply.get("added_objects")[0] if reply.get("added_objects") else {}
-    rule_id = added_objects.get("id")
-    message = added_objects.get("status")
+    if added_objects := reply.get("added_objects", []):
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "No Correlation Rules created."
+        outputs = {}
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
-        outputs={"rule_id": rule_id},
+        outputs=outputs,
         raw_response=reply,
     )
 
@@ -1935,14 +1937,16 @@ def correlation_rule_update_command(client: Client, args: Dict) -> CommandResult
         CommandResults: The command results.
     """
     reply = correlation_rule_create_or_update_helper(client, args)
-    updated_objects = reply.get("updated_objects")[0] if reply.get("updated_objects") else {}
-    rule_id = updated_objects.get("id")
-    message = updated_objects.get("status")
-
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No BIOCs updated."
+        outputs = {}
     return CommandResults(
         readable_output=message,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
-        outputs={"rule_id": rule_id},
+        outputs=outputs,
         raw_response=reply,
     )
 
