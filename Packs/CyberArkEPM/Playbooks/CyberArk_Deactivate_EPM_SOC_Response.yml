@@ -19,10 +19,9 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -52,6 +51,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
@@ -65,7 +67,70 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 230
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 796228ab-2cad-43e8-bb0c-c6b42409dec1
+    type: condition
+    task:
+      id: 796228ab-2cad-43e8-bb0c-c6b42409dec1
+      version: -1
+      name: Is Integration Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: CyberArkEPMSOCResponse
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6aea91b1-796e-4759-b5fd-965e7c56bdb4
+    type: title
+    task:
+      id: 6aea91b1-796e-4759-b5fd-965e7c56bdb4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 470
         }
       }
     note: false
@@ -80,7 +145,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 295,
+        "height": 520,
         "width": 380,
         "x": 750,
         "y": 10

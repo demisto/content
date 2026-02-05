@@ -20,17 +20,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 750,
-          "y": 10
+          "y": -60
         }
       }
     note: false
@@ -48,10 +47,11 @@ tasks:
       id: 7ff9b2c2-a941-43a3-ab25-2529d4ff13f6
       version: -1
       name: Check Severity
+      description: Checks the severity of the alert and activates the appropriate
+        risk plan.
       type: condition
       iscommand: false
       brand: ""
-      description: Checks the severity of the incident and activates the appropriate risk plan.
     nexttasks:
       High Risk Plan:
       - "3"
@@ -64,7 +64,7 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: incident.severity
+              simple: alert.severity
             iscontext: true
           right:
             value:
@@ -74,7 +74,7 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: incident.severity
+              simple: alert.severity
             iscontext: true
           right:
             value:
@@ -107,6 +107,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
@@ -143,6 +146,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
@@ -155,12 +161,75 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 520
+          "x": 1010,
+          "y": 530
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b278833a-1dd6-465e-80c4-43e768153204
+    type: condition
+    task:
+      id: b278833a-1dd6-465e-80c4-43e768153204
+      version: -1
+      name: Is Integration Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: CyberArkEPMSOCResponse
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3847060b-4ebd-4d44-b6ed-240481ce918d
+    type: title
+    task:
+      id: 3847060b-4ebd-4d44-b6ed-240481ce918d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0

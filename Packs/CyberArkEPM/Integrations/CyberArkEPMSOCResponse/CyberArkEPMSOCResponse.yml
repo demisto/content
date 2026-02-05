@@ -74,7 +74,7 @@ script:
 marketplaces:
 - marketplacev2
 - platform
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 beta: true

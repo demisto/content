@@ -1,4 +1,4 @@
-Deactivates a specific CyberArk EPM SOC risk plan for a specified endpoint. This will reset to baseline EPM Policies, effective prior to SOC Response Action.
+Deactivates a specific CyberArk EPM SOC risk plan for a specific endpoint. This reverts all security settings to the baseline EPM policies active prior to the SOC response action.
 
 ## Dependencies
 
@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CyberArkEPMSOCResponse
+This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* IsIntegrationAvailable
 
 ### Commands
 
@@ -26,9 +26,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| endpoint_name | FQDN of target endpoint |  | Required |
-| endpoint_external_ip | External IP of target endpoint |  | Required |
-| risk_plan | Name of Risk Plan to remove \(i.e. Medium_Risk_Plan or High_Risk_Plan\) |  | Required |
+| endpoint_name | The FQDN of the target endpoint. |  | Required |
+| endpoint_external_ip | The external IP of the target endpoint. |  | Required |
+| risk_plan | The name of the risk plan to remove \(Medium_Risk_Plan or High_Risk_Plan\). |  | Required |
 
 ## Playbook Outputs
 
