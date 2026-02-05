@@ -211,7 +211,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Flashpoint Ignite Feed V2 Integration allows importing indicators of compromise using the V2 API that provides a more concise, context-rich response structure. It includes sightings of IOCs over time and IOC relationships, providing visibility into an IOC's evolution over time. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+description: Flashpoint Ignite Feed V2 Integration allows importing indicators of compromise using the V2 API that provides a more concise, context-rich response structure. It includes sightings of IOCs over time and IOC relationships, providing visibility into an IOC's evolution. The indicators of compromise are ingested into Cortex XSOAR and displayed in the War Room.
 display: Flashpoint Ignite Feed v2
 name: IgniteFeedV2
 script:

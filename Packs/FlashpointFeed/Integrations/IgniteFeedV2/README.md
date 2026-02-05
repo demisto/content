@@ -1,4 +1,4 @@
-Flashpoint Ignite Feed V2 Integration allows importing indicators of compromise using the V2 API that provides a more concise, context-rich response structure. It includes sightings of IOCs over time and IOC relationships, providing visibility into an IOC's evolution over time. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+Flashpoint Ignite Feed V2 Integration allows importing indicators of compromise using the V2 API that provides a more concise, context-rich response structure. It includes sightings of IOCs over time and IOC relationships, providing visibility into an IOC's evolution. The indicators of compromise are ingested into Cortex XSOAR and displayed in the War Room.
 
 This integration was integrated and tested with API v2 of Flashpoint Ignite.
 
@@ -33,8 +33,8 @@ If you are upgrading from a Flashpoint Feed integration, please refer to the [Mi
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Default Indicator Mapping | When selected, all the incoming indicators will map to the Ignite Indicator. | False |
-    | Tags | Provides the tags to be added to the indicators. Supports CSV values. Supports CSV values. | False |
-    | feedIncremental |  | False |
+    | Tags | Provides the tags to be added to the indicators. Supports CSV values. | False |
+    | feedIncremental | To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards. | False |
     | feedExpirationPolicy |  | False |
     | feedExpirationInterval |  | False |
     | Feed Fetch Interval | Interval in minutes to fetch indicators. | False |
