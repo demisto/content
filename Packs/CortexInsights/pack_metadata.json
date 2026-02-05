@@ -2,7 +2,7 @@
   "name": "Cortex Insights",
   "description": "Cortex Insights dashboards for environment health metrics and trends",
   "support": "Community",
-  "currentVersion": "26.1.2",
+  "currentVersion": "1.0.0",
   "author": "Palo Alto Networks Technical Services",
   "url": "",
   "email": "",
