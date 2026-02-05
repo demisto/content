@@ -278,6 +278,7 @@ alter
   xdm.target.resource.id = resourceId,
   xdm.source.cloud.project_id = coalesce(homeTenantId, resourceTenantId),
   xdm.source.host.device_id = deviceDetail -> deviceId,
+  xdm.source.host.device_category = deviceDetail -> trustType,
   xdm.source.host.hostname = coalesce(homeTenantName, deviceDetail -> displayName),
   xdm.auth.mfa.method = authenticationMethodsUsed,
   xdm.auth.mfa.client_details = authenticationRequirement,
