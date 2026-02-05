@@ -1031,7 +1031,7 @@ def delete_user_command(client, args):
 
 def clear_user_sessions_command(client, args):
     user_id = args.get("userId")
-    revoke_oauth_tokens = argToBoolean(args.get("revoke_oauth_tokens", False))
+    revoke_oauth_tokens = argToBoolean(args.get("revokeOauthTokens", True))
     raw_response = client.clear_user_sessions(user_id, revoke_oauth_tokens)
     outputs = {
         "Okta.Metadata(true)": client.request_metadata,

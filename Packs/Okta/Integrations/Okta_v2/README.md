@@ -2174,7 +2174,7 @@ https://developer.okta.com/docs/reference/api/users/#user-sessions
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userId | Okta User ID. | Required |
-| revoke_oauth_tokens | When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user. Possible values are: true, false. Default is false. | Optional |
+| revokeOauthTokens | When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 

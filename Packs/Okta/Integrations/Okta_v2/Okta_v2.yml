@@ -1558,9 +1558,9 @@ script:
       name: userId
       required: true
     - description: When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
-      name: revoke_oauth_tokens
+      name: revokeOauthTokens
       auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
