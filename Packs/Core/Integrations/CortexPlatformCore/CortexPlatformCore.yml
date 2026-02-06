@@ -3353,7 +3353,7 @@ script:
           type: Unknown
     - name: core-list-findings
       description: Retrieves findings from the Cortex platform.
-      hidden: false
+      hidden: true
       arguments:
         - name: asset_id
           description: A comma-separated list of asset IDs to filter by.
