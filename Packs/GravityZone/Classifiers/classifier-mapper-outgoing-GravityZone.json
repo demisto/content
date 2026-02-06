@@ -9,71 +9,11 @@
     "mapping": {
         "GravityZone EDR": {
             "dontMapEventToLabels": true,
-            "internalMapping": {
-                "GravityZone Incident Status": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "dbotstatus",
-                        "transformers": [
-                            {
-                                "operator": "MapValuesTransformer",
-                                "args": {
-                                    "input_values": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Active,Pending,Done"
-                                        }
-                                    },
-                                    "mapped_values": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2,1,3"
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
-            }
+            "internalMapping": {}
         },
         "GravityZone XDR": {
             "dontMapEventToLabels": true,
-            "internalMapping": {
-                "GravityZone Incident Status": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "dbotstatus",
-                        "transformers": [
-                            {
-                                "operator": "MapValuesTransformer",
-                                "args": {
-                                    "input_values": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Active,Pending,Done"
-                                        }
-                                    },
-                                    "mapped_values": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2,1,3"
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
-            }
+            "internalMapping": {}
         }
     }
 }

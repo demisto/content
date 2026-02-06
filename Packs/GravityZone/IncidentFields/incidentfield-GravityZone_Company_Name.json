@@ -1,16 +1,11 @@
 {
-    "id": "incident_gravityzone_incident_type",
+    "id": "incident_gravityzone_company_name",
     "version": -1,
-    "name": "GravityZone Incident Type",
+    "name": "GravityZone Company Name",
     "ownerOnly": false,
-    "description": "Specifies the type of the incident.",
-    "cliName": "gravityzoneincidenttype",
-    "type": "singleSelect",
-    "selectValues": [
-        "",
-        "incident",
-        "extendedIncident"
-    ],
+    "description": "Name of the company associated with the incident.",
+    "cliName": "gravityzonecompanyname",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

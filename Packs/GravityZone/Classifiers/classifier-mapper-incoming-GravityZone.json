@@ -72,7 +72,10 @@
                     "simple": "mainAction"
                 },
                 "GravityZone Company ID": {
-                    "simple": "companyId"
+                    "simple": "company.id"
+                },
+                "GravityZone Company Name": {
+                    "simple": "company.name"
                 },
                 "GravityZone Incident Number": {
                     "simple": "incidentNumber"
@@ -81,7 +84,22 @@
                     "simple": "incidentLink"
                 },
                 "GravityZone Incident Attack Types": {
-                    "simple": "attackTypes"
+                    "complex": {
+                        "root": "attackTypes",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "join",
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 },
                 "GravityZone Computer ID": {
                     "simple": "details.computerId"
@@ -94,6 +112,18 @@
                 },
                 "GravityZone Computer IP": {
                     "simple": "details.computerIp"
+                },
+                "GravityZone Incident Status": {
+                    "simple": "status"
+                },
+                "Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "Source Create time": {
+                    "simple": "created"
+                },
+                "Last Update Time": {
+                    "simple": "lastProcessed"
                 }
             }
         },
@@ -162,7 +192,10 @@
                     "simple": "mainAction"
                 },
                 "GravityZone Company ID": {
-                    "simple": "companyId"
+                    "simple": "company.id"
+                },
+                "GravityZone Company Name": {
+                    "simple": "company.name"
                 },
                 "GravityZone Incident Number": {
                     "simple": "incidentNumber"
@@ -171,7 +204,34 @@
                     "simple": "incidentLink"
                 },
                 "GravityZone Incident Attack Types": {
-                    "simple": "attackTypes"
+                    "complex": {
+                        "root": "attackTypes",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "join",
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "GravityZone Incident Status": {
+                    "simple": "status"
+                },
+                "Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "Source Create time": {
+                    "simple": "created"
+                },
+                "Last Update Time": {
+                    "simple": "lastProcessed"
                 }
             }
         },
