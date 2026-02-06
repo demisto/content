@@ -4,7 +4,7 @@ Cortex Cloud Badges and content
 
 ## Overview
 
-This content pack includes dashboards to provide customers with snapshots of current metrics and trends related to their Cortex Cloud use case deployment.  This information is meant to empower Cortex Cloud users as a part of the product adoption journey.
+This content pack includes dashboards to provide customers with snapshots of current metrics and trends related to their Cortex Cloud use case deployment. This information is meant to empower Cortex Cloud users as a part of the product adoption journey.
 
 ## Installation
 
