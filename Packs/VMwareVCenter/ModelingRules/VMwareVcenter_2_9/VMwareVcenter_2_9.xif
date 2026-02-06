@@ -195,8 +195,8 @@ alter
     xdm.target.virtualization.data_center.name = target_datacenter,  
     xdm.source.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.name = target_datastore_name,
-    xdm.source.virtualization.vm.hostname = vm_name,
-    xdm.target.virtualization.vm.hostname = target_vm_name;
+    xdm.source.virtualization.vm.hostname = coalesce(vm_name, old_vm_name),
+    xdm.target.virtualization.vm.hostname = coalesce(target_vm_name, new_vm_name);
 
 // Virtualization Story vSphere Task Event fomrat field mapping
 // Event type = 10
