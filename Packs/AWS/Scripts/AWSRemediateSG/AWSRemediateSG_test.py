@@ -297,7 +297,7 @@ class TestSGFix:
         assert sg_create_args["account_id"] == account_id
         assert "demo-sg_cortex_remediation_" in sg_create_args["group_name"]
         assert sg_create_args["vpc_id"] == "vpc-061c242911e464170"
-        assert sg_create_args["description"] == "copied from Security Group demo-sg by Cortex."
+        assert sg_create_args["description"] == "Copied from Security Group demo-sg by Cortex."
         assert sg_create_args["region"] == region
         assert sg_create_args["using"] == integration_instance
 

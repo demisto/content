@@ -267,8 +267,15 @@ def sg_fix(account_id: str, sg_info: list, port: int, protocol: str, integration
             recreate_list.append(str(priv).replace("'", '"'))
 
         # Create the empty Security Group
-        new_name = info["GroupName"] + "_cortex_remediation_" + str(randint(100, 999))
-        description = "copied from Security Group " + info["GroupName"] + " by Cortex."
+        # Check if the name already contains the cortex remediation suffix
+        if "_cortex_remediation_" in info["GroupName"]:
+            # Find the last occurrence of the suffix and replace the number
+            base_name = info["GroupName"].rsplit("_cortex_remediation_", 1)[0]
+            new_name = base_name + "_cortex_remediation_" + str(randint(1000, 9999))
+        else:
+            # Original behavior for names that don't contain the suffix
+            new_name = info["GroupName"] + "_cortex_remediation_" + str(randint(1000, 9999))
+        description = "Copied from Security Group " + info["GroupName"] + " by Cortex."
         create_group_cmd_args = {
             "account_id": account_id,
             "group_name": new_name,
