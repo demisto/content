@@ -9453,3 +9453,416 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_map_findings_basic(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns findings with XDM_FINDING_ prefixed fields.
+    When:
+        The list_findings_command function is called (which uses map_findings internally).
+    Then:
+        All XDM_FINDING_ prefixes are removed and keys are converted to lowercase.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+
+    mock_data_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM_FINDING_ID": "finding-001",
+                    "XDM_FINDING_CATEGORY": "Vulnerability",
+                    "XDM_FINDING_NAME": "Test Finding",
+                    "XDM_FINDING_ASSET_ID": "asset-123",
+                }
+            ]
+        }
+    }
+    mock_counts_response = {"reply": {"FILTER_COUNT": 1}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+    result = list_findings_command(mock_client, {})
+
+    # Verify map_findings transformed the fields correctly
+    findings = result[0].outputs
+    assert len(findings) == 1
+    assert findings[0]["id"] == "finding-001"
+    assert findings[0]["category"] == "Vulnerability"
+    assert findings[0]["name"] == "Test Finding"
+    assert findings[0]["asset_id"] == "asset-123"
+    # Verify XDM_FINDING_ prefixes were removed
+    assert "XDM_FINDING_ID" not in findings[0]
+    assert "XDM_FINDING_CATEGORY" not in findings[0]
+
+
+def test_map_findings_empty_list(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns an empty list of findings.
+    When:
+        The list_findings_command function is called (which uses map_findings internally).
+    Then:
+        An empty list is returned.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+    result = list_findings_command(mock_client, {})
+
+    # Verify map_findings handled empty list correctly
+    findings = result[0].outputs
+    assert findings == []
+
+
+def test_list_findings_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and valid arguments with finding filters.
+    When:
+        The list_findings_command function is called.
+    Then:
+        The response is parsed, formatted, and returned correctly with expected outputs.
+        All fields (including extra fields) are included since map_findings processes ALL fields.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+
+    # Mock get_webapp_data response
+    mock_data_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM_FINDING_ID": "finding-001",
+                    "XDM_FINDING_CATEGORY": "Vulnerability",
+                    "XDM_FINDING_NAME": "Critical CVE",
+                    "XDM_FINDING_DESCRIPTION": "Critical vulnerability found",
+                    "XDM_FINDING_ASSET_ID": "asset-123",
+                    "XDM_FINDING_ASSET_NAME": "web-server-01",
+                    "XDM_FINDING_ASSET_CLASS": "Server",
+                    "XDM_FINDING_ASSET_CATEGORY": "Compute",
+                    "XDM_FINDING_ASSET_TYPE": "EC2 Instance",
+                    "XDM_FINDING_FIRST_OBSERVED": "2024-01-01T00:00:00Z",
+                    "XDM_FINDING_LAST_OBSERVED": "2024-01-15T00:00:00Z",
+                    "EXTRA_FIELD": "should_be_included",
+                }
+            ]
+        }
+    }
+
+    # Mock get_webapp_counts response
+    mock_counts_response = {"reply": {"FILTER_COUNT": 1}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mock_get_webapp_counts = mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Findings Table")
+
+    args = {"asset_id": "asset-123", "asset_name": "web-server-01", "page": "0", "page_size": "100"}
+
+    result = list_findings_command(mock_client, args)
+
+    # Verify we get a list of CommandResults
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    # Verify findings data CommandResults
+    findings_result = result[0]
+    assert findings_result.outputs_prefix == "Core.Findings"
+    assert findings_result.outputs_key_field == "id"
+    assert len(findings_result.outputs) == 1
+    assert findings_result.outputs[0]["id"] == "finding-001"
+    assert findings_result.outputs[0]["category"] == "Vulnerability"
+    assert findings_result.outputs[0]["name"] == "Critical CVE"
+    assert findings_result.outputs[0]["asset_id"] == "asset-123"
+    assert findings_result.outputs[0]["asset_name"] == "web-server-01"
+    # Verify extra field is also included (map_findings includes ALL fields)
+    assert findings_result.outputs[0]["extra_field"] == "should_be_included"
+    assert "Findings Table" in findings_result.readable_output
+
+    # Verify metadata CommandResults
+    metadata_result = result[1]
+    assert metadata_result.outputs_prefix == "Core.FindingsMetadata"
+    assert metadata_result.outputs["filtered_count"] == 1
+    assert metadata_result.outputs["returned_count"] == 1
+
+    # Verify API calls
+    assert mock_get_webapp_data.call_count == 1
+    assert mock_get_webapp_counts.call_count == 1
+
+
+def test_list_findings_command_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns empty data.
+    When:
+        The list_findings_command function is called.
+    Then:
+        An empty result is returned with proper structure.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="No Findings")
+
+    args = {"asset_id": "nonexistent-asset"}
+
+    result = list_findings_command(mock_client, args)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].outputs == []
+    assert result[1].outputs["filtered_count"] == 0
+    assert result[1].outputs["returned_count"] == 0
+
+
+def test_list_findings_command_multiple_findings(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns multiple finding records.
+    When:
+        The list_findings_command function is called.
+    Then:
+        All finding records are properly processed and returned.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM_FINDING_ID": "finding-001",
+                    "XDM_FINDING_CATEGORY": "Vulnerability",
+                    "XDM_FINDING_NAME": "CVE-2024-1234",
+                    "XDM_FINDING_ASSET_ID": "asset-123",
+                    "XDM_FINDING_ASSET_NAME": "server-01",
+                },
+                {
+                    "XDM_FINDING_ID": "finding-002",
+                    "XDM_FINDING_CATEGORY": "Misconfiguration",
+                    "XDM_FINDING_NAME": "Open Port 22",
+                    "XDM_FINDING_ASSET_ID": "asset-456",
+                    "XDM_FINDING_ASSET_NAME": "server-02",
+                },
+                {
+                    "XDM_FINDING_ID": "finding-003",
+                    "XDM_FINDING_CATEGORY": "Compliance",
+                    "XDM_FINDING_NAME": "Missing Encryption",
+                    "XDM_FINDING_ASSET_ID": "asset-789",
+                    "XDM_FINDING_ASSET_NAME": "database-01",
+                },
+            ]
+        }
+    }
+    mock_counts_response = {"reply": {"FILTER_COUNT": 3}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Findings Table")
+
+    args = {"category": "Vulnerability,Misconfiguration,Compliance"}
+
+    result = list_findings_command(mock_client, args)
+
+    assert len(result[0].outputs) == 3
+    assert result[0].outputs[0]["id"] == "finding-001"
+    assert result[0].outputs[1]["id"] == "finding-002"
+    assert result[0].outputs[2]["id"] == "finding-003"
+    assert result[1].outputs["filtered_count"] == 3
+    assert result[1].outputs["returned_count"] == 3
+
+
+def test_list_findings_command_with_all_filters(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with all possible filter combinations.
+    When:
+        The list_findings_command function is called.
+    Then:
+        All filters are properly applied and the request is built correctly.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Empty Table")
+
+    args = {
+        "asset_id": "asset-123,asset-456",
+        "asset_name": "server-01,server-02",
+        "asset_category": "Compute,Storage",
+        "asset_class": "Server,Database",
+        "category": "Vulnerability,Misconfiguration",
+        "finding_source": "AWS,Azure",
+        "page": "1",
+        "page_size": "50",
+    }
+
+    list_findings_command(mock_client, args)
+
+    # Verify get_webapp_data was called
+    mock_get_webapp_data.assert_called_once()
+    call_args = mock_get_webapp_data.call_args[0][0]
+
+    # Verify request structure
+    assert call_args["table_name"] == "FINDINGS"
+    assert call_args["filter_data"]["paging"]["from"] == 50  # page 1 * page_size 50
+    assert call_args["filter_data"]["paging"]["to"] == 100  # from + page_size
+    assert call_args["filter_data"]["sort"][0]["FIELD"] == "XDM_FINDING_LAST_OBSERVED"
+    assert call_args["filter_data"]["sort"][0]["ORDER"] == "DESC"
+
+
+def test_list_findings_command_default_pagination(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and minimal arguments without pagination parameters.
+    When:
+        The list_findings_command function is called.
+    Then:
+        Default pagination values are applied (page=0, page_size=100).
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Empty Table")
+
+    args = {"asset_id": "asset-123"}
+
+    list_findings_command(mock_client, args)
+
+    call_args = mock_get_webapp_data.call_args[0][0]
+    assert call_args["filter_data"]["paging"]["from"] == 0
+    assert call_args["filter_data"]["paging"]["to"] == 100
+
+
+def test_list_findings_command_custom_pagination(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with custom page and page_size values.
+    When:
+        The list_findings_command function is called.
+    Then:
+        Custom pagination values are correctly applied.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Empty Table")
+
+    args = {"asset_id": "asset-123", "page": "2", "page_size": "25"}
+
+    list_findings_command(mock_client, args)
+
+    call_args = mock_get_webapp_data.call_args[0][0]
+    # page 2 * page_size 25 = 50
+    assert call_args["filter_data"]["paging"]["from"] == 50
+    # from + page_size = 50 + 25 = 75
+    assert call_args["filter_data"]["paging"]["to"] == 75
+
+
+def test_list_findings_command_no_filters(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and empty arguments with no filter parameters.
+    When:
+        The list_findings_command function is called.
+    Then:
+        The request is built with empty filters and returns all findings.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM_FINDING_ID": "finding-all-1",
+                    "XDM_FINDING_NAME": "Finding 1",
+                    "XDM_FINDING_ASSET_ID": "asset-1",
+                },
+                {
+                    "XDM_FINDING_ID": "finding-all-2",
+                    "XDM_FINDING_NAME": "Finding 2",
+                    "XDM_FINDING_ASSET_ID": "asset-2",
+                },
+            ]
+        }
+    }
+    mock_counts_response = {"reply": {"FILTER_COUNT": 2}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+    args = {}
+
+    result = list_findings_command(mock_client, args)
+
+    assert len(result[0].outputs) == 2
+    assert result[0].outputs[0]["id"] == "finding-all-1"
+    assert result[0].outputs[1]["id"] == "finding-all-2"
+
+
+def test_list_findings_command_comma_separated_values(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with comma-separated filter values.
+    When:
+        The list_findings_command function is called.
+    Then:
+        Comma-separated values are properly parsed into lists and applied as filters.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+    args = {
+        "asset_id": "asset-1,asset-2,asset-3",
+        "asset_name": "server-1,server-2",
+        "category": "Vulnerability,Misconfiguration,Compliance",
+    }
+
+    list_findings_command(mock_client, args)
+
+    # Verify the filter contains multiple values
+    call_args = mock_get_webapp_data.call_args[0][0]
+    filter_dict = call_args["filter_data"]["filter"]
+    assert "AND" in filter_dict

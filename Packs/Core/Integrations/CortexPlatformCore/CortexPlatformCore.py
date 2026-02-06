@@ -672,7 +672,7 @@ class Client(CoreClient):
     def get_webapp_counts(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
-            url_suffix=f"/get_counts",
+            url_suffix="/get_counts",
             json_data=request_data,
         )
 
@@ -4515,7 +4515,7 @@ def get_case_resolution_statuses(client, args):
 def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Retrieves findings from the Cortex platform filtered by asset ID and asset name.
-    
+
     Args:
         client: The client instance used to send the request.
         args: Dictionary containing the arguments for the command.
@@ -4525,7 +4525,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
                   - page (int, optional): Page number for pagination. Default is 0.
                   - page_size (int, optional): Number of findings to return per page. Default is 100.
                   - limit (int, optional): Maximum number of findings to return. Default is 100.
-    
+
     Returns:
         list[CommandResults]: List containing:
             - CommandResults with findings data
@@ -4540,7 +4540,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     finding_source = argToList(args.get("finding_source"))
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 100
-    
+
     # Build filter
     filter_builder = FilterBuilder()
     filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.CONTAINS, asset_ids)
@@ -4553,7 +4553,7 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     # Calculate pagination
     start_index = page * page_size
     end_index = start_index + page_size
-    
+
     # Build request data for get_data
     request_data = build_webapp_request_data(
         table_name=FINDINGS_TABLE,
@@ -4563,14 +4563,14 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
         sort_order="DESC",
         start_page=start_index,
     )
-    
+
     # Get findings data
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    
+
     # Build request data for get_counts
-    counts_request_data = {
+    counts_request_data: dict = {
         "type": "grid",
         "table_name": FINDINGS_TABLE,
         "extraData": None,
@@ -4582,61 +4582,46 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
             "locked": {},
             "paging": {"from": start_index, "to": end_index},
         },
-        "jsons": [
-            "xdm.file.contributors",
-            "xdm.data.information_protection_label",
-            "xdm.kubernetes.resource.labels",
-            "xdm.ai.content_filters",
-            "xdm.repository.contributors",
-            "xdm.repository.technologies",
-            "xdm.repository.forks",
-            "xdm.repository.tags_metadata",
-            "xdm.repository.issues_metadata",
-            "xdm.repository.releases_metadata",
-            "xdm.repository.labels",
-        ],
+        "jsons": [],
     }
-    
+
     # Get counts
     counts_response = client.get_webapp_counts(counts_request_data)
     counts_reply = counts_response.get("reply", {})
     filtered_count = counts_reply.get("FILTER_COUNT", 0)
-    
+
+    def map_findings(findings):
+        return [{k.replace("XDM_FINDING_", "").lower(): v for k, v in finding.items()} for finding in findings]
+
     # Process findings - extract ALL upper hierarchy fields
-    findings = []
-    for finding in data:
-        findings.append({
-            "category": finding.get("XDM_FINDING_CATEGORY"),
-            "name": finding.get("XDM_FINDING_NAME"),
-            "description": finding.get("XDM_FINDING_DESCRIPTION"),
-            "first_observed": finding.get("XDM_FINDING_FIRST_OBSERVED"),
-            "last_observed": finding.get("XDM_FINDING_LAST_OBSERVED"),
-            "id": finding.get("XDM_FINDING_ID"),
-            "asset_id": finding.get("XDM_FINDING_ASSET_ID"),
-            "asset_name": finding.get("XDM_FINDING_ASSET_NAME"),
-            "asset_class": finding.get("XDM_FINDING_ASSET_CLASS"),
-            "asset_category": finding.get("XDM_FINDING_ASSET_CATEGORY"),
-            "asset_type": finding.get("XDM_FINDING_ASSET_TYPE"),
-            "asset_group_ids": finding.get("XDM_FINDING_ASSET_GROUP_IDS"),
-            "normalized_fields": finding.get("XDM_FINDING_NORMALIZED_FIELDS"),
-            "extended_fields": finding.get("XDM_FINDING_EXTENDED_FIELDS"),
-        })
-    
+    findings = map_findings(data)
+
     # Create metadata
     metadata = {
         "filtered_count": filtered_count,
         "returned_count": len(findings),
     }
-    
+
     command_results = []
-    
+
     command_results.append(
         CommandResults(
             readable_output=tableToMarkdown(
                 "Findings",
                 findings,
-                headers=["id", "category", "name", "description", "asset_id", "asset_name", "asset_class",
-                        "asset_category", "asset_type", "first_observed", "last_observed"],
+                headers=[
+                    "id",
+                    "category",
+                    "name",
+                    "description",
+                    "asset_id",
+                    "asset_name",
+                    "asset_class",
+                    "asset_category",
+                    "asset_type",
+                    "first_observed",
+                    "last_observed",
+                ],
                 headerTransform=string_to_table_header,
             ),
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Findings",
@@ -4645,14 +4630,14 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
             raw_response=response,
         )
     )
-    
+
     command_results.append(
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FindingsMetadata",
             outputs=metadata,
         )
     )
-    
+
     return command_results
 
 
