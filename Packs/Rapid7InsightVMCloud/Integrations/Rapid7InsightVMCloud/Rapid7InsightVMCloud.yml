@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: Rapid7
 commonfields:
   id: Rapid7 InsightVM Cloud
   version: -1
@@ -76,7 +77,7 @@ script:
       description: The index of the page to retrieve.
       name: page
     - defaultValue: '10'
-      description: The number of records per page to retrieve
+      description: The number of records per page to retrieve.
       name: size
     - description: Query by which to search for vulnerabilities.
       name: query

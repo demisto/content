@@ -6,6 +6,7 @@ display: SentinelOne (Deprecated)
 deprecated: true
 fromversion: 5.0.0
 category: Endpoint
+provider: SentinelOne
 description: Deprecated. Use the SentinelOne v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
