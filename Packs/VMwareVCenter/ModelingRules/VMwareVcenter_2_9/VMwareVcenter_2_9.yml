@@ -1,0 +1,6 @@
+fromversion: 8.13.0
+id: VMware_Vcenter_2_9_ModelingRule
+name: VMware Vcenter 2.9 Modeling Rule
+rules: ''
+schema: ''
+tags: VMware vCenter

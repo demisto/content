@@ -778,16 +778,16 @@ Export quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                 | **Required** |
+| --- |-----------------------------------------------------------------| --- |
 | identities | A comma-separated list of identities of the messages to export. | Optional |
-| identity | The identity of a single message to export. | Optional |
-| compress_output | Specify whether the output should be compressed. | Optional |
-| entity_type | The type of entity being exported. | Optional |
-| force_conversion_to_mime | Specify whether to force conversion to MIME format. | Optional |
-| password | Password to encrypt the exported file. | Optional |
-| reason_for_export | Reason for exporting the message. | Optional |
-| recipient_address | Email address to send the exported message to. | Optional |
+| identity | The identity of a single message to export.                     | Optional |
+| compress_output | Specify whether the output should be compressed.                | Optional |
+| entity_type | The type of entity being exported.                              | Optional |
+| force_conversion_to_mime | Specify whether to force conversion to MIME format.             | Optional |
+| password | Password to encrypt the exported file. Using this argument requires 'compress_output' argument to be set to true.                         | Optional |
+| reason_for_export | Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.                              | Optional |
+| recipient_address | Email address to send the exported message to.                  | Optional |
 
 #### Context Output
 
