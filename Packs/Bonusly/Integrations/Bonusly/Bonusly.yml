@@ -1,4 +1,5 @@
 category: Utilities
+provider: Bonusly
 commonfields:
   id: Bonusly
   version: -1
@@ -67,9 +68,9 @@ script:
       name: giver-email
     - description: Email address of the bonus receiver by which to filter results.
       name: receiver-email
-    - description: Email address of the bonus giver or receiver by which to filter results. this email
+    - description: Email address of the bonus giver or receiver by which to filter results. this email.
       name: user-email
-    - description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork'
+    - description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork.'
       name: hashtag
     - description: Whether to include child responses of the bonus.
       name: include-children
@@ -85,7 +86,7 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving".'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -193,7 +194,7 @@ script:
     - description: The email address of the bonus giver.
       name: giver-email
       required: true
-    - description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n"
+    - description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n."
       name: reason
       required: true
     - description: The parent bonus ID with which to associate this bonus, e.g., 24abcdef1234567890abcdef.
@@ -208,7 +209,7 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving".'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -277,7 +278,7 @@ script:
       description: Whether the giver can give bonuses.
       type: Number
     - contextPath: Bonusly.Bonus.giver.earning_balance
-      description: Available earning balance
+      description: Available earning balance.
       type: Number
     - contextPath: Bonusly.Bonus.giver.earning_balance_with_currency
       description: Earning balance of the bonus giver (with currency).
@@ -326,7 +327,7 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving".'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -434,7 +435,7 @@ script:
     - description: 'ID of the bonus to update. '
       name: id
       required: true
-    - description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution'
+    - description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution.'
       name: reason
       required: true
     description: Updates a bonus.
@@ -447,7 +448,7 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving".'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -559,7 +560,7 @@ script:
     name: bonusly-delete-bonus
     outputs:
     - contextPath: Bonusly.Bonus.message
-      description: Message
+      description: Message.
       type: Unknown
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true

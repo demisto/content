@@ -126,9 +126,7 @@ class Client(BaseClient):
         if status_code != 200:
             if status_code == 400:
                 error_msg = str(resp.json().get("errors", ""))
-                demisto.debug(
-                    f"RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {error_msg}"
-                )
+                demisto.debug(f"RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {error_msg}")
                 raise ValueError("RiskSense API call failed: Bad Request. One or more argument(s) are invalid.")
             elif status_code == 401:
                 raise ValueError("Unauthenticated. Check the API key configured.")

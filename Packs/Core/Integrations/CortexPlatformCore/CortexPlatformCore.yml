@@ -177,19 +177,15 @@ script:
         - contextPath: Core.Coverage.Histogram.column_name
           description: The column over which the histogram is generated.
           type: String
-
         - contextPath: Core.Coverage.Histogram.data.value
           description: The distinct value.
           type: String
-
         - contextPath: Core.Coverage.Histogram.data.count
           description: The number of records with this value after filtering.
           type: Number
-
         - contextPath: Core.Coverage.Histogram.data.percentage
           description: The percentage of filtered records with this value.
           type: Number
-
         - contextPath: Core.Coverage.Histogram.data.pretty_name
           description: A user-friendly label for the value.
           type: String
@@ -355,84 +351,67 @@ script:
         - contextPath: Core.Coverage.Asset.asset_id
           description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_name
           description: The name of the asset. Typically corresponds to the repository, container image, or pipeline name.
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_provider
           description:
             "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
           type: String
-
         - contextPath: Core.Coverage.Asset.asset_type
           description:
             "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
           type: String
-
         - contextPath: Core.Coverage.Asset.business_application_names
           description: A list of business applications associated with the asset. These applications help map the asset to business context or ownership.
           type: Array
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_cicd
           description:
             "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
           description:
             "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_iac
           description:
             "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_malware
           description:
             "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_secrets
           description:
             "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
           description:
             "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
           description:
             "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_veracode
           description:
             "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
           type: Boolean
-
         - contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
           description:
             "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
-
         - contextPath: Core.Coverage.Asset.last_scan_status
           description:
             "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
           type: String
-
         - contextPath: Core.Coverage.Asset.scanners_data
           description: An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata.
           type: Array
-
         - contextPath: Core.Coverage.Asset.status_coverage
           description:
             "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
           type: String
-
         - contextPath: Core.Coverage.Asset.unified_provider
           description:
             "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
@@ -1654,6 +1633,21 @@ script:
             - CORTEX_SERVERLESS_FUNCTION_SCANNER
             - QUALYS
             - TENABLE
+        - name: cvrs_gte
+          description: The minimum risk score assigned to the vulnerability (range 0-100).
+        - name: compensating_controls_effective_coverage
+          description: The assessed effectiveness and coverage of detected compensating controls.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - EFFECTIVE
+            - EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE
+            - EFFECTIVE_REQUIRES_CONTENT_UPDATE
+            - EXPLOIT_CONFIRMED
+            - EXPLOIT_UNREACHABLE
+            - NOT_INSTALLED
+            - NO_CONTROLS_FOUND
+            - UNKNOWN_COVERAGE
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
@@ -1702,6 +1696,39 @@ script:
           type: String
         - contextPath: Core.VulnerabilityIssue.FINDING_SOURCES
           description: The finding sources that originally generated the security finding of the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE
+          description: The coverage status of detected compensating controls.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE
+          description: The risk score assigned to the vulnerability.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.FIX_VERSIONS
+          description: The package versions that contain a fix for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.ASSET_TYPES
+          description: The types of assets affected by the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS
+          description: The compensating controls that were detected for the vulnerability.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.EXPLOIT_LEVEL
+          description: The exploitability level or status of the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ISSUE_NAME
+          description: The name of the vulnerability issue.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.PACKAGE_IN_USE
+          description: Indicates whether the vulnerable package is actively used in the environment.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.PROVIDERS
+          description: The providers or sources of the vulnerability information.
+          type: Array
+        - contextPath: Core.VulnerabilityIssue.OS_FAMILY
+          description: The operating system family of the affected asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.IMAGE
+          description: Information related to the affected container or system image.
           type: String
     - arguments:
         - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
@@ -1854,7 +1881,6 @@ script:
           isArray: true
       name: core-enable-scanners
       description: Enable or disable scanners with the specified configuration.
-
     - name: core-create-appsec-policy
       description: Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
       arguments:
@@ -1916,7 +1942,6 @@ script:
         - name: conditions_license_type
           description: Target specific software license types for compliance and legal risk management.
           isArray: true
-
         # Scope Filters (Asset Criteria)
         - name: scope_category
           description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization."
@@ -2066,7 +2091,7 @@ script:
           name: status
           predefined:
             - 'new'
-            - 'under_investigation'
+            - 'in_progress'
             - 'resolved'
         - auto: PREDEFINED
           description: |
@@ -2479,7 +2504,7 @@ script:
           type: String
           predefined:
             - "new"
-            - "under_investigation"
+            - "in_progress"
             - "resolved"
         - name: notes
           description: Additional notes for the case.
@@ -2865,6 +2890,105 @@ script:
         description: The cloud region of the endpoint.
         type: String
     - arguments:
+      - name: profile_name
+        description: The name of the assessment profile to create.
+        required: true
+      - name: profile_description
+        description: The description of the assessment profile to create.
+      - name: standard_name
+        description: The name of the compliance standard to associate with the profile.
+        required: true
+      - name: asset_group_name
+        description: The name of the asset group to apply the assessment profile to.
+        required: true
+      - auto: PREDEFINED
+        name: day
+        description: The day of the week to schedule the assessment. If left empty, assessment runs daily.
+        predefined:
+          - "Sunday"
+          - "Monday"
+          - "Tuesday"
+          - "Wednesday"
+          - "Thursday"
+          - "Friday"
+          - "Saturday"
+      - name: time
+        description: The time of day to run the assessment in HH:MM format.
+        defaultValue: "12:00"
+      name: core-add-assessment-profile
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.AssessmentProfile.assessment_profile_id
+        description: The unique identifier of the newly created assessment profile.
+        type: String
+    - arguments:
+      - name: name
+        description: The name of the standard.
+      - auto: PREDEFINED
+        name: created_by
+        description: The user or entity who created the compliance.
+        predefined:
+        - System
+        - Custom
+      - name: page_size
+        description: The number of standards to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the standards to return for pagination. Default is 0.
+      - auto: PREDEFINED
+        name: labels
+        description: A comma-separated list of labels to filter compliance standards.
+        predefined:
+          - "Aws"
+          - "Azure"
+          - "GCP"
+          - "GKE"
+          - "K8S"
+          - "Windows"
+          - "Linux"
+          - "EKS"
+          - "AKS"
+          - "OCI"
+          - "Alibaba Cloud"
+          - "On Prem"
+          - "LLM"
+          - "Docker"
+          - "Openshift"
+      name: core-list-compliance-standards
+      description: Create new assessment profile.
+      hidden: true
+      supportedModules:
+        - cloud_runtime_security
+        - cloud_posture
+      outputs:
+      - contextPath: Core.ComplianceStandards.id
+        description: The unique identifier of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.name
+        description: The name of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.description
+        description: The description of the standard.
+        type: String
+      - contextPath: Core.ComplianceStandards.labels
+        description: The labels associated with the compliance standard.
+        type: Array
+      - contextPath: Core.ComplianceStandards.controls_count
+        description: The number of controls in the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandards.assessments_profiles_count
+        description: The number of assessment profiles associated with the standard.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.returned_count
+        description: The actual number of compliance standards that match all filter criteria and returned in this specific response.
+        type: Number
+      - contextPath: Core.ComplianceStandardsMetadata.filtered_count
+        description: The total number of compliance standards in the system that match all filter criteria.
+        type: Number
+    - arguments:
       - description: A comma-separated list of endpoint IDs.
         name: endpoint_ids
         required: true
@@ -3170,11 +3294,68 @@ script:
       - contextPath: GenericXQLQuery.results
         description: The output obtained from the query.
         type: List
+      - contextPath: GenericXQLQuery.query_limit_modified
+        description: Contains a message if the query's LIMIT clauses were automatically reduced to the maximum supported limit.
+        type: String
+    - arguments:
+        - description: A comma separated list of case ids to retrieve resolution statuses for.
+          isArray: false
+          name: case_id
+          required: true
+      name: core-get-case-resolution-statuses
+      description:  Retrieves resolution status information for a specific case.
+      hidden: true
+      outputs:
+        - contextPath: Core.CaseResolutionStatus.category
+          description: The category of the item (done, inProgress, pending, recommended).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.itemType
+          description: The type of item - "playbook" or "playbookTask".
+          type: String
+        - contextPath: Core.CaseResolutionStatus.id
+          description: The unique identifier of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.name
+          description: The name of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.description
+          description: The description of the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.status
+          description: The execution/completion status.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.type
+          description: The type of the task (for playbookTask items).
+          type: String
+        - contextPath: Core.CaseResolutionStatus.issueIDs
+          description: Array of issue IDs associated with the playbook or task.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.playbookVersion
+          description: The version number of the playbook.
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.startedAt
+          description: Timestamp when execution started (for done/inProgress playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.completedAt
+          description: Timestamp when execution completed (for done playbooks).
+          type: Number
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.id
+          description: The unique identifier of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.name
+          description: The name of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.parentPlaybook.description
+          description: The description of the parent playbook.
+          type: String
+        - contextPath: Core.CaseResolutionStatus.userInput
+          description: User input parameters (for pending playbookTask items).
+          type: Unknown
   runonce: false
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.5633894
+  dockerimage: demisto/google-cloud-storage:1.0.0.6387824
 tests:
   - No tests
 fromversion: 6.2.0

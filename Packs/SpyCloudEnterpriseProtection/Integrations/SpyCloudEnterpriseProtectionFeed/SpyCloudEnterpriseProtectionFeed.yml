@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: SpyCloud
 sectionorder:
   - Connect
   - Collect
@@ -39,7 +40,6 @@ configuration:
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.
-  defaultvalue: -1days
   display: Until
   hidden: false
   name: until
@@ -161,7 +161,7 @@ script:
   type: python
   subtype: python3
   isfetch: true
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

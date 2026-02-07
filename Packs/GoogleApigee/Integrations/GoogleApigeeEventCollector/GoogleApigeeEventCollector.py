@@ -6,19 +6,19 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'google'
-PRODUCT = 'apigee'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "google"
+PRODUCT = "apigee"
 DEFAULT_LIMIT = 25000
 MILLISECOENDS_CONVERT = 1000
-ACCESS_TOKEN_STR = 'access_token'
-TOKEN_INITIATE_TIME_STR = 'token_initiate_time'
-TOKEN_EXPIRATION_SECONDS_STR = 'token_expiration_seconds'
-REFRESH_TOKEN_STR = 'refresh_token'
+ACCESS_TOKEN_STR = "access_token"
+TOKEN_INITIATE_TIME_STR = "token_initiate_time"
+TOKEN_EXPIRATION_SECONDS_STR = "token_expiration_seconds"
+REFRESH_TOKEN_STR = "refresh_token"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -36,8 +36,9 @@ class Client(BaseClient):
     :param zone (str): the zone name
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 org_name: str, zone: str, **kwargs):
+    def __init__(
+        self, base_url: str, username: str, password: str, verify: bool, proxy: bool, org_name: str, zone: str, **kwargs
+    ):
         self.username = username
         self.password = password
         self.org_name = org_name
@@ -51,33 +52,33 @@ class Client(BaseClient):
         """
         token = self.get_access_token()
         headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
     def get_access_token(self) -> str:
         """
-       Obtains access and refresh token from server.
-       Access token is used and stored in the integration context until expiration time.
-       After expiration, new access token are obtained and stored in the integration context.
+        Obtains access and refresh token from server.
+        Access token is used and stored in the integration context until expiration time.
+        After expiration, new access token are obtained and stored in the integration context.
 
-        Returns:
-            str: the access token.
-       """
+         Returns:
+             str: the access token.
+        """
         current_time = time.time()
         integration_context = get_integration_context()
         access_token = integration_context.get(ACCESS_TOKEN_STR)
         token_initiate_time = integration_context.get(TOKEN_INITIATE_TIME_STR, current_time)
         token_expiration_seconds = integration_context.get(TOKEN_EXPIRATION_SECONDS_STR, 0)
-        refresh_token = integration_context.get(REFRESH_TOKEN_STR, '')
+        refresh_token = integration_context.get(REFRESH_TOKEN_STR, "")
 
         if access_token and Client.is_token_valid(
             token_initiate_time=float(token_initiate_time),
             token_expiration_seconds=float(token_expiration_seconds),
-            current_time=current_time
+            current_time=current_time,
         ):
-            demisto.debug('existing access token is valid, no need to regenerate token')
+            demisto.debug("existing access token is valid, no need to regenerate token")
             return access_token
         # There's no token or it is expired
         access_token, token_expiration_seconds, refresh_token = self.get_token_request(refresh_token)
@@ -88,55 +89,52 @@ class Client(BaseClient):
             REFRESH_TOKEN_STR: refresh_token,
         }
         set_integration_context(context=integration_context)
-        demisto.info('successfully updated access token')
+        demisto.info("successfully updated access token")
 
         return access_token
 
-    def get_token_request(self, refresh_token: str = '') -> tuple[str, str, str]:
+    def get_token_request(self, refresh_token: str = "") -> tuple[str, str, str]:
         """
-        Sends request to retrieve token.
+         Sends request to retrieve token.
 
-       Returns:
-           tuple[str, str]: token and its expiration date
+        Returns:
+            tuple[str, str]: token and its expiration date
         """
         data = Client.generate_data_with_refresh_token(refresh_token) if refresh_token else self.generate_data_with_username()
         # The "Authorization" token is a hard-coded value that the API requires in the header.
         # https://docs.apigee.com/api-platform/system-administration/management-api-tokens
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-            'Accept': 'application/json;charset=utf-8',
-            'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0',
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+            "Accept": "application/json;charset=utf-8",
+            "Authorization": "Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0",
         }
-        zone = f'{self.zone}.' if self.zone else ''
-        url = f'https://{zone}login.apigee.com/oauth/token'
+        zone = f"{self.zone}." if self.zone else ""
+        url = f"https://{zone}login.apigee.com/oauth/token"
         try:
-            token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
+            token_response = self._http_request("POST", full_url=url, url_suffix="/oauth/token", data=data, headers=headers)
         except Exception as e:
-            if refresh_token and 'Invalid refresh token' in str(e):
-                demisto.debug(f'Failed to generate access token using refresh token. Attempting to generate a new access token \
-                    using username and password. Original error is: {str(e)}')
+            if refresh_token and "Invalid refresh token" in str(e):
+                demisto.debug(f"Failed to generate access token using refresh token. Attempting to generate a new access token \
+                    using username and password. Original error is: {str(e)}")
                 data = self.generate_data_with_username()
-                token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
+                token_response = self._http_request("POST", full_url=url, url_suffix="/oauth/token", data=data, headers=headers)
             else:
                 raise e
-        return token_response.get(ACCESS_TOKEN_STR), token_response.get('expires_in'), token_response.get(REFRESH_TOKEN_STR)
+        return token_response.get(ACCESS_TOKEN_STR), token_response.get("expires_in"), token_response.get(REFRESH_TOKEN_STR)
 
     @staticmethod
     def generate_data_with_refresh_token(refresh_token: str) -> dict:
-        demisto.debug('generates a new access token based on a refresh token.')
-        return {
-            'grant_type': REFRESH_TOKEN_STR,
-            REFRESH_TOKEN_STR: refresh_token
-        }
-    
+        demisto.debug("generates a new access token based on a refresh token.")
+        return {"grant_type": REFRESH_TOKEN_STR, REFRESH_TOKEN_STR: refresh_token}
+
     def generate_data_with_username(self) -> dict:
-        demisto.debug('generates a new access token based on a username and password.')
+        demisto.debug("generates a new access token based on a username and password.")
         return {
-            'grant_type': 'password',
-            'username': self.username,
-            'password': self.password,
+            "grant_type": "password",
+            "username": self.username,
+            "password": self.password,
         }
-    
+
     @staticmethod
     def is_token_valid(token_initiate_time: float, token_expiration_seconds: float, current_time: float) -> bool:
         """
@@ -168,11 +166,11 @@ class Client(BaseClient):
         Returns:
             List[Dict[str, Any]]: the logs from Apigee
         """
-        demisto.debug(f'get_logs {from_time=} {to_time=}')
+        demisto.debug(f"get_logs {from_time=} {to_time=}")
         res = self.http_request(
-            method='GET',
-            url_suffix=f'/v1/audits/organizations/{self.org_name}',
-            params={'startTime': from_time, 'endTime': to_time, 'expand': True}
+            method="GET",
+            url_suffix=f"/v1/audits/organizations/{self.org_name}",
+            params={"startTime": from_time, "endTime": to_time, "expand": True},
         )
         return res
 
@@ -186,7 +184,7 @@ def handle_dedup(logs: List[Dict[str, Any]], events_amount: float, last_timestam
         last_timestamp (float): the timestamp of the last fetch
     """
     for event in reversed(logs):
-        if event.get('timeStamp') == last_timestamp and events_amount > 0:
+        if event.get("timeStamp") == last_timestamp and events_amount > 0:
             events_amount -= 1
             logs.pop()
         else:
@@ -209,14 +207,14 @@ def create_events(logs: List[Dict[str, Any]], limit: int, to_time: int) -> tuple
     # The new logs are at the start of the list, we want to get the oldest relevant logs
     start_list = 0 if len(logs) <= limit else -limit
     events = logs[start_list:]
-    time_stamp = events[0].get('timeStamp') if events else 0
+    time_stamp = events[0].get("timeStamp") if events else 0
     if len(events) == limit:
         to_time = time_stamp  # type: ignore[assignment]
     # could be less than limit and still same
     events_count = 0
     if time_stamp == to_time:
-        events_count = sum(event.get('timeStamp') == time_stamp for event in events)
-    return events, {'last_fetch_timestamp': to_time, 'last_fetch_events_amount': events_count}
+        events_count = sum(event.get("timeStamp") == time_stamp for event in events)
+    return events, {"last_fetch_timestamp": to_time, "last_fetch_events_amount": events_count}
 
 
 def search_events(client, last_run: Dict[str, float], limit: int) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
@@ -231,15 +229,15 @@ def search_events(client, last_run: Dict[str, float], limit: int) -> tuple[List[
             List: A list containing the events.
             List: A dict containing the time of the last run and the amount of events of this time
     """
-    demisto.debug(f'search_events {last_run=}')
+    demisto.debug(f"search_events {last_run=}")
     to_time = int(time.time()) * MILLISECOENDS_CONVERT
-    last_fetch = last_run.get('last_fetch_timestamp', to_time)
+    last_fetch = last_run.get("last_fetch_timestamp", to_time)
     logs_response = client.get_logs(last_fetch, to_time)
-    logs = logs_response.get('auditRecord', [])
+    logs = logs_response.get("auditRecord", [])
     if not logs:
-        return [], {'last_fetch_timestamp': to_time, 'last_fetch_events_amount': 0}
+        return [], {"last_fetch_timestamp": to_time, "last_fetch_events_amount": 0}
 
-    events_amount = last_run.get('last_fetch_events_amount', 0)
+    events_amount = last_run.get("last_fetch_events_amount", 0)
     handle_dedup(logs, events_amount, last_fetch)
     return create_events(logs, limit, to_time)
 
@@ -261,15 +259,15 @@ def test_module(client: Client) -> str:
         search_events(client, last_run={}, limit=DEFAULT_LIMIT)
 
     except Exception as e:
-        if 'usergrid' in str(e):
-            return 'Authorization Error: make sure username is correctly set'
-        elif 'Invalid Credentials' in str(e):
-            return 'Authorization Error: make sure password and organization name are correctly set'
-        elif 'signupX' in str(e):
-            return 'Authorization Error: make sure zone is correctly set'
+        if "usergrid" in str(e):
+            return "Authorization Error: make sure username is correctly set"
+        elif "Invalid Credentials" in str(e):
+            return "Authorization Error: make sure password and organization name are correctly set"
+        elif "signupX" in str(e):
+            return "Authorization Error: make sure zone is correctly set"
         raise e
 
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(client: Client, args: dict, max_fetch: int = DEFAULT_LIMIT) -> tuple[List[Dict], CommandResults]:
@@ -286,15 +284,15 @@ def get_events_command(client: Client, args: dict, max_fetch: int = DEFAULT_LIMI
             CommandResults: A readable obtaining the events and raw response of the logs
     """
     last_run = {}
-    limit = arg_to_number(args.get('limit')) or max_fetch
-    from_date = arg_to_datetime(args.get('from_date'))
+    limit = arg_to_number(args.get("limit")) or max_fetch
+    from_date = arg_to_datetime(args.get("from_date"))
     if from_date:
-        last_run = {'last_fetch_timestamp': int(from_date.timestamp()) * MILLISECOENDS_CONVERT}
+        last_run = {"last_fetch_timestamp": int(from_date.timestamp()) * MILLISECOENDS_CONVERT}
     events, _ = search_events(client, last_run, limit)  # type: ignore[arg-type]
     if events:
-        hr = tableToMarkdown(name='Google Apigee Audit Logs', t=events)
+        hr = tableToMarkdown(name="Google Apigee Audit Logs", t=events)
     else:
-        hr = tableToMarkdown(name='No logs found.', t=events)
+        hr = tableToMarkdown(name="No logs found.", t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
 
@@ -310,11 +308,11 @@ def fetch_events(client: Client, last_run: Dict[str, float], limit: int) -> tupl
         List: list of events that will be created in XSIAM.
     """
     events, next_fetch = search_events(client, last_run, limit)
-    demisto.debug(f'fetch_events: {next_fetch=}')
+    demisto.debug(f"fetch_events: {next_fetch=}")
     return next_fetch, events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def add_time_and_type_to_event(events: List[Dict] = []):
@@ -324,47 +322,50 @@ def add_time_and_type_to_event(events: List[Dict] = []):
         events: List[Dict] - list of events to add the _time key to.
     """
     for event in events:
-        create_time = arg_to_datetime(arg=event.get('timeStamp'), is_utc=True)
-        event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
-        event['SOURCE_LOG_TYPE'] = 'audit'
+        create_time = arg_to_datetime(arg=event.get("timeStamp"), is_utc=True)
+        event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        event["SOURCE_LOG_TYPE"] = "audit"
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
-    org_name = params.get('org_name', '')
-    zone = params.get('zone', '')
-    base_url = params.get('url', '')
+    username = params["credentials"]["identifier"]
+    password = params["credentials"]["password"]
+    org_name = params.get("org_name", "")
+    zone = params.get("zone", "")
+    base_url = params.get("url", "")
     proxy = params.get("proxy", False)
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_LIMIT
+        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_LIMIT
 
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy,
-                        org_name=org_name, zone=zone, username=username, password=password)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            org_name=org_name,
+            zone=zone,
+            username=username,
+            password=password,
+        )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif command == 'google-apigee-get-events':
+        elif command == "google-apigee-get-events":
             events, results = get_events_command(client, args, max_fetch)
             return_results(results)
-            if argToBoolean(args.get('should_push_events')):
+            if argToBoolean(args.get("should_push_events")):
                 add_time_and_type_to_event(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                limit=max_fetch
-            )
+            next_run, events = fetch_events(client=client, last_run=last_run, limit=max_fetch)
 
             add_time_and_type_to_event(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -372,10 +373,10 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
