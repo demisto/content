@@ -45,7 +45,7 @@ defaultEnabled: true
 script:
   commands:
   - arguments:
-    - description: SHA256 hash to check
+    - description: SHA256 hash to check.
       name: sha256
       required: true
     description: Retrieves results for a file hash using WildFire.

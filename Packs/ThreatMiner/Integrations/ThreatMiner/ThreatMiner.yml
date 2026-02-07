@@ -4,7 +4,8 @@ commonfields:
 name: ThreatMiner
 display: ThreatMiner
 category: Data Enrichment & Threat Intelligence
-description: Data Mining for Threat Intelligence
+provider: ThreatConnect
+description: Data Mining for Threat Intelligence.
 configuration:
 - display: Maximum results per query, enter 'all' to get unlimited results
   name: limit_results
@@ -88,7 +89,7 @@ script:
       description: Related samples' MD5 hash.
       type: string
     - contextPath: Domain.Name
-      description: Searched domain name
+      description: Searched domain name.
       type: string
     - contextPath: ThreatMiner.Domain.Whois.Domain
       description: Domain name that was searched.
@@ -105,10 +106,10 @@ script:
       description: Expiration date.
       type: date
     - contextPath: Domain.Whois.Registrant.Name
-      description: Name of the registrant
+      description: Name of the registrant.
       type: string
     - contextPath: Domain.Whois.Registrant.Email
-      description: Email of the registrant
+      description: Email of the registrant.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -199,11 +200,11 @@ script:
     arguments:
     - name: file
       required: true
-      description: File hash (md5, sha1, sha256)
+      description: File hash (md5, sha1, sha256).
       default: true
       isArray: true
     - name: threshold
-      description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious.
       defaultValue: "10"
     outputs:
     - contextPath: ThreatMiner.File.MD5

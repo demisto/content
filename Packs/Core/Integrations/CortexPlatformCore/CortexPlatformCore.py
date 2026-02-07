@@ -4,8 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
-from enum import Enum
 import copy
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -18,11 +18,13 @@ SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -48,6 +50,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+REMEDIATION_TECHNIQUES_SOURCES = ["CIEM_SCANNER", "DATA_POLICY", "AISPM_RULE_ENGINE"]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -63,14 +66,13 @@ WEBAPP_COMMANDS = [
     "core-run-script-agentix",
     "core-list-endpoints",
     "core-list-exception-rules",
-    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -133,6 +135,7 @@ class CaseManagement:
     STATUS = {
         "new": "STATUS_010_NEW",
         "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "in_progress": "STATUS_020_UNDER_INVESTIGATION",
         "resolved": "STATUS_025_RESOLVED",
     }
 
@@ -329,11 +332,6 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
-
 EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
     "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
     "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
@@ -372,191 +370,6 @@ DAYS_MAPPING = {
     "friday": 6,
     "saturday": 7,
 }
-
-
-class FilterBuilder:
-    """
-    Filter class for creating filter dictionary objects.
-    """
-
-    class FilterType(str, Enum):
-        operator: str
-
-        """
-        Available type options for filter filtering.
-        Each member holds its string value and its logical operator for multi-value scenarios.
-        """
-
-        def __new__(cls, value, operator):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.operator = operator
-            return obj
-
-        EQ = ("EQ", "OR")
-        RANGE = ("RANGE", "OR")
-        CONTAINS = ("CONTAINS", "OR")
-        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
-        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
-        GTE = ("GTE", "OR")
-        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
-        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
-        IS_EMPTY = ("IS_EMPTY", "OR")
-        NIS_EMPTY = ("NIS_EMPTY", "AND")
-        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
-        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
-
-    AND = "AND"
-    OR = "OR"
-    FIELD = "SEARCH_FIELD"
-    TYPE = "SEARCH_TYPE"
-    VALUE = "SEARCH_VALUE"
-
-    class Field:
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
-            self.field_name = field_name
-            self.filter_type = filter_type
-            self.values = values
-
-    class MappedValuesField(Field):
-        def __init__(
-            self,
-            field_name: str,
-            filter_type: "FilterType",
-            values: Any,
-            mappings: dict[str, "FilterType"],
-        ):
-            super().__init__(field_name, filter_type, values)
-            self.mappings = mappings
-
-    def __init__(self, filter_fields: list[Field] | None = None):
-        self.filter_fields = filter_fields or []
-
-    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
-        """
-        Adds a new field to the filter.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The type to use for the field.
-            values (Any): The values to filter for.
-            mapper (dict | None): An optional dictionary to map values before filtering.
-        """
-        processed_values = values
-        if mapper:
-            if not isinstance(values, list):
-                values = [values]
-            processed_values = [mapper[v] for v in values if v in mapper]
-
-        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
-
-    def add_field_with_mappings(
-        self,
-        name: str,
-        type: "FilterType",
-        values: Any,
-        mappings: dict[str, "FilterType"],
-    ):
-        """
-        Adds a new field to the filter with special value mappings.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The default filter type for non-mapped values.
-            values (Any): The values to filter for.
-            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
-                Example:
-                    mappings = {
-                        "unassigned": FilterType.IS_EMPTY,
-                        "assigned": FilterType.NIS_EMPTY,
-                    }
-        """
-        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
-
-    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
-        """
-        Adds a time range field to the filter.
-        Args:
-            name (str): The name of the field.
-            start_time (str | None): The start time of the range.
-            end_time (str | None): The end time of the range.
-        """
-        start, end = self._prepare_time_range(start_time, end_time)
-        if start is not None and end is not None:
-            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
-
-    def to_dict(self) -> dict[str, list]:
-        """
-        Creates a filter dict from a list of Field objects.
-        The filter will require each field to be one of the values provided.
-        Returns:
-            dict[str, list]: Filter object.
-        """
-        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
-
-        for field in self.filter_fields:
-            if not isinstance(field.values, list):
-                field.values = [field.values]
-
-            search_values = []
-            for value in field.values:
-                if value is None:
-                    continue
-
-                current_filter_type = field.filter_type
-                current_value = value
-
-                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
-                    current_filter_type = field.mappings[value]
-                    if current_filter_type in [
-                        FilterType.IS_EMPTY,
-                        FilterType.NIS_EMPTY,
-                    ]:
-                        current_value = "<No Value>"
-
-                search_values.append(
-                    {
-                        FilterBuilder.FIELD: field.field_name,
-                        FilterBuilder.TYPE: current_filter_type.value,
-                        FilterBuilder.VALUE: current_value,
-                    }
-                )
-
-            if search_values:
-                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
-                filter_structure[FilterBuilder.AND].append(search_obj)
-
-        if not filter_structure[FilterBuilder.AND]:
-            filter_structure = {}
-
-        return filter_structure
-
-    @staticmethod
-    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
-        """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
-        start_time, end_time = None, None
-
-        if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str)):
-                start_time = int(start_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse start_time: {start_time_str}")
-
-        if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str)):
-                end_time = int(end_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse end_time: {end_time_str}")
-
-        if start_time and not end_time:
-            # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.now().timestamp() * 1000)
-
-        return start_time, end_time
-
-
-FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -991,6 +804,19 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def bulk_update_case(self, case_update_payload, case_ids):
+        request_data = {
+            "request_data": {
+                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
+                "update_attrs": case_update_payload,
+            }
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/bulk_update_cases",
+            json_data=request_data,
+        )
+
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
         """
         Runs a specific playbook for a given investigation.
@@ -1034,6 +860,38 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def add_assessment_profile(self, profile_payload: dict) -> dict:
+        """
+        Add a new assessment profile to Cortex XDR.
+
+        Args:
+            profile_payload (dict): The assessment profile configuration payload.
+
+        Returns:
+            dict: The response from the API for adding the assessment profile.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/add_assessment_profile",
+            json_data=profile_payload,
+        )
+
+    def list_compliance_standards_command(self, payload: dict) -> dict:
+        """
+        List compliance standards from Cortex XDR.
+
+        Args:
+            payload (dict): The request payload for listing compliance standards.
+
+        Returns:
+            dict: The response from the API containing compliance standards data.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_standards",
+            json_data=payload,
+        )
+
     def get_users(self):
         reply = self._http_request(
             method="POST",
@@ -1042,6 +900,18 @@ class Client(CoreClient):
             url_suffix="/rbac/get_users",
         )
 
+        return reply
+
+    def get_case_resolution_statuses(self, case_id: str) -> dict:
+        reply = self._http_request(
+            method="GET",
+            json_data={},
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            url_suffix=f"case/{case_id}/resolution-plan/tasks",
+        )
         return reply
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
@@ -1072,6 +942,22 @@ class Client(CoreClient):
         }
 
         return self.get_webapp_data(request_data)
+
+    def get_case_ai_summary(self, case_id: int) -> dict:
+        """
+        Retrieves AI-generated summary for a specific case ID.
+
+        Args:
+            case_id (int): The ID of the case to retrieve AI summary for.
+
+        Returns:
+            dict: API response containing case AI summary.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/cases/get_ai_case_details",
+            json_data={"case_id": case_id},
+        )
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -1110,6 +996,29 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     demisto.debug(f"{recommendation=} for {issue=}")
 
     return recommendation
+
+
+def get_remediation_techniques_suggestion(issue: dict, current_issue_id: str) -> list:
+    """
+    Get remediation techniques suggestions based on asset types.
+
+    Args:
+        issue (dict): The issue data.
+        current_issue_id (str): The current issue ID.
+
+    Returns:
+        list: A list of filtered remediation techniques.
+    """
+    asset_types: list = issue.get("asset_types", [])
+    normalized_asset_types = {t.upper().replace(" ", "_") for t in asset_types if t}
+    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques") or []
+    filtered_techniques = [
+        t
+        for t in remediation_techniques_response
+        if t.get("techniqueAssetType") and t.get("techniqueAssetType").upper() in normalized_asset_types
+    ]
+    demisto.debug(f"Remediation recommendation of {current_issue_id=}: {filtered_techniques}")
+    return filtered_techniques
 
 
 def populate_playbook_and_quick_action_suggestions(
@@ -1333,6 +1242,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
+        alert_source = issue.get("alert_source")
 
         # Base recommendation
         recommendation = {
@@ -1353,6 +1263,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
         if appsec_recommendation:
             recommendation.update(appsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            filtered_techniques = get_remediation_techniques_suggestion(issue, current_issue_id)
+            recommendation["remediation"] = filtered_techniques or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
@@ -1427,47 +1342,6 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def build_webapp_request_data(
-    table_name: str,
-    filter_dict: dict,
-    limit: int,
-    sort_field: str | None,
-    on_demand_fields: list | None = None,
-    sort_order: str | None = "DESC",
-    start_page: int = 0,
-) -> dict:
-    """
-    Builds the request data for the generic /api/webapp/get_data endpoint.
-    """
-    sort = (
-        [
-            {
-                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
-                "ORDER": sort_order,
-            }
-        ]
-        if sort_field
-        else []
-    )
-    filter_data = {
-        "sort": sort,
-        "paging": {"from": start_page, "to": limit},
-        "filter": filter_dict,
-    }
-    demisto.debug(f"{filter_data=}")
-
-    if on_demand_fields is None:
-        on_demand_fields = []
-
-    return {
-        "type": "grid",
-        "table_name": table_name,
-        "filter_data": filter_data,
-        "jsons": [],
-        "onDemandFields": on_demand_fields,
-    }
-
-
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
     """
     Builds the request data for the generic /api/webapp//get_histograms endpoint.
@@ -1527,6 +1401,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
             "assigned": FilterType.NIS_EMPTY,
         },
     )
+    filter_builder.add_field("CORTEX_VULNERABILITY_RISK_SCORE", FilterType.GTE, arg_to_number(args.get("cvrs_gte")))
+    filter_builder.add_field(
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE", FilterType.EQ, argToList(args.get("compensating_controls_effective_coverage"))
+    )
 
     request_data = build_webapp_request_data(
         table_name=VULNERABLE_ISSUES_TABLE,
@@ -1557,6 +1435,17 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "EXPLOITABLE",
         "ASSET_IDS",
         "FINDING_SOURCES",
+        "COMPENSATING_CONTROLS_DETECTED_COVERAGE",
+        "CORTEX_VULNERABILITY_RISK_SCORE",
+        "FIX_VERSIONS",
+        "ASSET_TYPES",
+        "COMPENSATING_CONTROLS_DETECTED_CONTROLS",
+        "EXPLOIT_LEVEL",
+        "ISSUE_NAME",
+        "PACKAGE_IN_USE",
+        "PROVIDERS",
+        "OS_FAMILY",
+        "IMAGE",
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
@@ -1640,8 +1529,7 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    client._base_url = "api/webapp/public_api/v1"
-    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
@@ -1748,26 +1636,7 @@ def map_case_format(case_list):
     return mapped_cases
 
 
-def get_cases_command(client, args):
-    """
-    Retrieves cases from Cortex platform based on provided filtering criteria.
-
-    Args:
-        client: The Cortex platform client instance for making API requests.
-        args (dict): Dictionary containing filter parameters including page number,
-                    limits, time ranges, status, severity, and other case attributes.
-
-    Returns:
-        List of mapped case objects containing case details and metadata.
-    """
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-
-    limit = page * MAX_GET_CASES_LIMIT + limit
-    page = page * MAX_GET_CASES_LIMIT
-
-    sort_by_modification_time = args.get("sort_by_modification_time")
-    sort_by_creation_time = args.get("sort_by_creation_time")
+def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
     since_modification_start_time = args.get("since_modification_time")
@@ -1776,8 +1645,6 @@ def get_cases_command(client, args):
     lte_creation_time = args.get("lte_creation_time")
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
-
-    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
 
     status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
     severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
@@ -1852,9 +1719,32 @@ def get_cases_command(client, args):
         },
     )
 
+    return filter_builder
+
+
+def get_cases_command(client, args):
+    """
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
+    """
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
+    sort_field, sort_order = get_cases_sort_order(args.get("sort_by_creation_time"), args.get("sort_by_modification_time"))
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
-        filter_dict=filter_builder.to_dict(),
+        filter_dict=build_get_cases_filter(args).to_dict(),
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
@@ -1871,14 +1761,27 @@ def get_cases_command(client, args):
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
-    command_results = []
-
-    command_results.append(
+    command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
             outputs={"filter_count": filter_count, "returned_count": returned_count},
         )
-    )
+    ]
+
+    if (
+        returned_count == 1 and int(data[0].get("issue_count") or 0) > 1
+    ):  # AI summary supported in cases of a single case query with more than one issue
+        case_id = data[0].get("case_id")
+        try:  # if functionality isn't supported exception is raised and should be handled
+            response = client.get_case_ai_summary(int(case_id))
+            if response:
+                reply = response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    data[0]["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    data[0]["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
@@ -2066,6 +1969,20 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
+    case = mapped_response.get("case")
+    if int(case.get("issue_count") or 0) > 1:
+        try:  # if functionality isn't supported exception is raised and should be handled
+            web_app_client = init_client("webapp")
+            ai_response = web_app_client.get_case_ai_summary(int(case_id))
+            if ai_response:
+                reply = ai_response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    case["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    case["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
+
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
@@ -3085,10 +3002,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
-    if assignee == "unassigned":
-        for case_id in case_ids:
-            client.unassign_case(case_id)
-        assignee = ""
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
@@ -3096,7 +3009,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved.'"
+            "'resolved'."
         )
 
     if status and not CaseManagement.STATUS.get(status):
@@ -3116,7 +3029,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "description": description if description else None,
         "assignedUser": assignee if assignee else None,
         "notes": notes if notes else None,
-        "starred": starred if starred else None,
+        "starred": argToBoolean(starred) if starred else None,
         "status": CaseManagement.STATUS.get(status) if status else None,
         "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
@@ -3126,11 +3039,129 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+    if not case_update_payload:
         raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = [process_case_response(resp) for resp in responses]
+    def is_bulk_update_allowed(case_update_payload: dict) -> bool:
+        # Bulk update supports only those fields
+        allowed_bulk_fields = {"userSeverity", "status", "starred", "assignedUser"}
+
+        for field_name, field_value in case_update_payload.items():
+            if (
+                field_name == "status"
+                and field_value == CaseManagement.STATUS["resolved"]
+                or field_name not in allowed_bulk_fields
+            ):
+                return False
+        return True
+
+    def repackage_to_update_case_format(case_list):
+        """
+        Maps raw API case data to the Update Case Format,
+        """
+        if not case_list or not isinstance(case_list, list):
+            return []
+
+        reverse_tags = {v: k for k, v in CaseManagement.TAGS.items()}
+        grouping_status_map = {"enabled": "GROUPING_STATUS_010_ENABLED", "disabled": "GROUPING_STATUS_020_DISABLED"}
+
+        target = []
+        for raw_case in case_list:
+            raw_status = str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", ""))).split("_")[-1].lower()
+            status_key = raw_status.replace("investigation", "under_investigation")
+            raw_severity = str(raw_case.get("SEVERITY", "")).split("_")[-1].lower()
+            raw_grouping = str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
+
+            target.append(
+                {
+                    "id": str(raw_case.get("CASE_ID")),
+                    "name": {"isUser": True, "value": raw_case.get("NAME")},
+                    "score": {
+                        "manual_score": raw_case.get("MANUAL_SCORE"),
+                        "score": raw_case.get("SCORE"),
+                        "score_source": raw_case.get("SCORE_SOURCE"),
+                        "scoring_rules": raw_case.get("CALCULATED_SCORE"),
+                        "scortex": raw_case.get("SCORTEX"),
+                    },
+                    "notes": None,
+                    "description": {"isUser": True, "value": raw_case.get("DESCRIPTION")},
+                    "caseDomain": raw_case.get("INCIDENT_DOMAIN"),
+                    "creationTime": raw_case.get("CREATION_TIME"),
+                    "lastUpdateTime": raw_case.get("LAST_UPDATE_TIME"),
+                    "modifiedBy": None,
+                    "starred": raw_case.get("CASE_STARRED"),
+                    "status": {
+                        "value": CaseManagement.STATUS.get(status_key),
+                        "resolveComment": raw_case.get("RESOLVED_COMMENT"),
+                        "resolve_reason": raw_case.get("RESOLVED_REASON"),
+                    },
+                    "severity": CaseManagement.SEVERITY.get(raw_severity),
+                    "userSeverity": raw_case.get("USER_SEVERITY"),
+                    "assigned": {"mail": raw_case.get("ASSIGNED_USER"), "pretty": raw_case.get("ASSIGNED_USER_PRETTY")},
+                    "severityCounters": {
+                        "SEV_020_LOW": raw_case.get("LOW_SEVERITY_ALERTS", 0),
+                        "SEV_030_MEDIUM": raw_case.get("MEDIUM_SEVERITY_ALERTS", 0),
+                        "SEV_040_HIGH": raw_case.get("HIGH_SEVERITY_ALERTS", 0),
+                        "SEV_050_CRITICAL": raw_case.get("CRITICAL_SEVERITY_ALERTS", 0),
+                    },
+                    "topCounters": {
+                        "HOSTS": len(raw_case.get("HOSTS", []) or []),
+                        "MAL_ARTIFACTS": raw_case.get("WF_HITS", 0),
+                        "USERS": len(raw_case.get("USERS", []) or []),
+                    },
+                    "tags": [
+                        {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
+                        for tag in (raw_case.get("CURRENT_TAGS", []) or [])
+                    ],
+                    "groupingStatus": {
+                        "pretty": raw_grouping.capitalize(),
+                        "raw": grouping_status_map.get(raw_grouping),
+                        "reason": None,
+                    },
+                    "hasAttachment": raw_case.get("HAS_ATTACHMENT", False),
+                    "internalStatus": raw_case.get("INTERNAL_STATUS", "STATUS_010_NONE"),
+                }
+            )
+
+        return target
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    replies = []
+    if is_bulk_update_allowed(case_update_payload):
+        demisto.debug("Performing bulk case update")
+        if case_update_payload.get("userSeverity"):
+            case_update_payload["severity"] = case_update_payload.pop("userSeverity")
+        if case_update_payload.get("assignedUser") == "unassigned":
+            case_update_payload["assignedUser"] = None
+
+        client.bulk_update_case(case_update_payload, case_ids)
+        filter_builder = FilterBuilder()
+        filter_builder.add_field(
+            CaseManagement.FIELDS["case_id_list"],
+            FilterType.EQ,
+            case_ids,
+        )
+        request_data = build_webapp_request_data(
+            table_name=CASES_TABLE,
+            filter_dict=filter_builder.to_dict(),
+            limit=len(case_ids),
+            sort_field="CREATION_TIME",
+        )
+        demisto.debug(f"request_data to retrieve cases that were updated via bulk: {request_data}")
+        response = client.get_webapp_data(request_data)
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        replies = repackage_to_update_case_format(data)
+
+    else:
+        demisto.debug("Performing iterative case update")
+        if assignee == "unassigned":
+            for case_id in case_ids:
+                client.unassign_case(case_id)
+        responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+        replies = []
+        for resp in responses:
+            replies.append(process_case_response(resp))
 
     command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
@@ -3524,6 +3555,284 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
+
+def parse_frequency(day: str | None, time: str | None) -> str:
+    """
+    Convert day and time to cron-style frequency string
+
+    Cron format: Minute Hour Day-of-Month Month Day-of-Week
+    Example: "0 12 * * 2" means:
+    - Minute: 0 (The task starts at the 0th minute of the hour)
+    - Hour: 12 (The task starts at the 12th hour - 12:00 PM in 24-hour time)
+    - Day of Month: * (Every day of the month)
+    - Month: * (Every month)
+    - Day of Week: 2 (Tuesday)
+
+    :param day: Day of month (optional)
+    :param time: Time in HH:MM format
+    :return: Cron-style frequency string
+    """
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
+
+    target_time = time if time else "12:00"
+    try:
+        hours, minutes = map(int, target_time.split(":"))
+        if not (0 <= hours < 24 and 0 <= minutes < 60):
+            raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
+    except ValueError:
+        raise ValueError("Invalid time format. Use HH:MM.")
+
+    if day is None:
+        # If no day is provided -> Daily (represented by * in cron)
+        cron_day = "*"
+    else:
+        # If day is provided -> Weekly (look up the day index)
+        day_key = day.lower()
+        if day_key not in DAY_MAP:
+            raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+        cron_day = str(DAY_MAP[day_key])
+
+    return f"{minutes} {hours} * * {cron_day}"
+
+
+def create_assessment_profile_payload(
+    name: str,
+    description: str,
+    standard_id: str,
+    asset_group_id: str,
+    day: str | None,
+    time: str | None,
+    report_type: str = "ALL",
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    report_frequency = parse_frequency(day, time)
+
+    payload = {
+        "request_data": {
+            "profile_name": name,
+            "asset_group_id": asset_group_id,
+            "standard_id": standard_id,
+            "description": description,
+            "report_targets": [],
+            "report_type": report_type,
+            "evaluation_frequency": report_frequency,
+        }
+    }
+
+    return payload
+
+
+def list_compliance_standards_payload(
+    name: str | None = None,
+    created_by: str | None = None,
+    labels: list[str] | None = None,
+    page=0,
+    page_size=MAX_COMPLIANCE_STANDARDS,
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+    payload: dict = {"request_data": {"filters": []}}
+
+    if name:
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
+
+    if created_by:
+        payload["request_data"]["filters"].append(
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
+        )
+
+    if labels:
+        for label in labels:
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
+    payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
+
+    payload["request_data"]["pagination"] = {
+        "search_from": start_index,
+        "search_to": end_index,
+    }
+
+    return payload
+
+
+def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
+    """
+    Adds a new assessment profile to the Cortex Platform.
+
+    Args:
+        client (Client): The integration client used to add the assessment profile.
+        args (dict): Command arguments containing profile details.
+
+    Returns:
+        CommandResults: Contains the result of adding the assessment profile.
+    """
+    profile_name = args.get("profile_name", "")
+    profile_description = args.get("profile_description", "")
+    standard_name = args.get("standard_name", "")
+    asset_group_name = args.get("asset_group_name", "")
+    day = args.get("day")
+    time = args.get("time", "12:00")
+
+    payload = list_compliance_standards_payload(
+        name=standard_name,
+    )
+    demisto.debug(f"Listing compliance standards with payload: {payload}")
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+
+    if not standards:
+        return_error("No compliance standards found matching the provided name.")
+
+    if len(standards) > 1:
+        standard_names = [standard.get("name") for standard in standards]
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one standard:\n\n{new_line.join(standard_names)}\n\n"
+            "Please provide a more specific name."
+        )
+
+    standard_id = standards[0].get("id")
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
+    filter_str = filter.to_dict()
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
+
+    if not group_ids:
+        return_error("No asset group found matching the provided name.")
+
+    if len(group_ids) > 1:
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one asset group:\n\n{new_line.join(group_names)}\n\n"
+            "Please provide a more specific name."
+        )
+    demisto.debug(f"{group_ids=}")
+    asset_group_id = group_ids[0]
+
+    payload = create_assessment_profile_payload(
+        name=profile_name,
+        description=profile_description,
+        standard_id=str(standard_id),
+        asset_group_id=asset_group_id,
+        day=day,
+        time=time,
+        report_type="ALL",
+    )
+    demisto.debug(f"Creating assessment profile with payload: {payload}")
+
+    reply = client.add_assessment_profile(payload)
+    assessment_profile_id = reply.get("assessment_profile_id")
+    return CommandResults(
+        readable_output=f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix="Core.AssessmentProfile",
+        outputs_key_field="assessment_profile_id",
+        outputs=assessment_profile_id,
+        raw_response=reply,
+    )
+
+
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Lists compliance standards with optional filtering.
+
+    Args:
+        client (Client): The client instance for API communication.
+        args (dict): Command arguments containing optional filters:
+            - name (str): Filter by standard name
+            - created_by (str): Filter by creator
+            - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
+            - page (int): Page number for pagination (default: 0)
+            - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with filtered compliance standards data and metadata
+            - CommandResults with pagination metadata (filtered_count, returned_count)
+    """
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by,
+        labels=labels,
+        page=page,
+        page_size=page_size,
+    )
+
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+    filtered_count = reply.get("result_count")
+    returned_count = len(standards)
+
+    filtered_standards = [
+        {
+            "id": s.get("id"),
+            "name": s.get("name"),
+            "description": s.get("description"),
+            "controls_count": len(s.get("controls_ids", [])),
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0),
+            "labels": s.get("labels", []),
+        }
+        for s in standards
+    ]
+
+    demisto.debug(f"{filtered_standards=}")
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Compliance Standards", filtered_standards),
+            outputs_prefix="Core.ComplianceStandards",
+            outputs_key_field="id",
+            outputs=filtered_standards,
+            raw_response=reply,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
 
 
 def validate_start_end_times(start_time, end_time):
@@ -4009,6 +4318,61 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     return outputs
 
 
+def handle_xql_limit(query: str, max_limit: int) -> str:
+    """Ensure the given query does not exceed the max limit.
+    Overrides the limit if it exceeds the maximum or if a limit clause isn't present.
+
+    Args:
+        query (str): The XQL query string to process.
+        max_limit (int): The max limit value.
+
+    Returns:
+        str: The original query if it already contains a valid limit clause, or the query
+            with a max limit clause appended or the limit value replaced if it exceeds max_limit.
+    """
+    if not query or not query.strip():
+        return query
+
+    # Pattern to match limit keyword with number, skipping over comments and quotes
+    # The pattern uses alternation: first try to match things to skip (comments/quotes),
+    # then try to match the actual limit clause. This ensures we don't match "limit"
+    # inside comments or quoted strings.
+    limit_pattern = re.compile(
+        r"""
+        (?P<skip>                           # Group for things to skip (not replace)
+            /\*.*?\*/                       # Block comments
+            |//[^\n]*                       # Line comments
+            |"(?:[^"\\]|\\.)*"              # Double-quoted strings
+            |'(?:[^'\\]|\\.)*'              # Single-quoted strings
+        )
+        |(?P<limit>limit\s+)(?P<num>\d+)    # Or match limit keyword with number
+        """,
+        re.IGNORECASE | re.DOTALL | re.VERBOSE,
+    )
+
+    limit_found = False
+
+    def replace_limit(match):
+        """Replace limit value if it exceeds max_limit, skip comments/quotes."""
+        nonlocal limit_found
+        # We matched a limit clause
+        if match.group("limit"):
+            limit_found = True
+            current_limit = int(match.group("num"))
+            if current_limit > max_limit:
+                return f"{match.group('limit')}{max_limit}"
+
+        return match.group(0)
+
+    result = limit_pattern.sub(replace_limit, query)
+
+    # Add a max limit clause if no limit was found anywhere in the query
+    if not limit_found:
+        result = f"{result}\n| limit {max_limit}"
+
+    return result
+
+
 def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
     """Execute an XQL query using Platform API.
 
@@ -4020,10 +4384,6 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    DEFAULT_LIMIT = 1000
-    if "limit" not in query:  # Add default limit if no limit was provided
-        query = f"{query} | limit {DEFAULT_LIMIT!s}"
-
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
@@ -4048,9 +4408,11 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("query is not specified")
 
+    MAX_QUERY_LIMIT = 1000
+    query_with_limit = handle_xql_limit(query, MAX_QUERY_LIMIT)
     timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = start_xql_query_platform(client, query, timeframe)
+    execution_id = start_xql_query_platform(client, query_with_limit, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
@@ -4060,6 +4422,10 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "execution_id": execution_id,
         "query_url": query_url,
     }
+    if query != query_with_limit:
+        outputs["query_limit_modified"] = (
+            f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
+        )
 
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
@@ -4069,6 +4435,107 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
     )
+
+
+def init_client(api_type: str) -> Client:
+    """
+    Initializes the Client for a specific API type.
+
+    Args:
+        api_type (str): The category of the API (e.g., 'public', 'webapp', 'data_platform', etc.)
+    """
+    params = demisto.params()
+
+    # Connection parameters
+    proxy = params.get("proxy", False)
+    verify_cert = not params.get("insecure", False)
+
+    try:
+        timeout = int(params.get("timeout", 120))
+    except (ValueError, TypeError):
+        timeout = 120
+
+    # Base URL Mapping logic based on api_type
+    webapp_root = "/api/webapp"
+
+    url_map = {
+        "webapp": webapp_root,
+        "public": f"{webapp_root}/public_api/v1",
+        "data_platform": f"{webapp_root}/data-platform",
+        "appsec": f"{webapp_root}/public_api/appsec",
+        "xsoar": "/xsoar",
+        "agents": f"{webapp_root}/agents",
+    }
+
+    # Fallback to public API if the type isn't recognized
+    client_url = url_map.get(api_type, url_map["public"])
+
+    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
+
+    return Client(
+        base_url=client_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout,
+    )
+
+
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
+    if related_pb:
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
+
+
+def postprocess_case_resolution_statuses(client, response: dict):
+    response = copy.deepcopy(response)
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
+
+            all_items.append(task)
+
+    return all_items
+
+
+def get_case_resolution_statuses(client, args):
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
+
+
+def verify_platform_version(version: str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
 
 
 def main():  # pragma: no cover
@@ -4081,41 +4548,21 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     remove_nulls_from_dictionary(args)
-    headers: dict = {}
-
-    webapp_api_url = "/api/webapp"
-    public_api_url = f"{webapp_api_url}/public_api/v1"
-    data_platform_api_url = f"{webapp_api_url}/data-platform"
-    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
-    agents_api_url = f"{webapp_api_url}/agents"
-    xsoar_api_url = "/xsoar"
-    proxy = demisto.params().get("proxy", False)
-    verify_cert = not demisto.params().get("insecure", False)
-    try:
-        timeout = int(demisto.params().get("timeout", 120))
-    except ValueError as e:
-        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
-        timeout = 120
-
-    client_url = public_api_url
+    # Logic to determine which API type the current command belongs to
     if command in WEBAPP_COMMANDS:
-        client_url = webapp_api_url
+        api_type = "webapp"
     elif command in DATA_PLATFORM_COMMANDS:
-        client_url = data_platform_api_url
+        api_type = "data_platform"
     elif command in APPSEC_COMMANDS:
-        client_url = appsec_api_url
+        api_type = "appsec"
     elif command in ENDPOINT_COMMANDS:
-        client_url = agents_api_url
+        api_type = "agents"
     elif command in XSOAR_COMMANDS:
-        client_url = xsoar_api_url
+        api_type = "xsoar"
+    else:
+        api_type = "public"
 
-    client = Client(
-        base_url=client_url,
-        proxy=proxy,
-        verify=verify_cert,
-        headers=headers,
-        timeout=timeout,
-    )
+    client = init_client(api_type)
 
     try:
         if command == "test-module":
@@ -4206,6 +4653,10 @@ def main():  # pragma: no cover
             return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+        elif command == "core-add-assessment-profile":
+            return_results(core_add_assessment_profile_command(client, args))
+        elif command == "core-list-compliance-standards":
+            return_results(core_list_compliance_standards_command(client, args))
 
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
@@ -4213,10 +4664,12 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
+        elif command == "core-get-case-resolution-statuses":
+            verify_platform_version()
+            return_results(get_case_resolution_statuses(client, args))
 
+        elif command == "core-xql-generic-query-platform":
+            verify_platform_version()
             return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
