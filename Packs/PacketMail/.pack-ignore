@@ -1,2 +1,5 @@
 [file:PacketMail.yml]
 ignore=RM110
+
+[file:README.md]
+ignore=RM110

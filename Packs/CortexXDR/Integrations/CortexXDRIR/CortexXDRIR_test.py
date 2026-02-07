@@ -2393,3 +2393,395 @@ def test_extract_paths_and_names_single_item():
 
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
+
+
+def test_api_key_list_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id, role, expires_before, expires_after)
+    When
+        - Running api_key_list_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_list_command
+
+    api_keys_response = load_test_data("./test_data/get_api_keys.json")
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/get_api_keys/", json=api_keys_response)
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "api_id": "1",
+        "role": "Admin",
+        "expires_before": "2024-01-01T00:00:00Z",
+        "expires_after": "2020-01-01T00:00:00Z",
+    }
+
+    response = api_key_list_command(client, args)
+
+    assert response.outputs == api_keys_response["reply"]["DATA"]
+    assert response.outputs_prefix == "PaloAltoNetworksXDR.APIKeyData"
+    assert "API Keys" in response.readable_output
+
+
+def test_api_key_delete_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id)
+    When
+        - Running api_key_delete_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_delete_command
+
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/delete/", json={"reply": "ok"})
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"api_id": "1,2"}
+
+    response = api_key_delete_command(client, args)
+
+    assert response.readable_output == "API Keys deleted successfully."
+
+
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_fetch_incidents_name_generation(mocker):
+    """
+    Given:
+        - Raw incidents from XDR (V4 with incident_name and Legacy without it)
+    When:
+        - Running fetch_incidents
+    Then:
+        - Verify the incident name is generated correctly for both cases
+    """
+    from CortexXDRIR import Client, fetch_incidents
+
+    # 1. XDR V4 (has incident_name)
+    # 2. XDR Legacy (no incident_name, has description)
+    raw_incidents = [
+        {
+            "incident": {
+                "incident_id": "100",
+                "incident_name": "V4 Incident Name",
+                "creation_time": 740314800000,
+                "description": "V4 Description",
+            }
+        },
+        {"incident": {"incident_id": "200", "creation_time": 740314800000, "description": "Legacy Description"}},
+    ]
+
+    mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=raw_incidents)
+    mocker.patch.object(Client, "save_modified_incidents_to_integration_context")
+    mocker.patch.object(demisto, "params", return_value={"exclude_fields": False, "mirror_direction": "Incoming"})
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+
+    _, incidents = fetch_incidents(client, "3 month", "MyInstance", exclude_artifacts=False, last_run={})
+
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "XDR Incident 100 - V4 Incident Name"
+    assert incidents[1]["name"] == "XDR Incident 200 - Legacy Description"
+
+
+def test_get_asset_list_command(mocker):
+    """
+    Given:
+        - asset_id_list in args
+    When:
+        - Running get_asset_list_command
+    Then:
+        - Verify the client.get_asset is called and results are correct with rich data
+    """
+    from CortexXDRIR import Client, get_asset_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"asset_id": "asset1,asset2"}
+    mock_assets = [
+        {
+            "xdm.asset.id": "asset1",
+            "xdm.asset.name": "name1",
+            "xdm.asset.related_issues.critical_assets": 5,
+            "xdm.asset.related_issues.critical_issues": 10,
+            "xdm.asset.first_observed": 1609459200000,
+            "xdm.asset.last_observed": 1609545600000,
+        },
+        {
+            "xdm.asset.id": "asset2",
+            "xdm.asset.name": "name2",
+            "xdm.asset.related_issues.critical_assets": 0,
+            "xdm.asset.related_issues.critical_issues": 1,
+            "xdm.asset.first_observed": 1609459200000,
+            "xdm.asset.last_observed": 1609545600000,
+        },
+    ]
+    mocker.patch.object(Client, "get_asset", side_effect=[[mock_assets[0]], [mock_assets[1]]])
+
+    res = get_asset_list_command(client, args)
+    assert isinstance(res.outputs, list)
+    assert len(res.outputs) == 2
+    assert res.outputs[0]["xdm_asset_id"] == "asset1"
+    assert res.outputs[1]["xdm_asset_id"] == "asset2"
+    assert res.outputs[0]["xdm_asset_related_issues_critical_assets"] == 5
+    assert "Cortex XDR Assets" in res.readable_output
+    assert "asset1" in res.readable_output
+    assert "name1" in res.readable_output
+    assert "asset2" in res.readable_output
+    assert "name2" in res.readable_output
+
+
+def test_get_asset_list_command_list(mocker):
+    """
+    Given:
+        - No asset_id in args, but filter and sort
+    When:
+        - Running get_asset_list_command
+    Then:
+        - Verify the client.list_assets is called and results are correct with rich data
+    """
+    from CortexXDRIR import Client, get_asset_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "filter_json": '{"field": "xdm.asset.name", "operator": "contains", "value": "test"}',
+        "sort_field": "xdm.asset.name",
+        "sort_order": "DESC",
+        "limit": "2",
+    }
+    mock_assets = [
+        {
+            "xdm.asset.id": "asset1",
+            "xdm.asset.name": "test-asset-1",
+            "xdm.asset.related_issues.critical_assets": 1,
+            "xdm.asset.related_issues.critical_issues": 2,
+            "xdm.asset.first_observed": 1609459200000,
+            "xdm.asset.last_observed": 1609545600000,
+        },
+        {
+            "xdm.asset.id": "asset2",
+            "xdm.asset.name": "test-asset-2",
+            "xdm.asset.related_issues.critical_assets": 0,
+            "xdm.asset.related_issues.critical_issues": 0,
+            "xdm.asset.first_observed": 1609459200000,
+            "xdm.asset.last_observed": 1609545600000,
+        },
+    ]
+    mocker.patch.object(Client, "list_assets", return_value=mock_assets)
+
+    res = get_asset_list_command(client, args)
+    assert isinstance(res.outputs, list)
+    assert len(res.outputs) == 2
+    assert res.outputs[0]["xdm_asset_id"] == "asset1"
+    assert res.outputs[1]["xdm_asset_name"] == "test-asset-2"
+    assert "Cortex XDR Assets" in res.readable_output
+    assert "test-asset-1" in res.readable_output
+
+
+def test_get_asset_schema_command(mocker):
+    """
+    Given:
+        - No args
+    When:
+        - Running get_asset_schema_command
+    Then:
+        - Verify the client.get_asset_schema is called and results are correct
+    """
+    from CortexXDRIR import Client, get_asset_schema_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_schema = [
+        {"name": "xdm.asset.id", "type": "string", "description": "Asset ID"},
+        {"name": "xdm.asset.name", "type": "string", "description": "Asset Name"},
+        {"name": "xdm.asset.status", "type": "enum", "description": "Asset Status"},
+    ]
+    mocker.patch.object(Client, "get_asset_schema", return_value=mock_schema)
+
+    res = get_asset_schema_command(client, {})
+    assert isinstance(res.outputs, list)
+    assert res.outputs == mock_schema
+    assert len(res.outputs) == 3
+    assert res.outputs[0]["name"] == "xdm.asset.id"
+    assert res.outputs[2]["type"] == "enum"
+    assert "Cortex XDR Asset Schema" in res.readable_output
+
+
+def test_get_asset_schema_field_options_command(mocker):
+    """
+    Given:
+        - field_name in args
+    When:
+        - Running get_asset_schema_field_options_command
+    Then:
+        - Verify the client.get_asset_schema_field_options is called and results are correct
+    """
+    from CortexXDRIR import Client, get_asset_schema_field_options_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"field_name": "xdm.asset.status"}
+    mock_options = [
+        {"value": "active", "description": "Active Asset"},
+        {"value": "inactive", "description": "Inactive Asset"},
+        {"value": "pending", "description": "Pending Asset"},
+    ]
+    mocker.patch.object(Client, "get_asset_schema_field_options", return_value=mock_options)
+
+    res = get_asset_schema_field_options_command(client, args)
+    assert isinstance(res.outputs, dict)
+    assert res.outputs["field_name"] == "xdm.asset.status"
+    assert res.outputs["options"] == mock_options
+    assert len(res.outputs["options"]) == 3
+    assert res.outputs["options"][0]["value"] == "active"
+    assert "Cortex XDR Asset Schema Options for xdm.asset.status" in res.readable_output
+
+
+def test_create_asset_group_command(mocker):
+    """
+    Given:
+        - group_name, group_type, group_description, membership_predicate_json in args
+    When:
+        - Running create_asset_group_command
+    Then:
+        - Verify the client.create_asset_group is called and results are correct
+    """
+    from CortexXDRIR import Client, create_asset_group_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "group_name": "group1",
+        "group_type": "static",
+        "group_description": "description1",
+        "membership_predicate_json": '{"field": "xdm.asset.name", "operator": "eq", "value": "test"}',
+    }
+    mock_res = {"group_id": "g1", "group_name": "group1", "status": "created"}
+    mocker.patch.object(Client, "create_asset_group", return_value=mock_res)
+
+    res = create_asset_group_command(client, args)
+    assert res.readable_output == "Asset group created successfully"
+    assert res.raw_response == mock_res
+    assert res.raw_response["status"] == "created"
+
+
+def test_delete_asset_group_command(mocker):
+    """
+    Given:
+        - group_id in args
+    When:
+        - Running delete_asset_group_command
+    Then:
+        - Verify the client.delete_asset_group is called
+    """
+    from CortexXDRIR import Client, delete_asset_group_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"group_id": "g1"}
+    mocker.patch.object(Client, "delete_asset_group")
+
+    res = delete_asset_group_command(client, args)
+    assert res.readable_output == "Asset group deleted successfully."
+
+
+def test_list_asset_groups_command(mocker):
+    """
+    Given:
+        - No args
+    When:
+        - Running list_asset_groups_command
+    Then:
+        - Verify the client.list_asset_groups is called and results are correct
+    """
+    from CortexXDRIR import Client, list_asset_groups_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_groups = [
+        {
+            "XDM.ASSET_GROUP.ID": "g1",
+            "XDM.ASSET_GROUP.NAME": "group1",
+            "XDM.ASSET_GROUP.TYPE": "static",
+            "XDM.ASSET_GROUP.DESCRIPTION": "desc1",
+        },
+        {
+            "XDM.ASSET_GROUP.ID": "g2",
+            "XDM.ASSET_GROUP.NAME": "group2",
+            "XDM.ASSET_GROUP.TYPE": "dynamic",
+            "XDM.ASSET_GROUP.DESCRIPTION": "desc2",
+        },
+    ]
+    mocker.patch.object(Client, "list_asset_groups", return_value=mock_groups)
+
+    res = list_asset_groups_command(client, {})
+    assert isinstance(res.outputs, list)
+    assert len(res.outputs) == 2
+    assert res.outputs[0]["XDM_ASSET_GROUP_ID"] == "g1"
+    assert res.outputs[1]["XDM_ASSET_GROUP_NAME"] == "group2"
+    assert "Cortex XDR Asset Groups" in res.readable_output
+    assert "group1" in res.readable_output
+    assert "group2" in res.readable_output
+
+
+def test_update_asset_group_command(mocker):
+    """
+    Given:
+        - group_id, group_name, group_type, group_description, membership_predicate_json in args
+    When:
+        - Running update_asset_group_command
+    Then:
+        - Verify the client.update_asset_group is called
+    """
+    from CortexXDRIR import Client, update_asset_group_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "group_id": "g1",
+        "group_name": "new_name",
+        "group_type": "dynamic",
+        "group_description": "new_desc",
+        "membership_predicate_json": '{"field": "xdm.asset.name", "operator": "contains", "value": "test"}',
+    }
+    mocker.patch.object(Client, "update_asset_group")
+
+    res = update_asset_group_command(client, args)
+    assert res.readable_output == "Asset group updated successfully"
+
+
+def test_replace_dots_in_keys():
+    """
+    Given:
+        - A data structure (dict, list, or primitive) containing keys with dots.
+    When:
+        - Calling replace_dots_in_keys.
+    Then:
+        - All dots in dictionary keys should be replaced with underscores.
+        - Nested structures (dicts within lists, etc.) should be processed correctly.
+    """
+    from CortexXDRIR import replace_dots_in_keys
+
+    # Test with a simple dictionary
+    data = {"a.b": 1, "c.d.e": "value"}
+    expected = {"a_b": 1, "c_d_e": "value"}
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with nested dictionary
+    data = {"a.b": {"c.d": 1}}
+    expected = {"a_b": {"c_d": 1}}
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with list of dictionaries
+    data = [{"a.b": 1}, {"c.d": 2}]
+    expected = [{"a_b": 1}, {"c_d": 2}]
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with complex nested structure
+    data = {"outer.key": [{"inner.key": 1, "another.key": {"deep.key": "deep.value"}}, "simple string"], "primitive": 123}
+    expected = {"outer_key": [{"inner_key": 1, "another_key": {"deep_key": "deep.value"}}, "simple string"], "primitive": 123}
+    assert replace_dots_in_keys(data) == expected
+
+    # Test with no dots
+    data = {"key": "value", "list": [1, 2, 3]}
+    assert replace_dots_in_keys(data) == data
+
+    # Test with non-dict/list input
+    assert replace_dots_in_keys("string.with.dots") == "string.with.dots"
+    assert replace_dots_in_keys(123) == 123
