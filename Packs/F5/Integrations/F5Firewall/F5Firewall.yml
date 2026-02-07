@@ -4,7 +4,8 @@ commonfields:
 name: F5 firewall
 display: F5 firewall
 category: Network Security
-description: Manages F5 firewall rules
+provider: F5
+description: Manages F5 firewall rules.
 configuration:
 - display: URL
   name: url
@@ -53,7 +54,7 @@ script:
     - name: policy-name
       required: true
       default: true
-      description: The policy name that the rules displayed are associated with
+      description: The policy name that the rules displayed are associated with.
     description: Lists all the rules of a specific policy.
   - name: f5-modify-rule
     arguments:
