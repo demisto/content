@@ -8,6 +8,7 @@ import time
 import os
 import traceback
 import hashlib
+import secrets
 
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
@@ -330,7 +331,7 @@ class OAuthHandler:
         """Generates the login URL for the standard Authorization Code flow."""
         auth_endpoint = authorization_endpoint or url_origin_join(self.base_url, "oauth2/authorize")
 
-        auth_url = self._create_authorization_url(auth_endpoint, self.client_id, self.scope)
+        auth_url = self._create_authorization_url(auth_endpoint, self.client_id, self.scope, state=secrets.token_urlsafe(32))
         return auth_url
 
     async def get_client_credentials_token(self) -> tuple[str, int]:
