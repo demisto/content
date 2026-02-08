@@ -1,0 +1,34 @@
+name: Validate AGENTS.md
+
+on:
+  pull_request:
+    paths:
+      - '**/AGENTS.md'
+  push:
+    paths:
+      - '**/AGENTS.md'
+
+jobs:
+  check-invisible-characters:
+    name: Check for invisible characters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find changed AGENTS.md files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: '**/AGENTS.md'
+
+      - name: Filter AGENTS.md files
+        id: filter
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          files=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | grep '/AGENTS\.md$\|^AGENTS\.md$' | tr '\n' ' ')
+          echo "agents_files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Check for invisible characters
+        if: steps.filter.outputs.agents_files != ''
+        run: python3 .github/scripts/check_invisible_chars.py ${{ steps.filter.outputs.agents_files }}
