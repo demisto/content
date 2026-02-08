@@ -5267,6 +5267,67 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
+  - arguments:
+    - name: repository
+      description: The repository to search.
+      auto: PREDEFINED
+      predefined:
+      - search-all
+      - third-party
+      - falcon_for_it_view
+      - forensics_view
+      defaultValue: search-all
+    - name: query
+      description: 'The query string. Example: #event_simpleName = "Event" or host.hostname = "Host"'
+      required: true
+    - name: start
+      description: 'The start time for the search. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+    - name: end
+      description: 'The end time for the search. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+    - name: around_event_id
+      description: The ID of the event to search around.
+    - name: around_number_events_before
+      description: Number of events to show before the eventId. Required when around_event_id is used.
+    - name: around_number_events_after
+      description: Number of events to show after the eventId. Required when around_event_id is used.
+    - name: around_timestamp
+      description: Timestamp for around search. Required when around_event_id is used.
+    - name: ingest_start
+      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field.
+    - name: ingest_end
+      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field.
+    - name: use_ingest_time
+      description: When set to true, the event's ingestStart and ingestEnd times are used as the basis for the query.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: time_zone
+      description: 'The time zone to use if start and end times are not specified in milliseconds. Time zones are provided in "area/location" format. Example: UTC'
+    - name: time_zone_offset_minutes
+      description: 'The time zone offset must be provided in minutes. For example, if your time zone is UTC+2:00, you would pass a value of 120.'
+    - name: limit
+      description: Maximum number of events to return.
+      defaultValue: '50'
+    - name: interval
+      description: Interval between polling attempts in seconds.
+      defaultValue: '60'
+    - name: timeout
+      description: Timeout for polling in seconds.
+      defaultValue: '600'
+    - name: job_id
+      description: Internal argument for polling - job ID from previous run.
+      hidden: true
+    - name: polling
+      hidden: true
+    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions. Query examples: host.hostname = DC1ENV11ADC02, LogonDomain = ENV11, UserName = Administrator, SHA256HashData = <hash>, MD5HashData = <hash>.'
+    name: cs-falcon-search-ngsiem-events
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.NGSiemEvent.timestamp
+      description: Event timestamp.
+      type: String
   dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false

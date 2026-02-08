@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
+import traceback
+
 
 """ IMPORTS """
 import base64
@@ -8070,6 +8072,223 @@ def get_ioarules_command(args: dict) -> CommandResults:
     )
 
 
+# ============== NGSIEM Search Events Functions ==============
+
+
+def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
+    """
+    Initiate an NGSIEM search query job.
+
+    POST /humio/api/v1/repositories/{repository}/queryjobs
+
+    Args:
+        repository: The repository to search (e.g., 'search-all').
+        body: The request body containing query parameters.
+
+    Returns:
+        dict: Response containing the job ID.
+    """
+    demisto.debug(f"Initiating NGSIEM search with {repository=}, {body=}")
+
+    return http_request(
+        method="POST",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs",
+        json=body,
+    )
+
+
+def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
+    """
+    Get the results of an NGSIEM search query job.
+
+    GET /humio/api/v1/repositories/{repository}/queryjobs/{job_id}
+
+    Args:
+        repository: The repository that was searched.
+        job_id: The job ID from the initiate search request.
+
+    Returns:
+        dict: Response containing the search results and status.
+    """
+    demisto.debug(f"Getting NGSIEM search results for {repository=}, {job_id=}")
+
+    return http_request(
+        method="GET",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs/{job_id}",
+    )
+
+
+def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
+    """
+    Clean the @rawstring field in NGSIEM events by removing escape characters.
+
+    The API response object includes an @rawstring field that contains unescaped
+    quotes and ampersands which prevent proper JSON parsing.
+
+    Args:
+        events: List of event dictionaries from the API response.
+
+    Returns:
+        list: Events with cleaned @rawstring fields.
+    """
+    for event in events:
+        if "@rawstring" in event:
+            raw = event["@rawstring"]
+            # Remove backslashes before quotes and ampersands
+            raw = raw.replace('\\"', '"').replace("\\&", "&")
+            event["@rawstring"] = raw
+    return events
+
+
+def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
+    """
+    Add tail() function to query if not already present to limit results.
+
+    The default number of events returned for each API call is 200,
+    unless the 'tail' function is used.
+
+    Args:
+        query: The original query string.
+        limit: Maximum number of events to return.
+
+    Returns:
+        str: Query with tail() function appended if needed.
+    """
+    if "tail(" not in query.lower():
+        return f"{query} | tail({limit})"
+    return query
+
+
+@polling_function(
+    "cs-falcon-search-ngsiem-events",
+    poll_message="Searching NGSIEM events:",
+    interval=60,
+    timeout=600,
+)
+def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
+    """
+    Search NGSIEM historical events using polling.
+
+    This command initiates a search query job and polls for results until complete.
+    Query jobs must continue to be polled until complete. If a query job is still
+    in progress, the response will show done as false.
+
+    Args:
+        args: Command arguments including query, repository, time range, etc.
+
+    Returns:
+        PollResult: Contains the search results or indicates to continue polling.
+    """
+    args["interval"] = arg_to_number(args.get("interval")) or 60
+    args["timeout"] = arg_to_number(args.get("timeout")) or 600
+    job_id = args.get("job_id")
+    repository = args.get("repository", "search-all")
+
+    if not job_id:
+        # First call - initiate the search job
+        query = args.get("query", "")
+        if not query:
+            raise ValueError("The 'query' argument is required.")
+
+        limit = arg_to_number(args.get("limit")) or 50
+        query = build_ngsiem_query_with_limit(query, limit)
+
+        # 1. Prepare the Nested Object (and map names correctly)
+        around_config = assign_params(
+            eventId=args.get("around_event_id"),
+            numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
+            numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
+            timestamp=args.get("around_timestamp")
+        )
+
+        # 2. Build the Main Request Body
+        # If around_config is empty {}, assign_params drops it automatically.
+        body = assign_params(
+            queryString=query,
+            start=args.get("start"),
+            end=args.get("end"),
+            ingestStart=args.get("ingest_start"),
+            ingestEnd=args.get("ingest_end"),
+            useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
+            timeZone=args.get("time_zone"),
+            timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
+            
+            # This inserts the nested object ONLY if it has data
+            around=around_config
+        )
+
+        response = initiate_ngsiem_search_request(repository=repository, body=body)
+
+        job_id = response.get("id")
+        if not job_id:
+            raise DemistoException(f"Failed to initiate NGSIEM search. Response: {response}")
+
+        demisto.debug(f"NGSIEM search job initiated with {job_id=}")
+        args["job_id"] = job_id
+
+    # Poll for results
+    response = get_ngsiem_search_results_request(repository, job_id)
+
+    is_done = response.get("done", False)
+    is_cancelled = response.get("cancelled", False)
+
+    if is_cancelled:
+        raise DemistoException(f"NGSIEM search job {job_id} was cancelled.")
+
+    if is_done:
+        events = response.get("events", [])
+        events = clean_ngsiem_rawstring_field(events)
+
+        # Check for warnings
+        warnings = response.get("warnings", [])
+        if warnings:
+            demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
+
+        # Build human readable output
+        if events:
+            # Select key fields for the table
+            table_headers = ["timestamp", "@rawstring"]
+            # Add other common fields if present
+            sample_event = events[0] if events else {}
+            for field in ["host.hostname", "user.name", "event_simpleName", "Agent IP"]:
+                if field in sample_event:
+                    table_headers.append(field)
+
+            hr = tableToMarkdown(
+                name=f"NGSIEM Events (Total: {len(events)})",
+                t=events,
+                headers=table_headers,
+                removeNull=True,
+            )
+        else:
+            hr = "No events found matching the query."
+
+        command_results = CommandResults(
+            outputs_prefix="CrowdStrike.NGSiemEvent",
+            outputs=events,
+            readable_output=hr,
+            raw_response=response,
+        )
+        return PollResult(response=command_results, continue_to_poll=False)
+
+    # Continue polling - job not done yet
+    demisto.debug(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
+    
+    # Explicitly extract your custom YAML arguments
+
+    demisto.debug(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
+    
+    # NO manual extraction needed anymore! 
+    # The decorator will automatically read args.get('interval') and args.get('timeout')
+    
+    return PollResult(
+        response=CommandResults(readable_output=f"NGSIEM search job {job_id} in progress..."),
+        continue_to_poll=True,
+        args_for_next_run=args
+        # You can pass 'args' directly; it now contains the correct 'interval' and 'timeout' keys
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -8324,10 +8543,14 @@ def main():  # pragma: no cover
             fetch_assets_command()
         elif command == "cs-falcon-list-cnapp-alerts":
             return_results(list_cnapp_alerts_command(args=args))
+        elif command == "cs-falcon-search-ngsiem-events":
+            return_results(cs_falcon_search_ngsiem_events_command(args=args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
-        return_error(f"Failed to execute {command!r} command.\nError:\n{e!s}")
+        tb = traceback.format_exc()
+        return_error(f"Failed to execute {command!r} command.\nError:\n{e!s}\n\nTraceback:\n{tb}")
+
 
 
 if __name__ in ("__main__", "builtin", "builtins"):
