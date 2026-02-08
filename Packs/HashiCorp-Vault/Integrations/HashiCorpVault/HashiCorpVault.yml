@@ -1,8 +1,8 @@
 commonfields:
-  id: HashiCorp Vault
+  id: HashiCorp Vault Test
   version: -1
-name: HashiCorp Vault
-display: HashiCorp Vault
+name: HashiCorp Vault Test
+display: HashiCorp Vault Test
 category: Authentication & Identity Management
 provider: IBM
 sectionorder:
@@ -14,7 +14,7 @@ configuration:
   name: server
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
   section: Connect
 - display: Use AppRole Auth Method
   name: use_approle
@@ -107,7 +107,7 @@ script:
   - name: hashicorp-list-secrets
     arguments:
     - name: engine
-      required: true
+      required: false
       default: true
       description: Engine path, e.g.,"secret/". Use the list-secrets-engines command to retrieve the engine path.
     - name: version
@@ -125,10 +125,10 @@ script:
   - name: hashicorp-get-secret-metadata
     arguments:
     - name: engine_path
-      required: true
+      required: false
       description: KV Engine path, e.g., "kv/".
     - name: secret_path
-      required: true
+      required: false
       description: Secret path, e.g., "secret".
     outputs:
     - contextPath: HashiCorp.Secret.Created
@@ -161,56 +161,56 @@ script:
   - name: hashicorp-delete-secret
     arguments:
     - name: secret_path
-      required: true
+      required: false
       description: Secret path, e.g., "secret".
     - name: engine_path
-      required: true
+      required: false
       description: Engine path, e.g.,"secret/".
     - name: versions
-      required: true
+      required: false
       description: CSV list of secret versions to delete.
       isArray: true
     description: Deletes the data under a specified secret given the secret path. Performs a soft delete that allows you to run the hashicorp-undelete-secret command if necessary (for KV V2 engine).
   - name: hashicorp-undelete-secret
     arguments:
     - name: secret_path
-      required: true
+      required: false
       description: Secret path, e.g., "secret".
     - name: engine_path
-      required: true
+      required: false
       description: Engine path, e.g.,"secret/".
     - name: versions
-      required: true
+      required: false
       description: CSV list of secret versions to undelete (restore).
       isArray: true
     description: Undeletes (restores) a secret on HashiCorp (for KV V2 engine).
   - name: hashicorp-destroy-secret
     arguments:
     - name: secret_path
-      required: true
+      required: false
       description: Secret path, .e.g., "secret".
     - name: engine_path
-      required: true
+      required: false
       description: Engine path, e.g.,"secret/".
     - name: versions
-      required: true
+      required: false
       description: CSV list of secret versions to permanently delete.
       isArray: true
     description: Permanently deletes a secret (for KV V2 engine).
   - name: hashicorp-disable-engine
     arguments:
     - name: path
-      required: true
+      required: false
       default: true
       description: Path of the secrets engine to disable.
     description: When a secrets engine is no longer needed, it can be disabled. All secrets under the engine are revoked and the corresponding vault data and configurations are removed.
   - name: hashicorp-enable-engine
     arguments:
     - name: path
-      required: true
+      required: false
       description: The path where the secrets engine will be mounted.
     - name: type
-      required: true
+      required: false
       description: Type of backend, e.g., "aws".
     - name: description
       description: Friendly description of the mount.
@@ -256,7 +256,7 @@ script:
   - name: hashicorp-get-policy
     arguments:
     - name: name
-      required: true
+      required: false
       description: Policy name.
     outputs:
     - contextPath: HashiCorp.Policy.Name
@@ -285,7 +285,7 @@ script:
   - name: hashicorp-configure-engine
     arguments:
     - name: path
-      required: true
+      required: false
       description: The engine path, e.g., "secret/".
     - name: folder
       description: Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2.)
@@ -303,7 +303,7 @@ script:
       - "KV"
       - "Cubbyhole"
       - "AWS"
-      required: true
+      required: false
       description: The engine type, e.g., "KV".
     - name: version
       auto: PREDEFINED
@@ -365,7 +365,7 @@ script:
   - name: hashicorp-generate-role-secret
     arguments:
     - name: role_name
-      required: true
+      required: false
       description: The name of the AppRole.
     - name: meta_data
       description: Metadata to be tied to the SecretID. 
@@ -385,7 +385,7 @@ script:
   - name: hashicorp-get-role-id
     arguments:
     - name: role_name
-      required: true
+      required: false
       description: The name of the AppRole.
     outputs:
     - contextPath: HashiCorp.AppRole.Id

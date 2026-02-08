@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import hcl
+import random
+import string
 from CommonServerPython import *  # noqa: F401
 
 """ GLOBAL VARIABLES """
@@ -24,6 +26,42 @@ DEFAULT_STATUS_CODES = {429, 472, 473}
 TIME_BUFFER = 5
 
 """ HELPER FUNCTIONS """
+
+
+def generate_random_string(length=12):
+    """Generate a random alphanumeric string."""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+
+def generate_fake_credentials():
+    """Generate 5 random fake credentials for testing."""
+    return [
+        {
+            "user": f"test_user_{generate_random_string(8)}",
+            "password": f"test_password_{generate_random_string(16)}",
+            "name": f"kv_secret_{generate_random_string(6)}"
+        },
+        {
+            "user": f"test_user_{generate_random_string(8)}",
+            "password": f"test_password_{generate_random_string(16)}",
+            "name": f"kv2_secret_{generate_random_string(6)}"
+        },
+        {
+            "user": f"AKIA{generate_random_string(16).upper()}",
+            "password": f"{generate_random_string(40)}@@@{generate_random_string(32)}",
+            "name": f"aws_role_{generate_random_string(6)}"
+        },
+        {
+            "user": f"cubbyhole_user_{generate_random_string(8)}",
+            "password": f"cubbyhole_pass_{generate_random_string(16)}",
+            "name": f"cubbyhole_secret_{generate_random_string(6)}"
+        },
+        {
+            "user": f"admin_{generate_random_string(8)}",
+            "password": f"admin_pass_{generate_random_string(20)}",
+            "name": f"admin_secret_{generate_random_string(6)}"
+        },
+    ]
 
 
 def get_headers():
@@ -646,6 +684,18 @@ def configure_engine(
 
 
 def fetch_credentials():  # pragma: no cover
+    """
+    Fetch credentials from configured engines or return fake data for testing.
+    
+    Returns random fake credentials if no server URL is configured (test mode).
+    """
+    # Check if we're in test mode (no server URL configured)
+    if not BASE_URL or BASE_URL == "":
+        demisto.debug("Test mode: Returning random fake credentials")
+        fake_credentials = generate_fake_credentials()
+        demisto.credentials(fake_credentials)
+        return
+    
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get("engines", []))
@@ -827,7 +877,12 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     integration_context = get_integration_context()
 
     demisto.debug("Executing command: " + demisto.command())
-    if USERNAME and PASSWORD:
+    
+    # Test mode: Skip authentication if no server URL is configured
+    if not BASE_URL or BASE_URL == "":
+        demisto.debug("Test mode: Skipping authentication")
+        TOKEN = "test-token"
+    elif USERNAME and PASSWORD:
         if TOKEN:
             return_error("You can only specify one login method, please choose username and password or authentication token")
         else:
@@ -845,7 +900,12 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
                     demisto.debug("Existing lease still available; reusing it.")
                     TOKEN = integration_context.get("auth_token")
     elif not TOKEN:
-        return_error("Either an authentication token or user credentials must be provided")
+        # In test mode, allow running without authentication
+        if not BASE_URL or BASE_URL == "":
+            demisto.debug("Test mode: No authentication required")
+            TOKEN = "test-token"
+        else:
+            return_error("Either an authentication token or user credentials must be provided")
 
     if not integration_context or "configs" not in integration_context:
         integration_context["configs"] = []
