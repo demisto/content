@@ -8953,6 +8953,7 @@ def test_modify_db_instance_command_multiple_vpc_security_group_ids(mocker):
     assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
     mock_client.modify_db_instance.assert_called_once_with(**expected_args)
 
+
 def test_ec2_describe_launch_templates_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client with valid launch templates response.
