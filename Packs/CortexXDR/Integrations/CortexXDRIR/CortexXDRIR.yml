@@ -4133,7 +4133,7 @@ script:
     description: Updates an asset group.
     name: xdr-asset-group-update
   - arguments:
-    - description: 'The BIOC name to filter by. Can filter only by one name.'
+    - description: The BIOC name to filter by. Can filter by only one name at a time.
       name: name
     - auto: PREDEFINED
       description: 'The BIOC severity to filter by.'
@@ -4173,7 +4173,7 @@ script:
     - description: 'The BIOC comment to filter by.'
       name: comment
     - auto: PREDEFINED
-      description: 'The BIOC status to filter by. Can be one of the following: enabled, disabled.'
+      description: 'The BIOC status to filter by. Options are enabled or disabled.'
       name: status
       predefined:
       - enabled
@@ -4202,7 +4202,7 @@ script:
     name: xdr-bioc-list
     outputs:
     - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
-      description: BIOC rule id.
+      description: BIOC rule ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.BIOC.name
       description: BIOC name.
@@ -4276,7 +4276,7 @@ script:
     - description: |-
         The BIOC indicator,
         for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
-        For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
       isArray: true
       name: indicator
       required: true
@@ -4346,7 +4346,7 @@ script:
     - description: |-
         The BIOC indicator,
         for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.
-        For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
+        For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs.
       isArray: true
       name: indicator
       required: true
@@ -4500,7 +4500,7 @@ script:
       description: Mapping details for lookups.
       type: String
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.execution_mode
-      description: How the rule is executed (e.g., SCHEDULED).
+      description: "How the rule is executed, for example: SCHEDULED."
       type: String
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
       description: The name of the correlation rule.
@@ -4518,7 +4518,7 @@ script:
       description: Whether suppression is enabled for this rule.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.action
-      description: The action taken when the rule triggers (e.g., ALERTS).
+      description: "The action taken when the rule triggers, for example: ALERTS."
       type: String
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.dataset
       description: The dataset the rule queries.
