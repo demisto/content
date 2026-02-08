@@ -4139,7 +4139,7 @@ script:
     - description: A comma-separated list of case domains.
       isArray: true
       name: case_domain
-    - description: A comma-separated list of severities.
+    - description: "A comma-separated list of severities."
       isArray: true
       name: severity
     - description: Filters cases that were created before this date. Supports English expressions like "in a year".
