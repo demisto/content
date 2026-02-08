@@ -4460,9 +4460,93 @@ script:
     description: Returns a list of correlation rules.
     name: xdr-correlation-rule-list
     outputs:
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
-      description: Correlation rule ID.
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_duration
+      description: The duration for which alerts are suppressed.
       type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_category
+      description: The category of the alert (e.g., DROPPER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mitre_defs
+      description: MITRE ATT&CK definitions associated with the rule.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.simple_schedule
+      description: The frequency at which the rule runs in a human-readable format.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.mapping_strategy
+      description: The strategy used for field mapping.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_fields
+      description: Fields used to determine alert suppression.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_domain
+      description: The security domain the alert belongs to.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.crontab
+      description: The cron expression for the rule execution schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.search_window
+      description: The time window the query searches across.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_severity
+      description: Custom severity level defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.drilldown_query_timeframe
+      description: The timeframe used for drilldown queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.user_defined_category
+      description: Custom category defined by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.lookup_mapping
+      description: Mapping details for lookups.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.execution_mode
+      description: How the rule is executed (e.g., SCHEDULED).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
+      description: The name of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.is_enabled
+      description: Whether the correlation rule is currently active.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.investigation_query_link
+      description: The query used for further investigation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_name
+      description: The specific name assigned to the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.suppression_enabled
+      description: Whether suppression is enabled for this rule.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.action
+      description: The action taken when the rule triggers (e.g., ALERTS).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.dataset
+      description: The dataset the rule queries.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_description
+      description: Detailed description of the generated alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.timezone
+      description: The timezone used for the rule schedule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.xql_query
+      description: The XQL query string executed by the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_fields
+      description: Specific fields included in the alert output.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.description
+      description: General description of the correlation rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.alert_type
+      description: The type of alert generated.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.severity
+      description: The severity level of the rule.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: The unique identifier for the correlation rule.
+      type: Number
   - arguments:
     - description: 'The correlation rule name. Example: name="This is a CR test 6".'
       name: name
