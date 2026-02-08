@@ -4173,14 +4173,8 @@ class AssetsDeviceHandler:
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
-        loop_counter = 0
         while self.running_tasks:
-            # TODO: Remove this
-            loop_counter += 1
-            log_falcon_assets(f"AssetsDeviceHandler: entering flush remaining running {loop_counter=}.", "info")
-            if loop_counter > 20:
-                log_falcon_assets(f"AssetsDeviceHandler: Forcing break for while loop.", "error")
-                break
+            log_falcon_assets(f"AssetsDeviceHandler: entering flush remaining running.", "info")
             # Create a snapshot of the current tasks
             current_batch = list(self.running_tasks)
             if not current_batch:
@@ -4733,14 +4727,6 @@ async def fetch_spotlight_assets():
 
         # Save reset state to integration context
         save_spotlight_state(context_store, integration_context, spotlight_state)
-
-        # Update assets last run (reset for next snapshot)
-        demisto.setAssetsLastRun(
-            {
-                "snapshot_id": "",
-                "total_fetched_until_now": 0,
-            }
-        )
 
         log_falcon_assets(
             f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
