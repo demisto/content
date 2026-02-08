@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: CheckPoint Software Technologies
 commonfields:
   id: CheckPointSandBlast
   version: -1
@@ -374,10 +375,10 @@ script:
       description: 'The ID for the malware type, if available: {0-}.'
       type: Number
     - contextPath: SandBlast.Upload.AntiVirus.Severity
-      description: 'The severity, 0 for benign files. Minimum: 0 Maximum: 4'
+      description: 'The severity, 0 for benign files. Minimum: 0 Maximum: 4.'
       type: Number
     - contextPath: SandBlast.Upload.AntiVirus.Confidence
-      description: 'The confidence, 0 for benign files. Minimum: 0 Maximum 5'
+      description: 'The confidence, 0 for benign files. Minimum: 0 Maximum 5.'
       type: Number
     - contextPath: SandBlast.Upload.AntiVirus.Status
       description: The Anti-Virus status for the requested file.

@@ -1,17 +1,29 @@
 {
-    "name": "Datadog",
-    "description": "Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform",
+    "name": "Datadog Cloud SIEM",
+    "description": "Datadog Cloud SIEM is a scalable, cloud-native SIEM that analyzes telemetry from cloud and on-premises systems to surface actionable security signals, with out-of-the-box detection rules and dashboards to help teams investigate and respond faster.",
     "support": "partner",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "team-cloudsiem@datadoghq.com",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Security",
+        "Security Analytics",
+        "Incident Response",
+        "Alerts",
+        "Compliance",
+        "Network"
+    ],
+    "useCases": [
+        "Incident Response",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "Cloud SIEM"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
@@ -25,5 +37,6 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "defaultDataSource": "DatadogCloudSIEMV2"
 }

@@ -2,7 +2,7 @@
     "name": "Freshworks Freshservice",
     "description": "Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,6 +28,8 @@
         "X5",
         "ENT_PLUS",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "edr",
+        "cloud_runtime_security"
     ]
 }

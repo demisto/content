@@ -7,7 +7,8 @@ sectionorder:
 name: Graylog
 display: Graylog
 category: Analytics & SIEM
-description: Integration with Graylog to search for logs and events
+provider: Graylog Inc
+description: Integration with Graylog to search for logs and events.
 configuration:
 - display: Server URL (e.g. https://serverurl:9000)
   name: url
@@ -61,101 +62,101 @@ script:
     arguments: []
     outputs:
     - contextPath: Graylog.ClusterStatus
-      description: Status of nodes in the Cluster
+      description: Status of nodes in the Cluster.
       type: String
     description: Get Cluster nodes status
   - name: graylog-cluster-node-jvm
     arguments:
     - name: nodeId
       required: true
-      description: Node ID of the cluster member
+      description: Node ID of the cluster member.
     outputs:
     - contextPath: Graylog.ClusterNodeJVM
-      description: JVM info of Node
+      description: JVM info of Node.
       type: String
     description: Get JVM status of a node in cluster
   - name: graylog-cluster-inputstates
     arguments: []
     outputs:
     - contextPath: Graylog.ClusterInputStates
-      description: Input states of the cluster
+      description: Input states of the cluster.
       type: String
     description: Get input states of the cluster
   - name: graylog-cluster-processing-status
     arguments: []
     outputs:
     - contextPath: Graylog.ClusterProcessingStatus
-      description: Processing status of the cluster
+      description: Processing status of the cluster.
       type: String
     description: Shows the processing status of the cluster
   - name: graylog-indexer-cluster-health
     arguments: []
     outputs:
     - contextPath: Graylog.IndexerHealth
-      description: Health of Indexer
+      description: Health of Indexer.
       type: String
     description: Get health of the indexer
   - name: graylog-search
     arguments:
     - name: query
       required: true
-      description: Query (Lucene syntax)
+      description: Query (Lucene syntax).
     - name: range
-      description: Relative timeframe to search in. Default 300s
+      description: Relative timeframe to search in. Default 300s.
       defaultValue: '300'
     - name: limit
-      description: Maximum number of messages to return. Default 20
+      description: Maximum number of messages to return. Default 20.
       defaultValue: '20'
     - name: offset
-      description: offset (integer)
+      description: offset (integer).
     - name: filter
-      description: filter
+      description: filter.
     - name: fields
-      description: Comma separated list of fields to return
+      description: Comma separated list of fields to return.
     - name: sort
-      description: Sorting (field:asc / field:desc)
+      description: Sorting (field:asc / field:desc).
     - name: decorate
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: Run decorators on search result (default True)
+      description: Run decorators on search result (default True).
     outputs:
     - contextPath: Graylog.Search
-      description: Search results
+      description: Search results.
       type: String
     description: 'Search for messages in a relative timerange, specified as seconds from now. Example: 300 means search from 5 minutes ago to now.'
   - name: graylog-events-search
     arguments:
     - name: query
-      description: Query to use
+      description: Query to use.
     - name: filter
-      description: filter to use
+      description: filter to use.
     - name: page
-      description: number of pages as integer
+      description: number of pages as integer.
     - name: sort_direction
       auto: PREDEFINED
       predefined:
       - asc
       - desc
-      description: Ascending or Descending
+      description: Ascending or Descending.
     - name: per_page
-      description: how many per page (integer)
+      description: how many per page (integer).
     - name: timerange
-      description: Relative timerange to search in seconds
+      description: Relative timerange to search in seconds.
       defaultValue: '300'
     - name: sort_by
-      description: how to sort
+      description: how to sort.
     outputs:
     - contextPath: Graylog.EventsSearch
-      description: Result of Events Search
+      description: Result of Events Search.
       type: String
     description: Events overview and search
   - name: graylog-search-absolute
     arguments:
     - name: query
       required: true
-      description: Query in lucene syntax
+      description: Query in lucene syntax.
     - name: from
       required: true
       description: Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss.
@@ -166,26 +167,26 @@ script:
       description: Maximum number of messages to return.
       defaultValue: '20'
     - name: offset
-      description: Offset
+      description: Offset.
     - name: filter
-      description: Filter
+      description: Filter.
     - name: fields
-      description: Comma separated list of fields to return
+      description: Comma separated list of fields to return.
     - name: sort
       auto: PREDEFINED
       predefined:
       - asc
       - desc
-      description: Sorting (field:asc / field:desc)
+      description: Sorting (field:asc / field:desc).
     - name: decorate
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: Run decorators on search result
+      description: Run decorators on search result.
     outputs:
     - contextPath: Graylog.SearchAbsolute
-      description: Search results of Absolute search
+      description: Search results of Absolute search.
       type: String
     description: Search with absolute times
   dockerimage: demisto/python3:3.12.8.3296088

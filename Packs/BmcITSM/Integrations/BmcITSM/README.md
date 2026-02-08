@@ -1601,3 +1601,99 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and BMC Helix ITSM.
+
+### bmc-itsm-worklog-add
+
+***
+Adds a worklog entry to an existing incident ticket in BMC Helix ITSM. Worklogs are used to document work performed, status updates, or communication related to an incident.
+
+#### Base Command
+
+`bmc-itsm-worklog-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_number | Incident Number. | Required |
+| worklog_type | Worklog Type. Possible values are: Chat, Status Update. | Required |
+| view_access | View Access. Possible values are: Public, Internal. | Required |
+| detailed_description | Detailed Description. | Required |
+| entry_ids | A comma-separated list of entry_ids to add as attachments. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### bmc-itsm-worklog-list
+
+***
+Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+
+#### Base Command
+
+`bmc-itsm-worklog-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ticket_ids | A comma-separated list of DisplayIDs. Used as a filtering argument. | Optional |
+| query | The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html). | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_size | The maximum number of records to retrieve per page. | Optional |
+| page | The page number of the results to retrieve. | Optional |
+| description | The Work Log description. Used as a filtering argument. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BmcITSM.WorkLog.ID | String | The Work Log ID. |
+
+### bmc-itsm-ticket-create-relationship
+
+***
+Creates a relationship between two tickets.
+
+#### Base Command
+
+`bmc-itsm-ticket-create-relationship`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| first_request_id | First Request ID. | Required |
+| first_form_name | First Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required |
+| second_request_id | Second Request ID. | Required |
+| second_form_name | Second Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required |
+| request_type | Request Type. Possible values are: Incident, Asset, Work order. | Required |
+| request_description | Request Description. | Required |
+| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Resolved, Resolved by. | Required |
+| bidirectional | Bidirectionality. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### bmc-itsm-worklog-attachment-get
+
+***
+Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+
+#### Base Command
+
+`bmc-itsm-worklog-attachment-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| worklog_id | Worklog ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BmcITSM.Attachment.ID | String | The Work Log ID. |
