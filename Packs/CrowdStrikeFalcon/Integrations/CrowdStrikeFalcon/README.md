@@ -6567,6 +6567,29 @@ Returns a list of CNAPP alerts. Used for debugging fetch-assets.
       - Falcon Cloud Security with Containers
       - Falcon for Managed Containers
 
+### cs-falcon-get-evidence-for-case
+
+***
+Get evidence for a specific case.
+
+#### Base Command
+
+`cs-falcon-get-evidence-for-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case to retrieve evidence for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CaseEvidence.alerts | Array | The alerts associated with the case. | 
+| CrowdStrike.CaseEvidence.events | Array | The events associated with the case. | 
+| CrowdStrike.CaseEvidence.leads | Array | The leads associated with the case. | 
+
 ### cs-falcon-list-case-summaries
 
 ***
@@ -6580,41 +6603,21 @@ Lists case summaries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of case IDs. | Optional |
+| ids | A comma-separated list of case IDs. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Case.id | String | The ID of the case. |
-| CrowdStrike.Case.name | String | The name of the case. |
-| CrowdStrike.Case.created_timestamp | Date | The datetime the case was created. |
-| CrowdStrike.Case.status | String | The status of the case. |
-| CrowdStrike.Case.version | String | The version of the case. |
-| CrowdStrike.Case.description | String | The description of the case. |
-| CrowdStrike.Case.severity | String | The severity of the case. |
-| CrowdStrike.Case.assigned_to | String | The name of the user assigned to the case. |
-| CrowdStrike.Case.tags | String | The tags of the case. |
-
-### cs-falcon-add-case-tag
-
-***
-Adds tags to the specified case.
-
-#### Base Command
-
-`cs-falcon-add-case-tag`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tags | A comma-separated list of tags. | Required |
-| id | The ID of the case the tags will be added to. | Required ### |
-
-#### Context Output
-
-There is no context output for this command.
+| CrowdStrike.Case.id | String | The ID of the case. | 
+| CrowdStrike.Case.name | String | The name of the case. | 
+| CrowdStrike.Case.created_timestamp | Date | The date and time the case was created. | 
+| CrowdStrike.Case.status | String | The status of the case. | 
+| CrowdStrike.Case.version | String | The version of the case. | 
+| CrowdStrike.Case.description | String | The description of the case. | 
+| CrowdStrike.Case.severity | String | The severity of the case. | 
+| CrowdStrike.Case.assigned_to | String | The name of the user assigned to the case. | 
+| CrowdStrike.Case.tags | String | The tags of the case. | 
 
 ### cs-falcon-delete-case-tag
 
@@ -6629,36 +6632,31 @@ Deletes a tag from the specified case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the case the tags will be deleted from. | Required |
-| tag | The tag to delete. | Required |
+| id | The ID of the case the tags will be deleted from. | Required | 
+| tag | The tag to delete. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### cs-falcon-get-evidence-for-case
+### cs-falcon-add-case-tag
 
 ***
-Get evidence for a specific case.
+Adds tags to the specified case.
 
 #### Base Command
 
-`cs-falcon-get-evidence-for-case`
+`cs-falcon-add-case-tag`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the case to retrieve evidence for. | Required |
+| tags | A comma-separated list of tags. | Required | 
+| id | The ID of the case the tags will be added to. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.CaseEvidence.alerts | Array | The alerts associated with the case. |
-| CrowdStrike.CaseEvidence.events | Array | The events associated with the case. |
-| CrowdStrike.CaseEvidence.leads | Array | The leads associated with the case. |
-
+There is no context output for this command.
 ### cs-falcon-resolve-case
 
 ***
@@ -6672,14 +6670,14 @@ Resolves or updates a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the case to resolve. | Required |
-| status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional |
-| assigned_to_uuid | A UUID of a user to assign the case to. | Optional |
-| description | A new description for the case. | Optional |
-| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_user_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional |
-| severity | The new case severity rating (10-100). | Optional |
-| template_id | The unique ID of the template to apply to the case. | Optional |
-| name | The new name for the case. | Optional |
+| id | The ID of the case to resolve. | Required | 
+| status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| assigned_to_uuid | A UUID of a user to assign the case to. | Optional | 
+| description | A new description for the case. | Optional | 
+| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_user_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_user_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional | 
+| severity | The new case severity rating (10-100). | Optional | 
+| template_id | The unique ID of the template to apply to the case. | Optional | 
+| name | The new name for the case. | Optional | 
 
 #### Context Output
 
