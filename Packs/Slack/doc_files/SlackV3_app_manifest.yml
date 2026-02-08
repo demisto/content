@@ -2,8 +2,8 @@ _metadata:
   major_version: 1
   minor_version: 1
 display_information:
-  name: Cortex XSOAR
-  description: Integrates Slack into Cortex XSOAR
+  name: Cortex Assistant
+  description: Integrates Slack into Cortex Platform
   background_color: "#2c2d30"
 features:
   app_home:
@@ -11,7 +11,7 @@ features:
     messages_tab_enabled: true
     messages_tab_read_only_enabled: true
   bot_user:
-    display_name: Cortex XSOAR
+    display_name: Cortex Assistant
     always_online: true
 oauth_config:
   scopes:
