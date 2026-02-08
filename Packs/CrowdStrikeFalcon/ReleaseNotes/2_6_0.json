@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Deprecated 4 incident-based commands (cs-falcon-resolve-incident, cs-falcon-list-incident-summaries, cs-falcon-get-incident-behavior, cs-falcon-get-detections-for-incident) and 6 playbooks. Migrate to new case-based commands. Deprecated playbooks will be removed in March 2026."
+    "breakingChangesNotes": "Deprecated 4 incident-based commands (cs-falcon-resolve-incident, cs-falcon-list-incident-summaries, cs-falcon-get-incident-behavior, cs-falcon-get-detections-for-incident. Migrate to new case-based commands."
 }
