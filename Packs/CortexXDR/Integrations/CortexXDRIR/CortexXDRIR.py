@@ -624,13 +624,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-    def list_issues(self, request_data: dict):
+    def list_issues(self, request_data: dict) -> list:
         res = self._http_request(
             method="POST",
             url_suffix="/issue/search",
             json_data=request_data,
         )
-        return res.get("reply", {}).get("data", [])
+        return res.get("reply", {}).get("DATA", [])
 
     def create_issue(self, request_data: dict):
         res = self._http_request(
@@ -1914,24 +1914,23 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     """
     filters = []
     if issue_id := argToList(args.get("issue_id")):
-        filters.append({"field": "issue_id", "operator": "in", "value": issue_id})
+        filters.append({"field": "id", "operator": "in", "value": issue_id})
     if external_id := argToList(args.get("external_id")):
         filters.append({"field": "external_id", "operator": "in", "value": external_id})
-    if detection_method := args.get("detection_method"):
-        filters.append({"field": "detection_method", "operator": "eq", "value": detection_method})
-    if domain := args.get("domain"):
-        filters.append({"field": "domain", "operator": "eq", "value": domain})
-    if severity := args.get("severity"):
-        filters.append({"field": "severity", "operator": "eq", "value": severity})
+    if detection_method := argToList(args.get("detection_method")):
+        filters.append({"field": "detection.method", "operator": "in", "value": detection_method})
+    if domain := argToList(args.get("domain")):
+        filters.append({"field": "issue_domain", "operator": "in", "value": domain})
+    if severity := argToList(args.get("severity")):
+        filters.append({"field": "severity", "operator": "in", "value": severity})
     if insert_time := args.get("insert_time"):
         timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
-        filters.append({"field": "insert_time", "operator": "gte", "value": timestamp})
+        filters.append({"field": "_insert_time", "operator": "gte", "value": timestamp})
     if status := argToList(args.get("status")):
-        filters.append({"field": "status", "operator": "in", "value": status})
+        filters.append({"field": "status.progress", "operator": "in", "value": status})
 
     sort_field = args.get("sort_field")
     sort_order = args.get("sort_order", "asc").lower()
-
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
@@ -1954,7 +1953,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Issues",
         t=issues,
-        headers=["issue_id", "name", "type", "severity", "description"],
+        headers=["id", "name", "type", "severity", "description"],
         headerTransform=string_to_table_header,
         removeNull=True
     )

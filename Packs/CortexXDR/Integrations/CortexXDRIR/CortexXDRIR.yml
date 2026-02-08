@@ -4142,13 +4142,27 @@ script:
       description: A comma-separated list of external IDs.
       isArray: true
     - name: detection_method
-      description: The detection method.
+      description: A comma-separated list of methods used to detect the activity.
+      auto: PREDEFINED
+      predefined:
+      - BIOC
+      - Correlation
+      - Analytics
+      - System
+      - IOC
     - name: domain
-      description: The domain.
+      description: A comma-separated list of domains.
     - name: severity
-      description: The severity.
+      description: A comma-separated list of severities.
+      auto: PREDEFINED
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
     - name: insert_time
-      description: Filter by insert time. Should support english expressions like "in a year".
+      description: Filter by issues inserted after this time.
     - name: status
       description: A comma-separated list of statuses.
       isArray: true
@@ -4172,27 +4186,72 @@ script:
     - name: page
       description: The page number.
     outputs:
-    - contextPath: PaloAltoNetworksXDR.Issue.issue_id
-      description: The issue ID.
+    - contextPath: PaloAltoNetworksXDR.Observation.observation_time
+      description: The timestamp when the observation occurred.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Observation.domain
+      description: The security domain associated with the observation.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.name
-      description: The issue name.
+    - contextPath: PaloAltoNetworksXDR.Observation.remediation
+      description: Suggested remediation steps.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.type
-      description: The issue type.
+    - contextPath: PaloAltoNetworksXDR.Observation.impact
+      description: The potential impact of the observed activity.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.severity
-      description: The issue severity.
+    - contextPath: PaloAltoNetworksXDR.Observation.status_resolution_comment
+      description: Comments regarding the resolution of the status.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.description
-      description: The issue description.
+    - contextPath: PaloAltoNetworksXDR.Observation.status_progress
+      description: The current progress status (e.g., New).
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.status
-      description: The issue status.
+    - contextPath: PaloAltoNetworksXDR.Observation.asset_ids
+      description: List of asset IDs involved.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.insert_time
-      description: The insert time.
-      type: Date
+    - contextPath: PaloAltoNetworksXDR.Observation.assigned_to_pretty
+      description: The display name of the user assigned to this item.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.last_update_timestamp
+      description: The last time this record was updated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Observation.detection_method
+      description: The method used to detect the activity (e.g., BIOC).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.is_starred
+      description: Whether the item has been starred/flagged.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Observation.name
+      description: The name of the observation or alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.external_id
+      description: The unique UUID for external reference.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.insert_time
+      description: The time the record was inserted into the database.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Observation.detection_rule_id
+      description: The ID of the specific detection rule triggered.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.tags
+      description: A list of tags associated with the observation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.type
+      description: The classification type of the observation.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.id
+      description: The numeric ID of the observation.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Observation.description
+      description: Detailed description of the observed activity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.severity
+      description: The severity level (e.g., LOW).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.category
+      description: The category classification.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Observation.is_excluded
+      description: Whether this observation is excluded from standard views.
+      type: Boolean
   - name: xdr-issue-create
     description: Create a new issue.
     arguments:
