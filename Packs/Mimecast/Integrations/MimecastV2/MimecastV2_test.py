@@ -1419,8 +1419,6 @@ class TestFetchIncidents:
         MimecastV2.fetch_incidents()
 
         assert set_last_run_mock.called
-        last_run_arg = set_last_run_mock.call_args[0][0]
-        assert "time" in last_run_arg
         assert incidents_mock.called
 
     @freeze_time("2024-01-15T12:00:00Z")

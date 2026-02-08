@@ -193,23 +193,21 @@ def fetch_logs_with_pagination(
     demisto.debug(f"fetch_logs_with_pagination: Starting request to {api_endpoint}")
     demisto.debug(f"fetch_logs_with_pagination: {limit=}, dedup_count={len(dedup_messages or [])}, {current_next_page=}")
     demisto.debug(f"fetch_logs_with_pagination: Request data={data}")
-    
+
     payload: dict[str, Any] = {"meta": {}, "data": data}
-    len_of_results = 0
     results = []
     dropped = 0
     next_page = current_next_page or ""
     dedup_messages = dedup_messages or []
 
-    for iteration in range(10):
-        iteration += 1
+    for iteration in range(1, 11):
         pagination = {"pageSize": limit}
         if next_page:
             demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Using next_page token (pagination continuation)")
             pagination = {"pageSize": limit, "pageToken": next_page}  # type: ignore
         else:
             demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Starting new query (no next_page token)")
-        
+
         payload["meta"]["pagination"] = pagination
         demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Sending HTTP request")
         response = http_request("POST", api_endpoint, payload, headers={})
@@ -223,7 +221,7 @@ def fetch_logs_with_pagination(
             response_data = data_list[0].get(response_param, []) if data_list else []
         else:
             response_data = response.get("data", [])
-        
+
         demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Received {len(response_data)} entries from API")
 
         for entry in response_data:
@@ -233,21 +231,25 @@ def fetch_logs_with_pagination(
                 dropped += 1
                 demisto.debug(f"fetch_logs_with_pagination: Dropped {entry_id} (duplicate)")
             else:
-                len_of_results += 1
                 results.append(entry)
 
         next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
-        demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Results so far: {len_of_results}, next_page_exists={bool(next_page)}")
-        
+        demisto.debug(
+            f"fetch_logs_with_pagination: Iteration {iteration} - Results so far: {len(results)}, "
+            f"next_page_exists={bool(next_page)}"
+        )
+
         if not next_page:
-            demisto.debug(f"fetch_logs_with_pagination: No more pages - pagination complete")
+            demisto.debug("fetch_logs_with_pagination: No more pages - pagination complete")
             break
-        elif limit and len_of_results >= limit:
-            demisto.debug(f"fetch_logs_with_pagination: Limit reached ({len_of_results} >= {limit}) - stopping pagination")
+        if limit and len(results) >= limit:
+            demisto.debug(f"fetch_logs_with_pagination: Limit reached ({len(results)} >= {limit}) - stopping pagination")
             break
 
-    demisto.debug(f"fetch_logs_with_pagination: Final results - total={len_of_results}, dropped={dropped}, has_next_page={bool(next_page)}")
-    return results, len_of_results, next_page
+    demisto.debug(
+        f"fetch_logs_with_pagination: Final results - total={len(results)}, dropped={dropped}, has_next_page={bool(next_page)}"
+    )
+    return results, len(results), next_page
 
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
@@ -2086,12 +2088,12 @@ def generate_log_id(log_entry, log_type):
 def get_log_type_fetch_time(last_run: dict, time_key: str, default_fetch_date_time: str) -> str:
     """
     Get the fetch time for a specific log type from last_run, or return default.
-    
+
     Args:
         last_run: The last run context dictionary
         time_key: The key to look up in last_run (e.g., 'time_url', 'time_attachment')
         default_fetch_date_time: The default time to use if key not found
-    
+
     Returns:
         Formatted date time string in Mimecast format (YYYY-MM-DDTHH:MM:SS+0000)
     """
@@ -2109,7 +2111,7 @@ def fetch_incidents():
     # handle first time fetch - calculate default time for any log type that doesn't have a time yet
     default_fetch_time = datetime.now() - timedelta(hours=FETCH_DELTA)
     default_fetch_date_time = default_fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-    
+
     current_fetch = default_fetch_time
     demisto.debug(f"Default fetch time for first-time fetches: {default_fetch_time=}, {default_fetch_date_time=}")
 
@@ -2285,7 +2287,7 @@ def fetch_log_type(
     if dedup_messages:
         new_last_run[dedup_key] = dedup_messages
         demisto.debug(f"{log_type}: Saving {len(dedup_messages)} dedup messages")
-    
+
     if next_page:
         # During pagination, save the next page token and the original query time
         demisto.debug(f"{log_type}: Pagination active - saving next_page token and original_query_time={original_query_time}")
@@ -2301,8 +2303,11 @@ def fetch_log_type(
         demisto.debug(f"{log_type}: Removing pagination keys from last_run")
         new_last_run.pop(next_page_key, None)
         new_last_run.pop(time_for_next_page_key, None)
-    
-    demisto.debug(f"{log_type}: Final last_run state - time_key={new_last_run.get(time_key)}, next_page_exists={bool(new_last_run.get(next_page_key))}")
+
+    demisto.debug(
+        f"{log_type}: Final last_run state - time_key={new_last_run.get(time_key)}, "
+        f"next_page_exists={bool(new_last_run.get(next_page_key))}"
+    )
 
 
 def url_to_incident(url_log):
