@@ -1645,7 +1645,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     lte_creation_time = args.get("lte_creation_time")
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
-    
+
     not_status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("not_status"))]
     status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
     severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
