@@ -919,7 +919,7 @@ def main() -> None:
             return_results(mark_as_resolved_command(client, demisto.args()))
         elif command == "socradar-add-comment":
             return_results(add_comment_command(client, demisto.args()))
-        elif command == "socradar-add-assignee":
+        elif command == "socradar-add-assignee" or command == "socradar-change-assignee":
             return_results(add_assignee_command(client, demisto.args()))
         elif command == "socradar-add-tag":
             return_results(add_tag_command(client, demisto.args()))
