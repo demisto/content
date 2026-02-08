@@ -2785,3 +2785,146 @@ def test_replace_dots_in_keys():
     # Test with non-dict/list input
     assert replace_dots_in_keys("string.with.dots") == "string.with.dots"
     assert replace_dots_in_keys(123) == 123
+
+
+@pytest.mark.parametrize(
+    "args, expected_filters, expected_sort",
+    [
+        (
+            {"case_id": "100", "status": "new"},
+            [
+                {"field": "case_id", "operator": "in", "value": [100]},
+                {"field": "status_progress", "operator": "in", "value": ["new"]},
+            ],
+            {},
+        ),
+        (
+            {"severity": "high", "sort_field": "creation_time", "sort_order": "asc"},
+            [{"field": "severity", "operator": "in", "value": ["high"]}],
+            {"field": "creation_time", "keyword": "asc"},
+        ),
+        (
+            {"case_domain": "example.com", "limit": "10"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+        ),
+    ],
+)
+def test_case_list_command(args, expected_filters, expected_sort):
+    """
+    Given:
+        - args for case list command
+    When:
+        - Running case_list_command
+    Then:
+        - Verify the client.search_cases is called with correct arguments
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "search_cases", return_value=[{"case_id": 1}]) as mock_search:
+        case_list_command(client, args)
+
+        call_args = mock_search.call_args[0][0]
+        assert call_args["request_data"]["filters"] == expected_filters
+        assert call_args["request_data"]["sort"] == expected_sort
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        (
+            {"case_id": "100", "status": "new"},
+            {"status_progress": "NEW"}
+        ),
+        (
+            {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
+            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "DONE"},
+        ),
+        (
+            {"case_id": "100", "status": "closed", "resolve_reason": "resolved_other"},
+            {"status_progress": "CLOSED", "resolve_reason": "Resolved - Other"},
+        ),
+    ],
+)
+def test_case_update_command(args, expected_update_data):
+    """
+    Given:
+        - args for case update command
+    When:
+        - Running case_update_command
+    Then:
+        - Verify the client.update_case is called with correct arguments
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        res = case_update_command(client, args)
+
+        assert res.readable_output == f"Case {args['case_id']} updated successfully"
+        mock_update.assert_called_with(
+            args["case_id"], request_data={"request_data": {"update_data": expected_update_data}}
+        )
+
+
+@pytest.mark.parametrize(
+    "mock_response, expected_count_network, expected_count_file",
+    [
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [{"id": 1}], "TOTAL_COUNT": 1},
+                    "file_artifacts": {"DATA": [{"id": 2}], "TOTAL_COUNT": 1},
+                }
+            ],
+            1,
+            1,
+        ),
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                    "file_artifacts": {"DATA": [{"id": 2}], "TOTAL_COUNT": 1},
+                }
+            ],
+            0,
+            1,
+        ),
+        (
+            [
+                {
+                    "network_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                    "file_artifacts": {"DATA": [], "TOTAL_COUNT": 0},
+                }
+            ],
+            0,
+            0,
+        ),
+    ],
+)
+def test_case_artifact_list_command(mock_response, expected_count_network, expected_count_file):
+    """
+    Given:
+        - mock response for get_case_artifacts
+    When:
+        - Running case_artifact_list_command
+    Then:
+        - Verify the number of returned results matches expected artifacts
+    """
+    from CortexXDRIR import Client, case_artifact_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "get_case_artifacts", return_value=mock_response):
+        res = case_artifact_list_command(client, {"case_id": "100"})
+
+        if expected_count_network == 0 and expected_count_file == 0:
+            assert len(res) == 1
+            assert "No artifacts found" in res[0].readable_output
+        else:
+            count = 0
+            if expected_count_network > 0:
+                count += 1
+            if expected_count_file > 0:
+                count += 1
+            assert len(res) == count
