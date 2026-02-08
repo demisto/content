@@ -3315,8 +3315,7 @@ class EC2:
                 "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
                 "VolumeType": args.get("ebs_volume_type"),
             })
-            if ebs_config:
-                block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config})
+            block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config if ebs_config else None})
 
         if block_device_mappings:
             launch_template_data["BlockDeviceMappings"] = block_device_mappings
@@ -3328,7 +3327,7 @@ class EC2:
             "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
             "Description": args.get("network_interfaces_description"),
             "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
-            "Groups": argToList(args.get("network_interface_groups")) if args.get("network_interface_groups") else None,
+            "Groups": argToList(args.get("network_interface_groups")),
             "SubnetId": args.get("subnet_id"),
             "PrivateIpAddress": args.get("private_ip_address"),
         })
@@ -3354,11 +3353,7 @@ class EC2:
                 "SpotOptions": spot_options if spot_options else None,
             }
 
-        # Remove empty elements from launch template data
-        launch_template_data = remove_empty_elements(launch_template_data)
-
-        if launch_template_data:
-            kwargs["LaunchTemplateData"] = launch_template_data
+        kwargs["LaunchTemplateData"] = remove_empty_elements(launch_template_data)
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Creating launch template with parameters: {kwargs}")
@@ -3370,7 +3365,6 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
         launch_template = response.get("LaunchTemplate", {})
 
         return CommandResults(
@@ -3380,7 +3374,8 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS LaunchTemplates",
                 launch_template,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber"],
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber",
+                         "LatestVersionNumber"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
