@@ -417,17 +417,20 @@ def test_module():
     Perform basic get request to get item samples
     """
     try:
+        params = demisto.params()
         google_service_creds = (
-            demisto.params().get("credentials_google_service", {}).get("password") or demisto.params()["google_service_creds"]
+            params.get("credentials_google_service", {}).get("password") or demisto.params()["google_service_creds"]
         )
+        region = params.get("region")
         bigquery_client = start_and_return_bigquery_client(google_service_creds)
-        query_job = bigquery_client.query(TEST_QUERY)
+        demisto.debug(f"[BigQuery Debug] test-module with {region=}")
+        query_job = bigquery_client.query("SELECT 1", location=region)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error(f"Authentication error: credentials JSON provided is invalid.\n Exception recieved:{ex}")
+        return_error(f"Authentication error. Exception received:{ex}")
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
