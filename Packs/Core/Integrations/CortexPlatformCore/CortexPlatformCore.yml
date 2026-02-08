@@ -3351,6 +3351,237 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - arguments:
+        - description: The name of the profile.
+          name: profile_name
+          required: true
+        - description: The description of the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Mode for aspFiles module.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Mode for basTools module.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for uacBypass module.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Mode for manualScan module.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Mode for scanEndpoints module.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for ransomware module.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for cryptominers module.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for antiTampering module.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for iisProtection module.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for uefiProtection module.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for maliciousDevice module.
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for networkSignature module.
+          name: network_packet_inspection_engine
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for passwordStealing module.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for webshellDroppers module.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for examineOfficeFiles module.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for inProcessShellcode module.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for examineJScriptFiles module.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for legitimateProcesses module.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for examineVBScriptFiles module.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for dynamicSecurityEngine module.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for powerShellScriptFiles module.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for financialMalwareThreat module.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for securityMeasuresBypass module.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for dynamicDriverProtection module.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for dynamicKernelProtection module.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Mode for passwordTheftProtection module.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Mode for examinePortableExecutables module.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: enabled
+          description: Mode for maliciousCausalityChainsResponse module.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Creates a new profile.
+      name: core-create-windows-malware-profile
+      outputs:
+        - contextPath: Core.Profile
+          description: The created profile data.
+          type: Unknown
   runonce: false
   script: "-"
   subtype: python3
