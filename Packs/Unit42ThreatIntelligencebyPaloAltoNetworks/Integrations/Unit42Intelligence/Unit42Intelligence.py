@@ -281,6 +281,7 @@ def create_relationships(
         indicator_type: Type of indicator
         threat_objects: List of threat object associations
         create_relationships: Whether to create relationships
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects or empty list
@@ -455,6 +456,7 @@ def create_threat_object_relationships(
         threat_obj: The threat object data
         threat_object_name: Name of the threat object
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -497,6 +499,7 @@ def create_campaigns_relationships(
         threat_obj: The threat object data
         threat_object_name: Name of the threat object
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -533,6 +536,7 @@ def create_attack_patterns_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -580,6 +584,7 @@ def create_malware_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -633,6 +638,7 @@ def create_tools_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -672,6 +678,7 @@ def create_vulnerabilities_relationships(
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -710,6 +717,7 @@ def create_actor_relationships(
         threat_obj: The threat object data
         malware_family_name: Name of the malware family
         threat_class: The threat object class
+        reliability: Source reliability
 
     Returns:
         List of EntityRelationship objects
@@ -761,6 +769,7 @@ def create_location_indicators_and_relationships(
     Args:
         threat_obj: The threat object data
         threat_actor_name: Name of the threat actor to create relationships with
+        reliability: Source reliability
 
     Returns:
         List of location indicators with relationships
@@ -1075,7 +1084,9 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score, tags=tags, malware_family=malware_families)
 
     # Create relationships
-    relationships = create_relationships(domain, FeedIndicatorType.Domain, threat_objects, create_relationships_flag, client.reliability)
+    relationships = create_relationships(
+        domain, FeedIndicatorType.Domain, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -1138,7 +1149,9 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     url_indicator = Common.URL(url=url, dbot_score=dbot_score, tags=tags, malware_family=malware_families)
 
     # Create relationships
-    relationships = create_relationships(url, FeedIndicatorType.URL, threat_objects, create_relationships_flag, client.reliability)
+    relationships = create_relationships(
+        url, FeedIndicatorType.URL, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
@@ -1219,7 +1232,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
     # Create relationships
-    relationships = create_relationships(file_hash, FeedIndicatorType.File, threat_objects, create_relationships_flag, client.reliability)
+    relationships = create_relationships(
+        file_hash, FeedIndicatorType.File, threat_objects, create_relationships_flag, client.reliability
+    )
 
     # Create indicators from relationships
     if create_threat_object_indicators_flag:
