@@ -1,7 +1,7 @@
 commonfields:
-  id: AppSecCreateApplication
+  id: CreateApplication
   version: -1
-name: AppSecCreateApplication
+name: CreateApplication
 script: ''
 type: python
 tags:

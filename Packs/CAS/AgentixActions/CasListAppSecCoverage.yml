@@ -301,8 +301,8 @@ outputs:
     type: String
     name: Cas.Coverage.Asset.is_scanned_by_malware
 underlyingcontentitem:
-  id: AppSecGetCoverage
-  name: AppSecGetCoverage
+  id: GetAppSecCoverage
+  name: GetAppSecCoverage
   type: script
   version: -1
   command: ""

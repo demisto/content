@@ -37,8 +37,8 @@ outputs:
     type: Number
     name: Cas.RepositoryScan.scan_id
 underlyingcontentitem:
-  id: AppSecRepositoryScan
-  name: AppSecRepositoryScan
+  id: TriggerRepositoryScan
+  name: TriggerRepositoryScan
   type: script
   version: -1
   command: ""

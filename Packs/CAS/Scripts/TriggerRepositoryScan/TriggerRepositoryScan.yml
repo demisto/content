@@ -1,7 +1,7 @@
 commonfields:
-  id: AppSecRepositoryScan
+  id: TriggerRepositoryScan
   version: -1
-name: AppSecRepositoryScan
+name: TriggerRepositoryScan
 script: ''
 type: python
 tags:

@@ -1,7 +1,7 @@
 commonfields:
-  id: AppSecRepositoryScanConfiguration
+  id: UpdateRepositoryScanConfiguration
   version: -1
-name: AppSecRepositoryScanConfiguration
+name: UpdateRepositoryScanConfiguration
 script: ''
 type: python
 tags:

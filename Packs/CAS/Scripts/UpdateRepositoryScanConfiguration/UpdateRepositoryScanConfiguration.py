@@ -156,7 +156,7 @@ def main() -> None:
         command_results = enable_scanners_command(args)
         return_results(command_results)
     except Exception as e:
-        return_error(f"Failed to execute AppSecRepositoryScan. Error:\n{str(e)}")
+        return_error(f"Failed to execute UpdateRepositoryScanConfiguration. Error:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

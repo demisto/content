@@ -68,8 +68,8 @@ outputs:
     type: String
     name: Cas.Application.applicationId
 underlyingcontentitem:
-  id: AppSecCreateApplication
-  name: AppSecCreateApplication
+  id: CreateApplication
+  name: CreateApplication
   type: script
   version: -1
   command: ""
