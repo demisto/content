@@ -172,6 +172,7 @@ def fetch_logs_with_pagination(
     limit: int = PAGE_SIZE_MAX,
     dedup_messages: list | None = None,
     current_next_page: str = "",
+    log_type: str = "",
 ):
     """
     Generic function for fetching logs with pagination and deduplication support.
@@ -184,6 +185,7 @@ def fetch_logs_with_pagination(
         limit: Maximum number of results to fetch
         dedup_messages: List of message IDs to deduplicate against
         current_next_page: Token for continuing from a previous pagination
+        log_type: Type of log for ID generation (e.g., 'url', 'attachment', 'impersonation', 'held_message')
 
     Returns:
         Tuple of (results, len_of_results, next_page)
@@ -225,7 +227,7 @@ def fetch_logs_with_pagination(
         demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Received {len(response_data)} entries from API")
 
         for entry in response_data:
-            entry_id = entry.get("id")
+            entry_id = generate_log_id(entry, log_type) if log_type else entry.get("id")
             # Dedup for fetch - only if dedup_messages is provided and entry has an id
             if dedup_messages and entry_id and entry_id in dedup_messages:
                 dropped += 1
@@ -2245,6 +2247,7 @@ def fetch_log_type(
         limit=MAX_FETCH,
         dedup_messages=dedup_messages,
         current_next_page=current_next_page,
+        log_type=log_type,
     )
 
     demisto.debug(f"Fetched {len_of_results} {log_type} logs")
