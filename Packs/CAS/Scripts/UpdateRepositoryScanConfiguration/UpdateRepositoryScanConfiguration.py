@@ -12,18 +12,8 @@ ALLOWED_SCANNERS = [
 
 def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
     res = demisto.executeCommand("core-generic-api-call", args)
-    path = args.get('path')
     if is_error(res):
-        return_error(f"Error in core-generic-api-call to {path}: {get_error(res)}")
-
-    try:
-        context = res[0]["EntryContext"]
-        raw_data = context.get("data")
-        if isinstance(raw_data, str):
-            return json.loads(raw_data)
-        return raw_data
-    except Exception as ex:
-        raise Exception(f"Failed to parse API response from {path}. Error: {str(ex)}")
+        return_error(f"Error in core-generic-api-call to {args.get('path')}: {get_error(res)}")
 
 
 def validate_scanner_name(scanner_name: str):
