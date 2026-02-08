@@ -1766,7 +1766,7 @@ def get_cases_command(client, args):
     command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
+            outputs={"filtered_count": filter_count, "returned_count": returned_count},
         )
     ]
 
