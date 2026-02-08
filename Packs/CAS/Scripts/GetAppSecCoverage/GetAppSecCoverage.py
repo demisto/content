@@ -34,7 +34,17 @@ VALID_ARGS: set[str] = {
 ASSET_COVERAGE_TABLE = "COVERAGE"
 
 def execute_core_api_call(path: str, method: str, data: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Execute a core-generic-api-call and return the parsed result."""
+    """
+    Execute a core API call and return the parsed result.
+    Args:
+        path (str): API endpoint path.
+        method (str): HTTP method (GET, POST, etc.).
+        data (dict[str, Any] | None): Optional request payload data.
+    Returns:
+        dict[str, Any]: Parsed API response data or reply object.
+    Raises:
+        Exception: If the API call fails or response parsing fails.
+    """
     args = {
         "path": path,
         "method": method,
@@ -65,6 +75,14 @@ def execute_core_api_call(path: str, method: str, data: dict[str, Any] | None = 
 
 
 def build_asset_coverage_filter(args: dict, extra_filters: list[dict] | None = None) -> dict:
+    """
+    Build a filter dictionary for asset coverage queries.
+    Args:
+        args (dict): Dictionary containing filter arguments from user input.
+        extra_filters (list[dict] | None): Optional additional filters to append.
+    Returns:
+        dict: Filter dictionary with AND logic combining all filter fields.
+    """
     # Mapping from script args to API filter fields
     filter_fields = []
 
@@ -101,6 +119,14 @@ def build_asset_coverage_filter(args: dict, extra_filters: list[dict] | None = N
 
 
 def get_asset_coverage_histograms(args: dict, filter_dict: dict) -> dict[str, Any]:
+    """
+    Retrieve histogram data for asset coverage metrics.
+    Args:
+        args (dict): Dictionary containing query arguments including limit.
+        filter_dict (dict): Filter criteria for the histogram query.
+    Returns:
+        dict[str, Any]: Histogram data for scanner coverage columns.
+    """
     return execute_core_api_call(
         path="/api/webapp/get_histograms",
         method="POST",
@@ -116,10 +142,22 @@ def get_asset_coverage_histograms(args: dict, filter_dict: dict) -> dict[str, An
 
 
 def transform_scanner_histograms_outputs(
-    repo_histograms: Dict[str, Any], 
-    non_repo_histograms: Dict[str, Any], 
+    repo_histograms: Dict[str, Any],
+    non_repo_histograms: Dict[str, Any],
     total_repos_count: List[Dict[str, Any]]
 ) -> Tuple[Dict[str, Dict[str, float]], float, float]:
+    """
+    Transform scanner histogram data into coverage metrics.
+    Args:
+        repo_histograms (Dict[str, Any]): Histogram data for repository assets.
+        non_repo_histograms (Dict[str, Any]): Histogram data for non-repository assets.
+        total_repos_count (List[Dict[str, Any]]): Total repository counts from external providers.
+    Returns:
+        Tuple containing:
+            - Dict[str, Dict[str, float]]: Scanner-specific coverage metrics.
+            - float: Overall coverage percentage.
+            - float: Coverage percentage including non-onboarded repositories.
+    """
     
     def get_histogram_count(data: List[Dict[str, Any]], value_key: str) -> int:
         """Helper to safely extract count from histogram list."""
@@ -221,6 +259,13 @@ def transform_scanner_histograms_outputs(
 
 
 def transform_status_coverage_histogram_output(data: dict[str, Any]) -> dict[str, dict[str, int | float]]:
+    """
+    Transform status coverage histogram data into structured output.
+    Args:
+        data (dict[str, Any]): Raw histogram data containing status_coverage information.
+    Returns:
+        dict[str, dict[str, int | float]]: Transformed status coverage metrics with counts and percentages.
+    """
     mapping = {
         "PARTIALLY SCANNED": "partially_scanned",
         "FULLY SCANNED": "fully_scanned",

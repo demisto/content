@@ -14,6 +14,15 @@ VALID_ARGS: set[str] = {
 
 
 def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Execute a core API call and parse the response.
+    Args:
+        args (dict[str, Any]): Dictionary containing API call parameters including path, method, data, and headers.
+    Returns:
+        dict[str, Any]: Parsed API response data.
+    Raises:
+        Exception: If the API call fails or response parsing fails.
+    """
     res = demisto.executeCommand("core-generic-api-call", args)
     path = args.get('path')
     if is_error(res):
@@ -30,6 +39,15 @@ def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def create_code_asset_selection(asset_identifiers: list[str], provider: str, filter_type: str) -> dict[str, Any]:
+    """
+    Create a code asset selection configuration for application creation.
+    Args:
+        asset_identifiers (list[str]): List of asset identifiers (repositories or organizations).
+        provider (str): The code provider (e.g., GitHub, GitLab).
+        filter_type (str): Type of filter to apply (e.g., REPOSITORY, ORGANIZATION).
+    Returns:
+        dict[str, Any]: Asset selection configuration dictionary.
+    """
     # currently only implemented application for Code and repositories/organizations.
     return {
         "selectionType": "filter",
@@ -43,6 +61,21 @@ def create_code_asset_selection(asset_identifiers: list[str], provider: str, fil
 
 
 def create_application(args: dict[str, Any]) -> CommandResults:
+    """
+    Create a new application in CAS with specified configuration.
+    Args:
+        args (dict[str, Any]): Dictionary containing application configuration including:
+                              - application_name (str): Name of the application.
+                              - provider (str): Code provider.
+                              - asset_identifiers (list): List of asset identifiers.
+                              - filter_type (str): Type of filter (default: REPOSITORY).
+                              - business_owner (list): List of business owners.
+                              - business_criticality (str): Business criticality level (default: Medium).
+    Returns:
+        CommandResults: Command results with readable output and application details.
+    Raises:
+        ValueError: If required fields (application_name or provider) are missing.
+    """
     application_name = args.get("application_name")
     provider = args.get("provider")
     asset_identifiers = argToList(args.get("asset_identifiers"))

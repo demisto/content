@@ -9,6 +9,15 @@ VALID_ARGS: set[str] = {
 }
 
 def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Execute a core API call and parse the response.
+    Args:
+        args (dict[str, Any]): Dictionary containing API call parameters including path, method, data, and headers.
+    Returns:
+        dict[str, Any]: Parsed API response data.
+    Raises:
+        Exception: If the API call fails or response parsing fails.
+    """
     res = demisto.executeCommand("core-generic-api-call", args)
     path = args.get('path')
     if is_error(res):
@@ -25,6 +34,15 @@ def execute_core_api_call(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def trigger_repository_scan(args: dict):
+    """
+    Trigger scans for specified repositories.
+    Args:
+        args (dict): Dictionary containing scan configuration including:
+                    - repository_ids (list): List of repository IDs to scan.
+                    - scan_git_history (bool): Whether to scan full git history (default: True).
+    Returns:
+        CommandResults: Command results with readable output and scan IDs.
+    """
     repository_ids = argToList(args.get("repository_ids"))
     scan_git_history = argToBoolean(args.get("scan_git_history", "True"))
     responses = []
