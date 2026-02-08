@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 urllib3.disable_warnings()
 
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
-SOCRADAR_SEVERITIES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
 
@@ -38,13 +38,14 @@ MESSAGES = {
 }
 
 
-def convert_to_demisto_severity(severity: str) -> int:
+def convert_to_demisto_severity(severity: str) -> int | float:
     """Convert SOCRadar severity to Demisto severity level"""
     return {
         "LOW": IncidentSeverity.LOW,
         "MEDIUM": IncidentSeverity.MEDIUM,
         "HIGH": IncidentSeverity.HIGH,
         "CRITICAL": IncidentSeverity.CRITICAL,
+        "INFO": IncidentSeverity.INFO,
     }.get(severity.upper(), IncidentSeverity.UNKNOWN)
 
 
@@ -60,12 +61,14 @@ class Client(BaseClient):
 
     def search_incidents(
         self,
-        status: str | None = None,
+        status: list[str] | None = None,
         severities: list[str] | None = None,
         alarm_main_types: list[str] | None = None,
         alarm_sub_types: list[str] | None = None,
         alarm_type_ids: list[int] | None = None,
         excluded_alarm_type_ids: list[int] | None = None,
+        excluded_alarm_main_types: list[str] | None = None,
+        excluded_alarm_sub_types: list[str] | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
         limit: int = 20,
@@ -75,12 +78,14 @@ class Client(BaseClient):
         Search incidents from SOCRadar API
 
         Args:
-            status: Filter by status (OPEN, CLOSED, ON_HOLD)
+            status: List of statuses to filter (OPEN, CLOSED, ON_HOLD)
             severities: List of severity levels to filter
             alarm_main_types: List of main alarm types to filter
             alarm_sub_types: List of alarm subtypes to filter
             alarm_type_ids: List of alarm type IDs to include
             excluded_alarm_type_ids: List of alarm type IDs to exclude
+            excluded_alarm_sub_types: List of alarm sub types to exclude
+            excluded_alarm_main_types: List of alarm main types to exclude
             start_date: Start date for filtering (YYYY-MM-DD)
             end_date: End date for filtering (YYYY-MM-DD)
             limit: Number of results per page (max 100)
@@ -115,6 +120,10 @@ class Client(BaseClient):
             params["start_date"] = start_date
         if end_date:
             params["end_date"] = end_date
+        if excluded_alarm_main_types:
+            params["excluded_alarm_main_types"] = excluded_alarm_main_types
+        if excluded_alarm_sub_types:
+            params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
 
         url_suffix = f"/company/{self.company_id}/incidents/v4"
 
@@ -156,8 +165,8 @@ class Client(BaseClient):
                     "message": response.get("message"),
                     "response_code": response.get("response_code"),
                     "data": alarms,
-                    "total_pages": total_pages,
-                    "total_records": total_records,
+                    "total_pages": int(total_pages),
+                    "total_records": int(total_records),
                     "current_page": page,
                 }
             else:
@@ -169,12 +178,18 @@ class Client(BaseClient):
             demisto.error(f"[SOCRadar] Traceback: {traceback.format_exc()}")
             raise
 
-    def change_alarm_status(self, alarm_ids: list[int], status_reason: str, comments: str | None = None) -> dict[str, Any]:
+    def change_alarm_status(
+        self, alarm_ids: list[int], status_reason: str, comments: str | None = None, company_id: str | None = None
+    ) -> dict[str, Any]:
         """Change status of alarms"""
         if status_reason not in STATUS_REASON_MAP:
             raise ValueError(f"Invalid status reason: {status_reason}")
 
-        url_suffix = f"/company/{self.company_id}/alarms/status/change"
+        effective_company_id = company_id or self.company_id
+        if not effective_company_id:
+            raise ValueError("company_id must be provided either as a parameter or set on the client")
+
+        url_suffix = f"/company/{effective_company_id}/alarms/status/change"
         json_data = {
             "alarm_ids": [str(aid) for aid in alarm_ids],
             "status": STATUS_REASON_MAP[status_reason],
@@ -193,19 +208,31 @@ class Client(BaseClient):
             raise DemistoException(f"API Error: {response.get('message')}")
         return response
 
-    def add_alarm_comment(self, alarm_id: int, user_email: str, comment: str) -> dict[str, Any]:
+    def add_alarm_comment(self, alarm_id: int, user_email: str, comment: str, company_id: str | None = None) -> dict[str, Any]:
         """Add comment to an alarm"""
-        url_suffix = f"/company/{self.company_id}/alarm/add/comment/v2"
+        effective_company_id = company_id or self.company_id
+        if not effective_company_id:
+            raise ValueError("company_id must be provided either as a parameter or set on the client")
+
+        url_suffix = f"/company/{effective_company_id}/alarm/add/comment/v2"
         json_data = {"alarm_id": alarm_id, "user_email": user_email, "comment": comment}
         return self._http_request(
             method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
         )
 
-    def change_alarm_assignee(
-        self, alarm_id: int, user_ids: list[int] | None = None, user_emails: list[str] | None = None
+    def add_alarm_assignee(
+        self,
+        alarm_id: int,
+        user_ids: list[int] | None = None,
+        user_emails: list[str] | None = None,
+        company_id: str | None = None,
     ) -> dict[str, Any]:
-        """Change assignee of an alarm"""
-        url_suffix = f"/company/{self.company_id}/alarm/{alarm_id}/assignee"
+        """Add assignee(s) to an alarm"""
+        effective_company_id = company_id or self.company_id
+        if not effective_company_id:
+            raise ValueError("company_id must be provided either as a parameter or set on the client")
+
+        url_suffix = f"/company/{effective_company_id}/alarm/{alarm_id}/assignee"
         json_data: dict[str, Any] = {}
 
         if user_ids:
@@ -217,9 +244,13 @@ class Client(BaseClient):
             method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
         )
 
-    def add_remove_tag(self, alarm_id: int, tag: str) -> dict[str, Any]:
+    def add_remove_tag(self, alarm_id: int, tag: str, company_id: str | None = None) -> dict[str, Any]:
         """Add or remove a tag from an alarm"""
-        url_suffix = f"/company/{self.company_id}/alarm/tag"
+        effective_company_id = company_id or self.company_id
+        if not effective_company_id:
+            raise ValueError("company_id must be provided either as a parameter or set on the client")
+
+        url_suffix = f"/company/{effective_company_id}/alarm/tag"
         json_data = {"alarm_id": alarm_id, "tag": tag}
         return self._http_request(
             method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
@@ -289,7 +320,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     We safely extract common fields and include full content in rawJSON.
     """
-
+    company_id = alarm.get("company_id")
     alarm_id = alarm.get("alarm_id")
     alarm_risk_level = alarm.get("alarm_risk_level", "UNKNOWN")
     alarm_asset = alarm.get("alarm_asset", "N/A")
@@ -310,7 +341,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
         tags = []
     tags_str = ",".join(str(tag) for tag in tags)
 
-    incident_name = f"SOCRadar Alarm #{alarm_id}: {alarm_main_type}"
+    incident_name = f"SOCRadar Alarm {alarm_id}: {alarm_main_type}"
     if alarm_sub_type:
         incident_name += f" - {alarm_sub_type}"
     incident_name += f" [{alarm_asset}]"
@@ -331,37 +362,38 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     details_parts = []
 
-    details_parts.append(f"🆔 Alarm ID: {alarm_id}")
-    details_parts.append(f"📊 Risk Level: {alarm_risk_level}")
-    details_parts.append(f"🎯 Asset: {alarm_asset}")
-    details_parts.append(f"📌 Status: {alarm_status}")
+    details_parts.append(f"Alarm ID: {alarm_id}")
+    details_parts.append(f"Risk Level: {alarm_risk_level}")
+    details_parts.append(f"Asset: {alarm_asset}")
+    details_parts.append(f"Status: {alarm_status}")
+    details_parts.append(f"Company ID: {company_id}")
 
     if alarm_main_type:
-        details_parts.append(f"🔍 Type: {alarm_main_type}")
+        details_parts.append(f"Type: {alarm_main_type}")
     if alarm_sub_type:
         details_parts.append(f"   Sub-Type: {alarm_sub_type}")
 
     if entity_info:
-        details_parts.append("\n🔗 Related Entities:")
+        details_parts.append("\n Related Entities:")
         for info in entity_info:
             details_parts.append(f"  • {info}")
 
     if alarm_text:
-        details_parts.append("\n📝 Alarm Description:")
+        details_parts.append("\n Alarm Description:")
         details_parts.append(alarm_text)
 
     if tags:
-        details_parts.append(f"\n🏷️ Tags: {', '.join(str(tag) for tag in tags)}")
+        details_parts.append(f"\n Tags: {', '.join(str(tag) for tag in tags)}")
 
     full_details = "\n".join(details_parts)
 
     incident = {
         "name": incident_name,
         "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
-        "rawJSON": json.dumps(alarm),  # Full alarm data including variable content structure
+        "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
-        "dbotMirrorId": str(alarm_id) if alarm_id else None,  # Use alarm_id as incident mirror ID
+        "dbotMirrorId": str(alarm_id) if alarm_id else None,
         "CustomFields": {
             "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
             "socradarstatus": alarm_status,
@@ -371,7 +403,7 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
         },
     }
 
-    demisto.debug(f"[SOCRadar] Created incident: Alarm #{alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
+    demisto.debug(f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
 
     return incident
 
@@ -382,10 +414,12 @@ def fetch_incidents(
     last_run: dict[str, Any],
     first_fetch_time: str,
     fetch_interval_minutes: int = 1,
-    status: str | None = None,
+    status: list[str] | None = None,
     severities: list[str] | None = None,
     alarm_main_types: list[str] | None = None,
+    excluded_alarm_main_types: list[str] | None = None,
     alarm_sub_types: list[str] | None = None,
+    excluded_alarm_sub_types: list[str] | None = None,
     alarm_type_ids: list[int] | None = None,
     excluded_alarm_type_ids: list[int] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -404,6 +438,8 @@ def fetch_incidents(
         alarm_sub_types: List of alarm subtypes to filter
         alarm_type_ids: List of alarm type IDs to include
         excluded_alarm_type_ids: List of alarm type IDs to exclude
+        excluded_alarm_sub_types: List of alarm sub types to exclude
+        excluded_alarm_main_types: List of alarm main types to exclude
 
     Strategy:
     - First fetch: Use first_fetch_time (e.g., "30 days ago")
@@ -427,6 +463,8 @@ def fetch_incidents(
     demisto.debug(f"[SOCRadar] fetch_interval_minutes: {fetch_interval_minutes}")
     demisto.debug(f"[SOCRadar] alarm_type_ids: {alarm_type_ids}")
     demisto.debug(f"[SOCRadar] excluded_alarm_type_ids: {excluded_alarm_type_ids}")
+    demisto.debug(f"[SOCRadar] excluded_alarm_sub_types: {excluded_alarm_sub_types}")
+    demisto.debug(f"[SOCRadar] excluded_alarm_main_types: {excluded_alarm_main_types}")
 
     last_fetch = last_run.get("last_fetch")
     last_alarm_ids = set(last_run.get("last_alarm_ids", []))
@@ -440,9 +478,10 @@ def fetch_incidents(
         start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
         demisto.debug(f"[SOCRadar] Subsequent fetch: Using fetch_interval of {fetch_interval_minutes} minutes")
     else:
-        start_datetime = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)  # type: ignore[assignment]
-        if not start_datetime:
+        start_datetime_temp = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
+        if not start_datetime_temp:
             raise ValueError("Failed to parse first_fetch_time")
+        start_datetime = start_datetime_temp
         demisto.debug("[SOCRadar] First fetch: Using first_fetch_time")
 
     start_date = start_datetime.strftime("%Y-%m-%d")
@@ -472,6 +511,8 @@ def fetch_incidents(
                 alarm_sub_types=alarm_sub_types,
                 alarm_type_ids=alarm_type_ids,
                 excluded_alarm_type_ids=excluded_alarm_type_ids,
+                excluded_alarm_main_types=excluded_alarm_main_types,
+                excluded_alarm_sub_types=excluded_alarm_sub_types,
                 start_date=start_date,
                 end_date=end_date,
                 limit=per_page,
@@ -541,10 +582,12 @@ def fetch_incidents(
         demisto.debug(f"[SOCRadar] Incidents created: {total_incidents_created} (max: {max_results})")
         demisto.debug(f"[SOCRadar] Alarm Type IDs filter: {alarm_type_ids}")
         demisto.debug(f"[SOCRadar] Excluded Alarm Type IDs: {excluded_alarm_type_ids}")
+        demisto.debug(f"[SOCRadar] Excluded Alarm Sub Types: {excluded_alarm_sub_types}")
+        demisto.debug(f"[SOCRadar] Excluded Alarm Main Types: {excluded_alarm_main_types}")
         demisto.debug("[SOCRadar] ====================================")
 
         combined_list = list(new_alarm_ids) + [aid for aid in last_alarm_ids if aid not in new_alarm_ids]
-        combined_alarm_ids = combined_list[:1000]
+        combined_alarm_ids = combined_list[:10000]
 
         next_run = {"last_fetch": current_time.isoformat() + "Z", "last_alarm_ids": combined_alarm_ids}
 
@@ -560,7 +603,7 @@ def fetch_incidents(
 
         if all_incidents:
             combined_list = list(new_alarm_ids) + [aid for aid in last_alarm_ids if aid not in new_alarm_ids]
-            combined_alarm_ids = combined_list[:1000]
+            combined_alarm_ids = combined_list[:10000]
             return {"last_fetch": current_time.isoformat() + "Z", "last_alarm_ids": combined_alarm_ids}, all_incidents
 
         return {"last_fetch": last_fetch or datetime.now().isoformat() + "Z", "last_alarm_ids": list(last_alarm_ids)[:1000]}, []
@@ -571,12 +614,13 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     alarm_ids_str = args.get("alarm_ids", "")
     status_reason = args.get("status_reason", "")
     comments = args.get("comments")
+    company_id = args.get("company_id")
 
     if not alarm_ids_str or not status_reason:
         raise ValueError("alarm_ids and status_reason are required")
 
     alarm_ids = [int(aid.strip()) for aid in alarm_ids_str.split(",")]
-    response = client.change_alarm_status(alarm_ids, status_reason, comments)
+    response = client.change_alarm_status(alarm_ids, status_reason, comments, company_id)
 
     return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
 
@@ -584,10 +628,14 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
 def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Mark alarm as false positive"""
     alarm_id = args.get("alarm_id")
+    company_id = args.get("company_id")
+
     if not alarm_id:
         raise ValueError("alarm_id is required")
 
-    response = client.change_alarm_status([int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"))
+    response = client.change_alarm_status(
+        [int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id
+    )
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
 
@@ -595,10 +643,12 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
 def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Mark alarm as resolved"""
     alarm_id = args.get("alarm_id")
+    company_id = args.get("company_id")
+
     if not alarm_id:
         raise ValueError("alarm_id is required")
 
-    response = client.change_alarm_status([int(alarm_id)], "RESOLVED", args.get("comments", "Marked as resolved"))
+    response = client.change_alarm_status([int(alarm_id)], "RESOLVED", args.get("comments", "Marked as resolved"), company_id)
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as resolved", raw_response=response)
 
@@ -606,6 +656,8 @@ def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandRes
 def add_comment_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Add comment to alarm"""
     alarm_id = arg_to_number(args.get("alarm_id"), "alarm_id", required=True)
+    company_id = args.get("company_id")
+
     if alarm_id is None:
         raise ValueError("alarm_id is required")
 
@@ -615,14 +667,16 @@ def add_comment_command(client: Client, args: dict[str, str]) -> CommandResults:
     if not user_email or not comment:
         raise ValueError("user_email and comment are required")
 
-    response = client.add_alarm_comment(alarm_id, user_email, comment)
+    response = client.add_alarm_comment(alarm_id, user_email, comment, company_id)
 
     return CommandResults(readable_output=f"Comment added to alarm {alarm_id}", raw_response=response)
 
 
-def change_assignee_command(client: Client, args: dict[str, str]) -> CommandResults:
-    """Change alarm assignee"""
+def add_assignee_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Add assignee(s) to an alarm."""
     alarm_id = arg_to_number(args.get("alarm_id"), "alarm_id", required=True)
+    company_id = args.get("company_id")
+
     if alarm_id is None:
         raise ValueError("alarm_id is required")
 
@@ -631,14 +685,16 @@ def change_assignee_command(client: Client, args: dict[str, str]) -> CommandResu
     if not user_emails:
         raise ValueError("user_emails is required")
 
-    response = client.change_alarm_assignee(alarm_id, user_emails=user_emails)
+    response = client.add_alarm_assignee(alarm_id, user_emails=user_emails, company_id=company_id)
 
-    return CommandResults(readable_output=f"Assignee changed for alarm {alarm_id}", raw_response=response)
+    return CommandResults(readable_output=f"Assignee added for alarm {alarm_id}", raw_response=response)
 
 
 def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Add or remove tag from alarm"""
     alarm_id = arg_to_number(args.get("alarm_id"), "alarm_id", required=True)
+    company_id = args.get("company_id")
+
     if alarm_id is None:
         raise ValueError("alarm_id is required")
 
@@ -647,7 +703,7 @@ def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
     if not tag:
         raise ValueError("tag is required")
 
-    response = client.add_remove_tag(alarm_id, tag)
+    response = client.add_remove_tag(alarm_id, tag, company_id)
 
     return CommandResults(readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}", raw_response=response)
 
@@ -801,9 +857,25 @@ def main() -> None:
             excluded_alarm_type_ids = None
             if excluded_alarm_type_ids_str:
                 try:
-                    excluded_alarm_type_ids = [int(x.strip()) for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
+                    excluded_alarm_type_ids = [x.strip() for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar] Invalid excluded_alarm_type_ids format: {excluded_alarm_type_ids_str}")
+
+            excluded_alarm_sub_types_str = params.get("excluded_alarm_sub_types", "")
+            excluded_alarm_sub_types = None
+            if excluded_alarm_sub_types_str:
+                try:
+                    excluded_alarm_sub_types = [x.strip() for x in excluded_alarm_sub_types_str.split(",") if x.strip()]
+                except ValueError:
+                    demisto.error(f"[SOCRadar] Invalid excluded_alarm_sub_types format: {excluded_alarm_sub_types_str}")
+
+            excluded_alarm_main_types_str = params.get("excluded_alarm_main_types", "")
+            excluded_alarm_main_types = None
+            if excluded_alarm_main_types_str:
+                try:
+                    excluded_alarm_main_types = [x.strip() for x in excluded_alarm_main_types_str.split(",") if x.strip()]
+                except ValueError:
+                    demisto.error(f"[SOCRadar] Invalid excluded_alarm_main_types format: {excluded_alarm_main_types_str}")
 
             demisto.debug(
                 f"[SOCRadar] Fetch config - max_fetch: {max_fetch}, "
@@ -813,6 +885,8 @@ def main() -> None:
             demisto.debug(
                 f"[SOCRadar] Fetch config - alarm_type_ids: {alarm_type_ids}, "
                 f"excluded_alarm_type_ids: {excluded_alarm_type_ids}"
+                f"excluded_alarm_main_types: {excluded_alarm_main_types}"
+                f"excluded_alarm_sub_types: {excluded_alarm_sub_types}"
             )
 
             next_run, incidents = fetch_incidents(
@@ -821,12 +895,14 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_time=params.get("first_fetch", "3 days"),
                 fetch_interval_minutes=fetch_interval_minutes,
-                status=params.get("status"),
+                status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
                 alarm_main_types=argToList(params.get("alarm_main_types")),
                 alarm_sub_types=argToList(params.get("alarm_sub_types")),
                 alarm_type_ids=alarm_type_ids,
                 excluded_alarm_type_ids=excluded_alarm_type_ids,
+                excluded_alarm_sub_types=excluded_alarm_sub_types,
+                excluded_alarm_main_types=excluded_alarm_main_types,
             )
 
             demisto.debug(f"[SOCRadar] Setting last run to: {next_run}")
@@ -843,8 +919,8 @@ def main() -> None:
             return_results(mark_as_resolved_command(client, demisto.args()))
         elif command == "socradar-add-comment":
             return_results(add_comment_command(client, demisto.args()))
-        elif command == "socradar-change-assignee":
-            return_results(change_assignee_command(client, demisto.args()))
+        elif command == "socradar-add-assignee" or command == "socradar-change-assignee":
+            return_results(add_assignee_command(client, demisto.args()))
         elif command == "socradar-add-tag":
             return_results(add_tag_command(client, demisto.args()))
         elif command == "socradar-test-fetch":
