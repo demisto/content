@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 from boto3 import Session
 from xml.sax.saxutils import escape
 import re
-
+import copy
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -279,21 +279,15 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         Dictionary of kwargs ready for create_function API call
     """
     create_function_api_keys = ["FunctionName", "Runtime", "Role", "Handler", "Description", "PackageType"]
-    kwargs: Dict[str, Any] = {}
 
     if code_path := args.get("code"):
         file_path = demisto.getFilePath(code_path).get("path")
         method_code = read_zip_to_bytes(file_path)
-        kwargs.update({"Code": {"ZipFile": method_code}})
+        code = {"ZipFile": method_code}
     elif s3_bucket := args.get("s3_bucket"):
-        kwargs.update({"Code": {"S3Bucket": s3_bucket}})
+        code = {"S3Bucket": s3_bucket}
     else:
         raise DemistoException("code or s3_bucket must be provided.")
-
-    for key in create_function_api_keys:
-        arg_name = camel_case_to_underscore(key)
-        if arg_name in args:
-            kwargs.update({key: args.get(arg_name)})
 
     # Parse environment variables using parse_tag_field and convert to dictionary
     env_vars = None
@@ -301,23 +295,28 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         parsed_env = parse_tag_field(args.get("environment"))
         env_vars = {item["Key"]: item["Value"] for item in parsed_env}
 
-    # Add all optional parameters directly to kwargs
-    kwargs["TracingConfig"] = {"Mode": args.get("tracing_config") or "Active"}
-    kwargs["MemorySize"] = arg_to_number(args.get("memory_size")) or 128
-    kwargs["Timeout"] = arg_to_number(args.get("function_timeout")) or 3
-    kwargs["Publish"] = argToBoolean(args.get("publish")) if args.get("publish") else None
-    kwargs["Environment"] = {"Variables": env_vars} if env_vars else None
-    kwargs["Tags"] = parse_tag_field(args.get("tags")) if args.get("tags") else None
-    kwargs["Layers"] = argToList(args.get("layers")) if args.get("layers") else None
-
-    # Build VpcConfig from individual arguments
-    kwargs["VpcConfig"] = {
-        "SubnetIds": argToList(args.get("subnet_ids")) if args.get("subnet_ids") else None,
-        "SecurityGroupIds": argToList(args.get("security_group_ids")) if args.get("security_group_ids") else None,
-        "Ipv6AllowedForDualStack": argToBoolean(args.get("ipv6_allowed_for_dual_stack"))
-        if args.get("ipv6_allowed_for_dual_stack")
-        else None,
+    kwargs: Dict[str, Any] = {
+        "Code": code,
+        "TracingConfig": {"Mode": args.get("tracing_config") or "Active"},
+        "MemorySize": arg_to_number(args.get("memory_size")) or 128,
+        "Timeout": arg_to_number(args.get("function_timeout")) or 3,
+        "Publish": argToBoolean(args.get("publish")) if args.get("publish") else None,
+        "Environment": {"Variables": env_vars} if env_vars else None,
+        "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
+        "Layers": argToList(args.get("layers")) if args.get("layers") else None,
+        "VpcConfig": {
+            "SubnetIds": argToList(args.get("subnet_ids")) if args.get("subnet_ids") else None,
+            "SecurityGroupIds": argToList(args.get("security_group_ids")) if args.get("security_group_ids") else None,
+            "Ipv6AllowedForDualStack": argToBoolean(args.get("ipv6_allowed_for_dual_stack"))
+            if args.get("ipv6_allowed_for_dual_stack")
+            else None,
+        },
     }
+
+    for key in create_function_api_keys:
+        arg_name = camel_case_to_underscore(key)
+        if arg_name in args:
+            kwargs.update({key: args.get(arg_name)})
 
     return remove_empty_elements(kwargs)
 
@@ -5194,6 +5193,8 @@ class Lambda:
         func_config = response.get("Configuration", {})
 
         response["FunctionArn"] = func_config["FunctionArn"]
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
         readable_data = {
             "FunctionName": func_config.get("FunctionName"),
             "FunctionArn": func_config.get("FunctionArn"),
@@ -5210,7 +5211,7 @@ class Lambda:
         return CommandResults(
             outputs_prefix="AWS.Lambda.Functions",
             outputs_key_field="FunctionArn",
-            outputs=response,
+            outputs=outputs,
             readable_output=human_readable,
             raw_response=response,
         )
@@ -5312,7 +5313,7 @@ class Lambda:
 
         # Build pagination parameters using build_pagination_kwargs
         pagination_kwargs = build_pagination_kwargs(
-            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+            args, minimum_limit=1, max_limit=10000, next_token_name="Marker", limit_name="MaxItems"
         )
         kwargs.update(pagination_kwargs)
 
@@ -5332,30 +5333,20 @@ class Lambda:
             return CommandResults(readable_output=f"No aliases found for function {args.get('function_name')}.")
 
         # Prepare readable output
-        readable_data = []
-        for alias in aliases_list:
-            readable_data.append(
-                {
-                    "AliasArn": alias.get("AliasArn"),
-                    "Name": alias.get("Name"),
-                    "FunctionVersion": alias.get("FunctionVersion"),
-                }
-            )
-
         human_readable = tableToMarkdown(
             "AWS Lambda Aliases",
-            readable_data,
+            aliases_list,
             headerTransform=pascalToSpace,
             removeNull=True,
+            headers=["AliasArn", "Name", "FunctionVersion"],
         )
 
         # Prepare outputs with pagination support
         outputs = {
-            "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)": {
-                "FunctionName": args.get("function_name"),
+            "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)": {
                 "Aliases": aliases_list,
-            },
-            "AWS.Lambda(true)": {"AliasesNextToken": next_marker},
+                "AliasesNextToken": next_marker,
+            }
         }
 
         return CommandResults(
@@ -5495,14 +5486,13 @@ class Lambda:
 
         # Prepare output with region context
         output = {
-            "Versions": versions,
-            "FunctionName": args.get("function_name"),
-            "Region": args.get("region"),
+            "FunctionVersions": versions,
+            "FunctionArn": versions[0].get("FunctionArn") if versions else None,
         }
 
         outputs = {
-            "AWS.Lambda.Functions.FunctionVersions(val.FunctionName && val.FunctionName == obj.FunctionName)": output,
-            "AWS.Lambda(true)": {"FunctionVersionsNextToken": next_marker},
+            "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)": output,
+            "AWS.Lambda.Functions(true)": {"FunctionVersionsNextToken": next_marker},
         }
 
         return CommandResults(
@@ -5592,21 +5582,18 @@ class Lambda:
 
         # Serialize response with datetime encoding
         response = serialize_response_with_datetime_encoding(response)
-        response.pop("ResponseMetadata", None)
-        # Extract outputs based on headers
-        readable_outputs = {key: response.get(key) for key in output_headers}
-        readable_outputs["Region"] = args.get("region")
-
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
         # Prepare readable output
         readable_output = tableToMarkdown(
             name=f"Created Lambda Function: {args.get('function_name')}",
-            t=readable_outputs,
+            t=outputs,
             headerTransform=pascalToSpace,
             removeNull=True,
+            headers=output_headers,
         )
-
         return CommandResults(
-            outputs=response,
+            outputs=outputs,
             raw_response=response,
             outputs_prefix="AWS.Lambda.Functions",
             outputs_key_field="FunctionArn",
@@ -5640,7 +5627,7 @@ class Lambda:
 
         # Build pagination parameters using build_pagination_kwargs
         pagination_kwargs = build_pagination_kwargs(
-            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
+            args, minimum_limit=1, max_limit=10000, next_token_name="Marker", limit_name="MaxItems"
         )
         kwargs.update(pagination_kwargs)
 
@@ -5664,12 +5651,14 @@ class Lambda:
 
         # Prepare outputs
         outputs = {
-            "AWS.Lambda.Layers.Versions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
-            "AWS.Lambda.Layers(true)": {"LayerVersionsNextToken": next_marker},
+            "AWS.Lambda.LayerVersions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)": layer_versions,
+            "AWS.Lambda(true)": {"LayerVersionsNextToken": next_marker},
         }
 
+        headers = ["LayerVersionArn", "Description", "CreatedDate", "Version"]
+
         readable_output = tableToMarkdown(
-            name="Layer Version List", t=layer_versions, headerTransform=pascalToSpace, removeNull=True
+            name="Layer Version List", t=layer_versions, headers=headers, headerTransform=pascalToSpace, removeNull=True
         )
 
         return CommandResults(
@@ -5804,6 +5793,7 @@ class Lambda:
 
         # Serialize response with datetime encoding
         outputs = serialize_response_with_datetime_encoding(response)
+        outputs.pop("ResponseMetadata", None)
 
         # Extract outputs based on headers
         outputs["Region"] = args.get("region")
@@ -5819,7 +5809,7 @@ class Lambda:
         return CommandResults(
             outputs=remove_empty_elements(outputs),
             raw_response=response,
-            outputs_prefix="AWS.Lambda.Layers",
+            outputs_prefix="AWS.Lambda.LayerVersions",
             outputs_key_field="LayerVersionArn",
             readable_output=readable_output,
         )

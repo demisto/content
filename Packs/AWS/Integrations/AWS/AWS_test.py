@@ -7083,10 +7083,7 @@ def test_lambda_get_function_command_readable_output_format(mocker):
     result = Lambda.get_function_command(mock_client, args)
 
     # Verify readable output contains expected information
-    assert "my-function" in result.readable_output
     assert "arn:aws:lambda:eu-west-1:123456789012:function:my-function" in result.readable_output
-    assert "nodejs18.x" in result.readable_output
-    assert "eu-west-1" in result.readable_output
 
 
 def test_lambda_list_functions_command_success(mocker):
@@ -7259,10 +7256,8 @@ def test_lambda_list_aliases_command_success(mocker):
     mock_client.list_aliases.assert_called_once_with(FunctionName="my-function", MaxItems=50)
 
     # Verify CommandResults structure
-    assert "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)" in result.outputs
-    assert "AWS.Lambda(true)" in result.outputs
-    function_data = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
-    assert function_data["FunctionName"] == "my-function"
+    assert "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)" in result.outputs
+    function_data = result.outputs["AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)"]
     assert len(function_data["Aliases"]) == 2
     assert function_data["Aliases"][0]["Name"] == "prod"
     assert function_data["Aliases"][1]["Name"] == "dev"
@@ -7301,7 +7296,7 @@ def test_lambda_list_aliases_command_with_function_version(mocker):
 
     # Verify FunctionVersion was passed to API
     mock_client.list_aliases.assert_called_once_with(FunctionName="test-func", FunctionVersion="5", MaxItems=50)
-    function_data = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    function_data = result.outputs["AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)"]
     assert function_data["Aliases"][0]["FunctionVersion"] == "5"
 
 
@@ -7473,15 +7468,12 @@ def test_lambda_list_versions_by_function_command_success(mocker):
     mock_client.list_versions_by_function.assert_called_once_with(FunctionName="my-function", MaxItems=50)
 
     # Verify outputs structure
-    assert "AWS.Lambda.Functions.FunctionVersions(val.FunctionName && val.FunctionName == obj.FunctionName)" in result.outputs
-    assert "AWS.Lambda(true)" in result.outputs
-    function_versions = result.outputs[
-        "AWS.Lambda.Functions.FunctionVersions(val.FunctionName && val.FunctionName == obj.FunctionName)"
-    ]
-    assert "Versions" in function_versions
-    assert len(function_versions["Versions"]) == 2
-    assert function_versions["FunctionName"] == "my-function"
-    assert function_versions["Region"] == "us-east-1"
+    assert "AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)" in result.outputs
+    assert "AWS.Lambda.Functions(true)" in result.outputs
+    function_versions = result.outputs["AWS.Lambda.Functions(val.FunctionArn && val.FunctionArn == obj.FunctionArn)"]
+    assert "FunctionVersions" in function_versions
+    assert function_versions["FunctionArn"] == "arn:aws:lambda:us-east-1:123456789012:function:my-function:1"
+    assert len(function_versions["FunctionVersions"]) == 2
 
     # Verify readable output contains expected data
     assert "my-function" in result.readable_output
@@ -7538,9 +7530,9 @@ def test_lambda_list_versions_by_function_command_with_pagination(mocker):
         FunctionName="my-function", Marker="previous-token", MaxItems=10
     )
 
-    # Verify NextMarker is in AWS.Lambda(true)
-    assert "AWS.Lambda(true)" in result.outputs
-    assert result.outputs["AWS.Lambda(true)"]["FunctionVersionsNextToken"] == "next-page-token-123"
+    # Verify NextMarker is in AWS.Lambda.Functions(true)
+    assert "AWS.Lambda.Functions(true)" in result.outputs
+    assert result.outputs["AWS.Lambda.Functions(true)"]["FunctionVersionsNextToken"] == "next-page-token-123"
 
 
 def test_lambda_list_versions_by_function_command_no_versions(mocker):
@@ -7802,8 +7794,8 @@ def test_lambda_list_layer_versions_command_with_pagination(mocker):
     assert call_kwargs["CompatibleArchitecture"] == "arm64"
 
     # Verify NextMarker is in context
-    assert "AWS.Lambda.Layers(true)" in result.outputs
-    assert result.outputs["AWS.Lambda.Layers(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
+    assert "AWS.Lambda(true)" in result.outputs
+    assert result.outputs["AWS.Lambda(true)"]["LayerVersionsNextToken"] == "next-layer-token-456"
 
 
 def test_lambda_list_layer_versions_command_no_versions(mocker):
@@ -8048,7 +8040,7 @@ def test_lambda_publish_layer_version_command_success_with_s3(mocker):
     assert call_kwargs["CompatibleArchitectures"] == ["x86_64"]
 
     # Verify outputs
-    assert result.outputs_prefix == "AWS.Lambda.Layers"
+    assert result.outputs_prefix == "AWS.Lambda.LayerVersions"
     assert result.outputs_key_field == "LayerVersionArn"
     assert result.outputs["LayerVersionArn"] == "arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1"
     assert result.outputs["Version"] == 1

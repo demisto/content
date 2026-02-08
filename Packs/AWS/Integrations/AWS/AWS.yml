@@ -7021,34 +7021,33 @@ script:
       required: true
     - description: Specify a function version to only list aliases that invoke that version.
       name: function_version
-    - description: The maximum number of aliases to return (default is 50, maximum is 50).
+    - description: The maximum number of aliases to return (default is 50, maximum is 10000).
       name: limit
       defaultValue: "50"
     - description: Specify the pagination token that was returned by a previous request to retrieve the next page of results.
       name: next_token
     description: Returns a list of aliases created for a Lambda function.
     outputs:
-    - contextPath: AWS.Lambda.Functions.Aliases.AliasArn
+    - contextPath: AWS.Lambda.Aliases.AliasArn
       description: Lambda function ARN that is qualified using the alias name as the suffix.
       type: string
-    - contextPath: AWS.Lambda.Functions.Aliases.Name
+    - contextPath: AWS.Lambda.Aliases.Name
       description: Alias name.
       type: string
-    - contextPath: AWS.Lambda.Functions.Aliases.FunctionVersion
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
       description: Function version to which the alias points.
       type: string
-    - contextPath: AWS.Lambda.Functions.Aliases.Description
+    - contextPath: AWS.Lambda.Aliases.Description
       description: Alias description.
       type: string
-    - contextPath: AWS.Lambda.Functions.Aliases.RoutingConfig.AdditionalVersionWeights
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
       description: The name of the second alias, and the percentage of traffic that is routed to it.
       type: string
-    - contextPath: AWS.Lambda.Functions.Aliases.RevisionId
+    - contextPath: AWS.Lambda.Aliases.RevisionId
       description: Represents the latest updated revision of the function or alias.
       type: string
-    - contextPath: AWS.Lambda.Functions.FunctionName
-      description: The name of the Lambda function.
-      type: string
+    - contextPath: AWS.Lambda.Aliases.AliasesNextToken
+      description: The pagination token for the next set of aliases.
 
   - name: aws-lambda-account-settings-get
     arguments:
@@ -7178,8 +7177,11 @@ script:
       defaultValue: "50"
     description: Returns a list of versions, with the version-specific configuration of each.
     outputs:
-    - contextPath: AWS.Lambda.Functions.FunctionVersionsNextMarker
+    - contextPath: AWS.Lambda.Functions.FunctionVersionsNextToken
       description: The pagination token that's included if more results are available.
+      type: String
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name (ARN).
       type: String
     - contextPath: AWS.Lambda.Functions.FunctionVersions.FunctionArn
       description: The function's Amazon Resource Name (ARN).
@@ -7264,9 +7266,6 @@ script:
       type: String
     - contextPath: AWS.Lambda.Functions.FunctionVersions.PackageType
       description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
-      type: String
-    - contextPath: AWS.Lambda.Functions.FunctionVersions.Region
-      description: The AWS Region.
       type: String
 
   - name: aws-lambda-function-url-config-delete
@@ -7539,28 +7538,28 @@ script:
     - name: compatible_architecture
       description: The compatible instruction set architecture.
     outputs:
-    - contextPath: AWS.Lambda.Layer.VersionsNextToken
+    - contextPath: AWS.Lambda.LayerVersionsNextToken
       description: A pagination token returned when the response doesn't contain all versions.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersionArn
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
       description: The ARN of the layer version.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.Version
+    - contextPath: AWS.Lambda.LayerVersions.Version
       description: The version number.
       type: number
-    - contextPath: AWS.Lambda.Layers.Versions.Description
+    - contextPath: AWS.Lambda.LayerVersions.Description
       description: The description of the version.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.CreatedDate
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
       description: The date that the version was created, in ISO 8601 format.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.CompatibleRuntimes
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
       description: The layer's compatible runtimes.
       type: array
-    - contextPath: AWS.Lambda.Layers.Versions.LicenseInfo
+    - contextPath: AWS.Lambda.LayerVersions.LicenseInfo
       description: The layer's open-source license.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.CompatibleArchitectures
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
       description: A list of compatible instruction set architectures.
       type: array
 
@@ -7732,28 +7731,28 @@ script:
       description: A list of compatible instruction set architectures.
       isArray: true
     outputs:
-    - contextPath: AWS.Lambda.Layers.Versions.LayerVersionArn
+    - contextPath: AWS.Lambda.LayerVersions.LayerVersionArn
       description: The ARN of the layer version.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.LayerArn
+    - contextPath: AWS.Lambda.LayerVersions.LayerArn
       description: The ARN of the layer.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.Description
+    - contextPath: AWS.Lambda.LayerVersions.Description
       description: The description of the version.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.CreatedDate
+    - contextPath: AWS.Lambda.LayerVersions.CreatedDate
       description: The date that the layer version was created, in ISO 8601 format.
       type: string
-    - contextPath: AWS.Lambda.Layers.Versions.Version
+    - contextPath: AWS.Lambda.LayerVersions.Version
       description: The version number.
       type: number
-    - contextPath: AWS.Lambda.Layers.Versions.CompatibleRuntimes
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleRuntimes
       description: The layer's compatible runtimes.
       type: array
-    - contextPath: AWS.Lambda.Layers.Versions.CompatibleArchitectures
+    - contextPath: AWS.Lambda.LayerVersions.CompatibleArchitectures
       description: A list of compatible instruction set architectures.
       type: array
-    - contextPath: AWS.Lambda.Layers.Versions.Region
+    - contextPath: AWS.Lambda.LayerVersions.Region
       description: The AWS Region.
       type: string
 
