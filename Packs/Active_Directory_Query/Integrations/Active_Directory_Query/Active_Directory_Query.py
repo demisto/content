@@ -26,7 +26,7 @@ from ldap3.utils.log import (
     set_library_log_detail_level,
     set_library_log_hide_sensitive_data,
 )
-
+# comment
 """ GLOBAL VARS """
 
 CIPHERS_STRING = (
