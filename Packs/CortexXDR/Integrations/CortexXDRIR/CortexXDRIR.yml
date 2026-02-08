@@ -4473,11 +4473,11 @@ script:
       description: Whether the correlation rule is enabled.
       type: Boolean
   - arguments:
-    - description: 'The correlation rule name. Example: name="This is a CR test 6"'
+    - description: 'The correlation rule name. Example: name="This is a CR test 6".'
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'The correlation rule severity. Example: severity=low'
+      description: 'The correlation rule severity. Example: severity=low.'
       name: severity
       required: true
       predefined:
@@ -4486,18 +4486,18 @@ script:
       - medium
       - high
       - critical
-    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
       name: xql_query
       required: true
     - auto: PREDEFINED
-      description: 'Whether the rule is enabled. Example: is_enabled=true'
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
       name: is_enabled
       required: true
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'The alert category. Example: alert_category=dropper'
+      description: 'The alert category. Example: alert_category=dropper.'
       name: alert_category
       required: true
       predefined:
@@ -4518,17 +4518,17 @@ script:
       - reconnaissance
       - discovery
     - auto: PREDEFINED
-      description: 'The rule execution mode. Example: execution_mode=scheduled'
+      description: 'The rule execution mode. Example: execution_mode=scheduled.'
       name: execution_mode
       required: true
       predefined:
       - scheduled
       - real_time
-    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem"'
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
       name: timezone
       required: true
     - auto: PREDEFINED
-      description: 'The rule mapping strategy. Example: mapping_strategy=auto'
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
       name: mapping_strategy
       required: true
       predefined:
@@ -4542,11 +4542,11 @@ script:
       name: alert_description
     - description: Alert fields (string or dictionary).
       name: alert_fields
-    - description: 'The search window timeframe. Example: search_window="1 hours"'
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
       name: search_window
-    - description: 'The correlation rule schedule. Example: schedule="10 minutes"'
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
       name: schedule
-    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *"'
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
       name: schedule_linux
     - auto: PREDEFINED
       description: Whether suppression is enabled.
@@ -4558,7 +4558,7 @@ script:
       name: suppression_duration
     - description: Suppression fields.
       name: suppression_fields
-    - description: 'The correlation rule dataset. Example: dataset=alerts'
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
       name: dataset
       required: true
     - description: User-defined severity.
@@ -4569,7 +4569,7 @@ script:
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT"'
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
       name: drilldown_query_timeframe
     description: Creates a new correlation rule.
     name: xdr-correlation-rule-create
@@ -4581,11 +4581,11 @@ script:
     - description: Correlation rule ID.
       name: rule_id
       required: true
-    - description: 'The correlation rule name. Example: name="This is a CR test 6"'
+    - description: 'The correlation rule name. Example: name="This is a CR test 6".'
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'The correlation rule severity. Example: severity=low'
+      description: 'The correlation rule severity. Example: severity=low.'
       name: severity
       required: true
       predefined:
@@ -4594,18 +4594,18 @@ script:
       - medium
       - high
       - critical
-    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1"'
+    - description: 'The correlation rule XQL query. Example: xql_query="dataset = xdr_data | limit 1".'
       name: xql_query
       required: true
     - auto: PREDEFINED
-      description: 'Whether the rule is enabled. Example: is_enabled=true'
+      description: 'Whether the rule is enabled. Example: is_enabled=true.'
       name: is_enabled
       required: true
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'The alert category. Example: alert_category=dropper'
+      description: 'The alert category. Example: alert_category=dropper.'
       name: alert_category
       required: true
       predefined:
@@ -4625,17 +4625,17 @@ script:
       - file_privilege_manipulation
       - reconnaissance
       - discovery
-    - description: 'The rule execution mode. Example: execution_mode=scheduled'
+    - description: 'The rule execution mode. Example: execution_mode=scheduled.'
       name: execution_mode
       required: true
       predefined:
       - scheduled
       - real_time
-    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem"'
+    - description: 'The correlation rule timezone. Example: timezone="Asia/Jerusalem".'
       name: timezone
       required: true
     - auto: PREDEFINED
-      description: 'The rule mapping strategy. Example: mapping_strategy=auto'
+      description: 'The rule mapping strategy. Example: mapping_strategy=auto.'
       name: mapping_strategy
       required: true
       predefined:
@@ -4649,11 +4649,11 @@ script:
       name: alert_description
     - description: Alert fields (string or dictionary).
       name: alert_fields
-    - description: 'The search window timeframe. Example: search_window="1 hours"'
+    - description: 'The search window timeframe. Example: search_window="1 hours".'
       name: search_window
-    - description: 'The correlation rule schedule. Example: schedule="10 minutes"'
+    - description: 'The correlation rule schedule. Example: schedule="10 minutes".'
       name: schedule
-    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *"'
+    - description: 'Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *".'
       name: schedule_linux
     - auto: PREDEFINED
       description: Whether suppression is enabled.
@@ -4665,7 +4665,7 @@ script:
       name: suppression_duration
     - description: Suppression fields.
       name: suppression_fields
-    - description: 'The correlation rule dataset. Example: dataset=alerts'
+    - description: 'The correlation rule dataset. Example: dataset=alerts.'
       name: dataset
       required: true
     - description: User-defined severity.
@@ -4676,12 +4676,12 @@ script:
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
-    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT"'
+    - description: 'The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT".'
       name: drilldown_query_timeframe
     description: Updates an existing correlation rule.
     name: xdr-correlation-rule-update
     outputs:
-    - contextPath: PaloAltoNetworksXDR.CorrelationRule.id
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
       description: Correlation rule ID.
       type: String
   - arguments:
@@ -4691,7 +4691,7 @@ script:
       required: true
     description: Deletes correlation rules.
     name: xdr-correlation-rule-delete
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
   script: ''
