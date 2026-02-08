@@ -21,6 +21,11 @@ INVISIBLE_RANGES = [
 ]
 
 
+def log(msg: str) -> None:
+    """Write message to stderr (allowed by ruff)."""
+    sys.stderr.write(msg + "\n")
+
+
 def check_file(path: str) -> list[tuple[int, int, str]]:
     """Return list of (line, col, char_desc) for invisible chars found."""
     issues = []
@@ -39,19 +44,19 @@ def check_file(path: str) -> list[tuple[int, int, str]]:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("No files provided")
+        log("No files provided")
         return 0
 
     failed = False
     for path in sys.argv[1:]:
-        print(f"Checking: {path}")
+        log(f"Checking: {path}")
         issues = check_file(path)
         if issues:
             failed = True
             for line, col, desc in issues:
-                print(f"  ::error file={path},line={line},col={col}::{desc}")
+                log(f"  ::error file={path},line={line},col={col}::{desc}")
         else:
-            print(f"  ✓ Clean")
+            log("  ✓ Clean")
 
     return 1 if failed else 0
 
