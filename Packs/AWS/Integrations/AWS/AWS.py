@@ -5325,7 +5325,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
-    "s3:ListObjects",
+    "s3:ListBuckets",
     "s3:DeleteBucket",
     "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
