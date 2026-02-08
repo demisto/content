@@ -3222,7 +3222,7 @@ class EC2:
         """
         kwargs: Dict[str, Any] = {
             "LaunchTemplateIds": argToList(args.get("launch_template_ids")),
-            "LaunchTemplateNames": argToList(args.get("launch_template_names"))
+            "LaunchTemplateNames": argToList(args.get("launch_template_names")),
         }
 
         # Add filters if provided
@@ -3258,8 +3258,14 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS EC2 LaunchTemplates",
                 launch_templates,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber",
-                         "CreateTime"],
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                    "CreateTime",
+                ],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -3297,24 +3303,28 @@ class EC2:
             "SecurityGroups": argToList(args.get("security_groups")),
             "Monitoring": remove_empty_elements({"Enabled": arg_to_bool_or_none(args.get("monitoring"))}),
             "IamInstanceProfile": remove_empty_elements(
-                {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")}),
+                {"Arn": args.get("iam_instance_profile_arn"), "Name": args.get("iam_instance_profile_name")}
+            ),
             "Placement": remove_empty_elements(
-                {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")}),
+                {"AvailabilityZone": args.get("availability_zone"), "Tenancy": args.get("placement_tenancy")}
+            ),
             "RamDiskId": args.get("ram_disk_id"),
         }
 
         # Block device mappings
         block_device_mappings = []
         if device_name := args.get("device_name"):
-            ebs_config = remove_empty_elements({
-                "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
-                "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
-                "Iops": arg_to_number(args.get("ebs_iops")),
-                "KmsKeyId": args.get("ebs_kms_key_id"),
-                "SnapshotId": args.get("ebs_snapshot_id"),
-                "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
-                "VolumeType": args.get("ebs_volume_type"),
-            })
+            ebs_config = remove_empty_elements(
+                {
+                    "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+                    "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                    "Iops": arg_to_number(args.get("ebs_iops")),
+                    "KmsKeyId": args.get("ebs_kms_key_id"),
+                    "SnapshotId": args.get("ebs_snapshot_id"),
+                    "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                    "VolumeType": args.get("ebs_volume_type"),
+                }
+            )
             block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config if ebs_config else None})
 
         if block_device_mappings:
@@ -3322,15 +3332,17 @@ class EC2:
 
         # Network interfaces
         network_interfaces = []
-        network_interface_config = remove_empty_elements({
-            "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
-            "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
-            "Description": args.get("network_interfaces_description"),
-            "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
-            "Groups": argToList(args.get("network_interface_groups")),
-            "SubnetId": args.get("subnet_id"),
-            "PrivateIpAddress": args.get("private_ip_address"),
-        })
+        network_interface_config = remove_empty_elements(
+            {
+                "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("network_interfaces_associate_public_ip_address")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("network_interfaces_delete_on_termination")),
+                "Description": args.get("network_interfaces_description"),
+                "DeviceIndex": arg_to_number(args.get("network_interfaces_device_index")),
+                "Groups": argToList(args.get("network_interface_groups")),
+                "SubnetId": args.get("subnet_id"),
+                "PrivateIpAddress": args.get("private_ip_address"),
+            }
+        )
         if network_interface_config:
             network_interfaces.append(network_interface_config)
 
@@ -3343,11 +3355,13 @@ class EC2:
 
         # Instance market options (Spot)
         if market_type := args.get("market_type"):
-            spot_options = remove_empty_elements({
-                "SpotInstanceType": args.get("spot_instance_type"),
-                "MaxPrice": args.get("spot_max_price"),
-                "InstanceInterruptionBehavior": args.get("spot_instance_interruption_behavior"),
-            })
+            spot_options = remove_empty_elements(
+                {
+                    "SpotInstanceType": args.get("spot_instance_type"),
+                    "MaxPrice": args.get("spot_max_price"),
+                    "InstanceInterruptionBehavior": args.get("spot_instance_interruption_behavior"),
+                }
+            )
             launch_template_data["InstanceMarketOptions"] = {
                 "MarketType": market_type,
                 "SpotOptions": spot_options if spot_options else None,
@@ -3374,8 +3388,14 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS LaunchTemplates",
                 launch_template,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber",
-                         "LatestVersionNumber"],
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreateTime",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                ],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -3398,7 +3418,7 @@ class EC2:
         """
         kwargs: Dict[str, Any] = {
             "LaunchTemplateId": args.get("launch_template_id"),
-            "LaunchTemplateName": args.get("launch_template_name")
+            "LaunchTemplateName": args.get("launch_template_name"),
         }
 
         # Either launch_template_id or launch_template_name must be provided
@@ -3422,8 +3442,14 @@ class EC2:
             readable_output=tableToMarkdown(
                 "AWS Deleted Launch Templates",
                 deleted_template,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber",
-                         "LatestVersionNumber"],
+                headers=[
+                    "LaunchTemplateId",
+                    "LaunchTemplateName",
+                    "CreateTime",
+                    "CreatedBy",
+                    "DefaultVersionNumber",
+                    "LatestVersionNumber",
+                ],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -3434,43 +3460,40 @@ class EC2:
 def parse_tag_specifications(tags_string: str) -> list:
     """
     Parse tag specifications string into AWS TagSpecifications format.
-    
+
     Format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2
-    
+
     Args:
         tags_string: The tag specifications string
-        
+
     Returns:
         A list of TagSpecifications dictionaries
     """
     if not tags_string:
         return []
-    
+
     tag_specs = []
     # Split by # to separate different resource types
     resource_type_specs = tags_string.split("#")
-    
+
     for spec in resource_type_specs:
         if ":" not in spec:
             continue
-            
+
         # Split resource type from tags
         parts = spec.split(":", 1)
         if len(parts) != 2:
             continue
-            
+
         resource_type = parts[0].strip()
         tags_part = parts[1].strip()
-        
+
         # Parse tags using existing parse_tag_field function
         tags = parse_tag_field(tags_part)
-        
+
         if tags:
-            tag_specs.append({
-                "ResourceType": resource_type,
-                "Tags": tags
-            })
-    
+            tag_specs.append({"ResourceType": resource_type, "Tags": tags})
+
     return tag_specs
 
 

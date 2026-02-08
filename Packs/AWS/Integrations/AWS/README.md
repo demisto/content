@@ -208,7 +208,7 @@ There is no context output for this command.
 ### aws-rds-db-instance-modify
 
 ***
-Modifies an Amazon RDS DB instance. Allows to change various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
+Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
 
 #### Base Command
 
@@ -221,14 +221,14 @@ Modifies an Amazon RDS DB instance. Allows to change various settings of an exis
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | db_instance_identifier | The identifier of DB instance to modify. This value is stored as a lowercase string. | Required |
-| publicly_accessible | Specifies whether the DB instance is publicly accessible. Possible values are: true, false. | Optional |
-| apply_immediately | Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
-| copy_tags_to_snapshot | Specifies whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
+| publicly_accessible | Weather the DB instance is publicly accessible. Possible values are: true, false. | Optional |
+| apply_immediately | Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
+| copy_tags_to_snapshot | Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
 | backup_retention_period | The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups. | Optional |
-| enable_iam_database_authentication | Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
-| deletion_protection | Specifies whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
-| auto_minor_version_upgrade | Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error. Possible values are: true, false. | Optional |
-| multi_az | Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances. Possible values are: true, false. | Optional |
+| enable_iam_database_authentication | Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
+| deletion_protection | Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
+| auto_minor_version_upgrade | Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error. Possible values are: true, false. | Optional |
+| multi_az | Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -2472,40 +2472,6 @@ Adds the specified inbound (egress) rules to a security group.
 
 There is no context output for this command.
 
-### aws-ec2-address-allocate
-
-***
-Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
-
-#### Base Command
-
-`aws-ec2-address-allocate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
-| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
-| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
-| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
-| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
-| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
-| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
-| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
-| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
-| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
-
 ### aws-ec2-addresses-describe
 
 ***
@@ -2565,6 +2531,174 @@ Disassociates an Elastic IP address from the instance or network interface it's 
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-launch-template-delete
+
+***
+Deletes a launch template. Deleting a launch template deletes all of its versions.
+
+#### Base Command
+
+`aws-ec2-launch-template-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| launch_template_id | The ID of the launch template. You must specify either the launch template ID or launch template name. | Optional |
+| launch_template_name | The name of the launch template. You must specify either the launch template ID or launch template name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId | string | The ID of the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName | string | The name of the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.CreateTime | date | The time launch template was created. |
+| AWS.EC2.DeletedLaunchTemplates.CreatedBy | string | The principal that created the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber | number | The version number of the default version of the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber | number | The version number of the latest version of the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.Operator | Object | The entity that manages the launch template. |
+| AWS.EC2.DeletedLaunchTemplates.Tags.Key | string | The key of the tag. |
+| AWS.EC2.DeletedLaunchTemplates.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-launch-template-create
+
+***
+Creates a launch template. A launch template contains the parameters to launch an instance.
+
+#### Base Command
+
+`aws-ec2-launch-template-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| launch_template_name | A name for the launch template. | Required |
+| version_description | A description for the first version of the launch template. | Optional |
+| kernel_id | The ID of the kernel. | Optional |
+| ebs_optimized | Indicates whether the instance is optimized for Amazon EBS I/O. Possible values are: true, false. | Optional |
+| iam_instance_profile_arn | The Amazon Resource Name (ARN) of the instance profile. | Optional |
+| iam_instance_profile_name | The name of the instance profile. | Optional |
+| image_id | The ID of the AMI. | Optional |
+| instance_type | The instance type. | Optional |
+| key_name | The name of the key pair. | Optional |
+| monitoring | Specify true to enable detailed monitoring. Otherwise, basic monitoring is enabled. Possible values are: true, false. | Optional |
+| disable_api_termination | If set to true, you can't terminate the instance using the Amazon EC2 console, CLI, or API. Possible values are: true, false. | Optional |
+| instance_initiated_shutdown_behavior | Indicates whether an instance stops or terminates when you initiate shutdown from the instance. Possible values are: stop, terminate. | Optional |
+| user_data | The Base64-encoded user data to make available to the instance. | Optional |
+| security_group_ids | A comma-separated list of security group IDs. | Optional |
+| security_groups | A comma-separated list of security group names. | Optional |
+| device_name | The device name (for example, /dev/sdh or xvdh). | Optional |
+| ebs_encrypted | Indicates whether the EBS volume is encrypted. Possible values are: true, false. | Optional |
+| ebs_delete_on_termination | Indicates whether the EBS volume is deleted on instance termination. Possible values are: true, false. | Optional |
+| ebs_iops | The number of I/O operations per second (IOPS) that the volume supports. | Optional |
+| ebs_kms_key_id | The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption. | Optional |
+| ebs_snapshot_id | The ID of the snapshot. | Optional |
+| ebs_volume_size | The size of the volume, in GiB. | Optional |
+| ebs_volume_type | The volume type. Possible values are: standard, io1, io2, gp2, gp3, sc1, st1. | Optional |
+| network_interfaces_associate_public_ip_address | Associates a public IPv4 address with eth0 for a new network interface. Possible values are: true, false. | Optional |
+| network_interfaces_delete_on_termination | Indicates whether the network interface is deleted when the instance is terminated. Possible values are: true, false. | Optional |
+| network_interfaces_description | A description for the network interface. | Optional |
+| network_interfaces_device_index | The device index for the network interface attachment. | Optional |
+| network_interface_groups | A comma-separated list of security group IDs. | Optional |
+| subnet_id | The ID of the subnet for the network interface. | Optional |
+| private_ip_address | The primary private IPv4 address of the network interface. | Optional |
+| availability_zone | The Availability Zone for the instance. | Optional |
+| placement_tenancy | The tenancy of the instance. Possible values are: default, dedicated, host. | Optional |
+| ram_disk_id | The ID of the RAM disk. | Optional |
+| tags | The tags to apply to the resource. Format ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2. | Optional |
+| market_type | The market type. Possible values are: spot. | Optional |
+| spot_instance_type | The Spot Instance request type. Possible values are: one-time, persistent. | Optional |
+| spot_max_price | The maximum hourly price you're willing to pay for the Spot Instances. | Optional |
+| spot_instance_interruption_behavior | The behavior when a Spot Instance is interrupted. Possible values are: hibernate, stop, terminate. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.LaunchTemplates.LaunchTemplateId | string | The ID of the launch template. |
+| AWS.EC2.LaunchTemplates.LaunchTemplateName | string | The name of the launch template. |
+| AWS.EC2.LaunchTemplates.CreateTime | date | The time launch template was created. |
+| AWS.EC2.LaunchTemplates.CreatedBy | string | The principal that created the launch template. |
+| AWS.EC2.LaunchTemplates.DefaultVersionNumber | number | The version number of the default version of the launch template. |
+| AWS.EC2.LaunchTemplates.LatestVersionNumber | number | The version number of the latest version of the launch template. |
+| AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. |
+| AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-launch-templates-describe
+
+***
+Describes one or more launch templates.
+
+#### Base Command
+
+`aws-ec2-launch-templates-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| launch_template_ids | A comma-separated list of launch template IDs. | Optional |
+| launch_template_names | A comma-separated list of launch template names. | Optional |
+| limit | The maximum number of results to return in a single call. | Optional |
+| next_token | The token for the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.LaunchTemplatesNextToken | String | Token to use for pagination in subsequent requests. |
+| AWS.EC2.LaunchTemplates.LaunchTemplateId | string | The ID of the launch template. |
+| AWS.EC2.LaunchTemplates.LaunchTemplateName | string | The name of the launch template. |
+| AWS.EC2.LaunchTemplates.CreateTime | date | The time launch template was created. |
+| AWS.EC2.LaunchTemplates.CreatedBy | string | The principal that created the launch template. |
+| AWS.EC2.LaunchTemplates.DefaultVersionNumber | number | The version number of the default version of the launch template. |
+| AWS.EC2.LaunchTemplates.LatestVersionNumber | number | The version number of the latest version of the launch template. |
+| AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. |
+| AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-address-allocate
+
+***
+Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+
+#### Base Command
+
+`aws-ec2-address-allocate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
+| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
+| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
+| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
+| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
+| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
+| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
+| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
+| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
+| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
 
 ### aws-ec2-address-release
 
