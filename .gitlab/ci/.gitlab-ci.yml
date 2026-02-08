@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "fix-last-upload-commit"
+  CURRENT_BRANCH_NAME: "fix-last-upload-commit-no-files"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "fix-last-upload-commit"
+    ref: "fix-last-upload-commit-no-files"
     project: "${CI_PROJECT_NAMESPACE}/infra"
