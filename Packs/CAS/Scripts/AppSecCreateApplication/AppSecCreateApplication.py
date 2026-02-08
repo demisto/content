@@ -74,11 +74,8 @@ def create_application(args: dict[str, Any]) -> CommandResults:
             "Content-Type": "application/json",
         })
     })
-    demisto.info(f'AppSecCreateApplication - response {response=}')
     application_id = response.get('applicationId')
-    demisto.info(f'AppSecCreateApplication - application_id {application_id=}')
     readable_output = f"Successfully created application '{application_id}' for {filter_type.lower()}s: {', '.join(asset_identifiers)}"
-    demisto.info(f"Successfully created application '{application_id}' for {filter_type.lower()}s: {', '.join(asset_identifiers)}")
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Cas.Application",

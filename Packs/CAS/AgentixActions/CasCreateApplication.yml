@@ -23,13 +23,14 @@ args:
   - name: application_name
     underlyingargname: application_name
     description: >
-      application name.
+      The name of the application to create.
     type: string
     required: true
   - name: asset_identifiers
     underlyingargname: asset_identifiers
     description: >
-      A comma-separated list of asset identifiers (Repository IDs or Organization URLs) to include in the application.
+      A comma-separated list of asset identifiers to include in the application.
+      Use Repository IDs when filter_type is REPOSITORY, or Organization URLs when filter_type is ORGANIZATION.
     type: string
     required: true
   - name: filter_type
@@ -44,13 +45,14 @@ args:
     underlyingargname: provider
     type: string
     description: >
+      The source code repository provider.
       Options: AWS_CODE_COMMIT, GITHUB, GITLAB, BITBUCKET, AZURE_REPOS.
     required: true
   - name: business_criticality
     underlyingargname: business_criticality
     type: string
     description: >
-      business criticality for the created application.
+      The business criticality level for the created application.
       Options: Critical, High, Medium, Low.
     required: false
     defaultvalue: "Medium"
@@ -58,7 +60,7 @@ args:
     underlyingargname: business_owner
     type: string
     description: >
-      A comma-separated list of application business owners.
+      A comma-separated list of business owners for the application (e.g., email addresses or usernames).
     required: false
 outputs:
   - underlyingoutputcontextpath: Cas.Application.applicationId
