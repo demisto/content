@@ -208,7 +208,7 @@ There is no context output for this command.
 ### aws-rds-db-instance-modify
 
 ***
-Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
+Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance.
 
 #### Base Command
 
@@ -221,14 +221,15 @@ Modifies an Amazon RDS DB instance. Allows changing various settings of an exist
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | db_instance_identifier | The identifier of DB instance to modify. This value is stored as a lowercase string. | Required |
-| publicly_accessible | Weather the DB instance is publicly accessible. Possible values are: true, false. | Optional |
-| apply_immediately | Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
-| copy_tags_to_snapshot | Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
+| publicly_accessible | Wether the DB instance is publicly accessible. Possible values are: true, false. | Optional |
+| apply_immediately | Wether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot. Possible values are: true, false. | Optional |
+| copy_tags_to_snapshot | Wether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied. Possible values are: true, false. | Optional |
 | backup_retention_period | The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups. | Optional |
-| enable_iam_database_authentication | Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
-| deletion_protection | Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
-| auto_minor_version_upgrade | Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error. Possible values are: true, false. | Optional |
-| multi_az | Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances. Possible values are: true, false. | Optional |
+| enable_iam_database_authentication | Wether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled. Possible values are: true, false. | Optional |
+| deletion_protection | Wether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance. Possible values are: true, false. | Optional |
+| auto_minor_version_upgrade | Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. Behavior: An outage occurs only if automatic upgrades are enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version; otherwise, changes are applied as soon as possible without causing an outage. Note: Do not enable for RDS Custom DB instances (operation will fail). Possible values are: true, false. | Optional |
+| multi_az | Behavior: Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage and is applied during the next maintenance window unless ApplyImmediately is enabled. Not applicable to RDS Custom DB instances. Possible values are: true, false. | Optional |
+| vpc_security_group_ids | A list of Amazon EC2 VPC security groups to associate with this DB instance. This setting doesn’t apply to the following DB instances: Amazon Aurora, RDS Custom. | Optional |
 
 #### Context Output
 
@@ -2472,6 +2473,82 @@ Adds the specified inbound (egress) rules to a security group.
 
 There is no context output for this command.
 
+### aws-ec2-iam-instance-profile-associations-describe
+
+***
+Describes IAM instance profile associations.
+
+#### Base Command
+
+`aws-ec2-iam-instance-profile-associations-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| association_ids | A comma-separated list of IAM instance profile association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| limit | The maximum number of results to return. Minimum value of 5. Maximum value of 1000. Default is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IamInstanceProfileAssociations.AssociationId | String | The ID of the association. |
+| AWS.EC2.IamInstanceProfileAssociations.InstanceId | String | The ID of the instance. |
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn | String | The Amazon Resource Name \(ARN\) of the instance profile. |
+| AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id | String | The ID of the instance profile. |
+| AWS.EC2.IamInstanceProfileAssociations.State | String | The state of the association. |
+| AWS.EC2.IamInstanceProfileAssociationsNextToken | String | The token for the next set of results. |
+
+### aws-ec2-instances-reboot
+
+***
+Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+
+#### Base Command
+
+`aws-ec2-instances-reboot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to reboot. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-monitor
+
+***
+Enables detailed monitoring on one or more running Amazon EC2 instances.
+
+#### Base Command
+
+`aws-ec2-instances-monitor`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to enable monitoring for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). |
+
 ### aws-ec2-addresses-describe
 
 ***
@@ -2511,6 +2588,65 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
 | AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address associated. |
 
+### aws-ec2-address-allocate
+
+***
+Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+
+#### Base Command
+
+`aws-ec2-address-allocate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
+| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
+| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
+| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
+| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
+| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
+| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
+| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
+| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
+| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
+| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
+
+### aws-ec2-instance-status-ok-waiter
+
+***
+Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+
+#### Base Command
+
+`aws-ec2-instance-status-ok-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds, to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+| include_all_instances | When true, includes the health status for all instances. When false, includes the health status for running instances only. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### aws-ec2-address-disassociate
 
 ***
@@ -2527,6 +2663,459 @@ Disassociates an Elastic IP address from the instance or network interface it's 
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | association_id | The association ID. Required for VPC. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-unmonitor
+
+***
+Disables detailed monitoring for one or more running Amazon EC2 instances.
+
+#### Base Command
+
+`aws-ec2-instances-unmonitor`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to disable monitoring for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.Monitoring.State | String | The monitoring state \(disabled | disabling | enabled | pending\). |
+
+### aws-ec2-reserved-instances-describe
+
+***
+Describes one or more of the Reserved Instances that you purchased.
+
+#### Base Command
+
+`aws-ec2-reserved-instances-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| reserved_instances_ids | A comma-separated list of Reserved Instance IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| offering_class | The offering class of the Reserved Instance. Possible values are: standard, convertible. | Optional |
+| offering_type | The Reserved Instance offering type. Possible values are: Heavy Utilization, Medium Utilization, Light Utilization, No Upfront, Partial Upfront, All Upfront. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ReservedInstances.ReservedInstancesId | String | The ID of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceType | String | The instance type on which the Reserved Instance can be used. |
+| AWS.EC2.ReservedInstances.AvailabilityZone | String | The Availability Zone in which the Reserved Instance can be used. |
+| AWS.EC2.ReservedInstances.Start | Date | The date and time the Reserved Instance started. |
+| AWS.EC2.ReservedInstances.End | Date | The time when the Reserved Instance expires. |
+| AWS.EC2.ReservedInstances.Duration | Number | The duration of the Reserved Instance, in seconds. |
+| AWS.EC2.ReservedInstances.UsagePrice | Number | The usage price of the Reserved Instance, per hour. |
+| AWS.EC2.ReservedInstances.FixedPrice | Number | The purchase price of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceCount | Number | The number of reservations purchased. |
+| AWS.EC2.ReservedInstances.ProductDescription | String | The Reserved Instance product platform description. |
+| AWS.EC2.ReservedInstances.State | String | The state of the Reserved Instance purchase. |
+| AWS.EC2.ReservedInstances.CurrencyCode | String | The currency of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.InstanceTenancy | String | The tenancy of the instance. |
+| AWS.EC2.ReservedInstances.OfferingClass | String | The offering class of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.OfferingType | String | The Reserved Instance offering type. |
+| AWS.EC2.ReservedInstances.RecurringCharges.Amount | Number | The amount of the recurring charge. |
+| AWS.EC2.ReservedInstances.RecurringCharges.Frequency | String | The frequency of the recurring charge. |
+| AWS.EC2.ReservedInstances.Scope | String | The scope of the Reserved Instance. |
+| AWS.EC2.ReservedInstances.Tags.Key | String | The key of the tag. |
+| AWS.EC2.ReservedInstances.Tags.Value | String | The value of the tag. |
+
+### aws-ec2-password-data-get
+
+***
+Retrieves the encrypted administrator password for a running Windows instance.
+
+#### Base Command
+
+`aws-ec2-password-data-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_id | The ID of the Windows instance. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.PasswordData.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.PasswordData.PasswordData | String | The password of the instance. Returns an empty string if the password is not available. |
+| AWS.EC2.Instances.PasswordData.Timestamp | Date | The time the data was last updated. |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+
+### aws-ec2-instance-running-waiter
+
+***
+Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`).
+
+#### Base Command
+
+`aws-ec2-instance-running-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-address-release
+
+***
+Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+
+#### Base Command
+
+`aws-ec2-address-release`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| allocation_id | The allocation ID. Required for VPC. | Optional |
+| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-stopped-waiter
+
+***
+Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+
+#### Base Command
+
+`aws-ec2-instance-stopped-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instance-terminated-waiter
+
+***
+Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+
+#### Base Command
+
+`aws-ec2-instance-terminated-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to wait for. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default is 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-address-associate
+
+***
+Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+
+#### Base Command
+
+`aws-ec2-address-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| allocation_id | The allocation ID. | Required |
+| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
+| network_interface_id | The ID of the network interface. | Optional |
+| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
+| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
+| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |
+
+### aws-s3-bucket-delete
+
+***
+Delete AWS S3 bucket, the bucket must be empty from files.
+
+#### Base Command
+
+`aws-s3-bucket-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of S3 bucket. | Required | 
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### aws-s3-bucket-objects-list
+
+***
+Returns some or all (up to 1,000) of the objects in a bucket.
+
+#### Base Command
+
+`aws-s3-bucket-objects-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of S3 bucket. | Required | 
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| delimiter | A delimiter is a character (like a slash /) used to bundle files into folders. It turns a long list of file names into an organized, clickable hierarchy. | Optional | 
+| prefix | Restricts the response to include only those keys that begin with the specified string. This is commonly used to filter results to a specific folder or category. | Optional | 
+| next_token | The next_token is the marker where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. Marker can be any key in the bucket. | Optional | 
+| limit | Specifies the maximum number of keys to return in the response, ranging from 1 to 1,000. Default: 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. | 
+| AWS.S3.Buckets.Objects.Key | String | The name of S3 object. | 
+| AWS.S3.Buckets.Objects.Size | Number | Object size in bytes. | 
+| AWS.S3.Buckets.Objects.LastModified | String | Last date object was modified. | 
+| AWS.S3.Buckets.Objects.StorageClass | String | The storage class of the object. | 
+| AWS.S3.Buckets.Objects.ChecksumType | Array | The checksum algorithm used to calculate the object checksum. | 
+| AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. | 
+| AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. | 
+### aws-ec2-images-describe
+
+***
+Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+
+#### Base Command
+
+`aws-ec2-images-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
+| image_ids | A comma-separated list of image IDs to describe. | Optional | 
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by a comma. | Optional | 
+| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional | 
+| include_deprecated | Specifies whether to include deprecated AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional | 
+| include_disabled | Specifies whether to include disabled AMIs. If not specified, the default behavior is determined by the AWS API. Possible values are: true, false. | Optional | 
+| limit | Maximum number of AMIs to be returned in response. | Optional | 
+| next_token | The token for the next set of AMIs to return. Use value from AWS.EC2.ImagesNextPageToken if available; otherwise, use the token from the output file header. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Images.Architecture | string | The architecture of the image. | 
+| AWS.EC2.Images.CreationDate | date | The date and time the image was created. | 
+| AWS.EC2.Images.ImageId | string | The ID of the AMI. | 
+| AWS.EC2.Images.ImageLocation | string | The location of the AMI. | 
+| AWS.EC2.Images.ImageType | string | The type of image. | 
+| AWS.EC2.Images.Public | boolean | Indicates whether the image has public launch permissions. | 
+| AWS.EC2.Images.KernelId | string | The kernel associated with the image, if any. | 
+| AWS.EC2.Images.OwnerId | string | The AWS account ID of the image owner. | 
+| AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. | 
+| AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. | 
+| AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. | 
+| AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. | 
+| AWS.EC2.Images.State | string | The current state of the AMI. | 
+| AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name. | 
+| AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted upon instance termination. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops | number | The number of input/output operations per second \(IOPS\). | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId | string | Identifier for a user-managed CMK under which the EBS volume is encrypted. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId | string | The ID of the snapshot. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize | number | The size of the EBS volume, in GiB. | 
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType | string | The volume type. | 
+| AWS.EC2.Images.BlockDeviceMappings.NoDevice | string | Suppresses the specified device included in the block device mapping. | 
+| AWS.EC2.Images.Description | string | The description of the AMI. | 
+| AWS.EC2.Images.EnaSupport | boolean | Specifies whether enhanced networking with ENA is enabled. | 
+| AWS.EC2.Images.Hypervisor | string | The hypervisor type of the image. | 
+| AWS.EC2.Images.ImageOwnerAlias | string | The AWS account alias or AWS account ID of the AMI owner. | 
+| AWS.EC2.Images.Name | string | The name of the AMI. | 
+| AWS.EC2.Images.RootDeviceName | string | The device name of the root device volume. | 
+| AWS.EC2.Images.RootDeviceType | string | The type of root device used by the AMI. | 
+| AWS.EC2.Images.SriovNetSupport | string | Indicates whether enhanced networking with the Intel 82599 VF interface is enabled. | 
+| AWS.EC2.Images.StateReason.Code | string | The reason code for the state change. | 
+| AWS.EC2.Images.StateReason.Message | string | The message for the state change. | 
+| AWS.EC2.Images.Tags.Key | string | The key of the tag. | 
+| AWS.EC2.Images.Tags.Value | string | The value of the tag. | 
+| AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. | 
+| AWS.EC2.Images.BootMode | string | The boot mode of the image. | 
+| AWS.EC2.Images.DeprecationTime | string | The date and time to deprecate the AMI. | 
+| AWS.EC2.Images.ImdsSupport | string | If v2.0, it indicates that IMDSv2 is specified in the AMI. | 
+| AWS.EC2.Images.SourceInstanceId | string | The ID of the instance that the AMI was created from. | 
+| AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+
+### aws-ec2-image-create
+
+***
+Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state.
+
+#### Base Command
+
+`aws-ec2-image-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| name | A name for the new image. | Required | 
+| instance_id | The ID of the instance. | Required | 
+| description | A description for the new image. | Optional | 
+| no_reboot | By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the No Reboot option is set, Amazon EC2 doesn't shut down the instance before creating the image. Possible values are: true, false. | Optional | 
+| block_device_mappings | The block devices for the instance in JSON format. | Optional | 
+| tag_specifications | The tags to apply to the AMI and snapshots on creation. Must be separated by a semicolon (;) and specified using the format "key=key,value=val". | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Images.ImageId | string | The ID of the new AMI. | 
+| AWS.EC2.Images.Name | string | The name of the new AMI. | 
+| AWS.EC2.Images.InstanceId | string | The ID of the instance used to create the AMI. | 
+| AWS.EC2.Images.Region | string | The AWS region where the AMI was created. | 
+
+### aws-ec2-image-deregister
+
+***
+Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI.
+
+#### Base Command
+
+`aws-ec2-image-deregister`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| image_id | The ID of the AMI to deregister. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-image-copy
+
+***
+Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment.
+
+#### Base Command
+
+`aws-ec2-image-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| name | A name for the new AMI in the destination region. | Required | 
+| source_image_id | The ID of the AMI to copy. | Required | 
+| source_region | The name of the region that contains the AMI to copy. | Required | 
+| description | A description for the new AMI in the destination region. | Optional | 
+| encrypted | Specifies whether the destination snapshots of the copied image should be encrypted. Possible values are: true, false. | Optional | 
+| kms_key_id | The identifier of the symmetric AWS KMS key to use when creating encrypted volumes. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional | 
+| client_token | Unique, case-sensitive identifier you provide to ensure idempotency of the request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Images.ImageId | string | The ID of the new AMI. | 
+| AWS.EC2.Images.Name | string | The name of the new AMI. | 
+| AWS.EC2.Images.SourceImageId | string | The ID of the source AMI. | 
+| AWS.EC2.Images.SourceRegion | string | The source region from which the AMI was copied. | 
+| AWS.EC2.Images.Region | string | The region to which the AMI was copied. | 
+
+### aws-ec2-image-available-waiter
+
+***
+Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached.
+
+#### Base Command
+
+`aws-ec2-image-available-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
+| image_ids | A comma-separated list of image IDs to wait for. | Optional | 
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft). Separated by a comma. | Optional | 
+| executable_users | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). Separated by a comma. | Optional | 
+| waiter_delay | The amount of time in seconds to wait between attempts. Default is 15 seconds. Default is 15. | Optional | 
+| waiter_max_attempts | The maximum number of attempts to check the image status. Default is 40 attempts. Default is 40. | Optional | 
 
 #### Context Output
 
@@ -2665,87 +3254,3 @@ Describes one or more launch templates.
 | AWS.EC2.LaunchTemplates.LatestVersionNumber | number | The version number of the latest version of the launch template. |
 | AWS.EC2.LaunchTemplates.Tags.Key | string | The key of the tag. |
 | AWS.EC2.LaunchTemplates.Tags.Value | string | The value of the tag. |
-
-### aws-ec2-address-allocate
-
-***
-Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
-
-#### Base Command
-
-`aws-ec2-address-allocate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| address | The Elastic IP address to recover or an IPv4 address from an address pool. | Optional |
-| public_ipv4_pool | The ID of an address pool that you own. Use this parameter to let Amazon EC2 select an address from the address pool. | Optional |
-| network_border_group | A unique set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
-| customer_owned_ipv4_pool | The ID of a customer-owned address pool. | Optional |
-| tag_specifications | The tags to assign to the Elastic IP address. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.PublicIp | string | The Elastic IP address. |
-| AWS.EC2.ElasticIPs.AllocationId | string | The ID that represents the allocation of the Elastic IP address. |
-| AWS.EC2.ElasticIPs.Domain | string | The network \(vpc or standard\). |
-| AWS.EC2.ElasticIPs.PublicIpv4Pool | string | The ID of an address pool. |
-| AWS.EC2.ElasticIPs.NetworkBorderGroup | string | The name of the unique set of Availability Zones, Local Zones, or Wavelength Zones. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIp | string | The customer-owned IP address. |
-| AWS.EC2.ElasticIPs.CustomerOwnedIpv4Pool | string | The ID of the customer-owned address pool. |
-| AWS.EC2.ElasticIPs.CarrierIp | string | The carrier IP address. |
-
-### aws-ec2-address-release
-
-***
-Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
-
-#### Base Command
-
-`aws-ec2-address-release`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| allocation_id | The allocation ID. Required for VPC. | Optional |
-| network_border_group | The set of Availability Zones, Local Zones, or Wavelength Zones from which AWS advertises IP addresses. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-address-associate
-
-***
-Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
-
-#### Base Command
-
-`aws-ec2-address-associate`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| allocation_id | The allocation ID. | Required |
-| instance_id | The ID of the instance. The instance must have exactly one attached network interface. | Optional |
-| network_interface_id | The ID of the network interface. | Optional |
-| private_ip_address | The primary or secondary private IP address to associate with the Elastic IP address. | Optional |
-| allow_reassociation | Whether to allow an Elastic IP address that is already associated with another network interface or instance to be reassociated with the specified instance or network interface. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.ElasticIPs.AllocationId | string | The allocation ID. |
-| AWS.EC2.ElasticIPs.AssociationId | string | The ID that represents the association of the Elastic IP address with an instance. |

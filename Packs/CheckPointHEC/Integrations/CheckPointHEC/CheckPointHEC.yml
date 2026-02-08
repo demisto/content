@@ -1,5 +1,5 @@
 category: Email
-provider: CheckPoint Software Technologies
+provider: CheckPoint Software Technologies Ltd.
 commonfields:
   id: CheckPointHEC
   version: -1
@@ -17,13 +17,15 @@ configuration:
   - https://smart-api-production-1-euw2.avanan.net
   - https://smart-api-production-1-mec1.avanan.net
   - https://smart-api-production-1-aps1.avanan.net
+  - https://smart-api-production-1-apse1.avanan.net
   - https://cloudinfra-gw-us.portal.checkpoint.com
   - https://cloudinfra-gw.portal.checkpoint.com
   - https://cloudinfra-gw.ca.portal.checkpoint.com
   - https://cloudinfra-gw.ap.portal.checkpoint.com
   - https://cloudinfra-gw.uk.portal.checkpoint.com
-  - https://cloudinfra-gw.me.portal.checkpoint.com
+  - https://cloudinfra-gw.ae.portal.checkpoint.com
   - https://cloudinfra-gw.in.portal.checkpoint.com
+  - https://cloudinfra-gw.sg.portal.checkpoint.com
   required: true
   additionalinfo: The URL of the Smart API or Check Point Infinity API.
 - section: Collect

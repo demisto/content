@@ -1,0 +1,30 @@
+{
+    "host": "example.com",
+    "blacklists": {
+        "engines": {"0": {"name": "test", "detected": false, "reference": "https://test.com", "elapsed_ms": 1}},
+        "detections": 0,
+        "engines_count": 10,
+        "detection_rate": "0%",
+        "scan_time_ms": 100
+    },
+    "server_details": {
+        "ip": "93.184.216.34",
+        "isp": "Edgecast Inc.",
+        "continent_code": "NA",
+        "continent_name": "North America",
+        "country_code": "US",
+        "country_name": "United States",
+        "region_name": "California",
+        "city_name": "Los Angeles",
+        "latitude": "34.0522",
+        "longitude": "-118.2437",
+        "reverse_dns": "example.com"
+    },
+    "category": {"is_anonymizer": false, "is_free_dynamic_dns": false, "is_free_hosting": false, "is_url_shortener": false},
+    "risk_score": {"result": 0},
+    "alexa_top_10k": false,
+    "alexa_top_100k": true,
+    "alexa_top_250k": true,
+    "most_abused_tld": false,
+    "domain_length": 11
+}
