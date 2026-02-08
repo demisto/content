@@ -4174,7 +4174,7 @@ class AssetsDeviceHandler:
 
         # Wait for all enrichment and send tasks to complete
         while self.running_tasks:
-            log_falcon_assets(f"AssetsDeviceHandler: entering flush remaining running.", "info")
+            log_falcon_assets(f"AssetsDeviceHandler: Starting flush of remaining assets.", "info")
             # Create a snapshot of the current tasks
             current_batch = list(self.running_tasks)
             if not current_batch:
@@ -4191,6 +4191,7 @@ class AssetsDeviceHandler:
         """
         Filters a list of asset dictionaries to retain only specific keys.
         """
+        # Filtering assets key according to UVEM request
         allowed_keys = {
             "device_id",
             "cid",
