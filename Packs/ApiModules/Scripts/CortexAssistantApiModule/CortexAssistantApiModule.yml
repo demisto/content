@@ -1,0 +1,30 @@
+commonfields:
+  id: CortexAssistantApiModule
+  version: -1
+name: CortexAssistantApiModule
+script: '-'
+type: python
+tags:
+  - Cortex Assistant
+  - Agentix
+comment: |-
+  Common utilities and classes for integrating with Cortex Assistant (Agentix).
+  Provides platform-agnostic functionality that can be used across different integrations (Slack, Teams, etc.).
+  
+  Classes:
+  - AgentixStatus: Manages conversation status states
+  - AgentixMessageType: Defines message types from backend
+  - AgentixMessages: User-facing messages and UI text
+  - AgentixActionIds: Action IDs for interactive elements
+  
+  Functions:
+  - agentix_integrations: Mock function for backend communication (to be replaced)
+  - register_agentix_integrations: Registers the agentixIntegrations method on demisto object
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.10.14.95956
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+  - No tests (auto formatted)
