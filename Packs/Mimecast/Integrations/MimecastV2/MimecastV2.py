@@ -151,7 +151,7 @@ def fetch_logs_with_pagination(
     data: list,
     response_param: str = None,
     limit: int = 100,
-    dedup_messages: list = [],
+    dedup_messages: list | None = None,
     current_next_page: str = "",
 ):
     """
@@ -175,6 +175,7 @@ def fetch_logs_with_pagination(
     results = []
     dropped = 0
     next_page = current_next_page or ""
+    dedup_messages = dedup_messages or []
 
     while True:
         pagination = {"pageSize": limit}
@@ -189,7 +190,8 @@ def fetch_logs_with_pagination(
 
         # Extract response data based on response_param
         if response_param:
-            response_data = response.get("data", [{}])[0].get(response_param, [])
+            data_list = response.get("data", [])
+            response_data = data_list[0].get(response_param, []) if data_list else []
         else:
             response_data = response.get("data", [])
 
@@ -2031,14 +2033,17 @@ def generate_log_id(log_entry, log_type):
 
     elif log_type == "attachment":
         # Attachment logs: use fileName + date + senderAddress + recipientAddress
-        return f"{log_entry.get('fileName')}_{log_entry.get('date')}_{log_entry.get('senderAddress')}_{log_entry.get('recipientAddress')}"
+        return (
+            f"{log_entry.get('fileName')}_{log_entry.get('date')}_"
+            f"{log_entry.get('senderAddress')}_{log_entry.get('recipientAddress')}"
+        )
 
     elif log_type == "impersonation":
         # Impersonation logs: use subject + eventTime + senderAddress
         return f"{log_entry.get('subject')}_{log_entry.get('date')}_{log_entry.get('senderAddress')}"
 
-    # Fallback: use hash of the entire entry for deduplication
-    return str(hash(json.dumps(log_entry, sort_keys=True)))
+    # Fallback: use MD5 hash of the entire entry for deterministic deduplication
+    return hashlib.md5(json.dumps(log_entry, sort_keys=True).encode()).hexdigest()
 
 
 def fetch_incidents():
@@ -2069,7 +2074,6 @@ def fetch_incidents():
             response_param="clickLogs",
             search_params={"from": last_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
             to_incident_func=url_to_incident,
-            date_field="date",
             last_run=last_run,
             current_fetch=current_fetch,
             incidents=incidents,
@@ -2085,7 +2089,6 @@ def fetch_incidents():
             response_param="attachmentLogs",
             search_params={"from": last_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
             to_incident_func=attachment_to_incident,
-            date_field="date",
             last_run=last_run,
             current_fetch=current_fetch,
             incidents=incidents,
@@ -2101,7 +2104,6 @@ def fetch_incidents():
             response_param="impersonationLogs",
             search_params={"from": last_fetch_date_time, "taggedMalicious": True, "oldestFirst": True},
             to_incident_func=impersonation_to_incident,
-            date_field="eventTime",
             last_run=last_run,
             current_fetch=current_fetch,
             incidents=incidents,
@@ -2117,7 +2119,6 @@ def fetch_incidents():
             response_param=None,
             search_params={"start": last_fetch_date_time, "admin": True},
             to_incident_func=held_to_incident,
-            date_field="dateReceived",
             last_run=last_run,
             current_fetch=current_fetch,
             incidents=incidents,
@@ -2136,7 +2137,6 @@ def fetch_log_type(
     response_param,
     search_params,
     to_incident_func,
-    date_field,
     last_run,
     current_fetch,
     incidents,
@@ -2151,7 +2151,6 @@ def fetch_log_type(
         response_param: Response parameter containing logs (None for direct data access)
         search_params: Search parameters for the API call
         to_incident_func: Function to convert log entry to incident
-        date_field: Field name containing the date in the log entry (not currently used but kept for future enhancement)
         last_run: Last run context from Demisto
         current_fetch: Current fetch datetime for deduplication
         incidents: List to append new incidents to
@@ -2171,10 +2170,8 @@ def fetch_log_type(
     # Parse last fetch time for this log type
     if last_fetch_log_type:
         last_fetch_log_type = datetime.strptime(last_fetch_log_type, "%Y-%m-%dT%H:%M:%SZ")
-        last_fetch_log_type_date_time = last_fetch_log_type.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
     else:
         last_fetch_log_type = current_fetch
-        last_fetch_log_type_date_time = search_params.get("from") or search_params.get("start")
 
     current_fetch_log_type = last_fetch_log_type
 
