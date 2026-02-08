@@ -3682,113 +3682,95 @@ class EC2:
         Returns:
             CommandResults: Results containing the created fleet ID
         """
+        # Build base fleet configuration
         kwargs: Dict[str, Any] = {
             "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
             "TerminateInstancesWithExpiration": arg_to_bool_or_none(args.get("terminate_instances_with_expiration")),
             "Type": args.get("type"),
             "ValidFrom": args.get("valid_from"),
             "ValidUntil": args.get("valid_until"),
-            "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances"))
+            "ReplaceUnhealthyInstances": arg_to_bool_or_none(args.get("replace_unhealthy_instances")),
+            "SpotOptions": remove_empty_elements({
+                "AllocationStrategy": args.get("spot_allocation_strategy"),
+                "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
+                "InstancePoolsToUseCount": args.get("spot_single_instance_type"),
+                "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
+                "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
+                "MinTargetCapacity": arg_to_number(args.get("min_target_capacity"))
+            }),
+            "OnDemandOptions": remove_empty_elements({
+                "AllocationStrategy": args.get("on_demand_allocation_strategy"),
+                "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
+                "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
+                "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
+                "MaxTotalPrice": args.get("on_demand_max_total_price"),
+            }),
         }
 
-        # Build SpotOptions
-        spot_options = {
-            "AllocationStrategy": args.get("spot_allocation_strategy"),
-            "InstanceInterruptionBehavior": args.get("instance_interruption_behavior"),
-            "InstancePoolsToUseCount": args.get("spot_single_instance_type"),
-            "SingleInstanceType": arg_to_bool_or_none(args.get("spot_single_instance_type")),
-            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("single_availability_zone")),
-            "MinTargetCapacity": arg_to_number(args.get("min_target_capacity"))
-        }
-
-        remove_nulls_from_dictionary(spot_options)
-        kwargs["SpotOptions"] = spot_options
-
-        # Build OnDemandOptions
-        on_demand_options = {
-            "AllocationStrategy": args.get("on_demand_allocation_strategy"),
-            "SingleInstanceType": arg_to_bool_or_none(args.get("on_demand_single_instance_type")),
-            "SingleAvailabilityZone": arg_to_bool_or_none(args.get("on_demand_single_availability_zone")),
-            "MinTargetCapacity": arg_to_number(args.get("on_demand_min_target_capacity")),
-            "MaxTotalPrice": args.get("on_demand_max_total_price"),
-        }
-        remove_nulls_from_dictionary(on_demand_options)
-        kwargs["OnDemandOptions"] = on_demand_options
-
-        # Build LaunchTemplateConfigs
-        launch_template_spec = {
+        # Build and validate launch template specification
+        launch_template_spec = remove_empty_elements({
             "LaunchTemplateId": args.get("launch_template_id"),
             "LaunchTemplateName": args.get("launch_template_name"),
             "Version": args.get("launch_template_version")
-        }
-        remove_nulls_from_dictionary(launch_template_spec)
+        })
         if not launch_template_spec:
-            return CommandResults(readable_output="You must specify either the launch template ID or launch template name")
+            raise ValueError("Must specify either 'launch_template_id' or 'launch_template_name' parameter")
 
-        # Build Overrides
-        overrides = []
+        # Build overrides using more Pythonic approach
         override_fields = {
-            "override_instance_type": "InstanceType",
-            "override_max_price": "MaxPrice",
-            "override_subnet_id": "SubnetId",
-            "override_availability_zone": "AvailabilityZone",
-            "override_weighted_capacity": "WeightedCapacity",
-            "override_priority": "Priority",
+            "override_instance_type": ("InstanceType", str),
+            "override_max_price": ("MaxPrice", str),
+            "override_subnet_id": ("SubnetId", str),
+            "override_availability_zone": ("AvailabilityZone", str),
+            "override_weighted_capacity": ("WeightedCapacity", int),
+            "override_priority": ("Priority", int),
         }
 
-        # Get max length of override arrays
-        max_overrides = 0
-        for arg_name in override_fields.keys():
-            if args.get(arg_name):
-                override_list = argToList(args.get(arg_name))
-                max_overrides = max(max_overrides, len(override_list))
+        # Collect all override values as lists with their types
+        override_data = {
+            api_name: (argToList(args.get(arg_name)), value_type)
+            for arg_name, (api_name, value_type) in override_fields.items()
+            if args.get(arg_name)
+        }
 
-        # Build override objects
-        for i in range(max_overrides):
-            override_obj = {}
-            for arg_name, api_name in override_fields.items():
-                if args.get(arg_name):
-                    override_list = argToList(args.get(arg_name))
-                    if i < len(override_list):
-                        value = override_list[i]
-                        # Convert numeric fields
-                        if api_name in ["WeightedCapacity", "Priority"]:
-                            override_obj[api_name] = arg_to_number(value)
-                        else:
-                            override_obj[api_name] = value
-            if override_obj:
-                overrides.append(override_obj)
+        # Determine maximum number of overrides needed
+        max_overrides = max((len(values) for values, _ in override_data.values()), default=0)
 
-        launch_template_config = {
+        # Build override objects using list comprehension
+        overrides = [
+            remove_empty_elements({
+                api_name: arg_to_number(values[i]) if value_type == int else values[i]
+                for api_name, (values, value_type) in override_data.items()
+                if i < len(values)
+            })
+            for i in range(max_overrides)
+        ]
+
+        # Build launch template configuration
+        kwargs["LaunchTemplateConfigs"] = [remove_empty_elements({
             "LaunchTemplateSpecification": launch_template_spec,
             "Overrides": overrides
-        }
+        })]
 
-        remove_nulls_from_dictionary(launch_template_config)
-        kwargs["LaunchTemplateConfigs"] = [launch_template_config]
-
-        # Build TargetCapacitySpecification
-        target_capacity_spec = {
+        # Build target capacity specification
+        kwargs["TargetCapacitySpecification"] = remove_empty_elements({
             "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
             "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
             "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
             "DefaultTargetCapacityType": args.get("default_target_capacity_type"),
-        }
-        remove_nulls_from_dictionary(target_capacity_spec)
-        kwargs["TargetCapacitySpecification"] = target_capacity_spec
+        })
 
-        # Handle tags
+        # Parse and add tag specifications if provided
         if tags := args.get("tags"):
-            tag_specifications = []
-            # Parse tags format: ResourceType:key=Name,value=test;key=Owner,value=Bob#ResourceType2:key=Name,value=test2
-            for tag_spec_str in tags.split("#"):
-                if ":" in tag_spec_str:
-                    resource_type, tags_str = tag_spec_str.split(":", 1)
-                    tag_specifications.append({"ResourceType": resource_type, "Tags": parse_tag_field(tags_str)})
-            if tag_specifications:
-                kwargs["TagSpecifications"] = tag_specifications
+            kwargs["TagSpecifications"] = [
+                {"ResourceType": resource_type, "Tags": parse_tag_field(tags_str)}
+                for tag_spec_str in tags.split("#")
+                if ":" in tag_spec_str
+                for resource_type, tags_str in [tag_spec_str.split(":", 1)]
+            ]
 
-        remove_nulls_from_dictionary(kwargs)
+        # Clean up None values and execute API call
+        kwargs = remove_empty_elements(kwargs)
         print_debug_logs(client, f"Creating fleet with parameters: {kwargs}")
 
         response = client.create_fleet(**kwargs)
@@ -3796,34 +3778,21 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        # Serialize response
+        # Serialize and prepare response
         response = serialize_response_with_datetime_encoding(response)
-
-        # fleet_id = response.get("FleetId")
-        # outputs = {
-        #     "FleetId": fleet_id,
-        #     outputs["Errors"] = errors
-        # }
-        #
-        # # Add errors and instances if present
-        # if errors := response.get("Errors"):
-        #     outputs["Errors"] = errors
-        # if instances := response.get("Instances"):
-        #     outputs["Instances"] = instances
-
-        readable_output = tableToMarkdown(
-            "AWS EC2 Fleet",
-            response,
-            headers=["FleetId"],
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Fleet",
             outputs_key_field="FleetId",
-            outputs=response,
-            readable_output=readable_output,
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleet",
+                outputs,
+                headers=["FleetId"],
+                removeNull=True,
+                headerTransform=pascalToSpace
+            ),
             raw_response=response,
         )
 
@@ -3839,10 +3808,10 @@ class EC2:
         Returns:
             CommandResults: Results containing successful and unsuccessful fleet deletions
         """
-        kwargs = {
+        kwargs = remove_empty_elements({
             "FleetIds": argToList(args.get("fleet_ids")),
             "TerminateInstances": arg_to_bool_or_none(args.get("terminate_instances")),
-        }
+        })
 
         print_debug_logs(client, f"Deleting fleets with parameters: {kwargs}")
         response = client.delete_fleets(**kwargs)
@@ -3850,50 +3819,46 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        # Serialize response
         response = serialize_response_with_datetime_encoding(response)
 
-        # Build outputs from successful and unsuccessful deletions
-        outputs = {}
-        readable_data = []
+        # Build outputs and readable data using comprehensions
+        successful = response.get("SuccessfulFleetDeletions", [])
+        unsuccessful = response.get("UnsuccessfulFleetDeletions", [])
 
-        if successful := response.get("SuccessfulFleetDeletions", []):
-            outputs["SuccessfulFleetDeletions"] = successful
-            for deletion in successful:
-                readable_data.append(
-                    {
-                        "FleetId": deletion.get("FleetId"),
-                        "CurrentFleetState": deletion.get("CurrentFleetState"),
-                        "PreviousFleetState": deletion.get("PreviousFleetState"),
-                    }
-                )
-
-        if unsuccessful := response.get("UnsuccessfulFleetDeletions", []):
-            outputs["UnsuccessfulFleetDeletions"] = unsuccessful
-            for deletion in unsuccessful:
-                readable_data.append(
-                    {
-                        "FleetId": deletion.get("FleetId"),
-                        "ErrorCode": deletion.get("Error", {}).get("Code"),
-                        "ErrorMessage": deletion.get("Error", {}).get("Message"),
-                    }
-                )
+        readable_data = [
+            {
+                "FleetId": deletion.get("FleetId"),
+                "CurrentFleetState": deletion.get("CurrentFleetState"),
+                "PreviousFleetState": deletion.get("PreviousFleetState"),
+            }
+            for deletion in successful
+        ] + [
+            {
+                "FleetId": deletion.get("FleetId"),
+                "ErrorCode": deletion.get("Error", {}).get("Code"),
+                "ErrorMessage": deletion.get("Error", {}).get("Message"),
+            }
+            for deletion in unsuccessful
+        ]
 
         if not readable_data:
             return CommandResults(readable_output="No fleets were deleted.")
 
-        readable_output = tableToMarkdown(
-            "AWS Deleted Fleets",
-            readable_data,
-            headers=["FleetId", "CurrentFleetState", "PreviousFleetState", "ErrorCode", "ErrorMessage"],
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
+        outputs = remove_empty_elements({
+            "SuccessfulFleetDeletions": successful,
+            "UnsuccessfulFleetDeletions": unsuccessful,
+        })
 
         return CommandResults(
             outputs_prefix="AWS.EC2.DeletedFleets",
             outputs=outputs,
-            readable_output=readable_output,
+            readable_output=tableToMarkdown(
+                "AWS Deleted Fleets",
+                readable_data,
+                headers=["FleetId", "CurrentFleetState", "PreviousFleetState", "ErrorCode", "ErrorMessage"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
@@ -3909,37 +3874,31 @@ class EC2:
         Returns:
             CommandResults: Results containing fleet information
         """
-        kwargs = {}
-
-        if filters := args.get("filters"):
-            kwargs["Filters"] = parse_filter_field(filters)
-        if fleet_ids := args.get("fleet_ids"):
-            kwargs["FleetIds"] = argToList(fleet_ids)
+        fleet_ids = args.get("fleet_ids")
+        kwargs = remove_empty_elements({
+            "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+            "FleetIds": argToList(fleet_ids) if fleet_ids else None,
+        })
 
         # Add pagination if no fleet_ids specified
         if not fleet_ids:
-            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
-            kwargs.update(pagination_kwargs)
+            kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
 
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
-
         response = client.describe_fleets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        # Serialize response
         response = serialize_response_with_datetime_encoding(response)
-
         fleets = response.get("Fleets", [])
+
         if not fleets:
             return CommandResults(readable_output="No fleets were found.")
 
-        # Build readable output
-        readable_data = []
-        for fleet in fleets:
-            fleet_data = {
+        # Build readable output using list comprehension
+        readable_data = [
+            remove_empty_elements({
                 "ActivityStatus": fleet.get("ActivityStatus"),
                 "FleetId": fleet.get("FleetId"),
                 "FleetState": fleet.get("FleetState"),
@@ -3953,47 +3912,44 @@ class EC2:
                 "TerminateInstancesWithExpiration": fleet.get("TerminateInstancesWithExpiration"),
                 "Type": fleet.get("Type"),
                 "InstanceInterruptionBehavior": fleet.get("SpotOptions", {}).get("InstanceInterruptionBehavior"),
-            }
-            # Get LaunchTemplateId from first config if available
-            if launch_configs := fleet.get("LaunchTemplateConfigs"):
-                if launch_configs and len(launch_configs) > 0:
-                    launch_spec = launch_configs[0].get("LaunchTemplateSpecification", {})
-                    fleet_data["LaunchTemplateId"] = launch_spec.get("LaunchTemplateId")
+                "LaunchTemplateId": (
+                    fleet.get("LaunchTemplateConfigs", [{}])[0]
+                    .get("LaunchTemplateSpecification", {})
+                    .get("LaunchTemplateId")
+                ) if fleet.get("LaunchTemplateConfigs") else None,
+            })
+            for fleet in fleets
+        ]
 
-            readable_data.append(remove_empty_elements(fleet_data))
-
-        # Build outputs with NextToken
         outputs = {
             "AWS.EC2.Fleet(val.FleetId && val.FleetId == obj.FleetId)": fleets,
             "AWS.EC2(true)": {"FleetNextToken": response.get("NextToken")},
         }
 
-        readable_output = tableToMarkdown(
-            "AWS EC2 Fleets",
-            readable_data,
-            headers=[
-                "ActivityStatus",
-                "FleetId",
-                "FleetState",
-                "FulfilledCapacity",
-                "FulfilledOnDemandCapacity",
-                "LaunchTemplateId",
-                "CreateTime",
-                "TotalTargetCapacity",
-                "OnDemandTargetCapacity",
-                "SpotTargetCapacity",
-                "DefaultTargetCapacityType",
-                "TerminateInstancesWithExpiration",
-                "Type",
-                "InstanceInterruptionBehavior",
-            ],
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
-
         return CommandResults(
             outputs=outputs,
-            readable_output=readable_output,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleets",
+                readable_data,
+                headers=[
+                    "ActivityStatus",
+                    "FleetId",
+                    "FleetState",
+                    "FulfilledCapacity",
+                    "FulfilledOnDemandCapacity",
+                    "LaunchTemplateId",
+                    "CreateTime",
+                    "TotalTargetCapacity",
+                    "OnDemandTargetCapacity",
+                    "SpotTargetCapacity",
+                    "DefaultTargetCapacityType",
+                    "TerminateInstancesWithExpiration",
+                    "Type",
+                    "InstanceInterruptionBehavior",
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
@@ -4009,65 +3965,55 @@ class EC2:
         Returns:
             CommandResults: Results containing fleet instance information
         """
-        kwargs = {"FleetId": args.get("fleet_id")}
+        kwargs = {
+            "FleetId": args.get("fleet_id"),
+            "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+        }
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+        kwargs = remove_empty_elements(kwargs)
 
-        if filters := args.get("filters"):
-            kwargs["Filters"] = parse_filter_field(filters)
-
-        # Add pagination
-        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
-        kwargs.update(pagination_kwargs)
-
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing fleet instances with parameters: {kwargs}")
-
         response = client.describe_fleet_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        # Serialize response
         response = serialize_response_with_datetime_encoding(response)
-
         active_instances = response.get("ActiveInstances", [])
         fleet_id = response.get("FleetId")
 
         if not active_instances:
             return CommandResults(readable_output="No active instances were found.")
 
-        # Build readable output
-        readable_data = []
-        for instance in active_instances:
-            readable_data.append(
-                {
-                    "InstanceId": instance.get("InstanceId"),
-                    "InstanceType": instance.get("InstanceType"),
-                    "SpotInstanceRequestId": instance.get("SpotInstanceRequestId"),
-                    "FleetId": fleet_id,
-                    "Region": args.get("region"),
-                }
-            )
+        # Build readable output using list comprehension
+        readable_data = [
+            {
+                "InstanceId": instance.get("InstanceId"),
+                "InstanceType": instance.get("InstanceType"),
+                "SpotInstanceRequestId": instance.get("SpotInstanceRequestId"),
+                "FleetId": fleet_id,
+                "Region": args.get("region"),
+            }
+            for instance in active_instances
+        ]
 
-        # Build outputs
-        outputs = {
+        outputs = remove_empty_elements({
             "ActiveInstances": active_instances,
             "NextToken": response.get("NextToken"),
             "FleetId": fleet_id,
-        }
-
-        readable_output = tableToMarkdown(
-            "AWS EC2 Fleets Instances",
-            readable_data,
-            headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "FleetId", "Region"],
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
+        })
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Fleet",
             outputs_key_field="FleetId",
             outputs=outputs,
-            readable_output=readable_output,
+            readable_output=tableToMarkdown(
+                "AWS EC2 Fleets Instances",
+                readable_data,
+                headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "FleetId", "Region"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
@@ -4083,25 +4029,19 @@ class EC2:
         Returns:
             CommandResults: Results of the modification operation
         """
-        kwargs = {
+        kwargs = remove_empty_elements({
             "FleetId": args.get("fleet_id"),
             "ExcessCapacityTerminationPolicy": args.get("excess_capacity_termination_policy"),
-            "Context": args.get("context")
-        }
+            "Context": args.get("context"),
+            "TargetCapacitySpecification": remove_empty_elements({
+                "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
+                "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
+                "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
+                "DefaultTargetCapacityType": args.get("default_target_capacity_type")
+            })
+        })
 
-        # Build TargetCapacitySpecification
-        target_capacity_spec = {
-            "TotalTargetCapacity": arg_to_number(args.get("total_target_capacity")),
-            "OnDemandTargetCapacity": arg_to_number(args.get("on_demand_target_capacity")),
-            "SpotTargetCapacity": arg_to_number(args.get("spot_target_capacity")),
-            "DefaultTargetCapacityType": args.get("default_target_capacity_type")
-        }
-
-        remove_nulls_from_dictionary(target_capacity_spec)
-        kwargs["TargetCapacitySpecification"] = target_capacity_spec
-        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Modifying fleet with parameters: {kwargs}")
-
         response = client.modify_fleet(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -4110,14 +4050,10 @@ class EC2:
         fleet_id = args.get("fleet_id")
         return_value = response.get("Return", False)
 
-        readable_output = f"Successfully modified EC2 Fleet {fleet_id}" if return_value else f"Failed to modify EC2 Fleet {fleet_id}"
-
-        outputs = {"Return": return_value}
-
         return CommandResults(
             outputs_prefix="AWS.EC2.Fleet",
-            outputs=outputs,
-            readable_output=readable_output,
+            outputs={"Return": return_value},
+            readable_output=f"Successfully modified EC2 Fleet {fleet_id}" if return_value else f"Failed to modify EC2 Fleet {fleet_id}",
             raw_response=response,
         )
 
