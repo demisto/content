@@ -1,0 +1,40 @@
+{
+    "name": "NVIDIA DOCA Argus",
+    "description": "This pack provides Modeling Rules to parse and map NVIDIA DOCA Argus logs to the Cortex Data Model (XDM)",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "Network Security"
+    ],
+    "tags": [
+        "Security",
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "DOCA",
+        "argus",
+        "bluefield",
+        "AI",
+        "edr",
+        "fluentbit"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}
