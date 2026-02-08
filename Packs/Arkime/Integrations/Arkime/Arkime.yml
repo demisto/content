@@ -689,7 +689,7 @@ script:
       description: Whether the file data is locked.
     - type: Number
       contextPath: Arkime.File.data.first
-      description: The timestamp of the first  time the file data appears.
+      description: The timestamp of the first  time the file data appears TEST.
     - type: Number
       contextPath: Arkime.File.data.compression
       description: The file data compression.
