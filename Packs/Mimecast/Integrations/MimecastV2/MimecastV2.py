@@ -2081,33 +2081,48 @@ def generate_log_id(log_entry, log_type):
     return hashlib.md5(json.dumps(log_entry, sort_keys=True).encode()).hexdigest()
 
 
+def get_log_type_fetch_time(last_run: dict, time_key: str, default_fetch_date_time: str) -> str:
+    """
+    Get the fetch time for a specific log type from last_run, or return default.
+    
+    Args:
+        last_run: The last run context dictionary
+        time_key: The key to look up in last_run (e.g., 'time_url', 'time_attachment')
+        default_fetch_date_time: The default time to use if key not found
+    
+    Returns:
+        Formatted date time string in Mimecast format (YYYY-MM-DDTHH:MM:SS+0000)
+    """
+    last_fetch = last_run.get(time_key)
+    if last_fetch:
+        fetch_time = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
+        return fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
+    return default_fetch_date_time
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time")
     demisto.debug(f"Before fetch {last_run=}")
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
-        last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-    else:
-        last_fetch = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
-        last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-
-    current_fetch = last_fetch
-    demisto.debug(f"last fetch dates {current_fetch=}, {last_fetch=}, {last_fetch_date_time=}")
+    # handle first time fetch - calculate default time for any log type that doesn't have a time yet
+    default_fetch_time = datetime.now() - timedelta(hours=FETCH_DELTA)
+    default_fetch_date_time = default_fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
+    
+    current_fetch = default_fetch_time
+    demisto.debug(f"Default fetch time for first-time fetches: {default_fetch_time=}, {default_fetch_date_time=}")
 
     incidents = []  # type: List[Any]
-    new_last_run = {"time": last_fetch.isoformat().split(".")[0] + "Z"}
+    new_last_run = {}  # type: Dict[str, Any]
 
     # Fetch URL logs with enhancement mechanism
     if FETCH_URL:
         demisto.debug("Fetching URL logs")
+        url_fetch_date_time = get_log_type_fetch_time(last_run, "time_url", default_fetch_date_time)
         fetch_log_type(
             log_type="url",
             api_endpoint="/api/ttp/url/get-logs",
             response_param="clickLogs",
-            search_params={"from": last_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
+            search_params={"from": url_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
             to_incident_func=url_to_incident,
             last_run=last_run,
             current_fetch=current_fetch,
@@ -2118,11 +2133,12 @@ def fetch_incidents():
     # Fetch Attachment logs with enhancement mechanism
     if FETCH_ATTACHMENTS:
         demisto.debug("Fetching Attachment logs")
+        attachment_fetch_date_time = get_log_type_fetch_time(last_run, "time_attachment", default_fetch_date_time)
         fetch_log_type(
             log_type="attachment",
             api_endpoint="/api/ttp/attachment/get-logs",
             response_param="attachmentLogs",
-            search_params={"from": last_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
+            search_params={"from": attachment_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
             to_incident_func=attachment_to_incident,
             last_run=last_run,
             current_fetch=current_fetch,
@@ -2133,11 +2149,12 @@ def fetch_incidents():
     # Fetch Impersonation logs with enhancement mechanism
     if FETCH_IMPERSONATIONS:
         demisto.debug("Fetching Impersonation logs")
+        impersonation_fetch_date_time = get_log_type_fetch_time(last_run, "time_impersonation", default_fetch_date_time)
         fetch_log_type(
             log_type="impersonation",
             api_endpoint="/api/ttp/impersonation/get-logs",
             response_param="impersonationLogs",
-            search_params={"from": last_fetch_date_time, "taggedMalicious": True, "oldestFirst": True},
+            search_params={"from": impersonation_fetch_date_time, "taggedMalicious": True, "oldestFirst": True},
             to_incident_func=impersonation_to_incident,
             last_run=last_run,
             current_fetch=current_fetch,
@@ -2148,11 +2165,12 @@ def fetch_incidents():
     # Fetch Held Messages with enhancement mechanism
     if FETCH_HELD_MESSAGES:
         demisto.debug("Fetching Held Messages")
+        held_message_fetch_date_time = get_log_type_fetch_time(last_run, "time_held_message", default_fetch_date_time)
         fetch_log_type(
             log_type="held_message",
             api_endpoint="/api/gateway/get-hold-message-list",
             response_param=None,
-            search_params={"start": last_fetch_date_time, "admin": True},
+            search_params={"start": held_message_fetch_date_time, "admin": True},
             to_incident_func=held_to_incident,
             last_run=last_run,
             current_fetch=current_fetch,
