@@ -6125,7 +6125,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
 
     # We take care of that value seperatly so that it won't appear in the HR unless passed by the user
     remove_user_assignment_str_value = args.get("remove_user_assignment")
-    
+
     # Collect changed fields for both API call and display
     changed_fields = {
         "status": args.get("status"),
@@ -6136,7 +6136,9 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
         "template_id": args.get("template_id"),
     }
 
-    resolve_case(case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields)
+    resolve_case(
+        case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
+    )
 
     readable_output = f"Case {case_id} was changed successfully"
     table = tableToMarkdown(
@@ -6144,7 +6146,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
         {"id": case_id, "remove_user_assginment": remove_user_assignment_str_value, **changed_fields},
         headers=list(changed_fields.keys()),
         headerTransform=string_to_table_header,
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(readable_output=f"{readable_output}\n{table}")
