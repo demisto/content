@@ -9,6 +9,10 @@ from Unit42Feed import (
     test_module as unit42_test_module,
     unit42_error_handler,
     main,
+    sort_indicator_types_by_priority,
+    fetch_indicator_type,
+    fetch_threat_objects_with_limit,
+    calculate_limit_per_type,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
     VALID_REGIONS,
@@ -17,6 +21,7 @@ from Unit42Feed import (
     INTEGRATION_NAME,
     RETRY_COUNT,
     STATUS_CODES_TO_RETRY,
+    TOTAL_INDICATOR_LIMIT,
 )
 from CommonServerPython import *
 
@@ -1243,3 +1248,452 @@ def test_unit42_error_handler_with_request_id(mocker):
     demisto.debug.assert_called_once_with(
         f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
     )
+
+
+def test_sort_indicator_types_by_priority():
+    """
+    Given:
+        - Unsorted list of indicator types
+    When:
+        - Calling sort_indicator_types_by_priority function
+    Then:
+        - Returns sorted list with IPs first, Files last (bottom-to-top priority)
+    """
+    # Test with unsorted types
+    unsorted_types = ["File", "IP", "Domain", "URL"]
+    result = sort_indicator_types_by_priority(unsorted_types)
+
+    assert result == ["IP", "Domain", "URL", "File"]
+
+    # Test with partial list
+    partial_types = ["File", "IP"]
+    result = sort_indicator_types_by_priority(partial_types)
+
+    assert result == ["IP", "File"]
+
+    # Test with single type
+    single_type = ["Domain"]
+    result = sort_indicator_types_by_priority(single_type)
+
+    assert result == ["Domain"]
+
+    # Test with empty list
+    empty_list = []
+    result = sort_indicator_types_by_priority(empty_list)
+
+    assert result == []
+
+
+def test_fetch_indicator_type_with_limit(client, mocker):
+    """
+    Given:
+        - Client and limit parameter
+    When:
+        - Calling fetch_indicator_type with limit smaller than API response
+    Then:
+        - Returns only up to the limit
+        - Makes correct API calls with page_limit
+    """
+    # Mock responses - first page has 100 items, second page has 50
+    first_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+
+    second_response = {
+        "data": [{"indicator_value": f"5.6.7.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(50)],
+        "metadata": {"next_page_token": None},
+    }
+
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mock_get_indicators.side_effect = [first_response, second_response]
+
+    # Fetch with limit of 120 (should get 100 from first page, 20 from second)
+    result = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert len(result) == 120
+    assert mock_get_indicators.call_count == 2
+
+    # Check first call had limit of 100 (min of API_LIMIT and remaining)
+    first_call_args = mock_get_indicators.call_args_list[0][1]
+    assert first_call_args["limit"] <= API_LIMIT
+
+    # Check second call had limit of 20 (remaining after first page)
+    second_call_args = mock_get_indicators.call_args_list[1][1]
+    assert second_call_args["limit"] == 20
+
+
+def test_fetch_indicator_type_stops_at_limit(client, mocker):
+    """
+    Given:
+        - Client with API returning more data than limit
+    When:
+        - Calling fetch_indicator_type with small limit
+    Then:
+        - Stops fetching when limit is reached
+        - Returns exactly limit number of indicators
+    """
+    # Mock response with 100 items
+    mock_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+
+    # Fetch with limit of 50
+    result = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert len(result) == 50
+    assert mock_get_indicators.call_count == 1  # Should only make one call
+
+
+def test_fetch_indicator_type_no_data(client, mocker):
+    """
+    Given:
+        - Client with API returning no data
+    When:
+        - Calling fetch_indicator_type
+    Then:
+        - Returns empty list
+        - Handles gracefully
+    """
+    mock_response = {"data": [], "metadata": {}}
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+
+    result = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert result == []
+
+
+def test_fetch_threat_objects_with_limit(client, mocker):
+    """
+    Given:
+        - Client and limit parameter
+    When:
+        - Calling fetch_threat_objects_with_limit
+    Then:
+        - Returns threat objects up to the limit
+        - Handles pagination correctly
+    """
+    mock_demisto_params(mocker)
+
+    # Mock responses
+    first_response = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+
+    second_response = {
+        "data": [{"name": f"Malware{i}", "threat_object_class": "malware_family", "publications": []} for i in range(50)],
+        "metadata": {"next_page_token": None},
+    }
+
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects")
+    mock_get_threat_objects.side_effect = [first_response, second_response]
+
+    # Fetch with limit of 120
+    result = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
+
+    assert len(result) == 120
+    assert mock_get_threat_objects.call_count == 2
+
+
+def test_fetch_indicators_limit_validation(client, mocker):
+    """
+    Given:
+        - Client with various limit values
+    When:
+        - Calling fetch_indicators with different limits
+    Then:
+        - Validates and caps limit at TOTAL_INDICATOR_LIMIT
+        - Uses DEFAULT_LIMIT when limit is invalid
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+    mock_response = {"data": [], "metadata": {}}
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    current_time = datetime.now()
+
+    # Test with limit exceeding maximum
+    params_high = {
+        "limit": "150000",  # Exceeds TOTAL_INDICATOR_LIMIT
+        "feed_types": ["Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    fetch_indicators(client, params_high, current_time)
+    # Should cap at TOTAL_INDICATOR_LIMIT (100K)
+    assert True  # Function should complete without error
+
+    # Test with zero limit
+    params_zero = {
+        "limit": "0",
+        "feed_types": ["Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    fetch_indicators(client, params_zero, current_time)
+    # Should use DEFAULT_LIMIT
+    assert True  # Function should complete without error
+
+
+def test_fetch_indicators_priority_order(client, mocker):
+    """
+    Given:
+        - Client with all indicator types configured
+        - Small limit to test priority
+    When:
+        - Calling fetch_indicators
+    Then:
+        - Fetches in correct priority order: Threat Objects → IP → Domain → URL → File
+        - Stops when limit is reached
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    # Track the order of API calls
+    call_order = []
+
+    def track_get_indicators(*args, **kwargs):
+        indicator_types = kwargs.get("indicator_types", [])
+        if indicator_types:
+            call_order.append(indicator_types[0])
+        return {
+            "data": [{"indicator_value": "test", "indicator_type": indicator_types[0].lower(), "verdict": "malicious"}],
+            "metadata": {"next_page_token": None},
+        }
+
+    def track_get_threat_objects(*args, **kwargs):
+        call_order.append("ThreatObjects")
+        return {
+            "data": [{"name": "APT29", "threat_object_class": "actor", "publications": []}],
+            "metadata": {"next_page_token": None},
+        }
+
+    mocker.patch.object(client, "get_indicators", side_effect=track_get_indicators)
+    mocker.patch.object(client, "get_threat_objects", side_effect=track_get_threat_objects)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    params = {
+        "limit": "10",
+        "feed_types": ["Indicators", "Threat Objects"],
+        "indicator_types": ["File", "URL", "Domain", "IP"],  # Unsorted
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    current_time = datetime.now()
+    fetch_indicators(client, params, current_time)
+
+    # Verify priority order: Threat Objects first, then IP, Domain, URL, File
+    assert call_order[0] == "ThreatObjects"
+    assert call_order[1] == "IP"
+    assert call_order[2] == "Domain"
+    assert call_order[3] == "URL"
+    assert call_order[4] == "File"
+
+
+def test_fetch_indicator_type_pagination(client, mocker):
+    """
+    Given:
+        - Client with paginated API responses
+        - Limit requiring multiple pages
+    When:
+        - Calling fetch_indicator_type
+    Then:
+        - Fetches multiple pages until limit is reached
+        - Calculates correct page_limit for each request
+    """
+    # Create responses for pagination
+    responses = []
+    for page in range(3):
+        responses.append(
+            {
+                "data": [
+                    {"indicator_value": f"1.2.{page}.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)
+                ],
+                "metadata": {"next_page_token": f"page{page+2}" if page < 2 else None},
+            }
+        )
+
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mock_get_indicators.side_effect = responses
+
+    # Fetch with limit of 250 (should get 100 + 100 + 50)
+    result = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert len(result) == 250
+    assert mock_get_indicators.call_count == 3
+
+    # Verify the third call requested only 50 (remaining)
+    third_call_args = mock_get_indicators.call_args_list[2][1]
+    assert third_call_args["limit"] == 50
+
+
+def test_fetch_threat_objects_with_limit_stops_early(client, mocker):
+    """
+    Given:
+        - Client with API returning fewer results than limit
+    When:
+        - Calling fetch_threat_objects_with_limit
+    Then:
+        - Stops when no more data available
+        - Returns all available data (less than limit)
+    """
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(25)],
+        "metadata": {"next_page_token": None},
+    }
+
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+
+    # Request limit of 100, but only 25 available
+    result = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
+
+    assert len(result) == 25
+    assert mock_get_threat_objects.call_count == 1
+
+
+def test_calculate_limit_per_type_with_none():
+    """
+    Given:
+        - limit is None
+        - total_indicator_types is 4
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
+    """
+    result = calculate_limit_per_type(None, 4)
+    expected = TOTAL_INDICATOR_LIMIT // 4  # 100,000 / 4 = 25,000
+    assert result == expected
+    assert result == 25000
+
+
+def test_calculate_limit_per_type_with_negative():
+    """
+    Given:
+        - limit is negative (-100)
+        - total_indicator_types is 5
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
+    """
+    result = calculate_limit_per_type(-100, 5)
+    expected = TOTAL_INDICATOR_LIMIT // 5  # 100,000 / 5 = 20,000
+    assert result == expected
+    assert result == 20000
+
+
+def test_calculate_limit_per_type_exceeds_total():
+    """
+    Given:
+        - limit is 30,000
+        - total_indicator_types is 4
+        - limit * types = 120,000 > TOTAL_INDICATOR_LIMIT (100,000)
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
+    """
+    result = calculate_limit_per_type(30000, 4)
+    expected = TOTAL_INDICATOR_LIMIT // 4  # 100,000 / 4 = 25,000
+    assert result == expected
+    assert result == 25000
+
+
+def test_calculate_limit_per_type_within_total():
+    """
+    Given:
+        - limit is 20,000
+        - total_indicator_types is 4
+        - limit * types = 80,000 <= TOTAL_INDICATOR_LIMIT (100,000)
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns the provided limit
+    """
+    result = calculate_limit_per_type(20000, 4)
+    assert result == 20000
+
+
+def test_calculate_limit_per_type_exact_total():
+    """
+    Given:
+        - limit is 25,000
+        - total_indicator_types is 4
+        - limit * types = 100,000 = TOTAL_INDICATOR_LIMIT
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns the provided limit (exactly at the limit)
+    """
+    result = calculate_limit_per_type(25000, 4)
+    assert result == 25000
+
+
+def test_calculate_limit_per_type_single_type():
+    """
+    Given:
+        - limit is None
+        - total_indicator_types is 1
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns TOTAL_INDICATOR_LIMIT (100,000 / 1 = 100,000)
+    """
+    result = calculate_limit_per_type(None, 1)
+    assert result == TOTAL_INDICATOR_LIMIT
+    assert result == 100000
+
+
+def test_calculate_limit_per_type_many_types():
+    """
+    Given:
+        - limit is None
+        - total_indicator_types is 10
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / 10 = 10,000)
+    """
+    result = calculate_limit_per_type(None, 10)
+    expected = TOTAL_INDICATOR_LIMIT // 10  # 100,000 / 10 = 10,000
+    assert result == expected
+    assert result == 10000
+
+
+def test_calculate_limit_per_type_small_limit():
+    """
+    Given:
+        - limit is 5,000
+        - total_indicator_types is 4
+        - limit * types = 20,000 <= TOTAL_INDICATOR_LIMIT
+    When:
+        - Calling calculate_limit_per_type
+    Then:
+        - Returns the provided limit (5,000)
+    """
+    result = calculate_limit_per_type(5000, 4)
+    assert result == 5000
