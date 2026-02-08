@@ -3396,18 +3396,16 @@ class EC2:
         Returns:
             CommandResults: Results of the deletion operation
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: Dict[str, Any] = {
+            "LaunchTemplateId": args.get("launch_template_id"),
+            "LaunchTemplateName": args.get("launch_template_name")
+        }
 
         # Either launch_template_id or launch_template_name must be provided
-        if launch_template_id := args.get("launch_template_id"):
-            kwargs["LaunchTemplateId"] = launch_template_id
-        elif launch_template_name := args.get("launch_template_name"):
-            kwargs["LaunchTemplateName"] = launch_template_name
-        else:
+        if not remove_empty_elements(kwargs):
             raise DemistoException("Either launch_template_id or launch_template_name must be provided")
 
         print_debug_logs(client, f"Deleting launch template with parameters: {kwargs}")
-
         response = client.delete_launch_template(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -3415,19 +3413,7 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
         deleted_template = response.get("LaunchTemplate", {})
-
-        # Build output data
-        output_data = {
-            "LaunchTemplateId": deleted_template.get("LaunchTemplateId"),
-            "LaunchTemplateName": deleted_template.get("LaunchTemplateName"),
-            "CreateTime": deleted_template.get("CreateTime"),
-            "CreatedBy": deleted_template.get("CreatedBy"),
-            "DefaultVersionNumber": deleted_template.get("DefaultVersionNumber"),
-            "LatestVersionNumber": deleted_template.get("LatestVersionNumber"),
-        }
-        output_data = remove_empty_elements(output_data)
 
         return CommandResults(
             outputs_prefix="AWS.EC2.DeletedLaunchTemplates",
@@ -3435,8 +3421,9 @@ class EC2:
             outputs=deleted_template,
             readable_output=tableToMarkdown(
                 "AWS Deleted Launch Templates",
-                output_data,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber"],
+                deleted_template,
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreateTime", "CreatedBy", "DefaultVersionNumber",
+                         "LatestVersionNumber"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),

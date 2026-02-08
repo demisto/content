@@ -8639,6 +8639,15 @@ script:
     - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
       description: The version number of the latest version of the launch template.
       type: number
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.Operator
+      description: The entity that manages the launch template.
+      type: Object
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Value
+      description: The value of the tag.
+      type: string
 
   isfetch: false
   runonce: false
