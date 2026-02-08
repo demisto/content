@@ -65,30 +65,40 @@ def generate_fake_credentials():
 
 
 def get_headers():
+    demisto.debug("get_headers: Building request headers")
     headers = {"Content-Type": "application/json", "X-Vault-Request": "true"}
 
     if TOKEN:  # pragma: no cover
+        demisto.debug("get_headers: Adding X-Vault-Token to headers")
         headers["X-Vault-Token"] = TOKEN
 
     if NAMESPACE:  # pragma: no cover
+        demisto.debug(f"get_headers: Adding X-Vault-Namespace: {NAMESPACE}")
         headers["X-Vault-Namespace"] = NAMESPACE
 
+    demisto.debug("get_headers: Headers prepared successfully")
     return headers
 
 
 def login():  # pragma: no cover
+    demisto.debug(f"login: Starting authentication (USE_APPROLE_AUTH_METHOD={USE_APPROLE_AUTH_METHOD})")
     if USE_APPROLE_AUTH_METHOD:
         path = "auth/approle/login"  # type: ignore
         body = {"role_id": USERNAME, "secret_id": PASSWORD}
+        demisto.debug("login: Using AppRole authentication method")
     else:
         path = "auth/userpass/login/" + USERNAME  # type: ignore
         body = {"password": PASSWORD}
+        demisto.debug(f"login: Using userpass authentication for user: {USERNAME}")
 
     integration_context = get_integration_context()
     url = urljoin(SERVER_URL, path)
+    demisto.debug(f"login: Authentication URL: {url}")
     payload = json.dumps(body)
     headers = get_headers()
+    demisto.debug("login: Sending authentication request")
     res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
+    demisto.debug(f"login: Received response with status code: {res.status_code}")
     if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
         try:
             error_body = res.json()
@@ -100,9 +110,12 @@ def login():  # pragma: no cover
         return_error(f"Login failed. Status code: {str(res.status_code)}, details: {error_body}")
 
     auth_res = res.json()
+    demisto.debug("login: Received authentication response")
     if not auth_res or "auth" not in auth_res or "client_token" not in auth_res["auth"]:
+        demisto.debug("login: Authentication failed - invalid response structure")
         return_error("Could not authenticate user")
 
+    demisto.debug("login: Authentication successful, updating integration context")
     integration_context.update(
         {
             "lease_expiration": int(time.time()) + int(auth_res["auth"]["lease_duration"]),
@@ -110,17 +123,22 @@ def login():  # pragma: no cover
         }
     )
     set_integration_context(integration_context)
+    demisto.debug("login: Token cached successfully")
     return auth_res["auth"]["client_token"]
 
 
 def send_request(path, method="get", body=None, params=None, headers=None):
+    demisto.debug(f"send_request: Starting request - Method: {method.upper()}, Path: {path}")
     body = body if body is not None else {}
     params = params if params is not None else {}
 
     url = urljoin(SERVER_URL, path)
+    demisto.debug(f"send_request: Full URL: {url}")
 
     headers = headers if headers is not None else get_headers()
+    demisto.debug(f"send_request: Sending {method.upper()} request")
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
+    demisto.debug(f"send_request: Received response with status code: {res.status_code}")
     if res.status_code < 200 or res.status_code >= 300:
         try:
             error_body = res.json()
@@ -152,8 +170,10 @@ def generate_role_secret_command():
     Returns:
         CommandResults: The command results object containing the response from the Vault server as readable output.
     """
+    demisto.debug("generate_role_secret_command: Starting command execution")
     args = demisto.args()
     role_name = args.get("role_name")
+    demisto.debug(f"generate_role_secret_command: Generating secret for role: {role_name}")
     meta_data = args.get("meta_data")
     cidr_list = argToList(args.get("cidr_list", ""))
     token_bound_cidrs = argToList(args.get("token_bound_cidrs", ""))
@@ -183,8 +203,10 @@ def get_role_id_command():
     Returns:
         CommandResults: The command results object containing the retrieved Role ID and role name as outputs.
     """
+    demisto.debug("get_role_id_command: Starting command execution")
     args = demisto.args()
     role_name = args.get("role_name")
+    demisto.debug(f"get_role_id_command: Getting role ID for: {role_name}")
     path = f"/auth/approle/role/{role_name}/role-id"
     response = send_request(path=path, method="get", body={"role_name": role_name})
     role_id = response.get("data", {}).get("role_id", "") if response else ""
@@ -689,47 +711,67 @@ def fetch_credentials():  # pragma: no cover
     
     Returns random fake credentials if no server URL is configured (test mode).
     """
+    demisto.debug("fetch_credentials: Starting credential fetch process")
     # Check if we're in test mode (no server URL configured)
     if not BASE_URL or BASE_URL == "":
-        demisto.debug("Test mode: Returning random fake credentials")
+        demisto.debug("fetch_credentials: Test mode detected - Returning random fake credentials")
         fake_credentials = generate_fake_credentials()
+        demisto.debug(f"fetch_credentials: Generated {len(fake_credentials)} fake credentials")
         demisto.credentials(fake_credentials)
+        demisto.debug("fetch_credentials: ✅ FETCH COMPLETED SUCCESSFULLY (Test Mode)")
         return
     
+    demisto.debug("fetch_credentials: Production mode - fetching real credentials")
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get("engines", []))
     identifier = demisto.args().get("identifier")
     concat_username_to_cred_name = argToBoolean(demisto.params().get("concat_username_to_cred_name") or "false")
+    demisto.debug(f"fetch_credentials: Configured engines: {engines}")
+    demisto.debug(f"fetch_credentials: Identifier filter: {identifier}")
     if len(engines) == 0:
+        demisto.debug("fetch_credentials: ERROR - No secrets engines specified")
         return_error("No secrets engines specified")
     for engine_type in engines:
         engines_to_fetch = list(filter(lambda e: e["type"] == engine_type, ENGINE_CONFIGS))
         engines_to_fetch_from += engines_to_fetch
+        demisto.debug(f"fetch_credentials: Found {len(engines_to_fetch)} engines of type {engine_type}")
     if len(engines_to_fetch_from) == 0:
+        demisto.debug("fetch_credentials: ERROR - No configured engines found")
         return_error("Engine type not configured, Use the configure-engine command to configure a secrets engine.")
 
+    demisto.debug(f"fetch_credentials: Processing {len(engines_to_fetch_from)} engines")
     for engine in engines_to_fetch_from:
+        demisto.debug(f"fetch_credentials: Processing engine type: {engine['type']}, path: {engine['path']}")
         if engine["type"] == "KV":
+            demisto.debug("fetch_credentials: Processing KV engine")
             if "version" not in engine:
+                demisto.debug("fetch_credentials: ERROR - KV version not configured")
                 return_error("Version not configured for KV engine, re-configure the engine")
             if engine["version"] == "1":
+                demisto.debug("fetch_credentials: Fetching KV v1 secrets")
                 credentials += get_kv1_secrets(engine["path"], concat_username_to_cred_name)
             elif engine["version"] == "2":
+                demisto.debug("fetch_credentials: Fetching KV v2 secrets")
                 credentials += get_kv2_secrets(engine["path"], concat_username_to_cred_name, engine.get("folder"))
         elif engine["type"] == "Cubbyhole":
+            demisto.debug("fetch_credentials: Fetching Cubbyhole secrets")
             credentials += get_ch_secrets(engine["path"], concat_username_to_cred_name)
 
         elif engine["type"] == "AWS":
+            demisto.debug("fetch_credentials: Fetching AWS secrets")
             aws_roles_list = []
             if engine.get("aws_roles_list"):
                 aws_roles_list = engine.get("aws_roles_list").split(",")
             credentials += get_aws_secrets(engine["path"], concat_username_to_cred_name, aws_roles_list, engine.get("aws_method"))
 
     if identifier:
+        demisto.debug(f"fetch_credentials: Filtering credentials by identifier: {identifier}")
         credentials = list(filter(lambda c: c.get("name", "") == identifier, credentials))
 
+    demisto.debug(f"fetch_credentials: ✅ SUCCESS - Returning {len(credentials)} credentials")
     demisto.credentials(credentials)
+    demisto.debug("fetch_credentials: ✅ FETCH COMPLETED SUCCESSFULLY")
 
 
 def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: no cover
@@ -914,9 +956,12 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
 
     try:
         command = demisto.command()
+        demisto.debug(f"main: Executing command: {command}")
         if command == "test-module":
+            demisto.debug("main: Running test-module")
             demisto.results("ok")
         elif command == "fetch-credentials":
+            demisto.debug("main: Running fetch-credentials")
             fetch_credentials()
         elif command == "hashicorp-list-secrets-engines":
             list_secrets_engines_command()
@@ -954,5 +999,8 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
             get_role_id_command()
 
     except Exception as e:
-        demisto.debug(f"An error occurred: {e}")
+        demisto.debug(f"main: EXCEPTION occurred: {str(e)}")
+        demisto.debug(f"main: Exception type: {type(e).__name__}")
+        import traceback
+        demisto.debug(f"main: Traceback: {traceback.format_exc()}")
         return_error(f"An error occurred: {e}")
