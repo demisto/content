@@ -4136,32 +4136,32 @@ Returns a list of BIOCs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The BIOC name to filter by. Can filter only by one name. | Optional |
-| severity | The BIOC severity to filter by. Possible values are: info, low, medium, high. | Optional |
-| type | The BIOC type to filter by. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
-| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
-| comment | The BIOC comment to filter by. | Optional |
-| status | The BIOC status to filter by. Can be one of the following: enabled, disabled. Possible values are: enabled, disabled. | Optional |
-| indicator | The BIOC indicator to filter by. | Optional |
-| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
-| mitre_tactic_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
-| extra_data | Whether to return extended data. Possible values are: true, false. | Optional |
-| limit | Maximum number of results to return. | Optional |
-| page_size | Page size. | Optional |
-| page | Page number. | Optional |
+| name | The BIOC name to filter by. Can filter only by one name. | Optional | 
+| severity | The BIOC severity to filter by. Possible values are: info, low, medium, high, critical. | Optional | 
+| type | The BIOC type to filter by. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional | 
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional | 
+| comment | The BIOC comment to filter by. | Optional | 
+| status | The BIOC status to filter by. Can be one of the following: enabled, disabled. Possible values are: enabled, disabled. | Optional | 
+| indicator | The BIOC indicator to filter by. | Optional | 
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional | 
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional | 
+| extra_data | Whether to return extended data. Possible values are: true, false. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
+| page_size | Page size. | Optional | 
+| page | Page number. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC rule id. |
-| PaloAltoNetworksXDR.BIOC.name | String | BIOC name. |
-| PaloAltoNetworksXDR.BIOC.type | String | BIOC type. |
-| PaloAltoNetworksXDR.BIOC.severity | String | BIOC severity. |
-| PaloAltoNetworksXDR.BIOC.status | String | BIOC status. |
-| PaloAltoNetworksXDR.BIOC.is_xql | Bool | Whether the BIOC is XQL. |
-| PaloAltoNetworksXDR.BIOC.comment | String | The BIOC comment. |
-| PaloAltoNetworksXDR.BIOC.indicator | Unknown | The BIOC indicator. |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC rule id. | 
+| PaloAltoNetworksXDR.BIOC.name | String | BIOC name. | 
+| PaloAltoNetworksXDR.BIOC.type | String | BIOC type. | 
+| PaloAltoNetworksXDR.BIOC.severity | String | BIOC severity. | 
+| PaloAltoNetworksXDR.BIOC.status | String | BIOC status. | 
+| PaloAltoNetworksXDR.BIOC.is_xql | Boolean | Whether the BIOC is XQL. | 
+| PaloAltoNetworksXDR.BIOC.comment | String | The BIOC comment. | 
+| PaloAltoNetworksXDR.BIOC.indicator | String | The BIOC indicator. | 
 
 ### xdr-bioc-create
 
@@ -4176,24 +4176,21 @@ Creates a new BIOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The BIOC name. | Required |
-| severity | The BIOC severity. Possible values are: info, low, medium, high. | Required |
-| type | The BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
-| is_xql | Whether the new BIOC is XQL. Possible values are: true, false. | Optional |
-| comment | The BIOC comment. | Required |
-| status | The BIOC status. Possible values are: enabled, disabled. | Required |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
-| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
-| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+| name | The BIOC name. | Required | 
+| severity | The BIOC severity. Possible values are: info, low, medium, high, critical. | Required | 
+| type | The BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional | 
+| is_xql | Whether the new BIOC is XQL. Possible values are: true, false. | Optional | 
+| comment | The BIOC comment. | Optional | 
+| status | The BIOC status. Possible values are: enabled, disabled. | Optional | 
+| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required | 
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional | 
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.BIOC.name | String | BIOC name. |
-| PaloAltoNetworksXDR.BIOC.type | String | BIOC type. |
-| PaloAltoNetworksXDR.BIOC.severity | String | BIOC severity. |
-| PaloAltoNetworksXDR.BIOC.status | String | BIOC status. |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC ID. | 
 
 ### xdr-bioc-update
 
@@ -4208,25 +4205,22 @@ Updates an existing BIOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | BIOC rule ID. | Required |
-| name | BIOC name. | Required |
-| severity | BIOC severity. Possible values are: info, low, medium, high. | Required |
-| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
-| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
-| comment | BIOC comment. | Required |
-| status | BIOC status. Possible values are: enabled, disabled. | Required |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
-| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
-| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+| rule_id | BIOC rule ID. | Required | 
+| name | BIOC name. | Required | 
+| severity | BIOC severity. Possible values are: info, low, medium, high, critical. | Required | 
+| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional | 
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional | 
+| comment | BIOC comment. | Optional | 
+| status | BIOC status. Possible values are: enabled, disabled. | Optional | 
+| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information please refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required | 
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional | 
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.BIOC.name | String | BIOC name. |
-| PaloAltoNetworksXDR.BIOC.type | String | BIOC type. |
-| PaloAltoNetworksXDR.BIOC.severity | String | BIOC severity. |
-| PaloAltoNetworksXDR.BIOC.status | String | BIOC status. |
+| PaloAltoNetworksXDR.BIOC.rule_id | String | BIOC ID. | 
 
 ### xdr-bioc-delete
 
@@ -4241,19 +4235,18 @@ Deletes a BIOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | BIOC name. | Optional |
-| severity | BIOC severity. Possible values are: info, low, medium, high. | Optional |
-| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
-| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
-| comment | BIOC comment. | Optional |
-| indicator | BIOC indicator. | Optional |
-| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
-| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
+| name | BIOC name. | Optional | 
+| severity | BIOC severity. Possible values are: info, low, medium, high, critical. | Optional | 
+| type | BIOC type. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional | 
+| is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional | 
+| comment | BIOC comment. | Optional | 
+| indicator | BIOC indicator. | Optional | 
+| mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional | 
+| mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### xdr-correlation-rule-list
 
 ***
@@ -4267,29 +4260,29 @@ Returns a list of correlation rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Correlation rule name. | Optional |
-| severity | Correlation rule severity. Possible values are: info, low, medium, high. | Optional |
-| xql_query | Correlation rule XQL query. | Optional |
-| is_xql | Whether the correlation rule is XQL. Possible values are: true, false. | Optional |
-| dataset | Correlation rule dataset. | Optional |
-| alert_name | Alert name. | Optional |
-| alert_category | Alert category. | Optional |
-| alert_fields | Alert fields. Can be a string or a dictionary. | Optional |
-| alert_domain | Alert domain. | Optional |
-| filter_json | Filter JSON. | Optional |
-| extra_data | Whether to return extended view. Possible values are: true, false. | Optional |
-| limit | Maximum number of results to return. | Optional |
-| page_size | Page size. | Optional |
-| page | Page number. | Optional |
+| name | Correlation rule name. | Optional | 
+| severity | Correlation rule severity. Possible values are: info, low, medium, high, critical. | Optional | 
+| xql_query | Correlation rule XQL query. | Optional | 
+| is_xql | Whether the correlation rule is XQL. Possible values are: true, false. | Optional | 
+| dataset | Correlation rule dataset. | Optional | 
+| alert_name | Alert name. | Optional | 
+| alert_category | Alert category. | Optional | 
+| alert_fields | Alert fields. Can be a string or a dictionary. | Optional | 
+| alert_domain | Alert domain. | Optional | 
+| filter_json | Filter JSON. | Optional | 
+| extra_data | Whether to return extended view. Possible values are: true, false. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
+| page_size | Page size. | Optional | 
+| page | Page number. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.CorrelationRule.id | String | Correlation rule ID. |
-| PaloAltoNetworksXDR.CorrelationRule.name | String | Correlation rule name. |
-| PaloAltoNetworksXDR.CorrelationRule.description | String | Correlation rule description. |
-| PaloAltoNetworksXDR.CorrelationRule.is_enabled | Boolean | Whether the correlation rule is enabled. |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | String | Correlation rule ID. | 
+| PaloAltoNetworksXDR.CorrelationRule.name | String | Correlation rule name. | 
+| PaloAltoNetworksXDR.CorrelationRule.description | String | Correlation rule description. | 
+| PaloAltoNetworksXDR.CorrelationRule.is_enabled | Boolean | Whether the correlation rule is enabled. | 
 
 ### xdr-correlation-rule-create
 
@@ -4304,39 +4297,36 @@ Creates a new correlation rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The correlation rule name. Example: name="This is a CR test 6". | Required |
-| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high. | Required |
-| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required |
-| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required |
-| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
-| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required |
-| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required |
-| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required |
-| description | The correlation rule description. | Optional |
-| alert_name | The alert name. | Optional |
-| alert_description | The alert description. | Optional |
-| alert_fields | Alert fields (string or dictionary). | Optional |
-| search_window | The search window timeframe. Example: search_window="1 hours". | Optional |
-| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional |
-| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10* ** *". | Optional |
-| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional |
-| suppression_duration | Duration of correlation rule suppression. | Optional |
-| suppression_fields | Suppression fields. | Optional |
-| dataset | The correlation rule dataset. Example: dataset=alerts. | Optional |
-| user_defined_severity | User-defined severity. | Optional |
-| user_defined_category | User-defined category. | Optional |
-| mitre_defs_json | MITRE definitions. | Optional |
-| investigation_query_link | Investigation query link. | Optional |
-| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional |
+| name | The correlation rule name. Example: name="This is a CR test 6". | Required | 
+| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high, critical. | Required | 
+| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required | 
+| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required | 
+| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required | 
+| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required | 
+| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required | 
+| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required | 
+| description | The correlation rule description. | Optional | 
+| alert_name | The alert name. | Optional | 
+| alert_description | The alert description. | Optional | 
+| alert_fields | Alert fields (string or dictionary). | Optional | 
+| search_window | The search window timeframe. Example: search_window="1 hours". | Optional | 
+| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional | 
+| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *". | Optional | 
+| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional | 
+| suppression_duration | Duration of correlation rule suppression. | Optional | 
+| suppression_fields | Suppression fields. | Optional | 
+| dataset | The correlation rule dataset. Example: dataset=alerts. | Required | 
+| user_defined_severity | User-defined severity. | Optional | 
+| user_defined_category | User-defined category. | Optional | 
+| mitre_defs_json | MITRE definitions. | Optional | 
+| investigation_query_link | Investigation query link. | Optional | 
+| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.CorrelationRule.id | String | Correlation rule ID. |
-| PaloAltoNetworksXDR.CorrelationRule.name | String | Correlation rule name. |
-| PaloAltoNetworksXDR.CorrelationRule.description | String | Correlation rule description. |
-| PaloAltoNetworksXDR.CorrelationRule.is_enabled | Boolean | Whether the correlation rule is enabled. |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | String | Correlation rule ID. | 
 
 ### xdr-correlation-rule-update
 
@@ -4351,40 +4341,37 @@ Updates an existing correlation rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | Correlation rule ID. | Required |
-| name | The correlation rule name. Example: name="This is a CR test 6". | Required |
-| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high. | Required |
-| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required |
-| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required |
-| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required |
-| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required |
-| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required |
-| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required |
-| description | The correlation rule description. | Optional |
-| alert_name | The alert name. | Optional |
-| alert_description | The alert description. | Optional |
-| alert_fields | Alert fields (string or dictionary). | Optional |
-| search_window | The search window timeframe. Example: search_window="1 hours". | Optional |
-| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional |
-| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10* ** *". | Optional |
-| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional |
-| suppression_duration | Duration of correlation rule suppression. | Optional |
-| suppression_fields | Suppression fields. | Optional |
-| dataset | The correlation rule dataset. Example: dataset=alerts. | Required |
-| user_defined_severity | User-defined severity. | Optional |
-| user_defined_category | User-defined category. | Optional |
-| mitre_defs_json | MITRE definitions. | Optional |
-| investigation_query_link | Investigation query link. | Optional |
-| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional |
+| rule_id | Correlation rule ID. | Required | 
+| name | The correlation rule name. Example: name="This is a CR test 6". | Required | 
+| severity | The correlation rule severity. Example: severity=low. Possible values are: info, low, medium, high, critical. | Required | 
+| xql_query | The correlation rule XQL query. Example: xql_query="dataset = xdr_data \| limit 1". | Required | 
+| is_enabled | Whether the rule is enabled. Example: is_enabled=true. Possible values are: true, false. | Required | 
+| alert_category | The alert category. Example: alert_category=dropper. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Required | 
+| execution_mode | The rule execution mode. Example: execution_mode=scheduled. Possible values are: scheduled, real_time. | Required | 
+| timezone | The correlation rule timezone. Example: timezone="Asia/Jerusalem". | Required | 
+| mapping_strategy | The rule mapping strategy. Example: mapping_strategy=auto. Possible values are: auto, custom. | Required | 
+| description | The correlation rule description. | Optional | 
+| alert_name | The alert name. | Optional | 
+| alert_description | The alert description. | Optional | 
+| alert_fields | Alert fields (string or dictionary). | Optional | 
+| search_window | The search window timeframe. Example: search_window="1 hours". | Optional | 
+| schedule | The correlation rule schedule. Example: schedule="10 minutes". | Optional | 
+| schedule_linux | Linux scheduling for the rule. Example: schedule_linux="*/10 * * * *". | Optional | 
+| suppression_enabled | Whether suppression is enabled. Possible values are: true, false. | Optional | 
+| suppression_duration | Duration of correlation rule suppression. | Optional | 
+| suppression_fields | Suppression fields. | Optional | 
+| dataset | The correlation rule dataset. Example: dataset=alerts. | Required | 
+| user_defined_severity | User-defined severity. | Optional | 
+| user_defined_category | User-defined category. | Optional | 
+| mitre_defs_json | MITRE definitions. | Optional | 
+| investigation_query_link | Investigation query link. | Optional | 
+| drilldown_query_timeframe | The drilldown query timeframe. Example: drilldown_query_timeframe="ALERT". | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.CorrelationRule.id | String | Correlation rule ID. |
-| PaloAltoNetworksXDR.CorrelationRule.name | String | Correlation rule name. |
-| PaloAltoNetworksXDR.CorrelationRule.description | String | Correlation rule description. |
-| PaloAltoNetworksXDR.CorrelationRule.is_enabled | Boolean | Whether the correlation rule is enabled. |
+| PaloAltoNetworksXDR.CorrelationRule.rule_id | String | Correlation rule ID. | 
 
 ### xdr-correlation-rule-delete
 
@@ -4399,7 +4386,7 @@ Deletes correlation rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | Correlation rule ID. | Required |
+| rule_id | Correlation rule ID. | Required | 
 
 #### Context Output
 
