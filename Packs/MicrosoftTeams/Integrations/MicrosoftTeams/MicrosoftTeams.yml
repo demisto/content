@@ -931,11 +931,13 @@ script:
       type: String
   - arguments:
     - description: |-
-        The user identifier to send the message to. Can be one of the following:
-        - User ID (GUID): e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"
-        - Email address: e.g., "user@example.com"
-        - User Principal Name: e.g., "user@domain.onmicrosoft.com"
-        - Display Name: e.g., "John Doe"
+        The user to send the message to. Accepts any of the following identifiers:
+        - Email address (e.g., "john.doe@example.com")
+        - User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")
+        - Display name (e.g., "John Doe")
+        - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2")
+        
+        The command will automatically resolve the identifier to the user's ID using Microsoft Graph API.
       name: user_id
       required: true
     - description: The text message to send to the user.
@@ -954,16 +956,16 @@ script:
       Note: Either 'message' or 'adaptive_card' must be provided, but not both.
     name: microsoft-teams-send-proactive-message
     outputs:
-    - contextPath: MicrosoftTeams.ProactiveMessage.conversationId
+    - contextPath: MicrosoftTeams.Conversation.conversationId
       description: The ID of the conversation created or used.
       type: String
-    - contextPath: MicrosoftTeams.ProactiveMessage.userId
+    - contextPath: MicrosoftTeams.Conversation.userId
       description: The resolved user ID.
       type: String
-    - contextPath: MicrosoftTeams.ProactiveMessage.activityId
+    - contextPath: MicrosoftTeams.Conversation.activityId
       description: The ID of the sent message activity.
       type: String
-    - contextPath: MicrosoftTeams.ProactiveMessage.userIdentifier
+    - contextPath: MicrosoftTeams.Conversation.userIdentifier
       description: The original user identifier provided.
       type: String
   dockerimage: demisto/teams:1.0.0.6091526

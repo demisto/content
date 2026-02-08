@@ -920,135 +920,61 @@ def get_bot_access_token() -> str:
         raise ValueError("Failed to get bot access token")
 
 
-def get_graph_token_for_proactive_messaging() -> str:
-    """
-    Retrieves Microsoft Graph API access token specifically for proactive messaging user resolution.
-    Uses a separate token with Graph API scope instead of Bot Framework scope.
-    :return: The Microsoft Graph API access token
-    """
-    integration_context: dict = get_integration_context()
-    access_token: str = integration_context.get("graph_proactive_token", "")
-    valid_until: int = integration_context.get("graph_proactive_valid_until", 0)
-    
-    if access_token and valid_until and epoch_seconds() < valid_until:
-        demisto.debug("Using cached Graph API token for proactive messaging")
-        return access_token
-    
-    tenant_id = integration_context.get("tenant_id")
-    if not tenant_id:
-        raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
-    
-    data: dict = {
-        "grant_type": "client_credentials",
-        "client_id": BOT_ID,
-        "client_secret": BOT_PASSWORD,
-        "scope": "https://graph.microsoft.com/.default",
-    }
-    
-    url: str = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
-    demisto.debug(f"Requesting Graph API token for proactive messaging from tenant {tenant_id}")
-    response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
-    
-    if not response.ok:
-        error = error_parser(response)
-        raise ValueError(f"Failed to get Graph access token for proactive messaging [{response.status_code}] - {error}")
-    
-    try:
-        response_json: dict = response.json()
-        access_token = response_json.get("access_token", "")
-        expires_in: int = response_json.get("expires_in", 3595)
-        time_now: int = epoch_seconds()
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            expires_in -= time_buffer
-        
-        integration_context["graph_proactive_token"] = access_token
-        integration_context["graph_proactive_valid_until"] = time_now + expires_in
-        set_integration_context(integration_context)
-        demisto.debug("Successfully obtained Graph API token for proactive messaging")
-        return access_token
-    except ValueError:
-        raise ValueError("Failed to get Graph access token for proactive messaging")
-
-
 def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
     """
     Resolves a user identifier (displayName, mail, or userPrincipalName) to the actual user ID.
     Uses Microsoft Graph API to query users.
-    
+
     :param user_identifier: User identifier - can be displayName, mail, userPrincipalName, or user ID
     :return: The resolved user ID
     """
     demisto.debug(f"Resolving user identifier: {user_identifier}")
-    
-    # Get Graph API token for user resolution
-    access_token = get_graph_token_for_proactive_messaging()
-    
-    headers: dict = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-    
-    # Try direct user ID lookup first (if it looks like a GUID)
-    if re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', user_identifier):
-        demisto.debug(f"User identifier appears to be a GUID, using directly: {user_identifier}")
-        return user_identifier
-    
+
     # Try to get user by exact match on userPrincipalName or mail
     url = f"{GRAPH_BASE_URL}/v1.0/users/{urllib.parse.quote(user_identifier)}"
     demisto.debug(f"Attempting direct user lookup: {url}")
-    
+
     try:
-        response: requests.Response = requests.get(url, headers=headers, verify=USE_SSL, proxies=PROXIES)
-        if response.ok:
-            user_data = response.json()
-            user_id = user_data.get("id", "")
-            if user_id:
-                demisto.debug(f"Found user by exact match: {user_id}")
-                return user_id
+        user_data: dict = cast(dict[Any, Any], http_request("GET", url))
+        user_id = user_data.get("id", "")
+        if user_id:
+            demisto.debug(f"Found user by exact match: {user_id}")
+            return user_id
     except Exception as e:
         demisto.debug(f"Direct user lookup failed: {str(e)}")
-    
+
     # Try filter query for exact match on displayName, mail, or userPrincipalName
     filter_query = (
-        f"displayName eq '{user_identifier}' or "
-        f"userPrincipalName eq '{user_identifier}' or "
-        f"mail eq '{user_identifier}'"
+        f"displayName eq '{user_identifier}' or " f"userPrincipalName eq '{user_identifier}' or " f"mail eq '{user_identifier}'"
     )
-    url = f"{GRAPH_BASE_URL}/v1.0/users?$filter={urllib.parse.quote(filter_query)}"
+    params = {"$filter": filter_query}
+    url = f"{GRAPH_BASE_URL}/v1.0/users"
     demisto.debug(f"Attempting exact match filter query: {filter_query}")
-    
-    response = requests.get(url, headers=headers, verify=USE_SSL, proxies=PROXIES)
-    
-    if not response.ok:
-        error = error_parser(response)
-        raise ValueError(f"Failed to resolve user ID [{response.status_code}] - {error}")
-    
-    users = response.json().get("value", [])
-    
+
+    response: dict = cast(dict[Any, Any], http_request("GET", url, params=params))
+    users = response.get("value", [])
+
     if not users:
-        raise ValueError(
+        return_error(
             f"User not found: {user_identifier}. "
             f"Please provide an exact match for email, User Principal Name, or user ID (GUID)."
         )
-    
+
     # Security check: If multiple users match, raise an error to prevent sending to wrong user
     if len(users) > 1:
-        user_list = '\n'.join([
-            f"- {u.get('displayName', 'N/A')} ({u.get('mail', 'N/A')}) - ID: {u.get('id', 'N/A')}"
-            for u in users
-        ])
-        raise ValueError(
-            f"Multiple users found matching '{user_identifier}':\n{user_list}\n\n"
+        user_list = "\n".join(
+            [f"- {u.get('displayName', 'N/A')} ({u.get('mail', 'N/A')}) - ID: {u.get('id', 'N/A')}" for u in users]
+        )
+        return_error(
+            f"Multiple users found matching '{user_identifier}':\n\n{user_list}\n\n"
             f"To avoid sending sensitive messages to the wrong user, please provide the exact user ID (GUID) "
             f"or a unique email address."
         )
-    
+
     user_id = users[0].get("id", "")
     if not user_id:
-        raise ValueError(f"User ID not found in response for: {user_identifier}")
-    
+        return_error(f"User ID not found in response for: {user_identifier}")
+
     demisto.debug(f"Resolved user '{user_identifier}' to ID: {user_id}")
     return user_id
 
@@ -1057,7 +983,7 @@ def create_proactive_conversation(user_id: str) -> str:
     """
     Creates a proactive conversation with a user using Bot Framework API.
     Checks if conversation already exists to avoid unnecessary API calls.
-    
+
     :param user_id: The Microsoft Teams user ID
     :return: The conversation ID
     """
@@ -1066,44 +992,46 @@ def create_proactive_conversation(user_id: str) -> str:
     bot_name: str = integration_context.get("bot_name", "")
     tenant_id: str = integration_context.get("tenant_id", "")
     service_url: str = integration_context.get("service_url", "")
-    
+
     if not service_url:
-        raise ValueError("Service URL not found. Please ensure the bot has been added to a team and has received at least one message.")
-    
+        raise ValueError(
+            "Service URL not found. Please ensure the bot has been added to a team and has received at least one message."
+        )
+
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
-    
+
     # Check if we have a cached conversation for this user
     cached_conversations: dict = integration_context.get("proactive_conversations", {})
     if isinstance(cached_conversations, str):
         cached_conversations = json.loads(cached_conversations)
-    
+
     if user_id in cached_conversations:
-        conversation_id = cached_conversations[user_id]
-        demisto.debug(f"Using cached conversation ID for user {user_id}: {conversation_id}")
-        return conversation_id
-    
+        cached_conversation_id = cached_conversations[user_id]
+        demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
+        return cached_conversation_id
+
     # Create new conversation
     conversation: dict = {
         "bot": {"id": f"28:{bot_id}", "name": bot_name},
         "members": [{"id": user_id}],
         "channelData": {"tenant": {"id": tenant_id}},
     }
-    
+
     url: str = f"{service_url}/v3/conversations"
     demisto.debug(f"Creating proactive conversation with user {user_id}")
-    
+
     response: dict = cast(dict[Any, Any], http_request("POST", url, json_=conversation, api="bot"))
     conversation_id: str = response.get("id", "")
-    
+
     if not conversation_id:
         raise ValueError("Failed to create conversation: No conversation ID returned")
-    
+
     # Cache the conversation ID
     cached_conversations[user_id] = conversation_id
     integration_context["proactive_conversations"] = json.dumps(cached_conversations)
     set_integration_context(integration_context)
-    
+
     demisto.debug(f"Created and cached conversation ID: {conversation_id}")
     return conversation_id
 
@@ -1111,7 +1039,7 @@ def create_proactive_conversation(user_id: str) -> str:
 def send_proactive_message_to_conversation(conversation_id: str, message: str = "", adaptive_card: dict = None) -> dict:
     """
     Sends a proactive message to a conversation using Bot Framework API.
-    
+
     :param conversation_id: The conversation ID
     :param message: The text message to send (optional if adaptive_card is provided)
     :param adaptive_card: The adaptive card to send (optional if message is provided)
@@ -1119,13 +1047,13 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
     """
     integration_context: dict = get_integration_context()
     service_url: str = integration_context.get("service_url", "")
-    
+
     if not service_url:
         raise ValueError("Service URL not found. Please ensure the bot has been added to a team.")
-    
+
     # Build the conversation payload
     conversation_payload: dict = {"type": "message"}
-    
+
     if adaptive_card:
         # Handle raw adaptive card format
         adaptive_card = handle_raw_adaptive_card(adaptive_card)
@@ -1135,10 +1063,10 @@ def send_proactive_message_to_conversation(conversation_id: str, message: str = 
         conversation_payload["entities"] = []
     else:
         raise ValueError("Either message or adaptive_card must be provided")
-    
+
     url: str = f"{service_url}/v3/conversations/{conversation_id}/activities"
     demisto.debug(f"Sending proactive message to conversation {conversation_id}")
-    
+
     response: dict = cast(dict[Any, Any], http_request("POST", url, json_=conversation_payload, api="bot"))
     return response
 
@@ -2857,64 +2785,62 @@ def send_proactive_message_command():
     Sends a proactive message to any Microsoft Teams user.
     This command enables sending messages to users across the entire organization without requiring
     the user to be in a specific team or channel.
-    
+
     The command:
     1. Resolves the user identifier (displayName, mail, userPrincipalName, or user ID) to the actual user ID
     2. Creates or retrieves a proactive conversation with the user
     3. Sends the message or adaptive card to the conversation
     """
     args = demisto.args()
-    user_id_arg: str = args.get('user_id', '')
-    message: str = args.get('message', '')
-    adaptive_card_arg: str = args.get('adaptive_card', '')
-    
+    user_id_arg: str = args.get("user_id", "")
+    message: str = args.get("message", "")
+    adaptive_card_arg: str = args.get("adaptive_card", "")
+
     # Validate inputs - message and adaptive_card are both optional, but at least one must be provided
     if not message and not adaptive_card_arg:
-        raise ValueError("Either message or adaptive_card must be provided")
-    
+        return_error("Either message or adaptive_card must be provided.")
+
     if message and adaptive_card_arg:
-        raise ValueError("Provide either message or adaptive_card, not both")
-    
+        return_error("Provide either message or adaptive_card, not both.")
+
     # Step 1: Resolve user identifier to user ID
     demisto.debug(f"Resolving user identifier: {user_id_arg}")
     user_id = resolve_user_id_for_proactive_message(user_id_arg)
-    
+
     # Step 2: Create or retrieve proactive conversation
     demisto.debug(f"Creating/retrieving proactive conversation for user: {user_id}")
     conversation_id = create_proactive_conversation(user_id)
-    
+
     # Step 3: Prepare message or adaptive card
     adaptive_card_obj = None
     if adaptive_card_arg:
         try:
             adaptive_card_obj = json.loads(adaptive_card_arg)
-        except json.JSONDecodeError:
-            raise ValueError("Invalid adaptive card JSON format")
-    
+        except json.JSONDecodeError as e:
+            return_error(f"Invalid adaptive card JSON format: {str(e)}")
+
     # Step 4: Send the proactive message
     demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
     response = send_proactive_message_to_conversation(
-        conversation_id=conversation_id,
-        message=message,
-        adaptive_card=adaptive_card_obj
+        conversation_id=conversation_id, message=message, adaptive_card=adaptive_card_obj
     )
-    
+    demisto.debug(f"Proactive message sent successfully. ActivityId: {response.get('id', '')}")
     # Prepare outputs
     outputs = {
-        "conversationId": conversation_id,
-        "userId": user_id,
-        "activityId": response.get("id", ""),
-        "userIdentifier": user_id_arg
+        "ConversationId": conversation_id,
+        "UserId": user_id,
+        "ActivityId": response.get("id", ""),
+        "UserIdentifier": user_id_arg,
     }
-    
+
     result = CommandResults(
-        outputs_prefix="MicrosoftTeams.ProactiveMessage",
+        outputs_prefix="MicrosoftTeams.Conversation",
         outputs_key_field="conversationId",
         outputs=outputs,
         readable_output="Message was sent successfully.",
-        raw_response=response
+        raw_response=response,
     )
-    
+
     return_results(result)
 
 
