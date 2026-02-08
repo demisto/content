@@ -4139,8 +4139,8 @@ class AssetsDeviceHandler:
                         log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
                 except asyncio.CancelledError:
                     log_falcon_assets(
-                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting).",
-                        "debug")
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting).", "debug"
+                    )
                 except Exception as e:
                     log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
                 finally:
@@ -4165,16 +4165,21 @@ class AssetsDeviceHandler:
         """
         # Handle leftover AIDs that didn't reach batch_limit
         if self.pending_buffer:
-            log_falcon_assets(f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}", "info")
+            log_falcon_assets(
+                f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}",
+                "info",
+            )
             # Create task for remaining batch (fire-and-forget)
-            task = asyncio.create_task(self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count))
+            task = asyncio.create_task(
+                self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count)
+            )
             self.running_tasks.add(task)
             task.add_done_callback(self.running_tasks.discard)
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
         while self.running_tasks:
-            log_falcon_assets(f"AssetsDeviceHandler: Starting flush of remaining assets.", "info")
+            log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
             # Create a snapshot of the current tasks
             current_batch = list(self.running_tasks)
             if not current_batch:
@@ -4717,7 +4722,9 @@ async def fetch_spotlight_assets():
         # Flush remaining AIDs and wait for all asset enrichment tasks
         # We pass the total count of unique AIDs we found during this execution
         total_assets_count = len(unique_aids)
-        log_falcon_assets(f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info")
+        log_falcon_assets(
+            f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
+        )
         await asset_handler.flush_remaining(total_items_count=total_assets_count)
 
         # Fetch completed successfully - reset state for next run
