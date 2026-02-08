@@ -3913,7 +3913,7 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
     spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
 
     # Extract state variables
-    snapshot_id = spotlight_state.metadata.get("snapshot_id", str(round(time.time() * 1000)))
+    snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
     unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
     processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
