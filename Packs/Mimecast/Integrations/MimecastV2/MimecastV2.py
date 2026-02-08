@@ -92,14 +92,14 @@ default_query_xml = '<?xml version="1.0"?> \n\
 def handle_error_response(failure_response, error_key="errors"):
     """
     Safely extract error details from Mimecast API failure response.
-    
+
     Args:
         failure_response: The 'fail' field from API response
         error_key: The key to extract from error object (default: "errors", can be "message")
-    
+
     Returns:
         Error details suitable for json.dumps()
-    
+
     Raises:
         Exception with formatted error message
     """
@@ -137,7 +137,7 @@ def request_with_pagination(
     response = http_request("POST", api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
-    results = []
+    results: list[Any] = []
     while True:
         if failure_response := response.get("fail"):
             handle_error_response(failure_response)
@@ -2193,17 +2193,13 @@ def fetch_log_type(
         last_fetch_log_type = current_fetch
 
     current_fetch_log_type = last_fetch_log_type
+    original_query_time = last_fetch_log_type
 
     # Handle pagination continuation
     if time_for_next_page:
         time_for_next_page = datetime.strptime(time_for_next_page, "%Y-%m-%dT%H:%M:%SZ")
-        time_for_next_page_date_time = time_for_next_page.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
         current_fetch_log_type = time_for_next_page
-        # Update search params with the time for next page
-        if "start" in search_params:
-            search_params["start"] = time_for_next_page_date_time
-        elif "from" in search_params:
-            search_params["from"] = time_for_next_page_date_time
+        original_query_time = time_for_next_page
 
     demisto.debug(f"{log_type}: {current_next_page=}, {dedup_messages=}, " f"{last_fetch_log_type=}, {current_fetch_log_type=}")
 
@@ -2251,11 +2247,17 @@ def fetch_log_type(
     # Update new_last_run with state for this log type
     if dedup_messages:
         new_last_run[dedup_key] = dedup_messages
-    if last_fetch_log_type:
-        new_last_run[time_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
     if next_page:
+        # During pagination, save the next page token and the original query time
         new_last_run[next_page_key] = next_page
-        new_last_run[time_for_next_page_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
+        new_last_run[time_for_next_page_key] = original_query_time.isoformat().split(".")[0] + "Z"
+    else:
+        # Pagination complete - update the time with the latest incident time
+        if last_fetch_log_type:
+            new_last_run[time_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
+        # Remove pagination keys from last_run as they are no longer relevant
+        new_last_run.pop(next_page_key, None)
+        new_last_run.pop(time_for_next_page_key, None)
 
 
 def url_to_incident(url_log):
