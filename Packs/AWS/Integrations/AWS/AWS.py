@@ -3220,22 +3220,17 @@ class EC2:
         Returns:
             CommandResults: Results containing launch template information
         """
-        kwargs: Dict[str, Any] = {}
+        kwargs: Dict[str, Any] = {
+            "LaunchTemplateIds": argToList(args.get("launch_template_ids")),
+            "LaunchTemplateNames": argToList(args.get("launch_template_names"))
+        }
 
         # Add filters if provided
         if filters_arg := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters_arg)
 
-        # Add launch template IDs if provided
-        if launch_template_ids := args.get("launch_template_ids"):
-            kwargs["LaunchTemplateIds"] = argToList(launch_template_ids)
-
-        # Add launch template names if provided
-        if launch_template_names := args.get("launch_template_names"):
-            kwargs["LaunchTemplateNames"] = argToList(launch_template_names)
-
         # Add pagination if no specific IDs or names provided
-        if not launch_template_ids and not launch_template_names:
+        if not args.get("launch_template_ids") and not args.get("launch_template_names"):
             pagination_kwargs = build_pagination_kwargs(args)
             kwargs.update(pagination_kwargs)
 
@@ -3247,31 +3242,11 @@ class EC2:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        launch_templates = response.get("LaunchTemplates", [])
-        if not launch_templates:
-            return CommandResults(readable_output="No launch templates were found.")
-
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
         launch_templates = response.get("LaunchTemplates", [])
-
-        # Add region to each launch template
-        for template in launch_templates:
-            template["Region"] = args.get("region")
-
-        # Build readable output data
-        readable_outputs = []
-        for template in launch_templates:
-            readable_data = {
-                "LaunchTemplateId": template.get("LaunchTemplateId"),
-                "LaunchTemplateName": template.get("LaunchTemplateName"),
-                "CreatedBy": template.get("CreatedBy"),
-                "DefaultVersionNumber": template.get("DefaultVersionNumber"),
-                "LatestVersionNumber": template.get("LatestVersionNumber"),
-                "CreateTime": template.get("CreateTime"),
-            }
-            readable_data = remove_empty_elements(readable_data)
-            readable_outputs.append(readable_data)
+        if not launch_templates:
+            return CommandResults(readable_output="No launch templates were found.")
 
         outputs = {
             "AWS.EC2.LaunchTemplates(val.LaunchTemplateId && val.LaunchTemplateId == obj.LaunchTemplateId)": launch_templates,
@@ -3282,8 +3257,9 @@ class EC2:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 LaunchTemplates",
-                readable_outputs,
-                headers=["LaunchTemplateId", "LaunchTemplateName", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber", "CreateTime"],
+                launch_templates,
+                headers=["LaunchTemplateId", "LaunchTemplateName", "CreatedBy", "DefaultVersionNumber", "LatestVersionNumber",
+                         "CreateTime"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),

@@ -8275,7 +8275,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: filters
-      description: One or more filters separated by ';'. See AWS documentation for details & filter options.
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
       required: false
     - name: launch_template_ids
       description: A comma-separated list of launch template IDs.
@@ -8292,6 +8292,9 @@ script:
       description: The token for the next set of results.
       required: false
     outputs:
+    - contextPath: AWS.EC2.LaunchTemplatesNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: String
     - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
       description: The ID of the launch template.
       type: string
@@ -8316,9 +8319,7 @@ script:
     - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
       description: The value of the tag.
       type: string
-    - contextPath: AWS.EC2.LaunchTemplates.Region
-      description: The AWS region where the template is located.
-      type: string
+
 
   - name: aws-ec2-launch-template-create
     description: Creates a launch template. A launch template contains the parameters to launch an instance.
