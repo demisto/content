@@ -225,6 +225,9 @@ class AgentixMessages:
     These messages are platform-agnostic and can be used across different integrations.
     """
     
+    # Bot display name (used when replacing bot mentions in messages sent to backend)
+    BOT_DISPLAY_NAME = "Cortex Assistant"
+    
     # Commands
     RESET_SESSION_COMMAND = "reset session"
 
@@ -1133,10 +1136,14 @@ class AgentixMessagingHandler:
         # Get conversation context (up to 5 previous messages)
         context = await self.get_conversation_context_formatted(channel_id, thread_ts, bot_id, message_ts)
         
+        # Replace bot mention with friendly display name for backend
+        bot_mention = self.format_user_mention(bot_id)
+        text_cleaned = text.replace(bot_mention, AgentixMessages.BOT_DISPLAY_NAME).strip()
+        
         # Prepare message with context
-        message_with_context = text
+        message_with_context = text_cleaned
         if context:
-            message_with_context = f"{context}\n**Current message**:\n{text}"
+            message_with_context = f"{context}\n**Current message**:\n{text_cleaned}"
         
         # Send message to backend using agentixIntegrations
         demisto.debug(f"Sending message to Agentix backend for user {user_email} in channel {channel_id}")
