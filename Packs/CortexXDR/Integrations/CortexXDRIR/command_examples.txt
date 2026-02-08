@@ -62,3 +62,6 @@
 !xdr-asset-group-create group_name="assetGroupTest" group_type=Dynamic membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.type.class\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-update group_id=1 group_type=Dynamic group_description=test group_name="Test" membership_predicate_json="{\"AND\":[{\"SEARCH_FIELD\":\"xdm.asset.provider\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Other\"}]}"
 !xdr-asset-group-delete group_id=1
+!xdr-case-list status="New" severity="low" case_domain="security" created_after=1770127736000
+!xdr-case-update case_id=1 status=resolved resolve_reason=resolved_other
+!xdr-case-artifact-list case_id=1
