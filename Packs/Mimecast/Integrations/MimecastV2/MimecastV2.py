@@ -198,9 +198,8 @@ def fetch_logs_with_pagination(
     dropped = 0
     next_page = current_next_page or ""
     dedup_messages = dedup_messages or []
-    iteration = 0
 
-    for _ in range(10):
+    for iteration in range(10):
         iteration += 1
         pagination = {"pageSize": limit}
         if next_page:
