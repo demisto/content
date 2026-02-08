@@ -8,7 +8,6 @@ import time
 import os
 import traceback
 import hashlib
-import secrets
 
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
@@ -89,6 +88,16 @@ def url_origin_join(base_url: str, path: str = "") -> str:
     parsed = urlparse(base_url)
     origin = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
     return origin.rstrip("/") + ("/" + path.lstrip("/") if path else "")
+
+
+def generate_state() -> str:
+    """
+    Generate a random state parameter for OAuth flows (CSRF protection).
+    
+    Returns:
+        A URL-safe base64-encoded random string without padding.
+    """
+    return base64.urlsafe_b64encode(os.urandom(16)).decode().rstrip("=")
 
 
 def update_integration_context_oauth_flow(data: dict[str, Any], override: bool = False) -> None:
@@ -310,7 +319,7 @@ class OAuthHandler:
         authorization_endpoint = metadata.get("authorization_endpoint", "")
 
         # 5. Generate random state for CSRF protection
-        state = base64.urlsafe_b64encode(os.urandom(16)).decode().rstrip("=")
+        state = generate_state()
 
         # 6. Build Authorization URL using the internal helper
         auth_url = self._create_authorization_url(authorization_endpoint, client_id, self.scope, code_challenge, state)
@@ -330,8 +339,8 @@ class OAuthHandler:
     def generate_authorization_code_login_url(self, authorization_endpoint: str) -> str:
         """Generates the login URL for the standard Authorization Code flow."""
         auth_endpoint = authorization_endpoint or url_origin_join(self.base_url, "oauth2/authorize")
-
-        auth_url = self._create_authorization_url(auth_endpoint, self.client_id, self.scope, state=secrets.token_urlsafe(32))
+        state = generate_state()
+        auth_url = self._create_authorization_url(auth_endpoint, self.client_id, self.scope, state=state)
         return auth_url
 
     async def get_client_credentials_token(self) -> tuple[str, int]:
