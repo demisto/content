@@ -4257,7 +4257,8 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
 
     all_resources: list[dict[str, Any]] = []
     offset = 0
-    while True:
+    total = offset + 1
+    while offset < total:
         query_params = {"ids": notification_ids, "offset": offset}
         demisto.debug(f"Recon-Log Recon notifications detailed request params: {query_params=}")
         raw = http_request(method="GET", url_suffix="/recon/entities/notifications-detailed/v1", params=query_params)
@@ -4270,9 +4271,6 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
         offset = pagination.get("offset", 0) + limit
 
         demisto.debug(f"Recon-Log pagination info: {offset=}, {total=}, {limit=} for detailed notifications")
-
-        if offset >= total:
-            break
     return all_resources
 
 
