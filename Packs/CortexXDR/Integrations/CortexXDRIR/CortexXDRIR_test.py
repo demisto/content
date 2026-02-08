@@ -2833,10 +2833,7 @@ def test_case_list_command(args, expected_filters, expected_sort):
 @pytest.mark.parametrize(
     "args, expected_update_data",
     [
-        (
-            {"case_id": "100", "status": "new"},
-            {"status_progress": "NEW"}
-        ),
+        ({"case_id": "100", "status": "new"}, {"status_progress": "NEW"}),
         (
             {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
             {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "DONE"},
@@ -2863,9 +2860,7 @@ def test_case_update_command(args, expected_update_data):
         res = case_update_command(client, args)
 
         assert res.readable_output == f"Case {args['case_id']} updated successfully"
-        mock_update.assert_called_with(
-            args["case_id"], request_data={"request_data": {"update_data": expected_update_data}}
-        )
+        mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
 
 
 @pytest.mark.parametrize(

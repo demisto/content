@@ -641,10 +641,7 @@ class Client(CoreClient):
         In case of success the API returns 204
         """
         return self._http_request(
-            method="POST",
-            url_suffix=f"/case/update/{case_id}",
-            json_data=request_data,
-            resp_type="response"
+            method="POST", url_suffix=f"/case/update/{case_id}", json_data=request_data, resp_type="response"
         )
 
     def get_case_artifacts(self, case_id: str):
@@ -1995,10 +1992,10 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         "resolved_known_issue": "Resolved - Known Issue",
         "resolved_duplicate": "Resolved - Duplicate Issue",
         "resolved_false_positive": "Resolved - False Positive",
-        "resolved_other": "Resolved - Other"
+        "resolved_other": "Resolved - Other",
     }
 
-    case_id = args.get("case_id")  # required
+    case_id = args.get("case_id", "")  # required
     status = args.get("status").upper() if args.get("status") else None
     resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason"))
     resolve_comment = args.get("resolve_comment").upper() if args.get("resolve_comment") else None
@@ -2025,7 +2022,7 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     Returns:
     - List[CommandResults]: A list of CommandResults objects.
     """
-    case_id = args.get("case_id")
+    case_id = args.get("case_id", "")
     artifacts = client.get_case_artifacts(case_id)
     demisto.debug(f"Full list of artifacts: {artifacts}")
 
@@ -2038,30 +2035,34 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     command_results = []
 
     if network_artifacts:
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(
-                name=f"Network Artifacts for Case {case_id}",
-                t=network_artifacts,
-                headerTransform=string_to_table_header,
-                removeNull=True,
-            ),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact",
-            outputs=network_artifacts,
-            raw_response=network_artifacts
-        ))
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    name=f"Network Artifacts for Case {case_id}",
+                    t=network_artifacts,
+                    headerTransform=string_to_table_header,
+                    removeNull=True,
+                ),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact",
+                outputs=network_artifacts,
+                raw_response=network_artifacts,
+            )
+        )
 
     if file_artifacts:
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(
-                name=f"File Artifacts for Case {case_id}",
-                t=file_artifacts,
-                headerTransform=string_to_table_header,
-                removeNull=True,
-            ),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact",
-            outputs=file_artifacts,
-            raw_response=file_artifacts
-        ))
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    name=f"File Artifacts for Case {case_id}",
+                    t=file_artifacts,
+                    headerTransform=string_to_table_header,
+                    removeNull=True,
+                ),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact",
+                outputs=file_artifacts,
+                raw_response=file_artifacts,
+            )
+        )
 
     if not command_results:
         command_results.append(CommandResults(readable_output=f"No artifacts found for case {case_id}"))
