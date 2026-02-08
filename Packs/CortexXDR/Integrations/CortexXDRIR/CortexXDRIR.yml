@@ -4292,6 +4292,18 @@ script:
     - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
       description: BIOC ID.
       type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.name
+      description: BIOC name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.type
+      description: BIOC type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.severity
+      description: BIOC severity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.status
+      description: BIOC status.
+      type: String
   - arguments:
     - description: BIOC rule ID.
       name: rule_id
@@ -4361,6 +4373,18 @@ script:
     outputs:
     - contextPath: PaloAltoNetworksXDR.BIOC.rule_id
       description: BIOC ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.name
+      description: BIOC name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.type
+      description: BIOC type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.severity
+      description: BIOC severity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.BIOC.status
+      description: BIOC status.
       type: String
   - arguments:
     - description: BIOC name.
@@ -4461,6 +4485,9 @@ script:
     name: xdr-correlation-rule-list
     outputs:
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.rule_id
+      description: Correlation rule ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.CorrelationRule.id
       description: Correlation rule ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.CorrelationRule.name
