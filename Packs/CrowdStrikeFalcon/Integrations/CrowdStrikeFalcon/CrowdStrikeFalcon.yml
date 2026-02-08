@@ -5328,6 +5328,7 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
+  - name: test-debug-mode
   dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetch: true
   isfetch:marketplacev2: false

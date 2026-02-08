@@ -780,6 +780,7 @@ def is_debug_mode():
     :rtype: ``bool``
     """
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return True
     return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 

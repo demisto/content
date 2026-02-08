@@ -8274,10 +8274,6 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     # Continue polling - job not done yet
     demisto.debug(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
     
-    # Explicitly extract your custom YAML arguments
-
-    demisto.debug(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
-    
     # NO manual extraction needed anymore! 
     # The decorator will automatically read args.get('interval') and args.get('timeout')
     
@@ -8545,6 +8541,8 @@ def main():  # pragma: no cover
             return_results(list_cnapp_alerts_command(args=args))
         elif command == "cs-falcon-search-ngsiem-events":
             return_results(cs_falcon_search_ngsiem_events_command(args=args))
+        elif command == "test-debug-mode":
+            return_results(CommandResults(readable_output=f"debug mode = {is_debug_mode()}"))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
