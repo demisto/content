@@ -496,3 +496,45 @@ def test_query_command_with_date_only_format(mocker):
     assert return_outputs_mock.call_count == 1
     _, kwargs = return_outputs_mock.call_args
     assert kwargs["outputs"]["BigQuery(val.Query && val.Query == obj.Query)"]["Row"][0]["Date"] == "2023-01-30"
+
+
+def test_test_module_success(mocker):
+    """
+    Given:
+    - Valid credentials and a region in the integration parameters.
+
+    When:
+    - Calling test_module.
+
+    Then:
+    - Ensure the bigquery client is initialized.
+    - Ensure the query is called with the correct SQL and location (region).
+    - Ensure the result is "ok".
+    """
+    from GoogleBigQuery import test_module
+
+    # Mock demisto.params
+    mock_params = {"credentials_google_service": {"password": '{"project_id": "test-project"}'}, "region": "us-central1"}
+    mocker.patch.object(demisto, "params", return_value=mock_params)
+
+    # Mock bigquery client and its methods
+    mock_client = mocker.Mock()
+    mock_query_job = mocker.Mock()
+    mock_query_results = ["row1"]  # Iterator will return this
+
+    mocker.patch("GoogleBigQuery.bigquery.Client", return_value=mock_client)
+    mock_client.query.return_value = mock_query_job
+    mock_query_job.result.return_value = mock_query_results
+
+    # Mock demisto.results
+    results_mock = mocker.patch.object(demisto, "results")
+
+    # Mock start_and_return_bigquery_client to avoid actual file operations
+    mocker.patch("GoogleBigQuery.start_and_return_bigquery_client", return_value=mock_client)
+
+    test_module()
+
+    # Verify query was called with correct parameters
+    mock_client.query.assert_called_once_with("SELECT 1", location="us-central1")
+    # Verify results
+    results_mock.assert_called_once_with("ok")
