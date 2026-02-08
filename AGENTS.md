@@ -30,12 +30,12 @@ demisto-sdk pre-commit -a
 
 ## Non-Obvious Project Rules
 
-- **Runtime Injection**: `CommonServerPython` and `CommonServerUserPython` are injected at runtime. Always import them: `from CommonServerPython import *`.
+- **Runtime Injection**: `CommonServerPython` is injected at runtime and must be imported: `from CommonServerPython import *`. Note: `CommonServerUserPython` is also injected but is typically not imported explicitly by integrations.
 - **Imports**: MUST import `demistomock as demisto` at the top of every integration/script.
 - **Docker Dependency**: Dependencies are managed via Docker images defined in the `.yml` file, not local `pip`. You cannot `pip install` in the runtime environment.
 - **Test Execution**: Standard `pytest` often fails due to missing runtime context. Use `demisto-sdk pre-commit` which sets up the correct Docker environment.
 - **Error Handling**: Use `return_error("message")` for user-facing errors. Only raise exceptions for unexpected failures.
-- **Outputs**: Use `return_outputs(readable_output, outputs, raw_response)` to return data. `outputs` dict keys should be CamelCase.
+- **Outputs**: Use `CommandResults` objects with `return_results()`: `return_results(CommandResults(outputs_prefix='MyPrefix', outputs=data))`. Output keys should be CamelCase.
 - **Logging**: Use `demisto.debug()` and `demisto.info()`. Avoid `print()`.
 
 ## Architecture Notes
@@ -80,7 +80,7 @@ demisto-sdk pre-commit -a
 
 5. **Self-review**
    - Check for hardcoded values.
-   - Ensure `return_outputs` is used correctly.
+   - Ensure `CommandResults` and `return_results()` are used correctly.
    - Verify `dockerimage` in YAML matches requirements.
 
 ## Principles

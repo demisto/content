@@ -110,7 +110,7 @@ pipeline_jobs_folder/
 # Ignore windsurf config
 .windsurf
 
-# Ignore AI generted dump files
+# Ignore AI generated dump files
 plan.md
 report.md
 plans/
