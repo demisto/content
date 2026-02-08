@@ -508,6 +508,67 @@ class AgentixMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement create_feedback_ui()")
     
+    def send_new_message(
+        self,
+        channel_id: str,
+        thread_id: str,
+        blocks: list,
+        attachments: list,
+    ) -> Optional[dict]:
+        """
+        Send a new message to the platform.
+        Must be implemented by subclass.
+        
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            blocks: Message blocks
+            attachments: Message attachments
+            
+        Returns:
+            Response dict with 'ts' (message timestamp) if successful, None otherwise
+        """
+        raise NotImplementedError("Subclass must implement send_new_message()")
+    
+    def update_existing_message(
+        self,
+        channel_id: str,
+        thread_id: str,
+        message_ts: str,
+        attachments: list,
+    ) -> bool:
+        """
+        Update an existing message.
+        Must be implemented by subclass.
+        
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message_ts: The message timestamp to update
+            attachments: New attachments
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        raise NotImplementedError("Subclass must implement update_existing_message()")
+    
+    def finalize_plan_header(
+        self,
+        channel_id: str,
+        thread_id: str,
+        step_message_ts: str,
+    ):
+        """
+        Finalize the plan header (remove "updating..." indicator).
+        Must be implemented by subclass.
+        
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            step_message_ts: The step message timestamp
+        """
+        raise NotImplementedError("Subclass must implement finalize_plan_header()")
+    
     def send_or_update_message(
         self,
         channel_id: str,
@@ -520,7 +581,7 @@ class AgentixMessagingHandler:
     ) -> dict:
         """
         Send or update a message based on message type.
-        Must be implemented by subclass.
+        Platform-agnostic implementation that uses platform-specific methods.
         
         Args:
             channel_id: The channel ID
@@ -534,7 +595,39 @@ class AgentixMessagingHandler:
         Returns:
             Updated agentix dictionary
         """
-        raise NotImplementedError("Subclass must implement send_or_update_message()")
+        step_message_ts = agentix.get(agentix_id_key, {}).get("step_message_ts")
+        
+        if AgentixMessageType.is_step_type(message_type):
+            # For step types, update existing message if it exists, otherwise create new one
+            if step_message_ts:
+                # Update existing step message
+                demisto.debug(f"Updating existing step message {step_message_ts} with new content")
+                success = self.update_existing_message(channel_id, thread_id, step_message_ts, attachments)
+                if not success:
+                    # Fallback: send as new message
+                    demisto.error("Failed to update step message, sending as new message")
+                    response = self.send_new_message(channel_id, thread_id, blocks, attachments)
+                    if response and agentix_id_key in agentix:
+                        agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
+            else:
+                # Send new step message and save its timestamp
+                response = self.send_new_message(channel_id, thread_id, blocks, attachments)
+                if response and agentix_id_key in agentix:
+                    agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
+                    demisto.debug(f"Saved step message timestamp: {response.get('ts')}")
+        else:
+            # For non-step types (model, approval, error), always send as new message
+            self.send_new_message(channel_id, thread_id, blocks, attachments)
+            
+            # Finalize Plan message when sending final response
+            if AgentixMessageType.is_model_type(message_type) and agentix_id_key in agentix:
+                # Update Plan header to remove "updating..." if step_message_ts exists
+                if step_message_ts:
+                    self.finalize_plan_header(channel_id, thread_id, step_message_ts)
+                # Clear step_message_ts
+                agentix[agentix_id_key].pop("step_message_ts", None)
+        
+        return agentix
     
     def update_context(self, context_updates: dict):
         """

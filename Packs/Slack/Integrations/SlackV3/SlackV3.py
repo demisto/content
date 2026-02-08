@@ -263,82 +263,90 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         """
         return get_feedback_buttons_block(message_id)
 
-    def send_or_update_message(
+    def send_new_message(
         self,
         channel_id: str,
         thread_id: str,
-        message_type: str,
         blocks: list,
         attachments: list,
-        agentix: dict,
-        agentix_id_key: str,
-    ) -> dict:
+    ) -> Optional[dict]:
         """
-        Send or update a message based on message type.
+        Send a new message to Slack.
         Implements the abstract method from AgentixMessagingHandler.
 
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
-            message_type: The message type
             blocks: Message blocks
             attachments: Message attachments
-            agentix: The agentix context
-            agentix_id_key: The conversation key
 
         Returns:
-            Updated agentix dictionary
+            Response dict with 'ts' if successful, None otherwise
         """
-        step_message_ts = agentix.get(agentix_id_key, {}).get("step_message_ts")
+        response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
+        if response:
+            return {"ts": response.get("ts")}
+        return None
 
-        if AgentixMessageType.is_step_type(message_type):
-            # For step types, update existing message if it exists, otherwise create new one
-            if step_message_ts:
-                # Update existing step message - append new content to existing
-                demisto.debug(f"Updating existing step message {step_message_ts} with new content")
-                try:
-                    # Get the current message to preserve existing content
-                    history_response = send_slack_request_sync(
-                        CLIENT,
-                        "conversations.replies",
-                        http_verb="GET",
-                        body={"channel": channel_id, "ts": thread_id, "latest": step_message_ts, "limit": 1, "inclusive": True},
-                    )
-                    demisto.debug(f"[1234-slack] History_response: {history_response}")
+    def update_existing_message(
+        self,
+        channel_id: str,
+        thread_id: str,
+        message_ts: str,
+        attachments: list,
+    ) -> bool:
+        """
+        Update an existing Slack message.
+        Implements the abstract method from AgentixMessagingHandler.
 
-                    # Intelligently merge blocks from new attachments into existing attachment
-                    combined_attachments = merge_attachment_blocks(history_response, attachments)
-                    demisto.debug(f"[1234-slack] Merged attachments: {combined_attachments}")
-                    send_slack_request_sync(
-                        CLIENT,
-                        "chat.update",
-                        body={"channel": channel_id, "ts": step_message_ts, "text": "", "attachments": combined_attachments},
-                    )
-                except Exception as e:
-                    demisto.error(f"Failed to update step message: {e}")
-                    # Fallback: send as new message
-                    response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
-                    if response and agentix_id_key in agentix:
-                        agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
-            else:
-                # Send new step message and save its timestamp
-                response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
-                if response and agentix_id_key in agentix:
-                    agentix[agentix_id_key]["step_message_ts"] = response.get("ts")
-                    demisto.debug(f"Saved step message timestamp: {response.get('ts')}")
-        else:
-            # For non-step types (model, approval, error), always send as new message
-            send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message_ts: The message timestamp to update
+            attachments: New attachments
 
-            # Finalize Plan message when sending final response
-            if AgentixMessageType.is_model_type(message_type) and agentix_id_key in agentix:
-                # Update Plan header to remove "updating..." if step_message_ts exists
-                if step_message_ts:
-                    finalize_plan_message(channel_id, thread_id, step_message_ts)
-                # Clear step_message_ts
-                agentix[agentix_id_key].pop("step_message_ts", None)
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Get the current message to preserve existing content
+            history_response = send_slack_request_sync(
+                CLIENT,
+                "conversations.replies",
+                http_verb="GET",
+                body={"channel": channel_id, "ts": thread_id, "latest": message_ts, "limit": 1, "inclusive": True},
+            )
+            demisto.debug(f"[1234-slack] History_response: {history_response}")
 
-        return agentix
+            # Intelligently merge blocks from new attachments into existing attachment
+            combined_attachments = merge_attachment_blocks(history_response, attachments)
+            demisto.debug(f"[1234-slack] Merged attachments: {combined_attachments}")
+            send_slack_request_sync(
+                CLIENT,
+                "chat.update",
+                body={"channel": channel_id, "ts": message_ts, "text": "", "attachments": combined_attachments},
+            )
+            return True
+        except Exception as e:
+            demisto.error(f"Failed to update message: {e}")
+            return False
+
+    def finalize_plan_header(
+        self,
+        channel_id: str,
+        thread_id: str,
+        step_message_ts: str,
+    ):
+        """
+        Finalize the plan header (remove "updating..." indicator).
+        Implements the abstract method from AgentixMessagingHandler.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            step_message_ts: The step message timestamp
+        """
+        finalize_plan_message(channel_id, thread_id, step_message_ts)
 
     def update_context(self, context_updates: dict):
         """
