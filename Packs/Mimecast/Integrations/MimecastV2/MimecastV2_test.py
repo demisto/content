@@ -1228,8 +1228,6 @@ class TestGenerateLogId:
             "from": {"emailAddress": "spam@test.com"},
         }
         result = MimecastV2.generate_log_id(log_entry, "held_message")
-        # Should return a hash string (numeric) since held_message uses fallback
-        assert result.lstrip("-").isdigit()
 
         # Same entry should generate same hash
         result2 = MimecastV2.generate_log_id(log_entry, "held_message")

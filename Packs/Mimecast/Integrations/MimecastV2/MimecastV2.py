@@ -89,6 +89,27 @@ default_query_xml = '<?xml version="1.0"?> \n\
 """ API COMMUNICATION FUNCTIONS"""
 
 
+def handle_error_response(failure_response, error_key="errors"):
+    """
+    Safely extract error details from Mimecast API failure response.
+    
+    Args:
+        failure_response: The 'fail' field from API response
+        error_key: The key to extract from error object (default: "errors", can be "message")
+    
+    Returns:
+        Error details suitable for json.dumps()
+    
+    Raises:
+        Exception with formatted error message
+    """
+    if isinstance(failure_response, list) and failure_response:
+        error_details = failure_response[0].get(error_key, failure_response[0])
+    else:
+        error_details = failure_response
+    raise Exception(json.dumps(error_details))
+
+
 def request_with_pagination(
     api_endpoint: str,
     data: list,
@@ -116,22 +137,20 @@ def request_with_pagination(
     response = http_request("POST", api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
-    len_of_results = 0
     results = []
     while True:
-        if response.get("fail"):
-            raise Exception(json.dumps(response.get("fail")[0].get("errors")))
+        if failure_response := response.get("fail"):
+            handle_error_response(failure_response)
         if response_param:
             response_data = response.get("data")[0].get(response_param)
         else:
             response_data = response.get("data")
         for entry in response_data:
             # If returning this log will not exceed the specified limit
-            if not limit or len_of_results < limit:
-                len_of_results += 1
+            if not limit or len(results) < limit:
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (limit and len_of_results >= limit):
+        if not next_page or (limit and len(results) >= limit):
             break
         pagination = {
             "page_size": page_size,  # type: ignore
@@ -143,14 +162,14 @@ def request_with_pagination(
     if page and page_size:
         return results[(-1 * page_size) :], page_size
 
-    return results, len_of_results
+    return results, len(results)
 
 
 def fetch_logs_with_pagination(
     api_endpoint: str,
     data: list,
     response_param: str = None,
-    limit: int = 100,
+    limit: int = PAGE_SIZE_MAX,
     dedup_messages: list | None = None,
     current_next_page: str = "",
 ):
@@ -177,7 +196,7 @@ def fetch_logs_with_pagination(
     next_page = current_next_page or ""
     dedup_messages = dedup_messages or []
 
-    while True:
+    for _ in range(10):
         pagination = {"pageSize": limit}
         if next_page:
             demisto.debug(f"next_page exists with value {next_page}")
@@ -186,7 +205,7 @@ def fetch_logs_with_pagination(
         response = http_request("POST", api_endpoint, payload, headers={})
 
         if failure_response := response.get("fail"):
-            raise Exception(json.dumps(failure_response[0].get("errors")))
+            handle_error_response(failure_response)
 
         # Extract response data based on response_param
         if response_param:
@@ -267,8 +286,8 @@ def token_oauth2_request():
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "grant_type": "client_credentials"}
     response = http_request("POST", api_endpoint, user_auth=False, headers=headers, data=data)
-    if response.get("fail"):
-        raise Exception(json.dumps(response.get("fail")[0].get("message")))
+    if failure_response := response.get("fail"):
+        handle_error_response(failure_response, error_key="message")
     return response.get("access_token")
 
 
