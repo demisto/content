@@ -4573,12 +4573,12 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
 
     # Build filter
     filter_builder = FilterBuilder()
-    filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.CONTAINS, asset_ids)
+    filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.WILDCARD, asset_ids)
     filter_builder.add_field("XDM_FINDING_ASSET_NAME", FilterType.CONTAINS, asset_names)
     filter_builder.add_field("XDM_FINDING_ASSET_CLASS", FilterType.EQ, asset_class)
     filter_builder.add_field("XDM_FINDING_ASSET_CATEGORY", FilterType.EQ, asset_category)
     filter_builder.add_field("XDM_FINDING_CATEGORY", FilterType.EQ, category)
-    filter_builder.add_field("xdm.finding_sources", FilterType.CONTAINS, finding_source)
+    filter_builder.add_field("xdm.finding_sources", FilterType.ARRAY_CONTAINS, finding_source)
 
     # Calculate pagination
     start_index = page * page_size
