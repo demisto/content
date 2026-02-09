@@ -641,10 +641,7 @@ class Client(CoreClient):
         In case of success the API returns 204
         """
         return self._http_request(
-            method="POST",
-            url_suffix=f"/case/update/{case_id}",
-            json_data=request_data,
-            resp_type="response"
+            method="POST", url_suffix=f"/case/update/{case_id}", json_data=request_data, resp_type="response"
         )
 
     def get_case_artifacts(self, case_id: str):
