@@ -1,11 +1,11 @@
 import urllib3
 import traceback
 from typing import Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 urllib3.disable_warnings()
 
-SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
+SOCRADAR_API_ENDPOINT = "https://preprod.socradar.com/api"
 SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
@@ -40,17 +40,17 @@ def convert_to_demisto_severity(severity: str) -> int:
         "CRITICAL": IncidentSeverity.CRITICAL,
         "INFO": IncidentSeverity.INFO,
     }
-    return int(severity_map.get(severity.upper(), IncidentSeverity.UNKNOWN))
+    return severity_map.get(severity.upper(), IncidentSeverity.UNKNOWN)
 
 
 class Client(BaseClient):
     """
     Multi-Tenant SOCRadar API Client
-    
+
     - Uses multi_tenant_id for fetching incidents across all companies
     - Uses company_id (from alarm data or parameter) for alarm-specific operations
     """
-    
+
     def __init__(self, base_url: str, api_key: str, multi_tenant_id: str, verify: bool, proxy: bool):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
@@ -77,7 +77,7 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar Multi-Tenant API
-        
+
         CHANGED: Now uses /v1/multi-tenant/{multiTenantId}/incidents endpoint
         instead of /company/{company_id}/incidents/v4
 
@@ -269,37 +269,37 @@ class Client(BaseClient):
     def get_company_id_for_alarm(self, alarm_id: int) -> str | None:
         """
         Fetch company_id for a given alarm_id from multi-tenant API
-        
+
         This is used when company_id is not provided in commands,
         allowing automatic lookup from the alarm data.
         """
         demisto.debug(f"[SOCRadar-MT] Looking up company_id for alarm_id: {alarm_id}")
-        
+
         try:
             # Search for the specific alarm using multi-tenant endpoint
             # We use a broad date range to find the alarm
             response = self.search_incidents(limit=1, page=1)
-            
+
             # If we got results, search through pages to find our alarm
             total_pages = response.get("total_pages", 1)
-            
+
             for page in range(1, min(total_pages + 1, 100)):  # Limit to 100 pages for safety
                 if page > 1:
                     response = self.search_incidents(limit=100, page=page)
-                
+
                 alarms = response.get("data", [])
                 for alarm in alarms:
                     if str(alarm.get("alarm_id")) == str(alarm_id):
                         company_id = alarm.get("company_id")
                         demisto.debug(f"[SOCRadar-MT] Found company_id {company_id} for alarm_id {alarm_id}")
                         return str(company_id) if company_id else None
-                
+
                 if len(alarms) < 100:
                     break
-            
+
             demisto.debug(f"[SOCRadar-MT] Could not find alarm_id {alarm_id} in recent alarms")
             return None
-            
+
         except Exception as e:
             demisto.error(f"[SOCRadar-MT] Error looking up company_id for alarm {alarm_id}: {str(e)}")
             return None
@@ -349,12 +349,14 @@ def parse_alarm_date(date_str: str | None) -> datetime | None:
         return None
 
     try:
+        dt = None
         if "." in date_str:
-            return datetime.strptime(date_str[:26], "%Y-%m-%dT%H:%M:%S.%f")
+            dt = datetime.strptime(date_str[:26], "%Y-%m-%dT%H:%M:%S.%f")
         elif "T" in date_str:
-            return datetime.strptime(date_str[:19], "%Y-%m-%dT%H:%M:%S")
+            dt = datetime.strptime(date_str[:19], "%Y-%m-%dT%H:%M:%S")
         else:
-            return datetime.strptime(date_str[:10], "%Y-%m-%d")
+            dt = datetime.strptime(date_str[:10], "%Y-%m-%d")
+        return dt.replace(tzinfo=timezone.utc)
     except Exception as e:
         demisto.debug(f"[SOCRadar-MT] Date parsing error for '{date_str}': {str(e)}")
         return None
@@ -441,11 +443,11 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     incident = {
         "name": incident_name,
-        "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
-        "rawJSON": json.dumps(alarm), 
+        "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now(timezone.utc).isoformat() + "Z",
+        "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
-        "dbotMirrorId": str(alarm_id) if alarm_id else None, 
+        "dbotMirrorId": str(alarm_id) if alarm_id else None,
         "CustomFields": {
             "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
             "socradarcompanyid": str(company_id) if company_id else "unknown",
@@ -525,7 +527,7 @@ def fetch_incidents(
     demisto.debug(f"[SOCRadar-MT] Last fetch: {last_fetch}")
     demisto.debug(f"[SOCRadar-MT] Previously fetched alarm IDs: {len(last_alarm_ids)}")
 
-    current_time = datetime.now()
+    current_time = datetime.now(timezone.utc)
 
     if last_fetch:
         start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
@@ -545,8 +547,6 @@ def fetch_incidents(
 
     all_incidents = []
     new_alarm_ids = set()
-    latest_timestamp = start_datetime
-
     per_page = 100
     current_page = 1
     total_pages = None
@@ -599,10 +599,6 @@ def fetch_incidents(
                     continue
 
                 new_alarm_ids.add(alarm_id)
-
-                alarm_date = parse_alarm_date(alarm.get("date"))
-                if alarm_date and alarm_date > latest_timestamp:
-                    latest_timestamp = alarm_date
 
                 if total_incidents_created < max_results:
                     incident = alarm_to_incident(alarm)
@@ -659,7 +655,7 @@ def fetch_incidents(
             combined_alarm_ids = combined_list[:10000]
             return {"last_fetch": current_time.isoformat() + "Z", "last_alarm_ids": combined_alarm_ids}, all_incidents
 
-        return {"last_fetch": last_fetch or datetime.now().isoformat() + "Z", "last_alarm_ids": list(last_alarm_ids)[:1000]}, []
+        return {"last_fetch": last_fetch or datetime.now(timezone.utc).isoformat() + "Z", "last_alarm_ids": list(last_alarm_ids)[:1000]}, []
 
 
 def change_status_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -673,14 +669,14 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         raise ValueError("alarm_ids and status_reason are required")
 
     alarm_ids = [int(aid.strip()) for aid in alarm_ids_str.split(",")]
-    
+
     # Auto-fetch company_id from first alarm if not provided
     if not company_id:
         demisto.debug(f"[SOCRadar-MT] company_id not provided, fetching from alarm {alarm_ids[0]}")
         company_id = client.get_company_id_for_alarm(alarm_ids[0])
         if not company_id:
             raise ValueError(f"Could not find company_id for alarm {alarm_ids[0]}. Please provide company_id parameter.")
-    
+
     response = client.change_alarm_status(alarm_ids, status_reason, comments, company_id)
 
     return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
