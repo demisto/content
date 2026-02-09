@@ -1143,10 +1143,12 @@ def test_rds_modify_db_instance_command_success(mocker):
     }
 
     args = {"db_instance_identifier": "test-instance", "multi_az": "true", "apply_immediately": "true"}
+    expected_args = {"DBInstanceIdentifier": "test-instance", "MultiAZ": True, "ApplyImmediately": True}
 
     result = RDS.modify_db_instance_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Successfully modified DB instance" in result.readable_output
+    assert mock_client.modify_db_instance.call_args.kwargs == expected_args
 
 
 def test_rds_modify_db_instance_command_exception(mocker):
@@ -8877,3 +8879,76 @@ def test_ec2_describe_reserved_instances_command_http_error(mocker):
 
     EC2.describe_reserved_instances_command(mock_client, args)
     mock_error_handler.assert_called_once()
+
+
+def test_modify_db_instance_command_success(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)
+
+
+def test_modify_db_instance_command_multiple_vpc_security_group_ids(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including multiple vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789,sg-987654321"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789", "sg-987654321"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+                {"VpcSecurityGroupId": "sg-987654321", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)
