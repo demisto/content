@@ -3807,7 +3807,7 @@ def main():
             }
 
     else:  # use basic authentication
-        #if are none - fallback to legacy which populates the oath credentials
+        # if are none - fallback to legacy which populates the oath credentials
         if not username or not password:
             demisto.debug("Using legacy parameters for username and password")
             username = oauth_creds.get("identifier")
