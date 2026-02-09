@@ -1950,7 +1950,7 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if created_after:
         filters.append({"field": "creation_time", "operator": "gte", "value": created_after})
 
-    request_data: Dict[str, Any] = {
+    request_data = {
         "search_from": page * page_size,
         "search_to": (page + 1) * page_size,
         "filters": filters,
@@ -2001,7 +2001,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     case_id = args.get("case_id", "")  # required
     status = args.get("status").upper() if args.get("status") else None
-    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason"))
+    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason", ""))
     resolve_comment = args.get("resolve_comment")
 
     update_data = assign_params(
