@@ -6127,7 +6127,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
     remove_user_assignment_str_value = args.get("remove_user_assignment")
 
     # Collect changed fields for both API call and display
-    changed_fields = {
+    changed_fields: dict[str, Any] = {
         "status": args.get("status"),
         "name": args.get("name"),
         "assigned_to_uuid": args.get("assigned_to_uuid"),
@@ -6141,9 +6141,14 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
     )
 
     readable_output = f"Case {case_id} was changed successfully"
+    display_data = {"id": case_id, "remove_user_assignment": remove_user_assignment_str_value, **changed_fields}
+
+    if argToBoolean(remove_user_assignment_str_value or False):
+        display_data["assigned_to_uuid"] = "Unassigned"
+
     table = tableToMarkdown(
         "Edited Case",
-        {"id": case_id, "remove_user_assginment": remove_user_assignment_str_value, **changed_fields},
+        display_data,
         headers=list(changed_fields.keys()),
         headerTransform=string_to_table_header,
         removeNull=True,
