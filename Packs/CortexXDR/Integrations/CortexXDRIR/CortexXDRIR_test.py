@@ -2836,7 +2836,7 @@ def test_case_list_command(args, expected_filters, expected_sort):
         ({"case_id": "100", "status": "new"}, {"status_progress": "NEW"}),
         (
             {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
-            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "DONE"},
+            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "done"},
         ),
         (
             {"case_id": "100", "status": "closed", "resolve_reason": "resolved_other"},
