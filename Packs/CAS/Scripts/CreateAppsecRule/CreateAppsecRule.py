@@ -18,7 +18,7 @@ def main():
                 - scanner: Required The type of security scanner used to detect findings of this rule IaC/secret
                 - category: Required Custom rule IaC/secret category
                 - subCategory: Required for IaC scanner only 
-                - frameworks: Required rule frameworks configuration parameters name and definition
+                - frameworks: Required An array of JSON objects defining framework-specific rules. name , definition and remediationDescription
 
         Returns:
             CommandResults: Results object containing the created rule information with
@@ -27,6 +27,7 @@ def main():
         Raises:
             DemistoException: If rule name is missing.
         """
+
         rule_name = args.get("rule_name")
         severity = args.get("severity")
         scanner = args.get("scanner")
@@ -68,7 +69,6 @@ def main():
         # Remove any keys where the value is None
         payload = {k: v for k, v in payload.items() if v is not None}
 
-        demisto.info(f"KUKU payload is {payload}.")
         payload = json.dumps(payload)
 
         res = demisto.executeCommand(
@@ -82,17 +82,12 @@ def main():
         )
 
         if is_error(res):
-            demisto.info(f"KUKU error is {res}.")
             return_error(res)
 
         else:
-            demisto.info(f"KUKU finish {res}.")
             context = res[0]["EntryContext"]
-            demisto.info(f"KUKU 1111111.")
             data = context.get("data")
-            demisto.info(f"KUKU 2222222.")
             data = json.loads(data)
-            demisto.info(f"KUKU 3333333. {data}")
 
             return_results(
                 CommandResults(
