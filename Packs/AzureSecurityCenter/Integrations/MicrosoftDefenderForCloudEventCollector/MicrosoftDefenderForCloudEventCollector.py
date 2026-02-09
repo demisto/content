@@ -161,8 +161,8 @@ def test_module(client: MsClient):  # pragma: no cover
     Performs basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
     """
-    evetns_res = client.get_event_list_basic()
-    if "value" in evetns_res:
+    events_res = client.get_event_list_basic()
+    if "value" in events_res:
         demisto.results("ok")
 
 
@@ -228,29 +228,15 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
         demisto.debug(f"{LOG_PREFIX} No events in list, returning previous last_run")
         return last_run
 
-    # Log event timestamps before sorting for debugging
-    event_times = [
-        {"name": get_alert_name(event), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
-        for event in events_list
-    ]
-    demisto.debug(f"{LOG_PREFIX} Event timestamps before sorting: {event_times}")
-
     # Sort events by startTimeUtc descending to ensure we get the newest event's timestamp
     # This prevents issues when the API returns events in an unexpected order
     sorted_events = sorted(events_list, key=lambda x: x.get("properties", {}).get("startTimeUtc", ""), reverse=True)
-
-    # Log event timestamps after sorting for debugging
-    sorted_event_times = [
-        {"name": get_alert_name(event), "startTimeUtc": event.get("properties", {}).get("startTimeUtc", "")}
-        for event in sorted_events
-    ]
-    demisto.debug(f"{LOG_PREFIX} Event timestamps after sorting: {sorted_event_times}")
 
     next_run = sorted_events[0].get("properties", {}).get("startTimeUtc", "")
     # Use alert name (GUID) instead of full id for deduplication
     # This prevents duplicates when the same alert appears from different locations (e.g., centralus vs eastus2)
     names_same_next_run_list = [
-        get_alert_name(event) for event in events_list if event.get("properties", {}).get("startTimeUtc") == next_run
+        get_alert_name(event) for event in sorted_events if event.get("properties", {}).get("startTimeUtc") == next_run
     ]
     demisto.info(f"{LOG_PREFIX} Setting next run time to {next_run}, alert names with same time are {names_same_next_run_list}.")
     return {"last_run": next_run, "dup_digested_time_id": names_same_next_run_list}
@@ -280,8 +266,7 @@ def add_time_key_to_events(events: list) -> list:
     demisto.debug(f"{LOG_PREFIX} Adding _time key to {len(events)} events")
     for event in events:
         time_generated = event.get("properties", {}).get("timeGeneratedUtc")
-        event["_time"] = time_generated
-        demisto.debug(f"{LOG_PREFIX} Event {event.get('id')}: _time set to {time_generated}")
+        event["_time"] = time_generated or event.get("properties", {}).get("startTimeUtc", "")
     return events
 
 
@@ -378,13 +363,12 @@ def main() -> None:  # pragma: no cover
             events = add_time_key_to_events(events)
 
             if should_push_events:
-                # saves next_run for the time fetch-events is invoked
                 next_run = find_next_run(events, last_run)
-                demisto.debug(f"{LOG_PREFIX} Setting next_run to: {next_run}")
-                demisto.setLastRun(next_run)
                 demisto.debug(f"{LOG_PREFIX} Sending {len(events)} events to XSIAM")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f"{LOG_PREFIX} Events sent to XSIAM successfully")
+                # saves next_run only after events are successfully sent to prevent data loss
+                demisto.debug(f"{LOG_PREFIX} Setting next_run to: {next_run}")
+                demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
