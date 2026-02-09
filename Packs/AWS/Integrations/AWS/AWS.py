@@ -3882,6 +3882,333 @@ class EC2:
 
         return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
 
+    @staticmethod
+    def delete_vpc_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified VPC. You must detach or delete all gateways and resources that are associated
+        with the VPC before you can delete it.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - vpc_id (str): The ID of the VPC
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        vpc_id = args.get("vpc_id")
+        print_debug_logs(client, f"Deleting VPC: {vpc_id}")
+        response = client.delete_vpc(VpcId=vpc_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted VPC {vpc_id}")
+
+    @staticmethod
+    def create_vpc_endpoint_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a VPC endpoint for a specified service. An endpoint enables you to create a private
+        connection between your VPC and the service.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - vpc_id (str): The ID of the VPC in which the endpoint will be used
+                - service_name (str): The service name
+                - vpc_endpoint_type (str, optional): The type of endpoint
+                - policy_document (str, optional): A policy to attach to the endpoint
+                - route_table_ids (array, optional): One or more route table IDs
+                - subnet_ids (array, optional): The ID of one or more subnets
+                - security_group_ids (array, optional): The ID of one or more security groups
+                - ip_address_type (str, optional): The IP address type for the endpoint
+                - dns_options_dns_record_ip_type (str, optional): The DNS records created for the endpoint
+                - dns_options_private_dns_only_for_inbound_resolver_endpoint (bool, optional): Enable private DNS only for inbound endpoints
+                - client_token (str, optional): Unique identifier for idempotency
+                - private_dns_enabled (bool, optional): Associate a private hosted zone with the VPC
+                - tag_specifications (str, optional): Tags to apply to the VPC endpoint
+                - subnet_configurations (str, optional): Subnet configurations for the endpoint
+
+        Returns:
+            CommandResults: Results containing VPC endpoint information
+        """
+        kwargs = {
+            "VpcId": args.get("vpc_id"),
+            "ServiceName": args.get("service_name"),
+            "VpcEndpointType": args.get("vpc_endpoint_type"),
+            "PolicyDocument": args.get("policy_document"),
+            "RouteTableIds": argToList(args.get("route_table_ids")),
+            "SubnetIds": argToList(args.get("subnet_ids")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "IpAddressType": args.get("ip_address_type"),
+            "ClientToken": args.get("client_token"),
+            "PrivateDnsEnabled": arg_to_bool_or_none(args.get("private_dns_enabled")),
+        }
+
+        # Build DnsOptions if any DNS option is provided
+        dns_options = {
+            "DnsRecordIpType": args.get("dns_options_dns_record_ip_type"),
+            "PrivateDnsOnlyForInboundResolverEndpoint": arg_to_bool_or_none(
+                args.get("dns_options_private_dns_only_for_inbound_resolver_endpoint")
+            ),
+        }
+        remove_nulls_from_dictionary(dns_options)
+        if dns_options:
+            kwargs["DnsOptions"] = dns_options
+
+        # Handle tag specifications
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(tag_specifications)}]
+
+        # Handle subnet configurations (format: SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy)
+        if subnet_configurations := args.get("subnet_configurations"):
+            subnet_configs = []
+            for config in subnet_configurations.split(";"):
+                config_dict = {}
+                for param in config.split(","):
+                    if "=" in param:
+                        key, value = param.split("=", 1)
+                        config_dict[key.strip()] = value.strip()
+                if config_dict:
+                    subnet_configs.append(config_dict)
+            if subnet_configs:
+                kwargs["SubnetConfigurations"] = subnet_configs
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating VPC endpoint with parameters: {kwargs}")
+        response = client.create_vpc_endpoint(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        vpc_endpoint = response.get("VpcEndpoint", {})
+
+        readable_output = tableToMarkdown(
+            "VPC Endpoint",
+            vpc_endpoint,
+            headers=["VpcEndpointId", "State", "ServiceName", "VpcId", "VpcEndpointType"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.VpcEndpoints",
+            outputs_key_field="VpcEndpointId",
+            outputs=vpc_endpoint,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_internet_gateways_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your internet gateways.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - internet_gateway_ids (array, optional): One or more internet gateway IDs
+                - max_results (number, optional): The maximum number of results to return
+                - next_token (str, optional): The token for the next page of results
+
+        Returns:
+            CommandResults: Results containing internet gateway information
+        """
+        kwargs = {}
+
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+
+        if internet_gateway_ids := args.get("internet_gateway_ids"):
+            kwargs["InternetGatewayIds"] = argToList(internet_gateway_ids)
+
+        if max_results := arg_to_number(args.get("max_results")):
+            kwargs["MaxResults"] = max_results
+
+        if next_token := args.get("next_token"):
+            kwargs["NextToken"] = next_token
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing internet gateways with parameters: {kwargs}")
+        response = client.describe_internet_gateways(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        internet_gateways = response.get("InternetGateways", [])
+
+        if not internet_gateways:
+            return CommandResults(readable_output="No internet gateways were found.")
+
+        # Prepare readable data with flattened attachment info
+        readable_data = []
+        for igw in internet_gateways:
+            igw_data = {
+                "InternetGatewayId": igw.get("InternetGatewayId"),
+                "OwnerId": igw.get("OwnerId"),
+            }
+            # Flatten attachments for readable output
+            attachments = igw.get("Attachments", [])
+            if attachments:
+                igw_data["State"] = attachments[0].get("State")
+                igw_data["VpcId"] = attachments[0].get("VpcId")
+            readable_data.append(igw_data)
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Internet Gateways",
+            readable_data,
+            headers=["InternetGatewayId", "OwnerId", "State", "VpcId"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        outputs = {
+            "AWS.EC2.InternetGateways(val.InternetGatewayId && val.InternetGatewayId == obj.InternetGatewayId)": internet_gateways,
+            "AWS.EC2(true)": {"InternetGatewaysNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def detach_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - internet_gateway_id (str): The ID of the internet gateway
+                - vpc_id (str): The ID of the VPC
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        internet_gateway_id = args.get("internet_gateway_id")
+        vpc_id = args.get("vpc_id")
+        
+        print_debug_logs(client, f"Detaching internet gateway {internet_gateway_id} from VPC {vpc_id}")
+        response = client.detach_internet_gateway(InternetGatewayId=internet_gateway_id, VpcId=vpc_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Successfully detached internet gateway {internet_gateway_id} from VPC {vpc_id}"
+        )
+
+    @staticmethod
+    def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified internet gateway. You must detach the internet gateway from the VPC
+        before you can delete it.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - internet_gateway_id (str): The ID of the internet gateway
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        internet_gateway_id = args.get("internet_gateway_id")
+        print_debug_logs(client, f"Deleting internet gateway: {internet_gateway_id}")
+        response = client.delete_internet_gateway(InternetGatewayId=internet_gateway_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted internet gateway {internet_gateway_id}")
+
+    @staticmethod
+    def delete_subnet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified subnet. You must terminate all running instances in the subnet
+        before you can delete the subnet.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - subnet_id (str): The ID of the subnet
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        subnet_id = args.get("subnet_id")
+        print_debug_logs(client, f"Deleting subnet: {subnet_id}")
+        response = client.delete_subnet(SubnetId=subnet_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted subnet {subnet_id}")
+
+    @staticmethod
+    def create_network_acl_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an entry (a rule) in a network ACL with the specified rule number.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - network_acl_id (str): The ID of the network ACL
+                - rule_number (number): The rule number for the entry
+                - protocol (str): The protocol number. A value of -1 means all protocols
+                - rule_action (str): Indicates whether to allow or deny the traffic
+                - egress (boolean): Indicates whether this is an egress rule
+                - cidr_block (str, optional): The IPv4 network range to allow or deny
+                - ipv6_cidr_block (str, optional): The IPv6 network range to allow or deny
+                - icmp_type_code_type (number, optional): The ICMP type
+                - icmp_type_code_code (number, optional): The ICMP code
+                - port_range_from (number, optional): The first port in the range
+                - port_range_to (number, optional): The last port in the range
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        kwargs = {
+            "NetworkAclId": args.get("network_acl_id"),
+            "RuleNumber": arg_to_number(args.get("rule_number")),
+            "Protocol": args.get("protocol"),
+            "RuleAction": args.get("rule_action"),
+            "Egress": argToBoolean(args.get("egress")),
+            "CidrBlock": args.get("cidr_block"),
+            "Ipv6CidrBlock": args.get("ipv6_cidr_block"),
+        }
+
+        # Build IcmpTypeCode if any ICMP parameter is provided
+        icmp_type_code = {
+            "Type": arg_to_number(args.get("icmp_type_code_type")),
+            "Code": arg_to_number(args.get("icmp_type_code_code")),
+        }
+        remove_nulls_from_dictionary(icmp_type_code)
+        if icmp_type_code:
+            kwargs["IcmpTypeCode"] = icmp_type_code
+
+        # Build PortRange if any port parameter is provided
+        port_range = {
+            "From": arg_to_number(args.get("port_range_from")),
+            "To": arg_to_number(args.get("port_range_to")),
+        }
+        remove_nulls_from_dictionary(port_range)
+        if port_range:
+            kwargs["PortRange"] = port_range
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating network ACL entry with parameters: {kwargs}")
+        response = client.create_network_acl_entry(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully created network ACL entry for {args.get('network_acl_id')}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -5459,6 +5786,13 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-volume-attach": EC2.attach_volume_command,
     "aws-ec2-volume-detach": EC2.detach_volume_command,
     "aws-ec2-volume-delete": EC2.delete_volume_command,
+    "aws-ec2-vpc-delete": EC2.delete_vpc_command,
+    "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
+    "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
+    "aws-ec2-internet-gateway-detach": EC2.detach_internet_gateway_command,
+    "aws-ec2-internet-gateway-delete": EC2.delete_internet_gateway_command,
+    "aws-ec2-subnet-delete": EC2.delete_subnet_command,
+    "aws-ec2-network-acl-entry-create": EC2.create_network_acl_entry_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -5563,6 +5897,13 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:AttachVolume",
     "ec2:DetachVolume",
     "ec2:DeleteVolume",
+    "ec2:DeleteVpc",
+    "ec2:CreateVpcEndpoint",
+    "ec2:DescribeInternetGateways",
+    "ec2:DetachInternetGateway",
+    "ec2:DeleteInternetGateway",
+    "ec2:DeleteSubnet",
+    "ec2:CreateNetworkAclEntry",
 ]
 
 COMMAND_SERVICE_MAP = {

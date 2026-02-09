@@ -9550,6 +9550,572 @@ script:
         required: true
     outputs: [ ]
 
+  - name: aws-ec2-vpc-delete
+    description: Deletes the specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: vpc_id
+        description: The ID of the VPC.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-vpc-endpoint-create
+    description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: vpc_id
+        description: The ID of the VPC in which the endpoint will be used.
+        required: true
+      - name: service_name
+        description: The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>.
+        required: true
+      - name: vpc_endpoint_type
+        description: The type of endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - Interface
+          - Gateway
+          - GatewayLoadBalancer
+      - name: policy_document
+        description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
+        required: false
+      - name: route_table_ids
+        description: One or more route table IDs (comma-separated). Applicable for Gateway endpoints only.
+        required: false
+        isArray: true
+      - name: subnet_ids
+        description: The ID of one or more subnets (comma-separated) in which to create an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+        required: false
+        isArray: true
+      - name: security_group_ids
+        description: The ID of one or more security groups (comma-separated) to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+        required: false
+        isArray: true
+      - name: ip_address_type
+        description: The IP address type for the endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - ipv4
+          - dualstack
+          - ipv6
+      - name: dns_options_dns_record_ip_type
+        description: The DNS records created for the endpoint.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - ipv4
+          - dualstack
+          - ipv6
+          - service-defined
+      - name: dns_options_private_dns_only_for_inbound_resolver_endpoint
+        description: Indicates whether to enable private DNS only for inbound endpoints.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+      - name: private_dns_enabled
+        description: Indicates whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tag_specifications
+        description: The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>.
+        required: false
+      - name: subnet_configurations
+        description: The subnet configurations for the endpoint. Format SubnetId=subnet-xxx,Ipv4=x.x.x.x;SubnetId=subnet-yyy.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
+        description: The ID of the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointType
+        description: The type of endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.VpcId
+        description: The ID of the VPC to which the endpoint is associated.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.ServiceName
+        description: The name of the service to which the endpoint is associated.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.State
+        description: The state of the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.PolicyDocument
+        description: The policy document associated with the endpoint, if applicable.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.RouteTableIds
+        description: One or more route tables associated with the endpoint.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.SubnetIds
+        description: One or more subnets in which the endpoint is located.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupId
+        description: The ID of the security group.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupName
+        description: The name of the security group.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.IpAddressType
+        description: The IP address type for the endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType
+        description: The DNS records created for the endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
+        description: Indicates whether to enable private DNS only for inbound endpoints.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
+        description: Indicates whether the VPC is associated with a private hosted zone.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.RequesterManaged
+        description: Indicates whether the VPC endpoint is being managed by its service.
+        type: boolean
+      - contextPath: AWS.EC2.VpcEndpoints.NetworkInterfaceIds
+        description: One or more network interfaces for the endpoint.
+        type: array
+      - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.DnsName
+        description: The DNS name.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId
+        description: The ID of the private hosted zone.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.CreationTimestamp
+        description: The date and time that the VPC endpoint was created.
+        type: date
+      - contextPath: AWS.EC2.VpcEndpoints.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.OwnerId
+        description: The ID of the AWS account that owns the VPC endpoint.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.LastError.Message
+        description: The error message for the VPC endpoint error.
+        type: string
+      - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
+        description: The error code for the VPC endpoint error.
+        type: string
+
+  - name: aws-ec2-internet-gateway-describe
+    description: Describes one or more of your internet gateways.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: internet_gateway_ids
+        description: One or more internet gateway IDs (comma-separated).
+        required: false
+        isArray: true
+      - name: max_results
+        description: The maximum number of results to return with a single call. To retrieve the remaining results, make another call with the returned nextToken value.
+        required: false
+      - name: next_token
+        description: The token for the next page of results.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.InternetGateways.InternetGatewayId
+        description: The ID of the internet gateway.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Attachments.State
+        description: The current state of the attachment.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
+        description: The ID of the VPC.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.InternetGateways.OwnerId
+        description: The ID of the AWS account that owns the internet gateway.
+        type: string
+      - contextPath: AWS.EC2.InternetGatewaysNextToken
+        description: The token to use to retrieve the next page of results.
+        type: string
+
+  - name: aws-ec2-internet-gateway-detach
+    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: internet_gateway_id
+        description: The ID of the internet gateway.
+        required: true
+      - name: vpc_id
+        description: The ID of the VPC.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-internet-gateway-delete
+    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: internet_gateway_id
+        description: The ID of the internet gateway.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-subnet-delete
+    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: subnet_id
+        description: The ID of the subnet.
+        required: true
+    outputs: []
+
+  - name: aws-ec2-network-acl-entry-create
+    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_acl_id
+        description: The ID of the network ACL.
+        required: true
+      - name: rule_number
+        description: The rule number for the entry (for example, 100). ACL entries are processed in ascending order by rule number.
+        required: true
+      - name: protocol
+        description: The protocol number. A value of -1 or all means all protocols. If you specify all, -1, or a protocol number other than tcp, udp, or icmp, traffic on all ports is allowed, regardless of any ports or ICMP types or codes that you specify.
+        required: true
+      - name: rule_action
+        description: Indicates whether to allow or deny the traffic that matches the rule.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - allow
+          - deny
+      - name: egress
+        description: Indicates whether this is an egress rule (rule is applied to traffic leaving the subnet).
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: cidr_block
+        description: The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block.
+        required: false
+      - name: ipv6_cidr_block
+        description: The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block.
+        required: false
+      - name: icmp_type_code_type
+        description: The ICMP type. Required if specifying ICMP for the protocol parameter.
+        required: false
+      - name: icmp_type_code_code
+        description: The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying ICMP for the protocol parameter.
+        required: false
+      - name: port_range_from
+        description: The first port in the range. Required if specifying TCP or UDP for the protocol parameter.
+        required: false
+      - name: port_range_to
+        description: The last port in the range. Required if specifying TCP or UDP for the protocol parameter.
+        required: false
+    outputs: []
+
   isfetch: false
   runonce: false
   script: '-'
