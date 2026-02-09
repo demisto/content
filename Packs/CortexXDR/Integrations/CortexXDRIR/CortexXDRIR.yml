@@ -4142,9 +4142,9 @@ script:
     - description: "A comma-separated list of severities."
       isArray: true
       name: severity
-    - description: Filters cases that were created before this date. Supports English expressions like "in a year".
+    - description: Filters cases that were created before this date. Supports English expressions like "one year".
       name: created_before
-    - description: Filters cases that were created after this date. Supports English expressions like "in a year".
+    - description: Filters cases that were created after this date. Supports English expressions like "one year".
       name: created_after
     - description: A comma-separated list of statuses.
       isArray: true
@@ -4224,7 +4224,7 @@ script:
       name: case_id
       required: true
     - auto: PREDEFINED
-      description: The status to set for the case. if the status is updated to "resolved", resolution_reason must be provided.
+      description: The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided.
       name: status
       predefined:
       - new

@@ -1962,6 +1962,7 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Cortex XDR Cases",
         t=cases,
+        headers=["case_id", "case_name", "case_domain", "creation_time", "modification_time", "description"],
         date_fields=["creation_time", "modification_time"],
         headerTransform=string_to_table_header,
         removeNull=True,
