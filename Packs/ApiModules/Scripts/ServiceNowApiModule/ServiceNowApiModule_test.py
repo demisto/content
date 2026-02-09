@@ -40,7 +40,8 @@ def test_get_access_token(mocker):
 
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -102,7 +103,8 @@ def test_get_access_token_with_automatic_retry(mocker):
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
 
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -163,7 +165,8 @@ def test_get_access_token_retry_only_once(mocker):
     mocker.patch("ServiceNowApiModule.return_error", side_effect=Exception("Error occurred while creating an access token"))
 
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -198,7 +201,8 @@ def test_separate_client_id_and_refresh_token():
     """
     client_id_with_strudel = "client_id@refresh_token"
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=client_id_with_strudel,
         client_secret=PARAMS.get("client_secret", ""),
@@ -324,7 +328,8 @@ def test_servicenow_client_jwt_init(mocker):
     """
     mocker.patch("jwt.encode", return_value="jwt_token_stub")
     client = ServiceNowClient(
-        credentials=PARAMS["credentials"],
+        username=PARAMS["credentials"]["identifier"],
+        password=PARAMS["credentials"]["password"],
         use_oauth=True,
         client_id=PARAMS["client_id"],
         client_secret=PARAMS["client_secret"],
@@ -348,7 +353,8 @@ def test_servicenow_client_jwt_none():
     - The client should not have a 'jwt' attribute
     """
     client = ServiceNowClient(
-        credentials=PARAMS["credentials"],
+        username=PARAMS["credentials"]["identifier"],
+        password=PARAMS["credentials"]["password"],
         use_oauth=True,
         client_id=PARAMS["client_id"],
         client_secret=PARAMS["client_secret"],

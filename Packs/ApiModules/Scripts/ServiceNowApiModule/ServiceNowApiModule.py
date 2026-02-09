@@ -13,7 +13,8 @@ OAUTH_URL = "/oauth_token.do"
 class ServiceNowClient(BaseClient):
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
@@ -26,7 +27,8 @@ class ServiceNowClient(BaseClient):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -39,8 +41,8 @@ class ServiceNowClient(BaseClient):
         """
         self.auth = None
         self.use_oauth = use_oauth
-        self.username = credentials.get("identifier")
-        self.password = credentials.get("password")
+        self.username = username
+        self.password = password
 
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id

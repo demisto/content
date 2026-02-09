@@ -24,9 +24,15 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Username/Client ID/JWT Audience (aud)
-  displaypassword: Password/Client Secret
-  name: credentials
+- display: Client ID/JWT Audience (aud)/ (legacy username for versions < )
+  displaypassword: Client Secret / (legacy password for versions < )
+  name: oath_credentials
+  type: 9
+  required: false
+  section: Connect
+- display: Username
+  displaypassword: Password
+  name: basic_credentials
   type: 9
   required: false
   section: Connect

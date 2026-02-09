@@ -33,7 +33,8 @@ class Client:
 
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
@@ -44,7 +45,8 @@ class Client:
     ):
         """
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -58,7 +60,8 @@ class Client:
         self.use_oauth = use_oauth
         self.use_jwt = bool(jwt_params)
         self.snow_client: ServiceNowClient = ServiceNowClient(
-            credentials=credentials,
+            username=username,
+            password=password,
             use_oauth=use_oauth,
             client_id=client_id,
             client_secret=client_secret,
@@ -549,10 +552,15 @@ def main() -> None:
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     client_id = client_secret = ""
-    credentials = params.get("credentials", {})
     use_oauth = params.get("use_oauth", False)
     use_jwt = params.get("use_jwt", False)
     jwt_params = {}
+
+    basic_auth_creds = params.get("basic_credentials", {})
+    username = basic_auth_creds.get("username", "")
+    password = basic_auth_creds.get("password", "")
+
+    oauth_creds = params.get("oath_credentials", {})
 
     # use jwt only with OAuth
     if use_jwt and use_oauth:
@@ -562,8 +570,14 @@ def main() -> None:
         use_oauth = True
 
     if use_oauth:
-        client_id = credentials.get("identifier")
-        client_secret = credentials.get("password")
+        client_id = oauth_creds.get("identifier")
+        client_secret = oauth_creds.get("password")
+    else:
+        # if username/password are empty - fallback to legacy which populates the oath credentials
+        if not username or not password:
+            demisto.debug("Using legacy parameters for username and password")
+            username = oauth_creds.get("identifier")
+            password = oauth_creds.get("password")
 
     if use_jwt:
         if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
@@ -577,7 +591,8 @@ def main() -> None:
         }
 
     client = Client(
-        credentials=credentials,
+        username=username,
+        password=password,
         use_oauth=use_oauth,
         client_id=client_id,
         client_secret=client_secret,
