@@ -37,14 +37,13 @@ Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex X
 1. Enter the following command to enable transmitting syslog messages to all output locations.  
    `logging enable`
 
-
 2. Enter the following command to configure Cisco ASA to send logging information to a syslog server.  
     `logging host interface_name ip_address [tcp[/port] | udp[/port]] [format emblem]`
-
 
 For more information about syslog configuration see the [Cisco ASA documentation](https://www.cisco.com/c/en/us/support/docs/security/pix-500-series-security-appliances/63884-config-asa-00.html#toc-hId-68106104).
 
 ### Cortex XSIAM side - Broker VM
+
 Configure the Broker VM to receive Cisco ASA logs. For more information on creating or configuring the Broker VM, see [Set up and configure Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
