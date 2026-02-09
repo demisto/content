@@ -56,7 +56,7 @@ def parse_resource_ids(resource_id):
     """
     Split the resource ids to a list
     parameter: (string) resource_id
-    Return the resource_ids as a list
+    Return the resource_ids as a list test
     """
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
