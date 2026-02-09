@@ -185,7 +185,7 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
         return_value={
             "isFetch": True,
             "url": url,
-            "credentials": {
+            "oath_credentials": {
                 "identifier": "identifier",
                 "password": "password",
             },
@@ -1454,7 +1454,7 @@ def test_incident_name_is_initialized(mocker, requests_mock):
         return_value={
             "isFetch": True,
             "url": url,
-            "credentials": {
+            "oath_credentials": {
                 "identifier": "identifier",
                 "password": "password",
             },
@@ -1657,7 +1657,7 @@ def test_oauth_authentication(mocker, requests_mock):
         "params",
         return_value={
             "url": url,
-            "credentials": {"identifier": "client_id", "password": "client_secret"},
+            "oath_credentials": {"identifier": "client_id", "password": "client_secret"},
             "use_oauth": True,
             "file_tag_from_service_now": "FromServiceNow",
             "file_tag": "ForServiceNow",

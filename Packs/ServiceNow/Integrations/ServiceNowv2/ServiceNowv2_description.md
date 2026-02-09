@@ -11,15 +11,16 @@ The integration supports three types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization follow the next steps:
-1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information). 
-2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
-3. Select the `Use OAuth Login` checkbox and click the `Done` button.
-4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
-5. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
+1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information).
+2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Client ID` and `Client Secret` fields of the instance configuration.
+3. (Optional but recommended) Enter the ServiceNow account's `Username` and `Password` in the instance configuration. When provided, the integration can automatically generate a new refresh token when the current one expires, without requiring a manual `!servicenow-oauth-login` command.
+4. Select the `Use OAuth Login` checkbox and click the `Done` button.
+5. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
+6. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
 
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+2. If the `Username` and `Password` fields are configured, the integration will automatically renew the refresh token when it expires. Otherwise, you will have to run the `servicenow-oauth-login` command again manually. We recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years).
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 #### JWT Authentication

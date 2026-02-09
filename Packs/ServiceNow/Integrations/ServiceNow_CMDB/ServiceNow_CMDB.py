@@ -557,66 +557,71 @@ def main() -> None:
     jwt_params = {}
 
     basic_auth_creds = params.get("basic_credentials", {})
-    username = basic_auth_creds.get("username", "")
+    username = basic_auth_creds.get("identifier", "")
     password = basic_auth_creds.get("password", "")
 
     oauth_creds = params.get("oath_credentials", {})
 
-    # use jwt only with OAuth
-    if use_jwt and use_oauth:
-        raise ValueError("Please choose only one authentication method (OAuth or JWT).")
+    try:
 
-    elif use_jwt:
-        use_oauth = True
+        # use jwt only with OAuth
+        if use_jwt and use_oauth:
+            raise ValueError("Please choose only one authentication method (OAuth or JWT).")
 
-    if use_oauth:
-        client_id = oauth_creds.get("identifier")
-        client_secret = oauth_creds.get("password")
-    else:
-        # if username/password are empty - fallback to legacy which populates the oath credentials
-        if not username or not password:
-            demisto.debug("Using legacy parameters for username and password")
-            username = oauth_creds.get("identifier")
-            password = oauth_creds.get("password")
+        elif use_jwt:
+            use_oauth = True
 
-    if use_jwt:
-        if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
-            raise Exception("When using JWT, fill private key, kid and sub fields")
-        jwt_params = {
-            "private_key": params.get("private_key", {}).get("password"),
-            "kid": params.get("kid"),
-            "sub": params.get("sub"),
-            "iss": params.get("iss", client_id),
-            "aud": client_id,
+        if use_oauth:
+            client_id = oauth_creds.get("identifier")
+            client_secret = oauth_creds.get("password")
+        else:
+            # if username/password are empty - fallback to legacy which populates the oath credentials
+            if not username or not password:
+                demisto.debug("Using legacy parameters for username and password")
+                username = oauth_creds.get("identifier")
+                password = oauth_creds.get("password")
+
+        if use_jwt:
+            if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+                raise Exception("When using JWT, fill private key, kid and sub fields")
+            jwt_params = {
+                "private_key": params.get("private_key", {}).get("password"),
+                "kid": params.get("kid"),
+                "sub": params.get("sub"),
+                "iss": params.get("iss", client_id),
+                "aud": client_id,
+            }
+
+        client = Client(
+            username=username,
+            password=password,
+            use_oauth=use_oauth,
+            client_id=client_id,
+            client_secret=client_secret,
+            url=url,
+            verify=verify,
+            proxy=proxy,
+            jwt_params=jwt_params,
+        )
+
+        commands = {
+            "servicenow-cmdb-oauth-login": login_command,
+            "servicenow-cmdb-oauth-test": oauth_test_module,
+            "servicenow-cmdb-records-list": records_list_command,
+            "servicenow-cmdb-record-get-by-id": get_record_command,
+            "servicenow-cmdb-record-create": create_record_command,
+            "servicenow-cmdb-record-update": update_record_command,
+            "servicenow-cmdb-record-add-relations": add_relation_command,
+            "servicenow-cmdb-record-delete-relations": delete_relation_command,
         }
 
-    client = Client(
-        username=username,
-        password=password,
-        use_oauth=use_oauth,
-        client_id=client_id,
-        client_secret=client_secret,
-        url=url,
-        verify=verify,
-        proxy=proxy,
-        jwt_params=jwt_params,
-    )
 
-    commands = {
-        "servicenow-cmdb-oauth-login": login_command,
-        "servicenow-cmdb-oauth-test": oauth_test_module,
-        "servicenow-cmdb-records-list": records_list_command,
-        "servicenow-cmdb-record-get-by-id": get_record_command,
-        "servicenow-cmdb-record-create": create_record_command,
-        "servicenow-cmdb-record-update": update_record_command,
-        "servicenow-cmdb-record-add-relations": add_relation_command,
-        "servicenow-cmdb-record-delete-relations": delete_relation_command,
-    }
 
-    command = demisto.command()
-
-    demisto.debug(f"Command being called is {command}")
+    except Exception as e:
+        return_error(f"Error:\n{e!s}")
     try:
+        command = demisto.command()
+        demisto.debug(f"Command being called is {command}")
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)

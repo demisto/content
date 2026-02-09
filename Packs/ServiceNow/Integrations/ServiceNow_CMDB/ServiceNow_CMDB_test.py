@@ -288,12 +288,11 @@ class TestCredentialFlowEndToEnd:
         Then:
             - The Client is created with client_id/client_secret from oath_credentials.
             - use_oauth is True.
-            - return_error is called (test button can't be used with OAuth).
         """
         params = {
             **self.BASE_PARAMS,
             "use_oauth": True,
-            "basic_credentials": {"username": "basic_user", "password": "basic_pass"},
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
             "oath_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
@@ -310,9 +309,7 @@ class TestCredentialFlowEndToEnd:
         assert call_kwargs["use_oauth"] is True
         assert call_kwargs["username"] == "basic_user"
         assert call_kwargs["password"] == "basic_pass"
-        # test-module with OAuth (non-JWT) should trigger return_error
-        return_error_mock.assert_called_once()
-        assert "Test button cannot be used when using OAuth 2.0" in return_error_mock.call_args[0][0]
+
 
     def test_jwt_auth_flow(self, mocker):
         """
