@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Any
-from urllib.parse import urlencode
-import requests
 
 """ CONSTANTS """
 
@@ -35,79 +33,28 @@ class Client(BaseClient):
 
     def get_token(self):
         """Retrieves the access token from the service."""
-        demisto.debug(f"{INTEGRATION_NAME}: Attempting to get OAuth token")
-        demisto.debug(f"{INTEGRATION_NAME}: Base URL: {self._base_url}")
-        demisto.debug(f"{INTEGRATION_NAME}: Client ID length: {len(self.client_id) if self.client_id else 0}")
-        secret_len = len(self.client_secret) if self.client_secret else 0
-        demisto.debug(f"{INTEGRATION_NAME}: Client Secret length: {secret_len}")
-        
-        # Log first few chars for debugging (safe since these are partial)
-        id_preview = self.client_id[:4] if self.client_id else 'N/A'
-        demisto.debug(f"{INTEGRATION_NAME}: Client ID (first 4 chars): {id_preview}")
-        
-        secret_preview = 'N/A'
-        if self.client_secret and len(self.client_secret) >= 4:
-            secret_preview = self.client_secret[:4]
-        demisto.debug(f"{INTEGRATION_NAME}: Client Secret (first 4 chars): {secret_preview}")
+        demisto.debug(f"{INTEGRATION_NAME}: Attempting to get OAuth token from {self._base_url}")
 
-        # Build the OAuth token request data as a dict - requests will handle encoding
+        # Pass data as a dict so that requests handles URL-encoding correctly,
+        # preserving characters like '=' in base64-encoded secrets.
         data = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
-            "client_secret": self.client_secret
+            "client_secret": self.client_secret,
         }
-        
-        # Log encoded data length for debugging
-        encoded_data = urlencode(data)
-        demisto.debug(f"{INTEGRATION_NAME}: Encoded data length: {len(encoded_data)}")
-        
-        token_url = "/oauth/connect/token"
-        full_url = f"{self._base_url}{token_url}"
-        demisto.debug(f"{INTEGRATION_NAME}: Full token URL: {full_url}")
-        
-        # Log the actual encoded request body (secrets will be scrubbed by XSOAR)
-        demisto.debug(f"{INTEGRATION_NAME}: Request body (URL-encoded): {encoded_data}")
 
-        try:
-            # Use requests directly to have full control over the OAuth request
-            # This bypasses BaseClient which may have issues with form-encoded data
-            req_headers = {"Content-Type": "application/x-www-form-urlencoded"}
-            demisto.debug(f"{INTEGRATION_NAME}: Request headers: {req_headers}")
-            
-            # Use PreparedRequest to see exactly what will be sent
-            from requests import Request, Session
-            session = Session()
-            req = Request('POST', full_url, data=data, headers=req_headers)
-            prepared = session.prepare_request(req)
-            
-            # Log the prepared request details
-            demisto.debug(f"{INTEGRATION_NAME}: Prepared request URL: {prepared.url}")
-            demisto.debug(f"{INTEGRATION_NAME}: Prepared request headers: {dict(prepared.headers)}")
-            demisto.debug(f"{INTEGRATION_NAME}: Prepared request body: {prepared.body}")
-            demisto.debug(f"{INTEGRATION_NAME}: Prepared request body type: {type(prepared.body)}")
-            
-            # Send the prepared request
-            response = session.send(prepared, verify=self._verify, timeout=30)
-            
-            demisto.debug(f"{INTEGRATION_NAME}: Token response status: {response.status_code}")
-            demisto.debug(f"{INTEGRATION_NAME}: Token response headers: {dict(response.headers)}")
-            
-            if response.status_code != 200:
-                demisto.debug(f"{INTEGRATION_NAME}: Token response body: {response.text}")
-                raise DemistoException(
-                    f"Error in API call [{response.status_code}] - {response.reason}\n"
-                    f"{response.text}"
-                )
-            
-            result = response.json()
-            demisto.debug(f"{INTEGRATION_NAME}: Token request successful")
-            return result.get("access_token")
-        except requests.exceptions.RequestException as e:
-            demisto.debug(f"{INTEGRATION_NAME}: Token request failed with error: {str(e)}")
-            raise DemistoException(f"Failed to get OAuth token: {str(e)}")
-        except Exception as e:
-            demisto.debug(f"{INTEGRATION_NAME}: Token request failed with error: {str(e)}")
-            raise
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        result = self._http_request(
+            method="POST",
+            url_suffix="/oauth/connect/token",
+            data=data,
+            headers=headers,
+            timeout=30,
+        )
+
+        demisto.debug(f"{INTEGRATION_NAME}: Token request successful")
+        return result.get("access_token")
 
     def _http_request(  # type: ignore[override]
         self,
@@ -146,12 +93,13 @@ class Client(BaseClient):
 
         Args:
             start_date (str): The start date to retrieve events from.
-            limit (int): The maximum number of events to retrieve.
+            limit (int): The maximum number of events to retrieve. Max is 1000.
 
         Returns:
             dict: The response from the service.
         """
-        params = {"StartDate": start_date, "RecordSize": limit}
+        # The BeyondTrust Events API enforces RecordSize between 1 and 1000
+        params = {"StartDate": start_date, "RecordSize": min(limit, DEFAULT_LIMIT)}
         demisto.debug(f"{INTEGRATION_NAME}: Getting events with params: {params}")
         return self._http_request(method="GET", url_suffix="/management-api/v3/Events/FromStartDate", params=params)
 
@@ -233,7 +181,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         CommandResults: The command results.
     """
     start_date = args.get("start_date")
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT)) or DEFAULT_LIMIT
+    limit = min(arg_to_number(args.get("limit", DEFAULT_LIMIT)) or DEFAULT_LIMIT, DEFAULT_LIMIT)
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     if not start_date:
@@ -281,6 +229,10 @@ def fetch_pm_events(
 ) -> tuple[dict, list[dict]]:
     """Fetches PM Cloud events from the Events API.
 
+    The Events API has a max RecordSize of 1000 per request. If max_fetch > 1000,
+    this function makes multiple API calls, using the last event's timestamp as the
+    next StartDate to paginate through all available events.
+
     Args:
         client (Client): The client to use.
         last_run (dict): The last run context.
@@ -305,25 +257,59 @@ def fetch_pm_events(
     # Format the start date as required by the API: ISO 8601
     start_date_str = last_event_time.strftime(DATE_FORMAT)
 
-    response = client.get_events(start_date_str, max_fetch)
-    fetched_events = response.get("events", [])
-    demisto.debug(f"{INTEGRATION_NAME}: Fetched {len(fetched_events)} PM events.")
-    if fetched_events:
-        demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (first): {fetched_events[0]}")
-        if len(fetched_events) > 1:
-            demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (last): {fetched_events[-1]}")
+    all_fetched_events: list[dict] = []
+    total_fetched = 0
 
-    for event in fetched_events:
-        # Add fields for XSIAM
-        event["_time"] = event.get("created") or event.get("@timestamp")
-        event["source_log_type"] = "events"
-        event["vendor"] = VENDOR
-        event["product"] = PRODUCT
+    while total_fetched < max_fetch:
+        # The Events API enforces RecordSize between 1 and 1000
+        remaining = max_fetch - total_fetched
+        batch_size = min(remaining, DEFAULT_LIMIT)
+
+        demisto.debug(f"{INTEGRATION_NAME}: Fetching events batch from {start_date_str}, batch_size={batch_size}")
+        response = client.get_events(start_date_str, batch_size)
+        fetched_events = response.get("events", [])
+        demisto.debug(f"{INTEGRATION_NAME}: Fetched {len(fetched_events)} PM events in this batch.")
+
+        if not fetched_events:
+            break
+
+        for event in fetched_events:
+            # Add fields for XSIAM
+            event["_time"] = event.get("created") or event.get("@timestamp")
+            event["source_log_type"] = "events"
+            event["vendor"] = VENDOR
+            event["product"] = PRODUCT
+
+        all_fetched_events.extend(fetched_events)
+        total_fetched += len(fetched_events)
+
+        # If we got fewer events than requested, there are no more events to fetch
+        if len(fetched_events) < batch_size:
+            break
+
+        # Use the last event's timestamp as the next StartDate to continue pagination.
+        # Parse and reformat to ensure the date format matches what the API expects.
+        last_event_timestamp = fetched_events[-1].get("created") or fetched_events[-1].get("@timestamp")
+        if not last_event_timestamp:
+            demisto.debug(f"{INTEGRATION_NAME}: No timestamp found on last event, stopping pagination.")
+            break
+        parsed_ts = dateparser.parse(last_event_timestamp)
+        if not parsed_ts:
+            demisto.debug(f"{INTEGRATION_NAME}: Could not parse timestamp '{last_event_timestamp}', stopping pagination.")
+            break
+        start_date_str = parsed_ts.strftime(DATE_FORMAT)
+        demisto.debug(f"{INTEGRATION_NAME}: Continuing pagination from {start_date_str}")
+
+    demisto.debug(f"{INTEGRATION_NAME}: Total PM events fetched: {total_fetched}")
+    if all_fetched_events:
+        demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (first): {all_fetched_events[0]}")
+        if len(all_fetched_events) > 1:
+            demisto.debug(f"{INTEGRATION_NAME}: Sample PM event (last): {all_fetched_events[-1]}")
 
     # Store the fetch end time as the next start time to ensure continuous coverage
     next_run["last_event_time"] = fetch_end_time.strftime(DATE_FORMAT)
 
-    return next_run, fetched_events
+    return next_run, all_fetched_events
 
 
 def fetch_activity_audits(
