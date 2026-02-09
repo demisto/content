@@ -1143,10 +1143,12 @@ def test_rds_modify_db_instance_command_success(mocker):
     }
 
     args = {"db_instance_identifier": "test-instance", "multi_az": "true", "apply_immediately": "true"}
+    expected_args = {"DBInstanceIdentifier": "test-instance", "MultiAZ": True, "ApplyImmediately": True}
 
     result = RDS.modify_db_instance_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Successfully modified DB instance" in result.readable_output
+    assert mock_client.modify_db_instance.call_args.kwargs == expected_args
 
 
 def test_rds_modify_db_instance_command_exception(mocker):
@@ -8877,6 +8879,642 @@ def test_ec2_describe_reserved_instances_command_http_error(mocker):
 
     EC2.describe_reserved_instances_command(mock_client, args)
     mock_error_handler.assert_called_once()
+
+
+def test_modify_db_instance_command_success(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)
+
+
+def test_modify_db_instance_command_multiple_vpc_security_group_ids(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including multiple vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789,sg-987654321"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789", "sg-987654321"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+                {"VpcSecurityGroupId": "sg-987654321", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)
+
+
+def test_ec2_describe_volumes_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume description arguments.
+    When: describe_volumes_command is called successfully.
+    Then: It should return CommandResults with volume data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Volumes": [
+            {
+                "VolumeId": "vol-12345678",
+                "Size": 100,
+                "VolumeType": "gp3",
+                "State": "available",
+                "AvailabilityZone": "us-east-1a",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Encrypted": True,
+            }
+        ],
+    }
+    mock_client.describe_volumes.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"volume_ids": "vol-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_volumes_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    volumes_key = "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)"
+    assert volumes_key in result.outputs
+    assert result.outputs[volumes_key][0]["VolumeId"] == "vol-12345678"
+    assert "AWS EC2 Volumes" in result.readable_output
+
+
+def test_ec2_describe_volumes_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_volumes_command is called with filters.
+    Then: It should pass filters to the API call and return filtered results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Volumes": [
+            {
+                "VolumeId": "vol-encrypted",
+                "Size": 50,
+                "VolumeType": "gp3",
+                "State": "in-use",
+                "AvailabilityZone": "us-east-1b",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Encrypted": True,
+            }
+        ],
+    }
+    mock_client.describe_volumes.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "encrypted", "Values": ["true"]}])
+
+    args = {"filters": "name=encrypted,values=true", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_volumes_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    volumes_key = "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)"
+    assert len(result.outputs[volumes_key]) == 1
+    assert result.outputs[volumes_key][0]["Encrypted"] is True
+    mock_client.describe_volumes.assert_called_once_with(Filters=[{"Name": "encrypted", "Values": ["true"]}], MaxResults=50)
+
+
+def test_ec2_describe_volumes_command_no_volumes_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty volumes list.
+    When: describe_volumes_command is called with no matching volumes.
+    Then: It should return CommandResults with no volumes message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_volumes.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Volumes": []}
+
+    args = {"volume_ids": "vol-nonexistent", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_volumes_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "No EC2 volumes were found" in result.readable_output
+
+
+def test_ec2_describe_volumes_command_with_pagination(mocker):
+    """
+    Given: A mocked boto3 EC2 client and pagination arguments.
+    When: describe_volumes_command is called with limit and next_token.
+    Then: It should pass pagination parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Volumes": [
+            {
+                "VolumeId": "vol-page1",
+                "Size": 100,
+                "VolumeType": "gp3",
+                "State": "available",
+                "AvailabilityZone": "us-east-1a",
+                "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Encrypted": False,
+            }
+        ],
+        "NextToken": "next-page-token",
+    }
+    mock_client.describe_volumes.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"limit": "50", "next_token": "previous-token", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_volumes_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_volumes.assert_called_once()
+    call_args = mock_client.describe_volumes.call_args[1]
+    assert call_args["MaxResults"] == 50
+    assert mock_response["NextToken"] == result.outputs.get("AWS.EC2(true)").get("VolumesNextToken")
+
+
+def test_ec2_modify_volume_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume modification arguments.
+    When: modify_volume_command is called successfully.
+    Then: It should return CommandResults with modification data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VolumeModification": {
+            "VolumeId": "vol-12345678",
+            "ModificationState": "modifying",
+            "TargetSize": 200,
+            "TargetVolumeType": "gp3",
+            "TargetIops": 3000,
+            "OriginalSize": 100,
+            "OriginalVolumeType": "gp2",
+            "OriginalIops": 100,
+            "Progress": 50,
+            "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+        },
+    }
+    mock_client.modify_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"volume_id": "vol-12345678", "size": "200", "volume_type": "gp3", "iops": "3000"}
+
+    result = EC2.modify_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Volumes"
+    assert result.outputs["VolumeId"] == "vol-12345678"
+    assert "AWS EC2 Volume Modification" in result.readable_output
+    assert result.outputs.get("VolumeId") not in mock_response["VolumeModification"]
+    assert result.outputs.get("VolumeType") == "gp3"
+    assert result.outputs.get("Modification").get("OriginalSize") == mock_response["VolumeModification"]["OriginalSize"]
+    assert result.outputs.get("Modification").get("ModificationState") == "modifying"
+
+
+def test_ec2_modify_volume_command_with_throughput(mocker):
+    """
+    Given: A mocked boto3 EC2 client and volume modification arguments with throughput.
+    When: modify_volume_command is called with throughput parameter.
+    Then: It should pass throughput to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VolumeModification": {
+            "VolumeId": "vol-12345678",
+            "ModificationState": "modifying",
+            "TargetSize": 100,
+            "TargetVolumeType": "gp3",
+            "TargetThroughput": 500,
+            "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+        },
+    }
+    mock_client.modify_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"volume_id": "vol-12345678", "throughput": "500"}
+
+    result = EC2.modify_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.modify_volume.call_args[1]
+    assert call_args["Throughput"] == 500
+
+
+def test_ec2_modify_volume_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: modify_volume_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"volume_id": "vol-12345678", "size": "200"}
+
+    EC2.modify_volume_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_create_volume_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume creation arguments.
+    When: create_volume_command is called successfully.
+    Then: It should return CommandResults with created volume data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VolumeId": "vol-new12345",
+        "Size": 100,
+        "VolumeType": "gp3",
+        "State": "creating",
+        "AvailabilityZone": "us-east-1a",
+        "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Encrypted": True,
+        "Iops": 3000,
+    }
+    mock_client.create_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {
+        "availability_zone": "us-east-1a",
+        "size": "100",
+        "volume_type": "gp3",
+        "encrypted": "true",
+        "iops": "3000",
+        "account_id": "123456789012",
+        "region": "us-east-1",
+    }
+
+    result = EC2.create_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Volumes"
+    assert result.outputs["VolumeId"] == "vol-new12345"
+    assert "AWS EC2 Volumes" in result.readable_output
+
+
+def test_ec2_create_volume_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and volume creation arguments with tags.
+    When: create_volume_command is called with tag specifications.
+    Then: It should configure tag specifications correctly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VolumeId": "vol-tagged123",
+        "Size": 50,
+        "VolumeType": "gp2",
+        "State": "creating",
+        "AvailabilityZone": "us-west-2a",
+        "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Encrypted": False,
+    }
+    mock_client.create_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+
+    args = {"availability_zone": "us-west-2a", "size": "50", "tags": "key=Environment,value=Production"}
+
+    result = EC2.create_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_volume.call_args[1]
+    assert "TagSpecifications" in call_args
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "volume"
+
+
+def test_ec2_create_volume_command_with_snapshot(mocker):
+    """
+    Given: A mocked boto3 EC2 client and volume creation arguments with snapshot ID.
+    When: create_volume_command is called with snapshot_id parameter.
+    Then: It should create volume from snapshot.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "VolumeId": "vol-from-snap",
+        "Size": 100,
+        "VolumeType": "gp3",
+        "State": "creating",
+        "AvailabilityZone": "us-east-1a",
+        "CreateTime": datetime(2023, 10, 15, 14, 30, 45),
+        "SnapshotId": "snap-source123",
+        "Encrypted": False,
+    }
+    mock_client.create_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"availability_zone": "us-east-1a", "snapshot_id": "snap-source123"}
+
+    result = EC2.create_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.create_volume.call_args[1]
+    assert call_args["SnapshotId"] == "snap-source123"
+
+
+def test_ec2_create_volume_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: create_volume_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"availability_zone": "us-east-1a", "size": "100"}
+
+    EC2.create_volume_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_attach_volume_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume attachment arguments.
+    When: attach_volume_command is called successfully.
+    Then: It should return CommandResults with attachment data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AttachTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Device": "/dev/sdf",
+        "InstanceId": "i-12345678",
+        "State": "attaching",
+        "VolumeId": "vol-12345678",
+        "DeleteOnTermination": False,
+    }
+    mock_client.attach_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"device": "/dev/sdf", "instance_id": "i-12345678", "volume_id": "vol-12345678"}
+
+    result = EC2.attach_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Volumes"
+    assert result.outputs["Attachments"]["VolumeId"] == "vol-12345678"
+    assert "AWS EC2 Volume Attachments" in result.readable_output
+
+
+def test_ec2_attach_volume_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume attachment arguments.
+    When: attach_volume_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AttachTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Device": "/dev/sdf",
+        "InstanceId": "i-12345678",
+        "State": "attaching",
+        "VolumeId": "vol-12345678",
+        "DeleteOnTermination": False,
+    }
+    mock_client.attach_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"device": "/dev/sdf", "instance_id": "i-12345678", "volume_id": "vol-12345678"}
+
+    EC2.attach_volume_command(mock_client, args)
+    assert mock_print_debug_logs.call_count >= 1
+
+
+def test_ec2_attach_volume_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: attach_volume_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.attach_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"device": "/dev/sdf", "instance_id": "i-12345678", "volume_id": "vol-12345678"}
+
+    EC2.attach_volume_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_detach_volume_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume detachment arguments.
+    When: detach_volume_command is called successfully.
+    Then: It should return CommandResults with detachment data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AttachTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Device": "/dev/sdf",
+        "InstanceId": "i-12345678",
+        "State": "detaching",
+        "VolumeId": "vol-12345678",
+        "DeleteOnTermination": False,
+    }
+    mock_client.detach_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"volume_id": "vol-12345678"}
+
+    result = EC2.detach_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Volumes"
+    assert result.outputs["Attachments"]["State"] == "detaching"
+    assert "AWS EC2 Volume Attachments" in result.readable_output
+
+
+def test_ec2_detach_volume_command_with_force(mocker):
+    """
+    Given: A mocked boto3 EC2 client and detachment arguments with force flag.
+    When: detach_volume_command is called with force=true.
+    Then: It should pass Force=True to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "AttachTime": datetime(2023, 10, 15, 14, 30, 45),
+        "Device": "/dev/sdf",
+        "InstanceId": "i-12345678",
+        "State": "detaching",
+        "VolumeId": "vol-12345678",
+        "DeleteOnTermination": False,
+    }
+    mock_client.detach_volume.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"volume_id": "vol-12345678", "force": "true", "instance_id": "i-12345678"}
+
+    result = EC2.detach_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.detach_volume.call_args[1]
+    assert call_args["Force"] is True
+
+
+def test_ec2_detach_volume_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: detach_volume_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.detach_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"volume_id": "vol-nonexistent"}
+
+    EC2.detach_volume_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_delete_volume_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume ID.
+    When: delete_volume_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"volume_id": "vol-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.delete_volume_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted volume vol-12345678" in result.readable_output
+
+
+def test_ec2_delete_volume_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: delete_volume_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"volume_id": "vol-12345678"}
+
+    EC2.delete_volume_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_delete_volume_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid volume ID.
+    When: delete_volume_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_volume.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"volume_id": "vol-12345678"}
+
+    EC2.delete_volume_command(mock_client, args)
+    mock_print_debug_logs.assert_called_once_with(mock_client, "Deleting volume: vol-12345678")
 
 
 def test_ec2_describe_snapshots_command_success(mocker):
