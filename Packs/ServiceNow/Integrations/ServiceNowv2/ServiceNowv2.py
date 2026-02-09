@@ -3778,7 +3778,7 @@ def main():
         use_oauth = True
     jwt_params: dict = {}
     basic_auth_creds = params.get("basic_credentials", {})
-    username = basic_auth_creds.get("username", "")
+    username = basic_auth_creds.get("identifier", "")
     password = basic_auth_creds.get("password", "")
 
     oauth_creds = params.get("oath_credentials", {})
