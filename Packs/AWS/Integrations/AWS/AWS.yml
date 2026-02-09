@@ -9930,6 +9930,656 @@ script:
     - contextPath: AWS.EC2.ReservedInstances.Tags.Value
       description: The value of the tag.
       type: String
+  - name: aws-ec2-volumes-describe
+    description: Describes the specified EBS volumes or all of your EBS volumes.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+        required: false
+      - name: volume_ids
+        description: A comma-separated list of volume IDs.
+        required: false
+        isArray: true
+      - name: limit
+        description: The maximum number of records to return. The valid range is 5-1000.
+      - name: next_token
+        description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+      - contextPath: AWS.EC2.VolumesNextToken
+        description: Token to use for pagination in subsequent requests.
+        type: String
+
+  - name: aws-ec2-volume-modify
+    description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: size
+        description: Target size in GiB of the volume to be modified.
+        required: false
+      - name: volume_type
+        description: Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - gp2
+          - gp3
+          - io1
+          - io2
+          - sc1
+          - st1
+      - name: iops
+        description: Target IOPS rate of the volume to be modified.
+        required: false
+      - name: throughput
+        description: Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.ModificationState
+        description: The current modification state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
+        description: A status message about the modification progress or failure.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The target size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The target IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The target EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The target throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: The target setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalSize
+        description: The original size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalIops
+        description: The original IOPS rate of the volume.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalVolumeType
+        description: The original EBS volume type of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalThroughput
+        description: The original throughput of the volume, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled
+        description: The original setting for Amazon EBS Multi-Attach.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Modification.Progress
+        description: The modification progress, from 0 to 100 percent complete.
+        type: number
+      - contextPath: AWS.EC2.Volumes.Modification.StartTime
+        description: The modification start time.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Modification.EndTime
+        description: The modification completion or failure time.
+        type: date
+
+  - name: aws-ec2-volume-create
+    description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: availability_zone
+        description: The Availability Zone in which to create the volume.
+        required: true
+      - name: encrypted
+        description: Specifies whether the volume should be encrypted.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: iops
+        description: The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume.
+        required: false
+      - name: kms_key_id
+        description: The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+        required: false
+      - name: outpost_arn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        required: false
+      - name: size
+        description: The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: snapshot_id
+        description: The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
+        required: false
+      - name: volume_type
+        description: The volume type.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - standard
+          - io1
+          - io2
+          - gp2
+          - gp3
+          - sc1
+          - st1
+      - name: throughput
+        description: The throughput to provision for a volume, with a maximum of 1,000 MiB/s. This parameter is valid only for gp3 volumes.
+        required: false
+      - name: multi_attach_enabled
+        description: Indicates whether to enable Amazon EBS Multi-Attach. If you enable Multi-Attach, you can attach the volume to up to 16 Nitro-based instances in the same Availability Zone. This parameter is supported with io1 and io2 volumes only.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tags
+        description: One or more tags. Example key=Name,value=test;key=Owner,value=Bob.
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.AvailabilityZone
+        description: The Availability Zone for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.CreateTime
+        description: The time stamp when volume creation was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Encrypted
+        description: Indicates whether the volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.KmsKeyId
+        description: The Amazon Resource Name (ARN) of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.OutpostArn
+        description: The Amazon Resource Name (ARN) of the Outpost.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Size
+        description: The size of the volume, in GiBs.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SnapshotId
+        description: The snapshot from which the volume was created, if applicable.
+        type: string
+      - contextPath: AWS.EC2.Volumes.State
+        description: The volume state.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Iops
+        description: The number of I/O operations per second (IOPS).
+        type: number
+      - contextPath: AWS.EC2.Volumes.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Volumes.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Volumes.FastRestored
+        description: Indicates whether the volume was created using fast snapshot restore.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.MultiAttachEnabled
+        description: Indicates whether Amazon EBS Multi-Attach is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Throughput
+        description: The throughput that the volume supports, in MiB/s.
+        type: number
+      - contextPath: AWS.EC2.Volumes.SseType
+        description: Reserved for future use.
+        type: string
+
+  - name: aws-ec2-volume-attach
+    description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: true
+      - name: instance_id
+        description: The ID of the instance.
+        required: true
+      - name: volume_id
+        description: The ID of the EBS volume. The volume and instance must be within the same Availability Zone.
+        required: true
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-detach
+    description: Detaches an EBS volume from an instance.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+      - name: force
+        description: Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: device
+        description: The device name (for example, /dev/sdh or xvdh).
+        required: false
+      - name: instance_id
+        description: The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Volumes.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+        description: The timestamp when the attachment was initiated.
+        type: date
+      - contextPath: AWS.EC2.Volumes.Attachments.Device
+        description: The device name.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+        description: The ID of the instance.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.State
+        description: The attachment state of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+        description: The ID of the volume.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Volumes.Attachments.AssociatedResource
+        description: The ARN of the Amazon ECS or Fargate task to which the volume is attached.
+        type: string
+      - contextPath: AWS.EC2.Volumes.Attachments.InstanceOwningService
+        description: The AWS service principal that owns the instance to which the volume is attached.
+        type: string
+
+  - name: aws-ec2-volume-delete
+    description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID. This is used when running commands across multiple accounts.
+        required: true
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: volume_id
+        description: The ID of the volume.
+        required: true
+    outputs: [ ]
 
   isfetch: false
   runonce: false
