@@ -4262,7 +4262,7 @@ script:
       description: The issue description.
       required: true
     - name: observation_time
-      description: The observation time. Should support english expressions like "in a year".
+      description: The observation time. Should support english expressions like "one year".
       required: true
     - name: domain
       description: The domain.
@@ -4306,8 +4306,10 @@ script:
       description: The pretty name of the user assigned to the issue.
     - name: severity
       description: The severity.
+      required: true
       auto: PREDEFINED
       predefined:
+      - critical
       - info
       - low
       - medium
@@ -4317,20 +4319,11 @@ script:
     - name: custom_fields_json
       description: The JSON to add to the "custom_fields" field in the API.
     outputs:
-    - contextPath: PaloAltoNetworksXDR.Issue.issue_id
-      description: The issue ID.
+    - contextPath: PaloAltoNetworksXDR.Issue.external_id
+      description: The issue external ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.name
-      description: The issue name.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.type
-      description: The issue type.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.severity
-      description: The issue severity.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Issue.description
-      description: The issue description.
+    - contextPath: PaloAltoNetworksXDR.detection_method
+      description: The issue detection method.
       type: String
   - name: xdr-issue-update
     description: Update an existing issue.

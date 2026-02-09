@@ -1913,8 +1913,9 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object containing the issues.
     """
     filters = []
-    if issue_id := argToList(args.get("issue_id")):
-        filters.append({"field": "id", "operator": "in", "value": issue_id})
+    if issue_ids := argToList(args.get("issue_id")):
+        converted_ids = list(map(int, issue_ids))
+        filters.append({"field": "id", "operator": "in", "value": converted_ids})
     if external_id := argToList(args.get("external_id")):
         filters.append({"field": "external_id", "operator": "in", "value": external_id})
     if detection_method := argToList(args.get("detection_method")):
@@ -1929,8 +1930,6 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     if status := argToList(args.get("status")):
         filters.append({"field": "status.progress", "operator": "in", "value": status})
 
-    sort_field = args.get("sort_field")
-    sort_order = args.get("sort_order", "asc").lower()
     limit = arg_to_number(args.get("limit")) or 50
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
@@ -1945,7 +1944,10 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     if filters:
         request_data["request_data"]["filters"] = filters
 
-    if sort_field:
+    if sort_field := args.get("sort_field"):
+        sort_order = args.get("sort_order", "asc").lower()
+        if sort_field == "issue_id":  # converting issue_id to id as the api expects
+            sort_field = "id"
         request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
 
     issues = client.list_issues(request_data)
@@ -1978,77 +1980,37 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the created issue.
     """
-    name = args.get("name")
-    description = args.get("description")
-    observation_time = args.get("observation_time")
-    domain = args.get("domain")
-    category = args.get("category")
-
-    # Optional
-    asset_id = argToList(args.get("asset_id"))
-    mitre_tactic = argToList(args.get("mitre_tactic"))
-    mitre_tecnique = argToList(args.get("mitre_tecnique"))
-    type_ = args.get("type")
-    extended_description = args.get("extended_description")
-    impact = args.get("impact")
-    tags = argToList(args.get("tags"))
-    is_excluded = argToBoolean(args.get("is_excluded")) if args.get("is_excluded") else None
-    is_starred = argToBoolean(args.get("is_starred")) if args.get("is_starred") else None
-    assigned_to = args.get("assigned_to")
-    assigned_to_pretty = args.get("assigned_to_pretty")
-    severity = args.get("severity")
-
-    normalized_fields_json = args.get("normalized_fields_json")
-    custom_fields_json = args.get("custom_fields_json")
-
     issue_data = {
-        "name": name,
-        "description": description,
-        "observation_time": arg_to_timestamp(observation_time, arg_name="observation_time"),
-        "domain": domain,
-        "category": category
+        # Required
+        "name": args.get("name"),
+        "description": args.get("description"),
+        "observation_time": arg_to_timestamp(args.get("observation_time"), arg_name="observation_time"),
+        "issue_domain": args.get("domain"),
+        "category": args.get("category"),
+        "severity": args.get("severity").upper(),
+
+        # Optional
+        "asset_id": argToList(args.get("asset_id")),
+        "mitre_tactic": argToList(args.get("mitre_tactic")),
+        "mitre_technique": argToList(args.get("mitre_technique")),  # Spelling fixed
+        "type_": args.get("type"),
+        "extended_description": args.get("extended_description"),
+        "impact": args.get("impact"),
+        "tags": argToList(args.get("tags")),
+        "is_excluded": argToBoolean(args.get("is_excluded")) if args.get("is_excluded") is not None else None,
+        "is_starred": argToBoolean(args.get("is_starred")) if args.get("is_starred") is not None else None,
+        "assigned_to": args.get("assigned_to"),
+        "assigned_to_pretty": args.get("assigned_to_pretty"),
     }
 
-    if asset_id:
-        issue_data["asset_id"] = asset_id
-    if mitre_tactic:
-        issue_data["mitre_tactic"] = mitre_tactic
-    if mitre_tecnique:
-        issue_data["mitre_technique"] = mitre_tecnique
-    if type_:
-        issue_data["type"] = type_
-    if extended_description:
-        issue_data["extended_description"] = extended_description
-    if impact:
-        issue_data["impact"] = impact
-    if tags:
-        issue_data["tags"] = tags
-    if is_excluded is not None:
-        issue_data["is_excluded"] = is_excluded
-    if is_starred is not None:
-        issue_data["is_starred"] = is_starred
-    if assigned_to:
-        issue_data["assigned_to"] = assigned_to
-    if assigned_to_pretty:
-        issue_data["assigned_to_pretty"] = assigned_to_pretty
-    if severity:
-        issue_data["severity"] = severity
-
-    if normalized_fields_json:
+    for field in ["normalized_fields_json", "custom_fields_json"]:
+        field_json = args.get(field)
         try:
-            issue_data["normalized_fields"] = json.loads(normalized_fields_json)
-        except ValueError:
-            raise DemistoException("Invalid JSON for normalized_fields_json")
+            issue_data[field] = json.loads(field_json) if field_json else {}
+        except (ValueError, TypeError):
+            raise DemistoException(f"Invalid JSON format in field: {field}")
 
-    if custom_fields_json:
-        try:
-            issue_data["custom_fields"] = json.loads(custom_fields_json)
-        except ValueError:
-            raise DemistoException("Invalid JSON for custom_fields_json")
-
-    request_data = {"request_data": issue_data}
-
-    result = client.create_issue(request_data)
+    result = client.create_issue({"request_data": {"issue": issue_data}})
 
     readable_output = tableToMarkdown(
         name="Created Issue",
@@ -2060,7 +2022,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
-        outputs_key_field="issue_id",
+        outputs_key_field="external_id",
         outputs=result,
         raw_response=result
     )
