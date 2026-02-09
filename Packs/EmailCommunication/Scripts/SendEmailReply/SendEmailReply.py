@@ -177,6 +177,7 @@ def validate_email_sent(
     email_latest_message,
     email_code,
     mail_sender_instance,
+    from_mail,
 ):
     """
     Validate that the email was actually sent, returns an error string if it wasn't sent successfully.
@@ -195,6 +196,7 @@ def validate_email_sent(
         email_latest_message: The latest message ID in the email thread to reply to.
         email_code: The random code that was generated when the incident was created.
         mail_sender_instance: The name of the mail sender integration instance
+        from_mail: mail address to send the mail from
     Returns:
         str: a message which indicates that the mail was sent successfully or an error message.
     """
@@ -213,6 +215,7 @@ def validate_email_sent(
         email_latest_message,
         email_code,
         mail_sender_instance,
+        from_mail,
     )
 
     msg = f"Mail sent successfully. To: {email_to}"
@@ -239,6 +242,7 @@ def execute_reply_mail(
     email_latest_message,
     email_code,
     mail_sender_instance,
+    from_mail,
 ):
     if subject_include_incident_id and f"[{incident_id}]" not in email_subject:
         email_subject = f"[{incident_id}] {email_subject}"
@@ -274,6 +278,9 @@ def execute_reply_mail(
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
+
+    if from_mail:
+        mail_content["from"] = from_mail
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
 
@@ -413,6 +420,7 @@ def send_new_email(
     mail_sender_instance,
     new_attachment_names,
     context_html_body,
+    from_mail,
 ):
     """Send new email.-
     Args:
@@ -451,6 +459,7 @@ def send_new_email(
         email_code,
         mail_sender_instance,
         context_html_body,
+        from_mail,
     )
 
     msg = f"Mail sent successfully. To: {email_to}"
@@ -478,6 +487,7 @@ def send_new_mail_request(
     email_code,
     mail_sender_instance,
     context_html_body,
+    from_mail,
 ):
     """
         Use message details from the selected thread to construct a new mail message, since
@@ -521,7 +531,8 @@ def send_new_mail_request(
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
-
+    if from_mail:
+        mail_content["from"] = from_mail
     # Send email
     demisto.debug(
         f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}"
@@ -536,7 +547,7 @@ def send_new_mail_request(
         email_cc,
         email_bcc,
         email_body,
-        service_mail,
+        from_mail or service_mail,
         context_html_body,
         "",
         "",
@@ -886,6 +897,7 @@ def resend_first_contact(
     mail_sender_instance,
     new_attachment_names,
     subject_include_incident_id,
+    from_mail,
 ):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
@@ -904,6 +916,7 @@ def resend_first_contact(
         mail_sender_instance: The service email (sender address)
         new_attachment_names: List of attachment file names
         subject_include_incident_id: Should we include the incident id in the email subject.
+        from_mail: mail address to send the mail from
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -935,6 +948,7 @@ def resend_first_contact(
             mail_sender_instance,
             new_attachment_names,
             context_html_body,
+            from_mail,
         )
 
         return result
@@ -1052,6 +1066,7 @@ def single_thread_reply(
     service_mail,
     email_latest_message,
     mail_sender_instance,
+    from_mail,
     reputation_calc_async=False,
 ):
     """
@@ -1113,6 +1128,7 @@ def single_thread_reply(
             email_latest_message,
             email_code,
             mail_sender_instance,
+            from_mail,
         )
         return_results(result)
 
@@ -1135,6 +1151,7 @@ def multi_thread_new(
     add_bcc,
     mail_sender_instance,
     new_attachment_names,
+    from_mail,
 ):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
     to the current incident, prepares the final HTML email message body, then sends the email.
@@ -1214,6 +1231,7 @@ def multi_thread_new(
             mail_sender_instance,
             new_attachment_names,
             context_html_body,
+            from_mail,
         )
         return_results(result)
 
@@ -1323,6 +1341,7 @@ def multi_thread_reply(
     mail_sender_instance,
     new_attachment_names,
     subject_include_incident_id,
+    from_mail,
 ):
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
     incident context (subject, list of recipients, etc.).  In the event this reply is for an email thread that has no
@@ -1383,6 +1402,7 @@ def multi_thread_reply(
                 mail_sender_instance,
                 new_attachment_names,
                 subject_include_incident_id,
+                from_mail,
             )
 
             # Clear fields for re-use
@@ -1431,6 +1451,7 @@ def multi_thread_reply(
                     mail_sender_instance,
                     new_attachment_names,
                     subject_include_incident_id,
+                    from_mail,
                 )
 
                 # Clear fields for re-use
@@ -1481,6 +1502,7 @@ def multi_thread_reply(
                 reply_to_message_id,
                 reply_code,
                 mail_sender_instance,
+                from_mail,
             )
             return_results(result)
 
@@ -1498,7 +1520,7 @@ def multi_thread_reply(
                 final_email_cc,
                 final_email_bcc,
                 new_email_body,
-                service_mail,
+                from_mail or service_mail,
                 context_html_body,
                 "",
                 "",
@@ -1551,6 +1573,7 @@ def main():  # pragma: no cover
         subject_include_incident_id = argToBoolean(args.get("subject_include_incident_id", False))
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
+        from_mail = args.get("from")
         demisto.debug("Getting notes")
         is_succeed, notes = execute_command(
             "getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False, fail_on_error=False
@@ -1580,6 +1603,7 @@ def main():  # pragma: no cover
                 service_mail,
                 email_latest_message,
                 mail_sender_instance,
+                from_mail,
                 reputation_calc_async,
             )
 
@@ -1600,6 +1624,7 @@ def main():  # pragma: no cover
                 add_bcc,
                 mail_sender_instance,
                 new_attachment_names,
+                from_mail,
             )
 
         elif new_thread == "false":
@@ -1617,6 +1642,7 @@ def main():  # pragma: no cover
                 mail_sender_instance,
                 new_attachment_names,
                 subject_include_incident_id,
+                from_mail,
             )
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
