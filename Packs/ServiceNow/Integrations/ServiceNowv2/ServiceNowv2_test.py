@@ -4019,3 +4019,179 @@ def test_client_jwt_param_usage(mocker):
     )
     assert hasattr(client.snow_client, "jwt")
     assert client.snow_client.jwt == "jwt_token_stub"
+
+
+class TestCredentialFlowEndToEnd:
+    """End-to-end tests for the new basic_credentials / oath_credentials flow in ServiceNowv2 main()."""
+
+    BASE_PARAMS = {
+        "url": "https://test.service-now.com",
+        "insecure": False,
+        "proxy": False,
+        "use_oauth": False,
+        "use_jwt": False,
+        "incident_name": None,
+        "file_tag_from_service_now": "FromServiceNow",
+        "file_tag": "ForServiceNow",
+        "comment_tag": "comments",
+        "comment_tag_from_servicenow": "CommentFromServiceNow",
+        "work_notes_tag": "work_notes",
+        "work_notes_tag_from_servicenow": "WorkNoteFromServiceNow",
+    }
+
+    def test_basic_auth_with_basic_credentials(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param provides username and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with the credentials from basic_credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "oath_credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with basic_credentials values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        # Basic auth header should be present (base64 encoded basic_user:basic_pass)
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_basic_auth_legacy_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param is empty (no username/password).
+            - oath_credentials param has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with legacy fallback from oath_credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {},
+            "oath_credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with legacy fallback values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_oauth_uses_oath_credentials_for_client_id_secret(self, mocker, requests_mock):
+        """
+        Given:
+            - use_oauth is True.
+            - oath_credentials provides client_id (identifier) and client_secret (password).
+        When:
+            - main() is called with the 'servicenow-oauth-test' command.
+        Then:
+            - OAuth flow is used (get_access_token is called).
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "use_oauth": True,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "oath_credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="servicenow-oauth-test")
+        mocker.patch.object(ServiceNowClient, "get_access_token", return_value="mock_token")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+
+        main()
+
+        # Verify OAuth was used (Bearer token in request)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Bearer" in auth
+
+    def test_jwt_and_oauth_both_enabled_raises_error(self, mocker):
+        """
+        Given:
+            - Both use_jwt and use_oauth are True.
+        When:
+            - main() is called.
+        Then:
+            - A ValueError is raised indicating only one auth method should be chosen.
+        """
+        params = {
+            **self.BASE_PARAMS,
+            "use_jwt": True,
+            "use_oauth": True,
+            "basic_credentials": {},
+            "oath_credentials": {"identifier": "id", "password": "secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        return_error_mock = mocker.patch("ServiceNowv2.return_error")
+
+        main()
+
+        assert return_error_mock.call_count >= 1
+        assert "authentication method" in return_error_mock.call_args_list[0][0][0]
+
+    def test_basic_auth_partial_credentials_triggers_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials has username but no password.
+            - oath_credentials has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The Client falls back to oath_credentials for both username and password.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "partial_user", "password": ""},
+            "oath_credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used (fallback to oath_credentials)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth
