@@ -3377,6 +3377,7 @@ Describes the EBS snapshots available to you or all snapshots accessible in your
 | AWS.EC2.Snapshots.RestoreExpiryTime | date | Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived. | 
 | AWS.EC2.Snapshots.SseType | string | Reserved for future use. | 
 | AWS.EC2.SnapshotsNextPageToken | string | Next page token for pagination. | 
+
 ### aws-ec2-snapshot-delete
 
 ***
@@ -3428,6 +3429,7 @@ Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You
 | AWS.EC2.Snapshots.SnapshotId | string | The ID of the new snapshot. | 
 | AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. | 
+
 ### aws-ec2-snapshot-completed-waiter
 
 ***
