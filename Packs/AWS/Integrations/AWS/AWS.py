@@ -2609,28 +2609,13 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         addresses = response.get("Addresses", [])
 
-        # Build readable output data
-        readable_outputs = []
-        for address in addresses:
-            readable_data = {
-                "PublicIp": address.get("PublicIp"),
-                "AllocationId": address.get("AllocationId"),
-                "Domain": address.get("Domain"),
-                "InstanceId": address.get("InstanceId"),
-                "AssociationId": address.get("AssociationId"),
-                "NetworkInterfaceId": address.get("NetworkInterfaceId"),
-                "PrivateIpAddress": address.get("PrivateIpAddress"),
-            }
-            readable_data = remove_empty_elements(readable_data)
-            readable_outputs.append(readable_data)
-
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
             outputs=addresses,
             readable_output=tableToMarkdown(
                 "AWS EC2 Elastic IP Addresses",
-                readable_outputs,
+                addresses,
                 headers=[
                     "PublicIp",
                     "AllocationId",
@@ -2681,27 +2666,15 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
-        # Build output data
-        output_data = {
-            "PublicIp": response.get("PublicIp"),
-            "AllocationId": response.get("AllocationId"),
-            "Domain": response.get("Domain"),
-            "PublicIpv4Pool": response.get("PublicIpv4Pool"),
-            "NetworkBorderGroup": response.get("NetworkBorderGroup"),
-            "CustomerOwnedIp": response.get("CustomerOwnedIp"),
-            "CustomerOwnedIpv4Pool": response.get("CustomerOwnedIpv4Pool"),
-            "CarrierIp": response.get("CarrierIp"),
-        }
-        output_data = remove_empty_elements(output_data)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
-            outputs=output_data,
+            outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Allocated Elastic IP",
-                output_data,
+                outputs,
                 headers=["PublicIp", "AllocationId", "Domain", "PublicIpv4Pool", "NetworkBorderGroup"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -2747,7 +2720,6 @@ class EC2:
             "AssociationId": response.get("AssociationId"),
         }
         output_data = remove_empty_elements(output_data)
-
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
@@ -2928,20 +2900,6 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         images = response.get("Images", [])
 
-        # Build readable output data
-        readable_outputs = []
-        for image in images:
-            readable_data = {
-                "ImageId": image.get("ImageId"),
-                "Name": image.get("Name"),
-                "CreationDate": image.get("CreationDate"),
-                "State": image.get("State"),
-                "Public": image.get("Public"),
-                "Description": image.get("Description"),
-            }
-            readable_data = remove_empty_elements(readable_data)
-            readable_outputs.append(readable_data)
-
         outputs = {
             "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
             "AWS.EC2(true)": {
@@ -2956,7 +2914,7 @@ class EC2:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Images",
-                readable_outputs,
+                images,
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -3013,7 +2971,6 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
         # Build output data
         output_data = {
             "ImageId": response.get("ImageId"),
@@ -3512,32 +3469,22 @@ class EC2:
         if not associations:
             return CommandResults(readable_output="No IAM instance profile associations were found.")
 
-        # Format output data
-        readable_data = []
-        for association in associations:
-            readable_data.append(
-                {
-                    "AssociationId": association.get("AssociationId"),
-                    "InstanceId": association.get("InstanceId"),
-                    "State": association.get("State"),
-                    "IamInstanceProfile": association.get("IamInstanceProfile"),
-                }
-            )
-
-        readable_output = tableToMarkdown(
-            "AWS IAM Instance Profile Associations",
-            readable_data,
-            headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
-            headerTransform=pascalToSpace,
-            removeNull=True,
-        )
-
         outputs = {
             "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
             "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
         }
 
-        return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS IAM Instance Profile Associations",
+                associations,
+                headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
 
     @staticmethod
     def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -3627,26 +3574,9 @@ class EC2:
         if not reserved_instances:
             return CommandResults(readable_output="No Reserved Instances were found.")
 
-        # Format output data
-        readable_data = []
-        for reservation in reserved_instances:
-            readable_data.append(
-                {
-                    "ReservedInstancesId": reservation.get("ReservedInstancesId"),
-                    "InstanceType": reservation.get("InstanceType"),
-                    "InstanceCount": reservation.get("InstanceCount"),
-                    "State": reservation.get("State"),
-                    "Start": reservation.get("Start"),
-                    "End": reservation.get("End"),
-                    "Duration": reservation.get("Duration"),
-                    "OfferingClass": reservation.get("OfferingClass"),
-                    "Scope": reservation.get("Scope"),
-                }
-            )
-
         readable_output = tableToMarkdown(
             "AWS EC2 Reserved Instances",
-            readable_data,
+            reserved_instances,
             headers=[
                 "ReservedInstancesId",
                 "InstanceType",
