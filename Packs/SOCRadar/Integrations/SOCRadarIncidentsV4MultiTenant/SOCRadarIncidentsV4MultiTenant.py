@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 
 urllib3.disable_warnings()
 
-SOCRADAR_API_ENDPOINT = "https://preprod.socradar.com/api"
+SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
 SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 2000
 MAX_INCIDENTS_PER_PAGE = 100
