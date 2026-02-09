@@ -74,7 +74,18 @@ from HelloWorldV2 import (
 )
 
 
-def util_load_json(path):
+@pytest.fixture(autouse=True)
+def mock_support_multithreading(mocker: MockerFixture):
+    """Mock support_multithreading to prevent demistomock attribute errors.
+
+    This fixture automatically runs before each test to mock the support_multithreading
+    function which is called during ContentClient initialization. Without this mock,
+    tests fail with: AttributeError: module 'demistomock' has no attribute '_Demisto__do'
+    """
+    mocker.patch("CommonServerPython.support_multithreading")
+
+
+def util_load_json(path: str):
     """Load JSON test data from file.
 
     Args:

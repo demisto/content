@@ -15,6 +15,7 @@ This is the Hello World v2 integration for getting started.
 | First fetch time | The time from which to start fetching alerts. Supports relative time \(e.g., "3 hours ago"\) or ISO 8601 format \(e.g., "2025-12-01T00:00:00Z"\). Default is 3 days. | False |
 | Severity of alerts to fetch | Possible values are: low, medium, high, critical. Default is high. | False |
 | Fetch incidents | Fetch HelloWorld alerts as incidents in Cortex XSOAR. Supported in Cortex XSOAR only. | False |
+| Incident type | | False |
 | Maximum number of incidents per fetch | Default is 10. Supported in Cortex XSOAR only. | False |
 | Fetch events | Fetch HelloWorld alerts as events in Cortex XSIAM. Supported in Cortex XSIAM only. | False |
 | Maximum number of events per fetch | Default is 1000. Supported in Cortex XSIAM only. | False |
@@ -44,7 +45,7 @@ Prints hello to a specified name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| hello | String | Should be Hello \*\*something\*\* here. |
+| HelloWorld.Hello.name | String | The greeting message returned by the command. |
 
 #### Command example
 

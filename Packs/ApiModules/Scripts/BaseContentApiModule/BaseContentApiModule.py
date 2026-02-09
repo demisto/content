@@ -11,7 +11,7 @@ Classes:
     BaseExecutionConfig: Centralized entry point holding command, params, args, and last_run
 """
 
-from pydantic import BaseModel, ValidationError, Extra
+from pydantic import BaseModel, ValidationError, Extra  # pylint: disable=no-name-in-module
 
 import demistomock as demisto
 from CommonServerPython import *

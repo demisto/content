@@ -1480,7 +1480,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
     severity: HelloWorldSeverity | None = None
 
     @root_validator(allow_reuse=True)
-    def check_alert_id_or_severity(cls, values: dict):
+    def check_alert_id_or_severity(cls, values: dict):  # pylint: disable=no-self-argument
         has_alert_id = bool(values.get("alert_id"))
         has_severity = bool(values.get("severity"))
 
