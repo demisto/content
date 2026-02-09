@@ -69,6 +69,7 @@ WEBAPP_COMMANDS = [
     "core-update-endpoint-version",
     "core-create-windows-malware-profile",
     "core-update-windows-malware-profile",
+    "core-create-windows-exploit-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -113,6 +114,11 @@ class Profile:
         "dynamicDriverProtection": "dynamic_driver_protection",
         "securityMeasuresBypass": "security_measures_bypass",
         "basTools": "breach_attack_simulation_tools_settings",
+        "browserExploitKits": "browser_exploits_protection",
+        "logicalExploits": "logical_exploits_protection",
+        "vulnerableApps": "known_vulnerable_processes_protection",
+        "osKernelExploits": "operating_system_exploit_protection",
+        "additionalProcesses": "exploit_protection_for_additional_processes",
     }
 
 class ScriptManagement:
@@ -4661,7 +4667,51 @@ def update_windows_malware_profile_command(client, args):
     client.update_profile(update_profile)
     
     return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
-    
+
+
+def create_windows_exploit_profile_command(client: Client, args: dict) -> CommandResults:
+    profile_name = args.get("profile_name")
+    profile_type = "EXPLOIT"
+    profile_platform = "AGENT_OS_WINDOWS"
+    profile_description = args.get("profile_description", "")
+
+    # Template from user
+    profile_modules = {
+        "vulnerableApps": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "javaProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
+        "logicalExploits": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "forbidDllLoad": []},
+        "osKernelExploits": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
+        "browserExploitKits": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
+        "additionalProcesses": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "processes": []},
+        "autoVulnerabilitiesProtection": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "settings": {"patch_feb_21": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}}}
+    }
+
+    # Update modules based on args
+    for module_name, module_data in profile_modules.items():
+        arg_value = args.get(Profile.FIELDS.get(module_name))
+        if arg_value and "mode" in module_data:
+            module_data["mode"]["value"] = arg_value
+
+    payload = {
+        "new_profile_data": {
+            "PROFILE_NAME": profile_name,
+            "PROFILE_TYPE": profile_type,
+            "PROFILE_PLATFORM": profile_platform,
+            "PROFILE_DESCRIPTION": profile_description,
+            "PROFILE_IS_DEFAULT": False,
+            "PROFILE_MODULES": profile_modules
+        }
+    }
+
+    response = client.create_profile(payload).get("reply", "")
+
+    return CommandResults(
+        readable_output="Profile created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
+        outputs={"profile_id": response},
+        raw_response={"profile_id": response}
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4801,6 +4851,9 @@ def main():  # pragma: no cover
             
         elif command == "core-update-windows-malware-profile":
             return_results(update_windows_malware_profile_command(client, args))
+
+        elif command == "core-create-windows-exploit-profile":
+            return_results(create_windows_exploit_profile_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

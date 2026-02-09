@@ -3582,10 +3582,6 @@ script:
         - contextPath: Core.Profile.profile_id
           description: The ID of the created profile.
           type: String
-      
-
-
-
     - arguments:
         - description: The ID of the profile.
           name: profile_id
@@ -3787,6 +3783,55 @@ script:
             - enabled
       description: Updates the provided profile.
       name: core-update-windows-malware-profile
+      outputs: []
+    - arguments:
+        - description: The name of the profile.
+          name: profile_name
+          required: true
+        - description: The description of the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protection against browser exploits.
+          name: browser_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protection against logical exploits.
+          name: logical_exploits_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protection against known vulnerable processes.
+          name: known_vulnerable_processes_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: block
+          description: Protection against operating system exploits.
+          name: operating_system_exploit_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          defaultValue: disabled
+          description: Exploit protection for additional processes.
+          name: exploit_protection_for_additional_processes
+          predefined:
+            - block
+            - disabled
+            - report
+      description: Creates a new Windows exploit profile.
+      name: core-create-windows-exploit-profile
       outputs:
         - contextPath: Core.Profile.profile_id
           description: The ID of the created profile.
