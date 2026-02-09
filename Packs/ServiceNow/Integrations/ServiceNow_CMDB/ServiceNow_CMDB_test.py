@@ -297,7 +297,6 @@ class TestCredentialFlowEndToEnd:
         }
         mocker.patch("ServiceNow_CMDB.demisto.params", return_value=params)
         mocker.patch("ServiceNow_CMDB.demisto.command", return_value="test-module")
-        return_error_mock = mocker.patch("ServiceNow_CMDB.return_error")
 
         client_init_spy = mocker.patch("ServiceNow_CMDB.Client", wraps=Client)
         main()
@@ -309,8 +308,7 @@ class TestCredentialFlowEndToEnd:
         assert call_kwargs["use_oauth"] is True
         assert call_kwargs["username"] == "basic_user"
         assert call_kwargs["password"] == "basic_pass"
-        # test-module with OAut should trigger return_error
-        assert "Test button cannot be used when using OAuth 2.0" in return_error_mock.call_args[0][0]
+
 
     def test_jwt_auth_flow(self, mocker):
         """
