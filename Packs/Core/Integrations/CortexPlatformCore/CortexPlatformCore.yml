@@ -3359,7 +3359,7 @@ script:
           name: profile_description
         - auto: PREDEFINED
           defaultValue: disabled
-          description: Mode for aspFiles module.
+          description: Analyze ASP and ASPX files written to the file system, and quarantine them if found to be malicious.
           name: asp_aspx_files
           predefined:
             - block
@@ -3367,14 +3367,14 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: disabled
-          description: Mode for basTools module.
+          description: Breach & Attack Simulation (BAS) Tools Settings.
           name: breach_attack_simulation_tools_settings
           predefined:
             - enabled
             - disabled
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for uacBypass module.
+          description: Protection against bypassing UAC mechanisms associated with process privileges elevation.
           name: uac_bypass_prevention
           predefined:
             - block
@@ -3382,21 +3382,21 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: enabled
-          description: Mode for manualScan module.
+          description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Periodic scan.
           name: on_demand_file_examination
           predefined:
             - disabled
             - enabled
         - auto: PREDEFINED
           defaultValue: disabled
-          description: Mode for scanEndpoints module.
+          description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Local scan.
           name: end_user_initiated_local_scan
           predefined:
             - disabled
             - enabled
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for ransomware module.
+          description: Targets encryption based activity associated with ransomware to analyze and halt ransomware before any data loss occurs.
           name: ransomware_protection
           predefined:
             - block
@@ -3404,7 +3404,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for cryptominers module.
+          description: Protection against Cryptominers.
           name: cryptominers_protection
           predefined:
             - block
@@ -3412,7 +3412,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for antiTampering module.
+          description: Protection against tampering attempts, including modification and/or termination of the Cortex XDR agent.
           name: anti_tampering_protection
           predefined:
             - block
@@ -3420,7 +3420,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for iisProtection module.
+          description: Protection against IIS related attacks.
           name: iis_protection
           predefined:
             - block
@@ -3428,7 +3428,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for uefiProtection module.
+          description: Protection against UEFI manipulation attempts.
           name: uefi_protection
           predefined:
             - block
@@ -3436,7 +3436,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for maliciousDevice module.
+          description: Protection against connecting potentially malicious Human Interface Devices (HIDs).
           name: malicious_device_prevention
           predefined:
             - block
@@ -3444,7 +3444,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for networkSignature module.
+          description: Analyze network packet data to detect malicious behavior.
           name: network_packet_inspection_engine
           predefined:
             - block
@@ -3452,7 +3452,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for passwordStealing module.
+          description: Protection from processes trying to access/steal passwords and other sensitive credentials.
           name: credential_gathering_protection
           predefined:
             - block
@@ -3460,7 +3460,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for webshellDroppers module.
+          description: Protection from processes dropping malicious webshells.
           name: anti_webshell_protection
           predefined:
             - block
@@ -3468,7 +3468,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for examineOfficeFiles module.
+          description: Analyze and prevent malicious macros embedded in Microsoft Office (Word/Excel) files from running.
           name: office_files_with_macros_examination
           predefined:
             - block
@@ -3476,7 +3476,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for inProcessShellcode module.
+          description: Prevents evasive attacks using shellcodes to load malicious code.
           name: in_process_shellcode_protection
           predefined:
             - block
@@ -3484,7 +3484,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for examineJScriptFiles module.
+          description: Analyze and prevent malicious JScript files from running.
           name: jscript_file_examination
           predefined:
             - block
@@ -3492,7 +3492,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for legitimateProcesses module.
+          description: Prevents script-based attacks used to deliver malware by blocking known targeted processes from launching child processes commonly used to bypass traditional security approaches.
           name: malicious_child_process_protection
           predefined:
             - block
@@ -3500,7 +3500,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for examineVBScriptFiles module.
+          description: Analyze and prevent malicious VB files from running.
           name: vb_scripts_examination
           predefined:
             - block
@@ -3508,7 +3508,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for dynamicSecurityEngine module.
+          description: Prevents sophisticated attacks that leverage built-in OS executables and common administration utilities by continuously monitoring endpoint activity for malicious causality chains.
           name: global_behavioral_threat_protection_rules
           predefined:
             - block
@@ -3516,7 +3516,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for powerShellScriptFiles module.
+          description: Analyze and prevent malicious PowerShell script files from running.
           name: powershell_script_files
           predefined:
             - block
@@ -3524,7 +3524,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for financialMalwareThreat module.
+          description: Protection against techniques specific to financial and banking malware.
           name: financial_malware_threat_protection
           predefined:
             - block
@@ -3532,7 +3532,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for securityMeasuresBypass module.
+          description: Protection against security measures bypass techniques.
           name: security_measures_bypass
           predefined:
             - block
@@ -3540,7 +3540,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for dynamicDriverProtection module.
+          description: Runtime protection against abuse of kernel drivers.
           name: dynamic_driver_protection
           predefined:
             - block
@@ -3548,7 +3548,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for dynamicKernelProtection module.
+          description: Protection against malicious processes running at boot time.
           name: dynamic_kernel_protection
           predefined:
             - block
@@ -3556,14 +3556,14 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: enabled
-          description: Mode for passwordTheftProtection module.
+          description: Prevent attacks using the Mimikatz tool to extract passwords from memory.
           name: password_theft_protection
           predefined:
             - disabled
             - enabled
         - auto: PREDEFINED
           defaultValue: block
-          description: Mode for examinePortableExecutables module.
+          description: Analyze and prevent malicious executable and DLL files from running.
           name: portable_executables_and_dll_examination
           predefined:
             - block
@@ -3571,7 +3571,7 @@ script:
             - report
         - auto: PREDEFINED
           defaultValue: enabled
-          description: Mode for maliciousCausalityChainsResponse module.
+          description: Configure agent automatic response actions to malicious causality chains.
           name: respond_to_malicious_causality_chains
           predefined:
             - disabled
@@ -3579,9 +3579,218 @@ script:
       description: Creates a new profile.
       name: core-create-windows-malware-profile
       outputs:
-        - contextPath: Core.Profile
-          description: The created profile data.
-          type: Unknown
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
+      
+
+
+
+    - arguments:
+        - description: The ID of the profile.
+          name: profile_id
+          required: true
+        - description: The new name for the profile.
+          name: profile_name
+        - description: The new description for the profile.
+          name: profile_description
+        - auto: PREDEFINED
+          description: Analyze ASP and ASPX files written to the file system, and quarantine them if found to be malicious.
+          name: asp_aspx_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Breach & Attack Simulation (BAS) Tools Settings.
+          name: breach_attack_simulation_tools_settings
+          predefined:
+            - enabled
+            - disabled
+        - auto: PREDEFINED
+          description: Protection against bypassing UAC mechanisms associated with process privileges elevation.
+          name: uac_bypass_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Periodic scan.
+          name: on_demand_file_examination
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Scan your endpoints and attached removable drives for dormant malware that is not actively attempting to run. Local scan.
+          name: end_user_initiated_local_scan
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Targets encryption based activity associated with ransomware to analyze and halt ransomware before any data loss occurs.
+          name: ransomware_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against Cryptominers.
+          name: cryptominers_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against tampering attempts, including modification and/or termination of the Cortex XDR agent.
+          name: anti_tampering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against IIS related attacks.
+          name: iis_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against UEFI manipulation attempts.
+          name: uefi_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against connecting potentially malicious Human Interface Devices (HIDs).
+          name: malicious_device_prevention
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyze network packet data to detect malicious behavior.
+          name: network_packet_inspection_engine
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection from processes trying to access/steal passwords and other sensitive credentials.
+          name: credential_gathering_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection from processes dropping malicious webshells.
+          name: anti_webshell_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyze and prevent malicious macros embedded in Microsoft Office (Word/Excel) files from running.
+          name: office_files_with_macros_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents evasive attacks using shellcodes to load malicious code.
+          name: in_process_shellcode_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyze and prevent malicious JScript files from running.
+          name: jscript_file_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents script-based attacks used to deliver malware by blocking known targeted processes from launching child processes commonly used to bypass traditional security approaches.
+          name: malicious_child_process_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyze and prevent malicious VB files from running.
+          name: vb_scripts_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevents sophisticated attacks that leverage built-in OS executables and common administration utilities by continuously monitoring endpoint activity for malicious causality chains.
+          name: global_behavioral_threat_protection_rules
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Analyze and prevent malicious PowerShell script files from running.
+          name: powershell_script_files
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against techniques specific to financial and banking malware.
+          name: financial_malware_threat_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against security measures bypass techniques.
+          name: security_measures_bypass
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Runtime protection against abuse of kernel drivers.
+          name: dynamic_driver_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Protection against malicious processes running at boot time.
+          name: dynamic_kernel_protection
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Prevent attacks using the Mimikatz tool to extract passwords from memory.
+          name: password_theft_protection
+          predefined:
+            - disabled
+            - enabled
+        - auto: PREDEFINED
+          description: Analyze and prevent malicious executable and DLL files from running.
+          name: portable_executables_and_dll_examination
+          predefined:
+            - block
+            - disabled
+            - report
+        - auto: PREDEFINED
+          description: Configure agent automatic response actions to malicious causality chains.
+          name: respond_to_malicious_causality_chains
+          predefined:
+            - disabled
+            - enabled
+      description: Updates the provided profile.
+      name: core-update-windows-malware-profile
+      outputs:
+        - contextPath: Core.Profile.profile_id
+          description: The ID of the created profile.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

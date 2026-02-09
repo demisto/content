@@ -68,6 +68,7 @@ WEBAPP_COMMANDS = [
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
     "core-create-windows-malware-profile",
+    "core-update-windows-malware-profile",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -995,6 +996,20 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/profiles/add_profile",
             json_data=profile_data,
+        )
+        
+    def get_current_profile(self, profile_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/get_profile_view_by_id",
+            json_data={"profile_id": profile_id},
+        )
+        
+    def update_profile(self, update_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/edit_profile",
+            json_data=update_data,
         )
 
 
@@ -4547,7 +4562,7 @@ def verify_platform_version(version: str = "8.13.0"):
         raise DemistoException("This command is not available for this platform version")
 
 
-def create_profile_command(client: Client, args: dict) -> CommandResults:
+def create_windows_malware_profile_command(client: Client, args: dict) -> CommandResults:
     profile_name = args.get("profile_name")
     profile_type = "MALWARE"
     profile_platform = "AGENT_OS_WINDOWS"
@@ -4576,8 +4591,8 @@ def create_profile_command(client: Client, args: dict) -> CommandResults:
         "examineJScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
         "ldapQueryProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "ipAllowList": [], "userAllowList": []},
         "legitimateProcesses": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "allow": []},
-        "examineVBScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
-        "dynamicSecurityEngine": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "advancedApiMonitoring": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "driversProtectionMode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
+        "examineVBScriptFiles": {"mode": {"value": "report", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "localAnalysis": {"value": True, "isDefault": True, "defaultValue": True}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "unknownVerdicts": {"value": False, "isDefault": True, "defaultValue": False}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
+        "dynamicSecurityEngine": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "advancedApiMonitoring": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "driversProtectionMode": {"value": "report", "isDefault": True, "defaultValue": "report"}},
         "examineOtherFileTypes": {"csv": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "lnk": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "msi": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "pdf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_allow", "isDefault": True, "defaultValue": "unknown_allow"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "rtf": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "java": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "flash": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "mshta": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}, "archive": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}}},
         "powerShellScriptFiles": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_allow", "isDefault": True, "defaultValue": "lc_allow"}},
         "financialMalwareThreat": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "blockIp": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "whitelistFolders": [], "cryptoWalletProtection": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
@@ -4587,7 +4602,7 @@ def create_profile_command(client: Client, args: dict) -> CommandResults:
         "dynamicKernelProtection": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}},
         "examineJavaFilesWindows": {"mode": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "onWriteProtectionServerPages": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "onWriteProtectionAppExamination": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}},
         "passwordTheftProtection": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}},
-        "examinePortableExecutables": {"mode": {"value": "block", "isDefault": True, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "whitelistSigners": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
+        "examinePortableExecutables": {"mode": {"value": "block", "isDefault": False, "defaultValue": "block"}, "upload": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "grayware": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "quarantine": {"value": "quarantine_disabled", "isDefault": True, "defaultValue": "quarantine_disabled"}, "actionOnUnknown": {"value": "unknown_local_analysis", "isDefault": True, "defaultValue": "unknown_local_analysis"}, "whitelistFolders": [], "whitelistSigners": [], "onWriteProtection": {"value": "disabled", "isDefault": True, "defaultValue": "disabled"}, "actionOnLowConfidence": {"value": "lc_local_analysis", "isDefault": True, "defaultValue": "lc_local_analysis"}},
         "maliciousCausalityChainsResponse": {"mode": {"value": "enabled", "isDefault": True, "defaultValue": "enabled"}, "remoteIpsWhitelist": []}
     }
 
@@ -4609,18 +4624,44 @@ def create_profile_command(client: Client, args: dict) -> CommandResults:
             "PROFILE_MODULES": profile_modules
         }
     }
-    print(payload)
 
-    response = client.create_profile(payload)
+    response = client.create_profile(payload).get("reply", "")
 
     return CommandResults(
         readable_output="Profile created successfully.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
-        outputs=response,
-        raw_response=response
+        outputs={"profile_id": response},
+        raw_response={"profile_id": response}
     )
 
+def update_windows_malware_profile_command(client, args):
+    profile_id = args.get("profile_id")
+    
+    current_profile = client.get_current_profile(profile_id)
+    if current_profile:
+        update_data = current_profile.get("reply", {})
+        current_profile_modules = update_data.get("PROFILE_MODULES", {})
+    
+    for module_name, module_data in current_profile_modules.items():
+        arg_value = args.get(Profile.FIELDS.get(module_name))
+        if arg_value and "mode" in module_data:
+            module_data["mode"]["value"] = arg_value
+            if "safeMode" in module_data:
+                module_data["safeMode"]["value"] = arg_value
 
+    if profile_name := args.get("profile_name"):
+        update_data["PROFILE_NAME"] = profile_name
+    
+    if profile_description := args.get("profile_description"):
+        update_data["PROFILE_DESCRIPTION"] = profile_description
+    
+    update_data["PROFILE_MODULES"] = current_profile_modules
+    update_profile = {"profile_id": profile_id, "update_data": update_data}
+    
+    client.update_profile(update_profile)
+    
+    return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
+    
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4756,7 +4797,10 @@ def main():  # pragma: no cover
             return_results(xql_query_platform_command(client, args))
 
         elif command == "core-create-windows-malware-profile":
-            return_results(create_profile_command(client, args))
+            return_results(create_windows_malware_profile_command(client, args))
+            
+        elif command == "core-update-windows-malware-profile":
+            return_results(update_windows_malware_profile_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
