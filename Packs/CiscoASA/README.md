@@ -34,7 +34,8 @@ Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex X
 
 ### Cisco ASA side
 
-1. To enable logging, enter the below command:
+1. Enter the following command to enable transmitting syslog messages to all output locations.  
+   `logging enable`
 
     `logging enable` - Enables the transmission of syslog messages to all output locations.
 
