@@ -1952,7 +1952,7 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     request_data: Dict[str, Any] = {
         "search_from": page * page_size,
-        "search_to": min((page + 1) * page_size, (page * page_size) + limit),
+        "search_to": (page + 1) * page_size,
         "filters": filters,
     }
     if sort_field:
