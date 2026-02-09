@@ -2046,10 +2046,22 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
         "resolved": "Resolved"
     }
 
+    reason_map = {
+        "resolved_threat_handled": "resolved - threat handled",
+        "resolved_known_issue": "resolved - known issue",
+        "resolved_duplicate": "resolved - duplicate issue",
+        "resolved_false_positive": "resolved - false positive",
+        "resolved_other": "resolved - other",
+        "resolved_true_positive": "resolved - true positive",
+        "resolved_security_testing": "resolved - security testing"
+    }
+
+    resolution_reason = reason_map.get(args.get("resolve_reason")) if args.get("resolve_reason") else None
+
     update_data = assign_params(
         severity=args.get("severity").upper() if args.get("severity") else None,
         status=statuses_map.get(args.get("status", "")),
-        status_resolution_reason=args.get("resolve_reason").upper() if args.get("resolve_reason") else None,
+        status_resolution_reason=resolution_reason,
         status_resolution_comment=args.get("resolve_comment")
     )
 

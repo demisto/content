@@ -4351,14 +4351,13 @@ script:
       description: The resolve reason.
       auto: PREDEFINED
       predefined:
+      - resolved_threat_handled
       - resolved_known_issue
       - resolved_duplicate
       - resolved_false_positive
       - resolved_other
       - resolved_true_positive
       - resolved_security_testing
-      - resolved_fixed
-      - resolved_dismissed
     - name: resolve_comment
       description: The resolve comment.
   dockerimage: demisto/python3:3.12.12.5490952
