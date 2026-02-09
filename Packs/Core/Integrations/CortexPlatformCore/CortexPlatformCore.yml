@@ -2093,7 +2093,7 @@ script:
             - 'new'
             - 'in_progress'
             - 'resolved'
-        - description: Not status progress. Accepts a comma-separated list.
+        - description: A comma-separated list of statuses to exclude.
           isArray: true
           name: not_status
           predefined:

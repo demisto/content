@@ -1646,9 +1646,9 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
 
-    not_status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("not_status"))]
-    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
-    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    not_status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("not_status"))]
+    status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY.get(severity) for severity in argToList(args.get("severity"))]
     tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
