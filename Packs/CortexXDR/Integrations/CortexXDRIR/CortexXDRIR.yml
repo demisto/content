@@ -4548,7 +4548,7 @@ script:
       description: The unique identifier for the correlation rule.
       type: Number
   - arguments:
-    - description: 'The correlation rule name. Example: name="This is a CR test 6".'
+    - description: The correlation rule name.
       name: name
       required: true
     - auto: PREDEFINED
@@ -4640,7 +4640,7 @@ script:
       name: user_defined_severity
     - description: User-defined category.
       name: user_defined_category
-    - description: MITRE definitions.
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'"
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link
@@ -4656,7 +4656,7 @@ script:
     - description: Correlation rule ID.
       name: rule_id
       required: true
-    - description: 'The correlation rule name. Example: name="This is a CR test 6".'
+    - description: The correlation rule name.
       name: name
       required: true
     - auto: PREDEFINED
@@ -4747,7 +4747,7 @@ script:
       name: user_defined_severity
     - description: User-defined category.
       name: user_defined_category
-    - description: MITRE definitions.
+    - description: "MITRE definitions. For example: '{\"TA0005 - Defense Evasion\": [\"T1014 - Rootkit\"]}'"
       name: mitre_defs_json
     - description: Investigation query link.
       name: investigation_query_link

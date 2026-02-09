@@ -4141,7 +4141,7 @@ Returns a list of BIOCs.
 | type | The BIOC type to filter by. Possible values are: other, persistence, evasion, tampering, file_type_obfuscation, privilege_escalation, credential_access, lateral_movement, execution, collection, exfiltration, infiltration, dropper, file_privilege_manipulation, reconnaissance, discovery. | Optional |
 | is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
 | comment | The BIOC comment to filter by. | Optional |
-| status | The BIOC status to filter by. Options are enabled or disabled. Possible values are: enabled, disabled. | Optional |
+| status | The BIOC status to filter by. Possible values are: enabled, disabled. | Optional |
 | indicator | The BIOC indicator to filter by. | Optional |
 | mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
 | mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
