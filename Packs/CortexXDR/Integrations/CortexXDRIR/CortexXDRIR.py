@@ -2000,7 +2000,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     }
 
     case_id = args.get("case_id", "")  # required
-    status = args.get("status").upper() if args.get("status") else None
+    status = args.get("status", "").upper() if args.get("status") else None
     resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason", ""))
     resolve_comment = args.get("resolve_comment")
 
