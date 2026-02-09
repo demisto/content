@@ -209,7 +209,6 @@ alter
     tmp_peer_port = arrayindex(regextract(tmp_peer_contact, ":(\d+)$"), 0),
     tmp_event_type_description = if(
         tmp_event_original_type = "association", "802.11 Association",
-        tmp_event_original_type = "disassociation",  "802.11 Disassociation",
         tmp_event_original_type = "wpa_auth",    "WPA Authentication",
         tmp_event_original_type = "wpa_deauth",  "WPA Deauthentication",
         tmp_event_original_type = "disassociation",  "WPA Failed Auth Attempt",
@@ -218,7 +217,6 @@ alter
         tmp_event_original_type = "8021x_eap_success",   "802.1X Authentication",
         tmp_event_original_type = "splash_auth", "Splash Authentication",
         tmp_event_original_type = "device_packet_flood", "Packet Flood Detected",
-        tmp_event_original_type = "device_packet_flood", "Packet Flood End",
         tmp_event_original_type = "rogue_ssid_detected", "Rogue SSID Detected",
         tmp_event_original_type = "ssid_spoofing_detected",  "SSID Spoofing Detected",
         tmp_event_original_type = "8021x_deauth", "802.1X Deauthentication",
