@@ -1,0 +1,42 @@
+{
+  "name": "AWS SNS SMS Communication",
+  "description": "Send and receive SMS messages via AWS SNS/SQS for interactive two-way communication with entitlement handling",
+  "support": "community",
+  "currentVersion": "1.0.36",
+  "author": "Maciej Drobniuch",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2026-01-06T00:00:00Z",
+  "categories": [
+    "Messaging and Conferencing"
+  ],
+  "tags": [
+    "SMS",
+    "Two-Way Communication",
+    "Messaging"
+  ],
+  "useCases": [
+    "Incident Response",
+    "Security Operations",
+    "User Notifications"
+  ],
+  "keywords": [
+    "AWS",
+    "SNS",
+    "SQS",
+    "SMS",
+    "Text Message",
+    "Two-Way",
+    "Entitlement",
+    "Ask Task"
+  ],
+  "dependencies": {},
+  "displayedImages": [],
+  "githubUser": [],
+  "certification": "certified",
+  "hidden": false,
+  "serverMinVersion": "6.5.0",
+  "marketplaces": [
+    "xsoar"
+  ]
+}
