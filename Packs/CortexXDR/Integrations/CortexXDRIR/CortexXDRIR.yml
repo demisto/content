@@ -4133,20 +4133,20 @@ script:
     description: Updates an asset group.
     name: xdr-asset-group-update
   - arguments:
-    - description: A comma-separated list of case IDs.
+    - description: A comma-separated list of case IDs to filter by.
       isArray: true
       name: case_id
-    - description: A comma-separated list of case domains.
+    - description: A comma-separated list of case domains to filter by.
       isArray: true
       name: case_domain
-    - description: "A comma-separated list of severities."
+    - description: "A comma-separated list of severities to filter by."
       isArray: true
       name: severity
-    - description: Filters cases that were created before this date. Supports English expressions like "one year".
+    - description: Filters cases that were created before this date. Supports natural language expressions such as "one year".
       name: created_before
-    - description: Filters cases that were created after this date. Supports English expressions like "one year".
+    - description: Filters cases that were created after this date. Supports natural language expressions such as "one year".
       name: created_after
-    - description: A comma-separated list of statuses.
+    - description: A comma-separated list of statuses to filter by.
       isArray: true
       name: status
     - auto: PREDEFINED
@@ -4168,7 +4168,7 @@ script:
       name: page_size
     - description: Page number for pagination.
       name: page
-    description: Returns a list of cases based on filters.
+    description: Returns a list of cases based on the specified filters.
     name: xdr-case-list
     outputs:
     - contextPath: PaloAltoNetworksXDR.Case.case_id
@@ -4246,20 +4246,20 @@ script:
       - resolved_other
     - description: A comment explaining the resolution.
       name: resolve_comment
-    description: Updates an existing case.
+    description: Updates an existing case with the specified details.
     name: xdr-case-update
   - arguments:
     - description: The ID of the case for which to retrieve artifacts.
       name: case_id
       required: true
-    description: Retrieves artifacts for a specific case.
+    description: Retrieves a list of artifacts for a specific case.
     name: xdr-case-artifact-list
     outputs:
     - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.case_id
       description: The ID of the case associated with the network artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_ip
-      description: The remote IP address involved in the artifact.
+      description: The remote IP address associated with the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.CaseNetworkArtifact.network_remote_port
       description: The remote port used in the network connection.
