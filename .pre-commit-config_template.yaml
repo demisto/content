@@ -321,15 +321,15 @@ repos:
     require_serial: true
     skip:docker_autoupdate: true
 
-  # - id: validate-validation-config-file
-  #   name: Validation for validate_config file
-  #   description: Validate the validation config file
-  #   entry: validate-validation-config-file
-  #   language: python
-  #   pass_filenames: false
-  #   skip:nightly: true
-  #   args:
-  #   - --config-path=validation_config.toml
+  - id: validate-validation-config-file
+    name: Validation for validate_config file
+    description: Validate the validation config file
+    entry: validate-validation-config-file
+    language: python
+    pass_filenames: false
+    skip:nightly: true
+    args:
+    - --config-path=validation_config.toml
 
   - id: secrets
     name: secrets
