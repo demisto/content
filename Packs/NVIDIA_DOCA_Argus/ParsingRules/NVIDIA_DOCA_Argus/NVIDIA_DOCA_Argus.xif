@@ -1,0 +1,9 @@
+[INGEST:vendor="nvidia", product="doca_argus", target_dataset="nvidia_doca_argus_raw", no_hit=keep]
+filter to_string(occurred_message_time_iso_8601_ns) != null
+| alter
+    //capture the timestamp with only the 6 first numbers after the dot
+    tmp_timestamp = arrayindex(regextract(to_string(occurred_message_time_iso_8601_ns),"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}"),0),
+    //capture the timestamp offset - such as +00:00
+    tmp_offset = arrayindex(regextract(to_string(occurred_message_time_iso_8601_ns),"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2})"),0)
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E6S%Z",tmp_timestamp+tmp_offset)
+| fields -tmp*;
