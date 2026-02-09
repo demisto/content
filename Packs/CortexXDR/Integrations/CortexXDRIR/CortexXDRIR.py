@@ -625,9 +625,6 @@ class Client(CoreClient):
         )
 
     def search_cases(self, request_data: dict):
-        """
-        API Endpoint: POST /public_api/v1/case/search
-        """
         res = self._http_request(
             method="POST",
             url_suffix="/case/search",
@@ -636,18 +633,14 @@ class Client(CoreClient):
         return res.get("reply", {}).get("DATA", [])
 
     def update_case(self, case_id: str, request_data: dict):
-        """
-        API Endpoint: POST /public_api/v1/case/update/{case-id}
-        In case of success the API returns 204
-        """
         return self._http_request(
-            method="POST", url_suffix=f"/case/update/{case_id}", json_data=request_data, resp_type="response"
+            method="POST",
+            url_suffix=f"/case/update/{case_id}",
+            json_data=request_data,
+            resp_type="response"
         )
 
     def get_case_artifacts(self, case_id: str):
-        """
-        API Endpoint: GET /public_api/v1/case/artifacts
-        """
         res = self._http_request(
             method="GET",
             url_suffix=f"/case/artifacts/{case_id}",
