@@ -3694,7 +3694,7 @@ class EC2:
             "VolumeType": volume_modification.pop("TargetVolumeType", None),
             "Throughput": volume_modification.pop("TargetThroughput", None),
             "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
-            "Modification": volume_modification, #empty
+            "Modification": volume_modification,
         }
         remove_nulls_from_dictionary(outputs)
 
