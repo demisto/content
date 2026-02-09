@@ -123,8 +123,8 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         channel_id: str,
         message: str,
         thread_id: str = "",
-        blocks: Optional[list] = None,
-        attachments: Optional[list] = None,
+        blocks: list | None = None,
+        attachments: list | None = None,
         ephemeral: bool = False,
         user_id: str = "",
     ):
@@ -155,7 +155,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         channel_id: str,
         message_ts: str,
         text: str = "",
-        blocks: Optional[list] = None,
+        blocks: list | None = None,
     ):
         """
         Update an existing Slack message.
@@ -173,6 +173,22 @@ class SlackAgentixHandler(AgentixMessagingHandler):
             body["blocks"] = blocks
 
         return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.update", body=body)
+
+    async def delete_message(
+        self,
+        channel_id: str,
+        message_ts: str,
+    ):
+        """
+        Delete an existing Slack message.
+        Implements the abstract method from AgentixMessagingHandler.
+
+        Args:
+            channel_id: The Slack channel ID
+            message_ts: The message timestamp
+        """
+        body: Dict = {"channel": channel_id, "ts": message_ts}
+        return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.delete", body=body)
 
     async def get_user_info(self, user_id: str) -> dict:
         """
@@ -216,6 +232,19 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         """
         return f"<@{user_id}>"
 
+    def normalize_message_for_backend(self, text: str) -> str:
+        """
+        Normalize Slack message for backend by removing markdown formatting.
+        Implements the abstract method from AgentixMessagingHandler.
+
+        Args:
+            text: The Slack message text with markdown formatting
+
+        Returns:
+            Normalized text suitable for backend
+        """
+        return normalize_slack_message_for_backend(text)
+
     def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
         """
         Prepare Slack-specific message blocks.
@@ -240,7 +269,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         Returns:
             Slack blocks for agent selection
         """
-        return create_agent_selection_blocks(json.dumps({"agents": agents}))
+        return create_agent_selection_blocks(agents)
 
     def create_approval_ui(self) -> list:
         """
@@ -269,7 +298,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
         thread_id: str,
         blocks: list,
         attachments: list,
-    ) -> Optional[dict]:
+    ) -> dict:
         """
         Send a new message to Slack.
         Implements the abstract method from AgentixMessagingHandler.
@@ -281,12 +310,12 @@ class SlackAgentixHandler(AgentixMessagingHandler):
             attachments: Message attachments
 
         Returns:
-            Response dict with 'ts' if successful, None otherwise
+            Response dict with 'ts' if successful
         """
         response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments)
         if response:
             return {"ts": response.get("ts")}
-        return None
+        return {}
 
     def update_existing_message(
         self,
@@ -316,11 +345,8 @@ class SlackAgentixHandler(AgentixMessagingHandler):
                 http_verb="GET",
                 body={"channel": channel_id, "ts": thread_id, "latest": message_ts, "limit": 1, "inclusive": True},
             )
-            demisto.debug(f"[1234-slack] History_response: {history_response}")
-
             # Intelligently merge blocks from new attachments into existing attachment
             combined_attachments = merge_attachment_blocks(history_response, attachments)
-            demisto.debug(f"[1234-slack] Merged attachments: {combined_attachments}")
             send_slack_request_sync(
                 CLIENT,
                 "chat.update",
@@ -435,7 +461,7 @@ def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str)
 slack_agentix_handler = SlackAgentixHandler()
 
 
-def send_agent_response():
+async def send_agent_response():
     """
     Wrapper function for the send-agent-response command.
     Delegates to SlackAgentixHandler.send_agent_response()
@@ -444,23 +470,23 @@ def send_agent_response():
 
     # Get current integration context
     integration_context = get_integration_context(SYNC_CONTEXT)
-    agentix = integration_context.get("agentix", {})
-    if isinstance(agentix, str):
-        agentix = json.loads(agentix)
+    agentix_context = integration_context.get("agentix", {})
+    if isinstance(agentix_context, str):
+        agentix_context = json.loads(agentix_context)
 
     channel_id = args["channel_id"]
     thread_id = str(args["thread_id"])
     agentix_id_key = f"{channel_id}_{thread_id}"
 
     # Call the handler's send_agent_response method
-    slack_agentix_handler.send_agent_response(
+    await slack_agentix_handler.send_agent_response(
         channel_id=channel_id,
         thread_id=thread_id,
         message=args["message"],
         message_type=args["message_type"],
         message_id=args.get("message_id", ""),
         completed=argToBoolean(args.get("completed", False)),
-        agentix=agentix,
+        agentix_context=agentix_context,
         agentix_id_key=agentix_id_key,
     )
 
@@ -606,6 +632,7 @@ def return_user_filter(user_to_search: str, users_list):
     users_filter = list(
         filter(
             lambda u: u.get("name", "").lower() == user_to_search
+            or u.get("id", "").lower() == user_to_search
             or u.get("profile", {}).get("display_name", "").lower() == user_to_search
             or u.get("profile", {}).get("email", "").lower() == user_to_search
             or u.get("profile", {}).get("real_name", "").lower() == user_to_search,
@@ -930,7 +957,6 @@ def send_slack_request_sync(
                 response = client.api_call(method, json=body)
             else:
                 response = client.api_call(method, http_verb="GET", params=body)
-                demisto.debug(f"Slack {method} (sync) response: {response!s}")
         except SlackApiError as api_error:
             response = api_error.response
             headers = response.headers  # type: ignore
@@ -1920,54 +1946,6 @@ def reset_listener_health():
     demisto.info("SlackV3 - Event handled successfully.")
 
 
-async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: str):
-    """
-    Handles Agentix modal submissions (e.g., negative feedback with checkboxes and text).
-    Extracts Slack-specific data and delegates to the handler.
-    Uses AgentixActionIds constants for block and action IDs.
-
-    Args:
-        view: The view payload from Slack
-        user_id: The Slack user ID
-        user_email: The user's email
-    """
-    private_metadata = json.loads(view.get("private_metadata", "{}"))
-    message_id = private_metadata.get("message_id", "")
-    channel_id = private_metadata.get("channel_id", "")
-    thread_ts = private_metadata.get("thread_ts", "")
-
-    # Extract feedback from modal (Slack-specific structure)
-    values = view.get("state", {}).get("values", {})
-
-    # Extract selected checkboxes (quick feedback) - using constants
-    issues = []
-    if AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID in values:
-        checkboxes_data = values[AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID].get(
-            AgentixActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID, {}
-        )
-        selected_options = checkboxes_data.get("selected_options", [])
-        issues = [option.get("value", "") for option in selected_options]
-
-    # Extract additional text feedback - using constants
-    feedback_text = ""
-    if AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID in values:
-        text_input_data = values[AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID].get(
-            AgentixActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID, {}
-        )
-        feedback_text = text_input_data.get("value", "") or ""
-
-    # Delegate to handler with extracted data
-    await slack_agentix_handler.handle_modal_submission(
-        message_id=message_id,
-        channel_id=channel_id,
-        thread_ts=thread_ts,
-        user_id=user_id,
-        user_email=user_email,
-        issues=issues,
-        feedback_text=feedback_text,
-    )
-
-
 async def handle_entitlement_interactions(
     data: dict,
     event: dict,
@@ -1977,7 +1955,7 @@ async def handle_entitlement_interactions(
     thread: Optional[str],
     message_ts: str,
     quick_check_payload: str,
-):
+) -> bool:
     """
     Handles entitlement-related interactions (SlackAsk responses).
 
@@ -1990,6 +1968,9 @@ async def handle_entitlement_interactions(
         thread: The thread timestamp
         message_ts: The message timestamp
         quick_check_payload: JSON string of the payload
+
+    Returns:
+        True if entitlement was handled, False otherwise
     """
     action_text = ""
 
@@ -2000,10 +1981,9 @@ async def handle_entitlement_interactions(
         entitlement_reply = None
         user = await get_user_details(user_id=user_id)
         if len(actions) > 0:
-            channel = data.get("channel", {}).get("id", "")
             entitlement_json = actions[0].get("value")
             if entitlement_json is None:
-                return
+                return True
             entitlement_string = json.loads(entitlement_json)
             if actions[0].get("action_id") == "xsoar-button-submit":
                 demisto.debug("Handling a SlackBlockBuilder response.")
@@ -2020,16 +2000,9 @@ async def handle_entitlement_interactions(
             response_url = data.get("response_url", "")
             await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
             reset_listener_health()
-            return
+            return True
 
-    # Check if thread reply contains entitlement
-    if thread:
-        user = await get_user_details(user_id=user_id)
-        text = event.get("text", "")
-        entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
-        if entitlement_reply:
-            await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
-            reset_listener_health()
+    return False
 
 
 async def handle_agentix_interactions(
@@ -2080,36 +2053,36 @@ async def handle_agentix_interactions(
         channel_id = event.get("channel", "") or container.get("channel_id", "")
         thread_ts = event.get("thread_ts", "") or event.get("ts", "") or container.get("thread_ts", "")
 
-        agentix = json.loads(integration_context.get("agentix", "{}"))
-        demisto.debug(f"Current Agentix state before processing: {agentix}")
+        agentix_context = json.loads(integration_context.get("agentix", "{}"))
+        demisto.debug(f"Current Agentix state before processing: {agentix_context}")
         agentix_id_key = f"{channel_id}_{thread_ts}"
 
         # Track original agentix to detect changes
-        original_agentix = json.dumps(agentix, sort_keys=True)
+        original_agentix = json.dumps(agentix_context, sort_keys=True)
 
         # Handle bot mention using the handler
         if is_bot_mentioned:
             message_ts = event.get("ts", "")
-            agentix = await slack_agentix_handler.handle_bot_mention(
-                text, user_id, user_email, channel_id, thread_ts, agentix, agentix_id_key, bot_id, message_ts
+            agentix_context = await slack_agentix_handler.handle_bot_mention(
+                text, user_id, user_email, channel_id, thread_ts, agentix_context, agentix_id_key, bot_id, message_ts
             )
 
         # Handle interactive actions (agent selection or approval)
         elif is_agentix_action:
             trigger_id = data.get("trigger_id", "")
             message = data.get("message", {})
-            agentix = await slack_agentix_handler.handle_action(
-                actions, user_id, user_email, channel_id, thread_ts, message, agentix, agentix_id_key, trigger_id
+            agentix_context = await slack_agentix_handler.handle_action(
+                actions, user_id, user_email, channel_id, thread_ts, message, agentix_context, agentix_id_key, trigger_id
             )
 
         elif is_modal_submission:
-            await handle_agentix_modal_submission(view, user_id, user_email)
+            await handle_agentix_modal_submission(view, user_id, user_email, slack_agentix_handler)
 
         # Save updated agentix context only if it was actually modified
-        updated_agentix = json.dumps(agentix, sort_keys=True)
+        updated_agentix = json.dumps(agentix_context, sort_keys=True)
         if updated_agentix != original_agentix:
-            demisto.debug(f"Agentix context was modified, saving updated context: {agentix}")
-            set_to_integration_context_with_retries({"agentix": agentix, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            demisto.debug(f"Agentix context was modified, saving updated context: {agentix_context}")
+            set_to_integration_context_with_retries({"agentix": agentix_context, "bot_id": bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
             demisto.debug("Agentix context was not modified, skipping context update")
 
@@ -2158,8 +2131,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         action_text = ""
         message_ts = message.get("ts", "")
         actions = data.get("actions", [])
-        state = data.get("state", {})
-        response_url = data.get("response_url", "")
         quick_check_payload = json.dumps(data)
 
         # Check if the message is from a bot so we can quit processing ASAP
@@ -2167,7 +2138,16 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             return
 
         # Handle entitlement interactions (SlackAsk)
-        await handle_entitlement_interactions(data, event, user_id, actions, channel, thread, message_ts, quick_check_payload)
+        entitlement_handled = await handle_entitlement_interactions(
+            data, event, user_id, actions, channel, thread, message_ts, quick_check_payload
+        )
+
+        # Handle Agentix AI Assistant interactions
+        await handle_agentix_interactions(data, event, user_id, actions, data_type)
+
+        if entitlement_handled:
+            # Entitlement was handled, stop processing
+            return
 
         # Check if slash command received. If so, ignore for now.
         if data.get("command", None):
@@ -2191,8 +2171,15 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             reset_listener_health()
             return
 
-        # Handle Agentix AI Assistant interactions
-        await handle_agentix_interactions(data, event, user_id, actions, data_type)
+        # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
+        # are not mirrored
+        if thread:
+            user = await get_user_details(user_id=user_id)
+            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
+            if entitlement_reply:
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
+                reset_listener_health()
+                return
 
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         if MIRRORING_ENABLED:
@@ -2760,6 +2747,7 @@ def send_message_to_destinations(
 
     if attachments:
         body["attachments"] = attachments
+
     if thread_id:
         body["thread_ts"] = thread_id
 

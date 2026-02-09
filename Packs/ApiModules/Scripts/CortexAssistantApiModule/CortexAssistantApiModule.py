@@ -231,6 +231,9 @@ class AgentixMessages:
     # Commands
     RESET_SESSION_COMMAND = "reset session"
 
+    # Thinking indicator (shown while waiting for AI response)
+    THINKING_INDICATOR = ":thought_balloon: Thinking..."
+
     # Messages for when user action is awaited - specific to action type
     AWAITING_AGENT_SELECTION = "Still waiting for you to select an agent from the dropdown above."
     AWAITING_APPROVAL_RESPONSE = "Still waiting for you to approve or reject the sensitive action above."
@@ -411,6 +414,21 @@ class AgentixMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement update_message()")
     
+    async def delete_message(
+        self,
+        channel_id: str,
+        message_ts: str,
+    ):
+        """
+        Delete an existing message.
+        Must be implemented by subclass.
+
+        Args:
+            channel_id: The channel/conversation ID
+            message_ts: The message timestamp/ID
+        """
+        raise NotImplementedError("Subclass must implement delete_message()")
+
     async def get_user_info(self, user_id: str) -> dict:
         """
         Get user information.
@@ -456,6 +474,19 @@ class AgentixMessagingHandler:
             Formatted user mention string
         """
         raise NotImplementedError("Subclass must implement format_user_mention()")
+    
+    def normalize_message_for_backend(self, text: str) -> str:
+        """
+        Normalize message text for backend by removing platform-specific formatting.
+        Must be implemented by subclass.
+        
+        Args:
+            text: The message text with platform-specific formatting
+            
+        Returns:
+            Normalized text suitable for backend
+        """
+        raise NotImplementedError("Subclass must implement normalize_message_for_backend()")
     
     def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
         """
@@ -1071,10 +1102,22 @@ class AgentixMessagingHandler:
                         blocks=[]
                     )
 
+                    # Send thinking indicator
+                    thinking_response = await self.send_message(
+                        channel_id,
+                        AgentixMessages.THINKING_INDICATOR,
+                        thread_id=thread_ts
+                    )
+                    thinking_ts = thinking_response.get("ts") if thinking_response else None
+
                     # Update status
                     agentix[agentix_id_key]["status"] = AgentixStatus.AWAITING_BACKEND_RESPONSE
                     agentix[agentix_id_key]["selected_agent"] = selected_agent_id
                     agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                    # Store thinking message timestamp if sent successfully
+                    if thinking_ts:
+                        agentix[agentix_id_key]["thinking_message_ts"] = thinking_ts
                 else:
                     # Backend call failed - show error and keep status as AWAITING_AGENT_SELECTION
                     error_message = response.get("error", "Unknown error") if isinstance(response, dict) else str(response)
@@ -1233,10 +1276,16 @@ class AgentixMessagingHandler:
         bot_mention = self.format_user_mention(bot_id)
         text_cleaned = text.replace(bot_mention, AgentixMessages.BOT_DISPLAY_NAME).strip()
         
+        # Normalize message for backend (remove markdown formatting but keep bullets)
+        text_normalized = self.normalize_message_for_backend(text_cleaned)
+        
+        # Normalize context as well
+        context_normalized = self.normalize_message_for_backend(context) if context else ""
+        
         # Prepare message with context
-        message_with_context = text_cleaned
-        if context:
-            message_with_context = f"{context}\n**Current message**:\n{text_cleaned}"
+        message_with_context = text_normalized
+        if context_normalized:
+            message_with_context = f"{context_normalized}\n**Current message**:\n{text_normalized}"
         
         # Send message to backend using agentixIntegrations
         demisto.debug(f"Sending message to Agentix backend for user {user_email} in channel {channel_id}")
@@ -1254,9 +1303,7 @@ class AgentixMessagingHandler:
 
         # Check if response contains agent list (requires user to select an agent)
         if "agents" in response:
-            agents_list = response.get("agents", [])
-            # TODO: remove
-            agents_list = [{"id": "agent_1", "name": "Agent 1"}, {"id": "threat-intel-agent", "name": "Threat Intel"}]
+            agents_list: list[dict] = response.get("agents", [])
             # Check if agents list is empty or UI creation failed
             if agents_list:
                 # Backend returned a list of agents - user needs to select one
@@ -1306,6 +1353,14 @@ class AgentixMessagingHandler:
                 )
         
         elif isinstance(response, dict) and response.get("success"):
+            # Send thinking indicator
+            thinking_response = await self.send_message(
+                channel_id,
+                AgentixMessages.THINKING_INDICATOR,
+                thread_id=thread_ts
+            )
+            thinking_ts = thinking_response.get("ts") if thinking_response else None
+
             # Lock the conversation with initial status
             from datetime import UTC, datetime
             agentix[agentix_id_key] = {
@@ -1317,6 +1372,10 @@ class AgentixMessagingHandler:
                 "status": AgentixStatus.AWAITING_BACKEND_RESPONSE,
                 "last_updated": datetime.now(UTC).timestamp(),
             }
+
+            # Store thinking message timestamp if sent successfully
+            if thinking_ts:
+                agentix[agentix_id_key]["thinking_message_ts"] = thinking_ts
 
             demisto.debug(
                 f"Created new Agentix conversation {agentix_id_key} with status {AgentixStatus.AWAITING_BACKEND_RESPONSE}"
@@ -1415,7 +1474,7 @@ class AgentixMessagingHandler:
             demisto.error(f"Failed to get conversation context: {e}")
             return ""
     
-    def send_agent_response(
+    async def send_agent_response(
         self,
         channel_id: str,
         thread_id: str,
@@ -1423,7 +1482,7 @@ class AgentixMessagingHandler:
         message_type: str,
         message_id: str = "",
         completed: bool = False,
-        agentix: dict | None = None,
+        agentix_context: dict | None = None,
         agentix_id_key: str = "",
     ) -> dict:
         """
@@ -1455,8 +1514,8 @@ class AgentixMessagingHandler:
             demisto.error(error_msg)
             raise ValueError(error_msg)
         
-        if not agentix:
-            agentix = {}
+        if not agentix_context:
+            agentix_context = {}
 
         # Replace escaped characters with actual characters
         message = message.replace("\\n", "\n")
@@ -1464,7 +1523,7 @@ class AgentixMessagingHandler:
         message = message.replace("\\'", "'")
         
         # Check if this is an update (step_message_ts exists in agentix)
-        is_update = agentix.get(agentix_id_key, {}).get("step_message_ts") is not None if AgentixMessageType.is_step_type(message_type) else False
+        is_update = agentix_context.get(agentix_id_key, {}).get("step_message_ts") is not None if AgentixMessageType.is_step_type(message_type) else False
         
         # Prepare blocks and attachments using platform-specific method
         blocks, attachments = self.prepare_message_blocks(message, message_type, is_update)
@@ -1495,24 +1554,36 @@ class AgentixMessagingHandler:
         elif AgentixMessageType.is_error_type(message_type):
             # ERROR - release lock immediately
             should_release_lock = True
-        
+
+        # Delete thinking indicator if it exists (before sending first response)
+        if agentix_id_key in agentix_context:
+            thinking_ts = agentix_context[agentix_id_key].get("thinking_message_ts")
+            if thinking_ts:
+                try:
+                    await self.delete_message(channel_id, thinking_ts)
+                    demisto.debug(f"Deleted thinking indicator message {thinking_ts}")
+                except Exception as e:
+                    demisto.error(f"Failed to delete thinking indicator: {e}")
+                # Remove thinking_message_ts from context
+                agentix_context[agentix_id_key].pop("thinking_message_ts", None)
+
         # Send or update message using platform-specific method
-        agentix = self.send_or_update_message(channel_id, thread_id, message_type, blocks, attachments, agentix, agentix_id_key)
+        agentix_context = self.send_or_update_message(channel_id, thread_id, message_type, blocks, attachments, agentix_context, agentix_id_key)
         
         # Update context based on message type
-        if agentix_id_key in agentix:
+        if agentix_id_key in agentix_context:
             if should_release_lock:
                 # Release the lock
-                del agentix[agentix_id_key]
-                self.update_context({"agentix": agentix})
+                del agentix_context[agentix_id_key]
+                self.update_context({"agentix": agentix_context})
                 demisto.debug(f"Released lock for {agentix_id_key}")
             elif new_status:
                 # Update status
                 from datetime import UTC, datetime
-                agentix[agentix_id_key]["status"] = new_status
-                agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
-                self.update_context({"agentix": agentix})
+                agentix_context[agentix_id_key]["status"] = new_status
+                agentix_context[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+                self.update_context({"agentix": agentix_context})
                 demisto.debug(f"Updated status for {agentix_id_key} to {new_status}")
         
         demisto.results("Agent response sent successfully.")
-        return agentix
+        return agentix_context

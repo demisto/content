@@ -4,33 +4,14 @@ commonfields:
 name: SlackApiModule
 script: '-'
 type: python
-tags:
-  - Slack
-  - Cortex Assistant
-  - Agentix
+subtype: python3
 comment: |-
   Slack-specific utilities for Cortex Assistant integration.
   Handles Slack Block Kit formatting, message parsing, and UI element creation.
-  
-  Depends on: CortexAssistantApiModule
-  
-  Classes:
-  - SlackAgentixMessages: Slack-specific messages and formatting
-  
-  Functions:
-  - parse_to_rich_text_elements: Converts markdown to Slack rich text elements
-  - parse_md_table_to_slack_table: Converts markdown tables to Slack table blocks
-  - process_text_part: Processes text with headers, lists, and paragraphs
-  - prepare_slack_message: Main function to convert messages to Slack blocks
-  - create_agent_selection_blocks: Creates agent selection dropdown UI
-  - get_feedback_buttons_block: Creates feedback buttons
-  - get_approval_buttons_block: Creates approval buttons
 enabled: true
 scripttarget: 0
-runonce: false
 dockerimage: demisto/slackv3:1.0.0.5301537
-runas: DBotWeakRole
-fromversion: 6.10.0
+fromversion: 8.14.0
 dependson:
   must:
     - CortexAssistantApiModule

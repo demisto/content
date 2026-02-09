@@ -153,6 +153,7 @@ configuration:
   type: 8
   section: Collect
   required: false
+  additionalinfo: Enable Cortex Assistant AI integration in Slack. When enabled, users can mention the bot to interact with AI agents for security analysis, threat intelligence, and automated responses.
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0

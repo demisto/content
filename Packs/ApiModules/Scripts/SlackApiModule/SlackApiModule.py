@@ -1,25 +1,6 @@
-"""
-Slack API Module
-
-This module provides Slack-specific utilities for Cortex Assistant integration.
-It handles Slack Block Kit formatting, message parsing, and UI element creation.
-
-Functions:
-    - parse_to_rich_text_elements: Converts markdown to Slack rich text elements
-    - parse_md_table_to_slack_table: Converts markdown tables to Slack table blocks
-    - process_text_part: Processes text with headers, lists, and paragraphs
-    - prepare_slack_message: Main function to convert messages to Slack blocks
-    - create_agent_selection_blocks: Creates agent selection dropdown UI
-    - get_feedback_buttons_block: Creates feedback buttons
-    - get_approval_buttons_block: Creates approval buttons
-    - is_bot_mention: Checks if bot is mentioned in message
-    - is_agentix_interactive_response: Checks if action is agentix-related
-    - is_agentix_modal_submission: Checks if event is agentix modal submission
-"""
-
 import re
 import json
-from typing import Tuple, List, Dict, Optional, Any
+from typing import Tuple, List, Dict, Any
 from slack_sdk.models.blocks import (
     SectionBlock,
     ActionsBlock,
@@ -93,25 +74,35 @@ def parse_to_rich_text_elements(text: str) -> List[Dict]:
     if not text:
         return [{"type": "text", "text": " "}]
 
-    # Pattern for Links, URLs, Bold, Inline Code, Strike, and Italics
-    pattern = r'(\[.*?\]\(.*?\))|(https?://[^\s<>"]+)|(\*\*.*?\*\*)|(`[^`]+`)|((?<!\w)~~.*?~~(?!\w))|((?<!\w)__.*?__(?!\w))|((?<!\w)_.*?_(?!\w))'
+    # Build pattern from simpler components for better readability and maintenance
+    link_pattern = r"\[.*?\]\(.*?\)"
+    url_pattern = r'https?://[^\s<>"]+'
+    bold_pattern = r"\*\*.*?\*\*"
+    code_pattern = r"`[^`]+`"
+    strike_pattern = r"~~.*?~~"
+    italic_double_pattern = r"__.*?__"
+    italic_single_pattern = r"_.*?_"
+
+    # Combine patterns with alternation (|) - each in its own capture group
+    pattern = (
+        f"({link_pattern})|({url_pattern})|({bold_pattern})|({code_pattern})|"
+        f"({strike_pattern})|({italic_double_pattern})|({italic_single_pattern})"
+    )
     parts = re.split(pattern, text)
 
-    elements: List[Dict] = []
+    elements: list[dict] = []
     for part in parts:
         if not part:
             continue
 
         # Link: [text](url)
-        link_match = re.match(r"\[(.*?)\]\((.*?)\)", part)
-        if link_match:
+        if link_match := re.match(r"\[(.*?)\]\((.*?)\)", part):
             elements.append({"type": "link", "text": link_match.group(1), "url": link_match.group(2)})
             continue
 
-        # URL match
-        url_match = re.match(r'(https?://[^\s<>"]+)', part)
-        if url_match:
-            url = url_match.group(1)
+        # URL: https://...
+        if url_match := re.match(url_pattern, part):
+            url = url_match.group(0)
             elements.append({"type": "link", "text": url, "url": url})
             continue
 
@@ -119,20 +110,24 @@ def parse_to_rich_text_elements(text: str) -> List[Dict]:
         content = part
 
         # Bold: **text**
-        if part.startswith("**") and part.endswith("**"):
+        if re.match(bold_pattern, part):
             content = part[2:-2]
             style["bold"] = True
         # Inline Code: `text`
-        elif part.startswith("`") and part.endswith("`"):
+        elif re.match(code_pattern, part):
             content = part[1:-1]
             style["code"] = True
         # Strikethrough: ~~text~~
-        elif part.startswith("~~") and part.endswith("~~"):
+        elif re.match(strike_pattern, part):
             content = part[2:-2]
             style["strike"] = True
-        # Italics: __text__ or _text_
-        elif (part.startswith("__") and part.endswith("__")) or (part.startswith("_") and part.endswith("_")):
-            content = part[2:-2] if part.startswith("__") else part[1:-1]
+        # Italics: __text__
+        elif re.match(italic_double_pattern, part):
+            content = part[2:-2]
+            style["italic"] = True
+        # Italics: _text_
+        elif re.match(italic_single_pattern, part):
+            content = part[1:-1]
             style["italic"] = True
 
         element = {"type": "text", "text": content}
@@ -144,7 +139,7 @@ def parse_to_rich_text_elements(text: str) -> List[Dict]:
     return elements if elements else [{"type": "text", "text": " "}]
 
 
-def create_rich_cell(text: str) -> Dict:
+def create_rich_cell(text: str) -> dict:
     """
     Helper to wrap rich elements into the cell structure for tables.
 
@@ -160,10 +155,10 @@ def create_rich_cell(text: str) -> Dict:
     if not has_rich_features:
         return {"type": "raw_text", "text": text if text else " "}
 
-    return RichTextSectionElement(elements=elements).to_dict()  # type: ignore[arg-type]
+    return RichTextSectionElement(elements=elements).to_dict()
 
 
-def parse_md_table_to_slack_table(md_text: str) -> Optional[Dict]:
+def parse_md_table_to_slack_table(md_text: str) -> dict | None:
     """
     Converts Markdown table to Slack 'table' block.
 
@@ -218,8 +213,8 @@ def process_text_part(text: str) -> List[Dict]:
     """
     sub_blocks = []
     lines = text.split("\n")
-    current_paragraph: List[str] = []
-    current_list_items: List[str] = []
+    current_paragraph: list[str] = []
+    current_list_items: list[str] = []
     current_list_style = "bullet"  # Can be "bullet" or "ordered"
 
     def flush_list():
@@ -314,7 +309,7 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     # Validate message_type
     if not AgentixMessageType.is_valid(message_type):
         error_msg = (
-            f"Invalid message_type: '{message_type}'. " f"Must be one of: {', '.join(sorted(AgentixMessageType.VALID_TYPES))}"
+            f"Invalid message_type: '{message_type}'. " + f"Must be one of: {', '.join(sorted(AgentixMessageType.VALID_TYPES))}"
         )
         demisto.error(error_msg)
         raise ValueError(error_msg)
@@ -325,90 +320,76 @@ def prepare_slack_message(message: str, message_type: str, is_update: bool = Fal
     blocks = []
     attachments = []
 
-    if message_type in AgentixMessageType.VALID_TYPES:
-        # Standard processing for all new types
-        table_regex = r"(\|[^\n]+\|\r?\n\|[\s|:-]+\|\r?\n(?:\|[^\n]+\|\r?\n?)+)"
-        parts = re.split(table_regex, message)
+    # Standard processing for all new types
+    table_regex = r"(\|[^\n]+\|\r?\n\|[\s|:-]+\|\r?\n(?:\|[^\n]+\|\r?\n?)+)"
+    parts = re.split(table_regex, message)
 
-        for part in parts:
-            if not part:
-                continue
+    for part in parts:
+        if not part:
+            continue
 
-            if re.match(table_regex, part):
-                table_block = parse_md_table_to_slack_table(part)
-                if table_block:
-                    blocks.append(table_block)
-            else:
-                clean_text = part.replace("</content>", "")
-                if clean_text.strip():
-                    blocks.extend(process_text_part(clean_text))
+        if re.match(table_regex, part):
+            table_block = parse_md_table_to_slack_table(part)
+            if table_block:
+                blocks.append(table_block)
+        else:
+            if part.strip():
+                blocks.extend(process_text_part(part))
 
-        # Note: Approval buttons are added in send_agent_response() via get_approval_buttons_block()
-        # to avoid duplication and allow for better styling
+    # For step types (step/thought), wrap everything in an attachment structure for a subtle appearance.
+    if AgentixMessageType.is_step_type(message_type):
+        # Add divider before new content if this is an update
+        if is_update:
+            blocks.insert(0, DividerBlock().to_dict())
+            # Don't add Plan header for updates
+            attachment_blocks = blocks
+        else:
+            # Add Plan header with "updating..." indicator for first message
+            attachment_blocks = [
+                ContextBlock(
+                    elements=[
+                        MarkdownTextObject(text=f"{SlackAgentixMessages.PLAN_ICON} {SlackAgentixMessages.PLAN_LABEL_UPDATING}")
+                    ]
+                ).to_dict()
+            ] + blocks
 
-        # For step types (step/thought), wrap everything in an attachment structure for a subtle appearance.
-        if AgentixMessageType.is_step_type(message_type):
-            # Add divider before new content if this is an update
-            if is_update:
-                blocks.insert(0, DividerBlock().to_dict())
-                # Don't add Plan header for updates
-                attachment_blocks = blocks
-            else:
-                # Add Plan header with "updating..." indicator for first message
-                attachment_blocks = [
-                    ContextBlock(
-                        elements=[
-                            MarkdownTextObject(
-                                text=f"{SlackAgentixMessages.PLAN_ICON} {SlackAgentixMessages.PLAN_LABEL_UPDATING}"
-                            )
-                        ]
-                    ).to_dict()
-                ] + blocks
+        attachments = [
+            {
+                "color": "#D1D2D3",  # Light gray border for a subtle look
+                "blocks": attachment_blocks,
+            }
+        ]
+        return [], attachments
 
-            attachments = [
-                {
-                    "color": "#D1D2D3",  # Light gray border for a subtle look
-                    "blocks": attachment_blocks,
-                }
-            ]
-            return [], attachments
-
-        # For error types, use red color
-        if AgentixMessageType.is_error_type(message_type):
-            attachments = [
-                {
-                    "color": "#FF0000",  # Red border for errors
-                    "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":x: *Error*")]).to_dict()] + blocks,
-                }
-            ]
-            return [], attachments
+    # For error types, use red color
+    if AgentixMessageType.is_error_type(message_type):
+        attachments = [
+            {
+                "color": "#FF0000",  # Red border for errors
+                "blocks": [ContextBlock(elements=[MarkdownTextObject(text=":x: *Error*")]).to_dict()] + blocks,
+            }
+        ]
+        return [], attachments
 
     return blocks, attachments
 
 
-def create_agent_selection_blocks(message: str) -> List:
+def create_agent_selection_blocks(agents: list[dict]) -> list:
     """
     Creates Slack blocks for agent selection dropdown with confirmation dialog.
 
     Args:
-        message: JSON string containing agent list
+        agents: List of agent dictionaries containing 'id' and 'name' fields
 
     Returns:
         List of Slack blocks with agent dropdown and confirmation
     """
-    try:
-        agent_data = json.loads(message)
-        agent_options = agent_data.get("agents", [])
-    except json.JSONDecodeError:
-        demisto.error(f"Failed to parse agent list from message: {message}")
-        agent_options = []
-
     dropdown_options = [
         Option(
             text=PlainTextObject(text=agent.get("name", agent.get("id", ""))),
             value=f"{AgentixActionIds.AGENT_SELECTION_VALUE_PREFIX}{agent.get('id', '')}",
         )
-        for agent in agent_options
+        for agent in agents
     ]
 
     if not dropdown_options:
@@ -624,7 +605,7 @@ def is_agentix_modal_submission(data_type: str, view: dict) -> bool:
     return False
 
 
-def merge_attachment_blocks(history_response: SlackResponse, new_attachments: List[Dict]) -> List[Dict]:
+def merge_attachment_blocks(history_response: SlackResponse, new_attachments: list[dict]) -> list[dict]:
     """
     Intelligently merges attachment blocks by appending new blocks to existing attachment.
 
@@ -666,25 +647,110 @@ def merge_attachment_blocks(history_response: SlackResponse, new_attachments: Li
     return existing_attachments
 
 
-# Note: get_conversation_context is now implemented in SlackV3.py
-# It requires access to ASYNC_CLIENT and get_user_details which are defined there
+def normalize_slack_message_for_backend(text: str) -> str:
+    """
+    Normalizes Slack message by removing Slack-specific formatting but keeping structure.
+
+    Removes:
+    - Bold: *text* -> text
+    - Italic: _text_ -> text
+    - Strikethrough: ~text~ -> text
+    - Inline code: `text` -> text
+    - Code blocks: ```text``` -> text
+    - Slack links: <url> or <url|text> -> url or text
+    - Quotes: > text -> text
+
+    Keeps:
+    - Bullet points (- or * at start of line)
+    - Numbered lists (1. 2. etc.)
+    - Plain text structure
+
+    Args:
+        text: The Slack message text with Slack formatting
+
+    Returns:
+        Normalized text suitable for backend processing
+    """
+    if not text:
+        return text
+
+    # Clean up HTML entities first (Slack might use these)
+    text = text.replace("&gt;", ">")
+    text = text.replace("&lt;", "<")
+    text = text.replace("&amp;", "&")
+
+    # Remove Slack links: <url|text> -> text, <url> -> url
+    text = re.sub(r"<([^|>]+)\|([^>]+)>", r"\2", text)  # <url|text> -> text
+    text = re.sub(r"<([^>]+)>", r"\1", text)  # <url> -> url
+
+    # Remove code blocks: ```text``` -> text
+    text = re.sub(r"```(.+?)```", r"\1", text, flags=re.DOTALL)
+
+    # Remove inline code: `text` -> text
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+
+    # Remove bold: *text* -> text (Slack uses single asterisk, not double)
+    # But preserve bullets at start of line (- or * followed by space)
+    # Match *text* but not "* item" or "- item" at start of line
+    text = re.sub(r"(?<!^[-*]\s)\*([^\*\n]+?)\*", r"\1", text, flags=re.MULTILINE)
+
+    # Remove italics: _text_ -> text
+    # But preserve underscores in URLs and variable names
+    text = re.sub(r"(?<![a-zA-Z0-9])_([^_\n]+?)_(?![a-zA-Z0-9])", r"\1", text, flags=re.MULTILINE)
+
+    # Remove strikethrough: ~text~ -> text (Slack uses single tilde, not double)
+    text = re.sub(r"~([^~\n]+?)~", r"\1", text)
+
+    # Remove quote markers: > text -> text (at start of line, with optional whitespace)
+    text = re.sub(r"^\s*>\s*(.+)$", r"\1", text, flags=re.MULTILINE)
+
+    return text
 
 
-# Note: handle_agentix_bot_mention is now implemented in SlackV3.py
-# It requires access to send_message_to_destinations and get_conversation_context which need global variables
+async def handle_agentix_modal_submission(view: dict, user_id: str, user_email: str, handler: AgentixMessagingHandler):
+    """
+    Handles Agentix modal submissions (e.g., negative feedback with checkboxes and text).
+    Extracts Slack-specific data and delegates to the handler.
+    Uses AgentixActionIds constants for block and action IDs.
 
+    Args:
+        view: The view payload from Slack
+        user_id: The Slack user ID
+        user_email: The user's email
+        handler: The AgentixMessagingHandler instance to delegate to
+    """
+    private_metadata = json.loads(view.get("private_metadata", "{}"))
+    message_id = private_metadata.get("message_id", "")
+    channel_id = private_metadata.get("channel_id", "")
+    thread_ts = private_metadata.get("thread_ts", "")
 
-# Note: handle_agentix_action is now implemented in SlackV3.py
-# It requires access to ASYNC_CLIENT and send_message_to_destinations which are defined there
+    # Extract feedback from modal
+    values = view.get("state", {}).get("values", {})
 
+    # Extract selected checkboxes (quick feedback) - using constants
+    issues = []
+    if AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID in values:
+        checkboxes_data = values[AgentixActionIds.FEEDBACK_MODAL_QUICK_BLOCK_ID].get(
+            AgentixActionIds.FEEDBACK_MODAL_CHECKBOXES_ACTION_ID, {}
+        )
+        selected_options = checkboxes_data.get("selected_options", [])
+        issues = [option.get("value", "") for option in selected_options]
 
-# Note: handle_agentix_modal_submission is now implemented in SlackV3.py
-# It requires access to send_message_to_destinations which is defined there
+    # Extract additional text feedback - using constants
+    feedback_text = ""
+    if AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID in values:
+        text_input_data = values[AgentixActionIds.FEEDBACK_MODAL_TEXT_BLOCK_ID].get(
+            AgentixActionIds.FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID, {}
+        )
+        feedback_text = text_input_data.get("value", "") or ""
 
-
-# Note: send_or_update_agent_message is now implemented in SlackV3.py
-# It requires access to CLIENT and send_message_to_destinations which are defined there
-
-
-# Note: send_agent_response() is now implemented as a method in SlackAgentixHandler
-# in SlackV3.py and called via a wrapper function there
+    # Delegate to handler with extracted data
+    await handler.handle_modal_submission(
+        message_id=message_id,
+        channel_id=channel_id,
+        thread_ts=thread_ts,
+        user_id=user_id,
+        user_email=user_email,
+        issues=issues,
+        feedback_text=feedback_text,
+    )
