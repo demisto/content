@@ -641,7 +641,10 @@ class Client(CoreClient):
         In case of success the API returns 204
         """
         return self._http_request(
-            method="POST", url_suffix=f"/case/update/{case_id}", json_data=request_data, resp_type="response"
+            method="POST",
+            url_suffix=f"/case/update/{case_id}",
+            json_data=request_data,
+            resp_type="response"
         )
 
     def get_case_artifacts(self, case_id: str):
@@ -1930,12 +1933,15 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sort_order = args.get("sort_order")
     limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
     page_size = arg_to_number(args.get("page_size")) if args.get("page_size") else limit
-    page = arg_to_number(args.get("page")) if args.get("page_size") else 0
+    page = arg_to_number(args.get("page")) if args.get("page") else 0
 
     filters = []
     if case_ids:
-        converted_ids = list(map(int, case_ids))
-        filters.append({"field": "case_id", "operator": "in", "value": converted_ids})
+        try:
+            converted_ids = list(map(int, case_ids))
+            filters.append({"field": "case_id", "operator": "in", "value": converted_ids})
+        except ValueError:
+            raise DemistoException(f"Invalid case IDs: {case_ids}. Case IDs must be a comma-separated list of integers.")
     if case_domains:
         filters.append({"field": "case_domain", "operator": "in", "value": case_domains})
     if severities:
@@ -1999,7 +2005,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", "")  # required
     status = args.get("status").upper() if args.get("status") else None
     resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason"))
-    resolve_comment = args.get("resolve_comment").upper() if args.get("resolve_comment") else None
+    resolve_comment = args.get("resolve_comment")
 
     update_data = assign_params(
         status_progress=status,
@@ -2025,7 +2031,7 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     """
     case_id = args.get("case_id", "")
     artifacts = client.get_case_artifacts(case_id)
-    if isinstance(artifacts, list):
+    if isinstance(artifacts, list) and len(artifacts) > 0:
         artifacts = artifacts[0]
 
     network_artifacts = artifacts.get("network_artifacts", {}).get("DATA", [])

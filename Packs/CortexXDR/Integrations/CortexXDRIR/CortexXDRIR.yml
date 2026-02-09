@@ -4180,6 +4180,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Case.severity
       description: The severity of the case.
       type: String
+    - contextPath: PaloAltoNetworksXDR.Case.creation_time
+      description: The creation time of the case.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.modification_time
+      description: The modification time of the case.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Case.status_progress
       description: The progress status of the case (e.g., New, Under Investigation).
       type: String
