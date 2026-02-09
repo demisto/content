@@ -41,7 +41,6 @@ Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex X
 2. Enter the following command to configure Cisco ASA to send logging information to a syslog server.  
     `logging host interface_name ip_address [tcp[/port] | udp[/port]] [format emblem]`
 
-    `logging host interface_name ip_address [tcp[/port] | udp[/port]] [format emblem]`
 
 For more information about syslog configuration see the official [Cisco ASA docs](https://www.cisco.com/c/en/us/support/docs/security/pix-500-series-security-appliances/63884-config-asa-00.html#toc-hId-68106104).
 
