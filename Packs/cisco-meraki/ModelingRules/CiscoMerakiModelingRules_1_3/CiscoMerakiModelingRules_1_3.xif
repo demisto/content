@@ -201,7 +201,7 @@ alter
     tmp_action = arrayindex(regextract(_raw_log, "\saction=(\w+)"), 0),
     tmp_agent = arrayindex(regextract(_raw_log, "\sagent='([^']+)'"), 0),
     tmp_category = arrayindex(regextract(_raw_log, "\scategory0='([^']+)'"), 0),
-    tmp_vlan = arrayindex(regextract(_raw_log, "\svlan='([^']+)'"), 0),
+    tmp_vlan = arrayindex(regextract(_raw_log, "\s[Vv]lan='([^']+)'"), 0),
     tmp_reason = arrayindex(regextract(_raw_log, "\sreason='([^']+)'"), 0),
     tmp_peer_ident = arrayindex(regextract(_raw_log, "\speer_ident='([^']+)'"), 0)
 | alter
@@ -307,7 +307,7 @@ alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"),
     sent_packets = to_integer(arrayindex(regextract(event_description, "sent\s+(\d+)\s+\w*\s*packets"), 0)),
     isakmp_spi = arrayindex(regextract(event_description,"spi[\:=](\S+)"), 0), // security parameter index 
 
-    vlan = to_integer(arrayindex(regextract(event_description, "vlan=\'?(\d+)"), 0)),
+    vlan = to_integer(arrayindex(regextract(event_description, "[Vv]lan=\'?(\d+)"), 0)),
     vpn_type = arrayindex(regextract(event_description, "vpn_type=\'(\S+)\'"), 0),
     vpn_peer_id = arrayindex(regextract(event_description,"peer_ident=\'([^\']+)"), 0),
     event_sub_type = if(
