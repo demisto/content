@@ -1,0 +1,227 @@
+commonfields:
+  id: AWS SNS SMS Communication
+  version: -1
+name: AWS SNS SMS Communication
+display: AWS SNS SMS Communication
+category: Messaging and Conferencing
+description: Send and receive SMS messages via AWS SNS/SQS for interactive two-way communication with entitlement handling
+tags:
+- messaging
+- communication
+- sms
+configuration:
+  - display: AWS Default Region
+    name: defaultRegion
+    type: 0
+    defaultvalue: us-east-1
+    required: true
+    additionalinfo: The AWS region for SNS and SQS services
+  - display: Role Arn
+    name: roleArn
+    type: 0
+    required: false
+    additionalinfo: The Amazon Resource Name (ARN) role to assume
+  - display: Role Session Name
+    name: roleSessionName
+    type: 0
+    required: false
+    additionalinfo: A name for the assumed role session
+  - display: Role Session Duration
+    name: sessionDuration
+    type: 0
+    defaultvalue: "900"
+    required: false
+    additionalinfo: The duration, in seconds, of the role session (default 900)
+  - display: Access Key
+    name: credentials
+    type: 9
+    displaypassword: Secret Key
+    required: false
+    hiddenusername: false
+    additionalinfo: AWS Access Key and Secret Key for authentication (if not using Role ARN)
+  - display: SQS Queue URL
+    name: sqsQueueUrl
+    type: 0
+    required: true
+    additionalinfo: The full URL of the SQS queue that receives SMS replies from SNS
+  - display: Timeout
+    name: timeout
+    type: 0
+    required: false
+    additionalinfo: The time in seconds until a timeout exception is reached (default 60)
+  - display: Retries
+    name: retries
+    type: 0
+    defaultvalue: "5"
+    required: false
+    additionalinfo: The maximum number of retry attempts (default 5, max 10)
+  - display: AWS STS Regional Endpoints
+    name: sts_regional_endpoint
+    type: 15
+    required: false
+    defaultvalue: legacy
+    options:
+    - legacy
+    - regional
+    additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable
+  - display: Poll Interval (seconds)
+    name: pollInterval
+    type: 0
+    defaultvalue: "10"
+    required: false
+    additionalinfo: How often to poll SQS for new messages (default 10 seconds)
+  - display: Entitlement TTL (hours)
+    name: entitlementTTL
+    type: 0
+    defaultvalue: "24"
+    required: false
+    additionalinfo: How long to keep unanswered entitlements before cleanup (default 24 hours)
+  - display: Enable Success Feedback SMS
+    name: successFeedbackEnabled
+    type: 8
+    required: false
+    defaultvalue: "true"
+    additionalinfo: Send confirmation SMS when user reply is successfully processed (e.g., "Thank you for your response!")
+  - display: Enable Failure Feedback SMS
+    name: failureFeedbackEnabled
+    type: 8
+    required: false
+    defaultvalue: "true"
+    additionalinfo: Send SMS listing available reply codes when user sends unrecognized reply
+  - display: Success Message Template
+    name: successMessage
+    type: 0
+    required: false
+    defaultvalue: "{reply_code} - Thank you for your response!"
+    additionalinfo: "Message sent on successful reply. Variables: {reply_code}, {chosen_option}, {phone_number}"
+  - display: Failure Message Template
+    name: failureMessage
+    type: 0
+    required: false
+    defaultvalue: "We couldn't process your response. Please reply with one of these codes: {available_codes}"
+    additionalinfo: "Message sent on unrecognized reply. Variables: {available_codes}, {phone_number}"
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Long Running Instance
+    name: longRunning
+    type: 8
+    required: false
+    defaultvalue: "true"
+    additionalinfo: Enable long-running execution for continuous SQS polling
+  - display: Incident Type
+    name: incidentType
+    type: 13
+    required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/boto3py3:1.0.0.115129
+  longRunning: true
+  longRunningPort: false
+  isfetch: false
+  commands:
+  - name: send-notification
+    description: Send an SMS notification via AWS SNS with entitlement support for interactive messaging
+    arguments:
+    - name: to
+      description: Destination phone number in E.164 format (e.g., +12345678900)
+      required: true
+    - name: message
+      description: Message text to send. Should include entitlement GUID for interactive questions.
+      required: true
+    outputs:
+    - contextPath: AWS.SNS.SMS.MessageId
+      description: The message ID returned by SNS
+      type: String
+    - contextPath: AWS.SNS.SMS.PhoneNumber
+      description: The destination phone number
+      type: String
+    - contextPath: AWS.SNS.SMS.Entitlement
+      description: The entitlement GUID if present
+      type: String
+    - contextPath: AWS.SNS.SMS.ReplyCode
+      description: The reply code assigned to this message
+      type: String
+  - name: aws-sns-sms-list-entitlements
+    description: List all active entitlements with phone numbers, reply codes, and status
+    arguments:
+    - name: phone_number
+      description: Filter by specific phone number (optional)
+      required: false
+    - name: show_answered
+      description: Include answered entitlements in results (default false)
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: AWS.SNS.SMS.Entitlement.EntitlementID
+      description: The entitlement ID (GUID@incident|task)
+      type: String
+    - contextPath: AWS.SNS.SMS.Entitlement.PhoneNumber
+      description: The phone number associated with this entitlement
+      type: String
+    - contextPath: AWS.SNS.SMS.Entitlement.ReplyCode
+      description: The reply code for this entitlement
+      type: String
+    - contextPath: AWS.SNS.SMS.Entitlement.Message
+      description: The message sent (truncated to 100 chars)
+      type: String
+    - contextPath: AWS.SNS.SMS.Entitlement.Created
+      description: When the entitlement was created
+      type: Date
+    - contextPath: AWS.SNS.SMS.Entitlement.AgeHours
+      description: How many hours old the entitlement is
+      type: Number
+    - contextPath: AWS.SNS.SMS.Entitlement.Answered
+      description: Whether the entitlement has been answered
+      type: Boolean
+    - contextPath: AWS.SNS.SMS.Entitlement.AnsweredAt
+      description: When the entitlement was answered
+      type: Date
+  - name: aws-sns-sms-inject-reply
+    description: '[TEST/DEBUG] Inject a simulated SMS reply for testing entitlement processing without actual SQS messages'
+    arguments:
+    - name: phone_number
+      description: Phone number to simulate reply from (must match an active entitlement)
+      required: true
+    - name: reply_code
+      description: 4-digit reply code from the SMS (e.g., 1234)
+      required: true
+    outputs:
+    - contextPath: AWS.SNS.SMS.TestReply.Success
+      description: Whether the test reply was processed successfully
+      type: Boolean
+    - contextPath: AWS.SNS.SMS.TestReply.PhoneNumber
+      description: The phone number used for the test
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.ReplyCode
+      description: The reply code that was tested
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.ChosenOption
+      description: The option that the reply code mapped to
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.EntitlementGUID
+      description: The entitlement GUID that was processed
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.IncidentID
+      description: The incident ID associated with the entitlement
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.TaskID
+      description: The task ID associated with the entitlement
+      type: String
+    - contextPath: AWS.SNS.SMS.TestReply.Error
+      description: Error message if the test failed
+      type: String
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
