@@ -3577,11 +3577,13 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
     """
     processed_assets, processed_vulnerabilities = process_results(data)
     asset_type_related_data.vulnerabilities_total_count += len(processed_vulnerabilities)
-    if not asset_type_related_data.added_one_asset and processed_assets:
+    if (not asset_type_related_data.added_one_asset) and processed_assets:
+        asset_type_related_data.write_debug_log("Updating last assets.")
         await asset_type_related_data.safe_update_last_assets(processed_assets)
         asset_type_related_data.added_one_asset = True
         processed_assets.pop()
-    if not asset_type_related_data.added_one_vulnerability and processed_vulnerabilities:
+    if (not asset_type_related_data.added_one_vulnerability) and processed_vulnerabilities:
+        asset_type_related_data.write_debug_log("Updating last vulnerabilities.")
         await asset_type_related_data.safe_update_last_vulnerabilities(processed_vulnerabilities)
         asset_type_related_data.added_one_vulnerability = True
         processed_vulnerabilities.pop()
@@ -3599,6 +3601,7 @@ async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_da
         url_key="address",
         items_count=1,
     )
+    asset_type_related_data.write_debug_log(f"sending {len(processed_vulnerabilities)} vulns.")
     vulnerabilities_coroutine = async_send_data_to_xsiam(
         data=processed_vulnerabilities,
         vendor=VENDOR,
