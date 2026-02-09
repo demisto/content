@@ -4,9 +4,6 @@ The Cortex Core - IOCs integration uses the Cortex API for detection and respons
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://example.net) |  | False |
-| API Key ID |  | False |
-| API Key |  | False |
 | Cortex XDR Severity | Map the severity of each indicator that will be synced to Cortex. | True |
 | Tags | Supports CSV values. | False |
 | Sync Query | The query used to collect indicators to sync from Cortex. | True |

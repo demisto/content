@@ -372,7 +372,7 @@ Get extra data fields of a specific case including issues and key artifacts.
 ### core-get-cases
 
 ***
-Get cases information based on the specified filters.
+Get case information based on the specified filters.
 
 #### Base Command
 
@@ -392,9 +392,19 @@ Get cases information based on the specified filters.
 | sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | sort_by_creation_time | Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
-| limit | Maximum number of cases to return per page. The default and maximum is 100. Default is 100. | Optional |
-| status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional |
-| starred | Whether the case is starred (Boolean value: true or false). Possible values are: true, false. | Optional |
+| limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
+| case_domain | A comma-separated list of domains to filter cases by. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, in_progress, resolved. | Optional |
+| severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
+| asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
+| asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
+| hosts | A comma-separated list of hosts to filter cases by. | Optional |
+| tags | A comma-separated list of tags to filter cases by. | Optional |
+| assignee | A comma-separated list of assignee names or emails to filter cases by. | Optional |
+| starred | Filter cases by whether they are starred or not. Possible values are: true, false. | Optional |
+| case_name | A comma-separated list of names to filter cases by. | Optional |
+| case_description | A comma-separated list of descriptions to filter cases by. | Optional |
+| get_enriched_case_data | Whether to include enriched case data in the response. Recommended for up to 10 cases. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -404,7 +414,6 @@ Get cases information based on the specified filters.
 | Core.Case.case_name | String | Name of the case. |
 | Core.Case.creation_time | Number | Timestamp when the case was created. |
 | Core.Case.modification_time | Number | Timestamp when the case was last modified. |
-| Core.Case.detection_time | Date | Timestamp when the first issue was detected in the case. May be null. |
 | Core.Case.status | String | Current status of the case. |
 | Core.Case.severity | String | Severity level of the case. |
 | Core.Case.description | String | Description of the case. |
@@ -417,14 +426,10 @@ Get cases information based on the specified filters.
 | Core.Case.critical_severity_issue_count | Number | Number of issues with critical severity. |
 | Core.Case.user_count | Number | Number of users involved in the case. |
 | Core.Case.host_count | Number | Number of hosts involved in the case. |
-| Core.Case.notes | String | Notes related to the case. May be null. |
 | Core.Case.resolve_comment | String | Comments added when resolving the case. May be null. |
 | Core.Case.resolved_timestamp | Number | Timestamp when the case was resolved. |
 | Core.Case.manual_severity | Number | Severity manually assigned by the user. May be null. |
-| Core.Case.manual_description | String | Description manually provided by the user. |
-| Core.Case.xdr_url | String | URL to view the case in Cortex XDR. |
 | Core.Case.starred | Boolean | Indicates whether the case is starred. |
-| Core.Case.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
 | Core.Case.hosts | Array | List of hosts involved in the case. |
 | Core.Case.users | Array | List of users involved in the case. |
 | Core.Case.case_sources | Array | Sources of the case. |
@@ -439,6 +444,16 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+| Core.Case.CaseExtraData.issue_ids | Array | List of issue IDs associated with the case. |
+| Core.Case.CaseExtraData.file_artifacts | Array | File artifacts associated with the case. |
+| Core.Case.CaseExtraData.network_artifacts | Array | Network artifacts associated with the case. |
+| Core.Case.CaseExtraData.starred_manually | Boolean | True if the case was starred manually; false if starred by rules. |
+| Core.Case.CaseExtraData.xdr_url | String | URL to view the case in Cortex XDR. |
+| Core.Case.CaseExtraData.manual_description | String | Description manually provided by the user. |
+| Core.Case.CaseExtraData.notes | String | The notes related to the case. |
+| Core.Case.CaseExtraData.detection_time | Date | The timestamp when the first issue was detected in the case. |
+| Core.CasesMetadata.returned_count | String | The actual number of cases that match all filter criteria and returned in this specific response. |
+| Core.CasesMetadata.filtered_count | String | The total number of cases in the system that match all filter criteria. |
 
 ### core-search-asset-groups
 
@@ -483,8 +498,8 @@ Retrieves vulnerabilities based on specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of vulnerabilities to return. Default is 50. | Optional |
-| sort_field | The field by which to sort the results. Default is LAST_OBSERVED. | Optional |
-| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
+| sort_field | The field by which to sort the results. Possible values are: PLATFORM_SEVERITY, CVSS_SCORE, EPSS_SCORE, CORTEX_VULNERABILITY_RISK_SCORE, LAST_OBSERVED. Default is LAST_OBSERVED. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. Default is DESC. | Optional |
 | cve_id | The CVE ID. Accepts a comma-separated list. | Optional |
 | issue_id | The issue ID. Accepts a comma-separated list. | Optional |
 | cvss_score_gte | The minimum CVSS score. | Optional |
@@ -497,7 +512,10 @@ Retrieves vulnerabilities based on specified filters.
 | start_time | The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
 | end_time | The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
 | severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional |
-| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional |
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities. | Optional |
+| finding_sources | The finding sources of the vulnerability. Accepts a comma-separated list. Possible values are: CORTEX_AGENT, CORTEX_AGENTLESS_SCANNER, CORTEX_ATTACK_SURFACE_MANAGEMENT, CORTEX_ATTACK_SURFACE_TESTING, CORTEX_CLI_SCANNER, CORTEX_CONTAINER_REGISTRY_SCANNER, CORTEX_NETWORK_SCANNER, CORTEX_SERVERLESS_FUNCTION_SCANNER, QUALYS, TENABLE. | Optional |
+| cvrs_gte | The minimum risk score assigned to the vulnerability (range 0-100). | Optional |
+| compensating_controls_effective_coverage | The assessed effectiveness and coverage of detected compensating controls. Possible values are: EFFECTIVE, EFFECTIVE_REQUIRES_CONFIGURATION_UPDATE, EFFECTIVE_REQUIRES_CONTENT_UPDATE, EXPLOIT_CONFIRMED, EXPLOIT_UNREACHABLE, NOT_INSTALLED, NO_CONTROLS_FOUND, UNKNOWN_COVERAGE. | Optional |
 
 #### Context Output
 
@@ -518,6 +536,18 @@ Retrieves vulnerabilities based on specified filters.
 | Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). |
 | Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. |
 | Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. |
+| Core.VulnerabilityIssue.FINDING_SOURCES | String | The finding sources that originally generated the security finding of the vulnerability. |
+| Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE | String | The coverage status of detected compensating controls, mirroring the input parameter enum values. |
+| Core.VulnerabilityIssue.CORTEX_VULNERABILITY_RISK_SCORE | Number | The risk score assigned to the vulnerability. |
+| Core.VulnerabilityIssue.FIX_VERSIONS | Array | The package versions that contain a fix for the vulnerability. |
+| Core.VulnerabilityIssue.ASSET_TYPES | Array | The types of assets affected by the vulnerability. |
+| Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS | Array | The compensating controls that were detected for the vulnerability. |
+| Core.VulnerabilityIssue.EXPLOIT_LEVEL | String | The exploitability level or status of the vulnerability. |
+| Core.VulnerabilityIssue.ISSUE_NAME | String | The name of the vulnerability issue. |
+| Core.VulnerabilityIssue.PACKAGE_IN_USE | Boolean | Indicates whether the vulnerable package is actively used in the environment. |
+| Core.VulnerabilityIssue.PROVIDERS | Array | The providers or sources of the vulnerability information. |
+| Core.VulnerabilityIssue.OS_FAMILY | String | The operating system family of the affected asset. |
+| Core.VulnerabilityIssue.IMAGE | String | Information related to the affected container or system image. |
 
 ### core-search-assets
 
@@ -541,6 +571,10 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | asset_providers | Comma-separated list of asset providers to search for. (e.g., "provider1,provider2"). | Optional |
 | asset_realms | Comma-separated list of asset realms to search for. (e.g., "realm1,realm2"). | Optional |
 | asset_groups | A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).<br/>. | Optional |
+| asset_categories | A Comma-separated list of asset categories to search for. (e.g., "category1,category2"). | Optional |
+| asset_classes | A comma-separated list of asset classes to search for. Possible values are: AI, API, Application, Code, Compute, Data, Device, External Surface, Identity, Management, Network, Organization, Other, Security Services. | Optional |
+| software_package_versions | A comma-separated list of software package versions to search for. (e.g., "0.23.0,5.2.0"). | Optional |
+| kubernetes_cluster_versions | A comma-separated list of Kubernetes cluster versions to search for. (e.g., "1.22,1.3"). | Optional |
 
 #### Context Output
 
@@ -565,6 +599,8 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 | Core.Asset.cloud.region | unknown | The cloud region of the asset. |
 | Core.Asset.related_cases.cases_breakdown | unknown | The related cases breakdown of the asset. |
 | Core.Asset.provider | unknown | The asset provider. |
+| Core.Asset.kubernetes.cluster.version | unknown | The Kubernetes cluster version of the asset. |
+| Core.Asset.software_package.version | unknown | The software package version of the asset. |
 
 ### core-get-issue-recommendations
 
@@ -579,7 +615,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue to get recommendations for. | Required |
+| issue_ids | Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request). | Required |
 
 #### Context Output
 
@@ -592,6 +628,19 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.playbook_suggestions.name | String | The name of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.comment | String | An explanation of the suggested playbook. |
+| Core.IssueRecommendations.quick_action_suggestions.name | String | The name of the suggested quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id | String | The ID of the suggestion quick action rule that generated this recommendation. |
+| Core.IssueRecommendations.quick_action_suggestions.brand | String | The brand of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.category | String | The category of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.description | String | An explanation of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.pretty_name | String | The display name of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.name | String | The argument name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName | String | The argument display name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined | String | The argument predefined display value. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.description | String | The argument description. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
@@ -879,3 +928,57 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. |
 | Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
+
+### core-update-endpoint-version
+
+***
+Updates the version of the given endpoint to the target version supplied.
+
+#### Base Command
+
+`core-update-endpoint-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
+| platform | The platform of the endpoints. Possible values are: windows, macos, linux. | Required |
+| version | The target version for updating the endpoints. | Required |
+| start_time | The start time for the update. Enter the time in a 24-hour format (HH:MM). Ensure that there are at least two hours between the start time and the end time. | Optional |
+| end_time | The end time for the update. Enter the time in a 24-hour format (HH:MM). | Optional |
+| days | A comma-separated list of days of the week the update may run. Possible values are: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.EndpointUpdate.endpoint_ids | String | The IDs of the endpoints on which the update run. |
+| Core.EndpointUpdate.action_id | String | The ID of the update action. 0 means that the action failed. |
+
+### core-get-endpoint-update-version
+
+***
+Retrieves endpoint update versions for the provided endpoint IDs.
+
+#### Base Command
+
+`core-get-endpoint-update-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.EndpointUpdateVersion.total_count | String | Total number of endpoints. |
+| Core.EndpointUpdateVersion.platform_count | String | Number of endpoints per platform. |
+| Core.EndpointUpdateVersion.distributions.platform | String | The platform of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.version | String | The version of the endpoint update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The number of endpoints running a version later than the specified update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The number of endpoints running the same version as the specified update. |
+| Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The number of endpoints running a version earlier than the specified update. |

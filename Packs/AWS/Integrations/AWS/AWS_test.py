@@ -1080,10 +1080,12 @@ def test_rds_modify_db_instance_command_success(mocker):
     }
 
     args = {"db_instance_identifier": "test-instance", "multi_az": "true", "apply_immediately": "true"}
+    expected_args = {"DBInstanceIdentifier": "test-instance", "MultiAZ": True, "ApplyImmediately": True}
 
     result = RDS.modify_db_instance_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Successfully modified DB instance" in result.readable_output
+    assert mock_client.modify_db_instance.call_args.kwargs == expected_args
 
 
 def test_rds_modify_db_instance_command_exception(mocker):
@@ -6823,3 +6825,118 @@ def test_handle_port_range_with_port_range_single_dash():
     args = {"port": "80-80"}
     result = handle_port_range(args)
     assert result == (80, 80)
+
+
+def test_build_pagination_kwargs_with_custom_max_limit():
+    """Test build_pagination_kwargs with custom max limit constraint.
+    Given: A limit bigger than the max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 500}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
+
+
+def test_build_pagination_kwargs_with_custom_parameter_names():
+    """Test build_pagination_kwargs with custom AWS parameter names.
+    Given: pagination parameters
+    When: build_pagination_kwargs is called with this custom parameter names
+    Then: The returned value should have the custom names as the keys with their matching values.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 25, "next_token": "abc123"}
+    result = build_pagination_kwargs(args, next_token_name="ContinuationToken", limit_name="PageSize")
+    expected = {"ContinuationToken": "abc123", "PageSize": 25}
+    assert result == expected
+
+
+def test_build_pagination_kwargs_at_maximum_boundary():
+    """Test build_pagination_kwargs with limit exactly at maximum boundary.
+    Given: A limit who is equal to the custom max limit.
+    When: build_pagination_kwargs is called with this argument
+    Then: The MaxResults should have the value of the max_limit and limit.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 100}
+    result = build_pagination_kwargs(args, max_limit=100)
+    expected = {"MaxResults": 100}
+    assert result == expected
+
+
+def test_modify_db_instance_command_success(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)
+
+
+def test_modify_db_instance_command_multiple_vpc_security_group_ids(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid DB instance modification arguments, including multiple vpc_security_group_ids.
+    When: modify_db_instance_command is called successfully.
+    Then: It should return CommandResults with success message and instance details.
+    """
+    from AWS import RDS
+
+    args = {"db_instance_identifier": "test-db", "vpc_security_group_ids": "sg-123456789,sg-987654321"}
+    expected_args = {"DBInstanceIdentifier": "test-db", "VpcSecurityGroupIds": ["sg-123456789", "sg-987654321"]}
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "DBInstance": {
+            "DBInstanceIdentifier": "test-db",
+            "DBInstanceClass": "db.t3.micro",
+            "Engine": "mysql",
+            "DBInstanceStatus": "modifying",
+            "VpcSecurityGroups": [
+                {"VpcSecurityGroupId": "sg-123456789", "Status": "Status"},
+                {"VpcSecurityGroupId": "sg-987654321", "Status": "Status"},
+            ],
+        },
+    }
+    mock_client.modify_db_instance.return_value = mock_response
+
+    result = RDS.modify_db_instance_command(mock_client, args)
+
+    assert "Successfully modified DB instance test-db" in result.readable_output
+    assert result.outputs_prefix == "AWS.RDS.DBInstance"
+    assert result.outputs["DBInstanceIdentifier"] == "test-db"
+    assert result.outputs_key_field == "DBInstanceIdentifier"
+    assert result.outputs["VpcSecurityGroups"] == mock_response["DBInstance"]["VpcSecurityGroups"]
+    mock_client.modify_db_instance.assert_called_once_with(**expected_args)

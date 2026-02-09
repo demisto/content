@@ -37,7 +37,12 @@ def test_report_incorrect_wildfire_command(mocker):
     mock_client = Client(base_url=f"{Core_URL}/public_api/v1", headers={})
     mocker.patch.object(mock_client, "report_incorrect_wildfire", return_value=wildfire_response)
     file_hash = "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
-    args = {"email": "a@a.gmail.com", "file_hash": file_hash, "new_verdict": 0, "reason": "test1"}
+    args = {
+        "email": "a@a.gmail.com",
+        "file_hash": file_hash,
+        "new_verdict": 0,
+        "reason": "test1",
+    }
     res = report_incorrect_wildfire_command(client=mock_client, args=args)
     assert res.readable_output == f"Reported incorrect WildFire on {file_hash}"
 
@@ -94,7 +99,9 @@ class TestPrevalenceCommands:
         mock_res = load_test_data("./test_data/prevalence_response.json")
         mocker.patch.object(mock_client, "get_prevalence", return_value=mock_res.get("registry"))
         res = handle_prevalence_command(
-            mock_client, "core-get-registry-analytics-prevalence", {"key_name": "some key", "value_name": "some value"}
+            mock_client,
+            "core-get-registry-analytics-prevalence",
+            {"key_name": "some key", "value_name": "some value"},
         )
         assert res.outputs[0].get("value") is True
         assert res.outputs[0].get("key_name") == "some key"
@@ -223,9 +230,19 @@ class TestPollingCommand:
         command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)
 
         assert command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
-        assert command_result.outputs == {"action_id": 1, "endpoints_count": 1, "status": 1}
+        assert command_result.outputs == {
+            "action_id": 1,
+            "endpoints_count": 1,
+            "status": 1,
+        }
 
-        polling_args = {"endpoint_ids": "1", "script_uid": "1", "action_id": "1", "hide_polling_output": True, "is_core": "true"}
+        polling_args = {
+            "endpoint_ids": "1",
+            "script_uid": "1",
+            "action_id": "1",
+            "hide_polling_output": True,
+            "is_core": "true",
+        }
 
         command_result = script_run_polling_command(args=polling_args, client=client)
         # if scheduled_command is set, it means that command should still poll
@@ -266,7 +283,9 @@ def test_get_asset_details_command_success(mocker):
 
     mock_client = Client(base_url="", headers={})
     mock_get_asset_details = mocker.patch.object(
-        mock_client, "_http_request", return_value={"reply": {"id": "1234", "name": "Test Asset"}}
+        mock_client,
+        "_http_request",
+        return_value={"reply": {"id": "1234", "name": "Test Asset"}},
     )
 
     args = {"asset_id": "1234"}
@@ -292,7 +311,12 @@ def test_get_distribution_url_command_without_download():
     client = MagicMock()
     client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
 
-    args = {"distribution_id": "12345", "package_type": "x64", "download_package": "false", "integration_context_brand": "CoreIR"}
+    args = {
+        "distribution_id": "12345",
+        "package_type": "x64",
+        "download_package": "false",
+        "integration_context_brand": "CoreIR",
+    }
 
     result = get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "x64")
@@ -341,7 +365,10 @@ def test_get_distribution_url_command_with_download(mocker):
     assert len(result) == 2
     command_result = result[1]
     assert isinstance(command_result, CommandResults)
-    assert command_result.outputs == {"id": "12345", "url": "https://example.com/distribution"}
+    assert command_result.outputs == {
+        "id": "12345",
+        "url": "https://example.com/distribution",
+    }
     assert command_result.outputs_prefix == "CortexCoreIR.Distribution"
     assert command_result.outputs_key_field == "id"
     assert "Installation package downloaded successfully." in command_result.readable_output
@@ -420,7 +447,11 @@ def test_reformat_args_separators(separator):
     Then:
         - Verify that commands_list split by the chosen separator.
     """
-    args = {"command": f"dir{separator}hostname", "is_raw_command": False, "command_separator": separator}
+    args = {
+        "command": f"dir{separator}hostname",
+        "is_raw_command": False,
+        "command_separator": separator,
+    }
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
@@ -435,7 +466,11 @@ def test_reformat_args_powershell_command_formatting():
     Then:
         - Verify command at commands_list reformated from 'command' to 'powershell -Command "command"'.
     """
-    args = {"command": "Get-Process", "command_type": "powershell", "is_raw_command": True}
+    args = {
+        "command": "Get-Process",
+        "command_type": "powershell",
+        "is_raw_command": True,
+    }
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']
@@ -453,7 +488,10 @@ def test_reformat_output():
     """
     from CortexCoreIR import core_execute_command_reformat_outputs
 
-    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
+    mock_res = CommandResults(
+        outputs_prefix="val",
+        outputs=load_test_data("./test_data/execute_command_response.json"),
+    )
     reformatted_outputs = core_execute_command_reformat_outputs([mock_res])
     excepted_output = [
         {
@@ -544,7 +582,10 @@ def test_reformat_readable():
     """
     from CortexCoreIR import core_execute_command_reformat_readable_output
 
-    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
+    mock_res = CommandResults(
+        outputs_prefix="val",
+        outputs=load_test_data("./test_data/execute_command_response.json"),
+    )
     reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
     excepted_output = """### Script Execution Results for Action ID: 1
 |Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
@@ -690,14 +731,24 @@ def test_prepare_ioc_to_output():
         "reputation": "SUSPICIOUS",
         "reliability": "D",
         "class": "Malware",
-        "vendors": [{"vendor_name": "VirusTotalV5", "reliability": "B", "reputation": "SUSPICIOUS"}],
+        "vendors": [
+            {
+                "vendor_name": "VirusTotalV5",
+                "reliability": "B",
+                "reputation": "SUSPICIOUS",
+            }
+        ],
     }
     assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
 
 
 def get_mock_client():
     return Client(
-        base_url="https://example.com", proxy=False, verify=False, headers={"Authorization": "Bearer dummy"}, timeout=10
+        base_url="https://example.com",
+        proxy=False,
+        verify=False,
+        headers={"Authorization": "Bearer dummy"},
+        timeout=10,
     )
 
 
@@ -717,7 +768,9 @@ class TestCoreAddIndicator:
 
         client = get_mock_client()
         mock_post = mocker.patch.object(
-            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+            client,
+            "create_indicator_rule_request",
+            return_value={"reply": {"success": True, "validation_errors": []}},
         )
 
         args = {
@@ -757,7 +810,9 @@ class TestCoreAddIndicator:
         """
         client = get_mock_client()
         mocker.patch.object(
-            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+            client,
+            "create_indicator_rule_request",
+            return_value={"reply": {"success": True, "validation_errors": []}},
         )
 
         args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
@@ -781,7 +836,9 @@ class TestCoreAddIndicator:
         """
         client = get_mock_client()
         mock_post = mocker.patch.object(
-            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+            client,
+            "create_indicator_rule_request",
+            return_value={"reply": {"success": True, "validation_errors": []}},
         )
 
         csv_payload = (
@@ -821,7 +878,9 @@ class TestCoreAddIndicator:
         """
         client = get_mock_client()
         mock_post = mocker.patch.object(
-            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+            client,
+            "create_indicator_rule_request",
+            return_value={"reply": {"success": True, "validation_errors": []}},
         )
 
         args = {
@@ -877,7 +936,10 @@ class TestCoreAddIndicator:
             return_value={
                 "reply": {
                     "success": False,
-                    "validation_errors": [{"indicator": "dummy", "error": "error1"}, {"indicator": "dummy", "error": "error2"}],
+                    "validation_errors": [
+                        {"indicator": "dummy", "error": "error1"},
+                        {"indicator": "dummy", "error": "error2"},
+                    ],
                 }
             },
         )
@@ -925,12 +987,24 @@ class TestClientBlockIP:
             - the appropriate list returned.
         """
         mocker.patch.object(client, "get_endpoints", return_value="Connected")
-        mocker.patch.object(client, "_http_request", return_value={"reply": {"group_action_id": "gid-123"}})
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value={"reply": {"group_action_id": "gid-123"}},
+        )
 
         results = client.block_ip_request("endpoint_id", ["3.3.3.3", "4.4.4.4"], 123)
         assert results == [
-            {"ip_address": "3.3.3.3", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
-            {"ip_address": "4.4.4.4", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
+            {
+                "ip_address": "3.3.3.3",
+                "group_id": "gid-123",
+                "endpoint_id": "endpoint_id",
+            },
+            {
+                "ip_address": "4.4.4.4",
+                "group_id": "gid-123",
+                "endpoint_id": "endpoint_id",
+            },
         ]
 
     def test_fetch_block_status_disconnected(self, mocker, client):
@@ -978,7 +1052,10 @@ class TestClientBlockIP:
         mocker.patch.object(
             client,
             "action_status_get",
-            return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {"errorText": "Error Message"}}},
+            return_value={
+                "data": {"endpoint_id": "FAILED"},
+                "errorReasons": {"endpoint_id": {"errorText": "Error Message"}},
+            },
         )
 
         status, msg = client.fetch_block_status(100, "endpoint_id")
@@ -998,7 +1075,12 @@ class TestClientBlockIP:
         """
         mocker.patch.object(client, "get_endpoints", return_value="Connected")
         mocker.patch.object(
-            client, "action_status_get", return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {}}}
+            client,
+            "action_status_get",
+            return_value={
+                "data": {"endpoint_id": "FAILED"},
+                "errorReasons": {"endpoint_id": {}},
+            },
         )
         status, msg = client.fetch_block_status(100, "endpoint_id")
         assert status == "Failure"
@@ -1014,7 +1096,11 @@ class TestClientBlockIP:
             - The status returned is Success without message.
         """
         mocker.patch.object(client, "get_endpoints", return_value="Connected")
-        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "COMPLETED_SUCCESSFULLY"}})
+        mocker.patch.object(
+            client,
+            "action_status_get",
+            return_value={"data": {"endpoint_id": "COMPLETED_SUCCESSFULLY"}},
+        )
         status, msg = client.fetch_block_status(100, "endpoint_id")
         assert status == "Success"
         assert msg == ""
@@ -1029,7 +1115,11 @@ class TestClientBlockIP:
             - The status returned is IN_PROGRESS without message.
         """
         mocker.patch.object(client, "get_endpoints", return_value="Connected")
-        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "IN_PROGRESS"}})
+        mocker.patch.object(
+            client,
+            "action_status_get",
+            return_value={"data": {"endpoint_id": "IN_PROGRESS"}},
+        )
         status, msg = client.fetch_block_status(100, "endpoint_id")
         assert status == "IN_PROGRESS"
         assert msg == ""
@@ -1095,7 +1185,15 @@ class TestBlockIp:
         Then:
             - polling stops and outputs include the success reason.
         """
-        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        args = {
+            "blocked_list": [
+                {
+                    "endpoint_id": "endpoint1",
+                    "group_id": "gid1",
+                    "ip_address": "1.1.1.1",
+                }
+            ]
+        }
         client = DummyClient(status_map={("gid1", "endpoint1"): ("Success", "")})
 
         pollRequest: PollResult = polling_block_ip_status(args, client)
@@ -1114,7 +1212,15 @@ class TestBlockIp:
         Then:
             - polling stops and outputs include the failure reason and message.
         """
-        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        args = {
+            "blocked_list": [
+                {
+                    "endpoint_id": "endpoint1",
+                    "group_id": "gid1",
+                    "ip_address": "1.1.1.1",
+                }
+            ]
+        }
         client = DummyClient(status_map={("gid1", "endpoint1"): ("Failure", "Network unreachable")})
 
         pollRequest = polling_block_ip_status(args, client)
@@ -1138,7 +1244,15 @@ class TestBlockIp:
         Then:
             - polling continues with partial results.
         """
-        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        args = {
+            "blocked_list": [
+                {
+                    "endpoint_id": "endpoint1",
+                    "group_id": "gid1",
+                    "ip_address": "1.1.1.1",
+                }
+            ]
+        }
         client = DummyClient(status_map={("gid1", "endpoint1"): ("PENDING", "Still working")})
 
         pollRequest = polling_block_ip_status(args, client)
@@ -1180,7 +1294,12 @@ class TestBlockIp:
         """
         calls = {}
 
-        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+        fake_poll_result = PollResult(
+            response="Polling",
+            continue_to_poll=False,
+            args_for_next_run=None,
+            partial_result=None,
+        )
 
         def fake_poll(args, client):
             calls["args"] = args
@@ -1188,7 +1307,15 @@ class TestBlockIp:
 
         mocker.patch("CortexCoreIR.polling_block_ip_status", side_effect=fake_poll)
 
-        block_map = {"endpoint1": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        block_map = {
+            "endpoint1": [
+                {
+                    "endpoint_id": "endpoint1",
+                    "group_id": "gid1",
+                    "ip_address": "1.1.1.1",
+                }
+            ]
+        }
         client = DummyClient(block_map=block_map)
         spy = mocker.spy(client, "block_ip_request")
 
@@ -1220,7 +1347,12 @@ class TestBlockIp:
         """
         calls = {}
 
-        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+        fake_poll_result = PollResult(
+            response="Polling",
+            continue_to_poll=False,
+            args_for_next_run=None,
+            partial_result=None,
+        )
 
         def fake_poll(a, c):
             calls["args"] = a
@@ -1231,7 +1363,13 @@ class TestBlockIp:
         client = DummyClient()
         spy = mocker.spy(client, "block_ip_request")
         args = {
-            "blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}],
+            "blocked_list": [
+                {
+                    "endpoint_id": "endpoint1",
+                    "group_id": "gid1",
+                    "ip_address": "1.1.1.1",
+                }
+            ],
         }
 
         result = core_block_ip_command(args, client)
@@ -1290,3 +1428,105 @@ def test_core_get_contributing_event(mocker):
     assert isinstance(result, CommandResults)
     assert "Contributing events" in result.readable_output
     assert result.outputs[0]["alertID"] == "1"
+
+
+def test_update_endpoints_tags_add_and_remove(mocker):
+    """
+    Given:
+        - Endpoint IDs and both tags to add and remove.
+    When:
+        - Calling update_endpoints_tags_command.
+    Then:
+        - Verify both add and remove functions are called appropriately.
+        - Verify success message includes both added and removed tags.
+    """
+    from CortexCoreIR import update_endpoints_tags_command
+
+    client = get_mock_client()
+    mock_add_tag = mocker.patch("CortexCoreIR.add_tag_to_endpoints_command", return_value=None)
+    mock_remove_tag = mocker.patch("CortexCoreIR.remove_tag_from_endpoints_command", return_value=None)
+    mocker.patch("CortexCoreIR.filter_invalid_tags", return_value=[])
+
+    args = {
+        "endpoint_ids": ["endpoint1", "endpoint2"],
+        "tags_to_add": ["new_tag"],
+        "tags_to_remove": ["old_tag"],
+    }
+
+    results = update_endpoints_tags_command(client, args)
+
+    assert len(results) == 1
+    assert (
+        "Successfully updated tags for endpoint(s) ['endpoint1', 'endpoint2']. Added tags: ['new_tag'] Removed tags: ['old_tag']."
+        in results[0].readable_output
+    )
+    assert mock_add_tag.call_count == 1
+    assert mock_remove_tag.call_count == 1
+    mock_add_tag.assert_called_with(client, {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "new_tag"})
+    mock_remove_tag.assert_called_with(client, {"endpoint_ids": ["endpoint1", "endpoint2"], "tag": "old_tag"})
+
+
+def test_update_endpoints_tags_no_tags_provided_raises_exception():
+    """
+    Given:
+        - Endpoint IDs but no tags to add or remove.
+    When:
+        - Calling update_endpoints_tags_command.
+    Then:
+        - Verify DemistoException is raised with appropriate message.
+    """
+    from CortexCoreIR import update_endpoints_tags_command
+    from CommonServerPython import DemistoException
+
+    client = get_mock_client()
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(DemistoException, match="At least one tag to add or remove must be specified."):
+        update_endpoints_tags_command(client, args)
+
+
+def test_update_endpoints_tags_with_invalid_tags(mocker):
+    """
+    Given:
+        - Endpoint IDs and tags including some invalid ones.
+    When:
+        - Calling update_endpoints_tags_command.
+    Then:
+        - Verify success message for valid operations.
+        - Verify warning message for invalid tags.
+        - Verify two CommandResults are returned.
+    """
+    from CortexCoreIR import update_endpoints_tags_command
+
+    client = get_mock_client()
+    mock_add_tag = mocker.patch("CortexCoreIR.add_tag_to_endpoints_command", return_value=None)
+    mock_remove_tag = mocker.patch("CortexCoreIR.remove_tag_from_endpoints_command", return_value=None)
+    mocker.patch(
+        "CortexCoreIR.filter_invalid_tags",
+        side_effect=[
+            ["very_long_invalid_tag_that_exceeds_limit"],
+            ["another_invalid_tag"],
+        ],
+    )
+
+    args = {
+        "endpoint_ids": ["endpoint1"],
+        "tags_to_add": ["valid_tag", "very_long_invalid_tag_that_exceeds_limit"],
+        "tags_to_remove": ["another_invalid_tag"],
+    }
+
+    results = update_endpoints_tags_command(client, args)
+
+    assert len(results) == 2
+    assert (
+        "Successfully updated tags for endpoint(s) ['endpoint1']. Added tags: ['valid_tag', "
+        "'very_long_invalid_tag_that_exceeds_limit'] Removed tags: ['another_invalid_tag']." in results[0].readable_output
+    )
+    assert (
+        "Invalid tags detected: very_long_invalid_tag_that_exceeds_limit, another_invalid_tag. Tags must be less than "
+        "64 characters long." in results[1].readable_output
+    )
+    assert results[1].entry_type == 4
+    assert mock_add_tag.call_count == 2
+    assert mock_remove_tag.call_count == 1

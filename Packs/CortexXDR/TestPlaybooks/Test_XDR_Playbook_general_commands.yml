@@ -86,7 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       gte_creation_time:
-        simple: 2010-10-10T00:00:00
+        simple: "2010-10-10T00:00:00"
       limit:
         simple: "3"
       sort_by_creation_time:
@@ -954,7 +954,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 13545
+          "y": 15645
         }
       }
     note: false
@@ -1250,7 +1250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2688,7 +2688,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "100"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3352,6 +3352,388 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 04f29040-5e2b-462b-94ca-cb6c35e0a2d9
+    type: title
+    task:
+      id: 04f29040-5e2b-462b-94ca-cb6c35e0a2d9
+      version: -1
+      name: Assets Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 13545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: d78e9f32-d4fd-4702-86e5-f820c1305ae7
+    type: regular
+    task:
+      id: d78e9f32-d4fd-4702-86e5-f820c1305ae7
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default\n  Limited User role, unless you explicitly change the permissions.\nFor more\n  information, see the section about permissions here:\n- For Cortex XSOAR 6\n  see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations\n  \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-\n  For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 13720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: bae7ced5-0377-42fd-a9f4-69a06c8978c3
+    type: regular
+    task:
+      id: bae7ced5-0377-42fd-a9f4-69a06c8978c3
+      version: -1
+      name: List Assets
+      description: Returns a list of assets.
+      script: Cortex XDR - IR|||xdr-asset-list
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 13895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 0d9efa92-14f9-44cb-bbf4-67af61fb9b1a
+    type: regular
+    task:
+      id: 0d9efa92-14f9-44cb-bbf4-67af61fb9b1a
+      version: -1
+      name: Get Asset
+      description: Returns a list of assets.
+      script: Cortex XDR - IR|||xdr-asset-list
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: PaloAltoNetworksXDR.Asset.xdm.asset
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 14070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: bf052793-783b-4171-80c7-ea58e6b89181
+    type: regular
+    task:
+      id: bf052793-783b-4171-80c7-ea58e6b89181
+      version: -1
+      name: List 5 Asset Groups
+      description: Returns a list of asset groups.
+      script: '|||xdr-asset-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      page_size:
+        simple: "5"
+      sort_field:
+        simple: XDM.ASSET_GROUP.NAME
+      sort_order:
+        simple: ASC
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 14245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 129beb78-fff0-4368-9322-185806e63790
+    type: regular
+    task:
+      id: 129beb78-fff0-4368-9322-185806e63790
+      version: -1
+      name: Get Schema
+      description: Gets the schema of the asset inventory.
+      script: '|||xdr-asset-schema-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 14595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 6cdded06-e0c8-4eff-9c46-0eab1e12fa80
+    type: regular
+    task:
+      id: 6cdded06-e0c8-4eff-9c46-0eab1e12fa80
+      version: -1
+      name: Get Schema Options
+      description: Gets the enum values of a specified field in the asset schema.
+      script: Cortex XDR - IR|||xdr-asset-schema-field-options-get
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      field_name:
+        simple: xdm.asset.provider
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 14770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: b65ce782-cb9e-4ab5-b513-e7447b0507a0
+    type: regular
+    task:
+      id: b65ce782-cb9e-4ab5-b513-e7447b0507a0
+      version: -1
+      name: Create Asset Group
+      description: Creates an asset group.
+      script: Cortex XDR - IR|||xdr-asset-group-create
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      group_name:
+        simple: tpbgroup
+      group_type:
+        simple: Dynamic
+      membership_predicate_json:
+        simple: '{"AND":[{"SEARCH_FIELD":"xdm.asset.type.class","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Other"}]}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 14945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 8b473bf8-60ca-4d3d-bfc9-affecb9a7a0c
+    type: regular
+    task:
+      id: 8b473bf8-60ca-4d3d-bfc9-affecb9a7a0c
+      version: -1
+      name: Get the new Asset Group
+      description: Returns a list of asset groups.
+      script: '|||xdr-asset-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      filter_json:
+        simple: '{"AND": [{"SEARCH_FIELD": "XDM.ASSET_GROUP.NAME", "SEARCH_TYPE":
+          "EQ", "SEARCH_VALUE": "tpbgroup"}]}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 15120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 6d8eec60-b8a9-448c-a082-8938916df816
+    type: regular
+    task:
+      id: 6d8eec60-b8a9-448c-a082-8938916df816
+      version: -1
+      name: Delete new Asset Group
+      description: Deletes an asset group.
+      script: Cortex XDR - IR|||xdr-asset-group-delete
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      group_id:
+        simple: ${PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 15295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 637d0ff8-b1af-4cbb-b184-4f4fed933297
+    type: title
+    task:
+      id: 637d0ff8-b1af-4cbb-b184-4f4fed933297
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 15470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3359,7 +3741,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 13555,
+        "height": 15755,
         "width": 1130,
         "x": -267.5,
         "y": 50

@@ -80,7 +80,10 @@ from TrendMicroVisionOneV3 import (
     get_endpoint_info,
     get_file_analysis_result,
     get_file_analysis_status,
+    get_mapping_fields_command,
+    get_modified_remote_data_command,
     get_observed_attack_techniques,
+    get_remote_data_command,
     get_sandbox_submission_status,
     get_task_status,
     isolate_or_restore_connection,
@@ -92,7 +95,10 @@ from TrendMicroVisionOneV3 import (
     submit_urls_to_sandbox,
     terminate_process,
     update_custom_script,
+    update_remote_system_command,
     update_status,
+    vision_one_status_to_xsoar,
+    xsoar_status_to_vision_one,
 )
 
 # Provide valid API KEY
@@ -1620,3 +1626,883 @@ def test_get_observed_attack_techniques(mocker):
     assert isinstance(result.outputs[0]["id"], str)
     assert result.outputs_prefix == "VisionOne.Get_Observed_Attack_Techniques"
     assert result.outputs_key_field == "id"
+
+
+def test_xsoar_status_to_vision_one():
+    """
+    Test the xsoar_status_to_vision_one helper function that maps XSOAR incident statuses
+    to Vision One alert statuses.
+
+    Given:
+        - incident_status: XSOAR IncidentStatus value (0=Pending, 1=Active, 2=Closed, or unknown)
+    When:
+        - Execute xsoar_status_to_vision_one function
+    Then:
+        - Validate correct mapping to Vision One status
+    """
+    # Test Pending (0) -> "open"
+    status = xsoar_status_to_vision_one(0)
+    assert status == "open"
+
+    # Test Active (1) -> "in_progress"
+    status = xsoar_status_to_vision_one(1)
+    assert status == "in_progress"
+
+    # Test Closed (2) -> "closed"
+    status = xsoar_status_to_vision_one(2)
+    assert status == "closed"
+
+    # Test Unknown status (999) -> defaults to "open"
+    status = xsoar_status_to_vision_one(999)
+    assert status == "open"
+
+
+# ========== Outgoing Mirroring Tests (update-remote-system) ==========
+
+
+def test_update_remote_system_no_remote_id(mocker):
+    """
+    Test update_remote_system when no remote ID is provided.
+
+    Given:
+        - No remote incident ID (empty string)
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should return empty string without making API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    args = {
+        "remoteId": "",
+        "data": {"status": 2},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return empty string without any API calls
+    assert result == ""
+    client.alert.get.assert_not_called()
+
+
+def test_update_remote_system_incident_not_changed(mocker):
+    """
+    Test update_remote_system when incident has not changed.
+
+    Given:
+        - Remote incident ID
+        - incidentChanged is False
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should return remote ID without making API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {"status": 1},
+        "entries": [],
+        "incidentChanged": False,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID without calling API
+    assert result == "WB-14-20190709-00003"
+    client.alert.get.assert_not_called()
+
+
+def test_update_remote_system_status_update_success(mocker):
+    """
+    Test update_remote_system when incident status changes successfully.
+
+    Given:
+        - Incident status changed to Closed (2)
+        - Close reason "Resolved"
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should retrieve alert to get ETag
+        - Should update Vision One alert status to "closed" with investigation result TRUE_POSITIVE
+    """
+    from pytmv1 import AlertStatus, InvestigationResult, GetAlertResp, Result, ResultCode, MultiResp
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() response - return success with etag
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.etag = "test-etag-123"
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    # Mock alert.update_status() response - return success
+    mock_update_result = Mock(spec=MultiResp)
+    mock_update_result.result_code = ResultCode.SUCCESS
+    mock_update_result.error = None
+
+    client.alert.update_status.return_value = mock_update_result
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {"status": 2, "closeReason": "Resolved"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID
+    assert result == "WB-14-20190709-00003"
+
+    # Verify alert.get was called
+    client.alert.get.assert_called_once_with(alert_id="WB-14-20190709-00003")
+
+    # Verify alert.update_status was called with correct parameters
+    client.alert.update_status.assert_called_once()
+    call_args = client.alert.update_status.call_args
+    assert call_args.kwargs["alert_id"] == "WB-14-20190709-00003"
+    assert call_args.kwargs["status"] == AlertStatus.CLOSED
+    assert call_args.kwargs["etag"] == "test-etag-123"
+    assert call_args.kwargs["inv_result"] == InvestigationResult.TRUE_POSITIVE
+
+
+def test_update_remote_system_with_close_notes(mocker):
+    """
+    Test update_remote_system when incident is closed with close notes.
+
+    Given:
+        - Incident closed with closeNotes
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should update status
+        - Should add closing note to Vision One alert
+    """
+    from pytmv1 import GetAlertResp, Result, ResultCode, MultiResp
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() response
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.etag = "test-etag-456"
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    # Mock alert.update_status() response
+    mock_update_result = Mock(spec=MultiResp)
+    mock_update_result.result_code = ResultCode.SUCCESS
+    mock_update_result.error = None
+
+    client.alert.update_status.return_value = mock_update_result
+
+    # Mock note.create() response
+    mock_note_result = Mock(spec=Result)
+    mock_note_result.result_code = ResultCode.SUCCESS
+    mock_note_result.error = None
+
+    client.note.create.return_value = mock_note_result
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {
+            "status": 2,
+            "closeReason": "Resolved",
+            "closeNotes": "Confirmed false positive after investigation",
+            "closingUserId": "analyst@example.com",
+            "id": "12345",
+        },
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID
+    assert result == "WB-14-20190709-00003"
+
+    # Verify note.create was called
+    client.note.create.assert_called_once()
+    call_args = client.note.create.call_args
+    assert call_args.kwargs["alert_id"] == "WB-14-20190709-00003"
+    assert "XSOAR Incident ID: 12345" in call_args.kwargs["note_content"]
+    assert "Close Reason: Resolved" in call_args.kwargs["note_content"]
+    assert "analyst@example.com" in call_args.kwargs["note_content"]
+    assert "Confirmed false positive after investigation" in call_args.kwargs["note_content"]
+
+
+def test_update_remote_system_close_reason_mapping(mocker):
+    """
+    Test update_remote_system close reason to investigation result mapping.
+
+    Given:
+        - Incident closed with different close reasons
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should map close reasons correctly to investigation results
+    """
+    from pytmv1 import InvestigationResult, GetAlertResp, Result, ResultCode, MultiResp
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock responses
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.etag = "test-etag"
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    mock_update_result = Mock(spec=MultiResp)
+    mock_update_result.result_code = ResultCode.SUCCESS
+    mock_update_result.error = None
+
+    client.alert.update_status.return_value = mock_update_result
+
+    # Test case 1: "False Positive" -> FALSE_POSITIVE
+    args_fp = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "False Positive"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_fp)
+    call_args = client.alert.update_status.call_args
+    assert call_args.kwargs["inv_result"] == InvestigationResult.FALSE_POSITIVE
+
+    # Reset mock
+    client.alert.update_status.reset_mock()
+
+    # Test case 2: "Resolved" -> TRUE_POSITIVE
+    args_resolved = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "Resolved"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_resolved)
+    call_args = client.alert.update_status.call_args
+    assert call_args.kwargs["inv_result"] == InvestigationResult.TRUE_POSITIVE
+
+    # Reset mock
+    client.alert.update_status.reset_mock()
+
+    # Test case 3: "Duplicate" -> NO_FINDINGS
+    args_duplicate = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "Duplicate"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_duplicate)
+    call_args = client.alert.update_status.call_args
+    assert call_args.kwargs["inv_result"] == InvestigationResult.NO_FINDINGS
+
+    # Reset mock
+    client.alert.update_status.reset_mock()
+
+    # Test case 4: "Other" -> NOTEWORTHY
+    args_other = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "Other"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_other)
+    call_args = client.alert.update_status.call_args
+    assert call_args.kwargs["inv_result"] == InvestigationResult.NOTEWORTHY
+
+
+def test_update_remote_system_api_error(mocker):
+    """
+    Test update_remote_system when API returns an error.
+
+    Given:
+        - Vision One API returns error when getting alert
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should log error and return remote ID without updating
+    """
+    from pytmv1 import Result, ResultCode, Error
+
+    client = Mock()
+    mock_error_logger = mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() to return error
+    mock_error = Mock(spec=Error)
+    mock_error.message = "Alert not found"
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.ERROR
+    mock_get_result.response = None
+    mock_get_result.error = mock_error
+
+    client.alert.get.return_value = mock_get_result
+
+    args = {
+        "remoteId": "WB-INVALID",
+        "data": {"status": 2},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID even on error
+    assert result == "WB-INVALID"
+
+    # Should have logged error
+    assert mock_error_logger.called
+    error_msg = mock_error_logger.call_args[0][0]
+    assert "Error fetching alert" in error_msg
+    assert "WB-INVALID" in error_msg
+
+    # Should not call update_status
+    client.alert.update_status.assert_not_called()
+
+
+# ========== Incoming Mirroring Tests (get-modified-remote-data) ==========
+
+
+def test_vision_one_status_to_xsoar():
+    """
+    Test the vision_one_status_to_xsoar helper function that maps Vision One alert statuses
+    to XSOAR incident statuses.
+
+    Given:
+        - v1_status: Vision One alert status string
+    When:
+        - Execute vision_one_status_to_xsoar function
+    Then:
+        - Validate correct mapping to XSOAR IncidentStatus values
+    """
+    # Test "Open" -> 0 (Pending) - Vision One API format
+    status = vision_one_status_to_xsoar("Open")
+    assert status == 0
+
+    # Test "In Progress" -> 1 (Active) - Vision One API format
+    status = vision_one_status_to_xsoar("In Progress")
+    assert status == 1
+
+    # Test "Closed" -> 2 (Closed) - Vision One API format
+    status = vision_one_status_to_xsoar("Closed")
+    assert status == 2
+
+    # Test unknown status -> defaults to 0 (Pending)
+    status = vision_one_status_to_xsoar("unknown_status")
+    assert status == 0
+
+
+def test_get_modified_remote_data_success(mocker):
+    """
+    Test get_modified_remote_data returns modified alert IDs.
+
+    Given:
+        - last_update timestamp
+    When:
+        - Execute get_modified_remote_data command
+        - Vision One returns alerts updated since last_update
+    Then:
+        - Should return list of modified alert IDs
+    """
+    from pytmv1 import SaeAlert
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume to call callback with test alerts
+    def mock_consume(callback, **kwargs):
+        # Create mock alerts
+        alert1 = Mock(spec=SaeAlert)
+        alert1.id = "WB-ALERT-001"
+
+        alert2 = Mock(spec=SaeAlert)
+        alert2.id = "WB-ALERT-002"
+
+        # Call the callback for each alert
+        callback(alert1)
+        callback(alert2)
+
+    client.alert.consume = mock_consume
+
+    args = {
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should return list of modified alert IDs
+    assert len(result.modified_incident_ids) == 2
+    assert "WB-ALERT-001" in result.modified_incident_ids
+    assert "WB-ALERT-002" in result.modified_incident_ids
+
+
+def test_get_modified_remote_data_no_last_update(mocker):
+    """
+    Test get_modified_remote_data when no last_update provided.
+
+    Given:
+        - No last_update timestamp
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should default to 1 hour ago
+        - Should return 0 modified alerts
+    """
+    from pytmv1 import SaeAlert
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume
+    def mock_consume(callback, **kwargs):
+        alert = Mock(spec=SaeAlert)
+        alert.id = "WB-ALERT-003"
+        callback(alert)
+
+    client.alert.consume = mock_consume
+
+    args = {}
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should return results even without last_update
+    assert len(result.modified_incident_ids) == 0
+
+
+def test_get_modified_remote_data_invalid_timestamp(mocker):
+    """
+    Test get_modified_remote_data with invalid timestamp format.
+
+    Given:
+        - Invalid last_update timestamp format
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should log error
+        - Should default to 1 hour ago
+        - Should still return results
+    """
+    from pytmv1 import SaeAlert
+
+    client = Mock()
+    mock_error_logger = mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume
+    def mock_consume(callback, **kwargs):
+        alert = Mock(spec=SaeAlert)
+        alert.id = "WB-ALERT-004"
+        callback(alert)
+
+    client.alert.consume = mock_consume
+
+    args = {
+        "lastUpdate": "invalid-timestamp-format",
+    }
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should log error about invalid format
+    assert mock_error_logger.called
+    error_msg = mock_error_logger.call_args[0][0]
+    assert "Invalid last_update format" in error_msg
+
+    # Should still return results
+    assert len(result.modified_incident_ids) == 1
+
+
+def test_get_modified_remote_data_api_error(mocker):
+    """
+    Test get_modified_remote_data when API throws exception.
+
+    Given:
+        - Vision One API throws exception
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should log error
+        - Should return empty list
+    """
+    client = Mock()
+    mock_error_logger = mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume to raise exception
+    client.alert.consume.side_effect = Exception("API connection error")
+
+    args = {
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should log error
+    assert mock_error_logger.called
+
+    # Should return empty list
+    assert len(result.modified_incident_ids) == 0
+
+
+# ========== Incoming Mirroring Tests (get-remote-data) ==========
+
+
+def test_get_remote_data_no_alert_id(mocker):
+    """
+    Test get_remote_data when no alert ID is provided.
+
+    Given:
+        - Empty or missing alert ID
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return empty response
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    args = {
+        "id": "",
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_remote_data_command(client, args)
+
+    # Should return empty response
+    assert result.mirrored_object == {}
+    assert len(result.entries) == 0
+
+    # Should not call API
+    client.alert.get.assert_not_called()
+
+
+def test_get_remote_data_alert_not_modified(mocker):
+    """
+    Test get_remote_data when alert was not modified since last_update.
+
+    Given:
+        - Alert updated time is before last_update
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return empty response (optimization)
+    """
+    from pytmv1 import GetAlertResp, Result, ResultCode
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() to return alert with old update time
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
+        "id": "WB-ALERT-OLD",
+        "status": "Open",
+        "severity": "medium",
+        "updated_date_time": "2025-01-01T00:00:00Z",  # Before last_update
+    }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    args = {
+        "id": "WB-ALERT-OLD",
+        "lastUpdate": "2025-01-02T00:00:00Z",  # After alert update time
+    }
+
+    result = get_remote_data_command(client, args)
+
+    # Should return empty response (not modified)
+    assert result.mirrored_object == {}
+    assert len(result.entries) == 0
+
+
+def test_get_remote_data_success_closed_alert(mocker):
+    """
+    Test get_remote_data when alert status is closed.
+
+    Given:
+        - Alert with status "Closed" (realistic Vision One data structure)
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return incident data with status 2 (Closed)
+        - Should add close entry
+        - Should preserve impact_scope and indicators fields
+    """
+    from pytmv1 import GetAlertResp, Result, ResultCode
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() to return closed alert with realistic Vision One structure
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
+        "schema_version": "1.12",
+        "id": "WB-ALERT-CLOSED",
+        "status": "Closed",
+        "severity": "high",
+        "investigation_status": "Closed",
+        "investigation_result": "True Positive",
+        "updated_date_time": "2025-01-03T00:00:00Z",
+        "created_date_time": "2025-01-01T00:00:00Z",
+        "model": "Privilege Escalation via UAC Bypass",
+        "score": 64,
+        "workbench_link": "test/...",
+        "impact_scope": {
+            "desktop_count": 1,
+            "server_count": 0,
+            "account_count": 1,
+            "entities": [
+                {
+                    "entity_type": "account",
+                    "entity_value": "domain\\user",
+                    "entity_id": "domain\\user",
+                    "related_entities": ["HOST-GUID"],
+                    "provenance": ["Alert"],
+                },
+                {
+                    "entity_type": "host",
+                    "entity_value": {"guid": "HOST-GUID", "name": "test-host", "ips": ["10.0.0.1"]},
+                    "entity_id": "HOST-GUID",
+                    "related_entities": ["domain\\user"],
+                    "related_indicator_ids": [1, 2],
+                    "provenance": ["Alert"],
+                },
+            ],
+        },
+        "indicators": [
+            {
+                "id": 1,
+                "type": "command_line",
+                "field": "processCmd",
+                "value": "powershell.exe -enc ...",
+                "related_entities": ["HOST-GUID"],
+                "provenance": ["Alert"],
+            },
+            {
+                "id": 2,
+                "type": "registry_key",
+                "field": "objectRegistryKeyHandle",
+                "value": "hkcr\\ms-settings\\shell\\open\\command",
+                "related_entities": ["HOST-GUID"],
+                "provenance": ["Alert"],
+            },
+        ],
+        "matched_rules": [{"id": "rule-id", "name": "UAC Bypass Rule", "matched_filters": []}],
+    }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    args = {
+        "id": "WB-ALERT-CLOSED",
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_remote_data_command(client, args)
+
+    # Should return incident data with closed status
+    assert result.mirrored_object["id"] == "WB-ALERT-CLOSED"
+    assert result.mirrored_object["status"] == "Closed"  # Closed
+
+    # Should have close entry
+    assert len(result.entries) == 1
+    close_entry = result.entries[0]
+    assert close_entry["Type"] == 1  # Note
+
+
+def test_get_remote_data_success_open_alert(mocker):
+    """
+    Test get_remote_data when alert status is open or in progress.
+
+    Given:
+        - Alert with status "In Progress" (realistic Vision One data structure)
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return incident data with status 1 (Active)
+        - Should not add any entries (XSOAR handles status update automatically)
+        - Should preserve impact_scope and indicators fields
+    """
+    from pytmv1 import GetAlertResp, Result, ResultCode
+
+    client = Mock()
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() to return in-progress alert with realistic Vision One structure
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
+        "schema_version": "1.12",
+        "id": "WB-ALERT-ACTIVE",
+        "status": "In Progress",
+        "severity": "medium",
+        "investigation_status": "In Progress",
+        "updated_date_time": "2025-01-03T00:00:00Z",
+        "created_date_time": "2025-01-01T00:00:00Z",
+        "model": "Suspicious Network Activity",
+        "score": 45,
+        "workbench_link": "test/...",
+        "impact_scope": {
+            "desktop_count": 1,
+            "server_count": 0,
+            "account_count": 1,
+            "entities": [
+                {
+                    "entity_type": "host",
+                    "entity_value": {"guid": "HOST-GUID-123", "name": "workstation-01", "ips": ["192.168.1.100"]},
+                    "entity_id": "HOST-GUID-123",
+                    "related_entities": ["user@domain.com"],
+                    "related_indicator_ids": [1],
+                    "provenance": ["Alert"],
+                }
+            ],
+        },
+        "indicators": [
+            {
+                "id": 1,
+                "type": "ip",
+                "field": "dst",
+                "value": "test value",
+                "related_entities": ["HOST-GUID-123"],
+                "provenance": ["Alert"],
+            }
+        ],
+        "matched_rules": [{"id": "rule-id-456", "name": "Outbound Connection to Known Bad IP", "matched_filters": []}],
+    }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.SUCCESS
+    mock_get_result.response = mock_alert_resp
+    mock_get_result.error = None
+
+    client.alert.get.return_value = mock_get_result
+
+    args = {
+        "id": "WB-ALERT-ACTIVE",
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_remote_data_command(client, args)
+
+    # Should return incident data with active status
+    assert result.mirrored_object["id"] == "WB-ALERT-ACTIVE"
+    assert result.mirrored_object["status"] == "In Progress"  # Active
+
+    assert len(result.entries) == 1
+
+
+def test_get_remote_data_alert_not_found(mocker):
+    """
+    Test get_remote_data when alert is not found.
+
+    Given:
+        - Vision One API returns error (alert not found)
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should log error
+        - Should return empty response
+    """
+    from pytmv1 import Result, ResultCode, Error
+
+    client = Mock()
+    mock_error_logger = mocker.patch.object(demisto, "error")
+
+    # Mock alert.get() to return error
+    mock_error = Mock(spec=Error)
+    mock_error.message = "Alert not found"
+
+    mock_get_result = Mock(spec=Result)
+    mock_get_result.result_code = ResultCode.ERROR
+    mock_get_result.response = None
+    mock_get_result.error = mock_error
+
+    client.alert.get.return_value = mock_get_result
+
+    args = {
+        "id": "WB-NONEXISTENT",
+        "lastUpdate": "2025-01-01T00:00:00Z",
+    }
+
+    result = get_remote_data_command(client, args)
+
+    # Should log error
+    assert mock_error_logger.called
+    error_msg = mock_error_logger.call_args[0][0]
+    assert "Error fetching alert" in error_msg
+
+    # Should return empty response
+    assert result.mirrored_object == {}
+    assert len(result.entries) == 0
+
+
+# ========== Mapping Fields Tests ==========
+
+
+def test_get_mapping_fields(mocker):
+    """
+    Test get_mapping_fields returns correct field mappings.
+
+    Given:
+        - No arguments (function takes no parameters)
+    When:
+        - Execute get_mapping_fields command
+    Then:
+        - Should return GetMappingFieldsResponse with SchemeTypeMapping
+        - Should include mirrored Vision One alert fields
+    """
+    mocker.patch.object(demisto, "error")
+
+    # get_mapping_fields() takes no parameters
+    result = get_mapping_fields_command()
+
+    # Should return GetMappingFieldsResponse
+    assert result is not None
+    assert len(result.scheme_types_mappings) > 0
+
+    # Verify incident type name
+    scheme_type = result.scheme_types_mappings[0]
+    assert scheme_type.type_name == "Trend Micro Vision One XDR Incident"
+    fields: dict = scheme_type.fields
+    # Verify mirrored fields are present
+    field_names = [field_key for field_key, _ in fields.items()]
+    assert "status" in field_names
+    assert "severity" in field_names
+    assert "investigation_result" in field_names

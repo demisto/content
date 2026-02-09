@@ -98,3 +98,87 @@ def test_proofpoint_v2(mocker):
         mock_result.call_args[0][0]["Contents"][0]
         == "https://media.mnn.com/assets/images/2016/06/jupiter-nasa.jpg.638x0_q80_crop-smart.jpg"
     )
+
+
+def test_missing_slash_before_query(mocker):
+    """Given
+        - A URL with query parameters but no path (missing / before ?).
+
+    When
+        - The FormatURL.main() function is executed.
+
+    Then
+        - A forward slash should be added after the domain before the query string.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"input": "https://example.com?test=value"},
+    )
+    mock_result = mocker.patch.object(demisto, "results")
+    FormatURL.main()
+    result = mock_result.call_args[0][0]["Contents"][0]
+    assert result == "https://example.com/?test=value", f"Expected 'https://example.com/?test=value', got: {result}"
+
+
+def test_missing_slash_before_fragment(mocker):
+    """Given
+        - A URL with fragment but no path (missing / before #).
+
+    When
+        - The FormatURL.main() function is executed.
+
+    Then
+        - A forward slash should be added after the domain before the fragment.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"input": "https://example.com#section"},
+    )
+    mock_result = mocker.patch.object(demisto, "results")
+    FormatURL.main()
+    result = mock_result.call_args[0][0]["Contents"][0]
+    assert result == "https://example.com/#section", f"Expected 'https://example.com/#section', got: {result}"
+
+
+def test_missing_slash_with_port_and_query(mocker):
+    """Given
+        - A URL with port and query parameters but no path (missing / before ?).
+
+    When
+        - The FormatURL.main() function is executed.
+
+    Then
+        - A forward slash should be added after the port before the query string.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"input": "http://example.com:8080?query=1"},
+    )
+    mock_result = mocker.patch.object(demisto, "results")
+    FormatURL.main()
+    result = mock_result.call_args[0][0]["Contents"][0]
+    assert result == "http://example.com:8080/?query=1", f"Expected 'http://example.com:8080/?query=1', got: {result}"
+
+
+def test_missing_slash_with_port_and_fragment(mocker):
+    """Given
+        - A URL with port and fragment but no path (missing / before #).
+
+    When
+        - The FormatURL.main() function is executed.
+
+    Then
+        - A forward slash should be added after the port before the fragment.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"input": "http://example.com:8080#fragment"},
+    )
+    mock_result = mocker.patch.object(demisto, "results")
+    FormatURL.main()
+    result = mock_result.call_args[0][0]["Contents"][0]
+    assert result == "http://example.com:8080/#fragment", f"Expected 'http://example.com:8080/#fragment', got: {result}"
