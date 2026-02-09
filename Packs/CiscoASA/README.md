@@ -30,7 +30,7 @@ Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex X
 
 ***
 
-## Data Collection
+## Data collection
 
 ### Cisco ASA side
 
