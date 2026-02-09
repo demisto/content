@@ -8585,7 +8585,7 @@ def test_resolve_case_command(requests_mock):
     # Test case 2: Remove user assignment
     args = {"id": "case1", "remove_user_assignment": "true"}
     result = resolve_case_command(args)
-    assert "Assigned To UUID" in result.readable_output
+    assert "Assigned To Uuid" in result.readable_output
     assert "Unassigned" in result.readable_output
     assert requests_mock.last_request.json() == {
         "id": "case1",
