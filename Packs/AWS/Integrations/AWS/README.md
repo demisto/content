@@ -3120,3 +3120,239 @@ Waits until an AMI is in the 'available' state. This command polls the AMI statu
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-volumes-describe
+
+***
+Describes the specified EBS volumes or all of your EBS volumes.
+
+#### Base Command
+
+`aws-ec2-volumes-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| volume_ids | A comma-separated list of volume IDs. | Optional |
+| limit | The maximum number of records to return. The valid range is 5-1000. | Optional |
+| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
+| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
+| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
+| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
+| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
+| AWS.EC2.Volumes.State | string | The volume state. |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
+| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Volumes.VolumeType | string | The volume type. |
+| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
+| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
+| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
+| AWS.EC2.VolumesNextToken | String | Token to use for pagination in subsequent requests. |
+
+### aws-ec2-volume-modify
+
+***
+You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+#### Base Command
+
+`aws-ec2-volume-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| size | Target size in GiB of the volume to be modified. | Optional |
+| volume_type | Target EBS volume type of the volume to be modified. The API does not support modifications for volume type standard. Possible values are: gp2, gp3, io1, io2, sc1, st1. | Optional |
+| iops | Target IOPS rate of the volume to be modified. | Optional |
+| throughput | Target throughput of the volume to be modified, in MiB/s. Valid only for gp3 volumes. | Optional |
+| multi_attach_enabled | Specifies whether to enable Amazon EBS Multi-Attach. Valid only for io1 and io2 volumes. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Modification.ModificationState | string | The current modification state. |
+| AWS.EC2.Volumes.Modification.StatusMessage | string | A status message about the modification progress or failure. |
+| AWS.EC2.Volumes.Size | number | The target size of the volume, in GiB. |
+| AWS.EC2.Volumes.Iops | number | The target IOPS rate of the volume. |
+| AWS.EC2.Volumes.VolumeType | string | The target EBS volume type of the volume. |
+| AWS.EC2.Volumes.Throughput | number | The target throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | The target setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.OriginalSize | number | The original size of the volume, in GiB. |
+| AWS.EC2.Volumes.Modification.OriginalIops | number | The original IOPS rate of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalVolumeType | string | The original EBS volume type of the volume. |
+| AWS.EC2.Volumes.Modification.OriginalThroughput | number | The original throughput of the volume, in MiB/s. |
+| AWS.EC2.Volumes.Modification.OriginalMultiAttachEnabled | boolean | The original setting for Amazon EBS Multi-Attach. |
+| AWS.EC2.Volumes.Modification.Progress | number | The modification progress, from 0 to 100 percent complete. |
+| AWS.EC2.Volumes.Modification.StartTime | date | The modification start time. |
+| AWS.EC2.Volumes.Modification.EndTime | date | The modification completion or failure time. |
+
+### aws-ec2-volume-create
+
+***
+Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+
+#### Base Command
+
+`aws-ec2-volume-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| availability_zone | The Availability Zone in which to create the volume. | Required |
+| encrypted | Specifies whether the volume should be encrypted. Possible values are: true, false. | Optional |
+| iops | The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. | Optional |
+| kms_key_id | The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional |
+| outpost_arn | The Amazon Resource Name (ARN) of the Outpost. | Optional |
+| size | The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size. | Optional |
+| snapshot_id | The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size. | Optional |
+| volume_type | The volume type. Possible values are: standard, io1, io2, gp2, gp3, sc1, st1. | Optional |
+| throughput | The throughput to provision for a volume, with a maximum of 1,000 MiB/s. This parameter is valid only for gp3 volumes. | Optional |
+| multi_attach_enabled | Indicates whether to enable Amazon EBS Multi-Attach. If you enable Multi-Attach, you can attach the volume to up to 16 Nitro-based instances in the same Availability Zone. This parameter is supported with io1 and io2 volumes only. Possible values are: true, false. | Optional |
+| tags | One or more tags. Example key=Name,value=test;key=Owner,value=Bob. | Optional |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.AvailabilityZone | string | The Availability Zone for the volume. |
+| AWS.EC2.Volumes.CreateTime | date | The time stamp when volume creation was initiated. |
+| AWS.EC2.Volumes.Encrypted | boolean | Indicates whether the volume is encrypted. |
+| AWS.EC2.Volumes.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the volume. |
+| AWS.EC2.Volumes.OutpostArn | string | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Volumes.Size | number | The size of the volume, in GiBs. |
+| AWS.EC2.Volumes.SnapshotId | string | The snapshot from which the volume was created, if applicable. |
+| AWS.EC2.Volumes.State | string | The volume state. |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Iops | number | The number of I/O operations per second \(IOPS\). |
+| AWS.EC2.Volumes.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Volumes.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Volumes.VolumeType | string | The volume type. |
+| AWS.EC2.Volumes.FastRestored | boolean | Indicates whether the volume was created using fast snapshot restore. |
+| AWS.EC2.Volumes.MultiAttachEnabled | boolean | Indicates whether Amazon EBS Multi-Attach is enabled. |
+| AWS.EC2.Volumes.Throughput | number | The throughput that the volume supports, in MiB/s. |
+| AWS.EC2.Volumes.SseType | string | Reserved for future use. |
+
+### aws-ec2-volume-attach
+
+***
+Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+
+#### Base Command
+
+`aws-ec2-volume-attach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| device | The device name (for example, /dev/sdh or xvdh). | Required |
+| instance_id | The ID of the instance. | Required |
+| volume_id | The ID of the EBS volume. The volume and instance must be within the same Availability Zone. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
+| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The service principal of Amazon Web Services service that owns the underlying instance to which the volume is attached. |
+
+### aws-ec2-volume-detach
+
+***
+Detaches an EBS volume from an instance.
+
+#### Base Command
+
+`aws-ec2-volume-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+| force | Forces detachment if the previous detachment attempt did not occur cleanly. This option can lead to data loss or a corrupted file system. Use this option only as a last resort to detach a volume from a failed instance. Possible values are: true, false. | Optional |
+| device | The device name (for example, /dev/sdh or xvdh). | Optional |
+| instance_id | The ID of the instance. If you are detaching a Multi-Attach enabled volume, you must specify an instance ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Volumes.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.AttachTime | date | The timestamp when the attachment was initiated. |
+| AWS.EC2.Volumes.Attachments.Device | string | The device name. |
+| AWS.EC2.Volumes.Attachments.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Volumes.Attachments.State | string | The attachment state of the volume. |
+| AWS.EC2.Volumes.Attachments.VolumeId | string | The ID of the volume. |
+| AWS.EC2.Volumes.Attachments.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Volumes.Attachments.AssociatedResource | string | The ARN of the Amazon ECS or Fargate task to which the volume is attached. |
+| AWS.EC2.Volumes.Attachments.InstanceOwningService | string | The AWS service principal that owns the instance to which the volume is attached. |
+
+### aws-ec2-volume-delete
+
+***
+Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+
+#### Base Command
+
+`aws-ec2-volume-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. This is used when running commands across multiple accounts. | Required |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| volume_id | The ID of the volume. | Required |
+
+#### Context Output
+
+There is no context output for this command.
