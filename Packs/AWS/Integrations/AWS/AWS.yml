@@ -6047,7 +6047,7 @@ script:
     - name: filters
       description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
     - name: limit
-      description: The maximum number of snapshots to return for this request. This value can be between 5 and 1,000.
+      description: The maximum number of snapshots to return for this request. This value can be between 5 and 1000.
     - name: next_token
       description: The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended.
     - name: owner_ids
