@@ -645,6 +645,7 @@ class Client(CoreClient):
             method="POST",
             url_suffix=f"/issue/{issue_id}",
             json_data=request_data,
+            resp_type="response"
         )
 
 
@@ -1992,7 +1993,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
         # Optional
         "asset_id": argToList(args.get("asset_id")),
         "mitre_tactic": argToList(args.get("mitre_tactic")),
-        "mitre_technique": argToList(args.get("mitre_technique")),  # Spelling fixed
+        "mitre_technique": argToList(args.get("mitre_technique")),
         "type_": args.get("type"),
         "extended_description": args.get("extended_description"),
         "impact": args.get("impact"),
@@ -2039,22 +2040,22 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
+    statuses_map = {
+        "new": "New",
+        "in_progress": "In Progress",
+        "resolved": "Resolved"
+    }
+
+    update_data = assign_params(
+        severity=args.get("severity").upper() if args.get("severity") else None,
+        status=statuses_map.get(args.get("status", "")),
+        status_resolution_reason=args.get("resolve_reason").upper() if args.get("resolve_reason") else None,
+        status_resolution_comment=args.get("resolve_comment")
+    )
+
     issue_id = args.get("issue_id")
-    update_data = {}
-
-    if severity := args.get("severity"):
-        update_data["severity"] = severity
-    if status := args.get("status"):
-        update_data["status"] = status
-    if resolve_reason := args.get("resolve_reason"):
-        update_data["resolve_reason"] = resolve_reason
-    if resolve_comment := args.get("resolve_comment"):
-        update_data["resolve_comment"] = resolve_comment
-
-    request_data = {"request_data": update_data}
-
+    request_data = {"request_data": {"update_data": update_data}}
     client.update_issue(issue_id, request_data)
-
     return CommandResults(readable_output="Issue updated successfully")
 
 

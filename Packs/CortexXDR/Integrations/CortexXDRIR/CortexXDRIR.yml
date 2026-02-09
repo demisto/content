@@ -4164,7 +4164,7 @@ script:
     - name: insert_time
       description: Filter by issues inserted after this time.
     - name: status
-      description: A comma-separated list of statuses.
+      description: "A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'."
       isArray: true
     - name: sort_field
       description: The field to sort by.
@@ -4335,6 +4335,7 @@ script:
       description: The severity.
       auto: PREDEFINED
       predefined:
+      - critical
       - info
       - low
       - medium
@@ -4344,7 +4345,7 @@ script:
       auto: PREDEFINED
       predefined:
       - new
-      - under_investigation
+      - in_progress
       - resolved
     - name: resolve_reason
       description: The resolve reason.
