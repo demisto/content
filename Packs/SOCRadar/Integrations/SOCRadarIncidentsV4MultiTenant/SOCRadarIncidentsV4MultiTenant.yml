@@ -164,7 +164,7 @@ script:
     - name: comments
       description: Optional comments explaining why this is a false positive.
       required: false
-      defaultValue: False positive
+      defaultValue: "False positive"
     - name: company_id
       description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
@@ -185,7 +185,7 @@ script:
     - name: comments
       description: Optional comments explaining the resolution.
       required: false
-      defaultValue: Resolved
+      defaultValue: "Resolved"
     - name: company_id
       description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
       required: false
@@ -218,7 +218,7 @@ script:
       type: String
 
   - name: socradar-add-assignee
-    description: add the assignee(s) of an alarm.
+    description: Add the assignee(s) of an alarm.
     arguments:
     - name: alarm_id
       description: Alarm ID to add assignee for.
@@ -278,6 +278,12 @@ script:
     - contextPath: SOCRadar.TestFetch.StartDate
       description: Parsed start date used for the test.
       type: String
+    - contextPath: SOCRadar.TestFetch.TotalRecords
+      description: Total number of incidents from service.
+      type: Number
+    - contextPath: SOCRadar.TestFetch.TotalPages
+      description: Total number of pages of incidents from service.
+      type: Number
 
   dockerimage: demisto/python3:3.12.12.6796194
   isfetch: true
