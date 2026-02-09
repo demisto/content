@@ -122,6 +122,20 @@ alter
 
     xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
     xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
+    xdm.target.identity.username = coalesce(
+        json_extract_scalar(entity, "$['app']['name']"),
+        json_extract_scalar(entity, "$['enterprise']['name']"),
+        json_extract_scalar(entity, "$['role']['name']"),
+        json_extract_scalar(entity, "$['workflow']['name']"),
+        json_extract_scalar(entity, "$['channel']['name']"),
+        json_extract_scalar(entity, "$['file']['name']"),
+        json_extract_scalar(entity, "$['workspace']['name']"),
+        json_extract_scalar(entity, "$['user']['name']"),
+        json_extract_scalar(entity, "$['account_type_role']['name']"),
+        json_extract_scalar(entity, "$['message']['name']"),
+        json_extract_scalar(entity, "$['usergroups']['name']"),
+        json_extract_scalar(entity, "$['huddles']['name']")
+    ),
     xdm.target.identity.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.target.identity.roles = get_entity_app_scopes,
     xdm.target.identity.identity_type = if(
