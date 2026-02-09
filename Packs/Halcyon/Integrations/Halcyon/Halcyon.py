@@ -2566,6 +2566,33 @@ def enrich_events(events: list[dict], log_type: LogType) -> list[dict]:
     return events
 
 
+def get_event_id(event: dict, log_type: LogType) -> str | None:
+    """Extract the event ID from an event dictionary.
+
+    The Halcyon API may return different ID field names depending on the endpoint.
+    This function tries multiple possible field names to find the ID.
+
+    Args:
+        event: The event dictionary.
+        log_type: The LogType Enum member for the logs being processed.
+
+    Returns:
+        The event ID string, or None if not found.
+    """
+    # Primary ID fields based on log type
+    if log_type == LogType.ALERTS:
+        primary_fields = ["alertId", "id", "alert_id", "AlertId", "ID"]
+    else:
+        primary_fields = ["eventId", "id", "event_id", "EventId", "ID"]
+
+    for id_field_name in primary_fields:
+        event_id = event.get(id_field_name)
+        if event_id:
+            return str(event_id)
+
+    return None
+
+
 def deduplicate_events(
     events: list[dict],
     previous_run_ids: set[str],
@@ -2595,13 +2622,22 @@ def deduplicate_events(
     unique_events = []
     last_timestamp: str | None = None
     last_timestamp_ids: set[str] = set()
-    id_field = "alertId" if log_type == LogType.ALERTS else "eventId"
+    events_without_id = 0
+
+    # Log the first event's keys to help debug ID field issues
+    if events:
+        first_event_keys = list(events[0].keys())
+        demisto.debug(f"First {log_type.type_string} event keys: {first_event_keys}")
 
     for event in events:
-        event_id = event.get(id_field)
+        event_id = get_event_id(event, log_type)
         time_value = event.get(log_type.time_field)
 
         if not event_id:
+            events_without_id += 1
+            # Still track the timestamp even for events without ID
+            if time_value and (not last_timestamp or time_value > last_timestamp):
+                last_timestamp = time_value
             continue
 
         # If this event has the same timestamp as the previous run's last timestamp,
@@ -2624,12 +2660,41 @@ def deduplicate_events(
                 # Same timestamp, add to the set
                 last_timestamp_ids.add(event_id)
 
+    if events_without_id > 0:
+        demisto.debug(
+            f"Warning: {events_without_id} {log_type.type_string} events had no recognizable ID field. "
+            f"First event keys were: {first_event_keys if events else 'N/A'}"
+        )
+
     demisto.debug(
         f"Deduplicated {log_type.type_string}: {len(events)} -> {len(unique_events)} events. "
-        f"Previous IDs: {len(previous_run_ids)}, Last timestamp IDs: {len(last_timestamp_ids)}"
+        f"Previous IDs: {len(previous_run_ids)}, Last timestamp IDs: {len(last_timestamp_ids)}, "
+        f"Last timestamp: {last_timestamp}"
     )
 
     return unique_events, last_timestamp_ids, last_timestamp
+
+
+def get_max_timestamp_from_events(events: list[dict], log_type: LogType) -> str | None:
+    """Get the maximum timestamp from a list of events.
+
+    This is used to ensure the fetch timestamp advances even when all events
+    are deduplicated (e.g., when events don't have recognizable ID fields).
+
+    Args:
+        events: List of event dictionaries.
+        log_type: The LogType Enum member for the logs being processed.
+
+    Returns:
+        The maximum timestamp string, or None if no timestamps found.
+    """
+    max_timestamp: str | None = None
+    for event in events:
+        time_value = event.get(log_type.time_field)
+        if time_value:
+            if max_timestamp is None or time_value > max_timestamp:
+                max_timestamp = time_value
+    return max_timestamp
 
 
 def fetch_events_for_log_type(
@@ -2705,6 +2770,10 @@ def fetch_events_for_log_type(
     # Limit to max_fetch
     all_events = all_events[:max_fetch]
 
+    # Get the max timestamp from raw events BEFORE deduplication
+    # This ensures we advance even if all events are deduplicated
+    raw_max_timestamp = get_max_timestamp_from_events(all_events, log_type)
+
     # Deduplicate events
     unique_events, new_ids, last_timestamp = deduplicate_events(
         events=all_events,
@@ -2716,10 +2785,21 @@ def fetch_events_for_log_type(
     # Enrich events
     enriched_events = enrich_events(unique_events, log_type)
 
-    # Update last run
+    # Update last run - use the deduplication timestamp if available,
+    # otherwise fall back to the raw max timestamp to ensure progress
     if last_timestamp:
         last_run[last_fetch_key] = last_timestamp
         last_run[previous_ids_key] = list(new_ids)
+    elif raw_max_timestamp:
+        # All events were deduplicated but we still need to advance the timestamp
+        # to prevent fetching the same events again
+        demisto.debug(
+            f"All {len(all_events)} {log_type.type_string} events were deduplicated. "
+            f"Advancing timestamp from {last_fetch_time} to {raw_max_timestamp}"
+        )
+        last_run[last_fetch_key] = raw_max_timestamp
+        # Clear previous IDs since we're moving to a new timestamp
+        last_run[previous_ids_key] = []
     elif not last_run.get(last_fetch_key):
         # If no events and no previous fetch time, set current time
         last_run[last_fetch_key] = datetime.now(timezone.utc).strftime(API_DATE_FORMAT)
