@@ -37,7 +37,6 @@ Rules that parse and model Cisco ASA logs ingested via the Broker VM in Cortex X
 1. Enter the following command to enable transmitting syslog messages to all output locations.  
    `logging enable`
 
-    `logging enable` - Enables the transmission of syslog messages to all output locations.
 
 2. To configure Cisco ASA to send logging information to a Syslog Server, enter the below command:
 
