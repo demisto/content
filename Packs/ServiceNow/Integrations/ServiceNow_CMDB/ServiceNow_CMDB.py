@@ -563,7 +563,6 @@ def main() -> None:
     oauth_creds = params.get("oath_credentials", {})
 
     try:
-
         # use jwt only with OAuth
         if use_jwt and use_oauth:
             raise ValueError("Please choose only one authentication method (OAuth or JWT).")
@@ -614,8 +613,6 @@ def main() -> None:
             "servicenow-cmdb-record-add-relations": add_relation_command,
             "servicenow-cmdb-record-delete-relations": delete_relation_command,
         }
-
-
 
     except Exception as e:
         return_error(f"Error:\n{e!s}")
