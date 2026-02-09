@@ -10,6 +10,7 @@ from BeyondTrustPrivilegeManagementCloud import (
     fetch_pm_events,
     fetch_activity_audits,
     get_dedup_key,
+    main,
 )
 import BeyondTrustPrivilegeManagementCloud
 
@@ -317,31 +318,32 @@ def test_fetch_events_pagination(client, mocker):
 def test_get_dedup_key():
     """
     Given:
-        - An event dictionary
+        - An event dictionary with source_log_type and id
     When:
         - get_dedup_key is called
     Then:
-        - The function should return the correct deduplication key
+        - The function should return a key prefixed with the event type
     """
-    event_with_id = {"id": "123", "data": "test"}
-    assert get_dedup_key(event_with_id) == "123"
+    event_with_id = {"id": "123", "data": "test", "source_log_type": "events"}
+    assert get_dedup_key(event_with_id) == "events_123"
 
-    event_without_id = {"data": "test"}
-    # The hash will vary, but it should be a string
-    assert isinstance(get_dedup_key(event_without_id), str)
+    event_without_id = {"data": "test", "source_log_type": "events"}
+    key = get_dedup_key(event_without_id)
+    assert isinstance(key, str)
+    assert key.startswith("events_")
 
 
 def test_get_dedup_key_numeric_id():
     """
     Given:
-        - An event with numeric ID
+        - An event with numeric ID and source_log_type
     When:
         - get_dedup_key is called
     Then:
-        - The function should convert ID to string
+        - The function should convert ID to string and prefix with event type
     """
-    event_with_numeric_id = {"id": 456, "data": "test"}
-    assert get_dedup_key(event_with_numeric_id) == "456"
+    event_with_numeric_id = {"id": 456, "data": "test", "source_log_type": "activity_audits"}
+    assert get_dedup_key(event_with_numeric_id) == "activity_audits_456"
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -649,3 +651,396 @@ def test_fetch_events_max_fetch_per_type(client, mocker):
     audit_count = sum(1 for e in events if e.get("source_log_type") == "activity_audits")
     assert event_count == 5
     assert audit_count == 5
+
+
+def test_get_dedup_key_cross_event_type_collision():
+    """
+    Given:
+        - An event and an audit with the same numeric ID but different source_log_type
+    When:
+        - get_dedup_key is called for both
+    Then:
+        - The dedup keys should be different, preventing cross-type collisions
+    """
+    event = {"id": 1, "source_log_type": "events", "created": "2024-01-01T10:00:00.000Z"}
+    audit = {"id": 1, "source_log_type": "activity_audits", "created": "2024-01-01T10:00:00.000Z"}
+
+    event_key = get_dedup_key(event)
+    audit_key = get_dedup_key(audit)
+
+    assert event_key != audit_key
+    assert event_key == "events_1"
+    assert audit_key == "activity_audits_1"
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_pm_events_at_api_limit(client, mocker):
+    """
+    Given:
+        - A client object
+        - API returns exactly DEFAULT_LIMIT (1000) events in first batch
+        - Second batch returns fewer events (pagination stops)
+    When:
+        - fetch_pm_events is called with max_fetch > 1000
+    Then:
+        - Should make multiple API calls to paginate
+        - Should stop when fewer events than batch_size are returned
+    """
+    batch_1 = [{"id": str(i), "created": f"2024-01-01T10:{i % 60:02d}:00.000Z"} for i in range(1000)]
+    batch_2 = [{"id": str(i), "created": f"2024-01-01T11:{i % 60:02d}:00.000Z"} for i in range(1000, 1050)]
+
+    mocker.patch.object(
+        client,
+        "get_events",
+        side_effect=[{"events": batch_1}, {"events": batch_2}],
+    )
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 2000
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, events = fetch_pm_events(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(events) == 1050
+    assert client.get_events.call_count == 2
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_activity_audits_exceeds_max_fetch(client, mocker):
+    """
+    Given:
+        - A client object
+        - max_fetch is 3
+        - API returns pages with 2 audits each
+    When:
+        - fetch_activity_audits is called
+    Then:
+        - Should stop fetching when max_fetch is reached
+        - Should only request remaining_limit as page_size on second page
+    """
+    page1 = {
+        "data": [
+            {"id": 1, "created": "2024-01-01T10:00:00.000Z"},
+            {"id": 2, "created": "2024-01-01T10:01:00.000Z"},
+        ],
+        "pageCount": 2,
+    }
+    page2 = {
+        "data": [{"id": 3, "created": "2024-01-01T10:02:00.000Z"}],
+        "pageCount": 2,
+    }
+
+    mocker.patch.object(client, "get_audit_activity", side_effect=[page1, page2])
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 3
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, audits = fetch_activity_audits(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(audits) == 3
+    # Second call should request page_size=1 (remaining_limit)
+    second_call = client.get_audit_activity.call_args_list[1]
+    assert second_call[1]["page_size"] == 1
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_events_dedup_across_types(client, mocker):
+    """
+    Given:
+        - Events and audits with the same ID (e.g., id=1)
+    When:
+        - fetch_events is called and deduplication is applied
+    Then:
+        - Both events should be kept because they have different source_log_type prefixes
+    """
+    mock_events_response = {"events": [{"id": 1, "created": "2024-01-01T10:00:00.000Z"}]}
+    mock_audit_response = {"data": [{"id": 1, "created": "2024-01-01T10:00:00.000Z"}], "pageCount": 1}
+
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    mocker.patch.object(client, "get_audit_activity", return_value=mock_audit_response)
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    events_types_to_fetch = ["Events", "Activity Audits"]
+
+    next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+
+    # Deduplicate using get_dedup_key (same logic as main())
+    deduped = {get_dedup_key(e): e for e in events}
+    final_events = list(deduped.values())
+
+    # Both should be kept because source_log_type differs
+    assert len(final_events) == 2
+
+
+def test_client_token_refresh_on_401(client, mocker):
+    """
+    Given:
+        - A client with an expired/invalid token
+    When:
+        - An API call is made
+    Then:
+        - The client should attempt to get a new token
+    """
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+
+    mock_token_response = {"access_token": "refreshed_token"}
+    mock_api_response = {"data": "test"}
+
+    mock_http = mocker.patch.object(BaseClient, "_http_request")
+    mock_http.side_effect = [mock_token_response, mock_api_response]
+
+    # Ensure token is None so it triggers get_token
+    client.token = None
+    client._http_request(method="GET", url_suffix="/management-api/v3/test")
+
+    assert client.token == "refreshed_token"
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_pm_events_exceeds_max_fetch(client, mocker):
+    """
+    Given:
+        - A client object
+        - max_fetch is 500
+        - API returns 500 events in first batch (batch_size=500 < DEFAULT_LIMIT)
+    When:
+        - fetch_pm_events is called
+    Then:
+        - Should stop after first batch since len(fetched) < batch_size won't trigger
+          but total_fetched == max_fetch will stop the loop
+    """
+    events_batch = [{"id": str(i), "created": f"2024-01-01T10:{i % 60:02d}:00.000Z"} for i in range(500)]
+    mocker.patch.object(client, "get_events", return_value={"events": events_batch})
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 500
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, events = fetch_pm_events(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(events) == 500
+    # Only one API call since batch_size (500) == max_fetch and len(fetched) == batch_size
+    # but total_fetched == max_fetch stops the while loop
+    assert client.get_events.call_count == 1
+
+
+def test_get_events_api_error_handling(client, mocker):
+    """
+    Given:
+        - A client object
+        - API raises an exception
+    When:
+        - get_events is called
+    Then:
+        - The exception should propagate
+    """
+    mocker.patch.object(client, "_http_request", side_effect=Exception("API Error: 500 Internal Server Error"))
+
+    with pytest.raises(Exception, match="API Error: 500 Internal Server Error"):
+        client.get_events("2024-01-01T00:00:00.000Z", 100)
+
+
+def test_get_audit_activity_api_error_handling(client, mocker):
+    """
+    Given:
+        - A client object
+        - API raises an exception
+    When:
+        - get_audit_activity is called
+    Then:
+        - The exception should propagate
+    """
+    mocker.patch.object(client, "_http_request", side_effect=Exception("API Error: 403 Forbidden"))
+
+    with pytest.raises(Exception, match="API Error: 403 Forbidden"):
+        client.get_audit_activity(page_size=10, page_number=1)
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_events_mixed_success_failure(client, mocker):
+    """
+    Given:
+        - Events API succeeds but Audit API fails
+    When:
+        - fetch_events is called for both types
+    Then:
+        - The exception from the audit API should propagate
+    """
+    mock_events_response = {"events": [{"id": "1", "created": "2024-01-01T10:00:00.000Z"}]}
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+    mocker.patch.object(client, "get_audit_activity", side_effect=Exception("Audit API Error"))
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    events_types_to_fetch = ["Events", "Activity Audits"]
+
+    with pytest.raises(Exception, match="Audit API Error"):
+        fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_get_events_command_with_push_events(client, mocker):
+    """
+    Given:
+        - A client object
+        - should_push_events is True
+    When:
+        - get_events_command is called
+    Then:
+        - Events should have XSIAM fields added
+        - send_events_to_xsiam should be called
+    """
+    mock_response = {
+        "events": [
+            {"id": "1", "created": "2024-01-01T10:00:00.000Z"},
+            {"id": "2", "created": "2024-01-01T11:00:00.000Z"},
+        ]
+    }
+    mocker.patch.object(client, "get_events", return_value=mock_response)
+    mock_send = mocker.patch("BeyondTrustPrivilegeManagementCloud.send_events_to_xsiam")
+
+    args = {"start_date": "2024-01-01T00:00:00.000Z", "limit": "10", "should_push_events": "true"}
+    result = get_events_command(client, args)
+
+    # Verify XSIAM fields were added
+    for event in result.outputs:
+        assert event["source_log_type"] == "events"
+        assert event["vendor"] == "beyondtrust"
+        assert event["product"] == "pm_cloud"
+        assert "_time" in event
+
+    # Verify send_events_to_xsiam was called
+    mock_send.assert_called_once()
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_activity_audits_empty_middle_page(client, mocker):
+    """
+    Given:
+        - A client object
+        - First page has data, second page is empty
+    When:
+        - fetch_activity_audits is called
+    Then:
+        - Should stop fetching when an empty page is encountered
+    """
+    page1 = {
+        "data": [{"id": 1, "created": "2024-01-01T10:00:00.000Z"}],
+        "pageCount": 3,
+    }
+    page2 = {"data": [], "pageCount": 3}
+
+    mocker.patch.object(client, "get_audit_activity", side_effect=[page1, page2])
+
+    last_run: dict = {}
+    first_fetch = "1 hour"
+    max_fetch = 100
+    fetch_end_time = datetime.now(UTC)
+
+    next_run, audits = fetch_activity_audits(client, last_run, first_fetch, max_fetch, fetch_end_time)
+
+    assert len(audits) == 1
+    assert client.get_audit_activity.call_count == 2
+
+
+def test_get_dedup_key_missing_id_and_source_log_type():
+    """
+    Given:
+        - An event without id and without source_log_type
+    When:
+        - get_dedup_key is called
+    Then:
+        - Should use 'N/A' as the event type prefix and hash the content
+    """
+    event = {"data": "some_data", "timestamp": "2024-01-01T10:00:00.000Z"}
+    key = get_dedup_key(event)
+
+    assert key.startswith("N/A_")
+    assert isinstance(key, str)
+
+
+@freeze_time("2024-01-01 12:00:00")
+def test_fetch_events_boundary_timestamp(client, mocker):
+    """
+    Given:
+        - Events with timestamps exactly at the boundary of the fetch window
+    When:
+        - fetch_events is called
+    Then:
+        - Boundary events should be included
+        - next_run should use fetch_end_time
+    """
+    mock_events_response = {
+        "events": [
+            {"id": "1", "created": "2024-01-01T12:00:00.000000Z"},  # Exactly at fetch_end_time
+        ]
+    }
+    mocker.patch.object(client, "get_events", return_value=mock_events_response)
+
+    last_run = {"last_event_time": "2024-01-01T11:59:59.000000Z"}
+    first_fetch = "1 hour"
+    max_fetch = 10
+    events_types_to_fetch = ["Events"]
+
+    next_run, events = fetch_events(client, last_run, first_fetch, max_fetch, events_types_to_fetch)
+
+    assert len(events) == 1
+    assert next_run["last_event_time"] == "2024-01-01T12:00:00.000000Z"
+
+
+def test_client_network_timeout(client, mocker):
+    """
+    Given:
+        - A client object
+        - Network request times out
+    When:
+        - An API call is made
+    Then:
+        - A timeout exception should propagate
+    """
+    from BeyondTrustPrivilegeManagementCloud import BaseClient
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=Exception("Connection timed out"))
+
+    # Token is None, so get_token will be called first and fail
+    client.token = None
+    with pytest.raises(Exception, match="Connection timed out"):
+        client._http_request(method="GET", url_suffix="/management-api/v3/test")
+
+
+def test_main_command_routing(mocker):
+    """
+    Given:
+        - Various command names
+    When:
+        - main() is called
+    Then:
+        - The correct command handler should be invoked
+    """
+    mocker.patch.object(
+        BeyondTrustPrivilegeManagementCloud.demisto,
+        "params",
+        return_value={
+            "url": "https://example.com",
+            "credentials": {"identifier": "test_id", "password": "test_secret"},
+            "insecure": False,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(BeyondTrustPrivilegeManagementCloud.demisto, "args", return_value={})
+    mocker.patch.object(BeyondTrustPrivilegeManagementCloud.demisto, "command", return_value="test-module")
+
+    mock_test_module = mocker.patch("BeyondTrustPrivilegeManagementCloud.test_module", return_value="ok")
+    mock_return_results = mocker.patch("BeyondTrustPrivilegeManagementCloud.return_results")
+
+    main()
+
+    mock_test_module.assert_called_once()
+    mock_return_results.assert_called_once_with("ok")

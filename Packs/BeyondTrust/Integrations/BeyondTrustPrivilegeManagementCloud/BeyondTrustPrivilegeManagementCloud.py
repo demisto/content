@@ -1,3 +1,5 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Any
@@ -9,7 +11,7 @@ VENDOR = "beyondtrust"
 PRODUCT = "pm_cloud"
 DEFAULT_LIMIT = 1000
 DEFAULT_PAGE_SIZE = 200
-INTEGRATION_NAME = "BeyondTrust PM Cloud DEBUGGING"
+INTEGRATION_NAME = "BeyondTrust PM Cloud"
 
 """ CLIENT CLASS """
 
@@ -137,18 +139,20 @@ class Client(BaseClient):
 def get_dedup_key(event: dict) -> str:
     """Generates a deduplication key for an event.
 
+    Events and Activity Audits may have overlapping IDs, so the event type
+    (source_log_type) is included in the key to prevent cross-type collisions.
+
     Args:
         event (dict): The event to generate the key for.
 
     Returns:
         str: The deduplication key.
     """
-    # For Events, we can use the 'id' field if available, or a combination of fields.
-    # Based on documentation, 'id' seems available in both event types.
+    event_type = event.get("source_log_type", "N/A")
     if "id" in event:
-        return str(event["id"])
+        return f"{event_type}_{event['id']}"
     # Fallback to hashing the event content if no ID is present (unlikely based on docs but good practice)
-    return str(hash(json.dumps(event, sort_keys=True)))
+    return f"{event_type}_{hash(json.dumps(event, sort_keys=True))}"
 
 
 """ COMMAND FUNCTIONS """
@@ -495,8 +499,10 @@ def main():
             demisto.debug(f"{INTEGRATION_NAME}: Successfully sent {len(final_events)} events to XSIAM.")
             demisto.setLastRun(next_run)
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError: {str(e)}")
+    except Exception as error:
+        error_msg = f"Failed to execute {command}. Error: {str(error)}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
