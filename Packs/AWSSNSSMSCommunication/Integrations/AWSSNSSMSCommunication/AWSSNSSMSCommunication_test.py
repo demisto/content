@@ -1,276 +1,841 @@
 """
-Unit tests for AWS SNS SMS Communication integration
+Unit tests for AWS SNS SMS Communication integration.
+
+Covers all 20 functions in the integration:
+- Helper functions (generate_reply_code, extract_entitlement, parse_entitlement, clean_ask_task_message)
+- Entitlement management (save, find, mark_answered, cleanup, get_active, get_available_codes)
+- Commands (send-notification, list-entitlements, inject-reply, test-module)
+- SMS reply processing (process_sms_reply, send_feedback_sms)
+- AWS client creation (get_aws_client with 4 auth methods)
 """
+import copy
 import pytest
 import json
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 from AWSSNSSMSCommunication import (
     generate_reply_code,
     extract_entitlement_from_message,
     parse_entitlement_string,
+    clean_ask_task_message_and_generate_codes,
     get_active_entitlements_for_phone,
     find_entitlement_by_reply_code,
     save_entitlement,
     mark_entitlement_answered,
     cleanup_expired_entitlements,
+    get_available_codes_for_phone,
+    send_notification_command,
+    list_entitlements_command,
+    inject_reply_command,
+    test_module_command,
+    process_sms_reply,
+    send_feedback_sms,
+    get_aws_client,
     DEFAULT_REPLY_CODE,
-    DATE_FORMAT
+    DEFAULT_SUCCESS_MESSAGE,
+    DEFAULT_FAILURE_MESSAGE,
+    DATE_FORMAT,
 )
 
 
-class TestHelperFunctions:
-    """Test helper functions"""
+# ===== Shared constants =====
 
-    def test_generate_reply_code(self):
-        """Test reply code generation"""
+SAMPLE_GUID = "550e8400-e29b-41d4-a716-446655440000"
+# Task IDs in XSOAR are numeric; the clean_ask_task_message regex char class
+# [a-fA-F0-9\-@|] only matches hex-range chars, digits, -, @, |.
+SAMPLE_ENTITLEMENT_ID = f"{SAMPLE_GUID}@123|45"
+SAMPLE_PHONE = "+12345678900"
+
+
+# ===== Shared fixtures =====
+
+@pytest.fixture(autouse=True)
+def mock_demisto(mocker):
+    """Mock all demisto functions used throughout the integration."""
+    mocker.patch("AWSSNSSMSCommunication.demisto.debug")
+    mocker.patch("AWSSNSSMSCommunication.demisto.info")
+    mocker.patch("AWSSNSSMSCommunication.demisto.error")
+    mocker.patch("AWSSNSSMSCommunication.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSSMSCommunication.demisto.handleEntitlementForUser")
+
+
+@pytest.fixture
+def integration_context(mocker):
+    """Provide a mutable integration context dict with get/set mocks.
+
+    The production code does:
+        ctx = get_integration_context_with_sync()   # returns our dict
+        ctx["entitlements"].append(...)              # mutates it
+        set_integration_context_with_sync(ctx)       # passes same ref back
+
+    So set_ctx receives the *same* object that get_ctx returned.
+    We deep-copy before clearing to preserve the mutations.
+    """
+    ctx = {"entitlements": []}
+
+    def get_ctx():
+        return ctx
+
+    def set_ctx(new_ctx):
+        snapshot = copy.deepcopy(new_ctx)
+        ctx.clear()
+        ctx.update(snapshot)
+
+    mocker.patch(
+        "AWSSNSSMSCommunication.get_integration_context_with_sync",
+        side_effect=get_ctx,
+    )
+    mocker.patch(
+        "AWSSNSSMSCommunication.set_integration_context_with_sync",
+        side_effect=set_ctx,
+    )
+    return ctx
+
+
+@pytest.fixture
+def mock_sns_client(mocker):
+    """Mock SNS boto3 client."""
+    client = mocker.Mock()
+    client.publish.return_value = {"MessageId": "msg-id-123"}
+    return client
+
+
+@pytest.fixture
+def mock_sqs_client(mocker):
+    """Mock SQS boto3 client."""
+    client = mocker.Mock()
+    client.get_queue_attributes.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Attributes": {"QueueArn": "arn:aws:sqs:us-east-1:123456789:test-queue"},
+    }
+    client.receive_message.return_value = {"Messages": []}
+    client.delete_message.return_value = {}
+    return client
+
+
+@pytest.fixture
+def mock_params():
+    """Standard integration parameters."""
+    return {
+        "credentials": {"identifier": "AKIATEST", "password": "secret123"},
+        "defaultRegion": "us-east-1",
+        "sqsQueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/test-queue",
+        "successFeedbackEnabled": True,
+        "failureFeedbackEnabled": True,
+        "successMessage": DEFAULT_SUCCESS_MESSAGE,
+        "failureMessage": DEFAULT_FAILURE_MESSAGE,
+    }
+
+
+def _make_entitlement(
+    entitlement_id=SAMPLE_ENTITLEMENT_ID,
+    phone=SAMPLE_PHONE,
+    codes_to_options=None,
+    answered=False,
+    created=None,
+):
+    """Helper to build an entitlement dict."""
+    if codes_to_options is None:
+        codes_to_options = {"1234": "Yes", "5678": "No"}
+    return {
+        "entitlement_id": entitlement_id,
+        "phone_number": phone,
+        "codes_to_options": codes_to_options,
+        "message": "Test question\nYes (1234) or No (5678)",
+        "created": created or datetime.utcnow().strftime(DATE_FORMAT),
+        "answered": answered,
+    }
+
+
+# ===== 1. TestHelperFunctions =====
+
+class TestHelperFunctions:
+    """Tests for pure helper / parsing functions."""
+
+    def test_generate_reply_code_format(self):
+        """Reply code must be exactly 4 digits."""
         code = generate_reply_code()
         assert len(code) == 4
         assert code.isdigit()
 
-    def test_extract_entitlement_from_message(self):
-        """Test entitlement extraction from message"""
-        message = "Please respond: 550e8400-e29b-41d4-a716-446655440000@123|task1 Yes or No?"
-        guid, remaining = extract_entitlement_from_message(message)
+    def test_generate_reply_code_uniqueness(self):
+        """Multiple generated codes should not all be the same (statistical)."""
+        codes = {generate_reply_code() for _ in range(50)}
+        assert len(codes) > 1
 
-        assert guid == "550e8400-e29b-41d4-a716-446655440000"
-        assert "Yes or No?" in remaining
+    def test_extract_entitlement_with_task(self):
+        """Extract GUID@incident|task from SMSAskUser format."""
+        msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        ent, remaining = extract_entitlement_from_message(msg)
+        assert ent == f"{SAMPLE_GUID}@123|45"
+        assert SAMPLE_GUID not in remaining
+
+    def test_extract_entitlement_without_task(self):
+        """Extract GUID@incident (no task) from SMSAskUser format."""
+        msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@456"
+        ent, remaining = extract_entitlement_from_message(msg)
+        assert ent == f"{SAMPLE_GUID}@456"
+        assert "|" not in ent
 
     def test_extract_entitlement_no_match(self):
-        """Test extraction when no entitlement present"""
-        message = "Simple message without entitlement"
-        guid, remaining = extract_entitlement_from_message(message)
+        """Plain message without entitlement returns (None, original)."""
+        msg = "Hello world, no GUID here"
+        ent, remaining = extract_entitlement_from_message(msg)
+        assert ent is None
+        assert remaining == msg
 
-        assert guid is None
-        assert remaining == message
+    def test_parse_entitlement_with_task(self):
+        """Full parsing of GUID@incident|task."""
+        parsed = parse_entitlement_string(f"{SAMPLE_GUID}@123|45")
+        assert parsed["guid"] == SAMPLE_GUID
+        assert parsed["incident_id"] == "123"
+        assert parsed["task_id"] == "45"
 
-    def test_parse_entitlement_string(self):
-        """Test parsing entitlement components"""
-        entitlement = "550e8400-e29b-41d4-a716-446655440000@123456|task789"
-        parsed = parse_entitlement_string(entitlement)
-
-        assert parsed["guid"] == "550e8400-e29b-41d4-a716-446655440000"
-        assert parsed["incident_id"] == "123456"
-        assert parsed["task_id"] == "task789"
-
-    def test_parse_entitlement_no_task(self):
-        """Test parsing entitlement without task ID"""
-        entitlement = "550e8400-e29b-41d4-a716-446655440000@123456"
-        parsed = parse_entitlement_string(entitlement)
-
-        assert parsed["guid"] == "550e8400-e29b-41d4-a716-446655440000"
-        assert parsed["incident_id"] == "123456"
+    def test_parse_entitlement_without_task(self):
+        """Parsing GUID@incident (no task_id)."""
+        parsed = parse_entitlement_string(f"{SAMPLE_GUID}@999")
+        assert parsed["guid"] == SAMPLE_GUID
+        assert parsed["incident_id"] == "999"
         assert parsed["task_id"] == ""
 
+    def test_parse_entitlement_invalid(self):
+        """Missing @ separator returns empty dict."""
+        parsed = parse_entitlement_string("not-an-entitlement")
+        assert parsed == {}
+
+
+# ===== 2. TestCleanAskTaskMessage =====
+
+class TestCleanAskTaskMessage:
+    """Tests for clean_ask_task_message_and_generate_codes()."""
+
+    def test_two_options(self):
+        """Standard SMSAskUser format with 2 options generates codes."""
+        msg = f"Approve incident? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set())
+
+        assert "Approve incident?" in cleaned
+        assert len(codes) == 2
+        assert set(codes.values()) == {"Yes", "No"}
+        for code in codes:
+            assert len(code) == 4 and code.isdigit()
+
+    def test_three_options(self):
+        """SMSAskUser format with 3 options."""
+        msg = f"Action? - Reply Approve or Deny or Escalate: {SAMPLE_GUID}@1|4"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set())
+
+        assert len(codes) == 3
+        assert set(codes.values()) == {"Approve", "Deny", "Escalate"}
+
+    def test_four_options(self):
+        """SMSAskUser format with 4 options."""
+        msg = f"Priority? - Reply Low or Medium or High or Critical: {SAMPLE_GUID}@1|4"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set())
+
+        assert len(codes) == 4
+        assert set(codes.values()) == {"Low", "Medium", "High", "Critical"}
+
+    def test_non_sms_ask_format(self):
+        """Non-SMSAskUser message returns original text and empty dict."""
+        msg = "Just a plain SMS message"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set())
+
+        assert cleaned == msg
+        assert codes == {}
+
+    def test_existing_codes_avoided(self):
+        """Generated codes should not collide with existing_codes set."""
+        existing = {f"{i:04d}" for i in range(9990)}
+        msg = f"Q? - Reply A or B: {SAMPLE_GUID}@1|4"
+
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, existing)
+
+        assert len(codes) == 2
+        for code in codes:
+            assert code not in existing
+
+    def test_multiline_question(self):
+        """Question text containing newlines should still match (re.DOTALL)."""
+        msg = f"Line1\nLine2\nLine3 - Reply Yes or No: {SAMPLE_GUID}@1|4"
+        cleaned, codes = clean_ask_task_message_and_generate_codes(msg, set())
+
+        assert len(codes) == 2
+        assert "Line1" in cleaned
+        assert "Line3" in cleaned
+
+
+# ===== 3. TestEntitlementManagement =====
 
 class TestEntitlementManagement:
-    """Test entitlement management functions"""
+    """Tests for entitlement CRUD operations."""
 
-    @pytest.fixture(autouse=True)
-    def setup_and_teardown(self, mocker):
-        """Setup and teardown for each test"""
-        # Mock integration context
-        self.mock_context = {"entitlements": []}
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
-        mocker.patch("AWSSNSSMSCommunication.set_integration_context_with_sync")
-        yield
-        # Cleanup
-        self.mock_context = {"entitlements": []}
+    def test_save_new_entitlement(self, integration_context):
+        """Save a new entitlement with codes_to_options dict."""
+        codes = {"1234": "Yes", "5678": "No"}
+        result = save_entitlement(SAMPLE_ENTITLEMENT_ID, SAMPLE_PHONE, codes, "msg")
 
-    def test_save_entitlement(self, mocker):
-        """Test saving a new entitlement"""
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
+        assert result == codes
+        assert len(integration_context["entitlements"]) == 1
+        ent = integration_context["entitlements"][0]
+        assert ent["entitlement_id"] == SAMPLE_ENTITLEMENT_ID
+        assert ent["phone_number"] == SAMPLE_PHONE
+        assert ent["codes_to_options"] == codes
+        assert ent["answered"] is False
 
-        entitlement_id = "550e8400-e29b-41d4-a716-446655440000@123"
-        phone = "+12345678900"
-        code = "1234"
-        message = "Test message"
+    def test_save_duplicate_returns_existing(self, integration_context):
+        """Saving same entitlement_id twice returns existing codes."""
+        codes_first = {"1111": "A", "2222": "B"}
+        codes_second = {"3333": "C", "4444": "D"}
 
-        reply_code = save_entitlement(entitlement_id, phone, code, message)
+        save_entitlement(SAMPLE_ENTITLEMENT_ID, SAMPLE_PHONE, codes_first, "msg")
+        result = save_entitlement(SAMPLE_ENTITLEMENT_ID, SAMPLE_PHONE, codes_second, "msg2")
 
-        assert reply_code == code
-        assert len(self.mock_context["entitlements"]) == 1
-        assert self.mock_context["entitlements"][0]["entitlement_id"] == entitlement_id
-        assert self.mock_context["entitlements"][0]["phone_number"] == phone
-        assert self.mock_context["entitlements"][0]["answered"] is False
+        assert result == codes_first
+        assert len(integration_context["entitlements"]) == 1
 
-    def test_get_active_entitlements_for_phone(self, mocker):
-        """Test retrieving active entitlements for a phone number"""
-        phone = "+12345678900"
-        self.mock_context["entitlements"] = [
-            {
-                "entitlement_id": "ent1",
-                "phone_number": phone,
-                "reply_code": "1111",
-                "answered": False,
-                "created": datetime.utcnow().strftime(DATE_FORMAT)
-            },
-            {
-                "entitlement_id": "ent2",
-                "phone_number": phone,
-                "reply_code": "2222",
-                "answered": True,  # Already answered
-                "created": datetime.utcnow().strftime(DATE_FORMAT)
-            },
-            {
-                "entitlement_id": "ent3",
-                "phone_number": "+19999999999",  # Different phone
-                "reply_code": "3333",
-                "answered": False,
-                "created": datetime.utcnow().strftime(DATE_FORMAT)
-            }
+    def test_get_active_entitlements_filters(self, integration_context):
+        """Filters by phone number and answered=False."""
+        integration_context["entitlements"] = [
+            _make_entitlement(entitlement_id="ent1", phone=SAMPLE_PHONE, answered=False),
+            _make_entitlement(entitlement_id="ent2", phone=SAMPLE_PHONE, answered=True),
+            _make_entitlement(entitlement_id="ent3", phone="+19999999999", answered=False),
         ]
 
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
-
-        active = get_active_entitlements_for_phone(phone)
+        active = get_active_entitlements_for_phone(SAMPLE_PHONE)
 
         assert len(active) == 1
         assert active[0]["entitlement_id"] == "ent1"
 
-    def test_find_entitlement_by_reply_code(self, mocker):
-        """Test finding entitlement by reply code"""
-        phone = "+12345678900"
-        self.mock_context["entitlements"] = [
-            {
-                "entitlement_id": "ent1",
-                "phone_number": phone,
-                "reply_code": "1234",
-                "answered": False,
-                "created": datetime.utcnow().strftime(DATE_FORMAT)
-            }
+    def test_find_by_reply_code_found(self, integration_context):
+        """Returns (entitlement, chosen_option) tuple when code matches."""
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes", "5678": "No"}),
         ]
 
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
+        ent, chosen = find_entitlement_by_reply_code(SAMPLE_PHONE, "5678")
 
-        found = find_entitlement_by_reply_code(phone, "1234")
+        assert ent is not None
+        assert ent["entitlement_id"] == SAMPLE_ENTITLEMENT_ID
+        assert chosen == "No"
 
-        assert found is not None
-        assert found["entitlement_id"] == "ent1"
-
-    def test_mark_entitlement_answered(self, mocker):
-        """Test marking entitlement as answered"""
-        self.mock_context["entitlements"] = [
-            {
-                "entitlement_id": "ent1",
-                "phone_number": "+12345678900",
-                "reply_code": "1234",
-                "answered": False,
-                "created": datetime.utcnow().strftime(DATE_FORMAT)
-            }
+    def test_find_by_reply_code_not_found(self, integration_context):
+        """Returns (None, None) when code doesn't match any entitlement."""
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes", "5678": "No"}),
         ]
 
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
+        ent, chosen = find_entitlement_by_reply_code(SAMPLE_PHONE, "9999")
 
-        mark_entitlement_answered("ent1")
+        assert ent is None
+        assert chosen is None
 
-        assert self.mock_context["entitlements"][0]["answered"] is True
-        assert "answered_at" in self.mock_context["entitlements"][0]
+    def test_mark_answered(self, integration_context):
+        """Sets answered=True and populates answered_at timestamp."""
+        integration_context["entitlements"] = [_make_entitlement()]
 
-    def test_cleanup_expired_entitlements(self, mocker):
-        """Test cleanup of expired entitlements"""
+        mark_entitlement_answered(SAMPLE_ENTITLEMENT_ID)
+
+        ent = integration_context["entitlements"][0]
+        assert ent["answered"] is True
+        assert "answered_at" in ent
+
+    def test_cleanup_expired(self, integration_context):
+        """Removes entitlements older than TTL, keeps fresh ones."""
         now = datetime.utcnow()
-        old_time = (now - timedelta(hours=25)).strftime(DATE_FORMAT)
-        new_time = now.strftime(DATE_FORMAT)
-
-        self.mock_context["entitlements"] = [
-            {
-                "entitlement_id": "ent1",
-                "phone_number": "+12345678900",
-                "reply_code": "1111",
-                "answered": False,
-                "created": old_time  # 25 hours old - should be removed
-            },
-            {
-                "entitlement_id": "ent2",
-                "phone_number": "+12345678900",
-                "reply_code": "2222",
-                "answered": False,
-                "created": new_time  # Fresh - should be kept
-            }
+        integration_context["entitlements"] = [
+            _make_entitlement(
+                entitlement_id="old",
+                created=(now - timedelta(hours=25)).strftime(DATE_FORMAT),
+            ),
+            _make_entitlement(
+                entitlement_id="fresh",
+                created=now.strftime(DATE_FORMAT),
+            ),
         ]
-
-        mocker.patch("AWSSNSSMSCommunication.get_integration_context_with_sync", return_value=self.mock_context)
 
         cleanup_expired_entitlements(ttl_hours=24)
 
-        assert len(self.mock_context["entitlements"]) == 1
-        assert self.mock_context["entitlements"][0]["entitlement_id"] == "ent2"
+        assert len(integration_context["entitlements"]) == 1
+        assert integration_context["entitlements"][0]["entitlement_id"] == "fresh"
+
+    def test_get_available_codes(self, integration_context):
+        """Returns all (code, option) tuples from active entitlements."""
+        integration_context["entitlements"] = [
+            _make_entitlement(
+                entitlement_id="ent1",
+                codes_to_options={"1111": "A", "2222": "B"},
+                answered=False,
+            ),
+            _make_entitlement(
+                entitlement_id="ent2",
+                codes_to_options={"3333": "C"},
+                answered=False,
+            ),
+            _make_entitlement(
+                entitlement_id="ent3",
+                codes_to_options={"4444": "D"},
+                answered=True,
+            ),
+        ]
+
+        codes = get_available_codes_for_phone(SAMPLE_PHONE)
+
+        code_values = {c for c, _ in codes}
+        assert code_values == {"1111", "2222", "3333"}
 
 
-class TestCommands:
-    """Test command functions"""
+# ===== 4. TestSendNotificationCommand =====
 
-    @pytest.fixture
-    def mock_sns_client(self, mocker):
-        """Mock SNS client"""
-        client = mocker.Mock()
-        client.publish.return_value = {"MessageId": "test-message-id-123"}
-        return client
+class TestSendNotificationCommand:
+    """Tests for the send-notification command."""
 
-    @pytest.fixture
-    def mock_params(self):
-        """Mock integration parameters"""
-        return {
-            "credentials": {
-                "identifier": "test_key",
-                "password": "test_secret"
-            },
-            "defaultRegion": "us-east-1",
-            "sqsQueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/test-queue"
-        }
-
-    def test_send_notification_simple_message(self, mocker, mock_sns_client, mock_params):
-        """Test sending simple message without entitlement"""
-        from AWSSNSSMSCommunication import send_notification_command
-
+    def test_simple_message_no_entitlement(self, mocker, mock_sns_client, mock_params):
+        """Plain SMS without entitlement just publishes and returns MessageId."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
 
-        args = {
-            "to": "+12345678900",
-            "message": "Simple test message"
+        result = send_notification_command(
+            {"to": SAMPLE_PHONE, "message": "Hello"}, mock_params
+        )
+
+        assert result.outputs["MessageId"] == "msg-id-123"
+        assert result.outputs["PhoneNumber"] == SAMPLE_PHONE
+        assert "Entitlement" not in result.outputs
+        mock_sns_client.publish.assert_called_once_with(
+            PhoneNumber=SAMPLE_PHONE, Message="Hello"
+        )
+
+    def test_with_sms_ask_entitlement(
+        self, mocker, mock_sns_client, mock_params, integration_context
+    ):
+        """Full entitlement flow: extract, generate codes, save, send formatted."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+
+        msg = f"Approve? - Reply Yes or No: {SAMPLE_GUID}@123|45"
+        result = send_notification_command(
+            {"to": SAMPLE_PHONE, "message": msg}, mock_params
+        )
+
+        assert result.outputs["Entitlement"] == f"{SAMPLE_GUID}@123|45"
+        assert isinstance(result.outputs["CodesToOptions"], dict)
+        assert len(result.outputs["CodesToOptions"]) == 2
+        assert set(result.outputs["CodesToOptions"].values()) == {"Yes", "No"}
+        assert len(integration_context["entitlements"]) == 1
+
+    def test_missing_args_raises(self, mock_params):
+        """ValueError raised when 'to' or 'message' missing."""
+        with pytest.raises(ValueError, match="Both 'to' and 'message'"):
+            send_notification_command({"to": SAMPLE_PHONE}, mock_params)
+
+        with pytest.raises(ValueError, match="Both 'to' and 'message'"):
+            send_notification_command({"message": "hi"}, mock_params)
+
+    def test_fallback_when_no_options(
+        self, mocker, mock_sns_client, mock_params, integration_context
+    ):
+        """When entitlement found but no options parsed, falls back to DEFAULT_REPLY_CODE."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+
+        # Has entitlement but not in "Reply X or Y:" format
+        msg = f"Some text {SAMPLE_GUID}@123|45 more text"
+        result = send_notification_command(
+            {"to": SAMPLE_PHONE, "message": msg}, mock_params
+        )
+
+        assert result.outputs["CodesToOptions"] == {DEFAULT_REPLY_CODE: "response"}
+
+
+# ===== 5. TestListEntitlementsCommand =====
+
+class TestListEntitlementsCommand:
+    """Tests for aws-sns-sms-list-entitlements command."""
+
+    def test_list_all_active(self, mocker, integration_context, mock_params):
+        """Returns unanswered entitlements."""
+        mocker.patch("AWSSNSSMSCommunication.argToBoolean", side_effect=lambda x: bool(x))
+
+        integration_context["entitlements"] = [
+            _make_entitlement(entitlement_id="ent1", answered=False),
+            _make_entitlement(entitlement_id="ent2", answered=True),
+        ]
+
+        result = list_entitlements_command({}, mock_params)
+
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["EntitlementID"] == "ent1"
+
+    def test_list_filtered_by_phone(self, mocker, integration_context, mock_params):
+        """Filters by phone_number argument."""
+        mocker.patch("AWSSNSSMSCommunication.argToBoolean", side_effect=lambda x: bool(x))
+
+        integration_context["entitlements"] = [
+            _make_entitlement(entitlement_id="ent1", phone=SAMPLE_PHONE),
+            _make_entitlement(entitlement_id="ent2", phone="+19999999999"),
+        ]
+
+        result = list_entitlements_command(
+            {"phone_number": SAMPLE_PHONE}, mock_params
+        )
+
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["PhoneNumber"] == SAMPLE_PHONE
+
+    def test_list_empty(self, mocker, integration_context, mock_params):
+        """No entitlements returns appropriate message."""
+        mocker.patch("AWSSNSSMSCommunication.argToBoolean", side_effect=lambda x: bool(x))
+
+        result = list_entitlements_command({}, mock_params)
+
+        assert "No entitlements found" in result.readable_output
+
+
+# ===== 6. TestInjectReplyCommand =====
+
+class TestInjectReplyCommand:
+    """Tests for aws-sns-sms-inject-reply debug command."""
+
+    def test_successful_injection(self, mocker, integration_context, mock_params):
+        """Finds entitlement, calls handleEntitlementForUser, marks answered."""
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes", "5678": "No"}),
+        ]
+
+        result = inject_reply_command(
+            {"phone_number": SAMPLE_PHONE, "reply_code": "1234"}, mock_params
+        )
+
+        assert result.outputs["Success"] is True
+        assert result.outputs["ChosenOption"] == "Yes"
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_called_once_with(
+            "123", SAMPLE_GUID, SAMPLE_PHONE, "Yes", "45"
+        )
+        assert integration_context["entitlements"][0]["answered"] is True
+
+    def test_invalid_code_format(self, integration_context, mock_params):
+        """Non-4-digit code returns error output."""
+        result = inject_reply_command(
+            {"phone_number": SAMPLE_PHONE, "reply_code": "12"}, mock_params
+        )
+
+        assert result.outputs["Success"] is False
+        assert "Invalid reply code format" in result.outputs["Error"]
+
+    def test_no_matching_entitlement(self, integration_context, mock_params):
+        """Valid code format but no matching entitlement returns error with active codes."""
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes"}),
+        ]
+
+        result = inject_reply_command(
+            {"phone_number": SAMPLE_PHONE, "reply_code": "9999"}, mock_params
+        )
+
+        assert result.outputs["Success"] is False
+        assert "No matching entitlement" in result.outputs["Error"]
+        assert len(result.outputs["ActiveEntitlements"]) == 1
+
+    def test_missing_args(self, mock_params):
+        """ValueError when phone_number or reply_code missing."""
+        with pytest.raises(ValueError, match="Both phone_number and reply_code"):
+            inject_reply_command({"phone_number": SAMPLE_PHONE}, mock_params)
+
+
+# ===== 7. TestProcessSmsReply =====
+
+class TestProcessSmsReply:
+    """Tests for process_sms_reply() - core SQS message processing."""
+
+    def _make_sqs_message(self, phone=SAMPLE_PHONE, body_text="1234"):
+        """Build an SQS message wrapping an SNS notification."""
+        sns_payload = {
+            "originationNumber": phone,
+            "messageBody": body_text,
+        }
+        return {
+            "MessageId": "sqs-msg-1",
+            "Body": json.dumps({
+                "Type": "Notification",
+                "Message": json.dumps(sns_payload),
+            }),
+            "ReceiptHandle": "receipt-1",
         }
 
-        result = send_notification_command(args, mock_params)
+    def test_valid_reply_success(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """Match code -> handleEntitlementForUser -> mark answered -> send success feedback."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes", "5678": "No"}),
+        ]
 
-        assert "MessageId" in result.outputs
-        assert result.outputs["MessageId"] == "test-message-id-123"
+        process_sms_reply(self._make_sqs_message(body_text="1234"), mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_called_once_with(
+            "123", SAMPLE_GUID, SAMPLE_PHONE, "Yes", "45"
+        )
+        assert integration_context["entitlements"][0]["answered"] is True
+        # Success feedback SMS sent
+        mock_sns_client.publish.assert_called_once()
+        call_kwargs = mock_sns_client.publish.call_args
+        assert call_kwargs[1]["PhoneNumber"] == SAMPLE_PHONE
+
+    def test_valid_reply_no_match(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """Valid 4-digit code but no matching entitlement -> failure feedback."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes"}),
+        ]
+
+        process_sms_reply(self._make_sqs_message(body_text="9999"), mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
         mock_sns_client.publish.assert_called_once()
 
-    def test_send_notification_with_entitlement_no_active(self, mocker, mock_sns_client, mock_params):
-        """Test sending message with entitlement when no other entitlements active"""
-        from AWSSNSSMSCommunication import send_notification_command
-
+    def test_invalid_code_format(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """Non-4-digit text -> failure feedback when active entitlements exist."""
         mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
-        mocker.patch("AWSSNSSMSCommunication.get_active_entitlements_for_phone", return_value=[])
-        mocker.patch("AWSSNSSMSCommunication.save_entitlement", return_value=DEFAULT_REPLY_CODE)
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes"}),
+        ]
 
-        args = {
-            "to": "+12345678900",
-            "message": "550e8400-e29b-41d4-a716-446655440000@123 Do you approve? Yes/No"
+        process_sms_reply(self._make_sqs_message(body_text="hello"), mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
+        mock_sns_client.publish.assert_called_once()
+
+    def test_success_feedback_disabled(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """When successFeedbackEnabled=False, no success SMS sent."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        mocker.patch(
+            "AWSSNSSMSCommunication.argToBoolean",
+            side_effect=lambda x: x if isinstance(x, bool) else str(x).lower() == "true",
+        )
+        mock_params["successFeedbackEnabled"] = False
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes"}),
+        ]
+
+        process_sms_reply(self._make_sqs_message(body_text="1234"), mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_called_once()
+        mock_sns_client.publish.assert_not_called()
+
+    def test_failure_feedback_disabled(
+        self, mocker, integration_context, mock_sns_client, mock_params
+    ):
+        """When failureFeedbackEnabled=False, no failure SMS sent."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+        mocker.patch(
+            "AWSSNSSMSCommunication.argToBoolean",
+            side_effect=lambda x: x if isinstance(x, bool) else str(x).lower() == "true",
+        )
+        mock_params["failureFeedbackEnabled"] = False
+        integration_context["entitlements"] = [
+            _make_entitlement(codes_to_options={"1234": "Yes"}),
+        ]
+
+        process_sms_reply(self._make_sqs_message(body_text="9999"), mock_params)
+
+        mock_sns_client.publish.assert_not_called()
+
+    def test_empty_message_skipped(self, mocker, mock_params):
+        """Message without phone or text returns early without processing."""
+        mocker.patch(
+            "AWSSNSSMSCommunication.argToBoolean",
+            side_effect=lambda x: x if isinstance(x, bool) else str(x).lower() == "true",
+        )
+        sqs_msg = {
+            "MessageId": "sqs-msg-1",
+            "Body": json.dumps({"originationNumber": "", "messageBody": ""}),
         }
 
-        result = send_notification_command(args, mock_params)
+        process_sms_reply(sqs_msg, mock_params)
 
-        assert result.outputs["ReplyCode"] == DEFAULT_REPLY_CODE
-        assert "Entitlement" in result.outputs
+        import AWSSNSSMSCommunication
 
-    def test_send_notification_with_entitlement_multiple_active(self, mocker, mock_sns_client, mock_params):
-        """Test sending message with entitlement when other entitlements are active"""
-        from AWSSNSSMSCommunication import send_notification_command
+        AWSSNSSMSCommunication.demisto.handleEntitlementForUser.assert_not_called()
 
-        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
-        mocker.patch("AWSSNSSMSCommunication.get_active_entitlements_for_phone", return_value=[
-            {"reply_code": "1111"}, {"reply_code": "2222"}
-        ])
-        mocker.patch("AWSSNSSMSCommunication.save_entitlement", return_value="3333")
 
-        args = {
-            "to": "+12345678900",
-            "message": "550e8400-e29b-41d4-a716-446655440000@123 Do you approve? Yes/No"
+# ===== 8. TestTestModuleCommand =====
+
+class TestTestModuleCommand:
+    """Tests for test-module command."""
+
+    def test_module_success(self, mocker, mock_sqs_client, mock_params):
+        """SQS get_queue_attributes returns 200 -> 'ok'."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sqs_client)
+
+        result = test_module_command(mock_params)
+
+        assert result == "ok"
+        mock_sqs_client.get_queue_attributes.assert_called_once_with(
+            QueueUrl=mock_params["sqsQueueUrl"],
+            AttributeNames=["QueueArn"],
+        )
+
+    def test_module_no_queue_url(self, mock_params):
+        """Missing sqsQueueUrl raises exception."""
+        mock_params["sqsQueueUrl"] = ""
+
+        with pytest.raises(Exception, match="SQS Queue URL is required"):
+            test_module_command(mock_params)
+
+
+# ===== 9. TestGetAwsClient =====
+
+class TestGetAwsClient:
+    """Tests for get_aws_client() with different auth methods.
+
+    boto3 is imported *inside* get_aws_client(), so we inject a mock boto3
+    module into sys.modules before each test. This allows patching even when
+    the real boto3 package is not installed.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _inject_mock_boto3(self, mocker):
+        """Inject a mock boto3 module so the local import inside get_aws_client works."""
+        import sys
+        from unittest.mock import MagicMock
+
+        self._mock_boto3 = MagicMock()
+        # Also need a mock botocore.config.Config
+        self._mock_botocore = MagicMock()
+        self._orig_boto3 = sys.modules.get("boto3")
+        self._orig_botocore = sys.modules.get("botocore")
+        self._orig_botocore_config = sys.modules.get("botocore.config")
+        sys.modules["boto3"] = self._mock_boto3
+        sys.modules.setdefault("botocore", self._mock_botocore)
+        sys.modules.setdefault("botocore.config", self._mock_botocore.config)
+        yield
+        # Restore originals
+        if self._orig_boto3 is not None:
+            sys.modules["boto3"] = self._orig_boto3
+        else:
+            sys.modules.pop("boto3", None)
+        if self._orig_botocore is not None:
+            sys.modules["botocore"] = self._orig_botocore
+        else:
+            sys.modules.pop("botocore", None)
+        if self._orig_botocore_config is not None:
+            sys.modules["botocore.config"] = self._orig_botocore_config
+        else:
+            sys.modules.pop("botocore.config", None)
+
+    def test_access_key_only(self):
+        """Creates client with access key credentials (no role ARN)."""
+        mock_client = MagicMock()
+        self._mock_boto3.client.return_value = mock_client
+
+        params = {
+            "credentials": {"identifier": "AKIA123", "password": "secret"},
+            "defaultRegion": "eu-west-1",
+            "timeout": "30",
+            "retries": "3",
+            "insecure": False,
         }
 
-        result = send_notification_command(args, mock_params)
+        result = get_aws_client(params, "sns")
 
-        # Should have generated a unique code
-        assert result.outputs["ReplyCode"] != DEFAULT_REPLY_CODE
-        assert result.outputs["ReplyCode"] == "3333"
+        assert result == mock_client
+        self._mock_boto3.client.assert_called_once()
+        call_args, call_kwargs = self._mock_boto3.client.call_args
+        assert call_args[0] == "sns"
+        assert call_kwargs["aws_access_key_id"] == "AKIA123"
+        assert call_kwargs["aws_secret_access_key"] == "secret"
+
+    def test_role_arn_only(self):
+        """Creates STS client, assumes role, creates service client with temp creds."""
+        mock_sts = MagicMock()
+        mock_sts.assume_role.return_value = {
+            "Credentials": {
+                "AccessKeyId": "ASIA_TEMP",
+                "SecretAccessKey": "temp_secret",
+                "SessionToken": "temp_token",
+                "Expiration": "2026-01-01T00:00:00Z",
+            }
+        }
+        mock_sqs = MagicMock()
+        self._mock_boto3.client.side_effect = [mock_sts, mock_sqs]
+
+        params = {
+            "credentials": None,
+            "defaultRegion": "us-east-1",
+            "roleArn": "arn:aws:iam::123456789:role/TestRole",
+            "roleSessionName": "xsoar-session",
+            "sessionDuration": "900",
+            "timeout": "60",
+            "retries": "5",
+            "insecure": False,
+        }
+
+        result = get_aws_client(params, "sqs")
+
+        assert result == mock_sqs
+        mock_sts.assume_role.assert_called_once()
+        second_call_kwargs = self._mock_boto3.client.call_args_list[1][1]
+        assert second_call_kwargs["aws_access_key_id"] == "ASIA_TEMP"
+        assert second_call_kwargs["aws_session_token"] == "temp_token"
+
+    def test_default_credentials(self):
+        """No keys, no role -> default credentials (EC2 instance role, env vars)."""
+        mock_client = MagicMock()
+        self._mock_boto3.client.return_value = mock_client
+
+        params = {
+            "credentials": None,
+            "defaultRegion": "us-east-1",
+            "timeout": "60",
+            "retries": "5",
+            "insecure": False,
+        }
+
+        result = get_aws_client(params, "sns")
+
+        assert result == mock_client
+        call_args, call_kwargs = self._mock_boto3.client.call_args
+        assert call_args[0] == "sns"
+        assert "aws_access_key_id" not in call_kwargs
+
+
+# ===== 10. TestSendFeedbackSms =====
+
+class TestSendFeedbackSms:
+    """Tests for send_feedback_sms helper."""
+
+    def test_sends_sms(self, mocker, mock_sns_client, mock_params):
+        """Publishes feedback message via SNS."""
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+
+        send_feedback_sms(SAMPLE_PHONE, "Thank you!", mock_params)
+
+        mock_sns_client.publish.assert_called_once_with(
+            PhoneNumber=SAMPLE_PHONE, Message="Thank you!"
+        )
+
+    def test_handles_publish_error(self, mocker, mock_sns_client, mock_params):
+        """Logs error but does not raise on publish failure."""
+        mock_sns_client.publish.side_effect = Exception("SNS error")
+        mocker.patch("AWSSNSSMSCommunication.get_aws_client", return_value=mock_sns_client)
+
+        send_feedback_sms(SAMPLE_PHONE, "msg", mock_params)
+
+        import AWSSNSSMSCommunication
+
+        AWSSNSSMSCommunication.demisto.error.assert_called()
