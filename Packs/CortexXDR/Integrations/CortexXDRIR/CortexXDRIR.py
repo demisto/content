@@ -1928,9 +1928,9 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     created_after = arg_to_timestamp(args.get("created_after"), "created_after") if args.get("created_after") else None
     sort_field = args.get("sort_field")
     sort_order = args.get("sort_order")
-    limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
-    page_size = arg_to_number(args.get("page_size")) if args.get("page_size") else limit
-    page = arg_to_number(args.get("page")) if args.get("page") else 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
 
     filters = []
     if case_ids:
