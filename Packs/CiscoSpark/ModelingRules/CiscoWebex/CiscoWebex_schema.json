@@ -13,7 +13,7 @@
             "is_array": false
         },
         "data": {
-            "type": "string",
+            "type": "nested_json",
             "is_array": false
         },
         "type": {
