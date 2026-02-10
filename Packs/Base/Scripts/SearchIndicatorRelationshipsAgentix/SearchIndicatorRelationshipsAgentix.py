@@ -48,8 +48,8 @@ def filter_relationships_by_entity_types(
 
         for relationship in data.get("Relationships", []):
             # For this case:
-            # !SearchIndicatorRelationships Entities = google.com, example.com relationships=relate_to entity_type=DOMAIN
-            # Relationships = google.com relate_to example.com
+            # !SearchIndicatorRelationships Entities = google.com, example.com relationships=relates-to entity_type=DOMAIN
+            # Relationships = google.com relates-to example.com
             if (
                 relationship["EntityAType"] in entities_types
                 and relationship["EntityBType"] in entities_types
@@ -91,7 +91,7 @@ def get_relationships(args: dict) -> list:
                 returns filtered relationships where EntityA or EntityB type matches entities_types.
                 Returns empty list if no parameters are provided or no relationships found.
     """
-    entities_types = argToList(args.pop("related_entities_types", []))
+    entities_types = argToList(args.pop("related_entity_types", []))
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
     verbose = args.get("verbose", "false")
