@@ -5226,6 +5226,8 @@ Create an ODS scan and wait for the results.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 
@@ -5268,6 +5270,8 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. |
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. |
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 
@@ -5328,6 +5332,8 @@ Create an ODS scan and wait for the results.
             ],
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "complete"
         }
     }
@@ -5371,6 +5377,8 @@ Create an ODS scheduled scan.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required |
 | schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 
 #### Context Output
 
@@ -5403,6 +5411,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. |
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. |
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
 
 #### Command Example
 
@@ -5487,6 +5497,8 @@ Create an ODS scheduled scan.
             },
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
             "status": "scheduled"
         }
     }

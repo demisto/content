@@ -6,6 +6,7 @@ from CoreIRApiModule import *
 import dateparser
 import copy
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -49,6 +50,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+REMEDIATION_TECHNIQUES_SOURCES = ["CIEM_SCANNER", "DATA_POLICY", "AISPM_RULE_ENGINE"]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -70,7 +72,7 @@ WEBAPP_COMMANDS = [
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -133,6 +135,7 @@ class CaseManagement:
     STATUS = {
         "new": "STATUS_010_NEW",
         "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "in_progress": "STATUS_020_UNDER_INVESTIGATION",
         "resolved": "STATUS_025_RESOLVED",
     }
 
@@ -899,6 +902,18 @@ class Client(CoreClient):
 
         return reply
 
+    def get_case_resolution_statuses(self, case_id: str) -> dict:
+        reply = self._http_request(
+            method="GET",
+            json_data={},
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            url_suffix=f"case/{case_id}/resolution-plan/tasks",
+        )
+        return reply
+
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
@@ -927,6 +942,22 @@ class Client(CoreClient):
         }
 
         return self.get_webapp_data(request_data)
+
+    def get_case_ai_summary(self, case_id: int) -> dict:
+        """
+        Retrieves AI-generated summary for a specific case ID.
+
+        Args:
+            case_id (int): The ID of the case to retrieve AI summary for.
+
+        Returns:
+            dict: API response containing case AI summary.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/cases/get_ai_case_details",
+            json_data={"case_id": case_id},
+        )
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -965,6 +996,29 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     demisto.debug(f"{recommendation=} for {issue=}")
 
     return recommendation
+
+
+def get_remediation_techniques_suggestion(issue: dict, current_issue_id: str) -> list:
+    """
+    Get remediation techniques suggestions based on asset types.
+
+    Args:
+        issue (dict): The issue data.
+        current_issue_id (str): The current issue ID.
+
+    Returns:
+        list: A list of filtered remediation techniques.
+    """
+    asset_types: list = issue.get("asset_types", [])
+    normalized_asset_types = {t.upper().replace(" ", "_") for t in asset_types if t}
+    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques") or []
+    filtered_techniques = [
+        t
+        for t in remediation_techniques_response
+        if t.get("techniqueAssetType") and t.get("techniqueAssetType").upper() in normalized_asset_types
+    ]
+    demisto.debug(f"Remediation recommendation of {current_issue_id=}: {filtered_techniques}")
+    return filtered_techniques
 
 
 def populate_playbook_and_quick_action_suggestions(
@@ -1188,6 +1242,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
+        alert_source = issue.get("alert_source")
 
         # Base recommendation
         recommendation = {
@@ -1208,6 +1263,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
         if appsec_recommendation:
             recommendation.update(appsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            filtered_techniques = get_remediation_techniques_suggestion(issue, current_issue_id)
+            recommendation["remediation"] = filtered_techniques or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
@@ -1469,8 +1529,7 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    client._base_url = "api/webapp/public_api/v1"
-    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
@@ -1577,26 +1636,7 @@ def map_case_format(case_list):
     return mapped_cases
 
 
-def get_cases_command(client, args):
-    """
-    Retrieves cases from Cortex platform based on provided filtering criteria.
-
-    Args:
-        client: The Cortex platform client instance for making API requests.
-        args (dict): Dictionary containing filter parameters including page number,
-                    limits, time ranges, status, severity, and other case attributes.
-
-    Returns:
-        List of mapped case objects containing case details and metadata.
-    """
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-
-    limit = page * MAX_GET_CASES_LIMIT + limit
-    page = page * MAX_GET_CASES_LIMIT
-
-    sort_by_modification_time = args.get("sort_by_modification_time")
-    sort_by_creation_time = args.get("sort_by_creation_time")
+def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
     since_modification_start_time = args.get("since_modification_time")
@@ -1605,8 +1645,6 @@ def get_cases_command(client, args):
     lte_creation_time = args.get("lte_creation_time")
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
-
-    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
 
     status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
     severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
@@ -1681,9 +1719,32 @@ def get_cases_command(client, args):
         },
     )
 
+    return filter_builder
+
+
+def get_cases_command(client, args):
+    """
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
+    """
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
+    sort_field, sort_order = get_cases_sort_order(args.get("sort_by_creation_time"), args.get("sort_by_modification_time"))
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
-        filter_dict=filter_builder.to_dict(),
+        filter_dict=build_get_cases_filter(args).to_dict(),
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
@@ -1700,14 +1761,27 @@ def get_cases_command(client, args):
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
-    command_results = []
-
-    command_results.append(
+    command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
             outputs={"filter_count": filter_count, "returned_count": returned_count},
         )
-    )
+    ]
+
+    if (
+        returned_count == 1 and int(data[0].get("issue_count") or 0) > 1
+    ):  # AI summary supported in cases of a single case query with more than one issue
+        case_id = data[0].get("case_id")
+        try:  # if functionality isn't supported exception is raised and should be handled
+            response = client.get_case_ai_summary(int(case_id))
+            if response:
+                reply = response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    data[0]["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    data[0]["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
@@ -1895,6 +1969,20 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
+    case = mapped_response.get("case")
+    if int(case.get("issue_count") or 0) > 1:
+        try:  # if functionality isn't supported exception is raised and should be handled
+            web_app_client = init_client("webapp")
+            ai_response = web_app_client.get_case_ai_summary(int(case_id))
+            if ai_response:
+                reply = ai_response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    case["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    case["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
+
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
@@ -4349,6 +4437,107 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def init_client(api_type: str) -> Client:
+    """
+    Initializes the Client for a specific API type.
+
+    Args:
+        api_type (str): The category of the API (e.g., 'public', 'webapp', 'data_platform', etc.)
+    """
+    params = demisto.params()
+
+    # Connection parameters
+    proxy = params.get("proxy", False)
+    verify_cert = not params.get("insecure", False)
+
+    try:
+        timeout = int(params.get("timeout", 120))
+    except (ValueError, TypeError):
+        timeout = 120
+
+    # Base URL Mapping logic based on api_type
+    webapp_root = "/api/webapp"
+
+    url_map = {
+        "webapp": webapp_root,
+        "public": f"{webapp_root}/public_api/v1",
+        "data_platform": f"{webapp_root}/data-platform",
+        "appsec": f"{webapp_root}/public_api/appsec",
+        "xsoar": "/xsoar",
+        "agents": f"{webapp_root}/agents",
+    }
+
+    # Fallback to public API if the type isn't recognized
+    client_url = url_map.get(api_type, url_map["public"])
+
+    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
+
+    return Client(
+        base_url=client_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout,
+    )
+
+
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
+    if related_pb:
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
+
+
+def postprocess_case_resolution_statuses(client, response: dict):
+    response = copy.deepcopy(response)
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
+
+            all_items.append(task)
+
+    return all_items
+
+
+def get_case_resolution_statuses(client, args):
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
+    return CommandResults(
+        readable_output=tableToMarkdown("Case Resolution Statuses", outputs, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
+
+
+def verify_platform_version(version: str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4359,41 +4548,21 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     remove_nulls_from_dictionary(args)
-    headers: dict = {}
-
-    webapp_api_url = "/api/webapp"
-    public_api_url = f"{webapp_api_url}/public_api/v1"
-    data_platform_api_url = f"{webapp_api_url}/data-platform"
-    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
-    agents_api_url = f"{webapp_api_url}/agents"
-    xsoar_api_url = "/xsoar"
-    proxy = demisto.params().get("proxy", False)
-    verify_cert = not demisto.params().get("insecure", False)
-    try:
-        timeout = int(demisto.params().get("timeout", 120))
-    except ValueError as e:
-        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
-        timeout = 120
-
-    client_url = public_api_url
+    # Logic to determine which API type the current command belongs to
     if command in WEBAPP_COMMANDS:
-        client_url = webapp_api_url
+        api_type = "webapp"
     elif command in DATA_PLATFORM_COMMANDS:
-        client_url = data_platform_api_url
+        api_type = "data_platform"
     elif command in APPSEC_COMMANDS:
-        client_url = appsec_api_url
+        api_type = "appsec"
     elif command in ENDPOINT_COMMANDS:
-        client_url = agents_api_url
+        api_type = "agents"
     elif command in XSOAR_COMMANDS:
-        client_url = xsoar_api_url
+        api_type = "xsoar"
+    else:
+        api_type = "public"
 
-    client = Client(
-        base_url=client_url,
-        proxy=proxy,
-        verify=verify_cert,
-        headers=headers,
-        timeout=timeout,
-    )
+    client = init_client(api_type)
 
     try:
         if command == "test-module":
@@ -4495,10 +4664,12 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
+        elif command == "core-get-case-resolution-statuses":
+            verify_platform_version()
+            return_results(get_case_resolution_statuses(client, args))
 
+        elif command == "core-xql-generic-query-platform":
+            verify_platform_version()
             return_results(xql_query_platform_command(client, args))
 
     except Exception as err:
