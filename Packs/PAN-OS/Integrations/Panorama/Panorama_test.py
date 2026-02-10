@@ -9345,14 +9345,20 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
     pushed_policy_data = "test_data/get_rule_hitcounts_pushed_policy.xml"
     mocker.patch(
         "Panorama.run_op_command",
-        side_effect=[
-            load_xml_root_from_test_file(rule_hitcounts_data),
-            load_xml_root_from_test_file(pushed_policy_data),
-        ],
+        side_effect=[load_xml_root_from_test_file(pushed_policy_data), load_xml_root_from_test_file(rule_hitcounts_data)],
     )
 
     mocker.patch("Panorama.demisto.callingContext", return_value={"context": {"IntegrationInstance": "Panorama_test_instance"}})
 
-    result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
+    result = FirewallCommand.get_hitcounts(
+        topology=mock_topology,
+        rulebase_type=rulebase_type,
+        vsys_arg="vsys1",
+        rules_arg="all",
+        no_new_hits_since=no_new_hits_since_dt,
+        device_filter_string=None,
+        target=None,
+        unused_only=unused_only,
+    )
     assert result is not None
     assert len(result) == length_expected

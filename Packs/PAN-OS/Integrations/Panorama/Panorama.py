@@ -12242,7 +12242,7 @@ class FirewallCommand:
             except Exception as e:
                 demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
 
-            def build_rule_hit_count_xml(vsys_name:str, rulebase_type:str) -> ET.Element:
+            def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str) -> ET.Element:
                 xml_root = ET.Element("show")
                 xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
                 xml_vsys = ET.SubElement(xml_rhc, "vsys")
@@ -12269,19 +12269,15 @@ class FirewallCommand:
                     demisto.debug(f"{debug_prefix} Run op command: {firewall.id=}, {vsys_name=}\n{cmd}")
                     hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
                     rule_entries = hitcount_response.findall(f".//rule-base/entry[@name='{rulebase_type}']//rules/entry")
-                    
+
                     for rule_entry in rule_entries:
                         # Iterate through all rules in the list, formatting them as a data class
                         ET.SubElement(rule_entry, "instanceName")
-                        result: ShowRuleHitCountResult = dataclass_from_element(
-                            firewall, ShowRuleHitCountResult, rule_entry
-                        )
+                        result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
 
                         # Timestamp Handling: API returns Unix epoch as string
                         try:
-                            last_hit_dt = datetime.strptime(result.last_hit_timestamp, DATE_FORMAT).replace(
-                                tzinfo=timezone.utc
-                            )
+                            last_hit_dt = datetime.strptime(result.last_hit_timestamp, DATE_FORMAT)
                         except (ValueError, TypeError) as e:
                             demisto.debug(
                                 f"{debug_prefix} Error while formating {result.last_hit_timestamp=}, Skipping {result.name}\n{str(e)}"
@@ -12571,15 +12567,12 @@ def get_rule_hitcounts(
     :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
 
     """
-
-    # Convert date string to ISO-8601 UTC format (This is the rule hit output format)
     no_new_hits_since_dt = None
     if no_new_hits_since:
         try:
-            no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S").replace(tzinfo=timezone.utc)
-            # no_new_hits_since_dt = datetime.strptime(no_new_hits_since, DATE_FORMAT).replace(tzinfo=timezone.utc)
+            no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S")
         except ValueError:
-            message = f"Failed convert {no_new_hits_since=} argument to %Y/%m/%d %H:%M:%S foramt."
+            message = f"Failed convert {no_new_hits_since=} argument to YYYY/MM/DD HH:MM:SS foramt."
             demisto.debug(f"[get_rule_hitcounts] {message}")
             raise DemistoException(message)
 
