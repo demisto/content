@@ -4132,6 +4132,70 @@ script:
       name: membership_predicate_json
     description: Updates an asset group.
     name: xdr-asset-group-update
+  - arguments:
+    - description: The entry ID of the script file (yml or zip).
+      name: entry_id
+      required: true
+    description: Creates or updates an automation script.
+    name: xdr-automation-script-create
+  - arguments:
+    - description: The field to search by (id or name).
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The value of the field to search for.
+      name: value
+      required: true
+    description: Gets an automation script.
+    name: xdr-automation-script-get
+  - arguments:
+    - description: The field to search by (id or name).
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The value of the field to search for.
+      name: value
+      required: true
+    description: Deletes an automation script.
+    name: xdr-automation-script-delete
+  - arguments:
+    - description: The entry ID of the playbook file (yml or zip).
+      name: entry_id
+      required: true
+    description: Creates or updates an automation playbook.
+    name: xdr-automation-playbook-create
+  - arguments:
+    - description: The field to search by (id or name).
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The value of the field to search for.
+      name: value
+      required: true
+    description: Gets an automation playbook.
+    name: xdr-automation-playbook-get
+  - arguments:
+    - description: The field to search by (id or name).
+      name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - description: The value of the field to search for.
+      name: value
+      required: true
+    description: Deletes an automation playbook.
+    name: xdr-automation-playbook-delete
   dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   isfetch:xpanse: false
