@@ -108,12 +108,22 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     return instance_data
 
 
-def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dict[str, Any]:
+def build_pagination_kwargs(
+    args: Dict[str, Any],
+    minimum_limit: int = 0,
+    max_limit: int = MAX_LIMIT_VALUE,
+    next_token_name: str = "NextToken",
+    limit_name: str = "MaxResults",
+) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
 
     Args:
         args (Dict[str, Any]): Command arguments containing pagination parameters
+        minimum_limit (int): The minimum possible limit for the pagination command.
+        max_limit (int): The maximum possible limit for the pagination command.
+        next_token_name (str): The name of the next token argument in AWS.
+        limit_name (str): The name of the limit argument in AWS.
 
     Returns:
         Dict[str, Any]: Validated pagination parameters for AWS API
@@ -134,21 +144,21 @@ def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dic
     except (ValueError, TypeError) as e:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
-    # Validate limit constraints
+    # Validate limit lower constraints
     if limit is not None and limit <= minimum_limit:
         raise ValueError(f"Limit must be greater than {minimum_limit}")
 
-    # AWS API constraints - most services have a max of 1000 items per request
-    if limit is not None and limit > MAX_LIMIT_VALUE:
-        demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
-        limit = MAX_LIMIT_VALUE
+    # AWS API upper constraints
+    if limit is not None and limit > max_limit:
+        demisto.debug(f"Requested limit {limit} exceeds maximum {max_limit}, using {max_limit}")
+        limit = max_limit
 
     # Handle pagination with next_token (for continuing previous requests)
     if next_token := args.get("next_token"):
         if (not isinstance(next_token, str)) or (len(next_token.strip()) == 0):
             raise ValueError("next_token must be a non-empty string")
-        kwargs["NextToken"] = next_token.strip()
-    kwargs.update({"MaxResults": limit})
+        kwargs[next_token_name] = next_token.strip()
+    kwargs.update({limit_name: limit})
     return kwargs
 
 
@@ -2802,6 +2812,7 @@ class RDS:
                 "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
                 if args.get("backup_retention_period")
                 else None,
+                "VpcSecurityGroupIds": argToList(args.get("vpc_security_group_ids")),
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
