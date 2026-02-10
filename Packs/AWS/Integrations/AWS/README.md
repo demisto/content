@@ -3332,7 +3332,6 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 
 There is no context output for this command.
 
-
 ### aws-ec2-launch-template-delete
 
 ***
