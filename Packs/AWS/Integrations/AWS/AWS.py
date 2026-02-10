@@ -4112,6 +4112,9 @@ class EC2:
         if filters_arg := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters_arg)
 
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1)
+        kwargs.update(pagination_kwargs)
+
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing launch templates with parameters: {kwargs}")
 
@@ -4337,6 +4340,7 @@ class EC2:
             ),
             raw_response=response,
         )
+
 
 class EKS:
     service = AWSServices.EKS
