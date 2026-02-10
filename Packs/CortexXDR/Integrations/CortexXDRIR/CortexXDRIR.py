@@ -623,120 +623,100 @@ class Client(CoreClient):
             url_suffix=f"/asset-groups/update/{group_id}",
             json_data=request_data,
         )
-    # --- Automation Script Methods ---
 
-    def create_automation_script(self, file_content: bytes, file_name: str):
+    def create_automation_script(self, files):
         """
         Creates or updates an automation script by uploading a file.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
 
         Args:
-            file_content (bytes): The content of the script file.
-            file_name (str): The name of the script file.
+            files (dict):
         """
-        self._http_request(
+        res = self._http_request(
             method='POST',
-            url_suffix='/scripts/insert/',
-            files={'file': (file_name, file_content)},
-            headers=self.headers,
-            timeout=self.timeout,
+            url_suffix='/scripts/insert',
+            files=files,
         )
+        return res
 
-    def get_automation_script(self, field: str, value: str) -> bytes:
+    def get_automation_script(self, request_data) -> bytes:
         """
         Gets an automation script.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
 
         Args:
-            field (str): The field to search by (id or name).
-            value (str): The value of the field to search for.
+            request_data (dict):
 
         Returns:
             bytes: The script file content.
         """
         return self._http_request(
             method='POST',
-            url_suffix='/scripts/get/',
-            json_data={'request_data': {field: value}},
-            headers=self.headers,
-            timeout=self.timeout,
-            resp_type='content',
+            url_suffix='/scripts/get',
+            json_data=request_data,
+            resp_type='content'
         )
 
-    def delete_automation_script(self, field: str, value: str):
+    def delete_automation_script(self, request_data):
         """
         Deletes an automation script.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
 
         Args:
-            field (str): The field to search by (id or name).
-            value (str): The value of the field to search for.
+            request_data (dict):
         """
         self._http_request(
             method='POST',
-            url_suffix='/scripts/delete/',
-            json_data={'request_data': {field: value}},
-            headers=self.headers,
-            timeout=self.timeout,
+            url_suffix='/scripts/delete',
+            json_data=request_data,
         )
 
-    # --- Automation Playbook Methods ---
-
-    def create_automation_playbook(self, file_content: bytes, file_name: str):
+    def create_automation_playbook(self, files):
         """
         Creates or updates an automation playbook by uploading a file.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
 
         Args:
-            file_content (bytes): The content of the playbook file.
-            file_name (str): The name of the playbook file.
+            files (dict):
+
         """
         self._http_request(
             method='POST',
-            url_suffix='/playbooks/insert/',
-            files={'file': (file_name, file_content)},
-            headers=self.headers,
-            timeout=self.timeout,
+            url_suffix='/playbooks/insert',
+            files=files,
         )
 
-    def get_automation_playbook(self, field: str, value: str) -> bytes:
+    def get_automation_playbook(self, request_data) -> bytes:
         """
         Gets an automation playbook.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
 
         Args:
-            field (str): The field to search by (id or name).
-            value (str): The value of the field to search for.
+            request_data (dict):
 
         Returns:
             bytes: The playbook file content.
         """
         return self._http_request(
             method='POST',
-            url_suffix='/playbooks/get/',
-            json_data={'request_data': {field: value}},
-            headers=self.headers,
-            timeout=self.timeout,
+            url_suffix='/playbooks/get',
+            json_data=request_data,
             resp_type='content',
         )
 
-    def delete_automation_playbook(self, field: str, value: str):
+    def delete_automation_playbook(self, request_data):
         """
         Deletes an automation playbook.
         API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
 
         Args:
-            field (str): The field to search by (id or name).
-            value (str): The value of the field to search for.
+            request_data (dict):
         """
         self._http_request(
             method='POST',
-            url_suffix='/playbooks/delete/',
-            json_data={'request_data': {field: value}},
-            headers=self.headers,
-            timeout=self.timeout,
+            url_suffix='/playbooks/delete',
+            json_data=request_data,
         )
-
 
 
 def extract_paths_and_names(paths: list) -> tuple:
@@ -1992,10 +1972,9 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
-
 def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
     """
-    Creates or updates an automation script by uploading a file.
+    Creates an automation script by uploading a file.
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
 
     Args:
@@ -2007,13 +1986,18 @@ def automation_script_create_command(client: Client, args: Dict) -> CommandResul
     """
     entry_id = args.get('entry_id', '')
     file_info = demisto.getFilePath(entry_id)
+
     file_path = file_info.get('path', '')
     file_name = file_info.get('name', '')
+    demisto.debug(f"Got file info {file_info}")
 
     with open(file_path, 'rb') as f:
         file_content = f.read()
 
-    client.create_automation_script(file_content=file_content, file_name=file_name)
+    files = {
+        'file': (file_name, file_content)
+    }
+    res = client.create_automation_script(files)
     return CommandResults(readable_output='Automation script created successfully.')
 
 
@@ -2029,11 +2013,12 @@ def automation_script_get_command(client: Client, args: Dict) -> dict:
     Returns:
         dict: A file result dictionary.
     """
-    field = args.get('field', '')
-    value = args.get('value', '')
+    field = args.get('field')
+    value = args.get('value')
 
-    file_content = client.get_automation_script(field=field, value=value)
-    return fileResult(f'automation_script_{value}', file_content)
+    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
+    file_content = client.get_automation_script(request_data)
+    return fileResult(filename=f'automation_script_{value}', data=file_content)
 
 
 def automation_script_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -2051,7 +2036,8 @@ def automation_script_delete_command(client: Client, args: Dict) -> CommandResul
     field = args.get('field', '')
     value = args.get('value', '')
 
-    client.delete_automation_script(field=field, value=value)
+    request_data = {'request_data': {"field": field, "value": value}}
+    client.delete_automation_script(request_data)
     return CommandResults(readable_output='Automation script deleted successfully.')
 
 
@@ -2075,7 +2061,8 @@ def automation_playbook_create_command(client: Client, args: Dict) -> CommandRes
     with open(file_path, 'rb') as f:
         file_content = f.read()
 
-    client.create_automation_playbook(file_content=file_content, file_name=file_name)
+    files = {'file': (file_name, file_content)}
+    client.create_automation_playbook(files)
     return CommandResults(readable_output='Automation playbook created successfully.')
 
 
@@ -2094,8 +2081,9 @@ def automation_playbook_get_command(client: Client, args: Dict) -> dict:
     field = args.get('field', '')
     value = args.get('value', '')
 
-    file_content = client.get_automation_playbook(field=field, value=value)
-    return fileResult(f'automation_playbook_{value}', file_content)
+    request_data = {'request_data': {"field": field, "value": value}}
+    file_content = client.get_automation_playbook(request_data)
+    return fileResult(filename=f'automation_playbook_{value}', data=file_content)
 
 
 def automation_playbook_delete_command(client: Client, args: Dict) -> CommandResults:
@@ -2112,8 +2100,8 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     """
     field = args.get('field', '')
     value = args.get('value', '')
-
-    client.delete_automation_playbook(field=field, value=value)
+    request_data = {'request_data': {"field": field, "value": value}}
+    client.delete_automation_playbook(request_data)
     return CommandResults(readable_output='Automation playbook deleted successfully.')
 
 

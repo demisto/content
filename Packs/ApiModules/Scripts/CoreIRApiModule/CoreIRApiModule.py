@@ -192,6 +192,7 @@ class CoreClient(BaseClient):
         json_data=None,  # type: ignore[override]
         params=None,
         data=None,
+        files=None,
         timeout=None,
         raise_on_status=False,
         ok_codes=None,
@@ -252,6 +253,7 @@ class CoreClient(BaseClient):
                 json_data=json_data,
                 params=params,
                 data=data,
+                files=files,
                 timeout=timeout,
                 raise_on_status=raise_on_status,
                 ok_codes=ok_codes,
