@@ -255,7 +255,7 @@ LOG_SOURCES_RAW_FORMATTED = {
     "target_event_collector_id": "TargetEventCollectorID",
 }
 
-TIME_FIELDS_PLACE_HOLDER = 9223372036854775807  # represents the max val that can be stored in a 64-bit signed integer data type.
+TIMESTAMP_MAX_VALUE = 9223372036854775807  # represents the max val that can be stored in a 64-bit signed integer data type.
 
 USECS_ENTRIES = {
     "last_persisted_time",
@@ -1320,6 +1320,13 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
     ]
 
 
+def safe_cast_to_int(k: str, v: Any, fallback: int = 0) -> int:
+    try:
+        return arg_to_number(v) or fallback
+    except ValueError:
+        return fallback
+
+
 def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
     """Checks whether the given key should be converted or not.
     The variable should be converted if the key is in the USECS_ENTRIES list and the value is valid.
@@ -1331,8 +1338,18 @@ def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) ->
     Returns:
         bool: True if it should be converted, otherwise return False.
     """
-    valid_value = isinstance(v, str) or v != TIME_FIELDS_PLACE_HOLDER
-    return k in USECS_ENTRIES and valid_value
+    is_valid_value: bool = safe_cast_to_int(k, v) < TIMESTAMP_MAX_VALUE
+    if not is_valid_value:
+        print_debug_msg(f"Invalid timestamp value. Got key={k} with value={v}. Skipping...")
+        return False
+
+    is_key_in_timestamp_keys: bool = k in USECS_ENTRIES
+    if not is_key_in_timestamp_keys:
+        print_debug_msg(f"Unknown timestamp key. Got key={k} with value={v}. Skipping...")
+        return False
+
+    # print_debug_msg(f"Retained key={k} with value{v}.")
+    return True
 
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
@@ -2733,17 +2750,29 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
         (List[Dict]): Incidents list.
     """
     print_debug_msg(f"Creating {len(offenses)} incidents")
-    return [
-        {
-            # NOTE: incident name will be updated in mirroring also with incoming mapper.
-            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
-            "rawJSON": json.dumps(offense),
-            "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
-            "type": incident_type,
-            "haIntegrationEventID": str(offense.get("id")),
-        }
-        for offense in offenses
-    ]
+    incidents = []
+
+    for offense in offenses:
+        offense_id = offense.get('id')
+        offense_start_time = offense.get("start_time")
+        offense_occurred_time = get_time_parameter(offense_start_time, iso_format=True)
+
+        # `get_time_parameter` returns None or original Unix timestamp if failed
+        if not offense_occurred_time or isinstance(offense_occurred_time, int):
+            print_debug_msg(f"Invalid {offense_start_time=} in {offense_id=}. Falling back on current UTC time.")
+            occurred_time = datetime.now(tz=timezone.utc).isoformat()
+
+        incidents.append(
+            {
+                # NOTE: incident name will be updated in mirroring also with incoming mapper.
+                "name": f"""{offense_id} {offense.get('description', '')}""",
+                "rawJSON": json.dumps(offense),
+                "occurred": occurred_time,
+                "type": incident_type,
+                "haIntegrationEventID": str(offense.get("id")),
+            }
+        )
+    return incidents
 
 
 def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
@@ -4476,6 +4505,11 @@ def create_events_search(
         if not offense_start_time:
             offense = client.offenses_list(offense_id=offense_id)
             offense_start_time = offense["start_time"]
+
+        if not should_get_time_parameter(k="start_time", v=offense_start_time):
+            print_debug_msg(f"Invalid {offense_start_time=} in {offense_id=}. Defaulting to 0.")
+            offense_start_time = "0"
+
         query_expression = (
             f"SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} "  # noqa: S608, E501
             f"START {offense_start_time}"
