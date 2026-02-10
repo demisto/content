@@ -769,7 +769,7 @@ def main():
     look_back_days = int(params.get("look_back", 1))
     handle_proxy(params.get("proxy"))
 
-    if isinstance(webservice_config_ticket, str):
+    if webservice_config_ticket and isinstance(webservice_config_ticket, str):
         webservice_config_ticket = safe_load_json(webservice_config_ticket)
 
     otrs_client = OTRSClient(
