@@ -2760,14 +2760,14 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
         # `get_time_parameter` returns None or original Unix timestamp if failed
         if not offense_occurred_time or isinstance(offense_occurred_time, int):
             print_debug_msg(f"Invalid {offense_start_time=} in {offense_id=}. Falling back on current UTC time.")
-            occurred_time = datetime.now(tz=timezone.utc).isoformat()
+            offense_occurred_time = datetime.now(tz=timezone.utc).isoformat()
 
         incidents.append(
             {
                 # NOTE: incident name will be updated in mirroring also with incoming mapper.
                 "name": f"""{offense_id} {offense.get('description', '')}""",
                 "rawJSON": json.dumps(offense),
-                "occurred": occurred_time,
+                "occurred": offense_occurred_time,
                 "type": incident_type,
                 "haIntegrationEventID": str(offense.get("id")),
             }
