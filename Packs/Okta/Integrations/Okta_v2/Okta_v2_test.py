@@ -1409,7 +1409,7 @@ def test_clear_user_sessions_with_oauth_tokens(mocker):
     mock_http_request.assert_called_once_with(
         method="DELETE",
         url_suffix="/api/v1/users/TestUserID456/sessions",
-        params={"oauthTokens": "true"},
+        params={"oauthTokens": True},
         resp_type="text",
     )
     assert "TestUserID456" in readable_output
@@ -1434,7 +1434,7 @@ def test_clear_user_sessions_without_oauth_tokens(mocker):
     mock_http_request.assert_called_once_with(
         method="DELETE",
         url_suffix="/api/v1/users/TestUserID789/sessions",
-        params=None,
+        params={"oauthTokens": False},
         resp_type="text",
     )
     assert "TestUserID789" in readable_output
