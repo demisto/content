@@ -330,8 +330,6 @@ To run this command, you must have *Add Users* or *Update Users* permissions.
 ***
 Return a list of all existing users in the vault that meet the filter and search criteria.
 
-To run this command, you must have *Audit Users* permission.
-
 #### Base Command
 
 `cyberark-pas-users-list`
@@ -340,90 +338,20 @@ To run this command, you must have *Audit Users* permission.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Retrieve users using filters. Valid values: userType, componentUser. | Optional |
-| search | Search by the following values: username, first name, last name. | Optional |
+| filter | Retrieve users using filters. Valid values: userType, componentUser. | Optional | 
+| search | Search by the following values: username, first name, last name. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Users.id | Number | The unique IDs of the users. |
-| CyberArkPAS.Users.authenticationMethod | String | The authentication method of the user. |
-| CyberArkPAS.Users.changePassOnNextLogon | Boolean | Whether or not the users must change their password. |
-| CyberArkPAS.Users.description | String | Descriptions of the users. |
-| CyberArkPAS.Users.enableUser | Boolean | Whether or not the users are enabled. |
-| CyberArkPAS.Users.expiryDate | Number | The expiry dates of the users. |
-| CyberArkPAS.Users.internet.businessEmail | String | The email addresses of the users. |
-| CyberArkPAS.Users.lastSuccessfulLoginDate | Number | The last successful login dates of the users. |
-| CyberArkPAS.Users.location | String | The locations in the vault where the users were created. |
-| CyberArkPAS.Users.personalDetails.profession | String | The professions of the users. |
-| CyberArkPAS.Users.suspended | Boolean | Whether or not the users are suspended. |
-| CyberArkPAS.Users.userType | String | The types of the users. |
-| CyberArkPAS.Users.username | String | The names of the users. |
-| CyberArkPAS.Users.vaultAuthorization | String | The permissions of the users. |
-
-#### Command Example
-
-```!cyberark-pas-users-list```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Users": [
-            {
-                "componentUser": false,
-                "id": 2,
-                "location": "\\",
-                "personalDetails": {
-                    "firstName": "",
-                    "lastName": "",
-                    "middleName": ""
-                },
-                "source": "CyberArk",
-                "userType": "Built-InAdmins",
-                "username": "Administrator",
-                "vaultAuthorization": [
-                    "AddUpdateUsers",
-                    "AddSafes",
-                    "AddNetworkAreas",
-                    "ManageDirectoryMapping",
-                    "ManageServerFileCategories",
-                    "AuditUsers",
-                    "BackupAllSafes",
-                    "RestoreAllSafes",
-                    "ResetUsersPasswords",
-                    "ActivateUsers"
-                ]
-            },
-            {
-                "componentUser": false,
-                "id": 3,
-                "location": "\\",
-                "personalDetails": {
-                    "firstName": "",
-                    "lastName": "",
-                    "middleName": ""
-                },
-                "source": "CyberArk",
-                "userType": "Built-InAdmins",
-                "username": "Auditor",
-                "vaultAuthorization": [
-                    "AuditUsers"
-                ]
-            }
-}
-```
-
-#### Human Readable Output
-
->### There are 2 users
->
->|componentUser|id|location|personalDetails|source|userType|username|vaultAuthorization|
->|---|---|---|---|---|---|---|---|
->| false | 2 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Administrator | AddUpdateUsers,<br/>AddSafes,<br/>AddNetworkAreas,<br/>ManageDirectoryMapping,<br/>ManageServerFileCategories,<br/>AuditUsers,<br/>BackupAllSafes,<br/>RestoreAllSafes,<br/>ResetUsersPasswords,<br/>ActivateUsers |
->| false | 3 | \ | firstName: <br/>middleName: <br/>lastName:  | CyberArk | Built-InAdmins | Auditor | AuditUsers |
+| CyberArkPAS.Users.id | Number | The unique IDs of the users. | 
+| CyberArkPAS.Users.username | String | The names of the users. | 
+| CyberArkPAS.Users.source | String | The sources of the users. | 
+| CyberArkPAS.Users.userType | String | The types of the users. | 
+| CyberArkPAS.Users.componentUser | Boolean | Whether the users are component users. | 
+| CyberArkPAS.Users.location | String | The locations in the vault where the users were created. | 
+| CyberArkPAS.Users.vaultAuthorization | String | The permissions of the users. | 
 
 ### cyberark-pas-user-activate
 

@@ -743,7 +743,7 @@ def get_users_command(
 ) -> CommandResults:
     """Returns a list of all existing users in the vault.
     :param client: The client object with an access token
-    :param filter: Retrieve users using filters.
+    :param filter: Retrieves users using filters.
     :param search: Search by the values.
     :return: CommandResults
     """
