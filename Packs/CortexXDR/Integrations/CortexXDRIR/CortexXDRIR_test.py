@@ -2924,6 +2924,7 @@ def test_case_artifact_list_command(mock_response, expected_count_network, expec
                 count += 1
             assert len(res) == count
 
+
 @pytest.mark.parametrize(
     "args, expected_request_data",
     [
