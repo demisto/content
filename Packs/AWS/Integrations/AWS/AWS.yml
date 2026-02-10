@@ -6002,6 +6002,320 @@ script:
         required: false
         defaultValue: "40"
 
+  - name: aws-ec2-snapshots-describe
+    description: Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+    - name: limit
+      description: The maximum number of snapshots to return for this request. This value can be between 5 and 1000.
+    - name: next_token
+      description: The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended.
+    - name: owner_ids
+      description: A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners.
+      isArray: true
+    - name: restorable_by_user_ids
+      description: A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot.
+      isArray: true
+    - name: snapshot_ids
+      description: A comma-separated list of snapshot IDs.
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
+      description: The data encryption key identifier for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Description
+      description: The description for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Encrypted
+      description: Indicates whether the snapshot is encrypted.
+      type: boolean
+    - contextPath: AWS.EC2.Snapshots.KmsKeyId
+      description: The Amazon Resource Name (ARN) of the AWS KMS key that was used to protect the volume encryption key for the parent volume.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.OwnerId
+      description: The ID of the AWS account that owns the EBS snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Progress
+      description: The progress of the snapshot, as a percentage.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.SnapshotId
+      description: The ID of the snapshot. Each snapshot receives a unique identifier when it is created.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StartTime
+      description: The time stamp when the snapshot was initiated.
+      type: date
+    - contextPath: AWS.EC2.Snapshots.State
+      description: The snapshot state.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StateMessage
+      description: Encrypted Amazon EBS snapshots are copied asynchronously. If a snapshot copy operation fails, this field displays error state details to help you diagnose why the error occurred.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.VolumeId
+      description: The ID of the volume that was used to create the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.VolumeSize
+      description: The size of the volume, in GiB.
+      type: number
+    - contextPath: AWS.EC2.Snapshots.OwnerAlias
+      description: The AWS owner alias, from an Amazon-maintained list (amazon). This is not the user-configured AWS account alias set using the IAM console.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.OutpostArn
+      description: The ARN of the Outpost on which the snapshot is stored.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.StorageTier
+      description: The storage tier in which the snapshot is stored.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.RestoreExpiryTime
+      description: Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived.
+      type: date
+    - contextPath: AWS.EC2.Snapshots.SseType
+      description: Reserved for future use.
+      type: string
+    - contextPath: AWS.EC2.SnapshotsNextPageToken
+      description: Next page token for pagination.
+      type: string
+
+  - name: aws-ec2-snapshot-delete
+    description: Deletes the specified snapshot.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: snapshot_id
+      description: The ID of the EBS snapshot.
+      required: true
+
+  - name: aws-ec2-snapshot-copy
+    description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: source_snapshot_id
+      description: The ID of the EBS snapshot to copy.
+      required: true
+    - name: source_region
+      description: The ID of the Region that contains the snapshot to be copied.
+      required: true
+    - name: description
+      description: A description for the EBS snapshot.
+    - name: destination_outpost_arn
+      description: The Amazon Resource Name (ARN) of the Outpost where the snapshot will be copied.
+    - name: encrypted
+      description: Use this parameter to encrypt a copy of an unencrypted snapshot when encryption-by-default is not enabled. Otherwise, omit it.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: kms_key_id
+      description: The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used.
+    - name: presigned_url
+      description: When you copy an encrypted source snapshot using the Amazon EC2 Query API, you must supply a pre-signed URL.
+    - name: tag_specifications
+      description: The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val".
+      isArray: true
+    outputs:
+    - contextPath: AWS.EC2.Snapshots.SnapshotId
+      description: The ID of the new snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Tags.Value
+      description: The value of the tag.
+      type: string
+
+  - name: aws-ec2-snapshot-completed-waiter
+    description: A waiter function that waits until the snapshot is complete.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
+    - name: owner_ids
+      description: A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners.
+      isArray: true
+    - name: restorable_by_user_ids
+      description: A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot.
+      isArray: true
+    - name: snapshot_ids
+      description: A comma-separated list of snapshot IDs.
+      isArray: true
+    - name: waiter_delay
+      description: The amount of time in seconds to wait between attempts. Default 15.
+      defaultValue: "15"
+    - name: waiter_max_attempts
+      description: The maximum number of attempts to be made. Default 40.
+      defaultValue: "40"
+
   - name: aws-s3-bucket-encryption-get
     description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
     arguments:
