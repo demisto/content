@@ -24,7 +24,7 @@ def get_server_url():
     return url
 
 
-''' GLOBAL VARIABLES  '''
+''' GLOBAL VARIABLES '''
 
 DEFAULTS = {
     'limit': 10,
