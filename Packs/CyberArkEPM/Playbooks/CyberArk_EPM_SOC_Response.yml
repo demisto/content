@@ -7,6 +7,7 @@ description: Activates a CyberArk EPM SOC risk plan for a specified endpoint, ba
 marketplaces:
 - marketplacev2
 - platform
+- xsoar
 fromversion: 6.5.0
 starttaskid: "0"
 tasks:
@@ -174,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b278833a-1dd6-465e-80c4-43e768153204
+    taskid: 8dd02779-41d9-42d1-91cc-7215351576d6
     type: condition
     task:
-      id: b278833a-1dd6-465e-80c4-43e768153204
+      id: 8dd02779-41d9-42d1-91cc-7215351576d6
       version: -1
       name: Is Integration Available
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -187,6 +188,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "5"
       "yes":
       - "1"
     scriptarguments:
@@ -229,7 +232,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0

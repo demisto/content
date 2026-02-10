@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of CyberArkEPMSOCResp
 
 ## Configure CyberArk EPM SOC Response (Beta) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | EPM Logon URL | Example: https://login.epm.cyberark.com | True |
@@ -29,17 +28,17 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risk_plan | The name of the risk plan to activate. | Required | 
-| endpoint_name | The name of the endpoint to target. | Required | 
-| external_ip | The external IP address of the endpoint. | Optional | 
+| risk_plan | The name of the risk plan to activate. | Required |
+| endpoint_name | The name of the endpoint to target. | Required |
+| external_ip | The external IP address of the endpoint. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints added to the risk plan. | 
-| CyberArkEPMSOCResponse.RiskPlan | String | The name of activated risk plan. | 
-| CyberArkEPMSOCResponse.Action | String | The action performed on the risk plan \(add/remove\). | 
+| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints added to the risk plan. |
+| CyberArkEPMSOCResponse.RiskPlan | String | The name of activated risk plan. |
+| CyberArkEPMSOCResponse.Action | String | The action performed on the risk plan \(add/remove\). |
 
 ### cyberarkepm-deactivate-risk-plan
 
@@ -54,12 +53,12 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risk_plan | The name of the risk plan to deactivate. | Required | 
-| endpoint_name | The name of the endpoint to target. | Required | 
-| external_ip | The external IP address of the endpoint. | Optional | 
+| risk_plan | The name of the risk plan to deactivate. | Required |
+| endpoint_name | The name of the endpoint to target. | Required |
+| external_ip | The external IP address of the endpoint. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints removed from risk plan. | 
+| CyberArkEPMSOCResponse.EndpointIDs | String | The IDs of the endpoints removed from risk plan. |
