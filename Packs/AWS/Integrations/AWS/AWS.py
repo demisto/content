@@ -2609,28 +2609,13 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         addresses = response.get("Addresses", [])
 
-        # Build readable output data
-        readable_outputs = []
-        for address in addresses:
-            readable_data = {
-                "PublicIp": address.get("PublicIp"),
-                "AllocationId": address.get("AllocationId"),
-                "Domain": address.get("Domain"),
-                "InstanceId": address.get("InstanceId"),
-                "AssociationId": address.get("AssociationId"),
-                "NetworkInterfaceId": address.get("NetworkInterfaceId"),
-                "PrivateIpAddress": address.get("PrivateIpAddress"),
-            }
-            readable_data = remove_empty_elements(readable_data)
-            readable_outputs.append(readable_data)
-
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
             outputs=addresses,
             readable_output=tableToMarkdown(
                 "AWS EC2 Elastic IP Addresses",
-                readable_outputs,
+                addresses,
                 headers=[
                     "PublicIp",
                     "AllocationId",
@@ -2681,27 +2666,15 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
-        # Build output data
-        output_data = {
-            "PublicIp": response.get("PublicIp"),
-            "AllocationId": response.get("AllocationId"),
-            "Domain": response.get("Domain"),
-            "PublicIpv4Pool": response.get("PublicIpv4Pool"),
-            "NetworkBorderGroup": response.get("NetworkBorderGroup"),
-            "CustomerOwnedIp": response.get("CustomerOwnedIp"),
-            "CustomerOwnedIpv4Pool": response.get("CustomerOwnedIpv4Pool"),
-            "CarrierIp": response.get("CarrierIp"),
-        }
-        output_data = remove_empty_elements(output_data)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
-            outputs=output_data,
+            outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Allocated Elastic IP",
-                output_data,
+                outputs,
                 headers=["PublicIp", "AllocationId", "Domain", "PublicIpv4Pool", "NetworkBorderGroup"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -2747,7 +2720,6 @@ class EC2:
             "AssociationId": response.get("AssociationId"),
         }
         output_data = remove_empty_elements(output_data)
-
         return CommandResults(
             outputs_prefix="AWS.EC2.ElasticIPs",
             outputs_key_field="AllocationId",
@@ -2928,20 +2900,6 @@ class EC2:
         response = serialize_response_with_datetime_encoding(response)
         images = response.get("Images", [])
 
-        # Build readable output data
-        readable_outputs = []
-        for image in images:
-            readable_data = {
-                "ImageId": image.get("ImageId"),
-                "Name": image.get("Name"),
-                "CreationDate": image.get("CreationDate"),
-                "State": image.get("State"),
-                "Public": image.get("Public"),
-                "Description": image.get("Description"),
-            }
-            readable_data = remove_empty_elements(readable_data)
-            readable_outputs.append(readable_data)
-
         outputs = {
             "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
             "AWS.EC2(true)": {
@@ -2956,7 +2914,7 @@ class EC2:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS EC2 Images",
-                readable_outputs,
+                images,
                 headers=["ImageId", "Name", "CreationDate", "State", "Public", "Description"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
@@ -3013,7 +2971,6 @@ class EC2:
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
-
         # Build output data
         output_data = {
             "ImageId": response.get("ImageId"),
@@ -3512,32 +3469,22 @@ class EC2:
         if not associations:
             return CommandResults(readable_output="No IAM instance profile associations were found.")
 
-        # Format output data
-        readable_data = []
-        for association in associations:
-            readable_data.append(
-                {
-                    "AssociationId": association.get("AssociationId"),
-                    "InstanceId": association.get("InstanceId"),
-                    "State": association.get("State"),
-                    "IamInstanceProfile": association.get("IamInstanceProfile"),
-                }
-            )
-
-        readable_output = tableToMarkdown(
-            "AWS IAM Instance Profile Associations",
-            readable_data,
-            headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
-            headerTransform=pascalToSpace,
-            removeNull=True,
-        )
-
         outputs = {
             "AWS.EC2.IamInstanceProfileAssociations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
             "AWS.EC2(true)": {"IamInstanceProfileAssociationsNextToken": response.get("NextToken")},
         }
 
-        return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS IAM Instance Profile Associations",
+                associations,
+                headers=["AssociationId", "InstanceId", "State", "IamInstanceProfile"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
 
     @staticmethod
     def get_password_data_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -3627,26 +3574,9 @@ class EC2:
         if not reserved_instances:
             return CommandResults(readable_output="No Reserved Instances were found.")
 
-        # Format output data
-        readable_data = []
-        for reservation in reserved_instances:
-            readable_data.append(
-                {
-                    "ReservedInstancesId": reservation.get("ReservedInstancesId"),
-                    "InstanceType": reservation.get("InstanceType"),
-                    "InstanceCount": reservation.get("InstanceCount"),
-                    "State": reservation.get("State"),
-                    "Start": reservation.get("Start"),
-                    "End": reservation.get("End"),
-                    "Duration": reservation.get("Duration"),
-                    "OfferingClass": reservation.get("OfferingClass"),
-                    "Scope": reservation.get("Scope"),
-                }
-            )
-
         readable_output = tableToMarkdown(
             "AWS EC2 Reserved Instances",
-            readable_data,
+            reserved_instances,
             headers=[
                 "ReservedInstancesId",
                 "InstanceType",
@@ -3669,6 +3599,288 @@ class EC2:
             readable_output=readable_output,
             raw_response=response,
         )
+
+    @staticmethod
+    def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified EBS volumes or all of your EBS volumes.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters and volume IDs
+
+        Returns:
+            CommandResults: Results containing volume information
+        """
+        kwargs = {}
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        # Add volume IDs if provided
+        if volume_ids := args.get("volume_ids"):
+            kwargs["VolumeIds"] = argToList(volume_ids)
+
+        if not volume_ids:
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing volumes with parameters: {kwargs}")
+        response = client.describe_volumes(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        volumes = response.get("Volumes", [])
+
+        if not volumes:
+            return CommandResults(readable_output="No EC2 volumes were found.")
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            volumes,
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "Encrypted", "State", "CreateTime"],
+            removeNull=True,
+        )
+
+        outputs = {
+            "AWS.EC2.Volumes(val.VolumeId && val.VolumeId == obj.VolumeId)": volumes,
+            "AWS.EC2(true)": {"VolumesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and modification parameters
+
+        Returns:
+            CommandResults: Results containing volume modification information
+        """
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Modifying volume with parameters: {kwargs}")
+        response = client.modify_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        volume_modification = response.get("VolumeModification", {})
+        outputs = {
+            "VolumeId": volume_modification.pop("VolumeId", None),
+            "Size": volume_modification.pop("TargetSize", None),
+            "Iops": volume_modification.pop("TargetIops", None),
+            "VolumeType": volume_modification.pop("TargetVolumeType", None),
+            "Throughput": volume_modification.pop("TargetThroughput", None),
+            "MultiAttachEnabled": volume_modification.pop("TargetMultiAttachEnabled", None),
+            "Modification": volume_modification,
+        }
+        remove_nulls_from_dictionary(outputs)
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Modification",
+            outputs,
+            headers=[
+                "VolumeId",
+                "Size",
+                "Iops",
+                "VolumeType",
+                "Throughput",
+                "MultiAttachEnabled",
+            ],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including availability zone and volume parameters
+
+        Returns:
+            CommandResults: Results containing created volume information
+        """
+        kwargs = {
+            "AvailabilityZone": args.get("availability_zone"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "OutpostArn": args.get("outpost_arn"),
+            "SnapshotId": args.get("snapshot_id"),
+            "VolumeType": args.get("volume_type"),
+            "MultiAttachEnabled": arg_to_bool_or_none(args.get("multi_attach_enabled")),
+            "ClientToken": args.get("client_token"),
+            "Iops": arg_to_number(args.get("iops")),
+            "Size": arg_to_number(args.get("size")),
+            "Throughput": arg_to_number(args.get("throughput")),
+        }
+
+        if tags := args.get("tags"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "volume", "Tags": parse_tag_field(tags)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating volume with parameters: {kwargs}")
+        response = client.create_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volumes",
+            outputs,
+            headers=["VolumeId", "VolumeType", "AvailabilityZone", "CreateTime", "Encrypted", "Size", "State", "Iops"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including device, instance ID, and volume ID
+
+        Returns:
+            CommandResults: Results containing volume attachment information
+        """
+        kwargs = {
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id"),
+            "VolumeId": args.get("volume_id"),
+        }
+
+        print_debug_logs(client, f"Attaching volume with parameters: {kwargs}")
+        response = client.attach_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            outputs,
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Detaches an EBS volume from an instance.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID and optional parameters
+
+        Returns:
+            CommandResults: Results containing volume detachment information
+        """
+        kwargs = {
+            "VolumeId": args.get("volume_id"),
+            "Force": arg_to_bool_or_none(args.get("force")),
+            "Device": args.get("device"),
+            "InstanceId": args.get("instance_id"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Detaching volume with parameters: {kwargs}")
+        response = client.detach_volume(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Volume Attachments",
+            outputs,
+            headers=["VolumeId", "InstanceId", "AttachTime", "Device", "State", "DeleteOnTermination"],
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Volumes",
+            outputs_key_field="VolumeId",
+            outputs={"Attachments": outputs, "VolumeId": response.get("VolumeId")},
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including volume ID
+
+        Returns:
+            CommandResults: Results with success message
+        """
+        volume_id = args.get("volume_id")
+        print_debug_logs(client, f"Deleting volume: {volume_id}")
+        response = client.delete_volume(VolumeId=volume_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
 
     @staticmethod
     def describe_launch_templates_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -5494,6 +5706,12 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-address-associate": EC2.associate_address_command,
     "aws-ec2-address-disassociate": EC2.disassociate_address_command,
     "aws-ec2-address-release": EC2.release_address_command,
+    "aws-ec2-volumes-describe": EC2.describe_volumes_command,
+    "aws-ec2-volume-modify": EC2.modify_volume_command,
+    "aws-ec2-volume-create": EC2.create_volume_command,
+    "aws-ec2-volume-attach": EC2.attach_volume_command,
+    "aws-ec2-volume-detach": EC2.detach_volume_command,
+    "aws-ec2-volume-delete": EC2.delete_volume_command,
     "aws-ec2-launch-templates-describe": EC2.describe_launch_templates_command,
     "aws-ec2-launch-template-create": EC2.create_launch_template_command,
     "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
@@ -5581,7 +5799,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
-    "s3:ListObjects",
+    "s3:ListBuckets",
     "s3:DeleteBucket",
     "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
@@ -5595,6 +5813,12 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
     "budgets:DescribeNotificationsForBudget",
+    "ec2:DescribeVolumes",
+    "ec2:ModifyVolume",
+    "ec2:CreateVolume",
+    "ec2:AttachVolume",
+    "ec2:DetachVolume",
+    "ec2:DeleteVolume",
     "ec2:DescribeLaunchTemplates",
     "ec2:CreateLaunchTemplate",
     "ec2:DeleteLaunchTemplate",
