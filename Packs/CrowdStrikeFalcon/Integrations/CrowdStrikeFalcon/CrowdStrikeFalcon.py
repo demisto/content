@@ -3881,16 +3881,9 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         auth_handler=OAuth2ClientCredentialsHandler(
             token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
         ),
-        # Retry policy for transient failures
-        retry_policy=RetryPolicy(max_attempts=5, initial_delay=1.0, multiplier=2.0, max_delay=60.0, jitter=0.2),
-        # Rate limiting
-        rate_limiter=RateLimitPolicy(rate_per_second=10.0, burst=20),
-        # Circuit breaker for fault tolerance
-        circuit_breaker=CircuitBreakerPolicy(failure_threshold=5, recovery_timeout=60.0),
         # Enable diagnostics
         diagnostic_mode=True,
         client_name="FalconSpotlightAssetCollector",
-        timeout=60.0,
     )
 
 
@@ -4575,6 +4568,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
+    # TODO: Verify do I need both Store and context - Remove them
     # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
@@ -4611,6 +4605,7 @@ async def fetch_spotlight_assets():
     spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(
         context_store
     )
+    # The "next page" token - In Falcon API called "after"
     after_token = spotlight_state.cursor
 
     # Create client
