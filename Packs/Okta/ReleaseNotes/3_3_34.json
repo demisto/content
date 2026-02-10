@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "dded the revokeOauthTokens argument to the okta-clear-user-sessions command. The default value is true, meaning OAuth/OIDC tokens are revoked by default."
+    "breakingChangesNotes": "Added the revokeOauthTokens argument to the okta-clear-user-sessions command. The default value is true, meaning OAuth/OIDC tokens are revoked by default."
 }
