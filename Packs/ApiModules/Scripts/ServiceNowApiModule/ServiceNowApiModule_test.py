@@ -185,7 +185,7 @@ def test_get_access_token_retry_only_once(mocker):
         client.get_access_token()
 
     # Validate that login was called exactly once (no infinite loop)
-    mock_login.assert_called_once_with(client.username, client.password)
+    mock_login.assert_called_once_with(username=client.username, password=client.password)
 
 
 def test_separate_client_id_and_refresh_token():

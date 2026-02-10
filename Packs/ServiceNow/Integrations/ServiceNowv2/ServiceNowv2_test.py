@@ -4156,12 +4156,9 @@ class TestCredentialFlowEndToEnd:
         }
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
-        return_error_mock = mocker.patch("ServiceNowv2.return_error")
 
-        main()
-
-        assert return_error_mock.call_count >= 1
-        assert "authentication method" in return_error_mock.call_args_list[0][0][0]
+        with pytest.raises(ValueError, match="authentication method"):
+            main()
 
     def test_basic_auth_partial_credentials_triggers_fallback(self, mocker, requests_mock):
         """
