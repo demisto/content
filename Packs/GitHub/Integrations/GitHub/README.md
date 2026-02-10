@@ -53,7 +53,7 @@ Another authentication option is to create and register a GitHub app under your 
    - In **GitHub App name**, type the name of your app.
    - In **Homepage URL**, type any URL (this field is required).
    - Deselect the **Active** option under the **Webhook settings**.
-   - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read and write, or No access. The minimum is read-only Repository permissions for **Contents**, **Issues**, **Pull requests**, **Checks**, and **Commit statuses**.
+   - In **Permissions**, choose the permissions within your app. For each item, use the drop-down menu and select **Read-only**, **Read and write**, or **No access**. The minimum repository permission for  **Contents**, **Issues**, **Pull requests**, **Checks**, and **Commit statuses** is read only.
    - Click **Create GitHub App**.
    - Click to generate and download a **private key** for your GitHub app.
 4. Once you create a GitHub app, you can install it on one or more of your org or user repositories.
@@ -63,9 +63,15 @@ Another authentication option is to create and register a GitHub app under your 
    - Install the app on all repositories or on selected repositories.
    - Once installed, you will see configuration options for the app on your selected account.
 5. Copy the **private key** from the .pem file generated and downloaded above. Include the lines `-----BEGIN RSA PRIVATE KEY-----` and `-----END RSA PRIVATE KEY-----`. In Cortex, navigate to **Settings** > **Credentials** and click **+ New Credential**. Give the credential a name and paste the private key into the **Certificate** field. When you configure the integration instance, for the **Credentials** parameter, you must select **Switch to credentials** and select the credential you just created.
-6. Locate the **GitHub app integration ID** (under **Advanced Settings** when you set up the integration instance): From the **GitHub Apps** page, click on the app name. The integration ID is the **Client ID**, which should be a string of letters and numbers.
+6. Set the **GitHub app integration ID**.  
+    a. In the **GitHub Apps** page, click the app name.
+    b. Copy the **Client ID** (a string of letters and numbers).
+    c. Under the integration instance settings configuration **Advanced Settings**, paste the client ID in the **GitHub app integration ID** field. 
 <img width="716" height="332" alt="Screenshot 2025-11-26 at 4 18 14 PM" src="doc_files/github_client_id.png" />
-7. Locate the **GitHub app installation ID**: Navigate to a repository where you have installed the app > **Settings** > **GitHub Apps**. To the right of the app name, click **Configure**. The installation ID is the number at the end of the URL.
+7. Set the **GitHub app installation ID**.  
+    a. Navigate to the repository where you installed the app > **Settings** > **GitHub Apps**.
+    b. To the right of the app name, click **Configure**. The installation ID is the number at the end of the URL.
+    c. Under the integration instance settings configuration **Advanced Settings**, paste the installation ID in the **GitHub app installation ID** field.
 
 ### Configure Integration Parameters
 
