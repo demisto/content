@@ -1,4 +1,5 @@
 category: Utilities
+provider: Open Source
 sectionorder:
 - Connect
 - Collect
@@ -428,7 +429,6 @@ script:
   type: python
 defaultclassifier: HelloWorld   # Incident classifier (if "fetch-incidents" is enabled)
 defaultmapperin: HelloWorld-mapper  # Incident field mapper (if "fetch-incidents" is enabled)
-supportlevelheader: xsoar
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
