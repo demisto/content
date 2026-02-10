@@ -12,6 +12,7 @@ import hashlib
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 from typing import Any
+import base64
 from base64 import b64encode
 import httpx
 
