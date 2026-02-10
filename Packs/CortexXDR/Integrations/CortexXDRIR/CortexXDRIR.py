@@ -2046,7 +2046,7 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object.
     """
     statuses_map = {
-        "new": "NEW",
+        "new": "New",
         "in_progress": "In Progress",
         "resolved": "Resolved"
     }
@@ -2074,8 +2074,9 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
 
     issue_id = args.get("issue_id")
     request_data = {"request_data": {"update_data": update_data}}
+    # request_data = {"request_data": update_data}
     client.update_issue(issue_id, request_data)
-    return CommandResults(readable_output="Issue updated successfully")
+    return CommandResults(readable_output=f"Issue with ID {issue_id} updated successfully")
 
 
 def main():  # pragma: no cover
