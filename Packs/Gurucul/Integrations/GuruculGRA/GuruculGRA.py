@@ -133,7 +133,7 @@ def fetch_incidents(
 
         # Only add maxCaseId if it exists
         if maxCaseId is not None:
-            params["maxCaseId"] = tempMaxCaseId
+            params["maxCaseId"] = maxCaseId
 
         case_data = client.fetch_command_result(case_url, params, None)
 
