@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon
+  id: CrowdstrikeFalcon - almog
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -365,8 +365,8 @@ configuration:
   - xsoar
   - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
-name: CrowdstrikeFalcon
+display: CrowdStrike Falcon - almog
+name: CrowdstrikeFalcon - almog
 script:
   commands:
   - arguments:
@@ -5269,21 +5269,29 @@ script:
       type: String
   - arguments:
     - name: repository
-      description: The repository to search.
+      description: |
+        The repository to run the query against.
+        Available repository values:
+        - All: search-all
+        - Falcon: investigate_view
+        - Third party: third-party
+        - IT Automation: falcon_for_it_view
+        - Forensics: forensics_view
       auto: PREDEFINED
       predefined:
       - search-all
       - third-party
       - falcon_for_it_view
       - forensics_view
+      - investigate_view
       defaultValue: search-all
     - name: query
-      description: 'The query string. Example: #event_simpleName = "Event" or host.hostname = "Host"'
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example:#event_simpleName = \"Event_APIActivityAuditEvent\" For more details see: https://library.humio.com/data-analysis/syntax.html."'
       required: true
     - name: start
-      description: 'The start time for the search. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+      description: 'The start time to use as the starting point of the search results, based on an event’s recorded timestamp field. If end is provided, it must be greater than or equal to the start. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
     - name: end
-      description: 'The end time for the search. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+      description: 'The end time to use as the ending point of the search results, based on an event’s recorded timestamp field. If start is provided, it must be less than or equal to the end. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
     - name: around_event_id
       description: The ID of the event to search around.
     - name: around_number_events_before
@@ -5293,9 +5301,9 @@ script:
     - name: around_timestamp
       description: Timestamp for around search. Required when around_event_id is used.
     - name: ingest_start
-      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field.
+      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field. If ingestEnd is provided, it must be greater than or equal to the ingestStart. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone.
     - name: ingest_end
-      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field.
+      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field. If ingestStart is provided, it must be less than or equal to the ingestEnd. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone.
     - name: use_ingest_time
       description: When set to true, the event's ingestStart and ingestEnd times are used as the basis for the query.
       auto: PREDEFINED
@@ -5311,7 +5319,7 @@ script:
       description: Maximum number of events to return.
       defaultValue: '50'
     - name: interval
-      description: Interval between polling attempts in seconds.
+      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range
       defaultValue: '60'
     - name: timeout
       description: Timeout for polling in seconds.
@@ -5319,8 +5327,14 @@ script:
     - name: job_id
       description: Internal argument for polling - job ID from previous run.
       hidden: true
-    - name: polling
+    - name: wait_for_result
       hidden: true
+      description: Whether to poll for results.
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: 'Search NGSIEM historical events. Requires NGSIEM scope with read/write permissions. Query examples: host.hostname = DC1ENV11ADC02, LogonDomain = ENV11, UserName = Administrator, SHA256HashData = <hash>, MD5HashData = <hash>.'
     name: cs-falcon-search-ngsiem-events
     polling: true
