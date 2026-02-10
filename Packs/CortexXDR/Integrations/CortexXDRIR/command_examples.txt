@@ -65,3 +65,11 @@
 !xdr-case-list status="New" severity="low" case_domain="security" created_after="one year"
 !xdr-case-update case_id=1 status=resolved resolve_reason=resolved_other
 !xdr-case-artifact-list case_id=1
+!xdr-bioc-list severity=high type=collection
+!xdr-bioc-create name="TestBIOC" severity=high mitre_tactic_id_and_name="['TA0002 - Execution']" mitre_technique_id_and_name="['T1059 - Command and Scripting Interpreter']" indicator="{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}" type=collection status=enabled comment="Test"
+!xdr-bioc-update name="TestBIOC" severity=high mitre_tactic_id_and_name="['TA0002 - Execution']" mitre_technique_id_and_name="['T1059 - Command and Scripting Interpreter']" indicator="{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}" type=collection status=enabled comment="Test"
+!xdr-bioc-delete type=collection name="TestBIOC"
+!xdr-correlation-rule-list extra_data=true
+!xdr-correlation-rule-create name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
+!xdr-correlation-rule-update name="CR test" severity=low alert_category=dropper execution_mode=scheduled mapping_strategy=auto xql_query="dataset = xdr_data | limit 1" dataset=alerts alert_name="Test" is_enabled=true drilldown_query_timeframe="ALERT" investigation_query_link="dataset = xdr_data | limit 1" schedule="10 minutes" schedule_linux="*/10 * * * *" search_window="1 hours" suppression_duration="1 hours" suppression_enabled=true suppression_fields="event_type" timezone="Asia/Jerusalem"
+!xdr-correlation-rule-delete rule_id=14,15
