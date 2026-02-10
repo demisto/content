@@ -93,7 +93,7 @@ def url_origin_join(base_url: str, path: str = "") -> str:
 def generate_state() -> str:
     """
     Generate a random state parameter for OAuth flows (CSRF protection).
-    
+
     Returns:
         A URL-safe base64-encoded random string without padding.
     """
@@ -576,7 +576,7 @@ class Client:
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,
+            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
             init = await session.initialize()
