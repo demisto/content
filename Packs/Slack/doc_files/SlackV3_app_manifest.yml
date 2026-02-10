@@ -3,7 +3,7 @@ _metadata:
   minor_version: 1
 display_information:
   name: Cortex Assistant
-  description: Integrates Slack into Cortex Platform
+  description: Integrates Slack into Cortex
   background_color: "#2c2d30"
 features:
   app_home:
