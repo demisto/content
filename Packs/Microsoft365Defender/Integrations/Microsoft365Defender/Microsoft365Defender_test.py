@@ -1251,7 +1251,7 @@ def test_update_remote_system_with_entries(mocker):
         assert result["Type"] == EntryType.NOTE
         assert result["Contents"]["dbotIncidentClose"] is True
         assert result["Contents"]["closeReason"] == "Other"
-        
+
     def test_handle_incident_close_out_custom_reason_valid_mapping(mocker):
         """
         Given:
@@ -1262,10 +1262,14 @@ def test_update_remote_system_with_entries(mocker):
         """
 
         # Mock integration params
-        mocker.patch.object(demisto, "params", return_value={
-            "close_out": True,
-            "custom_xsoar_to_defender_close_reason": True,
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "close_out": True,
+                "custom_xsoar_to_defender_close_reason": True,
+            },
+        )
 
         # Mock mapping dict used in the function
         mocker.patch(
@@ -1283,7 +1287,7 @@ def test_update_remote_system_with_entries(mocker):
         assert delta["classification"] == "TruePositive"
         assert delta["determination"] == "Malware"
         assert delta["status"] == "Resolved"
-        
+
     def test_handle_incident_close_out_custom_reason_invalid_mapping_format(mocker):
         """
         Given:
@@ -1292,10 +1296,14 @@ def test_update_remote_system_with_entries(mocker):
             fallback classification/determination are used
         """
 
-        mocker.patch.object(demisto, "params", return_value={
-            "close_out": True,
-            "custom_xsoar_to_defender_close_reason": True,
-        })
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "close_out": True,
+                "custom_xsoar_to_defender_close_reason": True,
+            },
+        )
 
         mocker.patch(
             "Microsoft365Defender.XSOAR_CLOSE_REASON_TO_MICROSOFT_CLASSIFICATION",
