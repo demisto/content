@@ -4077,3 +4077,48 @@ Returns a list of assets.
 | PaloAltoNetworksXDR.Asset.xdm_asset_related_issues_issues_breakdown | Unknown | Breakdown of related issues by severity. |
 | PaloAltoNetworksXDR.Asset.xdm_asset_relations | Unknown | Relations to other assets. |
 | PaloAltoNetworksXDR.Asset.xdm_asset_group_ids | Number | Group IDs associated with the asset. |
+
+### xdr-api-key-delete
+
+***
+Deletes the specified API keys.
+
+#### Base Command
+
+`xdr-api-key-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_id | A comma-separated list of API key IDs to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-api-key-list
+
+***
+Gets a list of existing API keys.
+
+#### Base Command
+
+`xdr-api-key-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| api_id | A comma-separated list of API key IDs to retrieve. | Optional |
+| role | A comma-separated list of API key roles to retrieve. | Optional |
+| expires_before | Filters API keys that expire before this date. For example: "1 year". Filters API keys that have an expiration date. | Optional |
+| expires_after | Filters API keys that expire after this date. For example: "1 year". Filters API keys that have an expiration date. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.APIKeyData.id | String | The API key ID. |
+| PaloAltoNetworksXDR.APIKeyData.roles | String | The roles associated with the API key. |
+| PaloAltoNetworksXDR.APIKeyData.expiration | Date | The expiration date of the API key. |

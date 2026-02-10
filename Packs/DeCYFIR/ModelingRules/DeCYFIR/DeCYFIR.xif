@@ -1,0 +1,20 @@
+[MODEL: dataset = "cyfirma_decyfir_raw"]
+alter
+    user = trim(coalesce(modified_by, principal, uid))
+| alter
+    user_parsed = if(user ~= "^\[",arrayindex(regextract(user, "^\[([^|]+)\|"), 0),user)
+| alter
+    xdm.event.original_event_type = coalesce(event_action, event_type),
+    xdm.event.description = coalesce(name,asset_comments),
+    xdm.source.user.username = user_parsed,
+    xdm.source.user.identifier = uid,
+    xdm.source.ipv4 = if(is_ipv4(ip),ip,null),
+    xdm.source.ipv6 = if(is_ipv6(ip),ip,null),
+    xdm.target.resource.name = asset_name,
+    xdm.target.resource.type = asset_type,
+    xdm.target.application.publisher = vendor,
+    xdm.target.application.version = version,
+    xdm.event.outcome = if(event_type ~= "SUCCESS", XDM_CONST.OUTCOME_SUCCESS,event_type ~= "FAILED",XDM_CONST.OUTCOME_FAILED, event_type ~= "AUTHENTICATION_ATTEMPT",XDM_CONST.OUTCOME_UNKNOWN,event_type),
+    xdm.source.user.upn = if(user_parsed ~= "@",user_parsed,null),
+    xdm.event.operation = if(event_action ~= "create", XDM_CONST.OPERATION_TYPE_CREATE, event_action ~= "delete", XDM_CONST.OPERATION_TYPE_DELETE, event_action ~= "update" or event_action ~= "modify", XDM_CONST.OPERATION_TYPE_UPDATE, event_action),
+    xdm.event.type = source_log_type;

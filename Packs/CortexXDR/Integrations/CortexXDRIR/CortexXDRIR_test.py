@@ -2395,6 +2395,58 @@ def test_extract_paths_and_names_single_item():
     assert file_names == ["file.exe"]
 
 
+def test_api_key_list_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id, role, expires_before, expires_after)
+    When
+        - Running api_key_list_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_list_command
+
+    api_keys_response = load_test_data("./test_data/get_api_keys.json")
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/get_api_keys/", json=api_keys_response)
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {
+        "api_id": "1",
+        "role": "Admin",
+        "expires_before": "2024-01-01T00:00:00Z",
+        "expires_after": "2020-01-01T00:00:00Z",
+    }
+
+    response = api_key_list_command(client, args)
+
+    assert response.outputs == api_keys_response["reply"]["DATA"]
+    assert response.outputs_prefix == "PaloAltoNetworksXDR.APIKeyData"
+    assert "API Keys" in response.readable_output
+
+
+def test_api_key_delete_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments (api_id)
+    When
+        - Running api_key_delete_command
+    Then
+        - Verify the returned result is as we expected
+    """
+    from CortexXDRIR import Client, api_key_delete_command
+
+    requests_mock.post(f"{XDR_URL}/public_api/v1/api_keys/delete/", json={"reply": "ok"})
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"api_id": "1,2"}
+
+    response = api_key_delete_command(client, args)
+
+    assert response.readable_output == "API Keys deleted successfully."
+
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_name_generation(mocker):
     """
