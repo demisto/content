@@ -630,7 +630,8 @@ class Client(CoreClient):
             url_suffix="/issue/search",
             json_data=request_data,
         )
-        return res.get("reply", {}).get("DATA", [])
+        return res
+        # return res.get("reply", {}).get("DATA", [])
 
     def create_issue(self, request_data: dict):
         res = self._http_request(
@@ -1956,6 +1957,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
 
     issues = client.list_issues(request_data)
+    demisto.debug(f"Results {issues}")
 
     readable_output = tableToMarkdown(
         name="Issues",
@@ -2074,7 +2076,6 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
 
     issue_id = args.get("issue_id")
     request_data = {"request_data": {"update_data": update_data}}
-    # request_data = {"request_data": update_data}
     client.update_issue(issue_id, request_data)
     return CommandResults(readable_output=f"Issue with ID {issue_id} updated successfully")
 
