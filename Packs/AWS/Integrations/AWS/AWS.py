@@ -3908,11 +3908,6 @@ class EC2:
         if filters_arg := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters_arg)
 
-        # Add pagination if no specific IDs or names provided
-        if not args.get("launch_template_ids") and not args.get("launch_template_names"):
-            pagination_kwargs = build_pagination_kwargs(args)
-            kwargs.update(pagination_kwargs)
-
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing launch templates with parameters: {kwargs}")
 
@@ -3968,6 +3963,10 @@ class EC2:
             "VersionDescription": args.get("version_description"),
         }
 
+        # Either launch_template_id or launch_template_name must be provided
+        if not remove_empty_elements(kwargs):
+            raise DemistoException("Either launch_template_id or launch_template_name must be provided")
+
         # Build LaunchTemplateData
         launch_template_data: Dict[str, Any] = {
             "KernelId": args.get("kernel_id"),
@@ -4004,7 +4003,7 @@ class EC2:
                     "VolumeType": args.get("ebs_volume_type"),
                 }
             )
-            block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config if ebs_config else None})
+            block_device_mappings.append({"DeviceName": device_name, "Ebs": ebs_config})
 
         if block_device_mappings:
             launch_template_data["BlockDeviceMappings"] = block_device_mappings
@@ -4043,7 +4042,7 @@ class EC2:
             )
             launch_template_data["InstanceMarketOptions"] = {
                 "MarketType": market_type,
-                "SpotOptions": spot_options if spot_options else None,
+                "SpotOptions": spot_options,
             }
 
         kwargs["LaunchTemplateData"] = remove_empty_elements(launch_template_data)
