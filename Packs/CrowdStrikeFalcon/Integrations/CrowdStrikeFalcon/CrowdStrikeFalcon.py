@@ -3887,7 +3887,7 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
     )
 
 
-def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, dict, str, int, set, set]:
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
     """
     Load Spotlight state from integration context.
 
@@ -3917,21 +3917,21 @@ def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[Cont
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids
+    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
 
 
 def save_spotlight_state(
-    context_store: ContentClientContextStore, integration_context: dict, spotlight_state: ContentClientState
+    context_store: ContentClientContextStore, spotlight_state: ContentClientState
 ) -> None:
     """
     Save Spotlight state to integration context without breaking other keys.
 
     Args:
         context_store: Context store for writing integration context
-        integration_context: Full integration context dict (preserves all keys)
         spotlight_state: Spotlight state object to save
     """
     # Update only the spotlight_assets key, preserving all other context
+    integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
     log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
@@ -4008,7 +4008,6 @@ class AssetsDeviceHandler:
         self,
         client: ContentClient,
         context_store: ContentClientContextStore,
-        integration_context: dict,
         spotlight_state: ContentClientState,
         snapshot_id: str,
         processed_aids: set,
@@ -4020,7 +4019,6 @@ class AssetsDeviceHandler:
         Args:
             client: ContentClient instance for API calls
             context_store: Context store for thread-safe state persistence
-            integration_context: Full integration context dict (preserves all keys)
             spotlight_state: Spotlight state object for metadata updates
             snapshot_id: Snapshot ID for asset collection tracking
             processed_aids: Set of already processed AIDs (for deduplication)
@@ -4028,7 +4026,6 @@ class AssetsDeviceHandler:
         """
         self.client = client
         self.context_store = context_store
-        self.integration_context = integration_context
         self.spotlight_state = spotlight_state
         self.snapshot_id = snapshot_id
         self.processed_aids = processed_aids
@@ -4116,7 +4113,6 @@ class AssetsDeviceHandler:
                 batch_number=current_batch_number,
                 last_saved_batch_number=self.asset_last_saved_batch_number,
                 context_store=self.context_store,
-                integration_context=self.integration_context,
                 state=self.spotlight_state,
                 save_state_callback=save_spotlight_state,
                 data_type="assets",
@@ -4386,7 +4382,6 @@ async def send_batch_to_xsiam_and_save_context(
     batch_number: int,
     last_saved_batch_number: int,
     context_store: ContentClientContextStore,
-    integration_context: dict,
     state: ContentClientState,
     save_state_callback: Callable[[ContentClientContextStore, dict, ContentClientState], None],
     data_type: str = "assets",
@@ -4407,7 +4402,6 @@ async def send_batch_to_xsiam_and_save_context(
         batch_number: Current batch number being processed
         last_saved_batch_number: Highest batch number that has successfully saved context
         context_store: ContentClientContextStore instance for thread-safe context operations
-        integration_context: Full integration context dictionary (preserves all keys)
         state: ContentClientState object containing cursor and metadata
         save_state_callback: Callback function to save state with signature:
                             (ContentClientContextStore, dict, ContentClientState) -> None
@@ -4440,7 +4434,7 @@ async def send_batch_to_xsiam_and_save_context(
 
         # 3. Save context ONLY if this is the latest batch using the provided callback
         if batch_number > last_saved_batch_number:
-            save_state_callback(context_store, integration_context, state)
+            save_state_callback(context_store, state)
             log_falcon_assets(f"[Batch {batch_number}] Context saved")
             return batch_number
         else:
@@ -4488,7 +4482,6 @@ def handle_spotlight_fetch_error(
     client: ContentClient,
     spotlight_state: ContentClientState,
     context_store: ContentClientContextStore,
-    integration_context: dict,
     after_token: str | None,
     snapshot_id: str,
     total_fetched: int,
@@ -4504,7 +4497,6 @@ def handle_spotlight_fetch_error(
         client: ContentClient instance for diagnostics
         spotlight_state: State object to update
         context_store: Context store for saving state
-        integration_context: Full integration context dict
         after_token: Current pagination token
         snapshot_id: Snapshot ID for tracking
         total_fetched: Total vulnerabilities fetched so far
@@ -4528,7 +4520,7 @@ def handle_spotlight_fetch_error(
         unique_aids=unique_aids,
         processed_aids=processed_aids,
     )
-    save_spotlight_state(context_store, integration_context, spotlight_state)
+    save_spotlight_state(context_store, spotlight_state)
 
     # Re-raise the exception
     raise error
@@ -4542,7 +4534,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
     batch_number,
     last_saved_batch_number,
     context_store,
-    integration_context,
     state,
     save_state_callback,
     data_type,
@@ -4559,7 +4550,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
         batch_number: Current batch number being processed
         last_saved_batch_number: Highest batch number that has successfully saved context
         context_store: ContentClientContextStore instance for thread-safe context operations
-        integration_context: Full integration context dictionary (preserves all keys)
         state: ContentClientState object containing cursor and metadata
         save_state_callback: Callback function to save state with signature:
                             (ContentClientContextStore, dict, ContentClientState) -> None
@@ -4568,7 +4558,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    # TODO: Verify do I need both Store and context - Remove them
     # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
@@ -4580,7 +4569,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
             batch_number=batch_number,
             last_saved_batch_number=last_saved_batch_number,
             context_store=context_store,
-            integration_context=integration_context,
             state=state,
             save_state_callback=save_state_callback,
             data_type=data_type,
@@ -4602,7 +4590,7 @@ async def fetch_spotlight_assets():
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
 
     # Load state from integration context (now includes processed_aids)
-    spotlight_state, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(
+    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(
         context_store
     )
     # The "next page" token - In Falcon API called "after"
@@ -4620,7 +4608,6 @@ async def fetch_spotlight_assets():
     asset_handler = AssetsDeviceHandler(
         client=client,
         context_store=context_store,
-        integration_context=integration_context,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
         processed_aids=processed_aids,
@@ -4669,7 +4656,6 @@ async def fetch_spotlight_assets():
                 batch_number=batch_counter,
                 last_saved_batch_number=last_saved_batch_number,
                 context_store=context_store,
-                integration_context=integration_context,
                 state=spotlight_state,
                 save_state_callback=save_spotlight_state,
                 data_type="assets",
@@ -4729,7 +4715,7 @@ async def fetch_spotlight_assets():
         )
 
         # Save reset state to integration context
-        save_spotlight_state(context_store, integration_context, spotlight_state)
+        save_spotlight_state(context_store, spotlight_state)
 
         log_falcon_assets(
             f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
@@ -4743,7 +4729,6 @@ async def fetch_spotlight_assets():
             client=client,
             spotlight_state=spotlight_state,
             context_store=context_store,
-            integration_context=integration_context,
             after_token=after_token,
             snapshot_id=snapshot_id,
             total_fetched=total_fetched,
