@@ -1042,11 +1042,16 @@ def spam_quarantine_message_search_command(
         for message in output
     ]
 
+    headers = ["mid", "date", "fromAddress", "toAddress", "subject", "size"]
+    
+    if quarantine_type != 'spam':
+        headers = ["mid", "received", "sender", "recipient", "subject", "size"]
+
     readable_output = tableToMarkdown(
         name="Spam Quarantine Messages List",
         metadata=pagination_message,
         t=spam_quarantine_message_lists,
-        headers=["mid", "received", "sender", "recipient", "subject", "size"],
+        headers=headers,
         headerTransform=pascalToSpace,
     )
 
@@ -1084,11 +1089,16 @@ def spam_quarantine_message_get_command(
         f'Found spam quarantine message with ID: {new_message.get("mid")}'
     )
 
+    headers = ["mid", "fromAddress", "toAddress", "date", "subject", "attachments"]
+    
+    if quarantine_type != 'spam':
+        headers = ["mid", "headers", "toAddress", "messageBody", "messageDetails", "quarantineDetails", "messagePartDetails"]
+    
     readable_output = tableToMarkdown(
         name="Spam Quarantine Message",
         metadata=readable_message,
         t=new_message,
-        headers=["mid", "headers", "toAddress", "messageBody", "messageDetails", "quarantineDetails", "messagePartDetails"],
+        headers=headers,
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -1250,12 +1260,12 @@ def spam_quarantine_message_send_copy_command(
     quarantine_type = "pvo"
     quarantine_name = args.get("quarantine_name")
     message_id = format_number_list_argument(args["message_id"])
-    recipients = args.get("recipients")
+    recipients = argToList(args.get("recipients"))
 
     command_results_list = []
 
     response = client.spam_quarantine_message_send_copy_request(
-        quarantine_type=quarantine_type, quarantine_name=quarantine_name, message_id=message_id, recipients=[recipients]
+        quarantine_type=quarantine_type, quarantine_name=quarantine_name, message_id=message_id, recipients=recipients
     )
 
     readable_output = f"Quarantined message {message_id} successfully sent to recipients."
