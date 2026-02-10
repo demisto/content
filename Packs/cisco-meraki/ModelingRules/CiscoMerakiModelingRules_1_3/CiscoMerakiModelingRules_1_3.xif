@@ -168,9 +168,115 @@ alter
     xdm.target.host.ipv4_addresses = arraycreate(dst_ip),
     xdm.target.port = dst_port;
 
+// Cisco Meraki Events
+// Log format: <priority>1 <epoch_timestamp> <hostname> <log_type> <message>
+alter
+    event_type = arrayindex(regextract(_raw_log, "<\d+>\d+\s+[\d\.]+\s+\S+\s+(\S+)"), 0)
+| filter event_type ="events"
+| alter
+    tmp_hostname = arrayindex(regextract(_raw_log, "<\d+>\d+\s+[\d\.]+\s+(\S+)\s+"), 0),
+    tmp_event_original_type = arrayindex(regextract(_raw_log, "type[=']([^'\s]+)"), 0),
+    tmp_src_ip = arrayindex(regextract(_raw_log, "\ssrc=([^\s:]+)"), 0),
+    tmp_dst_ip = arrayindex(regextract(_raw_log, "\sdst=([^\s:]+)"), 0),
+    tmp_sport = arrayindex(regextract(_raw_log, "\ssport=(\d+)"), 0),
+    tmp_dport = arrayindex(regextract(_raw_log, "\sdport=(\d+)"), 0),
+    tmp_event_description = arrayindex(regextract(_raw_log , "\<\d+\>\d+\s\S+\s\S+\s\S+\s(.*)"),0),
+    tmp_mac = coalesce(
+        arrayindex(regextract(_raw_log, "\smac='([^']+)'"), 0),
+        arrayindex(regextract(_raw_log, "\smac=([A-Fa-f0-9:]+)"), 0),
+        arrayindex(regextract(_raw_log, "\sclient_mac='([^']+)'"), 0)
+    ),
+    tmp_client_ip = coalesce(
+        arrayindex(regextract(_raw_log, "\sclient_ip='([^']+)'"), 0),
+        arrayindex(regextract(_raw_log, "\slast_known_client_ip='([^']+)'"), 0)
+    ),
+    tmp_url = arrayindex(regextract(_raw_log, "\surl=(\S+)"), 0),
+    tmp_pattern = arrayindex(regextract(_raw_log, "pattern:\s*(.+)$"), 0),
+    tmp_vap = arrayindex(regextract(_raw_log, "\svap='([^']+)'"), 0),
+    tmp_radio = arrayindex(regextract(_raw_log, "\sradio='([^']+)'"), 0),
+    tmp_vpn_type = arrayindex(regextract(_raw_log, "\svpn_type='([^']+)'"), 0),
+    tmp_connectivity = arrayindex(regextract(_raw_log, "\sconnectivity='([^']+)'"), 0),
+    tmp_peer_contact = arrayindex(regextract(_raw_log, "\speer_contact='([^']+)'"), 0),
+    tmp_sha256 = arrayindex(regextract(_raw_log, "\ssha256=([a-fA-F0-9]+)"), 0),
+    tmp_action = arrayindex(regextract(_raw_log, "\saction=(\w+)"), 0),
+    tmp_agent = arrayindex(regextract(_raw_log, "\sagent='([^']+)'"), 0),
+    tmp_category = arrayindex(regextract(_raw_log, "\scategory0='([^']+)'"), 0),
+    tmp_vlan = arrayindex(regextract(_raw_log, "\s[Vv]lan='([^']+)'"), 0),
+    tmp_reason = arrayindex(regextract(_raw_log, "\sreason='([^']+)'"), 0),
+    tmp_peer_ident = arrayindex(regextract(_raw_log, "\speer_ident='([^']+)'"), 0)
+| alter
+    tmp_peer_ip = arrayindex(regextract(tmp_peer_contact, "^([^:]+)"), 0),
+    tmp_peer_port = arrayindex(regextract(tmp_peer_contact, ":(\d+)$"), 0),
+    tmp_event_type_description = if(
+        tmp_event_original_type = "association", "802.11 Association",
+        tmp_event_original_type = "wpa_auth",    "WPA Authentication",
+        tmp_event_original_type = "wpa_deauth",  "WPA Deauthentication",
+        tmp_event_original_type = "disassociation",  "WPA Failed Auth Attempt",
+        tmp_event_original_type = "8021x_eap_failure",   "802.1X Failed Auth",
+        tmp_event_original_type = "8021x_deauth",    "802.1X Deauthentication",
+        tmp_event_original_type = "8021x_eap_success",   "802.1X Authentication",
+        tmp_event_original_type = "splash_auth", "Splash Authentication",
+        tmp_event_original_type = "device_packet_flood", "Packet Flood Detected",
+        tmp_event_original_type = "rogue_ssid_detected", "Rogue SSID Detected",
+        tmp_event_original_type = "ssid_spoofing_detected",  "SSID Spoofing Detected",
+        tmp_event_original_type = "8021x_deauth", "802.1X Deauthentication",
+        tmp_event_original_type = "8021x_eap_success", "802.1X EAP Success",
+        tmp_event_original_type = "8021x_auth", "802.1X Authentication",
+        tmp_event_original_type = "8021x_client_deauth", "802.1X Client Deauth",
+        tmp_event_original_type = "vpn_connectivity_change", "VPN Connectivity Change",
+        tmp_event_original_type = "anyconnect_vpn_general", "AnyConnect General",
+        tmp_event_original_type = "anyconnect_vpn_auth_success", "AnyConnect Success",
+        tmp_event_original_type = "anyconnect_vpn_auth_failure", "AnyConnect Failure",
+        tmp_event_original_type = "anyconnect_vpn_session_manager", "AnyConnect Session Manager",
+        tmp_event_original_type = "anyconnect_vpn_connect", "AnyConnect Connect",
+        tmp_event_original_type = "anyconnect_vpn_disconnect", "AnyConnect Disconnect"
+    )
+| alter
+    tmp_src_ipv4 = if(is_ipv4(tmp_src_ip),tmp_src_ip),
+    tmp_src_ipv6 = if(is_ipv6(tmp_src_ip),tmp_src_ip),
+    tmp_dst_ipv4 = if(is_ipv4(tmp_dst_ip),tmp_dst_ip),
+    tmp_dst_ipv6 = if(is_ipv6(tmp_dst_ip),tmp_dst_ip),
+    tmp_client_ipv4 = if(is_ipv4(tmp_client_ip),tmp_client_ip),
+    tmp_client_ipv6 = if(is_ipv6(tmp_client_ip),tmp_client_ip),
+    tmp_peer_ipv4 = if(is_ipv4(tmp_peer_ip),tmp_peer_ip),
+    tmp_peer_ipv6 = if(is_ipv6(tmp_peer_ip),tmp_peer_ip)
+| alter
+    tmp_outcome = if(
+        tmp_connectivity = "true", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_connectivity = "false", XDM_CONST.OUTCOME_FAILED,
+        tmp_action = "allow", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_action = "block", XDM_CONST.OUTCOME_FAILED,
+        tmp_pattern ~= "allow", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_pattern ~= "deny", XDM_CONST.OUTCOME_FAILED,
+        tmp_event_original_type ~= "success", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_event_original_type ~= "failure", XDM_CONST.OUTCOME_FAILED,
+        null
+    )
+| alter
+    xdm.source.host.hostname = tmp_hostname,
+    xdm.event.type = uppercase(event_type),
+    xdm.event.original_event_type = coalesce(tmp_event_type_description,tmp_event_original_type),
+    xdm.source.ipv4 = coalesce(tmp_src_ipv4, tmp_client_ipv4,tmp_peer_ipv4),
+    xdm.source.ipv6 = coalesce(tmp_src_ipv6, tmp_client_ipv6, tmp_peer_ipv6),
+    xdm.target.ipv4 = coalesce(tmp_dst_ipv4, tmp_peer_ipv4),
+    xdm.target.ipv6 = tmp_dst_ipv6,
+    xdm.source.port = to_integer(tmp_sport),
+    xdm.target.port = to_integer(coalesce(tmp_dport, tmp_peer_port)),
+    xdm.source.host.mac_addresses = if(tmp_mac != null, arraycreate(tmp_mac), null),
+    xdm.target.url = tmp_url,
+    xdm.event.outcome = tmp_outcome,
+    xdm.target.interface = tmp_vap,
+    xdm.source.interface = tmp_radio,
+    xdm.target.file.sha256 = tmp_sha256,
+    xdm.source.user_agent = tmp_agent,
+    xdm.network.http.url_category = tmp_category,
+    xdm.event.description = coalesce(tmp_event_description,tmp_event_type_description,tmp_reason, tmp_vpn_type),
+    xdm.network.session_id = tmp_peer_ident,
+    xdm.target.vlan = to_integer(tmp_vlan);
+
 /* Fallback for mapping all other event types */
 alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"), 0)
-| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted")
+| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted","events")
 | alter 
     appliance_name = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+(\S+)"), 0),
     event_description = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+\S+\s+(.+)"), 0)
@@ -201,7 +307,7 @@ alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"),
     sent_packets = to_integer(arrayindex(regextract(event_description, "sent\s+(\d+)\s+\w*\s*packets"), 0)),
     isakmp_spi = arrayindex(regextract(event_description,"spi[\:=](\S+)"), 0), // security parameter index 
 
-    vlan = to_integer(arrayindex(regextract(event_description, "vlan=\'?(\d+)"), 0)),
+    vlan = to_integer(arrayindex(regextract(event_description, "[Vv]lan=\'?(\d+)"), 0)),
     vpn_type = arrayindex(regextract(event_description, "vpn_type=\'(\S+)\'"), 0),
     vpn_peer_id = arrayindex(regextract(event_description,"peer_ident=\'([^\']+)"), 0),
     event_sub_type = if(
