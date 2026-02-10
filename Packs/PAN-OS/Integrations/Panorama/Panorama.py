@@ -12133,102 +12133,190 @@ class FirewallCommand:
         return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
 
     @staticmethod
+    def get_vsys_list(firewall: Firewall, debug_prefix:str) -> List[str]:
+        """
+        Runs Vsys.refreshall framwork command to get all vsys from specific FW.
+        
+        :param firewall: The `Firewall` device to directly connect to.
+        """
+        vsys_to_query = []
+        try:
+            """
+            Query the firewall for its list of active virtual systems
+            - No VSYS: always returns ['vsys1'] (multi-vsys is disabled)
+            - VSYS enabled: returns all active virtual systems (e.g., ['vsys1', 'vsys2'])
+            """
+            vsys_list = Vsys.refreshall(firewall)
+            vsys_to_query = [str(v) for v in vsys_list]
+            demisto.debug(f"{debug_prefix} all active vsys: {vsys_to_query}")
+        except Exception as e:
+            demisto.debug(f"{debug_prefix} Failed to discover VSYS for device {firewall.id}: {str(e)}. Defaulting to vsys1.")
+            vsys_to_query = ["vsys1"]  
+        return vsys_to_query      
+ 
+ 
+    @staticmethod
+    def get_pushed_shared_policy_rules(
+        firewall,
+        rulebase_type: str,
+    ) -> dict[str, PushedSharedPolicy]:
+        """
+        Retrieve Panorama pushed shared policies (pre-rulebase and post-rulebase)
+        and map them by rule name for fast lookup.
+        """
+        pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+
+        # Operational command to retrieve the full configuration of policies pushed from Panorama
+        pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
+        pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+
+        # Panorama rules can exist in pre-rulebase or post-rulebase
+        for position in ["pre-rulebase", "post-rulebase"]:
+            xpath = f"./result/policy/panorama/{position}/{rulebase_type}/rules/entry"
+            pushed_rules = pushed_config_response.findall(xpath)
+
+            for pushed_rule in pushed_rules:
+                pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                pushed_rulebase_entry.policy_type = rulebase_type
+                pushed_rulebase_entry.position = position.replace("-", "_")
+
+                # Map by rule name for quick lookup
+                pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+
+        return pushed_rulebase_results
+
+    @staticmethod
     def get_hitcounts(
         topology: Topology,
-        cmd: str,
         rulebase_type: str,
+        vsys_arg: str,
+        rules_arg: str,
         no_new_hits_since: datetime | None,
         device_filter_string: Optional[str] = None,
         target: Optional[str] = None,
         unused_only: str = "false",
     ) -> List[ShowRuleHitCountResult] | None:
         """
-        Runs the `show rule-hit-count` command.
+        Runs the `show rule-hit-count` command with VSYS support.
+
         :param topology: `Topology` instance.
-        :param cmd: The XML-formatted command to run on the firewalls.
-        :param rulebase_type: The rulebase being examined
-        :param no_new_hits_since: The datetime object used to filter out rules that haven't had any new hits since that time.
+        :param rulebase_type: The rulebase being examined.
+        :param vsys_arg: The firewall VSYS name to check or "all" for all virtual systems.
+        :param rules_arg: Comma-separated list of rule names to check, or "all" for all rules.
+        :param no_new_hits_since: Date string in format ISO-8601 UTC to filter rules with no hits since that time
+        :param device_filter_string: The datetime object used to filter out rules that haven't had any new hits since that time.
         :param device_filter_str: If provided, filters this command to only the devices specified.
         :param target: Single serial number to target with this command.
         :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
         """
-        # Initialize empty list to store results to return
+        debug_prefix = "[get_hitcounts]"
         result_data = []
-
-        # Get the name of the PANOS integration instance
         instanceName = demisto.callingContext["context"]["IntegrationInstance"]
-
-        # Identify the platform type the PANOS integration instance is connected to
         instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
+
+        demisto.debug(f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} {device_filter_string=} {target=} {unused_only=}")
 
         # Run operational command on each firewall using the given XML command to get rule hitcounts
         for firewall in topology.firewalls(filter_string=device_filter_string, target=target):
-            demisto.debug(
-                f"Now running operational command to get rule hitcounts.  Command XML: {cmd}\n"
-                f"Device Filter String: {device_filter_string}\nTarget: {target}"
-            )
-            hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+            demisto.debug(f"{debug_prefix} Start running on device {firewall.id}")
 
-            # Get list of vsys entries in the response
-            vsys_entries = hitcount_response.findall("./result/rule-hit-count/vsys/entry")
+            # Step 1: Determine which vsys to query
+            vsys_to_query = []
+            if vsys_arg != "all":
+                demisto.debug(f"{debug_prefix} Step 1: single vsys argument is set by the user: {vsys_arg}")
+                vsys_to_query = [vsys_arg]
+            else:
+                vsys_to_query = FirewallCommand.get_vsys_list(firewall, f"{debug_prefix} Step 1: ")
 
-            # Run operational command on the firewall to fetch policies pushed from Panorama (if any)
-            # Details from this will be used to enhance the returned results.
-            demisto.debug(f"Now running operational command to get Panorama pushed policies")
-            pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
-            pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
-            pushed_rulebases = {}
-            pushed_rulebases["pre_rulebase"] = pushed_config_response.findall(
-                f"./result/policy/panorama/pre-rulebase/{rulebase_type}/rules/entry"
-            )
-            pushed_rulebases["post_rulebase"] = pushed_config_response.findall(
-                f"./result/policy/panorama/post-rulebase/{rulebase_type}/rules/entry"
-            )
+            """
+            STEP 2: Data enrichment.
+            Pre-fetch Panorama pushed policies (shared) once per firewall. (if any)
+            This is necessary because the hitcount response itself doesn't contain rule metadata 
+            (whether a rule is from Panorama or which Device Group it belongs to...)
+            """
+            demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment")
+            pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+            try:
+                pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type)
+            except Exception as e:
+                demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")            
 
-            # Create data class items from pushed policy data
-            pushed_rulebase_results = {}
-            for position in ["pre_rulebase", "post_rulebase"]:
-                for pushed_rule in pushed_rulebases[position]:
-                    pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
-                    pushed_rulebase_entry.policy_type = rulebase_type
-                    pushed_rulebase_entry.position = position
-                    pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
 
-            for vsys_entry in vsys_entries:
-                # Get the name of the current vsys entry
-                vsys_name = vsys_entry.get("name", "")
+            def build_rule_hit_count_xml() -> ET.Element:
+                xml_root = ET.Element("show")
+                xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
+                xml_vsys = ET.SubElement(xml_rhc, "vsys")
+                v_name_container = ET.SubElement(xml_vsys, "vsys-name")
+                v_entry = ET.SubElement(v_name_container, "entry", name=vsys_name)
+                rb_elem = ET.SubElement(v_entry, "rule-base")
+                rb_entry = ET.SubElement(rb_elem, "entry", name=rulebase_type)
+                rules_container = ET.SubElement(rb_entry, "rules")            
+                if rules_arg == "all":
+                    ET.SubElement(rules_container, "all")                
+                else:
+                    rule_list = ET.SubElement(rules_container, "list")
+                    for rule in rules_arg.split(","):
+                        ET.SubElement(rule_list, "member").text = rule.strip()
+                return xml_root
+                
+            # STEP 3: Iterate through vsys and perform hitcount queries
+            for vsys_name in vsys_to_query:
+                demisto.debug(f"{debug_prefix} Step 3 Starting: Iterate through vsys: {vsys_name}")          
+                xml_root = build_rule_hit_count_xml()
+                try:
+                    cmd = ET.tostring(xml_root, encoding="unicode")
+                    demisto.debug(f"{debug_prefix} Run op command: {firewall.id=}, {vsys_name=}\n{cmd}") 
+                
+                    hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+                    vsys_entries = hitcount_response.findall("./result/rule-hit-count/vsys/entry")
 
-                for rulebase_entry in vsys_entry.findall("./rule-base/entry"):
-                    # Get the name of the current rulebase entry
-                    rulebase_name = rulebase_entry.get("name", "")
+                    for vsys_entry in vsys_entries:
+                        current_vsys_name = vsys_entry.get("name", "")
 
-                    for rule_entry in rulebase_entry.findall("./rules/entry"):
-                        # Iterate through all rules in the list, formatting them as a data class
-                        ET.SubElement(rule_entry, "instanceName")
-                        result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
+                        for rulebase_entry in vsys_entry.findall("./rule-base/entry"):
+                            # Get the name of the current rulebase entry
+                            rulebase_name = rulebase_entry.get("name", "")
 
-                        # Skip rules with hits or no new hits since a given date if those arguments were specified
-                        if (unused_only == "true" and result.hit_count != 0) or (
-                            no_new_hits_since and datetime.strptime(result.last_hit_timestamp, DATE_FORMAT) > no_new_hits_since
-                        ):
-                            continue  # Skip this result if given filter arguments say we should omit it
+                            for rule_entry in rulebase_entry.findall("./rules/entry"):
+                                # Iterate through all rules in the list, formatting them as a data class
+                                ET.SubElement(rule_entry, "instanceName")
+                                result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
 
-                        # Add vsys and rulebase, and integration instance names identified from earlier stages
-                        result.vsys = vsys_name
-                        result.rulebase = rulebase_name
-                        result.instanceName = instanceName
-                        result.instanceType = instanceType
+                                # Timestamp Handling: API returns Unix epoch as string 
+                                try:
+                                    last_hit_dt = datetime.strptime(result.last_hit_timestamp, DATE_FORMAT).replace(tzinfo=timezone.utc)
+                                    # last_hit_dt = datetime.fromisoformat(result.last_hit_timestamp.replace("Z", "+00:00"))
+                                except (ValueError, TypeError) as e:
+                                    demisto.debug(f"{debug_prefix} Error while formating {result.last_hit_timestamp=}, Skipping {result.name}\n{str(e)}")
+                                    continue
 
-                        # Add information about Panorama pushed policy, if any
-                        pushed_rule_entry = pushed_rulebase_results.get(result.name)
-                        if pushed_rule_entry:
-                            result.is_from_panorama = True
-                            result.position = pushed_rule_entry.position
-                            result.from_dg_name = pushed_rule_entry.loc
+                                # Skip rules based on filter arguments
+                                if (unused_only == "true" and result.hit_count!= 0):
+                                    demisto.debug(f"{debug_prefix} Skipping {result.name} (hit_count = 0)")
+                                    continue
+                                if no_new_hits_since and last_hit_dt and last_hit_dt > no_new_hits_since:
+                                    demisto.debug(f"{debug_prefix} Skipping {result.name} (older than {str(no_new_hits_since)})")
+                                    continue
 
-                        # Add the result to the list of results
-                        result_data.append(result)
+                                # Populate result metadata
+                                result.vsys = current_vsys_name
+                                result.rulebase = rulebase_name
+                                result.instanceName = instanceName
+                                result.instanceType = instanceType
 
+                                # Add information about Panorama pushed policy, if any
+                                pushed_rule_entry = pushed_rulebase_results.get(result.name)
+                                if pushed_rule_entry:
+                                    result.is_from_panorama = True
+                                    result.position = pushed_rule_entry.position
+                                    result.from_dg_name = pushed_rule_entry.loc
+
+                                result_data.append(result)
+                                
+                except Exception as e:
+                    demisto.debug(f"{debug_prefix} Failed to retrieve hitcounts for device {firewall.id} {vsys_name}:\n{str(e)}")
+                    continue
+            
         # Return final results
         return result_data
 
@@ -12475,56 +12563,40 @@ def get_rule_hitcounts(
 ):
     """
     Retrieves hit counts for policy rules from the specified firewall or device.
-
-    :param topology: `Topology` instance
-    :param device_filter_string: String to filter to only check given device
-    :param target: ID of host (serial or hostname) to target
-    :param rulebase: Type of rulebase to check (default: security)
-    :param vsys: Virtual system to check, or "all" for all virtual systems
-    :param rules: Comma-separated list of rule names to check, or "all" for all rules
-    :param unused_only: Whether to return only unused rules (default: false)
+    :param topology: `Topology` instance.
+    :param device_filter_string: The datetime object used to filter out rules that haven't had any new hits since that time.
+    :param target: Single serial number to target with this command.
+    :param rulebase: The rulebase being examined.
+    :param vsys: The firewall VSYS name to check or "all" for all virtual systems.
+    :param rules: Comma-separated list of rule names to check, or "all" for all rules.
+    :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
     :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+
     """
-    # Prepare XML ElementTree to add attributes to
-    xml_root = ET.Element("show")
-    xml_rule_hit_count = ET.SubElement(xml_root, "rule-hit-count")
+    
+    # Convert date string to ISO-8601 UTC format (This is the rule hit output format)
+    no_new_hits_since_dt = None
+    if no_new_hits_since:
+        try:
+            no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S").replace(tzinfo=timezone.utc)
+            # no_new_hits_since_dt = datetime.strptime(no_new_hits_since, DATE_FORMAT).replace(tzinfo=timezone.utc)
+        except ValueError:
+            message = f"Failed convert {no_new_hits_since=} argument to %Y/%m/%d %H:%M:%S foramt."
+            demisto.debug(f"[get_rule_hitcounts] {message}")
+            raise DemistoException(message)
 
-    # Add vsys selection to ElementTree
-    xml_vsys = ET.SubElement(xml_rule_hit_count, "vsys")
+    # Execute command, passing raw arguments to allow per-device XML construction.
+    return FirewallCommand.get_hitcounts(
+        topology, 
+        rulebase, 
+        vsys, 
+        rules, 
+        no_new_hits_since_dt, 
+        device_filter_string, 
+        target, 
+        unused_only
+    )
 
-    # Function to add rulebase and rule selections to the appropriate parent object
-    def add_rulebase_and_rules(parent):
-        # Add rule-base and rules list to the parent element
-        rulebase_elem = ET.SubElement(parent, "rule-base")
-        rulebase_entry = ET.SubElement(rulebase_elem, "entry", name=rulebase)
-        return ET.SubElement(rulebase_entry, "rules")
-
-    # Add rules argument to ElementTree, adding container attribute for specific rules if needed
-    if vsys == "all":
-        all_vsys = ET.SubElement(xml_vsys, "all")
-        vsys_rules = add_rulebase_and_rules(all_vsys)
-    else:
-        vsys_name = ET.SubElement(xml_vsys, "vsys-name")
-        vsys_name_entry = ET.SubElement(vsys_name, "entry", name=vsys)
-        vsys_rules = add_rulebase_and_rules(vsys_name_entry)
-
-    # Add rules to check to ElementTree
-    if rules == "all":
-        ET.SubElement(vsys_rules, "all")
-    else:
-        # If a list of specific rules was given, split comma-separated list & strip whitespace, then add to ElementTree
-        rule_list = ET.SubElement(vsys_rules, "list")
-        for rule in rules.split(","):
-            ET.SubElement(rule_list, "member").text = f"{rule.strip()}"
-
-    # Format operational command XPATH
-    cmd = ET.tostring(xml_root, encoding="us-ascii")
-
-    # Convert date string from "no_new_hits_since" argument to datetime object
-    no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S") if no_new_hits_since else None
-
-    # Execute command and return result
-    return FirewallCommand.get_hitcounts(topology, cmd, rulebase, no_new_hits_since_dt, device_filter_string, target, unused_only)
 
 
 """Hygiene Commands"""
