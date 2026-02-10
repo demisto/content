@@ -414,7 +414,7 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
     }
 
 
-def _get_default_incident_close_out_or_reactiviation_reason(delta: dict):
+def _get_default_incident_close_out_or_reactivation_reason(delta: dict):
     """
     Get the default incident close reason for the given classification.
     Args:
@@ -426,6 +426,27 @@ def _get_default_incident_close_out_or_reactiviation_reason(delta: dict):
     elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
         delta.update({"classification": "Unknown", "determination": "NotAvailable"})
         demisto.debug("Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable")
+
+   
+def _parse_classification_mapping(mapped_value: str) -> tuple[str, str]:
+    """
+    Safely parse a mapping value in the format 'Classification-Determination'.
+
+    Falls back to safe defaults if format is invalid.
+    """
+    if not mapped_value:
+        return "Unknown", "NotAvailable"
+
+    parts = mapped_value.split("-", 1)  # split only once
+
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        demisto.debug(
+            f"Microsoft Defender 365 - Invalid classification mapping format: '{mapped_value}'. "
+            "Falling back to Unknown/NotAvailable."
+        )
+        return "Unknown", "NotAvailable"
+
+    return parts[0], parts[1]
 
 
 def _get_default_modified_incidents_close_or_reopen_entries_reason(incident: dict) -> dict:
@@ -878,6 +899,7 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
     demisto.debug("Microsoft Defender 365 - Starting get_modified_incidents_close_or_repopen_entries")
     entries = []
     if close_incident:
+        custom_close_reason = demisto.params().get("custom_defender_to_xsoar_close_reason", False)
         for incident in modified_incidents:
             if incident.get("status") in ("Resolved", "Redirected"):
                 demisto.debug(
@@ -885,10 +907,10 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
                     f"{(incident.get('status') or '').lower()} in Microsoft, "
                     f"adding close entry to XSOAR."
                 )
-                if demisto.params().get("custom_defender_to_xsoar_close_reason", False):
+                if custom_close_reason:
                     # Reading custom Defender->XSOAR close-reason mapping.
                     custom_defender_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(
-                        demisto.params().get("custom_defender_to_xsoar_close_reason_mapping")
+                        demisto.params().get("custom_defender_to_xsoar_close_reason_mapping","")
                     )
 
                     # Overriding default close-reason mapping if there exists a custom one.
@@ -1102,7 +1124,7 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
             if demisto.params().get("custom_xsoar_to_defender_close_reason", False):
                 # Reading custom XSOAR->Defender close-reason mapping.
                 custom_xsoar_to_defender_close_reason_mapping = comma_separated_mapping_to_dict(
-                    demisto.params().get("custom_xsoar_to_defender_close_reason_mapping")
+                    demisto.params().get("custom_xsoar_to_defender_close_reason_mapping","")
                 )
 
                 # Overriding default close-reason mapping if there exists a custom one.
@@ -1111,7 +1133,7 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
                 if incident_close_reason in custom_xsoar_to_defender_close_reason_mapping:
                     defender_close_reason_candidate = custom_xsoar_to_defender_close_reason_mapping.get(incident_close_reason)
                     # Transforming resolved close-reason to match Defender format.
-                    defender_classification, defender_determination = defender_close_reason_candidate.split("-")
+                    defender_classification, defender_determination = _parse_classification_mapping(defender_close_reason_candidate)
                     demisto.debug(
                         f"Resolving Defender incident with classification"
                         f"{defender_classification} and determination {defender_determination}"
@@ -1119,10 +1141,10 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
                     delta.update({"classification": defender_classification, "determination": defender_determination})
                 else:
                     demisto.debug("resolve_defender_close_reason using default mapping")
-                    _get_default_incident_close_out_or_reactiviation_reason(delta)
+                    _get_default_incident_close_out_or_reactivation_reason(delta)
 
             else:
-                _get_default_incident_close_out_or_reactiviation_reason(delta)
+                _get_default_incident_close_out_or_reactivation_reason(delta)
     else:
         if any(delta.get(key) == "" for key in ["closeReason", "closeNotes", "closingUserId"]):
             delta["status"] = "Active"

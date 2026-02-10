@@ -18,7 +18,7 @@ from CommonServerPython import EntryType, IncidentStatus
 from Microsoft365Defender import (
     Client,
     _query_set_limit,
-    _get_default_incident_close_out_or_reactiviation_reason,
+    _get_default_incident_close_out_or_reactivation_reason,
     _get_default_modified_incidents_close_or_reopen_entries_reason,
     fetch_incidents,
     fetch_modified_incident,
@@ -1144,7 +1144,7 @@ def test_update_remote_system_with_entries(mocker):
         Given:
             closeReason is FalsePositive and classification is different
         When:
-            _get_default_incident_close_out_or_reactiviation_reason is called
+            _get_default_incident_close_out_or_reactivation_reason is called
         Then:
             classification and determination are updated to FalsePositive / Other
         """
@@ -1155,7 +1155,7 @@ def test_update_remote_system_with_entries(mocker):
             "classification": "TruePositive",
         }
 
-        _get_default_incident_close_out_or_reactiviation_reason(delta)
+        _get_default_incident_close_out_or_reactivation_reason(delta)
 
         assert delta["classification"] == "FalsePositive"
         assert delta["determination"] == "Other"
@@ -1171,7 +1171,7 @@ def test_update_remote_system_with_entries(mocker):
 
         delta = {"closeReason": "Other"}
 
-        _get_default_incident_close_out_or_reactiviation_reason(delta)
+        _get_default_incident_close_out_or_reactivation_reason(delta)
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
@@ -1187,7 +1187,7 @@ def test_update_remote_system_with_entries(mocker):
 
         delta = {"closeReason": "Duplicate"}
 
-        _get_default_incident_close_out_or_reactiviation_reason(delta)
+        _get_default_incident_close_out_or_reactivation_reason(delta)
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
@@ -1203,7 +1203,7 @@ def test_update_remote_system_with_entries(mocker):
 
         delta = {"closeReason": "Resolved"}
 
-        _get_default_incident_close_out_or_reactiviation_reason(delta)
+        _get_default_incident_close_out_or_reactivation_reason(delta)
 
         assert delta == {"closeReason": "Resolved"}
 
@@ -1251,3 +1251,63 @@ def test_update_remote_system_with_entries(mocker):
         assert result["Type"] == EntryType.NOTE
         assert result["Contents"]["dbotIncidentClose"] is True
         assert result["Contents"]["closeReason"] == "Other"
+        
+    def test_handle_incident_close_out_custom_reason_valid_mapping(mocker):
+        """
+        Given:
+            custom_xsoar_to_defender_close_reason is enabled
+            mapping returns 'TruePositive-Malware'
+        Then:
+            classification and determination are parsed correctly
+        """
+
+        # Mock integration params
+        mocker.patch.object(demisto, "params", return_value={
+            "close_out": True,
+            "custom_xsoar_to_defender_close_reason": True,
+        })
+
+        # Mock mapping dict used in the function
+        mocker.patch(
+            "Microsoft365Defender.XSOAR_CLOSE_REASON_TO_MICROSOFT_CLASSIFICATION",
+            {"Resolved": "TruePositive-Malware"},
+        )
+
+        delta = {
+            "closeReason": "Resolved",
+            "closeNotes": "done",
+        }
+
+        handle_incident_close_out_or_reactivation(delta, IncidentStatus.DONE)
+
+        assert delta["classification"] == "TruePositive"
+        assert delta["determination"] == "Malware"
+        assert delta["status"] == "Resolved"
+        
+    def test_handle_incident_close_out_custom_reason_invalid_mapping_format(mocker):
+        """
+        Given:
+            custom mapping returns value without hyphen
+        Then:
+            fallback classification/determination are used
+        """
+
+        mocker.patch.object(demisto, "params", return_value={
+            "close_out": True,
+            "custom_xsoar_to_defender_close_reason": True,
+        })
+
+        mocker.patch(
+            "Microsoft365Defender.XSOAR_CLOSE_REASON_TO_MICROSOFT_CLASSIFICATION",
+            {"Resolved": "BadFormatValue"},
+        )
+
+        delta = {
+            "closeReason": "Resolved",
+            "closeNotes": "done",
+        }
+
+        handle_incident_close_out_or_reactivation(delta, IncidentStatus.DONE)
+
+        assert delta["classification"] == "Unknown"
+        assert delta["determination"] == "NotAvailable"
