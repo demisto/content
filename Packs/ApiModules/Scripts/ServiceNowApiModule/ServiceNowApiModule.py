@@ -225,71 +225,151 @@ class ServiceNowClient(BaseClient):
             jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
         return jwt_token
 
+    def _can_auto_login(self) -> bool:
+        """Check whether automatic login via username/password is possible.
+
+        NOTE: This token regeneration logic is inherited by all integrations but currently relies on
+        the 'username' and 'password' fields. The Event Collector is the only integration that
+        supplies these fields under the OAuth method to utilize this retry logic.
+        Other inherited integrations require modification to function here.
+        """
+        return bool(self.use_oauth and self.username and self.password)
+
+    def _attempt_auto_login(self, *, retry_attempted: bool, reason: str, error_context: dict | None = None) -> str:
+        """
+        Try to automatically log in and retry token acquisition.
+
+        Args:
+            retry_attempted: Whether a retry has already been attempted.
+            reason: Debug message explaining why auto-login is being attempted.
+            error_context: Optional dict with the error response for error reporting.
+
+        Returns:
+            A valid access token if auto-login succeeds.
+
+        Raises:
+            Calls return_error if retry was already attempted or credentials are unavailable.
+        """
+        if self._can_auto_login() and not retry_attempted:
+            demisto.debug(reason)
+            self.login(self.username, self.password)
+            return self.get_access_token(retry_attempted=True)
+
+        # If retry was already attempted or credentials not available, raise the error
+        return_error(
+            f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+            f"and try to run again the login command to generate a new refresh token.\n{error_context}"
+        )
+
+    def _build_token_request_data(self, previous_token: dict) -> dict:
+        """
+        Build the request payload for the OAuth token endpoint.
+
+        Determines the correct grant type based on available credentials:
+        1. JWT assertion (if configured)
+        2. Refresh token (if stored in integration context)
+        3. Raises if neither is available
+
+        Args:
+            previous_token: The current integration context containing any stored tokens.
+
+        Returns:
+            The request data dict ready to POST to the token endpoint.
+
+        Raises:
+            Exception: If no grant type can be determined (no JWT and no refresh token).
+        """
+        data: dict[str, str] = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+        }
+
+        if self.jwt:
+            data["assertion"] = self.jwt
+            data["grant_type"] = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+        elif previous_token.get("refresh_token"):
+            data["refresh_token"] = previous_token["refresh_token"]
+            data["grant_type"] = "refresh_token"
+        else:
+            raise Exception(
+                "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+            )
+
+        return data
+
+    def _store_and_return_token(self, res: dict) -> str | None:
+        """
+        Persist a successful token response in the integration context and return the access token.
+
+        Args:
+            res: The parsed JSON response from the token endpoint.
+
+        Returns:
+            The new access token string, or None if no access_token in the response.
+        """
+        access_token = res.get("access_token")
+        if not access_token:
+            return None
+
+        expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+        expiry_time += res.get("expires_in", 0) * 1000 - 10
+        new_token = {
+            "access_token": access_token,
+            "refresh_token": res.get("refresh_token"),
+            "expiry_time": expiry_time,
+        }
+        set_integration_context(new_token)
+        return access_token
+
     def get_access_token(self, retry_attempted: bool = False):
         """
-        Get an access token that was previously created if it is still valid, else, generate a new access token from
-        the client id, client secret and refresh token.
+        Return a valid access token — reusing a cached one if still valid, otherwise requesting a new one.
+
+        The method handles three grant flows transparently:
+        1. **JWT bearer** — used when ``jwt_params`` were provided at init time.
+        2. **Refresh token** — used when a refresh token is stored in the integration context.
+        3. **Auto-login retry** — when the token endpoint returns an error and ``username``/``password``
+           are available, the method will attempt to re-login once and retry.
 
         Args:
             retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
         """
-        ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
 
-        # Check if there is an existing valid access token
-        if previous_token.get("access_token") and previous_token.get("expiry_time") > date_to_timestamp(datetime.now()):
-            return previous_token.get("access_token")
-        else:
-            data = {"client_id": self.client_id, "client_secret": self.client_secret}
+        # 1. Return cached token if still valid
+        if previous_token.get("access_token") and previous_token.get("expiry_time", 0) > date_to_timestamp(datetime.now()):
+            return previous_token["access_token"]
 
-            # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
-            if previous_token.get("refresh_token"):
-                data["refresh_token"] = previous_token.get("refresh_token")
-                data["grant_type"] = "refresh_token"
-            elif not self.jwt:
-                raise Exception(
-                    "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
-                )
+        # 2. Build the token request (determines grant type)
+        data = self._build_token_request_data(previous_token)
 
+        # 3. Request a new token from the OAuth endpoint
+        try:
+            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            res = super()._http_request(
+                method="POST",
+                url_suffix=OAUTH_URL,
+                resp_type="response",
+                headers=headers,
+                data=data,
+                ok_codes=(200, 201, 401),
+            )
             try:
-                headers = {"Content-Type": "application/x-www-form-urlencoded"}
-                if self.jwt:
-                    data["assertion"] = self.jwt
-                    data["grant_type"] = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                res = res.json()
+            except ValueError as exception:
+                raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+        except Exception as e:
+            return_error(
+                f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
+            )
 
-                res = super()._http_request(
-                    method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
-                )
-                try:
-                    res = res.json()
-                except ValueError as exception:
-                    raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
-                if "error" in res:
-                    # NOTE: This token regeneration logic is inherited by all integrations but currently relies on
-                    # the 'username' and 'password' fields. The Event Collector is the only integration that
-                    # supplies these fields under the OAuth method to utilize this retry logic.
-                    # Other inherited integrations require modification to function here
-                    if self.use_oauth and self.username and self.password and not retry_attempted:
-                        demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
-                        self.login(self.username, self.password)
-                        return self.get_access_token(retry_attempted=True)
+        # 4. Handle error responses (e.g. expired refresh token)
+        if "error" in res:
+            return self._attempt_auto_login(
+                retry_attempted=retry_attempted,
+                reason="Refresh token may have expired, automatically generating new refresh token via login",
+                error_context=res,
+            )
 
-                    # If retry was already attempted or credentials not available, raise the error
-                    return_error(
-                        f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
-                        f"and try to run again the login command to generate a new refresh token.\n{res}"
-                    )
-                if res.get("access_token"):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
-                    expiry_time += res.get("expires_in", 0) * 1000 - 10
-                    new_token = {
-                        "access_token": res.get("access_token"),
-                        "refresh_token": res.get("refresh_token"),
-                        "expiry_time": expiry_time,
-                    }
-                    set_integration_context(new_token)
-                    return res.get("access_token")
-            except Exception as e:
-                return_error(
-                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
-                )
+        # 5. Persist and return the new token
+        return self._store_and_return_token(res)
