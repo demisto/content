@@ -1610,6 +1610,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
+                        # Add user profile information to state object
                         state.update(
                             remove_empty_elements({"xsoar-button-submit": "Successful", "submitting_user": user_profile})
                         )
