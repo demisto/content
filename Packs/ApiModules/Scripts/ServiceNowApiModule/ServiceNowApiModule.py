@@ -251,8 +251,7 @@ class ServiceNowClient(BaseClient):
             return self.get_access_token(retry_attempted=True)
 
         raise Exception(
-            "Could not create an access token. User might be not logged in. "
-            "Try running the oauth-login command first."
+            "Could not create an access token. User might be not logged in. " "Try running the oauth-login command first."
         )
 
     def _build_token_request_data(self, previous_token: dict, *, retry_attempted: bool) -> dict:
@@ -310,9 +309,7 @@ class ServiceNowClient(BaseClient):
         """
         access_token = res.get("access_token")
         if not access_token:
-            raise DemistoException(
-                f"Token endpoint returned a successful response but no access_token was found.\n{res}"
-            )
+            raise DemistoException(f"Token endpoint returned a successful response but no access_token was found.\n{res}")
 
         expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
         expiry_time += res.get("expires_in", 0) * 1000 - 10
@@ -369,8 +366,7 @@ class ServiceNowClient(BaseClient):
                 raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
         except Exception as e:
             return_error(
-                f"Error occurred while creating an access token. "
-                f"Please check the instance configuration.\n\n{e.args[0]}"
+                f"Error occurred while creating an access token. " f"Please check the instance configuration.\n\n{e.args[0]}"
             )
 
         # 4. Handle error responses (e.g. expired refresh token)
