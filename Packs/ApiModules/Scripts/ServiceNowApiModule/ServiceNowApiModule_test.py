@@ -122,7 +122,7 @@ def test_get_access_token_with_automatic_retry(mocker):
     result = client.get_access_token()
 
     # Validate that login was called once to regenerate refresh token
-    mock_login.assert_called_once_with(client.username, client.password)
+    mock_login.assert_called_once_with(username=client.username, password=client.password)
 
     # Validate debug message was logged
     assert mock_debug.call_count == 2
@@ -162,7 +162,6 @@ def test_get_access_token_retry_only_once(mocker):
     error_response.status_code = 200
 
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
-    mocker.patch("ServiceNowApiModule.return_error", side_effect=Exception("Error occurred while creating an access token"))
 
     client = ServiceNowClient(
         username=PARAMS.get("credentials", {}).get("identifier", ""),
@@ -182,7 +181,7 @@ def test_get_access_token_retry_only_once(mocker):
     mocker.patch.object(BaseClient, "_http_request", return_value=error_response)
 
     # Call get_access_token - should retry once then raise error
-    with pytest.raises(Exception, match="Error occurred while creating an access token"):
+    with pytest.raises(Exception, match="Could not create an access token"):
         client.get_access_token()
 
     # Validate that login was called exactly once (no infinite loop)
