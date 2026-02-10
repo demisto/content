@@ -1,0 +1,243 @@
+category: Utilities
+commonfields:
+  id: PANOS-HA
+  version: -1
+configuration:
+- display: Hostname or IP Address
+  name: hostname
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: Firewall
+  display: Device Type
+  name: device_type
+  options:
+  - Firewall
+  - Panorama
+  required: true
+  type: 15
+- display: VSYS
+  name: vsys
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Manage and orchestrate High Availability (HA) features on Palo Alto Networks Firewalls and Panorama using the pan-os-python library.
+display: PANOS-HA
+name: PANOS-HA
+script:
+  commands:
+  - arguments: []
+    description: Retrieves the current High Availability state of a firewall. Not applicable to Panorama.
+    name: panos-ha-get-state
+    outputs:
+    - contextPath: PAN-OS-HA.State.enabled
+      description: Whether HA is enabled.
+      type: string
+    - contextPath: PAN-OS-HA.State.mode
+      description: The current HA mode (e.g., active-passive).
+      type: string
+    - contextPath: PAN-OS-HA.State.local-info.state
+      description: The HA state of the local device (e.g., active, passive, suspended).
+      type: string
+    - contextPath: PAN-OS-HA.State.local-info.serial
+      description: The serial number of the local device.
+      type: string
+    - contextPath: PAN-OS-HA.State.local-info.priority
+      description: The priority of the local device.
+      type: string
+    - contextPath: PAN-OS-HA.State.peer-info.state
+      description: The HA state of the peer device.
+      type: string
+    - contextPath: PAN-OS-HA.State.peer-info.serial
+      description: The serial number of the peer device.
+      type: string
+    - contextPath: PAN-OS-HA.State.peer-info.conn-status
+      description: The connection status of the peer device.
+      type: string
+  - arguments: []
+    description: Suspends the local firewall in an HA pair, forcing a failover to the peer. This is a disruptive action.
+    name: panos-ha-suspend-peer
+  - arguments: []
+    description: Requests that the local (currently passive) firewall becomes the active peer. This will cause a failover if the current active peer is functional.
+    name: panos-ha-make-peer-functional
+  - arguments: []
+    description: Manually forces the active firewall to synchronize its running configuration with its passive peer.
+    name: panos-ha-sync-config
+  - arguments: []
+    description: Manually forces the active firewall to synchronize its state (session table, etc.) with its passive peer.
+    name: panos-ha-sync-state
+  - arguments: []
+    description: Issues a "revert to running HA state" command to a Panorama peer. Used to re-integrate a peer after maintenance or failure.
+    name: panos-panorama-ha-reconfigure
+  - arguments:
+    - defaultValue: "1"
+      description: The HA Group ID (1-255).
+      name: group_id
+    - description: The IP address of the peer firewall's primary HA1 control link.
+      name: peer_ip
+      required: true
+    - description: The IP address of the peer firewall's backup HA1 control link.
+      name: peer_ip_backup
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: For Active/Passive mode, specifies the link state of the passive device.
+      name: passive_link_state
+      predefined:
+      - auto
+      - shutdown
+    - defaultValue: "100"
+      description: Device priority for HA election (0-255). Higher priority becomes active. Default is 100.
+      name: device_priority
+    - description: The primary control link (HA1) interface port (e.g., ha1-a, ethernet1/1).
+      name: ha1_port
+    - description: The IP address for the primary control link (HA1) interface.
+      name: ha1_ip_address
+    - description: The netmask for the primary control link (HA1) interface.
+      name: ha1_netmask
+    - description: The backup control link (HA1-Backup) interface port.
+      name: ha1_backup_port
+    - description: The IP address for the backup control link (HA1-Backup) interface.
+      name: ha1_backup_ip_address
+    - description: The netmask for the backup control link (HA1-Backup) interface.
+      name: ha1_backup_netmask
+    - description: The primary data link (HA2) interface port for session synchronization.
+      name: ha2_port
+    - description: The IP address for the primary data link (HA2) interface.
+      name: ha2_ip_address
+    - description: The netmask for the primary data link (HA2) interface.
+      name: ha2_netmask
+    - description: The backup data link (HA2-Backup) interface port for session synchronization.
+      name: ha2_backup_port
+    - description: The IP address for the backup data link (HA2-Backup) interface.
+      name: ha2_backup_ip_address
+    - description: The netmask for the backup data link (HA2-Backup) interface.
+      name: ha2_backup_netmask
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Commit the configuration change immediately.
+      name: commit
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Force a configuration sync to the peer after commit. 'commit' must also be true.
+      name: force_sync
+      predefined:
+      - "true"
+      - "false"
+    description: Enables and configures a detailed High Availability setup on a firewall.
+    name: panos-ha-configure
+  - arguments:
+    - defaultValue: "false"
+      description: Set to "true" to automatically commit the configuration changes after applying them.
+      name: commit
+    description: Disables the HA functionality on a firewall. This effectively removes it from an HA pair. This is a configuration change and requires a commit.
+    name: panos-ha-disable
+  - arguments: []
+    description: Retrieves the current High Availability (HA) configuration from a firewall.
+    name: panos-ha-get-config
+    outputs:
+    - contextPath: PAN-OS-HA.Config.enabled
+      description: Whether HA is enabled on the device.
+      type: String
+    - contextPath: PAN-OS-HA.Config.group-id
+      description: The Group ID for the HA pair.
+      type: String
+    - contextPath: PAN-OS-HA.Config.mode
+      description: The HA mode (e.g., Active/Passive).
+      type: String
+    - contextPath: PAN-OS-HA.Config.peer.ip
+      description: The IP address of the HA peer.
+      type: String
+    - contextPath: PAN-OS-HA.Config.peer.ip_backup
+      description: The backup IP address of the HA peer.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha1.port
+      description: The interface port for the HA1 (Control) link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha1.ip
+      description: The IP address for the HA1 (Control) link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha1_backup.port
+      description: The interface port for the HA1-Backup link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha1_backup.ip
+      description: The IP address for the HA1-Backup link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha2.port
+      description: The interface port for the HA2 (Data) link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha2.ip
+      description: The IP address for the HA2 (Data) link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha2_backup.port
+      description: The interface port for the HA2-Backup link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.interfaces.ha2_backup.ip
+      description: The IP address for the HA2-Backup link.
+      type: String
+    - contextPath: PAN-OS-HA.Config.link-monitoring
+      description: A list of Link Monitoring group configurations.
+      type: Unknown
+    - contextPath: PAN-OS-HA.Config.link-monitoring.Name
+      description: The name of the link monitoring group.
+      type: String
+    - contextPath: PAN-OS-HA.Config.link-monitoring.Enabled
+      description: Whether the link monitoring group is enabled.
+      type: String
+    - contextPath: PAN-OS-HA.Config.link-monitoring.Failure Condition
+      description: The failure condition for the group (any or all).
+      type: String
+    - contextPath: PAN-OS-HA.Config.link-monitoring.Interfaces
+      description: A comma-separated list of monitored interfaces.
+      type: String
+  - arguments:
+    - defaultValue: "false"
+      description: Set to "true" to automatically commit the configuration changes after applying them.
+      name: commit
+    description: Enables the HA functionality on a firewall. This effectively establishes  an HA pair from previous configuration. This is a configuration change and requires a commit.
+    name: panos-ha-enable
+  - arguments: []
+    description: Lists all available network interfaces on the firewall, including ethernet, HA control/data, loopback, tunnel, and VLAN interfaces.
+    name: panos-ha-list-interfaces
+    outputs:
+    - contextPath: PANOS-HA.AvailableInterfaces.Hostname
+      description: The hostname of the firewall.
+      type: String
+    - contextPath: PANOS-HA.AvailableInterfaces.InterfaceCount
+      description: Total number of interfaces found.
+      type: Number
+    - contextPath: PANOS-HA.AvailableInterfaces.Interfaces
+      description: List of all available interface names.
+      type: Unknown
+  - arguments:
+    - description: Comma-separated list of interface names to validate (e.g., "ha1-a,ha2-a,ethernet1/1").
+      name: interfaces
+      required: true
+    description: Validates that specified interfaces exist on the firewall before attempting HA configuration. Critical for preventing configuration errors.
+    name: panos-ha-validate-interfaces
+    outputs:
+    - contextPath: PANOS-HA.InterfaceValidation.Hostname
+      description: The hostname of the firewall.
+      type: String
+    - contextPath: PANOS-HA.InterfaceValidation.AllValid
+      description: Whether all specified interfaces were found.
+      type: Boolean
+    - contextPath: PANOS-HA.InterfaceValidation.ValidatedInterfaces
+      description: List of interfaces that were validated.
+      type: Unknown
+    - contextPath: PANOS-HA.InterfaceValidation.MissingInterfaces
+      description: List of interfaces that were not found on the device.
+      type: Unknown
+  dockerimage: demisto/pan-os-python:1.0.0.4889421
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
