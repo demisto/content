@@ -11,7 +11,7 @@ This integration was integrated and tested with Vancouver version of ServiceNow 
 | Client ID                                                     |                                                                    | False |
 | Client Secret                                                 |                                                                    | False |
 | ServiceNow API Version (e.g., 'v1')                           |                                                                    | False |
-| Use OAuth Login                                               | Select this checkbox to use OAuth 2.0 authentication.              | False |
+| Use OAuth Login                                               | Select this checkbox to use OAuth 2.0 authentication. When enabled with Username and Password configured, the integration will automatically perform the initial OAuth login and renew the refresh token when it expires. | False |
 | Event Types To Fetch                                          | Event types to fetch. Defaults to 'Audit' if no type is specified. | False |
 | Maximum audit events to fetch                                 | Maximum number of audit events per fetch.                          | False |
 | Maximum syslog transactions events to fetch                   | Maximum number of syslog transactions events per fetch.            | False |
