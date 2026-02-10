@@ -485,7 +485,7 @@ class Client(OktaClient):
 
     def clear_user_sessions(self, user_id, revoke_oauth_tokens=False):
         uri = f"/api/v1/users/{user_id}/sessions"
-        params = {"oauthTokens": "true"} if revoke_oauth_tokens else None
+        params = {"oauthTokens": revoke_oauth_tokens}
         return self.http_request(method="DELETE", url_suffix=uri, params=params, resp_type="text")
 
     def get_zone(self, zoneID):
