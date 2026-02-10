@@ -242,7 +242,7 @@ def get_incidents_batch_by_time_request(client, params):
         "created_before": created_before.isoformat().split(".")[0] + "Z",
     }
 
-    demisto.info(
+    demisto.debug(
         f"[BATCH_START] Starting get_incidents_batch_by_time_request with state={params.get('state')}, "
         f"fetch_limit={fetch_limit}, last_fetched_id={last_fetched_id}, fetch_delta={fetch_delta}, "
         f"created_after={request_params['created_after']}, current_time={current_time.isoformat()}"
@@ -261,20 +261,20 @@ def get_incidents_batch_by_time_request(client, params):
         request_params["created_after"] = created_after.isoformat().split(".")[0] + "Z"
         request_params["created_before"] = created_before.isoformat().split(".")[0] + "Z"
 
-        demisto.info(
+        demisto.debug(
             f"[BATCH_LOOP_START] Iteration #{iteration_count}: fetch_limit={fetch_limit}, "
             f"current_incidents_count={len(incidents_list)}, "
             f"created_after={request_params['created_after']}, "
             f"created_before={request_params['created_before']}"
         )
 
-        demisto.info(f"[API_CALL_START] Iteration #{iteration_count}: Calling get_new_incidents...")
+        demisto.debug(f"[API_CALL_START] Iteration #{iteration_count}: Calling get_new_incidents...")
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        demisto.info(f"[API_CALL_END] Iteration #{iteration_count}: get_new_incidents returned {len(new_incidents)} incidents")
+        demisto.debug(f"[API_CALL_END] Iteration #{iteration_count}: get_new_incidents returned {len(new_incidents)} incidents")
 
         incidents_list.extend(new_incidents)
 
-        demisto.info(
+        demisto.debug(
             f"[BATCH_LOOP_END] Iteration #{iteration_count}: total_incidents={len(incidents_list)}, "
             f"new_incidents_added={len(new_incidents)}"
         )
@@ -282,7 +282,7 @@ def get_incidents_batch_by_time_request(client, params):
         # Advance to next time window
         created_after = created_before
 
-    demisto.info(
+    demisto.debug(
         f"[BATCH_COMPLETE] Batch processing completed after {iteration_count} iterations, "
         f"total_incidents={len(incidents_list)}, fetch_limit={fetch_limit}, "
         f"reached_current_time={created_after >= current_time}"
@@ -290,7 +290,7 @@ def get_incidents_batch_by_time_request(client, params):
 
     incidents_list_limit = incidents_list[:fetch_limit]
 
-    demisto.info(
+    demisto.debug(
         f"[BATCH_END] get_incidents_batch_by_time_request completed, "
         f"total_iterations={iteration_count}, final_incident_count={len(incidents_list_limit)}, "
         f"incidents_truncated={len(incidents_list) > (fetch_limit or 0)}"
