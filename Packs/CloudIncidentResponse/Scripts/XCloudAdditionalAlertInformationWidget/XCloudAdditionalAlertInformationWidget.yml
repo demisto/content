@@ -20,3 +20,6 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam
+    
