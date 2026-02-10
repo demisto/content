@@ -1114,7 +1114,7 @@ def spam_quarantine_message_release_command(
         List[CommandResults]: readable outputs for XSOAR.
     """
     action = RELEASE_ACTION
-    quarantine_type = args.get("quarantine_type")
+    quarantine_type = args.get("quarantine_type", QUARANTINE_TYPE)
     quarantine_name = args.get("quarantine_name")
     message_ids = format_number_list_argument(args["message_ids"])
 
