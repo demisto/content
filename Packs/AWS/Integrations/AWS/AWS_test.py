@@ -9515,3 +9515,379 @@ def test_ec2_delete_volume_command_debug_logging(mocker):
 
     EC2.delete_volume_command(mock_client, args)
     mock_print_debug_logs.assert_called_once_with(mock_client, "Deleting volume: vol-12345678")
+
+
+def test_ec2_describe_snapshots_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot description arguments.
+    When: describe_snapshots_command is called successfully.
+    Then: It should return CommandResults with snapshot data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Snapshots": [
+            {
+                "SnapshotId": "snap-12345678",
+                "Description": "Test snapshot",
+                "State": "completed",
+                "VolumeId": "vol-12345678",
+                "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Progress": "100%",
+                "OwnerId": "123456789012",
+                "VolumeSize": 8,
+                "Encrypted": False,
+            }
+        ],
+    }
+    mock_client.describe_snapshots.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"snapshot_ids": "snap-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_snapshots_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    snapshots_key = "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)"
+    assert snapshots_key in result.outputs
+    assert result.outputs[snapshots_key][0]["SnapshotId"] == "snap-12345678"
+    assert "AWS EC2 Snapshots" in result.readable_output
+    mock_client.describe_snapshots.assert_called_once()
+    call_args = mock_client.describe_snapshots.call_args[1]
+    assert call_args["SnapshotIds"] == ["snap-12345678"]
+
+
+def test_ec2_describe_snapshots_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and filter arguments.
+    When: describe_snapshots_command is called with filters.
+    Then: It should pass filters to the API call and return filtered results.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Snapshots": [
+            {
+                "SnapshotId": "snap-11111111",
+                "Description": "Encrypted snapshot",
+                "State": "completed",
+                "VolumeId": "vol-11111111",
+                "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Progress": "100%",
+                "OwnerId": "123456789012",
+                "VolumeSize": 10,
+                "Encrypted": True,
+            }
+        ],
+    }
+    mock_client.describe_snapshots.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "encrypted", "Values": ["true"]}])
+
+    args = {"filters": "name=encrypted,values=true", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_snapshots_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    snapshots_key = "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)"
+    assert snapshots_key in result.outputs
+    assert len(result.outputs[snapshots_key]) == 1
+    assert result.outputs[snapshots_key][0]["Encrypted"] is True
+    mock_client.describe_snapshots.assert_called_once()
+
+
+def test_ec2_describe_snapshots_command_no_snapshots_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty snapshots list.
+    When: describe_snapshots_command is called with no matching snapshots.
+    Then: It should return CommandResults with no snapshots message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_snapshots.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Snapshots": []}
+
+    args = {"snapshot_ids": "snap-nonexistent", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_snapshots_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "No snapshots were found" in result.readable_output
+
+
+def test_ec2_describe_snapshots_command_with_pagination(mocker):
+    """
+    Given: A mocked boto3 EC2 client and pagination arguments.
+    When: describe_snapshots_command is called with limit and next_token.
+    Then: It should pass pagination parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Snapshots": [
+            {
+                "SnapshotId": "snap-page1",
+                "Description": "Snapshot page 1",
+                "State": "completed",
+                "VolumeId": "vol-12345678",
+                "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+                "Progress": "100%",
+                "OwnerId": "123456789012",
+                "VolumeSize": 8,
+                "Encrypted": False,
+            }
+        ],
+        "NextToken": "next-page-token",
+    }
+    mock_client.describe_snapshots.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"limit": "50", "next_token": "previous-token", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.describe_snapshots_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_snapshots.assert_called_once()
+    call_args = mock_client.describe_snapshots.call_args[1]
+    assert call_args["MaxResults"] == 50
+    assert call_args["NextToken"] == "previous-token"
+
+
+def test_ec2_delete_snapshot_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot ID.
+    When: delete_snapshot_command is called successfully.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_snapshot.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"snapshot_id": "snap-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    result = EC2.delete_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted snapshot snap-12345678" in result.readable_output
+
+
+def test_ec2_delete_snapshot_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: delete_snapshot_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_snapshot.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"snapshot_id": "snap-nonexistent", "account_id": "123456789012", "region": "us-east-1"}
+
+    EC2.delete_snapshot_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_delete_snapshot_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot ID.
+    When: delete_snapshot_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_snapshot.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"snapshot_id": "snap-12345678", "account_id": "123456789012", "region": "us-east-1"}
+
+    EC2.delete_snapshot_command(mock_client, args)
+    mock_print_debug_logs.assert_called_once_with(mock_client, "Deleting snapshot: snap-12345678")
+
+
+def test_ec2_copy_snapshot_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot copy arguments.
+    When: copy_snapshot_command is called successfully.
+    Then: It should return CommandResults with new snapshot ID and copy details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_snapshot.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SnapshotId": "snap-copied123",
+    }
+
+    args = {
+        "source_snapshot_id": "snap-source123",
+        "source_region": "us-west-1",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    result = EC2.copy_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Snapshots"
+    assert result.outputs["SnapshotId"] == "snap-copied123"
+    assert "AWS EC2 Snapshots" in result.readable_output
+
+
+def test_ec2_copy_snapshot_command_with_encryption(mocker):
+    """
+    Given: A mocked boto3 EC2 client and snapshot copy arguments with encryption.
+    When: copy_snapshot_command is called with encrypted=true and kms_key_id.
+    Then: It should pass encryption parameters to the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_snapshot.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SnapshotId": "snap-encrypted123",
+    }
+
+    args = {
+        "source_snapshot_id": "snap-source123",
+        "source_region": "us-west-1",
+        "encrypted": "true",
+        "kms_key_id": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    result = EC2.copy_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_snapshot.call_args[1]
+    assert call_args["Encrypted"] is True
+    assert "kms" in call_args["KmsKeyId"]
+
+
+def test_ec2_copy_snapshot_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and snapshot copy arguments with tags.
+    When: copy_snapshot_command is called with tag_specifications.
+    Then: It should configure tag specifications correctly and response should contain the tags.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_snapshot.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SnapshotId": "snap-tagged123",
+        "Tags": [{"Key": "Environment", "Value": "Production"}],
+    }
+
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+
+    args = {
+        "source_snapshot_id": "snap-source123",
+        "source_region": "us-west-1",
+        "tag_specifications": "key=Environment,value=Production",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    result = EC2.copy_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_client.copy_snapshot.call_args[1]
+    assert "TagSpecifications" in call_args
+    assert call_args["TagSpecifications"][0]["ResourceType"] == "snapshot"
+    assert "Tags" in result.outputs
+    assert result.outputs["Tags"] == [{"Key": "Environment", "Value": "Production"}]
+
+
+def test_ec2_copy_snapshot_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning non-OK status code.
+    When: copy_snapshot_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.copy_snapshot.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "source_snapshot_id": "snap-source123",
+        "source_region": "us-west-1",
+        "region": "us-east-1",
+        "account_id": "123456789012",
+    }
+
+    EC2.copy_snapshot_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_ec2_snapshot_completed_waiter_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with waiter that completes successfully.
+    When: snapshot_completed_waiter_command is called.
+    Then: It should return CommandResults with success message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"snapshot_ids": "snap-12345678", "waiter_delay": "1", "waiter_max_attempts": "1"}
+
+    result = EC2.snapshot_completed_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Snapshot is now completed" in result.readable_output
+    mock_client.get_waiter.assert_called_once_with("snapshot_completed")
+
+
+def test_ec2_snapshot_completed_waiter_command_with_custom_config(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with custom delay and max attempts.
+    When: snapshot_completed_waiter_command is called with waiter configuration.
+    Then: It should pass waiter configuration to the wait call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    args = {"snapshot_ids": "snap-12345678", "waiter_delay": "30", "waiter_max_attempts": "20"}
+
+    result = EC2.snapshot_completed_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert call_args["WaiterConfig"]["Delay"] == 30
+    assert call_args["WaiterConfig"]["MaxAttempts"] == 20
+
+
+def test_ec2_snapshot_completed_waiter_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and waiter arguments with filters.
+    When: snapshot_completed_waiter_command is called with filters.
+    Then: It should pass filters to the waiter.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_waiter = mocker.Mock()
+    mock_client.get_waiter.return_value = mock_waiter
+
+    mocker.patch("AWS.parse_filter_field", return_value=[{"Name": "status", "Values": ["completed"]}])
+
+    args = {"filters": "name=status,values=completed", "waiter_delay": "15", "waiter_max_attempts": "40"}
+
+    result = EC2.snapshot_completed_waiter_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    call_args = mock_waiter.wait.call_args[1]
+    assert "Filters" in call_args

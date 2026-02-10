@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, WaiterError
 from boto3 import Session
 from xml.sax.saxutils import escape
 import re
@@ -3882,6 +3882,210 @@ class EC2:
 
         return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
 
+    @staticmethod
+    def describe_snapshots_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more Amazon EBS snapshots available to you.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create
+                 volumes from the snapshot
+                - limit (int, optional): Maximum number of snapshots to return
+                - next_token (str, optional): Token for pagination
+
+        Returns:
+            CommandResults: Results containing snapshot information including description, encryption status, owner, progress,
+             state, and volume details
+        """
+        kwargs = {}
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        if owner_ids := args.get("owner_ids"):
+            kwargs["OwnerIds"] = parse_resource_ids(owner_ids)
+        if snapshot_ids := args.get("snapshot_ids"):
+            kwargs["SnapshotIds"] = parse_resource_ids(snapshot_ids)
+        if restorable_by_user_ids := args.get("restorable_by_user_ids"):
+            kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
+
+        if not snapshot_ids:
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing snapshots with parameters: {kwargs}")
+
+        response = client.describe_snapshots(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        snapshots = response.get("Snapshots", [])
+
+        if not snapshots:
+            return CommandResults(readable_output="No snapshots were found.")
+
+        readable_output = tableToMarkdown(
+            "AWS EC2 Snapshots",
+            snapshots,
+            headers=[
+                "SnapshotId",
+                "Description",
+                "VolumeId",
+                "VolumeSize",
+                "Encrypted",
+                "OwnerId",
+                "Progress",
+                "StartTime",
+                "State",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        outputs = {
+            "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)": snapshots,
+            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified Amazon EBS snapshot.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - snapshot_id (str): The ID of the snapshot to delete (required)
+
+        Returns:
+            CommandResults: Results of the deletion operation with success message
+        """
+        snapshot_id = args.get("snapshot_id")
+        print_debug_logs(client, f"Deleting snapshot: {snapshot_id}")
+        response = client.delete_snapshot(SnapshotId=snapshot_id)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output=f"Successfully deleted snapshot {snapshot_id}", raw_response=response)
+
+    @staticmethod
+    def copy_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Copies a point-in-time snapshot of an Amazon EBS volume and stores it in Amazon S3.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - source_snapshot_id (str): The ID of the snapshot to copy (required)
+                - source_region (str): The region containing the source snapshot (required)
+                - description (str, optional): Description for the new snapshot
+                - destination_outpost_arn (str, optional): The ARN of the Outpost to which to copy the snapshot
+                - encrypted (boolean, optional): Whether the destination snapshot should be encrypted
+                - kms_key_id (str, optional): KMS key ID for encryption
+                - presigned_url (str, optional): Pre-signed URL for the copy operation
+                - tag_specifications (str, optional): Tags to apply to the new snapshot
+
+        Returns:
+            CommandResults: Results containing the new snapshot ID and region information
+        """
+        kwargs = {
+            "SourceSnapshotId": args.get("source_snapshot_id"),
+            "SourceRegion": args.get("source_region"),
+            "Description": args.get("description"),
+            "DestinationOutpostArn": args.get("destination_outpost_arn"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "PresignedUrl": args.get("presigned_url"),
+        }
+
+        if tag_specifications := args.get("tag_specifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "snapshot", "Tags": parse_tag_field(tag_specifications)}]
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Copying snapshot with parameters: {kwargs}")
+
+        response = client.copy_snapshot(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
+        readable_output = tableToMarkdown(
+            "Copy AWS EC2 Snapshots", outputs, headers=["SnapshotId"], removeNull=True, headerTransform=pascalToSpace
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Snapshots",
+            outputs_key_field="SnapshotId",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def snapshot_completed_waiter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Waits until an Amazon EBS snapshot reaches the completed state.
+
+        This command uses AWS EC2's built-in waiter functionality to poll the snapshot state
+        until it reaches the 'completed' state. The waiter will check the snapshot status at
+        regular intervals (configurable via waiter_delay) up to a maximum number of attempts
+        (configurable via waiter_max_attempts).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - filters (str, optional): One or more filters separated by ';'
+                - owner_ids (str, optional): Comma-separated list of snapshot owner IDs
+                - snapshot_ids (str, optional): Comma-separated list of snapshot IDs to wait for
+                - restorable_by_user_ids (str, optional): Comma-separated list of user IDs that can create volumes
+                from the snapshot
+                - waiter_delay (str, optional): Time in seconds to wait between polling attempts (default: 15)
+                - waiter_max_attempts (str, optional): Maximum number of polling attempts (default: 40)
+
+        Returns:
+            CommandResults: Results with success message when snapshot is completed
+
+        Raises:
+            WaiterError: If the waiter times out or encounters an error
+        """
+        kwargs = {}
+        if filters := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters)
+        if owner_ids := args.get("owner_ids"):
+            kwargs["OwnerIds"] = parse_resource_ids(owner_ids)
+        if snapshot_ids := args.get("snapshot_ids"):
+            kwargs["SnapshotIds"] = parse_resource_ids(snapshot_ids)
+        if restorable_by_user_ids := args.get("restorable_by_user_ids"):
+            kwargs["RestorableByUserIds"] = parse_resource_ids(restorable_by_user_ids)
+
+        # Configure waiter settings
+        kwargs["WaiterConfig"] = {
+            "Delay": arg_to_number(args.get("waiter_delay")),
+            "MaxAttempts": arg_to_number(args.get("waiter_max_attempts")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Waiting for snapshot completion with parameters: {kwargs}")
+
+        try:
+            waiter = client.get_waiter("snapshot_completed")
+            waiter.wait(**kwargs)
+            return CommandResults(readable_output="Snapshot is now completed.")
+        except WaiterError as e:
+            raise DemistoException(f"Waiter error: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -5403,6 +5607,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-iam-instance-profile-associations-describe": EC2.describe_iam_instance_profile_associations_command,
     "aws-ec2-password-data-get": EC2.get_password_data_command,
     "aws-ec2-reserved-instances-describe": EC2.describe_reserved_instances_command,
+    "aws-ec2-snapshots-describe": EC2.describe_snapshots_command,
+    "aws-ec2-snapshot-delete": EC2.delete_snapshot_command,
+    "aws-ec2-snapshot-copy": EC2.copy_snapshot_command,
+    "aws-ec2-snapshot-completed-waiter": EC2.snapshot_completed_waiter_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
@@ -5497,6 +5705,9 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:CreateImage",
     "ec2:DeregisterImage",
     "ec2:CopyImage",
+    "ec2:DescribeSnapshots",
+    "ec2:DeleteSnapshot",
+    "ec2:CopySnapshot",
     "ec2:DescribeRegions",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",

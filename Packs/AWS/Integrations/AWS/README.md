@@ -3331,3 +3331,129 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-snapshots-describe
+
+***
+Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+
+#### Base Command
+
+`aws-ec2-snapshots-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| limit | The maximum number of snapshots to return for this request. This value can be between 5 and 1000. | Optional |
+| next_token | The token returned from the previous paginated request. Use it to continue retrieving results from where the last request ended. | Optional |
+| owner_ids | A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners. | Optional |
+| restorable_by_user_ids | A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot. | Optional |
+| snapshot_ids | A comma-separated list of snapshot IDs. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshots.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
+| AWS.EC2.Snapshots.Description | string | The description for the snapshot. |
+| AWS.EC2.Snapshots.Encrypted | boolean | Indicates whether the snapshot is encrypted. |
+| AWS.EC2.Snapshots.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the AWS KMS key that was used to protect the volume encryption key for the parent volume. |
+| AWS.EC2.Snapshots.OwnerId | string | The ID of the AWS account that owns the EBS snapshot. |
+| AWS.EC2.Snapshots.Progress | string | The progress of the snapshot, as a percentage. |
+| AWS.EC2.Snapshots.SnapshotId | string | The ID of the snapshot. Each snapshot receives a unique identifier when it is created. |
+| AWS.EC2.Snapshots.StartTime | date | The time stamp when the snapshot was initiated. |
+| AWS.EC2.Snapshots.State | string | The snapshot state. |
+| AWS.EC2.Snapshots.StateMessage | string | Encrypted Amazon EBS snapshots are copied asynchronously. If a snapshot copy operation fails, this field displays error state details to help you diagnose why the error occurred. |
+| AWS.EC2.Snapshots.VolumeId | string | The ID of the volume that was used to create the snapshot. |
+| AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. |
+| AWS.EC2.Snapshots.OwnerAlias | string | The AWS owner alias, from an Amazon-maintained list \(amazon\). This is not the user-configured AWS account alias set using the IAM console. |
+| AWS.EC2.Snapshots.OutpostArn | string | The ARN of the Outpost on which the snapshot is stored. |
+| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Snapshots.StorageTier | string | The storage tier in which the snapshot is stored. |
+| AWS.EC2.Snapshots.RestoreExpiryTime | date | Only for archived snapshots that are temporarily restored. Indicates the date and time when a temporarily restored snapshot will be automatically re-archived. |
+| AWS.EC2.Snapshots.SseType | string | Reserved for future use. |
+| AWS.EC2.SnapshotsNextPageToken | string | Next page token for pagination. |
+
+### aws-ec2-snapshot-delete
+
+***
+Deletes the specified snapshot.
+
+#### Base Command
+
+`aws-ec2-snapshot-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| snapshot_id | The ID of the EBS snapshot. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-snapshot-copy
+
+***
+Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+
+#### Base Command
+
+`aws-ec2-snapshot-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| source_snapshot_id | The ID of the EBS snapshot to copy. | Required |
+| source_region | The ID of the Region that contains the snapshot to be copied. | Required |
+| description | A description for the EBS snapshot. | Optional |
+| destination_outpost_arn | The Amazon Resource Name (ARN) of the Outpost where the snapshot will be copied. | Optional |
+| encrypted | Use this parameter to encrypt a copy of an unencrypted snapshot when encryption-by-default is not enabled. Otherwise, omit it. Possible values are: true, false. | Optional |
+| kms_key_id | The identifier of the AWS KMS key to use for Amazon EBS encryption. If this parameter is not specified, your AWS managed key for Amazon EBS is used. | Optional |
+| presigned_url | When you copy an encrypted source snapshot using the Amazon EC2 Query API, you must supply a pre-signed URL. | Optional |
+| tag_specifications | The tags to apply to the new snapshot. The tags must be separated by a semicolon (;) and specified using the format "key=key,values=val". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshots.SnapshotId | string | The ID of the new snapshot. |
+| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. |
+
+### aws-ec2-snapshot-completed-waiter
+
+***
+A waiter function that waits until the snapshot is complete.
+
+#### Base Command
+
+`aws-ec2-snapshot-completed-waiter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| owner_ids | A comma-separated list of possible owners IDs. Scopes the results to snapshots with the specified owners. | Optional |
+| restorable_by_user_ids | A comma-separated list of IDs of the AWS accounts that can create volumes from the snapshot. | Optional |
+| snapshot_ids | A comma-separated list of snapshot IDs. | Optional |
+| waiter_delay | The amount of time in seconds to wait between attempts. Default 15. Default is 15. | Optional |
+| waiter_max_attempts | The maximum number of attempts to be made. Default 40. Default is 40. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
