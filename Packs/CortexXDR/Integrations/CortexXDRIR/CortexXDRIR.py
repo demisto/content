@@ -623,6 +623,120 @@ class Client(CoreClient):
             url_suffix=f"/asset-groups/update/{group_id}",
             json_data=request_data,
         )
+    # --- Automation Script Methods ---
+
+    def create_automation_script(self, file_content: bytes, file_name: str):
+        """
+        Creates or updates an automation script by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+        Args:
+            file_content (bytes): The content of the script file.
+            file_name (str): The name of the script file.
+        """
+        self._http_request(
+            method='POST',
+            url_suffix='/scripts/insert/',
+            files={'file': (file_name, file_content)},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    def get_automation_script(self, field: str, value: str) -> bytes:
+        """
+        Gets an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+        Args:
+            field (str): The field to search by (id or name).
+            value (str): The value of the field to search for.
+
+        Returns:
+            bytes: The script file content.
+        """
+        return self._http_request(
+            method='POST',
+            url_suffix='/scripts/get/',
+            json_data={'request_data': {field: value}},
+            headers=self.headers,
+            timeout=self.timeout,
+            resp_type='content',
+        )
+
+    def delete_automation_script(self, field: str, value: str):
+        """
+        Deletes an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+        Args:
+            field (str): The field to search by (id or name).
+            value (str): The value of the field to search for.
+        """
+        self._http_request(
+            method='POST',
+            url_suffix='/scripts/delete/',
+            json_data={'request_data': {field: value}},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    # --- Automation Playbook Methods ---
+
+    def create_automation_playbook(self, file_content: bytes, file_name: str):
+        """
+        Creates or updates an automation playbook by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+        Args:
+            file_content (bytes): The content of the playbook file.
+            file_name (str): The name of the playbook file.
+        """
+        self._http_request(
+            method='POST',
+            url_suffix='/playbooks/insert/',
+            files={'file': (file_name, file_content)},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
+    def get_automation_playbook(self, field: str, value: str) -> bytes:
+        """
+        Gets an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+        Args:
+            field (str): The field to search by (id or name).
+            value (str): The value of the field to search for.
+
+        Returns:
+            bytes: The playbook file content.
+        """
+        return self._http_request(
+            method='POST',
+            url_suffix='/playbooks/get/',
+            json_data={'request_data': {field: value}},
+            headers=self.headers,
+            timeout=self.timeout,
+            resp_type='content',
+        )
+
+    def delete_automation_playbook(self, field: str, value: str):
+        """
+        Deletes an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+        Args:
+            field (str): The field to search by (id or name).
+            value (str): The value of the field to search for.
+        """
+        self._http_request(
+            method='POST',
+            url_suffix='/playbooks/delete/',
+            json_data={'request_data': {field: value}},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+
 
 
 def extract_paths_and_names(paths: list) -> tuple:
@@ -1878,6 +1992,131 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+
+def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation script by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get('entry_id', '')
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info.get('path', '')
+    file_name = file_info.get('name', '')
+
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+
+    client.create_automation_script(file_content=file_content, file_name=file_name)
+    return CommandResults(readable_output='Automation script created successfully.')
+
+
+def automation_script_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation script and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get('field', '')
+    value = args.get('value', '')
+
+    file_content = client.get_automation_script(field=field, value=value)
+    return fileResult(f'automation_script_{value}', file_content)
+
+
+def automation_script_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation script.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get('field', '')
+    value = args.get('value', '')
+
+    client.delete_automation_script(field=field, value=value)
+    return CommandResults(readable_output='Automation script deleted successfully.')
+
+
+def automation_playbook_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation playbook by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get('entry_id', '')
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info.get('path', '')
+    file_name = file_info.get('name', '')
+
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+
+    client.create_automation_playbook(file_content=file_content, file_name=file_name)
+    return CommandResults(readable_output='Automation playbook created successfully.')
+
+
+def automation_playbook_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation playbook and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get('field', '')
+    value = args.get('value', '')
+
+    file_content = client.get_automation_playbook(field=field, value=value)
+    return fileResult(f'automation_playbook_{value}', file_content)
+
+
+def automation_playbook_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation playbook.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get('field', '')
+    value = args.get('value', '')
+
+    client.delete_automation_playbook(field=field, value=value)
+    return CommandResults(readable_output='Automation playbook deleted successfully.')
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -2374,6 +2613,24 @@ def main():  # pragma: no cover
 
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-automation-script-create":
+            return_results(automation_script_create_command(client, args))
+
+        elif command == "xdr-automation-script-get":
+            return_results(automation_script_get_command(client, args))
+
+        elif command == "xdr-automation-script-delete":
+            return_results(automation_script_delete_command(client, args))
+
+        elif command == "xdr-automation-playbook-create":
+            return_results(automation_playbook_create_command(client, args))
+
+        elif command == "xdr-automation-playbook-get":
+            return_results(automation_playbook_get_command(client, args))
+
+        elif command == "xdr-automation-playbook-delete":
+            return_results(automation_playbook_delete_command(client, args))
 
     except Exception as err:
         return_error(str(err))
