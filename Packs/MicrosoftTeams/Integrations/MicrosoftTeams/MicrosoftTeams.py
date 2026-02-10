@@ -920,39 +920,17 @@ def get_bot_access_token() -> str:
         raise ValueError("Failed to get bot access token")
 
 
-def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
+def resolve_user_id_for_proactive_message(user_identifier: str) -> tuple[str, str]:
     """
-    Resolves a user identifier (displayName, mail, or userPrincipalName) to the actual user ID.
-    Uses Microsoft Graph API to query users.
+    Resolves a user identifier to user ID and email using Microsoft Graph API.
 
     :param user_identifier: User identifier - can be displayName, mail, userPrincipalName, or user ID
-    :return: The resolved user ID
+    :return: Tuple of user_id
     """
     demisto.debug(f"Resolving user identifier: {user_identifier}")
 
-    # Try to get user by exact match on userPrincipalName or mail
-    url = f"{GRAPH_BASE_URL}/v1.0/users/{urllib.parse.quote(user_identifier)}"
-    demisto.debug(f"Attempting direct user lookup: {url}")
-
-    try:
-        user_data: dict = cast(dict[Any, Any], http_request("GET", url))
-        user_id = user_data.get("id", "")
-        if user_id:
-            demisto.debug(f"Found user by exact match: {user_id}")
-            return user_id
-    except Exception as e:
-        demisto.debug(f"Direct user lookup failed: {str(e)}")
-
-    # Try filter query for exact match on displayName, mail, or userPrincipalName
-    filter_query = (
-        f"displayName eq '{user_identifier}' or " f"userPrincipalName eq '{user_identifier}' or " f"mail eq '{user_identifier}'"
-    )
-    params = {"$filter": filter_query}
-    url = f"{GRAPH_BASE_URL}/v1.0/users"
-    demisto.debug(f"Attempting exact match filter query: {filter_query}")
-
-    response: dict = cast(dict[Any, Any], http_request("GET", url, params=params))
-    users = response.get("value", [])
+    # Use get_user() with additional fields to get both ID and email
+    users = get_user(user_identifier, select_fields="id,mail,displayName")
 
     if not users:
         return_error(
@@ -972,6 +950,7 @@ def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
         )
 
     user_id = users[0].get("id", "")
+
     if not user_id:
         return_error(f"User ID not found in response for: {user_identifier}")
 
@@ -1002,14 +981,14 @@ def create_proactive_conversation(user_id: str) -> str:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
 
     # Check if we have a cached conversation for this user
-    cached_conversations: dict = integration_context.get("proactive_conversations", {})
-    if isinstance(cached_conversations, str):
-        cached_conversations = json.loads(cached_conversations)
+    # cached_conversations: dict = integration_context.get("proactive_conversations", {})
+    # if isinstance(cached_conversations, str):
+    #     cached_conversations = json.loads(cached_conversations)
 
-    if user_id in cached_conversations:
-        cached_conversation_id = cached_conversations[user_id]
-        demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
-        return cached_conversation_id
+    # if user_id in cached_conversations:
+    #     cached_conversation_id = cached_conversations[user_id]
+    #     demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
+    #     return cached_conversation_id
 
     # Create new conversation
     conversation: dict = {
@@ -1028,9 +1007,9 @@ def create_proactive_conversation(user_id: str) -> str:
         raise ValueError("Failed to create conversation: No conversation ID returned")
 
     # Cache the conversation ID
-    cached_conversations[user_id] = conversation_id
-    integration_context["proactive_conversations"] = json.dumps(cached_conversations)
-    set_integration_context(integration_context)
+    # cached_conversations[user_id] = conversation_id
+    # integration_context["proactive_conversations"] = json.dumps(cached_conversations)
+    # set_integration_context(integration_context)
 
     demisto.debug(f"Created and cached conversation ID: {conversation_id}")
     return conversation_id
@@ -1515,7 +1494,7 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
     return chat_id, chat_type
 
 
-def get_user(user: str, auth_type: str = AUTH_TYPE) -> list:
+def get_user(user: str, auth_type: str = AUTH_TYPE, select_fields: str = "id, userType") -> list:
     """Retrieves the AAD ID of requested user and the userType
 
     Args:
@@ -1528,7 +1507,7 @@ def get_user(user: str, auth_type: str = AUTH_TYPE) -> list:
     url: str = f"{GRAPH_BASE_URL}/v1.0/users"
     params = {
         "$filter": f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
-        "$select": "id, userType",
+        "$select": select_fields,
     }
     users = cast(dict[Any, Any], http_request("GET", url, params=params, auth_type=auth_type))
     return users.get("value", [])
@@ -2835,7 +2814,7 @@ def send_proactive_message_command():
     args = demisto.args()
     user_id_arg: str = args.get("user_id", "")
     message: str = args.get("message", "")
-    adaptive_card_arg: str = args.get("adaptive_card", "")
+    adaptive_card_arg = args.get("adaptive_card", "")
 
     # Validate inputs - message and adaptive_card are both optional, but at least one must be provided
     if not message and not adaptive_card_arg:
@@ -2844,7 +2823,7 @@ def send_proactive_message_command():
     if message and adaptive_card_arg:
         return_error("Provide either message or adaptive_card, not both.")
 
-    # Step 1: Resolve user identifier to user ID
+    # Step 1: Resolve user identifier to user ID and email
     demisto.debug(f"Resolving user identifier: {user_id_arg}")
     user_id = resolve_user_id_for_proactive_message(user_id_arg)
 
@@ -2855,10 +2834,23 @@ def send_proactive_message_command():
     # Step 3: Prepare message or adaptive card
     adaptive_card_obj = None
     if adaptive_card_arg:
-        try:
-            adaptive_card_obj = json.loads(adaptive_card_arg)
-        except json.JSONDecodeError as e:
-            return_error(f"Invalid adaptive card JSON format: {str(e)}")
+        # Parse if string, use directly if dict
+        if isinstance(adaptive_card_arg, str):
+            try:
+                adaptive_card: dict = json.loads(adaptive_card_arg)
+            except json.JSONDecodeError as e:
+                return_error(f"Invalid adaptive card JSON format: {str(e)}")
+        else:
+            adaptive_card = adaptive_card_arg  # Already a dict
+
+        # Check for TeamsAsk entitlement - SAME AS send-notification
+        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
+        if entitlement_match:
+            # TeamsAsk adaptive card with entitlement
+            adaptive_card_obj = process_teams_ask_adaptive_card(adaptive_card)
+        else:
+            # Regular adaptive card
+            adaptive_card_obj = handle_raw_adaptive_card(adaptive_card)
 
     # Step 4: Send the proactive message
     demisto.debug(f"Sending proactive message to conversation: {conversation_id}")
@@ -3323,7 +3315,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     Handles activity the bot received as part of TeamsAsk flow, which includes entitlement
     :param integration_context: Cached object to retrieve relevant data from
     :param request_body: Activity payload
-    :param value: Object which includes
+    :param value: Object which includes entitlement response data
     :param conversation_id: Message conversation ID
     :return: None
     """
@@ -3340,12 +3332,45 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     task_id: str = value.get("task_id", "")
     from_property: dict = request_body.get("from", {})
     team_members_id: str = from_property.get("id", "")
-    team_member: dict = get_team_member(integration_context, team_members_id)
+
+    # Try to get user email - check team cache first, then proactive users cache, then Graph API
+    user_email = ""
+    try:
+        team_member: dict = get_team_member(integration_context, team_members_id)
+        user_email = team_member.get("user_email", "")
+        demisto.debug(f"Found user in team cache: {user_email}")
+    except ValueError:
+        # Not in team cache - check proactive users cache
+        proactive_users: dict = json.loads(integration_context.get("proactive_users", "{}"))
+        if team_members_id in proactive_users:
+            user_email = proactive_users[team_members_id].get("email", "")
+            demisto.debug(f"Found user in proactive users cache: {user_email}")
+        else:
+            # Fallback: use Graph API to get user details (reusing shared function)
+            demisto.debug(f"User {team_members_id} not in cache, querying Graph API")
+            try:
+                user_data = get_user(team_members_id, select_fields="mail,userPrincipalName")
+                if user_data and user_data[0]:
+                    user_email = user_data[0].get("mail") or user_data[0].get("userPrincipalName", "")
+                    demisto.debug(f"Retrieved user email from Graph API: {user_email}")
+
+                    # Cache the user email for future entitlement responses
+                    if user_data[0].get("mail"):
+                        proactive_users[team_members_id] = {"email": user_email}
+                        integration_context["proactive_users"] = json.dumps(proactive_users)
+                        set_integration_context(integration_context)
+                        demisto.debug(f"Cached user email in integration context: {team_members_id} -> {user_email}")
+            except Exception as e:
+                demisto.error(f"Failed to retrieve user details: {str(e)}")
+                # Final fallback: try from_property
+                user_email = from_property.get("email") or from_property.get("userPrincipalName", "")
+                demisto.debug(f"Using email from request from_property: {user_email}")
+
     demisto.handleEntitlementForUser(
         incidentID=investigation_id,
         guid=entitlement_guid,
         taskID=task_id,
-        email=team_member.get("user_email", ""),
+        email=user_email,
         content=response,
     )
     activity_id: str = request_body.get("replyToId", "")
