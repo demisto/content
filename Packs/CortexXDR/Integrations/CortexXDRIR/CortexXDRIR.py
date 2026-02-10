@@ -1974,7 +1974,7 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
 
 def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
     """
-    Creates an automation script by uploading a file.
+    Creates or updates an automation script by uploading a file.
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
 
     Args:
@@ -2033,10 +2033,10 @@ def automation_script_delete_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    field = args.get('field', '')
-    value = args.get('value', '')
+    field = args.get('field')
+    value = args.get('value')
 
-    request_data = {'request_data': {"field": field, "value": value}}
+    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
     client.delete_automation_script(request_data)
     return CommandResults(readable_output='Automation script deleted successfully.')
 
@@ -2081,7 +2081,7 @@ def automation_playbook_get_command(client: Client, args: Dict) -> dict:
     field = args.get('field', '')
     value = args.get('value', '')
 
-    request_data = {'request_data': {"field": field, "value": value}}
+    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
     file_content = client.get_automation_playbook(request_data)
     return fileResult(filename=f'automation_playbook_{value}', data=file_content)
 
@@ -2100,7 +2100,7 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     """
     field = args.get('field', '')
     value = args.get('value', '')
-    request_data = {'request_data': {"field": field, "value": value}}
+    request_data = {'request_data': {"filter": {"field": field, "value": value}}}
     client.delete_automation_playbook(request_data)
     return CommandResults(readable_output='Automation playbook deleted successfully.')
 
