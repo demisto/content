@@ -965,7 +965,7 @@ def spam_quarantine_message_search_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    quarantine_type = args.get("quarantine_type")
+    quarantine_type = args.get("quarantine_type", QUARANTINE_TYPE)
     quarantines = args.get("quarantines")
     start_date = format_datetime(args["start_date"])
     end_date = format_datetime(args["end_date"])
