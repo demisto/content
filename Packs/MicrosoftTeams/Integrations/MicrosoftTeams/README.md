@@ -1564,10 +1564,10 @@ A user attempts to download a malicious file. An XSOAR playbook is triggered by 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftTeams.ProactiveMessage.conversationId | String | The ID of the conversation created or used. |
-| MicrosoftTeams.ProactiveMessage.userId | String | The resolved user ID. |
-| MicrosoftTeams.ProactiveMessage.activityId | String | The ID of the sent message activity. |
-| MicrosoftTeams.ProactiveMessage.userIdentifier | String | The original user identifier provided. |
+| MicrosoftTeams.Conversation.ConversationId | String | The ID of the conversation created or used. |
+| MicrosoftTeams.Conversation.UserId | String | The resolved user ID. |
+| MicrosoftTeams.Conversation.ActivityId | String | The ID of the sent message activity. |
+| MicrosoftTeams.Conversation.UserIdentifier | String | The original user identifier provided. |
 
 ##### Command Example
 

@@ -920,12 +920,12 @@ def get_bot_access_token() -> str:
         raise ValueError("Failed to get bot access token")
 
 
-def resolve_user_id_for_proactive_message(user_identifier: str) -> tuple[str, str]:
+def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
     """
     Resolves a user identifier to user ID and email using Microsoft Graph API.
 
     :param user_identifier: User identifier - can be displayName, mail, userPrincipalName, or user ID
-    :return: Tuple of user_id
+    :return: user_id
     """
     demisto.debug(f"Resolving user identifier: {user_identifier}")
 
@@ -2868,7 +2868,7 @@ def send_proactive_message_command():
 
     result = CommandResults(
         outputs_prefix="MicrosoftTeams.Conversation",
-        outputs_key_field="conversationId",
+        outputs_key_field="ConversationId",
         outputs=outputs,
         readable_output="Message was sent successfully.",
         raw_response=response,
