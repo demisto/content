@@ -10,7 +10,7 @@ import traceback
 import hashlib
 
 from mcp import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
+from mcp.client.streamable_http import streamable_http_client
 from typing import Any
 from base64 import b64encode
 import httpx
@@ -570,12 +570,13 @@ class Client:
         """
         headers = await self._resolve_headers()
         async with (
-            streamablehttp_client(self.base_url, headers=headers) as (
+            httpx.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
+            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (
                 read_stream,
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
+            ClientSession(read_stream, write_stream) as session,
         ):
             # Initialize the connection
             init = await session.initialize()
