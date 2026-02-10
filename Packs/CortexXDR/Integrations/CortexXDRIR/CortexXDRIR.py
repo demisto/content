@@ -1952,6 +1952,9 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
             sort_field = "id"
         request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
 
+    # TODO decide if to keep
+    request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
+
     issues = client.list_issues(request_data)
 
     readable_output = tableToMarkdown(
@@ -1965,7 +1968,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
-        outputs_key_field="issue_id",
+        outputs_key_field="id",
         outputs=issues,
         raw_response=issues
     )
@@ -2043,7 +2046,7 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
     - CommandResults: A CommandResults object.
     """
     statuses_map = {
-        "new": "New",
+        "new": "NEW",
         "in_progress": "In Progress",
         "resolved": "Resolved"
     }
@@ -2058,14 +2061,16 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
         "resolved_security_testing": "resolved - security testing"
     }
 
-    resolution_reason = reason_map.get(args.get("resolve_reason")) if args.get("resolve_reason") else None
-
     update_data = assign_params(
         severity=args.get("severity").upper() if args.get("severity") else None,
-        status=statuses_map.get(args.get("status", "")),
-        status_resolution_reason=resolution_reason,
-        status_resolution_comment=args.get("resolve_comment")
+        # status=statuses_map.get(args.get("status", ""))
     )
+    if status := statuses_map.get(args.get("status", "")):
+        update_data["status_progress"] = status
+    if resolution_reason := reason_map.get(args.get("resolve_reason")):
+        update_data["status_resolution_reason"] = resolution_reason
+    if resolution_comment := args.get("resolve_comment"):
+        update_data["status_resolution_comment"] = resolution_comment
 
     issue_id = args.get("issue_id")
     request_data = {"request_data": {"update_data": update_data}}
