@@ -29,7 +29,7 @@ LAST_RUN_EVENT_HASHES = "recent_event_hashes"
 DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
 LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
 MAX_EVENTS_PER_REQUEST = 10000
-EVENT_TYPE_TO_FETCH = "SIEMAuditLogs"
+DEFAULT_ANALYTICS_NAME = "SIEMAuditLogs"
 
 """ CLIENT CLASS """
 
@@ -535,7 +535,7 @@ def _fetch_analytics_pages_concurrently(
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, analytics_name: str) -> str:
     """
     Test API connectivity and authentication.
 
@@ -544,6 +544,7 @@ def test_module(client: Client) -> str:
 
     Args:
         client: The Saviynt EIC client to use for the test.
+        analytics_name: The analytics name (event type) to fetch.
 
     Returns:
         str: "ok" if the test succeeded, otherwise raises an exception.
@@ -551,7 +552,7 @@ def test_module(client: Client) -> str:
     try:
         # example fetch
         client.fetch_events(
-            analytics_name=EVENT_TYPE_TO_FETCH,
+            analytics_name=analytics_name,
             time_frame_minutes=1,
             max_results=1,
         )
@@ -568,9 +569,10 @@ def fetch_events(
     last_run: dict[str, Any],
     max_events: int,
     time_frame_minutes: int | None,
+    analytics_name: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
-    Fetch events for the fixed analytics type defined by `EVENT_TYPE_TO_FETCH`.
+    Fetch events for the specified analytics type.
 
     If `time_frame_minutes` is `None` (the `fetch-events` command), the function
     derives the effective time window from `last_run`. Otherwise, the provided
@@ -582,6 +584,7 @@ def fetch_events(
         max_events: The maximum number of events to collect.
         time_frame_minutes: The time frame to query in minutes, or `None` to compute
             it from `last_run`.
+        analytics_name: The analytics name (event type) to fetch.
 
     Returns:
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of `(next_run, events)` where
@@ -592,7 +595,7 @@ def fetch_events(
 
     previous_run_event_hash_count = len(last_run.get(LAST_RUN_EVENT_HASHES, []))
     demisto.debug(
-        f"[fetch_events] start: analytics={EVENT_TYPE_TO_FETCH}, max_events={max_events}, "
+        f"[fetch_events] start: analytics={analytics_name}, max_events={max_events}, "
         f"time_frame_minutes_input={time_frame_minutes}, effective_time_frame_minutes={effective_time_frame_minutes}, "
         f"previous_run_event_hash_count={previous_run_event_hash_count}"
     )
@@ -600,20 +603,18 @@ def fetch_events(
     page_size = min(max_events, MAX_EVENTS_PER_REQUEST)
 
     demisto.debug(
-        f"[fetch_events] concurrent pages for analytics_name={EVENT_TYPE_TO_FETCH} "
+        f"[fetch_events] concurrent pages for analytics_name={analytics_name} "
         f"time_frame_minutes={effective_time_frame_minutes} "
         f"request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"
     )
     events = _fetch_analytics_pages_concurrently(
         client=client,
-        analytics_name=EVENT_TYPE_TO_FETCH,
+        analytics_name=analytics_name,
         effective_time_frame_minutes=effective_time_frame_minutes,
         overall_max_events=max_events,
         page_size=page_size,
     )
-    demisto.debug(
-        f"[fetch_events] {EVENT_TYPE_TO_FETCH}: collected={len(events)} for analytics_name={EVENT_TYPE_TO_FETCH} (concurrent)"
-    )
+    demisto.debug(f"[fetch_events] {analytics_name}: collected={len(events)} for analytics_name={analytics_name} (concurrent)")
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
     # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
@@ -639,6 +640,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
     max_events = int(params.get("max_fetch", MAX_EVENTS))
+    analytics_name = params.get("analytics_name") or DEFAULT_ANALYTICS_NAME
 
     demisto.debug(f"Command being called is {command}")
 
@@ -651,7 +653,7 @@ def main():  # pragma: no cover
         )
 
         if command == "test-module":
-            result = test_module(client)
+            result = test_module(client, analytics_name)
             return_results(result)
 
         elif command == "saviynt-eic-get-events":
@@ -661,6 +663,7 @@ def main():  # pragma: no cover
                 last_run={},
                 max_events=arg_to_number(args.get("limit")) or MAX_EVENTS,
                 time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
+                analytics_name=analytics_name,
             )
             if should_push_events and events:
                 demisto.debug(f"[saviynt-eic-get-events] Sending {len(events)} events to XSIAM")
@@ -676,6 +679,7 @@ def main():  # pragma: no cover
                 last_run=last_run,
                 max_events=max_events,
                 time_frame_minutes=None,
+                analytics_name=analytics_name,
             )
             demisto.debug(f"[fetch-events] Sending {len(events)} events to XSIAM")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
