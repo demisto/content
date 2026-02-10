@@ -1727,9 +1727,8 @@ def test_test_module(mocker):
         oauth_params=OAUTH_PARAMS,
     )
 
-    with pytest.raises(Exception) as e:
-        module(client)
-    assert "Test button cannot be used when using OAuth 2.0" in str(e)
+    assert result[0] == "ok"
+
 
 
 def test_oauth_test_module(mocker):

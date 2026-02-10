@@ -473,13 +473,6 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    # Notify the user that test button can't be used when using OAuth 2.0:
-
-    if client.use_oauth and not client.use_jwt:
-        return_error(
-            "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-oauth-login "
-            "command followed by the !servicenow-cmdb-oauth-test command to test the instance."
-        )
 
     try:
         client.records_list(class_name="cmdb_ci_linux_server")

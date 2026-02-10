@@ -314,8 +314,7 @@ class TestCredentialFlowEndToEnd:
         assert call_kwargs["use_oauth"] is True
         assert call_kwargs["username"] == "basic_user"
         assert call_kwargs["password"] == "basic_pass"
-        # test-module with OAuth should trigger return_error
-        assert "Test button cannot be used when using OAuth 2.0" in return_error_mock.call_args[0][0]
+
 
     def test_jwt_auth_flow(self, mocker):
         """
