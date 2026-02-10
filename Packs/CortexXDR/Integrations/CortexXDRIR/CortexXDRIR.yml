@@ -4133,7 +4133,7 @@ script:
     description: Updates an asset group.
     name: xdr-asset-group-update
   - name: xdr-issue-list
-    description: Retrieve issues based on filters.
+    description: Retrieve issues based on filters. Issues with an 'INFO' severity level are filtered out.
     arguments:
     - name: issue_id
       description: A comma-separated list of issue IDs.
@@ -4253,7 +4253,7 @@ script:
       description: Whether this observation is excluded from standard views.
       type: Boolean
   - name: xdr-issue-create
-    description: Create a new issue.
+    description: Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
     arguments:
     - name: name
       description: The issue name.

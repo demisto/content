@@ -1913,6 +1913,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the issues.
     """
+    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
     filters = []
     if issue_ids := argToList(args.get("issue_id")):
         converted_ids = list(map(int, issue_ids))
@@ -1981,6 +1982,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object containing the created issue.
     """
+    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
     issue_data = {
         # Required
         "name": args.get("name"),
