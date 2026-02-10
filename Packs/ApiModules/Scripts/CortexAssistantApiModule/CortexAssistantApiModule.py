@@ -26,14 +26,14 @@ class AgentixStatus:
         AWAITING_AGENT_SELECTION,
         AWAITING_SENSITIVE_ACTION_APPROVAL,
     }
-    
+
     # Timeout durations (in seconds) for automatic cleanup
     # These determine how long a conversation can stay in each status before being automatically cleaned up
     TIMEOUT_AWAITING_BACKEND_RESPONSE = 120  # 2 minutes
     TIMEOUT_RESPONDING_WITH_PLAN = 120  # 2 minutes
     TIMEOUT_AWAITING_AGENT_SELECTION = 604800  # 7 days
     TIMEOUT_AWAITING_SENSITIVE_ACTION_APPROVAL = 1209600  # 14 days
-    
+
     # Map status to timeout duration
     STATUS_TIMEOUTS = {
         AWAITING_BACKEND_RESPONSE: TIMEOUT_AWAITING_BACKEND_RESPONSE,
@@ -67,41 +67,41 @@ class AgentixStatus:
             True if waiting for user action, False otherwise
         """
         return status in {cls.AWAITING_AGENT_SELECTION, cls.AWAITING_SENSITIVE_ACTION_APPROVAL}
-    
+
     @classmethod
     def get_timeout_for_status(cls, status: str) -> int:
         """
         Get the timeout duration for a given status.
-        
+
         Args:
             status: The status to get timeout for
-            
+
         Returns:
             Timeout duration in seconds, or 0 if status is invalid
         """
         return cls.STATUS_TIMEOUTS.get(status, 0)
-    
+
     @classmethod
     def is_expired(cls, status: str, last_updated: float) -> bool:
         """
         Check if a conversation has expired based on its status and last update time.
-        
+
         Args:
             status: The conversation status
             last_updated: Unix timestamp of last update
-            
+
         Returns:
             True if the conversation has expired, False otherwise
         """
         from datetime import datetime, UTC
-        
+
         timeout = cls.get_timeout_for_status(status)
         if timeout == 0:
             return False
-        
+
         current_time = datetime.now(UTC).timestamp()
         time_elapsed = current_time - last_updated
-        
+
         return time_elapsed > timeout
 
 
@@ -224,10 +224,10 @@ class AgentixMessages:
     User-facing messages and UI text for Agentix AI Assistant interactions.
     These messages are platform-agnostic and can be used across different integrations.
     """
-    
+
     # Bot display name (used when replacing bot mentions in messages sent to backend)
     BOT_DISPLAY_NAME = "Cortex Assistant"
-    
+
     # Commands
     RESET_SESSION_COMMAND = "reset session"
 
@@ -237,7 +237,7 @@ class AgentixMessages:
     # Messages for when user action is awaited - specific to action type
     AWAITING_AGENT_SELECTION = "Still waiting for you to select an agent from the dropdown above."
     AWAITING_APPROVAL_RESPONSE = "Still waiting for you to approve or reject the sensitive action above."
-    
+
     ONLY_LOCKED_USER_CAN_RESPOND = (
         "You cannot mention {bot_tag} in this thread. Only {locked_user_tag} can interact with the AI here."
     )
@@ -254,15 +254,19 @@ class AgentixMessages:
 
     # Permission error
     NOT_AUTHORIZED = "You are not authorized to interact with the {bot_tag} in this thread."
-    
+
     # Reset session messages
     RESET_SESSION_SUCCESS = "✅ Session reset successfully."
     RESET_SESSION_FAILED = "❌ Failed to reset session."
     RESET_SESSION_NO_ACTIVE_SESSION = "No active session to reset. You can start a new conversation by mentioning me."
-    RESET_SESSION_CANNOT_RESET_AWAITING_SELECTION = "Cannot reset - still waiting for agent selection. No conversation has started yet."
-    RESET_SESSION_CANNOT_RESET_PROCESSING = "Cannot reset session while processing a message. Please wait for the response to complete."
+    RESET_SESSION_CANNOT_RESET_AWAITING_SELECTION = (
+        "Cannot reset - still waiting for agent selection. No conversation has started yet."
+    )
+    RESET_SESSION_CANNOT_RESET_PROCESSING = (
+        "Cannot reset session while processing a message. Please wait for the response to complete."
+    )
     RESET_SESSION_CANNOT_RESET_RESPONDING = "Cannot reset session while responding. Please wait for the response to complete."
-    
+
     # Agent selection messages
     NO_AGENTS_AVAILABLE = "❌ No agents are currently available for you. Please try again later or contact your administrator."
     AGENT_SELECTION_FAILED = "❌ Failed to start conversation with selected agent. Please try again or select a different agent."
@@ -291,7 +295,7 @@ class AgentixMessages:
     FEEDBACK_GOOD_ACCESSIBILITY = "Mark this response as good"
     FEEDBACK_BAD_ACCESSIBILITY = "Mark this response as bad"
     FEEDBACK_THANK_YOU = "Thanks for your feedback!"
-    
+
     # Feedback modal texts
     FEEDBACK_MODAL_TITLE = "Send feedback"
     FEEDBACK_MODAL_SUBMIT = "Submit"
@@ -299,7 +303,7 @@ class AgentixMessages:
     FEEDBACK_MODAL_QUICK_LABEL = "Quick Feedback"
     FEEDBACK_MODAL_ADDITIONAL_LABEL = "Anything to add?"
     FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER = "Enter your feedback here..."
-    
+
     # Feedback modal checkbox options (text is also used as value)
     FEEDBACK_OPTION_NO_ANSWER = "No answer but I expected you to know that"
     FEEDBACK_OPTION_FACTUALLY_INCORRECT = "Factually incorrect"
@@ -317,38 +321,38 @@ class AgentixActionIds:
     Action IDs for Agentix interactive elements.
     Centralized constants for easy maintenance.
     """
-    
+
     # Interactive action IDs
     AGENT_SELECTION = "agent_selection"
     APPROVAL_YES = "yes_btn"
     APPROVAL_NO = "no_btn"
     FEEDBACK = "agentix_feedback"
-    
+
     # Agent selection value prefix
     AGENT_SELECTION_VALUE_PREFIX = "agentix-agent-selection-"
-    
+
     # Modal callback IDs
     FEEDBACK_MODAL_CALLBACK_ID = "agentix_feedback_modal"
-    
+
     # Feedback modal block IDs
     FEEDBACK_MODAL_QUICK_BLOCK_ID = "quick_feedback_block"
     FEEDBACK_MODAL_TEXT_BLOCK_ID = "feedback_text_block"
-    
+
     # Feedback modal action IDs
     FEEDBACK_MODAL_CHECKBOXES_ACTION_ID = "quick_feedback_checkboxes"
     FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID = "feedback_text_input"
-    
+
     # All valid action IDs
     VALID_ACTION_IDS = {AGENT_SELECTION, APPROVAL_YES, APPROVAL_NO, FEEDBACK}
-    
+
     @classmethod
     def is_valid(cls, action_id: str) -> bool:
         """
         Check if an action ID is valid.
-        
+
         Args:
             action_id: The action ID to validate
-            
+
         Returns:
             True if the action ID is valid, False otherwise
         """
@@ -362,14 +366,14 @@ class AgentixMessagingHandler:
     Platform-specific implementations (Slack, Teams, etc.) should inherit from this class
     and implement the abstract methods.
     """
-    
+
     def __init__(self):
         """Initialize the messaging handler"""
-    
+
     # ============================================================================
     # Abstract methods - must be implemented by platform-specific subclasses
     # ============================================================================
-    
+
     async def send_message(
         self,
         channel_id: str,
@@ -383,7 +387,7 @@ class AgentixMessagingHandler:
         """
         Send a message to the platform.
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel/conversation ID
             message: The message text
@@ -394,7 +398,7 @@ class AgentixMessagingHandler:
             user_id: User ID for ephemeral messages
         """
         raise NotImplementedError("Subclass must implement send_message()")
-    
+
     async def update_message(
         self,
         channel_id: str,
@@ -405,7 +409,7 @@ class AgentixMessagingHandler:
         """
         Update an existing message.
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel/conversation ID
             message_ts: The message timestamp/ID
@@ -413,8 +417,8 @@ class AgentixMessagingHandler:
             blocks: Optional new blocks
         """
         raise NotImplementedError("Subclass must implement update_message()")
-    
-    async def delete_message(
+
+    def delete_message_sync(
         self,
         channel_id: str,
         message_ts: str,
@@ -427,118 +431,113 @@ class AgentixMessagingHandler:
             channel_id: The channel/conversation ID
             message_ts: The message timestamp/ID
         """
-        raise NotImplementedError("Subclass must implement delete_message()")
+        raise NotImplementedError("Subclass must implement delete_message_sync()")
 
     async def get_user_info(self, user_id: str) -> dict:
         """
         Get user information.
         Must be implemented by subclass.
-        
+
         Args:
             user_id: The user ID
-            
+
         Returns:
             User information dictionary
         """
         raise NotImplementedError("Subclass must implement get_user_info()")
-    
-    async def get_conversation_history(
-        self,
-        channel_id: str,
-        thread_ts: str,
-        limit: int = 20
-    ) -> list:
+
+    async def get_conversation_history(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
         """
         Get conversation history.
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel ID
             thread_ts: The thread timestamp
             limit: Maximum number of messages to retrieve
-            
+
         Returns:
             List of messages
         """
         raise NotImplementedError("Subclass must implement get_conversation_history()")
-    
+
     def format_user_mention(self, user_id: str) -> str:
         """
         Format a user mention for the platform.
         Must be implemented by subclass.
-        
+
         Args:
             user_id: The user ID
-            
+
         Returns:
             Formatted user mention string
         """
         raise NotImplementedError("Subclass must implement format_user_mention()")
-    
+
     def normalize_message_for_backend(self, text: str) -> str:
         """
         Normalize message text for backend by removing platform-specific formatting.
         Must be implemented by subclass.
-        
+
         Args:
             text: The message text with platform-specific formatting
-            
+
         Returns:
             Normalized text suitable for backend
         """
         raise NotImplementedError("Subclass must implement normalize_message_for_backend()")
-    
+
     def prepare_message_blocks(self, message: str, message_type: str, is_update: bool = False) -> tuple:
         """
         Prepare platform-specific message blocks.
         Must be implemented by subclass.
-        
+
         Args:
             message: The message text
             message_type: The message type
             is_update: Whether this is an update to existing message (True) or new message (False)
-            
+
         Returns:
             Tuple of (blocks, attachments)
         """
         raise NotImplementedError("Subclass must implement prepare_message_blocks()")
-    
+
     def create_agent_selection_ui(self, agents: list) -> list:
         """
         Create agent selection UI.
         Must be implemented by subclass.
-        
+
         Args:
             agents: List of available agents
-            
+
         Returns:
             Platform-specific UI blocks
         """
         raise NotImplementedError("Subclass must implement create_agent_selection_ui()")
-    
+
     def create_approval_ui(self) -> list:
         """
         Create approval UI for sensitive actions.
         Must be implemented by subclass.
-        
+
         Returns:
             Platform-specific UI blocks
         """
         raise NotImplementedError("Subclass must implement create_approval_ui()")
-    
+
     def create_feedback_ui(self, message_id: str) -> dict:
         """
         Create feedback UI.
         Must be implemented by subclass.
-        
+
         Args:
             message_id: The message ID for tracking
-            
+
         Returns:
             Platform-specific feedback UI
         """
         raise NotImplementedError("Subclass must implement create_feedback_ui()")
-    
+
     def send_new_message(
         self,
         channel_id: str,
@@ -549,18 +548,18 @@ class AgentixMessagingHandler:
         """
         Send a new message to the platform.
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
             blocks: Message blocks
             attachments: Message attachments
-            
+
         Returns:
             Response dict with 'ts' (message timestamp) if successful, None otherwise
         """
         raise NotImplementedError("Subclass must implement send_new_message()")
-    
+
     def update_existing_message(
         self,
         channel_id: str,
@@ -571,18 +570,18 @@ class AgentixMessagingHandler:
         """
         Update an existing message.
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
             message_ts: The message timestamp to update
             attachments: New attachments
-            
+
         Returns:
             True if successful, False otherwise
         """
         raise NotImplementedError("Subclass must implement update_existing_message()")
-    
+
     def finalize_plan_header(
         self,
         channel_id: str,
@@ -592,14 +591,14 @@ class AgentixMessagingHandler:
         """
         Finalize the plan header (remove "updating..." indicator).
         Must be implemented by subclass.
-        
+
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
             step_message_ts: The step message timestamp
         """
         raise NotImplementedError("Subclass must implement finalize_plan_header()")
-    
+
     def send_or_update_message(
         self,
         channel_id: str,
@@ -613,7 +612,7 @@ class AgentixMessagingHandler:
         """
         Send or update a message based on message type.
         Platform-agnostic implementation that uses platform-specific methods.
-        
+
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
@@ -622,12 +621,12 @@ class AgentixMessagingHandler:
             attachments: Message attachments
             agentix: The agentix context
             agentix_id_key: The conversation key
-            
+
         Returns:
             Updated agentix dictionary
         """
         step_message_ts = agentix.get(agentix_id_key, {}).get("step_message_ts")
-        
+
         if AgentixMessageType.is_step_type(message_type):
             # For step types, update existing message if it exists, otherwise create new one
             if step_message_ts:
@@ -649,7 +648,7 @@ class AgentixMessagingHandler:
         else:
             # For non-step types (model, approval, error), always send as new message
             self.send_new_message(channel_id, thread_id, blocks, attachments)
-            
+
             # Finalize Plan message when sending final response
             if AgentixMessageType.is_model_type(message_type) and agentix_id_key in agentix:
                 # Update Plan header to remove "updating..." if step_message_ts exists
@@ -657,19 +656,19 @@ class AgentixMessagingHandler:
                     self.finalize_plan_header(channel_id, thread_id, step_message_ts)
                 # Clear step_message_ts
                 agentix[agentix_id_key].pop("step_message_ts", None)
-        
+
         return agentix
-    
+
     def update_context(self, context_updates: dict):
         """
         Update the integration context.
         Must be implemented by subclass.
-        
+
         Args:
             context_updates: Dictionary of updates to apply
         """
         raise NotImplementedError("Subclass must implement update_context()")
-    
+
     async def open_feedback_modal(
         self,
         trigger_id: str,
@@ -680,7 +679,7 @@ class AgentixMessagingHandler:
         """
         Open a feedback modal for negative feedback collection.
         Must be implemented by subclass.
-        
+
         Args:
             trigger_id: The trigger ID for opening the modal
             message_id: The message ID for tracking
@@ -688,7 +687,7 @@ class AgentixMessagingHandler:
             thread_ts: The thread timestamp
         """
         raise NotImplementedError("Subclass must implement open_feedback_modal()")
-    
+
     async def submit_feedback(
         self,
         message_id: str,
@@ -702,7 +701,7 @@ class AgentixMessagingHandler:
         """
         Submit feedback to backend.
         Platform-agnostic implementation.
-        
+
         Args:
             message_id: The message ID
             feedback_score: 1 for positive, 0 for negative
@@ -723,13 +722,13 @@ class AgentixMessagingHandler:
             args["issues"] = issues
         if message:
             args["improvement_suggestion"] = message
-        
+
         demisto.agentixCommands("rateConversation", args)
-    
+
     # ============================================================================
     # Platform-agnostic methods - shared logic across all platforms
     # ============================================================================
-    
+
     def cleanup_expired_conversations(self, agentix: dict) -> dict:
         """
         Cleans up expired conversations from the agentix context.
@@ -738,22 +737,22 @@ class AgentixMessagingHandler:
         - RESPONDING_WITH_PLAN: 2 minutes
         - AWAITING_AGENT_SELECTION: 7 days
         - AWAITING_SENSITIVE_ACTION_APPROVAL: 14 days
-        
+
         Args:
             agentix: The agentix context dictionary
-            
+
         Returns:
             Updated agentix dictionary with expired conversations removed
         """
         if not agentix:
             return agentix
-        
+
         expired_keys = []
-        
+
         for agentix_id_key, conversation in agentix.items():
             status = conversation.get("status", "")
             last_updated = conversation.get("last_updated", 0)
-            
+
             # Check if conversation has expired
             if AgentixStatus.is_expired(status, last_updated):
                 expired_keys.append(agentix_id_key)
@@ -761,17 +760,17 @@ class AgentixMessagingHandler:
                     f"Conversation {agentix_id_key} expired (status: {status}, "
                     f"last_updated: {last_updated}, timeout: {AgentixStatus.get_timeout_for_status(status)}s)"
                 )
-        
+
         # Remove expired conversations
         for key in expired_keys:
             del agentix[key]
             demisto.info(f"Cleaned up expired conversation: {key}")
-        
+
         if expired_keys:
             demisto.info(f"Cleaned up {len(expired_keys)} expired conversations")
-        
+
         return agentix
-    
+
     def check_and_cleanup_agentix_conversations(self):
         """
         Checks and cleans up expired Agentix conversations from integration context.
@@ -782,30 +781,27 @@ class AgentixMessagingHandler:
             # Get integration context
             integration_context = get_integration_context(sync=True)
             agentix = integration_context.get("agentix", {})
-            
+
             # Parse if it's a string
             if isinstance(agentix, str):
                 agentix = json.loads(agentix)
-            
+
             if not agentix:
                 return
-            
+
             # Store original count before cleanup
             original_count = len(agentix)
-            
+
             # Cleanup expired conversations
             cleaned_agentix = self.cleanup_expired_conversations(agentix)
-            
+
             # Update context if anything was cleaned
             if len(cleaned_agentix) != original_count:
                 demisto.debug(f"Updating context after cleanup: {original_count} -> {len(cleaned_agentix)} conversations")
-                set_to_integration_context_with_retries(
-                    {"agentix": cleaned_agentix},
-                    sync=True
-                )
+                set_to_integration_context_with_retries({"agentix": cleaned_agentix}, sync=True)
         except Exception as e:
             demisto.error(f"Failed to cleanup expired Agentix conversations: {e}")
-    
+
     async def handle_reset_session(
         self,
         text: str,
@@ -819,7 +815,7 @@ class AgentixMessagingHandler:
         """
         Handles reset session command.
         Checks if the message is exactly "@BotName reset session" (case-insensitive).
-        
+
         Args:
             text: The message text
             user_id: The user ID
@@ -828,7 +824,7 @@ class AgentixMessagingHandler:
             agentix: The agentix context dictionary
             agentix_id_key: The unique key for this conversation
             bot_id: The bot user ID
-            
+
         Returns:
             Tuple of (is_reset_command, updated_agentix)
         """
@@ -837,16 +833,16 @@ class AgentixMessagingHandler:
         bot_mention = self.format_user_mention(bot_id)
         # Remove the bot mention and check if remaining text is exactly "reset session"
         text_without_mention = text.replace(bot_mention, "").strip()
-        
+
         if text_without_mention.lower() != AgentixMessages.RESET_SESSION_COMMAND:
             return False, agentix
-        
+
         demisto.debug(f"Reset session command detected for {agentix_id_key}")
-        
+
         # Check status to determine if reset is allowed
         if agentix_id_key in agentix:
             status = agentix[agentix_id_key].get("status", "")
-            
+
             # Cannot reset while waiting for agent selection (no conversation started yet)
             if status == AgentixStatus.AWAITING_AGENT_SELECTION:
                 await self.send_message(
@@ -854,10 +850,10 @@ class AgentixMessagingHandler:
                     AgentixMessages.RESET_SESSION_CANNOT_RESET_AWAITING_SELECTION,
                     thread_id=thread_ts,
                     ephemeral=True,
-                    user_id=user_id
+                    user_id=user_id,
                 )
                 return True, agentix
-            
+
             # Cannot reset while processing
             if status == AgentixStatus.AWAITING_BACKEND_RESPONSE:
                 await self.send_message(
@@ -865,10 +861,10 @@ class AgentixMessagingHandler:
                     AgentixMessages.RESET_SESSION_CANNOT_RESET_PROCESSING,
                     thread_id=thread_ts,
                     ephemeral=True,
-                    user_id=user_id
+                    user_id=user_id,
                 )
                 return True, agentix
-            
+
             # Cannot reset while responding
             if status == AgentixStatus.RESPONDING_WITH_PLAN:
                 await self.send_message(
@@ -876,10 +872,10 @@ class AgentixMessagingHandler:
                     AgentixMessages.RESET_SESSION_CANNOT_RESET_RESPONDING,
                     thread_id=thread_ts,
                     ephemeral=True,
-                    user_id=user_id
+                    user_id=user_id,
                 )
                 return True, agentix
-        
+
         # For AWAITING_SENSITIVE_ACTION_APPROVAL or no lock - allow reset
         # Call backend to reset conversation
         response = demisto.agentixCommands(
@@ -887,43 +883,31 @@ class AgentixMessagingHandler:
             {
                 "channel_id": channel_id,
                 "thread_id": thread_ts,
-            }
+            },
         )
-        
+
         if isinstance(response, dict) and response.get("success"):
             demisto.debug(f"Successfully reset conversation {agentix_id_key}")
             # Remove from agentix context
             if agentix_id_key in agentix:
                 del agentix[agentix_id_key]
-            
+
             await self.send_message(
-                channel_id,
-                AgentixMessages.RESET_SESSION_SUCCESS,
-                thread_id=thread_ts,
-                ephemeral=True,
-                user_id=user_id
+                channel_id, AgentixMessages.RESET_SESSION_SUCCESS, thread_id=thread_ts, ephemeral=True, user_id=user_id
             )
         elif isinstance(response, dict) and "No active session" in str(response.get("error", "")):
             # Backend says no active session
             await self.send_message(
-                channel_id,
-                AgentixMessages.RESET_SESSION_NO_ACTIVE_SESSION,
-                thread_id=thread_ts,
-                ephemeral=True,
-                user_id=user_id
+                channel_id, AgentixMessages.RESET_SESSION_NO_ACTIVE_SESSION, thread_id=thread_ts, ephemeral=True, user_id=user_id
             )
         else:
             demisto.error(f"Failed to reset conversation: {response}")
             await self.send_message(
-                channel_id,
-                AgentixMessages.RESET_SESSION_FAILED,
-                thread_id=thread_ts,
-                ephemeral=True,
-                user_id=user_id
+                channel_id, AgentixMessages.RESET_SESSION_FAILED, thread_id=thread_ts, ephemeral=True, user_id=user_id
             )
-        
+
         return True, agentix
-    
+
     async def handle_modal_submission(
         self,
         message_id: str,
@@ -937,7 +921,7 @@ class AgentixMessagingHandler:
         """
         Handles modal submissions (e.g., negative feedback).
         Platform-agnostic logic that submits feedback.
-        
+
         Args:
             message_id: The message ID
             channel_id: The channel ID
@@ -960,14 +944,10 @@ class AgentixMessagingHandler:
 
         # Send confirmation message (ephemeral)
         await self.send_message(
-            channel_id,
-            AgentixMessages.FEEDBACK_THANK_YOU,
-            thread_id=thread_ts,
-            ephemeral=True,
-            user_id=user_id
+            channel_id, AgentixMessages.FEEDBACK_THANK_YOU, thread_id=thread_ts, ephemeral=True, user_id=user_id
         )
         demisto.debug(f"Submitted negative feedback for message {message_id}: issues={issues}, text={feedback_text}")
-    
+
     async def handle_action(
         self,
         actions: list,
@@ -983,7 +963,7 @@ class AgentixMessagingHandler:
         """
         Handles interactive actions (agent selection, approval, feedback).
         Platform-agnostic logic that uses platform-specific methods.
-        
+
         Args:
             actions: The list of actions from the payload
             user_id: The user ID
@@ -994,12 +974,12 @@ class AgentixMessagingHandler:
             agentix: The agentix context dictionary
             agentix_id_key: The unique key for this conversation
             trigger_id: The trigger ID for modals
-            
+
         Returns:
             Updated agentix dictionary
         """
         from datetime import UTC, datetime
-        
+
         message_ts = message.get("ts", "")
         demisto.debug(f"Processing interactive response for user {user_id}")
 
@@ -1011,7 +991,7 @@ class AgentixMessagingHandler:
         # OPTION 1: Feedback Buttons
         if action_id == AgentixActionIds.FEEDBACK:
             demisto.debug(f"User provided feedback: action_id={action_id}, value={action_value}")
-            
+
             # Value format: "positive-message_id" or "negative-message_id"
             parts = action_value.split("-")
             if len(parts) == 2:
@@ -1020,7 +1000,7 @@ class AgentixMessagingHandler:
             else:
                 demisto.error(f"Invalid feedback value format: {action_value}")
                 return agentix
-            
+
             if is_positive:
                 # Positive feedback - send immediately
                 await self.submit_feedback(
@@ -1030,14 +1010,10 @@ class AgentixMessagingHandler:
                     channel_id=channel_id,
                     username=user_email,
                 )
-                
+
                 # Send confirmation message (ephemeral)
                 await self.send_message(
-                    channel_id,
-                    AgentixMessages.FEEDBACK_THANK_YOU,
-                    thread_id=thread_ts,
-                    ephemeral=True,
-                    user_id=user_id
+                    channel_id, AgentixMessages.FEEDBACK_THANK_YOU, thread_id=thread_ts, ephemeral=True, user_id=user_id
                 )
             else:
                 # Negative feedback - open modal
@@ -1048,16 +1024,12 @@ class AgentixMessagingHandler:
                         demisto.error(f"Failed to open feedback modal: {e}")
                         # Fallback to ephemeral message
                         await self.send_message(
-                            channel_id,
-                            AgentixMessages.FEEDBACK_THANK_YOU,
-                            thread_id=thread_ts,
-                            ephemeral=True,
-                            user_id=user_id
+                            channel_id, AgentixMessages.FEEDBACK_THANK_YOU, thread_id=thread_ts, ephemeral=True, user_id=user_id
                         )
-            
+
             # Feedback doesn't require active conversation
             return agentix
-        
+
         # For other actions, check if conversation exists
         if agentix_id_key not in agentix:
             demisto.debug(f"No active conversation found for {agentix_id_key}")
@@ -1077,7 +1049,7 @@ class AgentixMessagingHandler:
                 # Correct user selected an agent
                 selected_agent_id = option_value.replace(AgentixActionIds.AGENT_SELECTION_VALUE_PREFIX, "")
                 selected_agent_name = selected_option.get("text", {}).get("text", "")
-                
+
                 # Send message to backend with selected agent
                 response = demisto.agentixCommands(
                     "sendToConversation",
@@ -1087,26 +1059,19 @@ class AgentixMessagingHandler:
                         "message": original_message,
                         "username": user_email,
                         "agent_id": selected_agent_id,
-                    }
+                    },
                 )
-                
+
                 demisto.debug(f"Agent selection response: {response}")
-                
+
                 # Check if backend call was successful
                 if isinstance(response, dict) and response.get("success"):
                     # Update the original message to show selection
-                    await self.update_message(
-                        channel_id,
-                        message_ts,
-                        text=f"Selected agent: {selected_agent_name}",
-                        blocks=[]
-                    )
+                    await self.update_message(channel_id, message_ts, text=f"Selected agent: {selected_agent_name}", blocks=[])
 
                     # Send thinking indicator
                     thinking_response = await self.send_message(
-                        channel_id,
-                        AgentixMessages.THINKING_INDICATOR,
-                        thread_id=thread_ts
+                        channel_id, AgentixMessages.THINKING_INDICATOR, thread_id=thread_ts
                     )
                     thinking_ts = thinking_response.get("ts") if thinking_response else None
 
@@ -1122,21 +1087,15 @@ class AgentixMessagingHandler:
                     # Backend call failed - show error and keep status as AWAITING_AGENT_SELECTION
                     error_message = response.get("error", "Unknown error") if isinstance(response, dict) else str(response)
                     demisto.error(f"Failed to send agent selection to backend: {error_message}")
-                    
+
                     # Send ephemeral error message to user
                     await self.send_message(
-                        channel_id,
-                        AgentixMessages.AGENT_SELECTION_FAILED,
-                        thread_id=thread_ts,
-                        ephemeral=True,
-                        user_id=user_id
+                        channel_id, AgentixMessages.AGENT_SELECTION_FAILED, thread_id=thread_ts, ephemeral=True, user_id=user_id
                     )
                     # Keep the conversation in AWAITING_AGENT_SELECTION status so user can try again
             else:
                 # Wrong user trying to select
-                error_msg = AgentixMessages.CANNOT_SELECT_AGENT.format(
-                    locked_user_tag=self.format_user_mention(locked_user)
-                )
+                error_msg = AgentixMessages.CANNOT_SELECT_AGENT.format(locked_user_tag=self.format_user_mention(locked_user))
                 await self.send_message(channel_id, error_msg, thread_id=thread_ts, ephemeral=True, user_id=user_id)
 
         # OPTION 3: Sensitive Action Approval
@@ -1156,18 +1115,15 @@ class AgentixMessagingHandler:
                         "message": "Yes" if is_approved else "No",
                         "username": user_email,
                         "is_approved": is_approved,
-                    }
+                    },
                 )
 
                 # Update the original message
                 decision_indicator = AgentixMessages.DECISION_APPROVED if is_approved else AgentixMessages.DECISION_CANCELLED
                 original_blocks = message.get("blocks", [])
                 updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
-                updated_blocks.append({
-                    "type": "context",
-                    "elements": [{"type": "mrkdwn", "text": decision_indicator}]
-                })
-                
+                updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
+
                 try:
                     await self.update_message(channel_id, message_ts, blocks=updated_blocks)
                 except Exception as e:
@@ -1181,13 +1137,11 @@ class AgentixMessagingHandler:
                 agentix[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
             else:
                 # Wrong user trying to respond
-                error_msg = AgentixMessages.CANNOT_APPROVE_ACTION.format(
-                    locked_user_tag=self.format_user_mention(locked_user)
-                )
+                error_msg = AgentixMessages.CANNOT_APPROVE_ACTION.format(locked_user_tag=self.format_user_mention(locked_user))
                 await self.send_message(channel_id, error_msg, thread_id=thread_ts, ephemeral=True, user_id=user_id)
-        
+
         return agentix
-    
+
     async def handle_bot_mention(
         self,
         text: str,
@@ -1214,15 +1168,13 @@ class AgentixMessagingHandler:
             agentix_id_key: The unique key for this conversation
             bot_id: The bot user ID
             message_ts: The current message timestamp
-            
+
         Returns:
             Updated agentix dictionary - to be saved by caller
         """
-        
+
         # Check for "reset session" command first
-        is_reset, agentix = await self.handle_reset_session(
-            text, user_id, channel_id, thread_ts, agentix, agentix_id_key, bot_id
-        )
+        is_reset, agentix = await self.handle_reset_session(text, user_id, channel_id, thread_ts, agentix, agentix_id_key, bot_id)
         if is_reset:
             return agentix
 
@@ -1244,8 +1196,7 @@ class AgentixMessagingHandler:
                         message_to_send = AgentixMessages.AWAITING_APPROVAL_RESPONSE
                 else:
                     message_to_send = AgentixMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
-                        bot_tag=self.format_user_mention(bot_id),
-                        locked_user_tag=self.format_user_mention(locked_user)
+                        bot_tag=self.format_user_mention(bot_id), locked_user_tag=self.format_user_mention(locked_user)
                     )
 
             elif status == AgentixStatus.AWAITING_BACKEND_RESPONSE:
@@ -1258,35 +1209,32 @@ class AgentixMessagingHandler:
                     message_to_send = AgentixMessages.WAITING_FOR_COMPLETION
                 else:
                     message_to_send = AgentixMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
-                        bot_tag=self.format_user_mention(bot_id),
-                        locked_user_tag=self.format_user_mention(locked_user)
+                        bot_tag=self.format_user_mention(bot_id), locked_user_tag=self.format_user_mention(locked_user)
                     )
 
             # Send message if needed
             if message_to_send:
-                await self.send_message(
-                    channel_id, message_to_send, thread_id=thread_ts, ephemeral=True, user_id=user_id
-                )
+                await self.send_message(channel_id, message_to_send, thread_id=thread_ts, ephemeral=True, user_id=user_id)
             return agentix
 
         # Get conversation context (up to 5 previous messages)
         context = await self.get_conversation_context_formatted(channel_id, thread_ts, bot_id, message_ts)
-        
+
         # Replace bot mention with friendly display name for backend
         bot_mention = self.format_user_mention(bot_id)
         text_cleaned = text.replace(bot_mention, AgentixMessages.BOT_DISPLAY_NAME).strip()
-        
+
         # Normalize message for backend (remove markdown formatting but keep bullets)
         text_normalized = self.normalize_message_for_backend(text_cleaned)
-        
+
         # Normalize context as well
         context_normalized = self.normalize_message_for_backend(context) if context else ""
-        
+
         # Prepare message with context
         message_with_context = text_normalized
         if context_normalized:
             message_with_context = f"{context_normalized}\n**Current message**:\n{text_normalized}"
-        
+
         # Send message to backend using agentixIntegrations
         demisto.debug(f"Sending message to Agentix backend for user {user_email} in channel {channel_id}")
         demisto.debug(f"Message content: {message_with_context}")
@@ -1297,7 +1245,7 @@ class AgentixMessagingHandler:
                 "thread_id": thread_ts,
                 "message": message_with_context,
                 "username": user_email,
-            }
+            },
         )
         demisto.debug(f"sendToConversation {response=}")
 
@@ -1308,16 +1256,17 @@ class AgentixMessagingHandler:
             if agents_list:
                 # Backend returned a list of agents - user needs to select one
                 demisto.debug(f"Received agent list with {len(agents_list)} agents")
-                
+
                 # Create agent selection UI
                 agent_selection_blocks = self.create_agent_selection_ui(agents_list)
-                
+
                 if agent_selection_blocks:
                     # Send agent selection UI
                     await self.send_message(channel_id, "", thread_ts, blocks=agent_selection_blocks)
-                    
+
                     # Lock the conversation with agent selection status
                     from datetime import UTC, datetime
+
                     agentix[agentix_id_key] = {
                         "date": thread_ts,
                         "user": user_id,
@@ -1327,7 +1276,7 @@ class AgentixMessagingHandler:
                         "status": AgentixStatus.AWAITING_AGENT_SELECTION,
                         "last_updated": datetime.now(UTC).timestamp(),
                     }
-                    
+
                     demisto.debug(
                         f"Created new Agentix conversation {agentix_id_key} with status {AgentixStatus.AWAITING_AGENT_SELECTION}"
                     )
@@ -1335,34 +1284,23 @@ class AgentixMessagingHandler:
                     # Failed to create agent selection UI
                     demisto.error("Failed to create agent selection UI despite having agents")
                     await self.send_message(
-                        channel_id,
-                        AgentixMessages.NO_AGENTS_AVAILABLE,
-                        thread_id=thread_ts,
-                        ephemeral=True,
-                        user_id=user_id
+                        channel_id, AgentixMessages.NO_AGENTS_AVAILABLE, thread_id=thread_ts, ephemeral=True, user_id=user_id
                     )
             else:
                 # Empty agents list
                 demisto.error("Received empty agents list from backend")
                 await self.send_message(
-                    channel_id,
-                    AgentixMessages.NO_AGENTS_AVAILABLE,
-                    thread_id=thread_ts,
-                    ephemeral=True,
-                    user_id=user_id
+                    channel_id, AgentixMessages.NO_AGENTS_AVAILABLE, thread_id=thread_ts, ephemeral=True, user_id=user_id
                 )
-        
+
         elif isinstance(response, dict) and response.get("success"):
             # Send thinking indicator
-            thinking_response = await self.send_message(
-                channel_id,
-                AgentixMessages.THINKING_INDICATOR,
-                thread_id=thread_ts
-            )
+            thinking_response = await self.send_message(channel_id, AgentixMessages.THINKING_INDICATOR, thread_id=thread_ts)
             thinking_ts = thinking_response.get("ts") if thinking_response else None
 
             # Lock the conversation with initial status
             from datetime import UTC, datetime
+
             agentix[agentix_id_key] = {
                 "date": thread_ts,
                 "user": user_id,
@@ -1386,58 +1324,54 @@ class AgentixMessagingHandler:
         else:
             # Permission error or other issue - don't lock
             demisto.debug(f"demisto.agentixIntegrations() failed for user {user_email}: {response}")
-        
+
         return agentix
-    
+
     async def get_conversation_context_formatted(
-        self,
-        channel_id: str,
-        thread_ts: str,
-        bot_id: str,
-        current_message_ts: str
+        self, channel_id: str, thread_ts: str, bot_id: str, current_message_ts: str
     ) -> str:
         """
         Retrieves and formats conversation context.
         Platform-agnostic logic that uses platform-specific methods.
-        
+
         Args:
             channel_id: The channel ID
             thread_ts: The thread timestamp
             bot_id: The bot user ID
             current_message_ts: The current message timestamp
-            
+
         Returns:
             Formatted context string
         """
         try:
             # Get conversation history using platform-specific method
             messages = await self.get_conversation_history(channel_id, thread_ts, limit=20)
-            
+
             if not messages:
                 return ""
-            
+
             # Filter and collect context messages
             context_messages = []
             bot_mention = self.format_user_mention(bot_id)
-            
+
             for msg in reversed(messages):  # Process from oldest to newest
                 msg_ts = msg.get("ts", "")
                 msg_text = msg.get("text", "")
                 msg_user = msg.get("user", "")
                 msg_bot_id = msg.get("bot_id", "")
-                
+
                 # Skip current message
                 if msg_ts == current_message_ts:
                     continue
-                
+
                 # Skip bot messages
                 if msg_bot_id or msg_user == bot_id:
                     continue
-                
+
                 # Stop if we hit a previous bot mention
                 if bot_mention in msg_text and msg_ts != current_message_ts:
                     break
-                
+
                 # Add to context
                 if msg_text and msg_user:
                     # Get user name
@@ -1446,35 +1380,31 @@ class AgentixMessagingHandler:
                         user_name = user_info.get("real_name", user_info.get("name", msg_user))
                     except Exception:
                         user_name = msg_user
-                    
-                    context_messages.append({
-                        "user": user_name,
-                        "text": msg_text,
-                        "ts": msg_ts
-                    })
-                
+
+                    context_messages.append({"user": user_name, "text": msg_text, "ts": msg_ts})
+
                 # Limit to 5 messages
                 if len(context_messages) >= 5:
                     break
-            
+
             # Format context messages
             if not context_messages:
                 return ""
-            
+
             # Create formatted context string
             context_lines = ["--- Previous conversation context ---"]
             for ctx_msg in reversed(context_messages):  # Show oldest first
                 context_lines.append(f"**{ctx_msg['user']}**: {ctx_msg['text']}")
             context_lines.append("--- End of context ---")
             context_lines.append("")  # Empty line before current message
-            
+
             return "\n".join(context_lines)
-            
+
         except Exception as e:
             demisto.error(f"Failed to get conversation context: {e}")
             return ""
-    
-    async def send_agent_response(
+
+    def send_agent_response(
         self,
         channel_id: str,
         thread_id: str,
@@ -1488,7 +1418,7 @@ class AgentixMessagingHandler:
         """
         Sends an agent response and updates the Agentix status accordingly.
         This is platform-agnostic logic that uses platform-specific methods.
-        
+
         Args:
             channel_id: The channel ID
             thread_id: The thread ID
@@ -1498,22 +1428,21 @@ class AgentixMessagingHandler:
             completed: Whether this is the final response
             agentix: The agentix context dictionary
             agentix_id_key: The unique key for this conversation
-            
+
         Returns:
             Updated agentix dictionary
-            
+
         Raises:
             ValueError: If message_type is not valid
         """
         # Validate message_type
         if not AgentixMessageType.is_valid(message_type):
             error_msg = (
-                f"Invalid message_type: '{message_type}'. "
-                f"Must be one of: {', '.join(sorted(AgentixMessageType.VALID_TYPES))}"
+                f"Invalid message_type: '{message_type}'. " f"Must be one of: {', '.join(sorted(AgentixMessageType.VALID_TYPES))}"
             )
             demisto.error(error_msg)
             raise ValueError(error_msg)
-        
+
         if not agentix_context:
             agentix_context = {}
 
@@ -1521,19 +1450,23 @@ class AgentixMessagingHandler:
         message = message.replace("\\n", "\n")
         message = message.replace('\\"', '"')
         message = message.replace("\\'", "'")
-        
+
         # Check if this is an update (step_message_ts exists in agentix)
-        is_update = agentix_context.get(agentix_id_key, {}).get("step_message_ts") is not None if AgentixMessageType.is_step_type(message_type) else False
-        
+        is_update = (
+            agentix_context.get(agentix_id_key, {}).get("step_message_ts") is not None
+            if AgentixMessageType.is_step_type(message_type)
+            else False
+        )
+
         # Prepare blocks and attachments using platform-specific method
         blocks, attachments = self.prepare_message_blocks(message, message_type, is_update)
         if not blocks:
             blocks = []
-        
+
         # Variables for status update
         new_status = None
         should_release_lock = False
-        
+
         # Handle different message types
         if AgentixMessageType.is_model_type(message_type):
             # MODEL TYPES - Final responses
@@ -1541,16 +1474,16 @@ class AgentixMessagingHandler:
             # Add feedback buttons for final responses
             if message_id:
                 blocks.append(self.create_feedback_ui(message_id))
-        
+
         elif AgentixMessageType.is_approval_type(message_type):
             # APPROVAL - Sensitive action requiring approval
             blocks.extend(self.create_approval_ui())
             new_status = AgentixStatus.AWAITING_SENSITIVE_ACTION_APPROVAL
-        
+
         elif AgentixMessageType.is_step_type(message_type):
             # STEP TYPES - Plan steps
             new_status = AgentixStatus.RESPONDING_WITH_PLAN
-        
+
         elif AgentixMessageType.is_error_type(message_type):
             # ERROR - release lock immediately
             should_release_lock = True
@@ -1560,7 +1493,7 @@ class AgentixMessagingHandler:
             thinking_ts = agentix_context[agentix_id_key].get("thinking_message_ts")
             if thinking_ts:
                 try:
-                    await self.delete_message(channel_id, thinking_ts)
+                    self.delete_message_sync(channel_id, thinking_ts)
                     demisto.debug(f"Deleted thinking indicator message {thinking_ts}")
                 except Exception as e:
                     demisto.error(f"Failed to delete thinking indicator: {e}")
@@ -1568,8 +1501,10 @@ class AgentixMessagingHandler:
                 agentix_context[agentix_id_key].pop("thinking_message_ts", None)
 
         # Send or update message using platform-specific method
-        agentix_context = self.send_or_update_message(channel_id, thread_id, message_type, blocks, attachments, agentix_context, agentix_id_key)
-        
+        agentix_context = self.send_or_update_message(
+            channel_id, thread_id, message_type, blocks, attachments, agentix_context, agentix_id_key
+        )
+
         # Update context based on message type
         if agentix_id_key in agentix_context:
             if should_release_lock:
@@ -1580,10 +1515,11 @@ class AgentixMessagingHandler:
             elif new_status:
                 # Update status
                 from datetime import UTC, datetime
+
                 agentix_context[agentix_id_key]["status"] = new_status
                 agentix_context[agentix_id_key]["last_updated"] = datetime.now(UTC).timestamp()
                 self.update_context({"agentix": agentix_context})
                 demisto.debug(f"Updated status for {agentix_id_key} to {new_status}")
-        
+
         demisto.results("Agent response sent successfully.")
         return agentix_context

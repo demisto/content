@@ -174,7 +174,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
 
         return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.update", body=body)
 
-    async def delete_message(
+    def delete_message_sync(
         self,
         channel_id: str,
         message_ts: str,
@@ -188,7 +188,7 @@ class SlackAgentixHandler(AgentixMessagingHandler):
             message_ts: The message timestamp
         """
         body: Dict = {"channel": channel_id, "ts": message_ts}
-        return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.delete", body=body)
+        return send_slack_request_sync(CLIENT, "chat.delete", body=body)
 
     async def get_user_info(self, user_id: str) -> dict:
         """
@@ -461,7 +461,7 @@ def finalize_plan_message(channel_id: str, thread_id: str, step_message_ts: str)
 slack_agentix_handler = SlackAgentixHandler()
 
 
-async def send_agent_response():
+def send_agent_response():
     """
     Wrapper function for the send-agent-response command.
     Delegates to SlackAgentixHandler.send_agent_response()
@@ -479,7 +479,7 @@ async def send_agent_response():
     agentix_id_key = f"{channel_id}_{thread_id}"
 
     # Call the handler's send_agent_response method
-    await slack_agentix_handler.send_agent_response(
+    slack_agentix_handler.send_agent_response(
         channel_id=channel_id,
         thread_id=thread_id,
         message=args["message"],
