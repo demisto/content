@@ -1070,7 +1070,7 @@ def spam_quarantine_message_get_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    quarantine_type = args.get("quarantine_type")
+    quarantine_type = args.get("quarantine_type", QUARANTINE_TYPE)
     message_id = args["message_id"]
 
     response: Dict[str, Any] = client.spam_quarantine_message_get_request(
