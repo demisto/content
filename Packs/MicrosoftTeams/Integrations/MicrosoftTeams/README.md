@@ -1545,10 +1545,7 @@ A user attempts to download a malicious file. An XSOAR playbook is triggered by 
 
 ##### Required Permissions
 
-- `Chat.Create` - *Application and Delegated*
-- `Chat.ReadWrite.All` - *Application*
-- `Chat.ReadWrite` - *Delegated*
-- `ChatMessage.Send` - *Delegated*
+- `User.Read.All` - *Application and Delegated*
 
 ##### Input
 

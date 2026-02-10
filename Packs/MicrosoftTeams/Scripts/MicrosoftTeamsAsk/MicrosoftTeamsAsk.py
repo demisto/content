@@ -48,8 +48,13 @@ def main():
     command_arguments: dict = {}
 
     if adaptive_card:
+        try:
+            adaptive_card_parsed = json.loads(adaptive_card)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
+
         adaptive_card_object: dict = {
-            "adaptive_card": json.loads(adaptive_card),
+            "adaptive_card": adaptive_card_parsed,
             "entitlement": entitlement,
             "investigation_id": investigation_id,
             "task_id": task_id,

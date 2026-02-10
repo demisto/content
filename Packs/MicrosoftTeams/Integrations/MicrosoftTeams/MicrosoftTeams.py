@@ -218,7 +218,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-auth-test": [],
         "microsoft-teams-auth-reset": [],
         "microsoft-teams-token-permissions-list": [],
-        "microsoft-teams-send-proactive-message": [],
+        "microsoft-teams-send-proactive-message": [Perms.USER_READ_ALL],
     },
     CLIENT_CREDENTIALS_FLOW: {
         "send-notification": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
@@ -271,7 +271,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-auth-test": [],
         "microsoft-teams-auth-reset": [],
         "microsoft-teams-token-permissions-list": [],
-        "microsoft-teams-send-proactive-message": [],
+        "microsoft-teams-send-proactive-message": [Perms.USER_READ_ALL],
     },
 }
 HIGHER_PERMISSIONS: dict[GraphPermissions, list[GraphPermissions]] = {
@@ -933,7 +933,7 @@ def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
     users = get_user(user_identifier, select_fields="id,mail,displayName")
 
     if not users:
-        return_error(
+        raise ValueError(
             f"User not found: {user_identifier}. "
             f"Please provide an exact match for email, User Principal Name, or user ID (GUID)."
         )
@@ -943,7 +943,7 @@ def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
         user_list = "\n".join(
             [f"- {u.get('displayName', 'N/A')} ({u.get('mail', 'N/A')}) - ID: {u.get('id', 'N/A')}" for u in users]
         )
-        return_error(
+        raise ValueError(
             f"Multiple users found matching '{user_identifier}':\n\n{user_list}\n\n"
             f"To avoid sending sensitive messages to the wrong user, please provide the exact user ID (GUID) "
             f"or a unique email address."
@@ -952,7 +952,7 @@ def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
     user_id = users[0].get("id", "")
 
     if not user_id:
-        return_error(f"User ID not found in response for: {user_identifier}")
+        raise ValueError(f"User ID not found in response for: {user_identifier}")
 
     demisto.debug(f"Resolved user '{user_identifier}' to ID: {user_id}")
     return user_id
@@ -981,14 +981,14 @@ def create_proactive_conversation(user_id: str) -> str:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
 
     # Check if we have a cached conversation for this user
-    # cached_conversations: dict = integration_context.get("proactive_conversations", {})
-    # if isinstance(cached_conversations, str):
-    #     cached_conversations = json.loads(cached_conversations)
+    cached_conversations: dict = integration_context.get("proactive_conversations", {})
+    if isinstance(cached_conversations, str):
+        cached_conversations = json.loads(cached_conversations)
 
-    # if user_id in cached_conversations:
-    #     cached_conversation_id = cached_conversations[user_id]
-    #     demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
-    #     return cached_conversation_id
+    if user_id in cached_conversations:
+        cached_conversation_id = cached_conversations[user_id]
+        demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
+        return cached_conversation_id
 
     # Create new conversation
     conversation: dict = {
@@ -1007,9 +1007,9 @@ def create_proactive_conversation(user_id: str) -> str:
         raise ValueError("Failed to create conversation: No conversation ID returned")
 
     # Cache the conversation ID
-    # cached_conversations[user_id] = conversation_id
-    # integration_context["proactive_conversations"] = json.dumps(cached_conversations)
-    # set_integration_context(integration_context)
+    cached_conversations[user_id] = conversation_id
+    integration_context["proactive_conversations"] = json.dumps(cached_conversations)
+    set_integration_context(integration_context)
 
     demisto.debug(f"Created and cached conversation ID: {conversation_id}")
     return conversation_id
@@ -2818,10 +2818,10 @@ def send_proactive_message_command():
 
     # Validate inputs - message and adaptive_card are both optional, but at least one must be provided
     if not message and not adaptive_card_arg:
-        return_error("Either message or adaptive_card must be provided.")
+        raise ValueError("Either message or adaptive_card must be provided.")
 
     if message and adaptive_card_arg:
-        return_error("Provide either message or adaptive_card, not both.")
+        raise ValueError("Provide either message or adaptive_card, not both.")
 
     # Step 1: Resolve user identifier to user ID and email
     demisto.debug(f"Resolving user identifier: {user_id_arg}")
@@ -2839,7 +2839,7 @@ def send_proactive_message_command():
             try:
                 adaptive_card: dict = json.loads(adaptive_card_arg)
             except json.JSONDecodeError as e:
-                return_error(f"Invalid adaptive card JSON format: {str(e)}")
+                raise ValueError(f"Invalid adaptive card JSON format: {str(e)}")
         else:
             adaptive_card = adaptive_card_arg  # Already a dict
 

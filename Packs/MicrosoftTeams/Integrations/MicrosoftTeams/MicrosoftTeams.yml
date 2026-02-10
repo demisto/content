@@ -956,16 +956,16 @@ script:
       Note: Either 'message' or 'adaptive_card' must be provided, but not both.
     name: microsoft-teams-send-proactive-message
     outputs:
-    - contextPath: MicrosoftTeams.Conversation.conversationId
+    - contextPath: MicrosoftTeams.Conversation.ConversationId
       description: The ID of the conversation created or used.
       type: String
-    - contextPath: MicrosoftTeams.Conversation.userId
+    - contextPath: MicrosoftTeams.Conversation.UserId
       description: The resolved user ID.
       type: String
-    - contextPath: MicrosoftTeams.Conversation.activityId
+    - contextPath: MicrosoftTeams.Conversation.ActivityId
       description: The ID of the sent message activity.
       type: String
-    - contextPath: MicrosoftTeams.Conversation.userIdentifier
+    - contextPath: MicrosoftTeams.Conversation.UserIdentifier
       description: The original user identifier provided.
       type: String
   dockerimage: demisto/teams:1.0.0.6091526
