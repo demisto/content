@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#FF8411",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "SENTRIA - Sentria App Quick Actions",
+    "layout": "SENTRIA - Sentria App Quick Actions",
+    "locked": false,
+    "name": "SENTRIA - Sentria App Quick Actions",
+    "onChangeRepAlg": 1,
+    "playbookId": "SENTRIA - M - Sentria App Quick Actions",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

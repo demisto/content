@@ -1,0 +1,543 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - sentria
+    - puntos_colombia
+id: SENTRIA - S - Containment Indicators General
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - IP
+  - Domain
+  - URL
+  - File
+  name: General (Inputs group)
+inputs:
+- description: ""
+  key: IP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: Domain
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: URL
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: File
+  playbookInputQuery:
+  required: false
+  value: {}
+name: SENTRIA - S - Containment Indicators General
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tags:
+- SENTRIA
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+      - "7"
+      - "5"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db883ef8-a669-4ca1-8a06-9ed86c711c5b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: db883ef8-a669-4ca1-8a06-9ed86c711c5b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -10
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customer:
+        complex:
+          accessor: selectcustomer
+          root: incident
+          transformers:
+          - operator: MapCustomerEDL
+      indicator_type:
+        simple: IP
+      indicator_value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add indicators to one of the three configured EDLs (Domain, IP, and URL) based on the indicator type.
+
+        If the indicator does not exist, it creates it in the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      id: 2c3a03f9-2bae-4146-8021-57761a8ce4e9
+      iscommand: false
+      name: Add Malicious IP To EDL
+      scriptName: AddIndicatorToEDL_Sentria
+      type: regular
+      version: -1
+    taskid: 2c3a03f9-2bae-4146-8021-57761a8ce4e9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 340
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customer:
+        complex:
+          accessor: selectcustomer
+          root: incident
+          transformers:
+          - operator: MapCustomerEDL
+      indicator_type:
+        simple: Domain
+      indicator_value:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add indicators to one of the three configured EDLs (Domain, IP, and URL) based on the indicator type.
+
+        If the indicator does not exist, it creates it in the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      id: 3df946e4-5866-46c1-8931-b85f94a8f2da
+      iscommand: false
+      name: Add Malicious Domain To EDL
+      scriptName: AddIndicatorToEDL_Sentria
+      type: regular
+      version: -1
+    taskid: 3df946e4-5866-46c1-8931-b85f94a8f2da
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 340
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customer:
+        complex:
+          accessor: selectcustomer
+          root: incident
+          transformers:
+          - operator: MapCustomerEDL
+      indicator_type:
+        simple: URL
+      indicator_value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add indicators to one of the three configured EDLs (Domain, IP, and URL) based on the indicator type.
+
+        If the indicator does not exist, it creates it in the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      id: 96558e39-30d5-49fb-8248-652913ed65aa
+      iscommand: false
+      name: Add Malicious URL To EDL
+      scriptName: AddIndicatorToEDL_Sentria
+      type: regular
+      version: -1
+    taskid: 96558e39-30d5-49fb-8248-652913ed65aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 340
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0fc5a7dc-4e61-473a-86b2-c9da4c54aea1
+      iscommand: false
+      name: Any IP
+      type: condition
+      version: -1
+    taskid: 0fc5a7dc-4e61-473a-86b2-c9da4c54aea1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 130
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Domain
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2c29342-7b5c-4bf8-8fd1-d1962672383e
+      iscommand: false
+      name: Any Domain?
+      type: condition
+      version: -1
+    taskid: f2c29342-7b5c-4bf8-8fd1-d1962672383e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 130
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9f4e168-c33d-4bf9-8bff-289dec6ea57a
+      iscommand: false
+      name: Any URL?
+      type: condition
+      version: -1
+    taskid: e9f4e168-c33d-4bf9-8bff-289dec6ea57a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 130
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 261aaab5-b501-4b4e-8915-533662112690
+      iscommand: false
+      name: Any File?
+      type: condition
+      version: -1
+    taskid: 261aaab5-b501-4b4e-8915-533662112690
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 130
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b42d50fc-3b50-447a-8707-ca46bd305437
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: b42d50fc-3b50-447a-8707-ca46bd305437
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -900,
+          "y": 330
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e044d8c-4d65-40af-82b6-6cd2ae152f5f
+      iscommand: false
+      name: end
+      type: title
+      version: -1
+      description: ''
+    taskid: 8e044d8c-4d65-40af-82b6-6cd2ae152f5f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 680
+        }
+      }
+  "12":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: ${incident.selectcustomer}
+      hash_list:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.File
+              operator: stringHasLength
+              right:
+                value:
+                  simple: "64"
+          root: inputs.File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex XDR - IR
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      id: a7fe1500-fcc4-462e-8ebc-dcd73a93b2a8
+      iscommand: true
+      name: Block File in XDR
+      script: Cortex XDR - IR|||xdr-blocklist-files
+      type: regular
+      version: -1
+    taskid: a7fe1500-fcc4-462e-8ebc-dcd73a93b2a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 510
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customer:
+        complex:
+          accessor: selectcustomer
+          root: incident
+          transformers:
+          - operator: MapCustomerEDL
+      indicator_type:
+        simple: File
+      indicator_value:
+        simple: ${inputs.File}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add indicators to one of the three configured EDLs (Domain, IP, and URL) based on the indicator type.
+
+        If the indicator does not exist, it creates it in the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      id: 31bf5a32-4571-496a-80e3-1a7e8b68970d
+      iscommand: false
+      name: Add Malicious File To EDL
+      scriptName: AddIndicatorToEDL_Sentria
+      type: regular
+      version: -1
+    taskid: 31bf5a32-4571-496a-80e3-1a7e8b68970d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 2170,
+        "x": -900,
+        "y": -10
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
