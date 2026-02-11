@@ -6503,7 +6503,6 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     args["wait_for_result"] = False
     events = response.get("events", [])
     events = clean_ngsiem_rawstring_field(events)
-
     warnings = response.get("warnings", [])
     if warnings:
         demisto.info(f"NGSIEM search completed with warnings: {warnings}")
@@ -6529,7 +6528,6 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
         )
     else:
         hr = "No events found matching the query."
-
     command_results = CommandResults(
         outputs_prefix="CrowdStrike.NGSiemEvent",
         outputs=events,
@@ -6590,11 +6588,8 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
     if is_done:
         return process_ngsiem_search_completion(response, args)
 
-    # Continue polling - job not done yet
     demisto.info(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
     
-    # NO manual extraction needed anymore!
-    # The decorator will automatically read args.get('interval') and args.get('timeout')
     return PollResult(
         response=CommandResults(readable_output=f"NGSIEM search job {job_id} still in progress, continuing to poll..."),
         continue_to_poll=True,
