@@ -1,6 +1,7 @@
 # SOCRadar Incidents v4.0 Multi-Tenant
 
 Fetch and manage security incidents from multiple companies using SOCRadar's Multi-Tenant Incident API. Designed for MSPs, MSSPs, and organizations managing multiple subsidiaries.
+
 ## Overview
 
 SOCRadar is a digital risk protection platform that provides extended threat intelligence and brand protection capabilities. This Multi-Tenant integration enables XSOAR to ingest security incidents from multiple companies through a single integration instance, including:
@@ -14,16 +15,19 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 ## Multi-Tenant Features
 
 ### Centralized Multi-Company Management
+
 - **Single Integration**: Monitor incidents from all your companies through one integration instance
 - **Company Tracking**: Each alarm automatically includes company ID and company name
 - **Smart Filtering**: Filter and manage incidents across companies or focus on specific ones
 
 ### Automatic Company ID Handling
+
 - **Auto-Extraction**: When taking actions, company ID is automatically extracted from alarm data
 - **No Manual Input**: You don't need to remember or specify company IDs for most operations
 - **Override Capability**: Manually specify company ID when needed (advanced use cases)
 
 ### Company Visibility Control
+
 - **Configurable Display**: Choose whether to show company information in incident details
 - **Custom Fields**: Company ID and company name available in custom fields
 - **Incident Naming**: Company information included in incident names for quick identification
@@ -33,12 +37,14 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 ## What's New in Multi-Tenant v4.0
 
 ### Multi-Tenant Specific
+
 - **Multi-Tenant API Endpoint**: Uses `/multi_tenant/{multi-tenant-id}/incidents` for fetching
 - **Company Information**: Each alarm includes both company_id and company_name
 - **Smart Action Handling**: Automatically determines which company to act upon
 - **Default Company Visibility**: Company info shown by default (can be disabled)
 
 ### Core Features (from v4.0)
+
 - **Multi-Status Filtering**: Select multiple statuses (OPEN, CLOSED, ON_HOLD) simultaneously
 - **Epoch Time Precision**: Second-level accuracy for incident fetching - zero duplicates
 - **Reverse Pagination**: Fetches newest incidents first for better performance
@@ -46,6 +52,7 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 - **Enhanced Deduplication**: Two-layer protection prevents duplicate incidents
 
 ### Technical Improvements
+
 - Interval-based fetching with overlap protection
 - Configurable content and entity inclusion
 - Comprehensive debug logging
@@ -70,12 +77,14 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 ## Prerequisites
 
 ### Required
+
 - SOCRadar account with Multi-Tenant Incident API access
 - Multi-Tenant ID from SOCRadar platform
 - API Key from SOCRadar platform
 - XSOAR 6.x or later
 
 ### API Access
+
 To obtain your API credentials:
 
 1. Log in to [SOCRadar Platform](https://platform.socradar.com)
@@ -108,7 +117,6 @@ To obtain your API credentials:
 | **Excluded Alarm Type IDs** | Text | Comma-separated list of type IDs to exclude |
 | **Main Alarm Types** | Text | Comma-separated main types (e.g., "Brand Protection") |
 | **Alarm Sub Types** | Text | Comma-separated sub types |
-
 
 ## License
 
