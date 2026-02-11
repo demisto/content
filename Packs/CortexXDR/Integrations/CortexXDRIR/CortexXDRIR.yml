@@ -684,7 +684,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: This command xdr-case-update is deprecated please use Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+    description: This command xdr-case-update is deprecated please use xdr-case-update instead. Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
     deprecated: true
   - arguments:
