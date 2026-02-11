@@ -20,7 +20,7 @@ outputs:
   description: Indicators Found.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.7090913
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
