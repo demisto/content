@@ -1,5 +1,6 @@
-# VERSION: 1.0.37
+# VERSION: 1.0.38
 # CHANGELOG:
+# v1.0.38 - Updated integration description, Help tab, and README documentation with Reply Code Mode feature details and sequential mode examples.
 # v1.0.37 - Added replyCodeMode configuration parameter: 'sequential' mode uses simple incrementing numbers (1, 2, 3...) instead of random 4-digit codes for simpler UX.
 # v1.0.36 - Security: Replaced kwargs logging with explicit parameter names to ensure no secrets are ever logged accidentally.
 # v1.0.35 - Enhanced debug logging throughout for better troubleshooting: added descriptive logs for entitlement parsing, feedback settings, AWS client creation, and reply processing decisions.
@@ -51,7 +52,7 @@ from typing import Any
 
 # ===== CONSTANTS =====
 INTEGRATION_NAME = "AWS SNS SMS Communication"
-INTEGRATION_VERSION = "1.0.37"
+INTEGRATION_VERSION = "1.0.38"
 
 # Default feedback messages
 DEFAULT_SUCCESS_MESSAGE = "{reply_code} - Thank you for your response!"

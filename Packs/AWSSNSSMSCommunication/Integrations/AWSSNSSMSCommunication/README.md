@@ -9,6 +9,7 @@ The AWS SNS SMS Communication integration enables interactive two-way SMS commun
 - **Interactive SMS Messaging**: Send questions to users via SMS and receive their responses
 - **Entitlement Support**: Full integration with XSOAR's entitlement system for conditional playbook tasks
 - **Reply Code Management**: Automatically manages unique reply codes for concurrent conversations with the same user
+- **Reply Code Modes**: Choose between random 4-digit codes or simple sequential numbers (1, 2, 3...) for simpler UX
 - **Reply Feedback SMS**: Sends confirmation when reply is processed or lists available codes for unrecognized replies
 - **Long-Running Execution**: Continuous polling of SQS queue for incoming SMS replies
 - **Automatic Cleanup**: TTL-based expiration of old entitlements
@@ -40,9 +41,10 @@ The **SMSAskUser** automation script (included in this pack) provides a native S
 1. SMSAskUser creates entitlement GUID before sending SMS
 2. Formats message as: `"Question - Reply option1 or option2: GUID@incident|task"`
 3. Integration extracts options and GUID, generates reply codes
-4. User receives SMS: `"Approve this incident?\nYes (1234) or No (5678)"`
-5. User replies with code: `"1234"`
-6. Integration maps: 1234 → "Yes" → entitlement → task resumption
+4. User receives SMS (random mode): `"Approve this incident?\nYes (1234) or No (5678)"`
+   Or (sequential mode): `"Approve this incident?\nYes (1) or No (2)"`
+5. User replies with code: `"1234"` or `"1"`
+6. Integration maps code -> option -> entitlement -> task resumption
 
 **Advantages:**
 - Native SMS reply experience
@@ -130,6 +132,7 @@ Allow SNS to send messages to your SQS queue:
 | SQS Queue URL | Yes | - | Full URL of SQS queue receiving SMS replies |
 | Poll Interval (seconds) | No | 10 | How often to poll SQS for new messages |
 | Entitlement TTL (hours) | No | 24 | Time before unanswered entitlements expire |
+| Reply Code Mode | No | random | Code style: "random" (4-digit codes) or "sequential" (1, 2, 3...) |
 | Long Running Instance | No | true | Enable continuous SQS polling |
 | Enable Reply Feedback SMS | No | true | Send confirmation SMS when user replies |
 | Success Message Template | No | {reply_code} - Thank you for your response! | Customizable success message. Variables: {reply_code}, {chosen_option}, {phone_number} |
@@ -216,7 +219,7 @@ Bypasses AWS infrastructure to test the integration's reply handling logic.
 | Argument | Required | Description |
 |----------|----------|-------------|
 | phone_number | Yes | Phone number to simulate reply from (must match active entitlement) |
-| reply_code | Yes | 4-digit reply code from the SMS (e.g., 1234) |
+| reply_code | Yes | Reply code from the SMS (e.g., 1234 in random mode, or 1 in sequential mode) |
 
 #### Context Output
 
@@ -274,26 +277,46 @@ To disable automatic feedback SMS, set **Enable Reply Feedback SMS** to `false` 
 
 ### Reply Code System
 
-The integration automatically manages unique 4-digit reply codes for each option to handle concurrent conversations:
+The integration manages unique reply codes for each option to handle concurrent conversations. Two modes are available via the **Reply Code Mode** configuration parameter:
 
-**How Reply Codes Are Generated:**
+#### Random Mode (Default)
+
+Generates random 4-digit codes for each option:
 
 1. **SMSAskUser Script**: Formats message as `"Question - Reply option1 or option2: GUID@incident|task"`
-2. **Integration Parsing**: Extracts options ("Yes", "No") and entitlement GUID from message
-3. **Code Generation**: Creates unique 4-digit code for EACH option:
-   - Option "Yes" → code "1234"
-   - Option "No" → code "5678"
+2. **Integration Parsing**: Extracts options ("Yes", "No") and entitlement GUID
+3. **Code Generation**: Creates unique 4-digit code for EACH option: "Yes" -> "1234", "No" -> "5678"
 4. **SMS Formatting**: Sends `"Question\nYes (1234) or No (5678)"`
-5. **Reply Processing**: User replies with just "1234", integration maps 1234 → "Yes" → entitlement
+5. **Reply Processing**: User replies with "1234", integration maps to "Yes"
 
-**Multiple Concurrent Questions:**
+#### Sequential Mode
+
+Uses simple incrementing numbers (1, 2, 3...) across all active questions for a simpler user experience:
+
+```
+Q1: Did you do the thing?
+    Yes (1) or No (2)
+
+Q2: Did you do the other thing?
+    Yes (3) or No (4)
+
+Q3: Did you do the last thing?
+    Yes (5) or No (6)
+```
+
+- Numbers increment across all active questions for a phone number
+- When a question is answered, its numbers become available for reuse
+- Simpler for end users -- just reply with a single digit
+
+#### Multiple Concurrent Questions
+
+Both modes support multiple active questions to the same phone number:
 - Each option across ALL questions gets a unique code
-- Supports many active questions to same phone number simultaneously
 - Integration tracks all code-to-option mappings in context
 
 **Reply Processing Flow:**
-1. User replies with 4-digit code (e.g., "1234")
-2. Integration validates code format
+1. User replies with code (e.g., "1234" or "1")
+2. Integration validates the code is numeric
 3. Finds matching entitlement and mapped option
 4. Calls `demisto.handleEntitlementForUser(incident_id, guid, phone, "Yes", task_id)`
 5. Playbook task resumes with user's choice
@@ -363,10 +386,20 @@ This is expected behavior! The integration supports multiple concurrent question
 
 - AWS SNS SMS has regional restrictions and country-specific regulations
 - SQS polling interval affects response time (default 10 seconds)
-- Reply codes are 4 digits (10,000 unique combinations per phone number)
+- Reply codes are 4 digits in random mode (10,000 combinations) or sequential numbers in sequential mode
 - Integration context size limits may apply for very high volumes
 
 ## Version History
+
+### 1.0.38 (2026-02-11)
+- Updated integration description and README documentation for Reply Code Mode feature
+
+### 1.0.37 (2026-02-11)
+- Added **Reply Code Mode** configuration parameter:
+  - **random** (default): 4-digit reply codes (existing behavior)
+  - **sequential**: Simple incrementing numbers (1, 2, 3...) for simpler UX
+- Sequential mode assigns next available number, skipping codes in use
+- Reply code validation now accepts any numeric code (supports both modes)
 
 ### 1.0.33 (2026-01-19)
 - Added **SMS Reply Feedback** feature for improved user experience:

@@ -2,7 +2,7 @@
   "name": "AWS SNS SMS Communication",
   "description": "Send and receive SMS messages via AWS SNS/SQS for interactive two-way communication with entitlement handling",
   "support": "community",
-  "currentVersion": "1.0.37",
+  "currentVersion": "1.0.38",
   "author": "Maciej Drobniuch",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",

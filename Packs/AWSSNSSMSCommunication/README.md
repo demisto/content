@@ -6,7 +6,7 @@ This pack enables interactive two-way SMS communication within Cortex XSOAR play
 
 - Send SMS notifications to users via AWS SNS
 - Receive SMS replies via AWS SQS polling
-- Manage concurrent conversations with unique reply codes
+- Manage concurrent conversations with unique reply codes (random 4-digit or simple sequential 1, 2, 3...)
 - Integrate with XSOAR's entitlement system for conditional playbook tasks
 - Automatically clean up expired entitlements
 
