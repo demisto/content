@@ -5939,8 +5939,7 @@ class Lambda:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
-        else:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))  # noqa: RET503
+        return None
 
     @staticmethod
     def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
@@ -5967,8 +5966,7 @@ class Lambda:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             msg = f"Successfully deleted version {kwargs.get('VersionNumber')} of layer {kwargs.get('LayerName')}"
             return CommandResults(readable_output=msg)
-        else:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))  # noqa: RET503
+        return None
 
     @staticmethod
     def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
