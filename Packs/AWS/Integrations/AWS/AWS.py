@@ -5810,13 +5810,6 @@ class Lambda:
         Returns:
             CommandResults: Results containing the created function details
         """
-        output_headers = [
-            "FunctionName",
-            "FunctionArn",
-            "Description",
-            "Version",
-        ]
-
         kwargs = prepare_create_function_kwargs(args)
 
         print_debug_logs(client, f"Creating Lambda function: {args.get('function_name')} using {kwargs=}")
@@ -5831,6 +5824,13 @@ class Lambda:
         outputs = copy.deepcopy(response)
         outputs.pop("ResponseMetadata", None)
         # Prepare readable output
+        output_headers = [
+            "FunctionName",
+            "FunctionArn",
+            "Description",
+            "Version",
+        ]
+        
         readable_output = tableToMarkdown(
             name=f"Created Lambda Function: {args.get('function_name')}",
             t=outputs,
@@ -5990,13 +5990,7 @@ class Lambda:
         Returns:
             CommandResults: Results containing the published layer version details
         """
-        output_headers = [
-            "LayerVersionArn",
-            "LayerArn",
-            "Description",
-            "CreatedDate",
-            "Version",
-        ]
+
 
         # Prepare content configuration
         content = {}
@@ -6039,7 +6033,13 @@ class Lambda:
 
         # Extract outputs based on headers
         outputs["Region"] = args.get("region")
-
+        output_headers = [
+            "LayerVersionArn",
+            "LayerArn",
+            "Description",
+            "CreatedDate",
+            "Version",
+        ]
         readable_output = tableToMarkdown(
             name=f"Published Layer Version: {response.get('LayerArn')}",
             t=outputs,
