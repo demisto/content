@@ -37,7 +37,7 @@ MESSAGES = {
 
 def convert_to_demisto_severity(severity: str) -> int | float:
     """Convert SOCRadar severity to Demisto severity level"""
-    severity_map = {
+    return {
         "LOW": IncidentSeverity.LOW,
         "MEDIUM": IncidentSeverity.MEDIUM,
         "HIGH": IncidentSeverity.HIGH,
@@ -73,7 +73,7 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar Multi-Tenant API
-        
+
         CHANGED: Now uses /v1/multi-tenant/{multiTenantId}/incidents endpoint
         instead of /company/{company_id}/incidents/v4
 
@@ -121,9 +121,9 @@ class Client(BaseClient):
         if end_date:
             params["end_date"] = end_date
         if excluded_alarm_main_types:
-            params['excluded_alarm_main_types'] = excluded_alarm_main_types
+            params["excluded_alarm_main_types"] = excluded_alarm_main_types
         if excluded_alarm_sub_types:
-            params['excluded_alarm_sub_types'] = excluded_alarm_sub_types
+            params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
 
         # CHANGED: Multi-tenant endpoint
         url_suffix = f"/v1/multi-tenant/{self.multi_tenant_id}/incidents"
@@ -265,37 +265,37 @@ class Client(BaseClient):
     def get_company_id_for_alarm(self, alarm_id: int) -> str | None:
         """
         Fetch company_id for a given alarm_id from multi-tenant API
-        
+
         This is used when company_id is not provided in commands,
         allowing automatic lookup from the alarm data.
         """
         demisto.debug(f"[SOCRadar-MT] Looking up company_id for alarm_id: {alarm_id}")
-        
+
         try:
             # Search for the specific alarm using multi-tenant endpoint
             # We use a broad date range to find the alarm
             response = self.search_incidents(limit=1, page=1)
-            
+
             # If we got results, search through pages to find our alarm
             total_pages = response.get("total_pages", 1)
-            
+
             for page in range(1, min(total_pages + 1, 100)):  # Limit to 100 pages for safety
                 if page > 1:
                     response = self.search_incidents(limit=100, page=page)
-                
+
                 alarms = response.get("data", [])
                 for alarm in alarms:
                     if str(alarm.get("alarm_id")) == str(alarm_id):
                         company_id = alarm.get("company_id")
                         demisto.debug(f"[SOCRadar-MT] Found company_id {company_id} for alarm_id {alarm_id}")
                         return str(company_id) if company_id else None
-                
+
                 if len(alarms) < 100:
                     break
-            
+
             demisto.debug(f"[SOCRadar-MT] Could not find alarm_id {alarm_id} in recent alarms")
             return None
-            
+
         except Exception as e:
             demisto.error(f"[SOCRadar-MT] Error looking up company_id for alarm {alarm_id}: {str(e)}")
             return None
@@ -669,14 +669,14 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         raise ValueError("alarm_ids and status_reason are required")
 
     alarm_ids = [int(aid.strip()) for aid in alarm_ids_str.split(",")]
-    
+
     # Auto-fetch company_id from first alarm if not provided
     if not company_id:
         demisto.debug(f"[SOCRadar-MT] company_id not provided, fetching from alarm {alarm_ids[0]}")
         company_id = client.get_company_id_for_alarm(alarm_ids[0])
         if not company_id:
             raise ValueError(f"Could not find company_id for alarm {alarm_ids[0]}. Please provide company_id parameter.")
-    
+
     response = client.change_alarm_status(alarm_ids, status_reason, comments, company_id)
 
     return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
@@ -698,9 +698,7 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
             raise ValueError(f"Could not find company_id for alarm {alarm_id}. Please provide company_id parameter.")
 
     comments = args.get("comments", "Marked as false positive")
-    response = client.change_alarm_status(
-        [int(alarm_id)], "FALSE_POSITIVE", comments, company_id
-    )
+    response = client.change_alarm_status([int(alarm_id)], "FALSE_POSITIVE", comments, company_id)
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
 
@@ -871,11 +869,11 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"📊 Total available: {total_records} records across {total_pages} pages\n\n"
         message += "Sample incidents:\n"
         for info in incidents_info:
-            alarm_id = info['Alarm ID']
-            company = info['Company ID']
-            risk = info['Risk Level']
-            status = info['Status']
-            asset = info['Asset']
+            alarm_id = info["Alarm ID"]
+            company = info["Company ID"]
+            risk = info["Risk Level"]
+            status = info["Status"]
+            asset = info["Asset"]
             message += f"- [{alarm_id}] Company: {company} | {risk} | {status} | {asset}\n"
             message += f"  Type: {info['Type']}{info['Extra']}\n"
 
