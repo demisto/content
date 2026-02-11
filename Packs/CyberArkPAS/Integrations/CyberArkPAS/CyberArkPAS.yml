@@ -293,6 +293,15 @@ script:
     - contextPath: CyberArkPAS.Users.location
       description: The locations in the vault where the users were created.
       type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.firstName
+      description: The first name of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.middleName
+      description: The middle name of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.lastName
+      description: The last name of the users.
+      type: String
     - contextPath: CyberArkPAS.Users.vaultAuthorization
       description: The permissions of the users.
       type: String
