@@ -2788,7 +2788,6 @@ def test_replace_dots_in_keys():
 
 
 @pytest.mark.parametrize(
-<<<<<<< HEAD
     "file_name, file_content",
     [
         ("test_script.py", b"print('hello world')"),
