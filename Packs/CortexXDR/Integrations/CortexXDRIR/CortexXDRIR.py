@@ -1984,7 +1984,7 @@ def automation_script_create_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults: The results of the command.
     """
-    entry_id = args.get('entry_id', '')
+    entry_id = args.get('entry_id')
     file_info = demisto.getFilePath(entry_id)
 
     file_path = file_info.get('path', '')
@@ -1997,7 +1997,7 @@ def automation_script_create_command(client: Client, args: Dict) -> CommandResul
     files = {
         'file': (file_name, file_content)
     }
-    res = client.create_automation_script(files)
+    client.create_automation_script(files)
     return CommandResults(readable_output='Automation script created successfully.')
 
 
@@ -2053,8 +2053,10 @@ def automation_playbook_create_command(client: Client, args: Dict) -> CommandRes
     Returns:
         CommandResults: The results of the command.
     """
-    entry_id = args.get('entry_id', '')
+    entry_id = args.get('entry_id')
     file_info = demisto.getFilePath(entry_id)
+
+    demisto.debug(f"Got file info {file_info}")
     file_path = file_info.get('path', '')
     file_name = file_info.get('name', '')
 
