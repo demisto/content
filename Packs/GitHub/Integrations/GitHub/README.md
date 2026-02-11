@@ -66,8 +66,8 @@ Another authentication option is to create and register a GitHub app under your 
 6. Set the **GitHub app integration ID**.  
     a. In the **GitHub Apps** page, click the app name.
     b. Copy the **Client ID** (a string of letters and numbers).
-    c. Under the integration instance settings configuration **Advanced Settings**, paste the client ID in the **GitHub app integration ID** field. 
-<img width="716" height="332" alt="Screenshot 2025-11-26 at 4 18 14 PM" src="doc_files/github_client_id.png" />
+    c. Under the integration instance settings configuration **Advanced Settings**, paste the client ID in the **GitHub app integration ID** field.
+<img width="716" height="332" alt="Screenshot 2025-11-26 at 4 18 14 PM" src="../../doc_files/github_client_id.png" />
 7. Set the **GitHub app installation ID**.  
     a. Navigate to the repository where you installed the app > **Settings** > **GitHub Apps**.
     b. To the right of the app name, click **Configure**. The installation ID is the number at the end of the URL.
