@@ -3351,6 +3351,22 @@ script:
         - contextPath: Core.CaseResolutionStatus.userInput
           description: User input parameters (for pending playbookTask items).
           type: Unknown
+    - arguments:
+        - description: The name of the Broker VM to diagnose.
+          name: broker_vm_name
+          required: true
+        - description: How far back to search for collector errors. (e.g., "24 hours", "7 days", "1 hour"). Default is "24 hours".'
+          name: timeframe
+          defaultValue: "24 hours"
+      name: core-diagnose-syslog-collector
+      description: Diagnoses why the syslog collector on a specified Broker VM is failing by checking broker status and querying collection_auditing for errors.
+      outputs:
+        - contextPath: Core.SyslogCollectorDiagnostics.status
+          description: Overall diagnostic status (HEALTHY, WARNING, ERROR, UNKNOWN).
+          type: String
+        - contextPath: Core.SyslogCollectorDiagnostics.diagnosis_report
+          description: Detailed diagnosis report containing error messages (deduplicated). Multiple messages are separated by newlines.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
