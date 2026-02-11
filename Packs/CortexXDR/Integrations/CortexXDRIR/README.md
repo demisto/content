@@ -218,10 +218,10 @@ Regarding mirroring, if you have already imported an incident and the mirroring 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### xdr-get-incidents
+### xdr-get-incidents (Deprecated)
 
 ***
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+This command is deprecated please use xdr-case-list instead. Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
 
 ##### Required Permissions
@@ -527,10 +527,10 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 >**No entries.**
 
-### xdr-update-incident
+### xdr-update-incident (Deprecated)
 
 ***
-Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+This command is deprecated please use xdr-case-update instead. Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
 
 ##### Required Permissions
 
