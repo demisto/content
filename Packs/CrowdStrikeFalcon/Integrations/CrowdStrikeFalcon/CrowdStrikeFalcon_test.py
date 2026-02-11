@@ -8613,6 +8613,8 @@ async def test_fetch_spotlight_assets_error_handling(mocker):
     assert call_kwargs['after_token'] == "initial_cursor"  # Should preserve cursor
 
 
+""" Spotlight Fetch Assets Tests """
+
 @pytest.mark.asyncio
 async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(mocker):
     """
@@ -8632,13 +8634,14 @@ async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(mocker
     mock_state = mocker.Mock()
     mock_state.cursor = None
     mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(
-        mock_state, {}, "test_snapshot_id", 0, set(), set()
+        mock_state, "test_snapshot_id", 0, set(), set()
     ))
 
     mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
     mock_handler = mock_handler_cls.return_value
     mock_handler.receive_aids = mocker.AsyncMock()
     mock_handler.processed_aids = {"aid1"}  # Simulate some processed aids
+    mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
     # Mock fetch: Page 1 success, Page 2 crash
     page1_vulns = [{"id": "v1", "aid": "aid1"}]
@@ -8649,7 +8652,16 @@ async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(mocker
         Exception("Crash on Page 2")
     ])
 
-    mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+    def create_task_side_effect(*args, **kwargs):
+        f = asyncio.Future()
+        f.set_result(1)  # The expected return value (e.g., batch_number)
+        return f
+
+    # Mock create_task_send_batch_to_xsiam_and_save_context
+    _ = mocker.patch(
+        "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+        side_effect=create_task_side_effect
+    )
 
     # We want to verify handle_spotlight_fetch_error logic, specifically that it saves state
     # So we WON'T mock handle_spotlight_fetch_error, but we WILL mock save_spotlight_state and update_spotlight_state_and_metadata
@@ -8660,7 +8672,6 @@ async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(mocker
     with pytest.raises(Exception, match="Crash on Page 2"):
         await fetch_spotlight_assets()
 
-    # 3. Verify
     # Verify update_spotlight_state_and_metadata called with correct state BEFORE crash
     # The last call should be from handle_spotlight_fetch_error
     assert mock_update_state.call_count >= 2  # Once for page 1, once for error
@@ -8669,7 +8680,7 @@ async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(mocker
     assert error_save_call['cursor'] == "token_page_2"  # Should save the token for the NEXT page (where we crashed)
     assert error_save_call['total_fetched'] == 1  # We successfully fetched 1 item before crash
     assert error_save_call['processed_aids'] == {"aid1"}  # Should include processed aids
-
+    assert error_save_call['snapshot_id'] == "test_snapshot_id"  # Save the snapshot id for the next run.
     # Verify save_spotlight_state called
     mock_save_state.assert_called()
 
