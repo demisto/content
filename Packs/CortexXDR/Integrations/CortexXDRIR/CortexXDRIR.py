@@ -2601,6 +2601,7 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
 
         elif command == "xdr-get-incidents":
+            # This command is Deprecated
             return_outputs(*get_incidents_command(client, args))
 
         elif command == "xdr-asset-list":
@@ -2628,6 +2629,7 @@ def main():  # pragma: no cover
             return_outputs(*get_incident_extra_data_command(client, args))
 
         elif command == "xdr-update-incident":
+            # This command is Deprecated
             return_outputs(*update_incident_command(client, args))
 
         elif command == "xdr-get-endpoints":
