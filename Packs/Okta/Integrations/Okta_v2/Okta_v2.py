@@ -483,7 +483,7 @@ class Client(OktaClient):
         uri = f"/api/v1/users/{encode_string_results(user_term)}"
         return self.http_request(method="DELETE", url_suffix=uri, resp_type="text")
 
-    def clear_user_sessions(self, user_id, revoke_oauth_tokens=False):
+    def clear_user_sessions(self, user_id, revoke_oauth_tokens=True):
         uri = f"/api/v1/users/{user_id}/sessions"
         params = {"oauthTokens": revoke_oauth_tokens}
         return self.http_request(method="DELETE", url_suffix=uri, params=params, resp_type="text")
