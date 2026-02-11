@@ -8177,6 +8177,25 @@ def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
     return query
 
 
+def arg_to_ms_int(val: Any, arg_name: Optional[str] = None) -> Optional[int]:
+    """
+    Convert an argument into an absolute epoch timestamp in milliseconds.
+
+    Args:
+        val: The raw argument value (from demisto.args()).
+        arg_name: Optional argument name for clearer error messages.
+
+    Returns:
+        Epoch time in milliseconds as an int, or None if `val` is None.
+    """
+    dt: Optional[datetime] = (
+        arg_to_datetime(val, arg_name=arg_name, is_utc=True, required=False)
+        if val is not None
+        else None
+    )
+    return int(dt.timestamp() * 1000) if dt else None
+
+
 @polling_function(
     "cs-falcon-search-ngsiem-events",
     poll_message="Searching NGSIEM events:",
@@ -8211,17 +8230,12 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 
         limit = arg_to_number(args.get("limit")) or 50
         query = build_ngsiem_query_with_limit(query, limit)
-
-        # 1. Prepare the Nested Object (and map names correctly)
-        ts_arg = args.get("around_timestamp")
-        dt = arg_to_datetime(ts_arg) if ts_arg is not None else None
-        timestamp_ms = int(dt.timestamp() * 1000) if dt else None
         
         around_config = assign_params(
             eventId=args.get("around_event_id"),
             numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
             numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
-            timestamp=timestamp_ms
+            timestamp=arg_to_ms_int(args.get("around_timestamp"))
         )
         demisto.info(f"around_config: {around_config}")
         # 2. Build the Main Request Body
@@ -8230,8 +8244,8 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
             queryString=query,
             start=args.get("start"),
             end=args.get("end"),
-            ingestStart=args.get("ingest_start"),
-            ingestEnd=args.get("ingest_end"),
+            ingestStart=arg_to_ms_int(args.get("ingest_start")),
+            ingestEnd=arg_to_ms_int(args.get("ingest_end")),
             useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
             timeZone=args.get("time_zone"),
             timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),

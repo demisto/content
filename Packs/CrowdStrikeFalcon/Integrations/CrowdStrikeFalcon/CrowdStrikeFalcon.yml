@@ -5305,7 +5305,7 @@ script:
     - name: ingest_end
       description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field. If ingestStart is provided, it must be less than or equal to the ingestEnd. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone.
     - name: use_ingest_time
-      description: When set to true, the event's ingestStart and ingestEnd times are used as the basis for the query.
+      description: When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided).
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:

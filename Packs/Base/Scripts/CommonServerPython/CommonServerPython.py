@@ -83,6 +83,148 @@ def register_module_line(module_name, start_end, line, wrapper=0):
             'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
 
 
+def support_multithreading():  # pragma: no cover
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
+                return prev_do(cmd)  # type: ignore[call-arg]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+def content_profiler(func):
+    """
+    A decorator for profiling the execution time and performance of a function.
+
+    This decorator is useful for identifying performance bottlenecks and understanding the time complexity of your code.
+    It collects and displays detailed profiling information, including the total execution time, the number of calls,
+    and the average time per call.
+    When to use it:
+        - When you need to debug and optimize the performance of your functions or methods.
+        - When you want to identify slow or inefficient parts of your code.
+        - During the development and testing phases to ensure that your code meets performance requirements.
+
+    To use, decorate the function that calls the function you want to profile with @content_profiler.
+    Example: I want to profile the function_to_profile() function:
+            ```
+            @content_profiler
+            function_to_profile():
+                # some code
+            ```
+    Analyze the Profiling Data with SnakeViz:
+        Download the <automation_name>.prof from the war room and run:
+            pip install snakeviz; snakveiz <automation_name>.prof
+
+    **Tested with Python 3.10**
+
+    :type func: ``function``
+    :param func: The function to be profiled.
+    :return: The profiled function.
+    :rtype: ``any``
+    """
+    import cProfile
+    import threading
+
+    def profiler_wrapper(*args, **kwargs):
+        """
+        A wrapper function that profiles the execution of the decorated function.
+        :param args: The positional arguments to be passed to the decorated function.
+        :param kwargs: The keyword arguments to be passed to the decorated function.
+        :return: The result of the decorated function.
+        """
+
+        def profiler_function(signal_event, profiler):
+            """
+            A helper function that runs the profiled function. When the profiled function is finished
+             a signal is received and the profiling data is dumped to a temporary file.
+             Otherwise, the function will stop when reaching to timeout.
+            :param signal_event: A signal that will be set when the profiled function is finished.
+            :param profiler: The Profile object to use for profiling.
+            """
+
+            def dump_result():
+                """
+                Helper function to dump the profiling results to a file and return the file.
+                """
+                import tempfile
+                # Create a temporary file to store profiling data
+                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                    profiler.dump_stats(temp_file.name)
+                    temp_file_path = temp_file.name
+
+                # Read the profiling data from the temporary file
+                with open(temp_file_path, 'rb') as f:
+                    profiling_results = f.read()
+
+                # Delete the temporary file
+                os.remove(temp_file_path)
+                context = demisto.callingContext
+                executed_commands = context.get("context", {}).get("ExecutedCommands", {})
+                automation_name = context.get("command") or executed_commands[0].get("name",
+                                                                                     "stats") if executed_commands else "stats"
+                # Use Demisto's fileResult to create a file from the profiling stats
+                demisto.results(fileResult('{}.prof'.format(automation_name), profiling_results))
+
+            # 5 minutes in nanoseconds
+            default_timeout = 60 * 5 * 1e9
+
+            # The system timeout configuration.
+            timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
+            timeout_seconds = timeout_nanoseconds / 1e9
+            event_set = signal_event.wait(timeout_seconds - 5)
+            profiler.disable()
+            dump_result()
+            demisto.debug("Profiler finished.")
+            if not event_set:
+                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
+
+        def function_runner(func, profiler, signal_event,
+                            results, *args, **kwargs):
+            """
+            A wrapper function that runs the targeted profiled function and captures the results in the results list.
+            :param func: The function to be profiled.
+            :param profiler: The Profile object to use for profiling.
+            :param signal_event: The event to signal when profiling is complete.
+            :param results: A shared object to store the results of the profiled function.
+            :param args: The positional arguments to be passed to the profiled function.
+            :param kwargs: The keyword arguments
+            """
+            profiler.enable()
+            demisto.debug("Profiler started.")
+            try:
+                results["function_results"] = func(*args, **kwargs)
+            finally:
+                # Signal the profiling thread that the command has completed.
+                signal_event.set()
+
+        support_multithreading()
+        results = {}
+        profiler = cProfile.Profile()
+        signal_event = threading.Event()
+        function_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results) + args,
+                                           kwargs=kwargs)
+        function_thread.start()
+        profiler_function(signal_event, profiler)
+        return results.get("function_results")
+
+    return profiler_wrapper
+
 def _find_relevant_module(line):
     global _MODULES_LINE_MAPPING
 
@@ -780,7 +922,6 @@ def is_debug_mode():
     :rtype: ``bool``
     """
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return True
     return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 
@@ -9349,27 +9490,49 @@ class DebugLogger(object):
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
-            setattr(http_client, 'print', self.int_logger.print_override)
+            print("abcdefgh")
+            # setattr(http_client, 'print', self.int_logger.print_override)
+            print("abcdefgh2")
         self.handler = DemistoHandler(self.int_logger)
+        print("abcdefgh3")
         demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
+        print("abcdefgh4")
         self.handler.setFormatter(demisto_formatter)
+        print("abcdefgh5")
         self.root_logger = logging.getLogger()
+        print("abcdefgh6")
         self.prev_log_level = self.root_logger.getEffectiveLevel()
+        print("abcdefgh7")
         self.root_logger.setLevel(logging.DEBUG)
+        print("abcdefgh8")
         self.org_handlers = list()
+        print("abcdefgh9")
         if self.root_logger.handlers:
+            print("abcdefgh10")
             self.org_handlers.extend(self.root_logger.handlers)
+            print("abcdefgh11")
             for h in self.org_handlers:
+                print("abcdefgh12")
                 self.root_logger.removeHandler(h)
+                print("abcdefgh13")
+        print("abcdefgh14")
         self.root_logger.addHandler(self.handler)
+        print("abcdefgh15")
 
     def __del__(self):
+        print("__del__1")
         if self.handler:
+            print("__del__2")
             self.root_logger.setLevel(self.prev_log_level)
+            print("__del__3")
             self.root_logger.removeHandler(self.handler)
+            print("__del__4")
             self.handler.flush()
+            print("__del__5")
             self.handler.close()
+            print("__del__6")
         if self.org_handlers:
+            print("__del__7")
             for h in self.org_handlers:
                 self.root_logger.addHandler(h)
         if self.http_client:
@@ -9386,16 +9549,28 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
+        print("aaaaaaaaa")
         msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
                                                                                             os.environ)
+        print("aaaaaaaaaa")
         if hasattr(demisto, 'params'):
+            print("aaaaaaaaaa")
             msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+            print("aaaaaaaaaa8")
+        print("aaaaaaaaaaa7")
         calling_context = demisto.callingContext.get('context', {})
+        print("aaaaaaaaaaaa6")
         msg += "\n#### Docker image: [{}]".format(calling_context.get('DockerImage'))
+        print("aaaaaaaaaaaa5")
         brand = calling_context.get('IntegrationBrand')
+        print("aaaaaaaaaaaa4")
         if brand:
+            print("aaaaaaaaaaa3a")
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
+            print("aaaaaaaaaaaaa")
+        print("aaaaaaaaaaaaaa2")
         sm = get_schedule_metadata(context=calling_context)
+        print("aaaaaaaaaaaaaaa1")
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
                    "date: [{}]".format(sm.get('polling_command'),
@@ -9404,19 +9579,28 @@ class DebugLogger(object):
                                        sm.get('start_date'),
                                        sm.get('end_date')
                                        )
+        print("bbbb")
         self.int_logger.write(msg)
-
+        print("bbbbb")
 
 _requests_logger = None
-try:
-    if is_debug_mode():
-        _requests_logger = DebugLogger()
-        _requests_logger.log_start_debug()
-except Exception as ex:
-    # Should fail silently so that if there is a problem with the logger it will
-    # not affect the execution of commands and playbooks
-    demisto.info('Failed initializing DebugLogger: {}'.format(ex))
+@content_profiler
+def test_debugger():
+    
+    try:
+        if is_debug_mode():
+            print("test:is_debug_mode")
+            _requests_logger = DebugLogger()
+            print("aaaaaa")
+            _requests_logger.log_start_debug()
+            print("aaaaaaa")
+    except Exception as ex:
+        # Should fail silently so that if there is a problem with the logger it will
+        # not affect the execution of commands and playbooks
+        print("Exception:is_debug_mode")
+        demisto.info('Failed initializing DebugLogger: {}'.format(ex))
 
+test_debugger()
 
 def add_sensitive_log_strs(sensitive_str):
     """
@@ -11303,30 +11487,6 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
     raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
 
 
-def support_multithreading():  # pragma: no cover
-    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
-    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
-        return
-    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
-    global demisto
-    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
-    demisto.lock = Lock()  # type: ignore[attr-defined]
-
-    def locked_do(cmd):
-        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
-            try:
-                return prev_do(cmd)  # type: ignore[call-arg]
-            finally:
-                demisto.lock.release()  # type: ignore[attr-defined]
-        else:
-            raise RuntimeError('Failed acquiring lock')
-
-    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
 
 def get_tenant_account_name():
@@ -13008,122 +13168,6 @@ def get_server_config():
     return server_config
 
 
-def content_profiler(func):
-    """
-    A decorator for profiling the execution time and performance of a function.
-
-    This decorator is useful for identifying performance bottlenecks and understanding the time complexity of your code.
-    It collects and displays detailed profiling information, including the total execution time, the number of calls,
-    and the average time per call.
-    When to use it:
-        - When you need to debug and optimize the performance of your functions or methods.
-        - When you want to identify slow or inefficient parts of your code.
-        - During the development and testing phases to ensure that your code meets performance requirements.
-
-    To use, decorate the function that calls the function you want to profile with @content_profiler.
-    Example: I want to profile the function_to_profile() function:
-            ```
-            @content_profiler
-            function_to_profile():
-                # some code
-            ```
-    Analyze the Profiling Data with SnakeViz:
-        Download the <automation_name>.prof from the war room and run:
-            pip install snakeviz; snakveiz <automation_name>.prof
-
-    **Tested with Python 3.10**
-
-    :type func: ``function``
-    :param func: The function to be profiled.
-    :return: The profiled function.
-    :rtype: ``any``
-    """
-    import cProfile
-    import threading
-
-    def profiler_wrapper(*args, **kwargs):
-        """
-        A wrapper function that profiles the execution of the decorated function.
-        :param args: The positional arguments to be passed to the decorated function.
-        :param kwargs: The keyword arguments to be passed to the decorated function.
-        :return: The result of the decorated function.
-        """
-
-        def profiler_function(signal_event, profiler):
-            """
-            A helper function that runs the profiled function. When the profiled function is finished
-             a signal is received and the profiling data is dumped to a temporary file.
-             Otherwise, the function will stop when reaching to timeout.
-            :param signal_event: A signal that will be set when the profiled function is finished.
-            :param profiler: The Profile object to use for profiling.
-            """
-
-            def dump_result():
-                """
-                Helper function to dump the profiling results to a file and return the file.
-                """
-                import tempfile
-                # Create a temporary file to store profiling data
-                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                    profiler.dump_stats(temp_file.name)
-                    temp_file_path = temp_file.name
-
-                # Read the profiling data from the temporary file
-                with open(temp_file_path, 'rb') as f:
-                    profiling_results = f.read()
-
-                # Delete the temporary file
-                os.remove(temp_file_path)
-                context = demisto.callingContext
-                executed_commands = context.get("context", {}).get("ExecutedCommands", {})
-                automation_name = context.get("command") or executed_commands[0].get("name",
-                                                                                     "stats") if executed_commands else "stats"
-                # Use Demisto's fileResult to create a file from the profiling stats
-                demisto.results(fileResult('{}.prof'.format(automation_name), profiling_results))
-
-            # 5 minutes in nanoseconds
-            default_timeout = 60 * 5 * 1e9
-
-            # The system timeout configuration.
-            timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
-            timeout_seconds = timeout_nanoseconds / 1e9
-            event_set = signal_event.wait(timeout_seconds - 5)
-            profiler.disable()
-            dump_result()
-            demisto.debug("Profiler finished.")
-            if not event_set:
-                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
-
-        def function_runner(func, profiler, signal_event,
-                            results, *args, **kwargs):
-            """
-            A wrapper function that runs the targeted profiled function and captures the results in the results list.
-            :param func: The function to be profiled.
-            :param profiler: The Profile object to use for profiling.
-            :param signal_event: The event to signal when profiling is complete.
-            :param results: A shared object to store the results of the profiled function.
-            :param args: The positional arguments to be passed to the profiled function.
-            :param kwargs: The keyword arguments
-            """
-            profiler.enable()
-            demisto.debug("Profiler started.")
-            try:
-                results["function_results"] = func(*args, **kwargs)
-            finally:
-                # Signal the profiling thread that the command has completed.
-                signal_event.set()
-
-        support_multithreading()
-        results = {}
-        profiler = cProfile.Profile()
-        signal_event = threading.Event()
-        function_thread = threading.Thread(target=function_runner, args=(func, profiler, signal_event, results) + args,
-                                           kwargs=kwargs)
-        function_thread.start()
-        profiler_function(signal_event, profiler)
-        return results.get("function_results")
-
-    return profiler_wrapper
 
 
 def find_and_remove_sensitive_text(text, pattern):
