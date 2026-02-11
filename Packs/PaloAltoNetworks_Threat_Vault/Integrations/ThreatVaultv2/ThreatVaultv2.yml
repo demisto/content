@@ -3,6 +3,9 @@ provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks Threat Vault v2
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: https://api.threatvault.paloaltonetworks.com/
   display: URL
