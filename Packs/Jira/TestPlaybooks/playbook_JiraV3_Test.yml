@@ -180,7 +180,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: Ticket.Status
@@ -192,7 +192,7 @@ tasks:
             value:
               simple: Ticket.Creator
             iscontext: true
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: Ticket.Summary
@@ -217,7 +217,7 @@ tasks:
             value:
               simple: ${Ticket.issuelinks.issueFieldDisplayName}
             iscontext: true
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: Ticket.Assignee
@@ -500,7 +500,7 @@ tasks:
             value:
               simple: ${Ticket.[1].issuelinks.rawData}
             iscontext: true
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               simple: ${Ticket.[1].issuelinks.issueFieldDisplayName}
