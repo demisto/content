@@ -688,8 +688,6 @@ class Client(CoreClient):
         res = self._http_request(
             method="GET",
             url_suffix=f"/uvem/v1/vulnerabilities/{vulnerability_id}",
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {})
 
@@ -701,8 +699,6 @@ class Client(CoreClient):
         res = self._http_request(
             method="GET",
             url_suffix="/healthcheck",
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {})
 
@@ -714,8 +710,6 @@ class Client(CoreClient):
         res = self._http_request(
             method="GET",
             url_suffix="/get_triage_presets",
-            headers=self.headers,
-            timeout=self.timeout,
         )
         return res.get("reply", {}).get("triage_presets", [])
 
@@ -2413,12 +2407,12 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
     Returns:
         CommandResults: The command results.
     """
-    vulnerability_id = args.get("vulnerability_id", "")
-    raw_response = client.get_vulnerability_details(vulnerability_id)
+    vulnerability_id = args.get("vulnerability_id")
+    response = client.get_vulnerability_details(vulnerability_id)
 
     readable_output = tableToMarkdown(
         name="Vulnerability Details",
-        t=raw_response,
+        t=response,
         headers=["vulnerabilityID", "description"],
         headerTransform=string_to_table_header,
         removeNull=True,
@@ -2429,8 +2423,8 @@ def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResu
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
         outputs_key_field="vulnerabilityID",
-        outputs=raw_response,
-        raw_response=raw_response,
+        outputs=response,
+        raw_response=response,
     )
 
 
@@ -2443,14 +2437,14 @@ def healthcheck_run_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    raw_response = client.run_healthcheck()
-    status = raw_response.get("status", "unknown") if isinstance(raw_response, dict) else raw_response
+    response = client.run_healthcheck()
+    status = response.get("status", "unknown") if isinstance(response, dict) else response
 
     return CommandResults(
         readable_output=f"**Cortex health status: {status}**",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
-        outputs=raw_response,
-        raw_response=raw_response,
+        outputs=response,
+        raw_response=response,
     )
 
 
