@@ -8242,8 +8242,8 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
         # If around_config is empty {}, assign_params drops it automatically.
         body = assign_params(
             queryString=query,
-            start=args.get("start"),
-            end=args.get("end"),
+            start=arg_to_number(args.get("start")),
+            end=arg_to_number(args.get("end")),
             ingestStart=arg_to_ms_int(args.get("ingest_start")),
             ingestEnd=arg_to_ms_int(args.get("ingest_end")),
             useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
