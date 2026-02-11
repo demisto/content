@@ -1,5 +1,6 @@
-# VERSION: 1.0.36
+# VERSION: 1.0.37
 # CHANGELOG:
+# v1.0.37 - Added replyCodeMode configuration parameter: 'sequential' mode uses simple incrementing numbers (1, 2, 3...) instead of random 4-digit codes for simpler UX.
 # v1.0.36 - Security: Replaced kwargs logging with explicit parameter names to ensure no secrets are ever logged accidentally.
 # v1.0.35 - Enhanced debug logging throughout for better troubleshooting: added descriptive logs for entitlement parsing, feedback settings, AWS client creation, and reply processing decisions.
 # v1.0.34 - Split reply feedback into separate toggles: successFeedbackEnabled and failureFeedbackEnabled. Added customizable failureMessage template.
@@ -50,7 +51,7 @@ from typing import Any
 
 # ===== CONSTANTS =====
 INTEGRATION_NAME = "AWS SNS SMS Communication"
-INTEGRATION_VERSION = "1.0.36"
+INTEGRATION_VERSION = "1.0.37"
 
 # Default feedback messages
 DEFAULT_SUCCESS_MESSAGE = "{reply_code} - Thank you for your response!"
@@ -59,6 +60,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_TTL_HOURS = 24
 DEFAULT_POLL_INTERVAL_SECONDS = 10
 DEFAULT_REPLY_CODE = "0000"  # Implicit code when no other entitlements active
+REPLY_CODE_MODE_RANDOM = "random"
+REPLY_CODE_MODE_SEQUENTIAL = "sequential"
 
 # Entitlement regex pattern (from Slack integration)
 GUID_REGEX = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
@@ -91,6 +94,25 @@ def set_integration_context_with_sync(context: dict):
 def generate_reply_code() -> str:
     """Generate a unique 4-digit reply code."""
     return ''.join(random.choices(string.digits, k=4))
+
+
+def generate_sequential_codes(count: int, existing_codes: set) -> list:
+    """Generate sequential reply codes (1, 2, 3...) skipping any already in use.
+
+    Args:
+        count: Number of codes to generate
+        existing_codes: Set of codes already assigned to active entitlements
+
+    Returns:
+        List of string codes, e.g. ["1", "2"] or ["3", "4"]
+    """
+    codes = []
+    candidate = 1
+    while len(codes) < count:
+        if str(candidate) not in existing_codes:
+            codes.append(str(candidate))
+        candidate += 1
+    return codes
 
 
 def extract_entitlement_from_message(message: str) -> tuple:
@@ -132,26 +154,29 @@ def extract_entitlement_from_message(message: str) -> tuple:
     return None, message
 
 
-def clean_ask_task_message_and_generate_codes(message: str, existing_codes: set) -> tuple:
+def clean_ask_task_message_and_generate_codes(message: str, existing_codes: set,
+                                               reply_code_mode: str = REPLY_CODE_MODE_RANDOM) -> tuple:
     """
     Clean SMSAskUser message and generate reply codes for each option.
 
     Only supports SMSAskUser format: "Question - Reply option1 or option2 [or option3 [or option4]]: GUID@incident|task"
     Built-in XSOAR Ask tasks are NOT supported.
 
-    Converts to: "Question\noption1 (1234) or option2 (5678) [or option3 (9012) [or option4 (3456)]]"
+    Converts to: "Question\noption1 (1234) or option2 (5678)" (random mode)
+    Or: "Question\noption1 (1) or option2 (2)" (sequential mode)
 
     Args:
         message: Original message in SMSAskUser format (supports 2-4 options)
         existing_codes: Set of already-used reply codes to avoid duplicates
+        reply_code_mode: Code generation mode - "random" (4-digit) or "sequential" (1, 2, 3...)
 
     Returns:
         Tuple of (cleaned_message, options_to_codes_dict)
-        Example: ("Do you like PANcakes?\nYes (1234) or No (5678)", {"1234": "Yes", "5678": "No"})
+        Example: ("Do you like PANcakes?\nYes (1) or No (2)", {"1": "Yes", "2": "No"})
     """
     import re
 
-    demisto.debug(f"Processing message for reply codes (first 200 chars): {message[:200]}...")
+    demisto.debug(f"Processing message for reply codes (mode={reply_code_mode}, first 200 chars): {message[:200]}...")
 
     # SMSAskUser format: "Question - Reply option1 or option2 [or option3 [or option4]]: GUID@incident"
     # Pattern: anything - Reply <options separated by 'or'>: <entitlement>
@@ -176,18 +201,23 @@ def clean_ask_task_message_and_generate_codes(message: str, existing_codes: set)
 
     demisto.debug(f"SMSAskUser detected. Question: {question_text}, Options: {options}")
 
-    # Generate unique reply codes for each option
+    # Generate reply codes based on mode
     codes_to_options = {}
     formatted_options = []
 
-    for option in options:
-        # Generate unique code
-        code = generate_reply_code()
-        while code in existing_codes or code in codes_to_options:
+    if reply_code_mode == REPLY_CODE_MODE_SEQUENTIAL:
+        sequential_codes = generate_sequential_codes(len(options), existing_codes)
+        for option, code in zip(options, sequential_codes):
+            codes_to_options[code] = option
+            formatted_options.append(f"{option} ({code})")
+    else:
+        # Random 4-digit codes (default)
+        for option in options:
             code = generate_reply_code()
-
-        codes_to_options[code] = option
-        formatted_options.append(f"{option} ({code})")
+            while code in existing_codes or code in codes_to_options:
+                code = generate_reply_code()
+            codes_to_options[code] = option
+            formatted_options.append(f"{option} ({code})")
 
     # Build final message
     options_text = " or ".join(formatted_options)
@@ -624,8 +654,14 @@ def send_notification_command(args: dict, params: dict) -> CommandResults:
 
     demisto.debug(f"Existing codes for {phone_number}: {existing_codes}")
 
+    # Get reply code mode from configuration
+    reply_code_mode = params.get("replyCodeMode", REPLY_CODE_MODE_RANDOM)
+    demisto.debug(f"Reply code mode: {reply_code_mode}")
+
     # Clean the message and generate reply codes for each option
-    formatted_message, codes_to_options = clean_ask_task_message_and_generate_codes(message, existing_codes)
+    formatted_message, codes_to_options = clean_ask_task_message_and_generate_codes(
+        message, existing_codes, reply_code_mode
+    )
 
     if not codes_to_options:
         # No options found in message (shouldn't happen with Ask tasks)
@@ -888,7 +924,7 @@ def process_sms_reply(sqs_message: dict, params: dict):
 
     demisto.info(f"Processing SMS reply from {phone_number}: {message_text}")
 
-    # Parse reply: User sends just the reply code (e.g., "1234")
+    # Parse reply: User sends just the reply code (e.g., "1234" or "1")
     # The code maps to an option like "Yes" or "No"
     reply_code = message_text.strip()
     demisto.debug(f"Reply code from SMS: {reply_code}")
@@ -896,9 +932,9 @@ def process_sms_reply(sqs_message: dict, params: dict):
     # Check if there are any active entitlements for this phone number
     available_codes = get_available_codes_for_phone(phone_number)
 
-    # Validate it's a 4-digit code
-    if not (reply_code.isdigit() and len(reply_code) == 4):
-        demisto.debug(f"Invalid reply code format: '{reply_code}' (expected 4 digits, got length={len(reply_code)}, isdigit={reply_code.isdigit()})")
+    # Validate it's a numeric code (supports both 4-digit random and sequential modes)
+    if not reply_code.isdigit():
+        demisto.debug(f"Invalid reply code format: '{reply_code}' (expected digits, isdigit={reply_code.isdigit()})")
         # Send failure feedback if enabled and there are active entitlements
         if failure_feedback_enabled and available_codes:
             codes_list = ", ".join([f"{opt} ({code})" for code, opt in available_codes])
@@ -1030,14 +1066,14 @@ def inject_reply_command(args: dict, params: dict) -> CommandResults:
 
     demisto.debug(f"inject_reply_command: phone={phone_number}, code={reply_code}")
 
-    # Validate reply code format
-    if not (reply_code.isdigit() and len(reply_code) == 4):
+    # Validate reply code format (supports both 4-digit random and sequential modes)
+    if not reply_code.isdigit():
         return CommandResults(
-            readable_output=f"❌ Invalid reply code format: {reply_code}\nMust be 4 digits",
+            readable_output=f"Invalid reply code format: {reply_code}\nMust be numeric",
             outputs_prefix="AWS.SNS.SMS.TestReply",
             outputs={
                 "Success": False,
-                "Error": "Invalid reply code format - must be 4 digits",
+                "Error": "Invalid reply code format - must be numeric",
                 "PhoneNumber": phone_number,
                 "ReplyCode": reply_code
             }
