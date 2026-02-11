@@ -367,7 +367,7 @@ script:
       description: Benign.
       type: String
     description: Gets URL enrichment from the feed.
-  dockerimage: demisto/python3:3.12.12.6204436
+  dockerimage: demisto/python3:3.12.12.6663663
   feed: true
   subtype: python3
 tests:
