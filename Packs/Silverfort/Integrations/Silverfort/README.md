@@ -22,14 +22,33 @@ This integration was integrated and tested with Silverfort version 2.12.
 | url | Server URL | True |
 | apikey | APIKEY | True |
 | insecure | Trust any certificate (not secure) | False |
+    
+## For Silverfort version 5.1 and above
 
+- To generate an API token:
+    1. On the Silverfort Admin Console, navigate to the **SETTINGS** page, and then select **Silverfort API**.
+    2. Click Create Key.
+    3. Assign the API a name and select **Risk** for the API category and **Read & Write** for Permissions.
+    4. Copy the values of the **App User ID** and **App User Secret**.
+    5. Click Save.
+    6. The API KEY is "**App USer ID**:**App USer Secret**". (note the ":" between User ID and Secret)
+
+    For calls using **sam_account/domain** instead of upn, you must also configure the **Operational API Key** parameter. To generate this, follow the same steps as above, except select **Operations** instead of Risk (in API category), making sure to also select **Read & Write** for Permissions.
+
+    Also, for external calls (where Cortex does not have line of sight to Silverfort) you must include the **External API Key** parameter. This can be copied from Settings > Silverfort API (verify that Allow access from public facing interface is toggled on).
+
+    For more information, see the [Silverfort documentation](https://docs.silverfort.com/docs/silverfort-cortex-xsoar-docs).
+    
+    
+## For versions prior to Silverfort 5.1
 - To generate an API token:
     1. On the Silverfort Admin Console, navigate to the **SETTINGS** page, and then select **Silverfort API**.
     2. Next to the Application **User ID** field, click **Create App User**.
     3. Copy the values of the **App User ID** and **App User Secret**.
     4. Click Save all.
     5. The API KEY is "**App USer ID**:**App USer Secret**". (note the ":" between User ID and Secret)
-    For more information, see the [Silverfort documentation](https://support.silverfort.com/hc/en-us/articles/360020891537-Silverfort-Risk-Engine-API-Reference).
+    For more information, see the [Silverfort documentation](https://docs.silverfort.com/docs/silverfort-cortex-xsoar-docs).
+
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
