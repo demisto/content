@@ -213,7 +213,21 @@ def test_aws_recreate_sg(mocker):
 
 class TestSGFix:
     def test_sg_fix_recreate_list_contents(self, mocker):
-        """Test that sg_fix creates the correct recreate_list for remediation"""
+        """Test that sg_fix creates the correct recreate_list for remediation.
+
+        Given:
+            - A security group with an overly permissive TCP 0-65535 rule to 0.0.0.0/0
+              and a direct port 22 rule to 0.0.0.0/0, plus a TCP egress rule.
+        When:
+            - sg_fix is called to remediate port 22.
+        Then:
+            - A new SG is created with tags copied from the original.
+            - All ingress rules are batched into a single authorize call containing
+              the split rules (port ranges excluding 22) and private CIDR rules.
+            - The original egress rule is added via a single egress authorize call.
+            - The AWS default all-traffic egress rule is revoked (since the original
+              SG did not have an IpProtocol "-1" all-traffic rule).
+        """
 
         from AWSRemediateSG import sg_fix
 
@@ -223,11 +237,14 @@ class TestSGFix:
         # Mock the tag creation response
         mock_tag_create_response = [{"Type": 1, "Contents": "Success"}]
 
-        # Mock the ingress rule creation responses (multiple calls)
+        # Mock the ingress rule creation response (single batched call)
         mock_ingress_response = [{"Type": 1, "Contents": "Success"}]
 
         # Mock the egress rule creation response
         mock_egress_response = [{"Type": 1, "Contents": "Success"}]
+
+        # Mock the egress rule revoke response
+        mock_egress_revoke_response = [{"Type": 1, "Contents": "Success"}]
 
         # Setup the mock to return different responses for different commands
         def mock_command_side_effect(command, args):
@@ -239,11 +256,11 @@ class TestSGFix:
                 return mock_ingress_response
             elif command == "aws-ec2-security-group-egress-authorize":
                 return mock_egress_response
+            elif command == "aws-ec2-security-group-egress-revoke":
+                return mock_egress_revoke_response
             return []
 
         mock_execute_command = mocker.patch.object(demisto, "executeCommand", side_effect=mock_command_side_effect)
-
-        mock_execute_command.side_effect = mock_command_side_effect
 
         # Test parameters
         account_id = "717007404259"
@@ -259,36 +276,86 @@ class TestSGFix:
         # Verify the function returned the new security group ID
         assert result == {"new-sg": "sg-new123456789"}
 
-        # Verify executeCommand was called the correct number of times
-        # 1 for SG creation + 1 for tag creation + 5 for ingress rules (2 split rules + 3 private IP rules) + 1 for egress
-        assert mock_execute_command.call_count == 8
+        # Verify executeCommand was called the correct number of times:
+        # 1 SG creation + 1 tag creation + 1 batched ingress + 1 egress authorize + 1 egress revoke = 5
+        assert mock_execute_command.call_count == 5
 
-        # Extract the ingress rule calls to verify recreate_list contents
+        # --- Verify batched ingress rules ---
         ingress_calls = [
             call for call in mock_execute_command.call_args_list if call[0][0] == "aws-ec2-security-group-ingress-authorize"
         ]
 
-        # Should have 5 ingress rule calls (2 from split rule + 3 private IP ranges)
-        assert len(ingress_calls) == 5
+        # Should have exactly 1 batched ingress call
+        assert len(ingress_calls) == 1
 
-        # Verify each ingress rule call matches our expected rules
-        for i, call in enumerate(ingress_calls):
-            call_args = call[0][1]  # Get the keyword arguments
-            ip_permissions_str = call_args["ip_permissions"]
-            actual_rule = json.loads(ip_permissions_str)
+        # Parse the batched ip_permissions payload
+        ingress_call_args = ingress_calls[0][0][1]
+        actual_rules = json.loads(ingress_call_args["ip_permissions"])
 
-            # Find matching expected rule (order might vary)
-            found_match = False
-            expected_rules = util_load_json("./test_data/fixed_sg_sample.json")
+        # Load expected rules (flat list: 2 split rules + 3 private CIDR rules)
+        expected_rules = util_load_json("./test_data/fixed_sg_sample.json")
 
-            for expected_rule in expected_rules:
-                if actual_rule == expected_rule:
-                    found_match = True
-                    break
+        # Should contain 5 rules total (2 from split + 3 private CIDRs)
+        assert len(actual_rules) == 5
 
-            assert found_match, f"Unexpected rule in call {i}: {actual_rule}"
+        # Verify each expected rule is present in the actual rules (order may vary)
+        for expected_rule in expected_rules:
+            assert expected_rule in actual_rules, (
+                f"Expected rule not found in batched ingress call: {expected_rule}"
+            )
 
-        # Verify security group creation parameters
+        # Verify the ingress call targets the new SG
+        assert ingress_call_args["group_id"] == "sg-new123456789"
+        assert ingress_call_args["account_id"] == account_id
+        assert ingress_call_args["region"] == region
+        assert ingress_call_args["using"] == integration_instance
+
+        # --- Verify egress authorize call ---
+        egress_authorize_calls = [
+            call for call in mock_execute_command.call_args_list if call[0][0] == "aws-ec2-security-group-egress-authorize"
+        ]
+        assert len(egress_authorize_calls) == 1
+
+        egress_call_args = egress_authorize_calls[0][0][1]
+        actual_egress_rules = json.loads(egress_call_args["ip_permissions"])
+
+        # The original SG has a single TCP 0-65535 egress rule to 0.0.0.0/0.
+        # Since it is NOT an IpProtocol "-1" all-traffic rule, it is added as-is.
+        expected_egress = [
+            {
+                "FromPort": 0,
+                "IpProtocol": "tcp",
+                "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                "Ipv6Ranges": [],
+                "PrefixListIds": [],
+                "ToPort": 65535,
+                "UserIdGroupPairs": [],
+            }
+        ]
+        assert actual_egress_rules == expected_egress
+
+        # --- Verify egress revoke call ---
+        # The original SG does NOT have an IpProtocol "-1" all-traffic egress rule,
+        # so the AWS auto-created default must be revoked.
+        egress_revoke_calls = [
+            call for call in mock_execute_command.call_args_list if call[0][0] == "aws-ec2-security-group-egress-revoke"
+        ]
+        assert len(egress_revoke_calls) == 1
+
+        revoke_call_args = egress_revoke_calls[0][0][1]
+        revoked_rules = json.loads(revoke_call_args["ip_permissions"])
+        expected_revoke = [
+            {
+                "IpProtocol": "-1",
+                "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                "Ipv6Ranges": [],
+                "PrefixListIds": [],
+                "UserIdGroupPairs": [],
+            }
+        ]
+        assert revoked_rules == expected_revoke
+
+        # --- Verify security group creation parameters ---
         sg_create_call = next(
             call for call in mock_execute_command.call_args_list if call[0][0] == "aws-ec2-security-group-create"
         )
