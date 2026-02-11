@@ -35,10 +35,10 @@ iso_8601 (*`2025-11-18T10:18:50.625005951+00:00`*)
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
     | `Name`        | nvidia doca_argus Logs            |
-    | `Compression` | Select the desired compression     |
-    | `Log Format`  | Select json     |
-    | `Vendor`      | Enter nvidia                     |
-    | `Product`     | Enter doca_argus                    |
+    | `Compression` | uncompressed     |
+    | `Log Format`  | json     |
+    | `Vendor`      | nvidia                     |
+    | `Product`     | doca_argus                    |
 
 4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 5. Click the 3 dots sign next to the newly created instance and copy the API URL, it will also be used later.
