@@ -102,7 +102,7 @@ def test_alarm_to_incident_basic(sample_alarm):
     assert incident["severity"] == IncidentSeverity.HIGH
     assert incident["dbotMirrorId"] == "12345"
     assert "12345" in incident["details"]
-    assert "test.com" in incident["details"]
+    assert sample_alarm["alarm_asset"] in incident["details"]
 
 
 def test_alarm_to_incident_custom_fields(sample_alarm):
