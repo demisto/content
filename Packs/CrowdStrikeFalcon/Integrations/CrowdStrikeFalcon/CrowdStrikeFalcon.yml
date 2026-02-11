@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon - almog
+  id: CrowdstrikeFalcon
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -365,8 +365,8 @@ configuration:
   - xsoar
   - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon - almog
-name: CrowdstrikeFalcon - almog
+display: CrowdStrike Falcon
+name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
