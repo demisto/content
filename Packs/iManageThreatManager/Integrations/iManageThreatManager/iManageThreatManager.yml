@@ -16,7 +16,7 @@ configuration:
   - display: User Name
     name: credentials_user
     displaypassword: Password
-    additionalinfo: Required for Detect and Protect alerts
+    additionalinfo: Required for Get Addressable Alerts and Get Detect And Protect Alerts
     required: false
     type: 9
     section: Connect
@@ -85,11 +85,14 @@ script:
           defaultValue: Behavior Analytics alerts
           required: false
         - name: limit
-          description: Maximum number of results to return, maximum is 900 events for each type.
+          description: Maximum number of results to return.
           required: false
           defaultValue: "50"
         - name: from_date
-          description: Date from which to get events. Supports ISO format or natural language (e.g., "7 days ago", "yesterday").
+          description: Start date from which to get events. Supports ISO format or natural language (e.g., "7 days ago", "1 hour ago"). Default is 1 hour ago.
+          required: false
+        - name: to_date
+          description: End date until which to get events. Supports ISO format or natural language (e.g., "now", "30 minutes ago"). Default is now.
           required: false
       description: Gets events from iManage Threat Manager.
       name: imanage-threat-manager-get-events
