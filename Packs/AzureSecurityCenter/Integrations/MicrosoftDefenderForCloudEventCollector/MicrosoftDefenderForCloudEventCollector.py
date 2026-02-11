@@ -109,14 +109,15 @@ def get_alert_name(event: dict) -> str:
     Extracts the alert name (GUID) from an event.
     The 'name' field contains just the alert GUID, while 'id' contains the full resource path
     which can differ by location (e.g., centralus vs eastus2) for the same alert.
+    Falls back to 'id' if 'name' is not present.
 
     Args:
         event (dict): The event dictionary from the API
 
     Returns:
-        str: The alert name/GUID, or empty string if not found
+        str: The alert name/GUID, the id, or empty string if neither found
     """
-    return event.get("name", "") or ""
+    return event.get("name") or event.get("id", "") or ""
 
 
 def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
@@ -138,7 +139,8 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     filtered_events = [
         event
         for event in events
-        if event.get("properties", {}).get("startTimeUtc", "") >= last_run_time and get_alert_name(event) not in dup_names
+        if event.get("properties", {}).get("startTimeUtc", "") > last_run_time
+        or (event.get("properties", {}).get("startTimeUtc", "") == last_run_time and get_alert_name(event) not in dup_names)
     ]
 
     demisto.debug(f"{LOG_PREFIX} Filtered {len(events)} events down to {len(filtered_events)} events.")
