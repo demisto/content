@@ -2093,6 +2093,14 @@ script:
             - 'new'
             - 'in_progress'
             - 'resolved'
+        - description: A comma-separated list of statuses to exclude.
+          isArray: true
+          name: not_status
+          predefined:
+            - 'new'
+            - 'in_progress'
+            - 'resolved'
+          auto: PREDEFINED
         - auto: PREDEFINED
           description: |
             A comma-separated list of severity levels to filter cases by.
@@ -2199,7 +2207,7 @@ script:
         - contextPath: Core.Case.host_count
           description: Number of hosts involved in the case.
           type: Number
-        - contextPath: Core.Case.resolve_comment
+        - contextPath: Core.Case.resolved_comment
           description: Comments added when resolving the case. May be null.
           type: String
         - contextPath: Core.Case.resolved_timestamp
