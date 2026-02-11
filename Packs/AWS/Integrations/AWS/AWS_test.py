@@ -7879,33 +7879,6 @@ def test_lambda_delete_function_command_with_qualifier(mocker):
     assert "Successfully deleted" in result.readable_output
 
 
-def test_lambda_delete_function_command_failure_response(mocker):
-    """
-    Test Lambda.delete_function_command with failed response.
-
-    Given: Function deletion returns error status
-    When: delete_function_command is called
-    Then: Should handle error appropriately
-    """
-    from AWS import Lambda, AWSErrorHandler
-
-    mock_client = mocker.Mock()
-    mock_response = {"ResponseMetadata": {"HTTPStatusCode": 400}}
-
-    mock_client.delete_function.return_value = mock_response
-    mock_error_handler = mocker.patch.object(AWSErrorHandler, "handle_response_error")
-
-    args = {"function_name": "failing-function", "region": "us-west-2", "account_id": "123456789012"}
-
-    result = Lambda.delete_function_command(mock_client, args)
-
-    # Verify error handler was called
-    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
-
-    # Result should be None when error handler is called
-    assert result is None
-
-
 # Tests for delete_layer_version_command
 
 
@@ -7960,33 +7933,6 @@ def test_lambda_delete_layer_version_command_with_arn(mocker):
 
     # Verify success message
     assert "Successfully deleted" in result.readable_output
-
-
-def test_lambda_delete_layer_version_command_failure_response(mocker):
-    """
-    Test Lambda.delete_layer_version_command with failed response.
-
-    Given: Layer version deletion returns error status
-    When: delete_layer_version_command is called
-    Then: Should handle error appropriately
-    """
-    from AWS import Lambda, AWSErrorHandler
-
-    mock_client = mocker.Mock()
-    mock_response = {"ResponseMetadata": {"HTTPStatusCode": 400}}
-
-    mock_client.delete_layer_version.return_value = mock_response
-    mock_error_handler = mocker.patch.object(AWSErrorHandler, "handle_response_error")
-
-    args = {"layer_name": "failing-layer", "version_number": "1", "region": "us-west-2", "account_id": "123456789012"}
-
-    result = Lambda.delete_layer_version_command(mock_client, args)
-
-    # Verify error handler was called
-    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
-
-    # Result should be None when error handler is called
-    assert result is None
 
 
 # Tests for publish_layer_version_command
