@@ -4133,7 +4133,7 @@ script:
     description: Updates an asset group.
     name: xdr-asset-group-update
   - arguments:
-    - description: The entry ID of the file. The script should be a YAML file in a zipped file.
+    - description: The entry ID of the file. The script should be a zipped YAML file.
       name: entry_id
       required: true
     description: Creates or updates an automation script.
@@ -4165,7 +4165,7 @@ script:
     description: Deletes an automation script.
     name: xdr-automation-script-delete
   - arguments:
-    - description: The entry ID of the playbook file (yml or zip).
+    - description: The entry ID of the file. The playbook should be a zipped YAML file.
       name: entry_id
       required: true
     description: Creates or updates an automation playbook.
