@@ -911,8 +911,7 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="GET",
-            headers=self._headers,
-            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups/",
+            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups",
         )
 
     def get_questionnaire_by_sme(self, sme_area: str, sub_group: str) -> dict:
