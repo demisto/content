@@ -36,6 +36,8 @@ args:
   predefined:
   - text
   - HTML
+- description: The mailbox address to send the email from.
+  name: from
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.

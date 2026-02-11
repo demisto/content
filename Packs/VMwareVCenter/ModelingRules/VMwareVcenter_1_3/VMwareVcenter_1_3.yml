@@ -1,6 +1,7 @@
 fromversion: 6.10.0
-id: VMware_vCenter
-name: VMware vCenter
+id: VMware_Vcenter_1_3_ModelingRule
+name: VMware vCenter 1.3 Modeling Rule
 rules: ''
 schema: ''
 tags: VMware vCenter
+toversion: 8.12.0
