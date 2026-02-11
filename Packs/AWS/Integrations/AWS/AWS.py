@@ -5964,7 +5964,7 @@ class Lambda:
             "Description",
             "Version",
         ]
-        
+
         readable_output = tableToMarkdown(
             name=f"Created Lambda Function: {args.get('function_name')}",
             t=outputs,
@@ -6124,7 +6124,6 @@ class Lambda:
         Returns:
             CommandResults: Results containing the published layer version details
         """
-
 
         # Prepare content configuration
         content = {}
