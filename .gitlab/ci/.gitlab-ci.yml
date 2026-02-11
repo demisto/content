@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: managed_content
+  CURRENT_BRANCH_NAME: managed_content_bigquery
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: managed_content
+    ref: managed_content_bigquery
     project: "${CI_PROJECT_NAMESPACE}/infra"
