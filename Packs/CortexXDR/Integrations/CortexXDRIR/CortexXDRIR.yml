@@ -4766,6 +4766,46 @@ script:
       required: true
     description: Deletes correlation rules.
     name: xdr-correlation-rule-delete
+  - arguments:
+    - description: The vulnerability ID to retrieve details for.
+      name: vulnerability_id
+      required: true
+    description: Gets vulnerability details by ID. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities.
+    name: xdr-vulnerability-details-get
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.vulnerabilityID
+      description: The unique identifier of the vulnerability.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Vulnerability.description
+      description: Description of the vulnerability.
+      type: String
+  - arguments: []
+    description: Runs a system health check on the Cortex XDR environment. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check.
+    name: xdr-healthcheck-run
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.HealthStatus.status
+      description: The health status of the Cortex XDR system.
+      type: String
+  - arguments: []
+    description: Gets a list of available triage presets. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets.
+    name: xdr-endpoint-triage-preset-list
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriagePreset
+      description: The list of triage presets.
+      type: Unknown
+  - arguments:
+    - description: A comma-separated list of agent IDs to initiate triage on.
+      isArray: true
+      name: agent_id
+      required: true
+    - description: The collector UUID to use for the triage.
+      name: collector_uuid
+    description: Initiates a forensics triage on the specified endpoints. For more information, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage.
+    name: xdr-endpoint-triage
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointTriage
+      description: The triage response data.
+      type: Unknown
   dockerimage: demisto/python3:3.12.12.7019815
   isfetch: true
   isfetch:xpanse: false
