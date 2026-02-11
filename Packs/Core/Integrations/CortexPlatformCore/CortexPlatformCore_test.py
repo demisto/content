@@ -9371,3 +9371,103 @@ def test_core_fill_support_ticket_command_invalid_category_per_product():
 
     with pytest.raises(ValueError, match="Invalid issue category 'AI Security \(AISPM\)' for product type 'Cortex XSIAM'"):
         core_fill_support_ticket_command(None, args)
+
+
+def test_get_sme_areas_and_sub_groups_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mock API response with SME areas and sub-groups.
+    WHEN:
+        The get_sme_areas_and_sub_groups_command function is called.
+    THEN:
+        The response contains the correct SME areas and sub-groups data.
+    """
+    from CortexPlatformCore import get_sme_areas_and_sub_groups_command, Client
+
+    mock_response = {
+        "reply": [
+            {
+                "value": "XDR Agent",
+                "label": "XDR Agent",
+                "suggestedValues": [
+                    {"value": "XDR Agent for Enterprise - Windows", "label": "XDR Agent for Enterprise - Windows"},
+                    {"value": "XDR Agent for Enterprise - macOS", "label": "XDR Agent for Enterprise - macOS"},
+                ],
+            },
+            {
+                "value": "Cases and Issues",
+                "label": "Cases and Issues",
+                "suggestedValues": [
+                    {"value": "Security Domain", "label": "Security Domain"},
+                    {"value": "Health Domain", "label": "Health Domain"},
+                ],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=mock_response)
+
+    result = get_sme_areas_and_sub_groups_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SmeAreasAndSubGroups"
+    assert result.outputs_key_field == "value"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["value"] == "XDR Agent"
+    assert len(result.outputs[0]["suggestedValues"]) == 2
+    assert result.outputs[1]["value"] == "Cases and Issues"
+    assert "SME Areas and Sub-Groups" in result.readable_output
+
+
+def test_get_sme_areas_and_sub_groups_command_empty_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        An empty API response.
+    WHEN:
+        The get_sme_areas_and_sub_groups_command function is called.
+    THEN:
+        The response contains an empty list and no errors are raised.
+    """
+    from CortexPlatformCore import get_sme_areas_and_sub_groups_command, Client
+
+    mock_response = {"reply": []}
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=mock_response)
+
+    result = get_sme_areas_and_sub_groups_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SmeAreasAndSubGroups"
+    assert result.outputs == []
+    assert "SME Areas and Sub-Groups" in result.readable_output
+
+
+def test_get_sme_areas_and_sub_groups_command_single_area_no_sub_groups(mocker: MockerFixture):
+    """
+    GIVEN:
+        An API response with a single SME area that has no sub-groups.
+    WHEN:
+        The get_sme_areas_and_sub_groups_command function is called.
+    THEN:
+        The response correctly handles the area with empty suggestedValues.
+    """
+    from CortexPlatformCore import get_sme_areas_and_sub_groups_command, Client
+
+    mock_response = {
+        "reply": [
+            {
+                "value": "Posture Management",
+                "label": "Posture Management",
+                "suggestedValues": [],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=mock_response)
+
+    result = get_sme_areas_and_sub_groups_command(mock_client, {})
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["value"] == "Posture Management"
+    assert result.outputs[0]["suggestedValues"] == []

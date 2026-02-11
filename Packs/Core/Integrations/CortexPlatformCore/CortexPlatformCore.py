@@ -66,6 +66,7 @@ WEBAPP_COMMANDS = [
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-sme-areas-and-sub-groups",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -898,6 +899,19 @@ class Client(CoreClient):
         )
 
         return reply
+
+    def get_sme_areas_and_sub_groups(self) -> dict:
+        """
+        Retrieve SME areas and sub-groups for the tenant's product type.
+
+        Returns:
+            dict: The response containing SME areas and their associated sub-groups.
+        """
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups/",
+        )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
@@ -4511,6 +4525,45 @@ def core_fill_support_ticket_command(client, args: Dict[str, Any]) -> CommandRes
     )
 
 
+def get_sme_areas_and_sub_groups_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the available SME areas (issue categories) and their sub-groups (problem concentrations)
+    for the tenant's product type by calling the /sfdc_support/get_sme_areas_and_sub_groups/ endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (currently unused, no arguments required).
+
+    Returns:
+        CommandResults: Object containing the SME areas and sub-groups data.
+    """
+    response = client.get_sme_areas_and_sub_groups()
+    reply = response.get("reply", response)
+
+    # Flatten the data for readable output
+    readable_data = []
+    if isinstance(reply, list):
+        for area in reply:
+            area_name = area.get("value", "")
+            sub_groups = [sg.get("value", "") for sg in area.get("suggestedValues", [])]
+            readable_data.append({
+                "sme_area": area_name,
+                "sub_groups": ", ".join(sub_groups),
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "SME Areas and Sub-Groups",
+            readable_data,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SmeAreasAndSubGroups",
+        outputs_key_field="value",
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -4665,6 +4718,9 @@ def main():  # pragma: no cover
 
         elif command == "core-fill-support-ticket":
             return_results(core_fill_support_ticket_command(client, args))
+
+        elif command == "core-get-sme-areas-and-sub-groups":
+            return_results(get_sme_areas_and_sub_groups_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

@@ -3422,6 +3422,22 @@ script:
         - contextPath: Core.SupportTicket.subGroupName
           description: The specific problem concentration.
           type: String
+    - name: core-get-sme-areas-and-sub-groups
+      description: Retrieves the available SME areas (issue categories) and their sub-groups (problem concentrations) for the tenant's product type.
+      arguments: []
+      outputs:
+        - contextPath: Core.SmeAreasAndSubGroups.value
+          description: The SME area (issue category) value.
+          type: String
+        - contextPath: Core.SmeAreasAndSubGroups.label
+          description: The SME area (issue category) display label.
+          type: String
+        - contextPath: Core.SmeAreasAndSubGroups.suggestedValues.value
+          description: The sub-group (problem concentration) value.
+          type: String
+        - contextPath: Core.SmeAreasAndSubGroups.suggestedValues.label
+          description: The sub-group (problem concentration) display label.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
