@@ -8136,25 +8136,26 @@ def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
     )
 
 
+
 def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
     """
-    Clean the @rawstring field in NGSIEM events by removing escape characters.
-
-    The API response object includes an @rawstring field that contains unescaped
-    quotes and ampersands which prevent proper JSON parsing.
-
-    Args:
-        events: List of event dictionaries from the API response.
-
-    Returns:
-        list: Events with cleaned @rawstring fields.
+    Safely decode @rawstring if it contains stringified JSON.
     """
     for event in events:
-        if "@rawstring" in event:
-            raw = event["@rawstring"]
-            # Remove backslashes before quotes and ampersands
-            raw = raw.replace('\\"', '"').replace("\\&", "&")
-            event["@rawstring"] = raw
+        raw = event.get("@rawstring")
+        if not raw:
+            continue
+        if isinstance(raw, str):
+            try:
+                decoded = json.loads(raw)
+                event["@rawstring"] = decoded
+            except json.JSONDecodeError:
+                fixed = raw.replace("\\&", "&")
+                try:
+                    event["@rawstring"] = json.loads(fixed)
+                except Exception:
+                    event["@rawstring"] = raw
+
     return events
 
 
@@ -8196,6 +8197,102 @@ def arg_to_ms_int(val: Any, arg_name: Optional[str] = None) -> Optional[int]:
     return int(dt.timestamp() * 1000) if dt else None
 
 
+def build_ngsiem_search_body(args: dict) -> dict:
+    """
+    Build the request body for NGSIEM search.
+
+    Args:
+        args: Command arguments.
+
+    Returns:
+        dict: The request body.
+    """
+    query = args.get("query", "")
+    if not query:
+        raise ValueError("The 'query' argument is required.")
+
+    limit = arg_to_number(args.get("limit")) or 50
+    query = build_ngsiem_query_with_limit(query, limit)
+
+    around_config = assign_params(
+        eventId=args.get("around_event_id"),
+        numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
+        numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
+        timestamp=arg_to_ms_int(args.get("around_timestamp")),
+    )
+    demisto.info(f"around_config: {around_config}")
+    # 2. Build the Main Request Body
+    # If around_config is empty {}, assign_params drops it automatically.
+    body = assign_params(
+        queryString=query,
+        start=arg_to_ms_int(args.get("start")),
+        end=arg_to_ms_int(args.get("end")),
+        ingestStart=arg_to_ms_int(args.get("ingest_start")),
+        ingestEnd=arg_to_ms_int(args.get("ingest_end")),
+        useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
+        timeZone=args.get("time_zone"),
+        timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
+        # This inserts the nested object ONLY if it has data
+        around=around_config,
+    )
+    return body
+
+
+def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
+    """
+    Process the completion of an NGSIEM search job.
+
+    Args:
+        response: The response from the search job.
+        args: Command arguments.
+
+    Returns:
+        PollResult: The result of the polling.
+    """
+    args["wait_for_result"] = False
+    events = response.get("events", [])
+    # events = clean_ngsiem_rawstring_field(events)
+
+    # Check for warnings
+    warnings = response.get("warnings", [])
+    if warnings:
+        demisto.info(f"NGSIEM search completed with warnings: {warnings}")
+
+    # Build human readable output
+    if events:
+        # Select key fields for the table
+        table_headers = [
+            "timestamp",
+            "host.hostname",
+            "user.name",
+            "event_simpleName",
+            "id",
+        ]
+
+        # Add other common fields if present
+        def header_transform(header: str) -> str:
+            clean = header.lstrip("#@")
+            return clean.replace("_", " ").replace(".", " ").title()
+
+        hr = tableToMarkdown(
+            name=f"NGSIEM Events (Total: {len(events)})",
+            t=events,
+            headerTransform=header_transform,
+            headers=table_headers,
+            removeNull=True,
+        )
+    else:
+        hr = "No events found matching the query."
+
+    command_results = CommandResults(
+        outputs_prefix="CrowdStrike.NGSiemEvent",
+        outputs=events,
+        readable_output=hr,
+        raw_response=response,
+    )
+    return PollResult(response=command_results, continue_to_poll=False)
+
+
 @polling_function(
     "cs-falcon-search-ngsiem-events",
     poll_message="Searching NGSIEM events:",
@@ -8224,35 +8321,7 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 
     if not job_id:
         # First call - initiate the search job
-        query = args.get("query", "")
-        if not query:
-            raise ValueError("The 'query' argument is required.")
-
-        limit = arg_to_number(args.get("limit")) or 50
-        query = build_ngsiem_query_with_limit(query, limit)
-        
-        around_config = assign_params(
-            eventId=args.get("around_event_id"),
-            numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
-            numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
-            timestamp=arg_to_ms_int(args.get("around_timestamp"))
-        )
-        demisto.info(f"around_config: {around_config}")
-        # 2. Build the Main Request Body
-        # If around_config is empty {}, assign_params drops it automatically.
-        body = assign_params(
-            queryString=query,
-            start=arg_to_number(args.get("start")),
-            end=arg_to_number(args.get("end")),
-            ingestStart=arg_to_ms_int(args.get("ingest_start")),
-            ingestEnd=arg_to_ms_int(args.get("ingest_end")),
-            useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
-            timeZone=args.get("time_zone"),
-            timeZoneOffsetMinutes=arg_to_number(args.get("time_zone_offset_minutes")),
-            
-            # This inserts the nested object ONLY if it has data
-            around=around_config
-        )
+        body = build_ngsiem_search_body(args)
         demisto.info(f"body{body}")
         response = initiate_ngsiem_search_request(repository=repository, body=body)
 
@@ -8273,40 +8342,7 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
         raise DemistoException(f"NGSIEM search job {job_id} was cancelled.")
 
     if is_done:
-        args["wait_for_result"] = False
-        events = response.get("events", [])
-        # events = clean_ngsiem_rawstring_field(events)
-
-        # Check for warnings
-        warnings = response.get("warnings", [])
-        if warnings:
-            demisto.info(f"NGSIEM search completed with warnings: {warnings}")
-
-        # Build human readable output
-        if events:
-            # Select key fields for the table
-            table_headers = ["timestamp", "host.hostname", "user.name", "event_simpleName", "Agent IP", "id", "@ingesttimestamp"]
-            # Add other common fields if present
-            def header_transform(header: str) -> str:
-                clean = header.lstrip('#@')
-                return clean.replace('_', ' ').replace('.',' ').title()
-            hr = tableToMarkdown(
-                name=f"NGSIEM Events (Total: {len(events)})",
-                t=events,
-                headerTransform=header_transform,
-                headers=table_headers,
-                removeNull=True,
-            )
-        else:
-            hr = "No events found matching the query."
-
-        command_results = CommandResults(
-            outputs_prefix="CrowdStrike.NGSiemEvent",
-            outputs=events,
-            readable_output=hr,
-            raw_response=response,
-        )
-        return PollResult(response=command_results, continue_to_poll=False)
+        return process_ngsiem_search_completion(response, args)
 
     # Continue polling - job not done yet
     demisto.info(f"NGSIEM search job {job_id} still in progress, continuing to poll...")

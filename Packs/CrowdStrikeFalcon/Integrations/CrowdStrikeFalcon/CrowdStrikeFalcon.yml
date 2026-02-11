@@ -5289,9 +5289,9 @@ script:
       description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example:#event_simpleName = \"Event_APIActivityAuditEvent\" For more details see: https://library.humio.com/data-analysis/syntax.html."'
       required: true
     - name: start
-      description: 'The start time to use as the starting point of the search results, based on an event’s recorded timestamp field. If end is provided, it must be greater than or equal to the start. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+      description: 'The start time to use as the starting point of the search results, based on an event’s recorded timestamp field. If end is provided, it must be greater than or equal to the start. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000).'
     - name: end
-      description: 'The end time to use as the ending point of the search results, based on an event’s recorded timestamp field. If start is provided, it must be less than or equal to the end. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours") and ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z").'
+      description: 'The end time to use as the ending point of the search results, based on an event’s recorded timestamp field. If start is provided, it must be less than or equal to the end. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000).'
     - name: around_event_id
       description: The ID of the event to search around.
     - name: around_number_events_before
@@ -5301,13 +5301,12 @@ script:
     - name: around_timestamp
       description: Timestamp for around search. Required when around_event_id is used.
     - name: ingest_start
-      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field. If ingestEnd is provided, it must be greater than or equal to the ingestStart. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone.
+      description: The date and time to use as the starting point of the search results, based on an event's recorded ingesttimestamp field. If ingestEnd is provided, it must be greater than or equal to the ingestStart. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000)
     - name: ingest_end
-      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field. If ingestStart is provided, it must be less than or equal to the ingestEnd. You can also use the timeZoneOffsetMinutes to retrieve results relative to your timezone.
+      description: The date and time to use as the ending point of the search results, based on an event's recorded ingesttimestamp field. If ingestStart is provided, it must be less than or equal to the ingestEnd. You can also use the time_zone_offset_minutes to retrieve results relative to your timezone. Supports relative time (e.g., "3 days ago", "2 hours"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z") and timestamps (e.g., 1767225600000)
     - name: use_ingest_time
       description: When true, the query uses ingestStart/ingestEnd instead of start/end. If use_ingest_time is false or not set, start/end are used (even if ingest times are also provided).
       auto: PREDEFINED
-      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
