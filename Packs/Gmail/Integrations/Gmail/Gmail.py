@@ -1507,7 +1507,46 @@ def search(
     include_spam_trash=False,
     has_attachments=None,
     only_return_account_names=None,
-):
+) -> tuple[list[dict[str, Any]] | bool, str, str | None]:
+    """
+    Search for Gmail messages in a user's mailbox using various filter criteria.
+    
+    This function queries the Gmail API to find messages matching the specified criteria.
+    It can return either full message details or just a boolean indicating if messages were found.
+    
+    Args:
+        user_id: The user's email address or user ID to search in their mailbox.
+        subject: Filter by email subject (partial match).
+        _from: Filter by sender email address.
+        to: Filter by recipient email address.
+        before: Filter messages before this date (format: YYYY/MM/DD).
+        after: Filter messages after this date (format: YYYY/MM/DD).
+        filename: Filter by attachment filename.
+        _in: Filter by location (e.g., 'inbox', 'trash', 'spam').
+        query: Additional Gmail search query string (uses Gmail search syntax).
+        fields: List of fields to include in the response (filters output fields).
+        label_ids: List of label IDs to filter by.
+        max_results: Maximum number of results to return (default: 100).
+        page_token: Token for pagination to get the next page of results.
+        include_spam_trash: Whether to include messages from spam and trash (default: False).
+        has_attachments: Filter by attachment presence (True/False/None).
+        only_return_account_names: If True, returns only a boolean indicating if messages exist,
+                                   rather than full message details.
+    
+    Returns:
+        A tuple containing three elements:
+        - First element: Either a list of email message dictionaries (when only_return_account_names is False)
+                        or a boolean True (when only_return_account_names is True and messages exist).
+        - Second element: The constructed query string that was used for the search.
+        - Third element: The next page token for pagination (None if no more pages exist).
+    
+    Raises:
+        Exception: If the Gmail API call fails (unless "Mail service not enabled" error).
+    
+    Note:
+        - When only_return_account_names is True and no messages are found, returns (False, query, None).
+        - The function constructs a Gmail search query from the individual filter parameters.
+    """
     query_values = {
         "subject": subject,
         "from": _from,
