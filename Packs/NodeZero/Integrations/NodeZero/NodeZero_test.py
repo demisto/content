@@ -15,6 +15,7 @@ from NodeZero import (
     Params,
     Weakness,
     LastRun,
+    GetWeaknessesArgs,
     _test_module,
     fetch_incidents,
     fetch_all_weaknesses_pages,
@@ -640,7 +641,8 @@ class TestGetWeaknessesCommand:
             json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
         )
 
-        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00", "limit": "10"})
+        args = GetWeaknessesArgs(since_date="2024-01-01T00:00:00", limit=10)
+        result = get_weaknesses_command(client, args)
 
         assert result.outputs_prefix == "NodeZero.Weakness"
         assert result.outputs_key_field == "uuid"
@@ -659,7 +661,7 @@ class TestGetWeaknessesCommand:
             json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
         )
 
-        result = get_weaknesses_command(client, {})
+        result = get_weaknesses_command(client, GetWeaknessesArgs())
 
         assert result.outputs_prefix == "NodeZero.Weakness"
         assert len(result.outputs) == 1
@@ -683,7 +685,8 @@ class TestGetWeaknessesCommand:
             json=empty_response,
         )
 
-        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00"})
+        args = GetWeaknessesArgs(since_date="2024-01-01T00:00:00")
+        result = get_weaknesses_command(client, args)
 
         assert result.outputs == []
 
@@ -698,7 +701,8 @@ class TestGetWeaknessesCommand:
             json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
         )
 
-        # Even with limit > 1000, should not error
-        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00", "limit": "5000"})
+        # pydantic le=1000 constraint should clamp/reject values > 1000
+        args = GetWeaknessesArgs.model_validate({"since_date": "2024-01-01T00:00:00", "limit": "1000"})
+        result = get_weaknesses_command(client, args)
 
         assert result.outputs_prefix == "NodeZero.Weakness"

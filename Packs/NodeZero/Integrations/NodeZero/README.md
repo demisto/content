@@ -1,6 +1,6 @@
 # NodeZero
 
-Integrates with the NodeZero autonomous penetration testing platform to fetch weaknesses discovered during pentest operations. Automatically ingests HIGH and CRITICAL severity weaknesses as incidents for tracking and remediation.
+Integrates with the [NodeZero](https://www.horizon3.ai/nodezero/) autonomous penetration testing platform to fetch weaknesses discovered during pentest operations. Automatically ingests HIGH and CRITICAL severity weaknesses as incidents for tracking and remediation.
 
 ## Configure NodeZero on Cortex XSOAR
 
@@ -44,7 +44,55 @@ The integration fetches HIGH and CRITICAL severity weaknesses from NodeZero pent
 
 ## Commands
 
-This integration does not have user-callable commands. It only supports incident fetching.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message is displayed in the War Room with the command details.
+
+### nodezero-get-weaknesses
+
+Retrieves HIGH and CRITICAL weaknesses discovered by NodeZero pentests.
+
+#### Base Command
+
+`nodezero-get-weaknesses`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| since_date | Fetch weaknesses created on or after this date (ISO 8601, e.g. 2024-01-01T00:00:00). Defaults to 7 days ago. | Optional |
+| limit | Maximum number of weaknesses to return (1–1000). Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NodeZero.Weakness.uuid | String | Unique identifier of the weakness. |
+| NodeZero.Weakness.created_at | Date | Timestamp when the weakness was first discovered. |
+| NodeZero.Weakness.vuln_id | String | Vulnerability identifier (e.g. CVE ID). |
+| NodeZero.Weakness.vuln_name | String | Full vulnerability name. |
+| NodeZero.Weakness.vuln_short_name | String | Short vulnerability name. |
+| NodeZero.Weakness.vuln_category | String | Vulnerability category. |
+| NodeZero.Weakness.vuln_cisa_kev | Boolean | Whether the vulnerability is in the CISA Known Exploited Vulnerabilities catalog. |
+| NodeZero.Weakness.vuln_known_ransomware_campaign_use | Boolean | Whether the vulnerability is known to be used in ransomware campaigns. |
+| NodeZero.Weakness.ip | String | IP address of the affected asset. |
+| NodeZero.Weakness.has_proof | Boolean | Whether NodeZero has proof of exploitability. |
+| NodeZero.Weakness.score | Number | Weakness severity score. |
+| NodeZero.Weakness.severity | String | Weakness severity level (HIGH or CRITICAL). |
+| NodeZero.Weakness.affected_asset_uuid | String | UUID of the affected asset. |
+| NodeZero.Weakness.affected_asset_display_name | String | Display name of the affected asset. |
+| NodeZero.Weakness.attack_paths_count | Number | Number of attack paths through this weakness. |
+| NodeZero.Weakness.op_id | String | ID of the pentest operation that discovered this weakness. |
+
+#### Command example
+
+```!nodezero-get-weaknesses limit=5```
+
+#### Human Readable Output
+
+>### NodeZero Weaknesses
+>|uuid|severity|vuln_name|ip|score|has_proof|
+>|---|---|---|---|---|---|
+>| abc-123 | CRITICAL | Example Vuln | 10.0.0.1 | 9.8 | true |
 
 ## Deduplication
 

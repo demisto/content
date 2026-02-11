@@ -17,10 +17,10 @@ This pack integrates NodeZero with Cortex XSOAR to automatically ingest discover
 | --- | --- | --- |
 | Server URL | The NodeZero API server URL. | True |
 | API Key | The API Key required to authenticate to the NodeZero service. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Fetch incidents |  | False |
-| Incident type |  | False |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | False |
+| Use system proxy settings | Runs the integration instance using the proxy server defined in the server configuration. | False |
+| Fetch incidents | When selected, the integration fetches incidents. | False |
+| Incident type | The incident type to create for fetched incidents. | False |
 | Maximum number of weaknesses to fetch | Maximum number of incidents to fetch per run. | False |
-| First fetch time | How far back to fetch on first run \(e.g., "7 days", "3 days"\). | False |
-| Incidents Fetch Interval |  | False |
+| First fetch time | How far back to fetch on first run (e.g., "7 days", "3 days"). | False |
+| Incidents Fetch Interval | How often to fetch new incidents (in minutes). Default is 10080 (7 days). | False |
