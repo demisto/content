@@ -6348,8 +6348,6 @@ def upload_batch_custom_ioc_command(
 
 
 # ============== NGSIEM Search Events Functions ==============
-
-
 def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
     """
     Initiate an NGSIEM search query job.
@@ -6369,7 +6367,6 @@ def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
         method="POST",
         url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs",
         json=body,
-    
     )
 
 
@@ -6394,7 +6391,6 @@ def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
     )
 
 
-
 def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
     """
     Safely decode @rawstring if it contains stringified JSON.
@@ -6413,7 +6409,6 @@ def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
                     event["@rawstring"] = json.loads(fixed)
                 except Exception:
                     event["@rawstring"] = raw
-
     return events
 
 
@@ -6479,8 +6474,6 @@ def build_ngsiem_search_body(args: dict) -> dict:
         timestamp=arg_to_ms_int(args.get("around_timestamp")),
     )
     demisto.info(f"around_config: {around_config}")
-    # 2. Build the Main Request Body
-    # If around_config is empty {}, assign_params drops it automatically.
     body = assign_params(
         queryString=query,
         start=arg_to_ms_int(args.get("start")),
@@ -6509,16 +6502,13 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
     """
     args["wait_for_result"] = False
     events = response.get("events", [])
-    # events = clean_ngsiem_rawstring_field(events)
+    events = clean_ngsiem_rawstring_field(events)
 
-    # Check for warnings
     warnings = response.get("warnings", [])
     if warnings:
         demisto.info(f"NGSIEM search completed with warnings: {warnings}")
 
-    # Build human readable output
     if events:
-        # Select key fields for the table
         table_headers = [
             "timestamp",
             "host.hostname",
@@ -6526,8 +6516,6 @@ def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
             "event_simpleName",
             "id",
         ]
-
-        # Add other common fields if present
         def header_transform(header: str) -> str:
             clean = header.lstrip("#@")
             return clean.replace("_", " ").replace(".", " ").title()

@@ -131,6 +131,7 @@ def ip_enrichment_script(
 
 """ MAIN FUNCTION """
 
+
 def main():
     args = demisto.args()
     ip_list = argToList(args.get("ip_list"))
