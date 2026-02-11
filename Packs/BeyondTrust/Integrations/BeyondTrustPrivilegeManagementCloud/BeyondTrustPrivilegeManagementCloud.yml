@@ -1,6 +1,9 @@
 commonfields:
   id: BeyondTrust Privilege Management Cloud
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: BeyondTrust Privilege Management Cloud
 display: BeyondTrust Privilege Management Cloud
 category: Endpoint
@@ -12,7 +15,7 @@ configuration:
   type: 0
   required: true
   section: Connect
-  help: "The server URL, e.g. https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com"
+  additionalinfo: "The server URL, e.g. https://[yourProductionSub-domainName]-services.pm.beyondtrustcloud.com"
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
@@ -53,7 +56,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  help: Maximum number of events to fetch per fetch cycle.
+  additionalinfo: Maximum number of events to fetch per fetch cycle.
 - display: First fetch timestamp
   name: first_fetch
   defaultvalue: "1 minute"
@@ -106,11 +109,12 @@ script:
       defaultValue: "1"
     - name: filter_created_dates
       required: false
-      description: "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00"
+      description: "Valid date formats for filter - 2020-12-24, 2020-12-24 19:09:47, 2020-12-24 19:09:47.6816562, 2020-12-24 19:09:47.6816562 +00:00."
     - name: filter_created_selection_mode
       required: false
       description: The selection mode of date criteria e.g. single, multiple, range.
-      options:
+      auto: PREDEFINED
+      predefined:
       - Single
       - Multiple
       - Range
