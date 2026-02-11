@@ -115,6 +115,19 @@ script:
       description: Specifies the action that occurs if the destination table already exists.
     - name: project_id
       description: ID of the project used to execute the current query.
+    - name: context_key_format
+      auto: PREDEFINED
+      predefined:
+        - underscore
+        - CamelCase
+      description: Choose whether the key in the context will be in an underscore or a CamelCase format.
+      defaultValue: 'CamelCase'
+    - name: datetime_format
+      description: The requested date and time format for datetime objects returned from the query.
+      defaultValue: "%m/%d/%Y %H:%M:%S"
+    - name: date_only_format
+      description: The requested format for date objects returned from the query, including only the date without time.
+      defaultValue: "%m/%d/%Y"
     outputs:
     - contextPath: BigQuery.Query
       description: The query performed.

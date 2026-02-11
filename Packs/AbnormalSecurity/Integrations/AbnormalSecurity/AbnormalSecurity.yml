@@ -796,6 +796,336 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
     deprecated: true
+
+  # SOAR Message Search and Respond Commands
+  - arguments:
+    - description: Message source (abnormal or quarantine).
+      name: source
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - abnormal
+      - quarantine
+    - description: Comma-separated list of tenant IDs.
+      name: tenant_ids
+    - description: Start time for the search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z).
+      name: start_time
+      required: true
+    - description: End time for the search in ISO 8601 format (e.g., 2024-01-31T23:59:59Z).
+      name: end_time
+      required: true
+    - description: Filter by email subject.
+      name: subject
+    - description: Filter by sender email address.
+      name: sender_email
+    - description: Filter by sender name.
+      name: sender_name
+    - description: Filter by recipient email address.
+      name: recipient_email
+    - description: Filter by recipient name.
+      name: recipient_name
+    - description: Filter by attachment name.
+      name: attachment_name
+    - description: Filter by attachment MD5 hash.
+      name: attachment_md5_hash
+    - description: Filter by internet message ID.
+      name: internet_message_id
+    - description: Filter by body link/URL.
+      name: body_link
+    - description: Filter by sender IP address.
+      name: sender_ip
+    - description: Filter by judgement status.
+      name: judgement
+      auto: PREDEFINED
+      predefined:
+      - attack
+      - borderline
+      - spam
+      - graymail
+      - safe
+    - description: Use regex for sender filtering (default false).
+      name: use_sender_regex
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Use regex for recipient filtering (default false).
+      name: use_recipient_regex
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Show graymail messages (default false).
+      name: show_graymail
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Page number (default 1).
+      name: page_number
+    - description: Page size (default 100, max 1000).
+      name: page_size
+    description: Search for messages using filters across abnormal or quarantine sources.
+    name: abnormal-security-search-messages
+    outputs:
+    - contextPath: AbnormalSecurity.MessageSearch.results
+      description: List of messages matching the search criteria.
+      type: Unknown
+    - contextPath: AbnormalSecurity.MessageSearch.results.abnormal_message_id
+      description: Abnormal message identifier.
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.subject
+      description: Email subject.
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.sender
+      description: Sender email address.
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.mailbox_name
+      description: Mailbox name where the message was received.
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.received_time
+      description: Time when message was received.
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.decision_category
+      description: Decision category (malicious, spam, safe, graymail).
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.results.judgement
+      description: Judgement status (attack, borderline, spam, graymail, safe).
+      type: String
+    - contextPath: AbnormalSecurity.MessageSearch.total
+      description: Total number of messages found.
+      type: Number
+    - contextPath: AbnormalSecurity.MessageSearch.pageNumber
+      description: Current page number.
+      type: Number
+    - contextPath: AbnormalSecurity.MessageSearch.nextPageNumber
+      description: Next page number.
+      type: Number
+
+  - arguments:
+    - description: Action to perform on messages.
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - delete
+      - move_to_inbox
+      - submit_to_d360
+      - reclassify
+    - description: Comma-separated list of tenant IDs.
+      name: tenant_ids
+    - description: Message source (abnormal or quarantine).
+      name: source
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - abnormal
+      - quarantine
+    - description: Reason for remediation.
+      name: remediation_reason
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - false_negative
+      - misdirected
+      - unsolicited
+      - other
+      - groups_remediation
+      - quarantine_release
+    - description: JSON string containing array of message objects to remediate. Required if remediate_all is false.
+      name: messages
+    - description: Whether to remediate all messages matching search filters (default false).
+      name: remediate_all
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Target folder for move actions (e.g., "Deleted Items").
+      name: target_folder
+    - description: Whether to submit a Detection360 case (default false).
+      name: submit_d360_case
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Start time for search filters when remediate_all is true (ISO 8601 format).
+      name: start_time
+    - description: End time for search filters when remediate_all is true (ISO 8601 format).
+      name: end_time
+    - description: Subject filter when remediate_all is true.
+      name: subject
+    - description: Sender email filter when remediate_all is true.
+      name: sender_email
+    - description: Sender name filter when remediate_all is true.
+      name: sender_name
+    - description: Recipient email filter when remediate_all is true.
+      name: recipient_email
+    - description: Recipient name filter when remediate_all is true.
+      name: recipient_name
+    - description: Attachment name filter when remediate_all is true.
+      name: attachment_name
+    - description: Attachment MD5 hash filter when remediate_all is true.
+      name: attachment_md5_hash
+    - description: Internet message ID filter when remediate_all is true.
+      name: internet_message_id
+    - description: Body link/URL filter when remediate_all is true.
+      name: body_link
+    - description: Sender IP address filter when remediate_all is true.
+      name: sender_ip
+    - description: Judgement filter when remediate_all is true.
+      name: judgement
+      auto: PREDEFINED
+      predefined:
+      - attack
+      - borderline
+      - spam
+      - graymail
+      - safe
+    - description: Use regex for sender filtering when remediate_all is true (default false).
+      name: use_sender_regex
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Use regex for recipient filtering when remediate_all is true (default false).
+      name: use_recipient_regex
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Show graymail messages when remediate_all is true (default false).
+      name: show_graymail
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Remediate messages by performing actions like delete, move, or submit to Detection360.
+    name: abnormal-security-remediate-messages
+    outputs:
+    - contextPath: AbnormalSecurity.MessageRemediation.activity_log_id
+      description: Activity log ID for tracking the remediation request.
+      type: Number
+    - contextPath: AbnormalSecurity.MessageRemediation.metadata
+      description: Metadata about the request.
+      type: Unknown
+
+  - arguments:
+    - description: Comma-separated list of tenant IDs (will be sent as query parameters).
+      name: tenant_ids
+    - description: Filter by action type.
+      name: action
+      auto: PREDEFINED
+      predefined:
+      - search
+      - remediation
+      - csv_export
+    - description: Page number (default 1).
+      name: page_number
+    - description: Page size (default 100, max 1000).
+      name: page_size
+    description: Get a list of activity logs for message search and remediation operations.
+    name: abnormal-security-list-activities
+    outputs:
+    - contextPath: AbnormalSecurity.Activities.activities
+      description: List of activity logs.
+      type: Unknown
+    - contextPath: AbnormalSecurity.Activities.activities.activity_id
+      description: Activity log ID.
+      type: Number
+    - contextPath: AbnormalSecurity.Activities.activities.action
+      description: Action type (search, remediate, csv_export).
+      type: String
+    - contextPath: AbnormalSecurity.Activities.activities.status
+      description: Activity status.
+      type: String
+    - contextPath: AbnormalSecurity.Activities.activities.performed_by
+      description: User who performed the action.
+      type: String
+    - contextPath: AbnormalSecurity.Activities.activities.timestamp
+      description: Timestamp of the activity.
+      type: String
+    - contextPath: AbnormalSecurity.Activities.activities.result_count
+      description: Number of results from the activity.
+      type: Number
+    - contextPath: AbnormalSecurity.Activities.total
+      description: Total number of activities.
+      type: Number
+    - contextPath: AbnormalSecurity.Activities.page
+      description: Current page number.
+      type: Number
+    - contextPath: AbnormalSecurity.Activities.size
+      description: Page size.
+      type: Number
+
+  - arguments:
+    - description: Activity log ID to get status for.
+      name: activity_log_id
+      required: true
+    - description: Page number (default 1).
+      name: page
+    - description: Page size (default 100, max 1000).
+      name: size
+    description: Get the status and details of a specific activity log entry.
+    name: abnormal-security-get-activity-status
+    outputs:
+    - contextPath: AbnormalSecurity.ActivityStatus.activity_id
+      description: Activity log ID.
+      type: Number
+    - contextPath: AbnormalSecurity.ActivityStatus.action
+      description: Action type.
+      type: String
+    - contextPath: AbnormalSecurity.ActivityStatus.status
+      description: Activity status.
+      type: String
+    - contextPath: AbnormalSecurity.ActivityStatus.performed_by
+      description: User who performed the action.
+      type: String
+    - contextPath: AbnormalSecurity.ActivityStatus.timestamp
+      description: Timestamp of the activity.
+      type: String
+    - contextPath: AbnormalSecurity.ActivityStatus.result_count
+      description: Number of results.
+      type: Number
+    - contextPath: AbnormalSecurity.ActivityStatus.remediation_details
+      description: Detailed remediation information for each message.
+      type: Unknown
+    - contextPath: AbnormalSecurity.ActivityStatus.total
+      description: Total number of remediation details.
+      type: Number
+
+  - arguments:
+    - description: Abnormal message ID (can be negative). Obtained from message search results.
+      name: message_id
+      required: true
+    - description: Name of the attachment to download. Obtained from message search results attachments field.
+      name: attachment_name
+      required: true
+    - description: Tenant ID for the message. Obtained from message search results.
+      name: tenant_id
+      required: true
+    - description: Cloud provider message ID (O365/GSuite). Obtained from message search results as raw_message_id.
+      name: raw_message_id
+      required: true
+    - description: Cloud provider user ID. Obtained from message search results as native_user_id.
+      name: native_user_id
+      required: true
+    - description: Mailbox email address. Obtained from message search results as mailbox_name.
+      name: recipient_mailbox
+      required: true
+    description: Download an attachment from a message found in search results. All required parameters can be obtained from the abnormal-security-search-messages command output.
+    name: abnormal-security-download-message-attachment
+
+  - arguments:
+    - description: The cloud_message_id from search results (format abx:CloudMessage:...). Use the cloud_message_id field from message search results.
+      name: cloud_message_id
+      required: true
+    - description: Quarantine identifier (required only for quarantine messages). Obtained from quarantine_info.identity field in search results.
+      name: quarantine_identity
+    - description: Recipient email address (required only for quarantine messages). Obtained from mailbox_name field in search results.
+      name: recipient_mailbox
+    description: Download a message in RFC822 EML format for forensic analysis. For quarantine messages, both quarantine_identity and recipient_mailbox parameters are required.
+    name: abnormal-security-download-message-eml
+
   dockerimage: demisto/python3:3.12.8.3296088
   script: ""
   subtype: python3

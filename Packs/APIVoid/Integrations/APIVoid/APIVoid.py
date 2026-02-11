@@ -2,582 +2,816 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
-""" IMPORTS """
-import copy
+"""IMPORTS"""
 import urllib3
 from base64 import b64decode
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """
+"""CONSTANTS"""
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-API_ENDPOINT = "https://endpoint.apivoid.com"
-GOOD = 10
-SUSPICIOUS = 30
-BAD = 60
-MALICIOUS = "suspicious"
+
+# V2 API Endpoints
+ENDPOINTS = {
+    "ip_reputation": "/v2/ip-reputation",
+    "domain_reputation": "/v2/domain-reputation",
+    "url_reputation": "/v2/url-reputation",
+    "dns_lookup": "/v2/dns-lookup",
+    "ssl_info": "/v2/ssl-info",
+    "email_verify": "/v2/email-verify",
+    "parked_domain": "/v2/parked-domain",
+    "domain_age": "/v2/domain-age",
+    "screenshot": "/v2/screenshot",
+    "url_to_pdf": "/v2/url-to-pdf",
+    "site_trustworthiness": "/v2/site-trust",
+}
+
+# Global field mapping - maps API V2 field names to YML expected field names
+# This mapping is applied recursively to all response data
+FIELD_MAPPING = {
+    "elapsed_ms": "elapsed",
+    "name": "engine",
+    "calling_code": "country_calling_code",
+    "currency": "country_currency",
+    "scan_time_ms": "scantime",
+    "html_info": "web_page",
+    "fingerprint_sha1": "fingerprint",
+}
 
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
+    APIVoid V2 Client - handles all API requests with V2 authentication
     """
 
-    def __init__(self, base_url, apikey, verify, proxy):
-        self.apikey = apikey
-        super().__init__(base_url, verify=verify, proxy=proxy)
+    def __init__(self, base_url: str, apikey: str, verify: bool, proxy: bool):
+        headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def test(self):
-        # Use iprep & STATS as test parameter
-        suffix = "/iprep/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "stats": ""}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
+    def api_request(self, endpoint: str, json_data: dict) -> dict:
+        """Generic V2 API request method"""
+        demisto.debug(f"APIVoid: Making API request to {endpoint} with data: {json_data}")
 
-    def check_ip(self, ip):
-        suffix = "/iprep/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "ip": ip}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_domain(self, domain):
-        suffix = "/domainbl/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": domain}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_url(self, url):
-        suffix = "/urlrep/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "url": url}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_dns(self, host, dns_type):
-        suffix = "/dnslookup/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": host, "action": f"dns-{dns_type.lower()}"}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_ssl(self, host):
-        suffix = "/sslinfo/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": host}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_email_address(self, email):
-        suffix = "/emailverify/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "email": email}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_threatlog(self, host):
-        suffix = "/threatlog/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": host}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_parked_domain(self, domain):
-        suffix = "/parkeddomain/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": domain}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def check_domain_age(self, domain):
-        suffix = "/domainage/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": domain}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def screenshot(self, url):
-        suffix = "/screenshot/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "url": url}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def url_to_pdf(self, url):
-        suffix = "/urltopdf/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "url": url}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def url_to_html(self, url):
-        suffix = "/urltohtml/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "url": url}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
-        return response
-
-    def site_trust(self, host):
-        suffix = "/sitetrust/v1/pay-as-you-go/"
-        api_params = {"key": self.apikey, "host": host}
-        response = self._http_request(method="GET", url_suffix=suffix, params=api_params)
+        response = self._http_request(method="POST", url_suffix=endpoint, json_data=json_data)
+        demisto.debug(f"APIVoid: Received response with {len(response)} fields")
         return response
 
 
-def indicator_context(client, indicator, indicator_context_path, indicator_value_field, engines, detections):
-    # DBot Information
-    dbot_score = 0
-    if engines != 0:
-        detection_rate = (detections / engines) * 100
+def map_fields(data: Any, exclude_mappings: list | None = None) -> Any:
+    """
+    Recursively map field names in a data structure according to FIELD_MAPPING.
+    Works on dictionaries, lists, and nested structures.
 
-        if detection_rate < GOOD:
-            dbot_score = 1
-        if detection_rate > SUSPICIOUS:
-            dbot_score = 2
-        if detection_rate > BAD:
-            dbot_score = 3
+    Args:
+        data: Data structure to map (dict, list, or any other type)
+        exclude_mappings: Optional list of field names to exclude from mapping
 
-    if (MALICIOUS == "suspicious" and dbot_score >= 2) or (MALICIOUS == "bad" and dbot_score == 3):
-        indicator["Malicious"] = {
-            "Vendor": "APIVoid",
-            "Description": f"Detection rate of {indicator['PositiveDetections']}/{indicator['DetectionEngines']}",
-        }
+    Returns:
+        Data structure with mapped field names
+    """
+    if isinstance(data, dict):
+        # Create a new dict to avoid modifying during iteration
+        result = {}
+        for key, value in data.items():
+            # Map the key if it exists in the global mapping and is not excluded
+            if exclude_mappings and key in exclude_mappings:
+                new_key = key
+            else:
+                new_key = FIELD_MAPPING.get(key, key)
+            # Recursively process the value
+            result[new_key] = map_fields(value, exclude_mappings)
+        return result
+    elif isinstance(data, list):
+        # Recursively process each item in the list
+        return [map_fields(item, exclude_mappings) for item in data]
+    else:
+        # Return primitive types as-is
+        return data
 
-    return {
-        indicator_context_path: indicator,
-        "DBotScore": {
-            "Score": dbot_score,
-            "Vendor": "APIVoid",
-            "Indicator": indicator[indicator_value_field],
-            "Type": "ip",
-            "Reliability": demisto.params().get("integrationReliability"),
+
+def calculate_dbot_score(engines_count: int, detections: int, thresholds: dict) -> int:
+    """
+    Calculate DBot score based on detection rate
+
+    Args:
+        engines_count: Total number of engines
+        detections: Number of positive detections
+        thresholds: Dict with 'suspicious', 'bad' thresholds (%)
+
+    Returns:
+        DBot score (0-3)
+    """
+    if engines_count == 0:
+        return Common.DBotScore.NONE
+
+    detection_rate = (detections / engines_count) * 100
+
+    if detection_rate > thresholds["bad"]:
+        return Common.DBotScore.BAD
+    if detection_rate > thresholds["suspicious"]:
+        return Common.DBotScore.SUSPICIOUS
+
+    return Common.DBotScore.GOOD
+
+
+def ip_reputation_command(
+    client: Client, args: dict, reputation_only: bool, thresholds: dict, reliability: str
+) -> CommandResults:
+    """
+    Get IP reputation from APIVoid V2 API
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+        reputation_only: If True, return only standard IP context
+        thresholds: Dict with 'good', 'suspicious', 'bad' thresholds
+        reliability: Source reliability level
+
+    Returns:
+        CommandResults object
+    """
+    ip = args.get("ip")
+
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["ip_reputation"], {"ip": ip})
+    except Exception as e:
+        raise DemistoException(f"Failed to get IP reputation: {str(e)}")
+
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error checking IP {ip}: {response.get("error")}')
+
+    # Extract data
+    blacklists = response.get("blacklists", {})
+    information = response.get("information", {})
+    engines_count = blacklists.get("engines_count", 0)
+    detections = blacklists.get("detections", 0)
+
+    # Convert engines dict to list for YML compatibility
+    if "engines" in blacklists:
+        engines_dict = blacklists["engines"]
+        if isinstance(engines_dict, dict):
+            engines_list = list(engines_dict.values())
+            response["blacklists"]["engines"] = engines_list
+
+    # Apply field mapping recursively to entire response
+    response = map_fields(response)
+
+    # Calculate DBot score
+    score = calculate_dbot_score(engines_count, detections, thresholds)
+
+    # Create DBot score object
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
+    )
+
+    # Create IP indicator with standard context
+    lat = information.get("latitude")
+    lng = information.get("longitude")
+
+    ip_indicator = Common.IP(
+        ip=ip,
+        detection_engines=engines_count,
+        positive_engines=detections,
+        dbot_score=dbot_score,
+        hostname=information.get("reverse_dns"),
+        geo_country=information.get("country_name"),
+        geo_description=information.get("isp"),
+        geo_latitude=lat,
+        geo_longitude=lng,
+    )
+
+    # Build custom context outputs
+    outputs = None if reputation_only else response
+
+    readable_data = {
+        "Address": ip,
+        "Hostname": information.get("reverse_dns"),
+        "Geo": {
+            "Location": f"{lat}:{lng}" if lat and lng else None,
+            "Country": information.get("country_name"),
+            "Description": information.get("isp"),
         },
+        "DetectionEngines": engines_count,
+        "PositiveDetections": detections,
     }
 
+    readable_output = tableToMarkdown(f"APIVoid information for {ip}:", readable_data)
 
-def test_module(client):
-    result = client.test()
-
-    if result.get("success"):
-        return "ok"
-    else:
-        return "Test Failed: " + str(result)
-
-
-def ip_command(client, args, reputation_only):
-    ip = args.get("ip")
-    raw_response = client.check_ip(ip)
-
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
-
-    report = raw_response.get("data", {}).get("report", None)
-    if report:
-        engines = report.get("blacklists", {}).get("engines_count", 0)
-        detections = report.get("blacklists", {}).get("detections", 0)
-
-        # IP Information
-        information = report.get("information", {})
-        lat = information.get("latitude", None)
-        lng = information.get("longitude", None)
-        ip = {
-            "Address": report["ip"],
-            "Hostname": information.get("reverse_dns", None),
-            "Geo": {
-                "Location": f"{lat}:{lng}" if lat and lng else None,
-                "Country": information.get("country_name", None),
-                "Description": information.get("isp", None),
-            },
-            "DetectionEngines": engines,
-            "PositiveDetections": detections,
-        }
-        ec = indicator_context(client, ip, outputPaths["ip"], "Address", engines, detections)
-
-        if not reputation_only:
-            ec["APIVoid.IP(val.ip && val.ip == obj.ip)"] = report
-
-        md = tableToMarkdown(f'APIVoid information for {ip["Address"]}:', ip)
-
-    else:
-        ec = {}
-        md = f"## No information for {ip}"
-
-    return_outputs(md, ec, raw_response)
+    return CommandResults(
+        outputs_prefix="APIVoid.IP",
+        outputs_key_field="ip",
+        outputs=outputs,
+        indicator=ip_indicator,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
-def domain_command(client, args, reputation_only):
+def domain_reputation_command(
+    client: Client, args: dict, reputation_only: bool, thresholds: dict, reliability: str
+) -> CommandResults:
+    """
+    Get Domain reputation from APIVoid V2 API
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+        reputation_only: If True, return only standard Domain context
+        thresholds: Dict with 'good', 'suspicious', 'bad' thresholds
+        reliability: Source reliability level
+
+    Returns:
+        CommandResults object
+    """
     domain = args.get("domain")
-    raw_response = client.check_domain(domain)
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["domain_reputation"], {"host": domain})
+    except Exception as e:
+        raise DemistoException(f"Failed to get domain reputation: {str(e)}")
 
-    report = raw_response.get("data", {}).get("report", None)
-    if report:
-        engines = report.get("blacklists", {}).get("engines_count", 0)
-        detections = report.get("blacklists", {}).get("detections", 0)
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error checking domain {domain}: {response.get("error")}')
 
-        # Domain Information
-        domain = {
-            "Name": report["host"],
-            "DNS": report["host"],
-            "DetectionEngines": engines,
-            "PositiveDetections": detections,
-        }
+    # Map V2 response to V1 field names for YML compatibility
+    if "server_details" in response:
+        response["server"] = response.pop("server_details")
 
-        ec = indicator_context(client, domain, outputPaths["domain"], "Name", engines, detections)
-        md = tableToMarkdown(f'APIVoid information for {domain["Name"]}:', domain)
+    # Extract data
+    blacklists = response.get("blacklists", {})
+    engines_count = blacklists.get("engines_count", 0)
+    detections = blacklists.get("detections", 0)
 
-        if not reputation_only:
-            ec["APIVoid.Domain(val.domain && val.domain == obj.domain)"] = report
+    # Convert engines dict to list for YML compatibility
+    if "engines" in blacklists:
+        engines_dict = blacklists["engines"]
+        if isinstance(engines_dict, dict):
+            engines_list = list(engines_dict.values())
+            response["blacklists"]["engines"] = engines_list
 
-    else:
-        ec = {}
-        md = f"## No information for {domain}"
+    # Apply field mapping recursively to entire response
+    response = map_fields(response)
 
-    return_outputs(md, ec, raw_response)
+    # Calculate DBot score
+    score = calculate_dbot_score(engines_count, detections, thresholds)
+
+    # Create DBot score object
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
+    )
+
+    # Create Domain indicator
+    domain_indicator = Common.Domain(
+        domain=domain, dbot_score=dbot_score, detection_engines=engines_count, positive_detections=detections
+    )
+
+    # Build custom context outputs
+    outputs = None if reputation_only else response
+
+    readable_data = {"Name": domain, "DNS": domain, "DetectionEngines": engines_count, "PositiveDetections": detections}
+
+    readable_output = tableToMarkdown(f"APIVoid information for {domain}:", readable_data)
+
+    return CommandResults(
+        outputs_prefix="APIVoid.Domain",
+        outputs_key_field="host",
+        outputs=outputs,
+        indicator=domain_indicator,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
-def url_command(client, args, reputation_only):
+def url_reputation_command(
+    client: Client, args: dict, reputation_only: bool, thresholds: dict, reliability: str
+) -> CommandResults:
+    """
+    Get URL reputation from APIVoid V2 API
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+        reputation_only: If True, return only standard URL context
+        thresholds: Dict with 'good', 'suspicious', 'bad' thresholds
+        reliability: Source reliability level
+
+    Returns:
+        CommandResults object
+    """
     url = args.get("url")
-    raw_response = client.check_url(url)
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["url_reputation"], {"url": url})
+    except Exception as e:
+        raise DemistoException(f"Failed to get URL reputation: {str(e)}")
 
-    report = raw_response.get("data", {}).get("report", None)
-    if report:
-        report["url"] = url
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error checking URL {url}: {response.get("error")}')
 
-        engines = len(report.get("domain_blacklist", {}).get("engines", []))
-        detections = report.get("domain_blacklist", {}).get("detections", 0)
+    # Add url to response for context
+    response["url"] = url
 
-        # URL Information
-        url = {
-            "Data": report["url"],
-            "DetectionEngines": engines,
-            "PositiveDetections": detections,
-        }
+    # Apply field mapping recursively to entire response
+    response = map_fields(response, exclude_mappings=["name"])
 
-        ec = indicator_context(client, url, outputPaths["url"], "Data", engines, detections)
-        md = tableToMarkdown(f'APIVoid information for {url["Data"]}:', url)
+    # Extract data
+    domain_blacklist = response.get("domain_blacklist", {})
+    engines_count = domain_blacklist.get("engines_count", 0)
+    detections = domain_blacklist.get("detections", 0)
+    for key in ["ns", "mx"]:
+        dns_records_inner_data = demisto.get(response, f"dns_records.{key}", {})
+        if dns_records_inner_data:
+            response["dns_records"][key] = {"records": dns_records_inner_data}  # Backward Competability
 
-        if not reputation_only:
-            ec["APIVoid.URL(val.url && val.url == obj.url)"] = report
+    # Calculate DBot score
+    score = calculate_dbot_score(engines_count, detections, thresholds)
 
-    else:
-        ec = {}
-        md = f"## No information for {url}"
+    # Create DBot score object
+    dbot_score = Common.DBotScore(
+        indicator=url,
+        indicator_type=DBotScoreType.URL,
+        integration_name="APIVoid",
+        score=score,
+        reliability=reliability,
+        malicious_description=f"Detection rate of {detections}/{engines_count}",
+    )
 
-    return_outputs(md, ec, raw_response)
+    # Create URL indicator
+    url_indicator = Common.URL(url=url, dbot_score=dbot_score, detection_engines=engines_count, positive_detections=detections)
+
+    # Build custom context outputs
+    outputs = None if reputation_only else response
+
+    readable_data = {"Data": url, "DetectionEngines": engines_count, "PositiveDetections": detections}
+
+    readable_output = tableToMarkdown(f"APIVoid information for {url}:", readable_data)
+
+    return CommandResults(
+        outputs_prefix="APIVoid.URL",
+        outputs_key_field="url",
+        outputs=outputs,
+        indicator=url_indicator,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
-def dns_lookup_command(client, args):
+def dns_lookup_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get DNS records for a host
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+
+    Returns:
+        CommandResults object
+    """
     host = args.get("host")
-    dns_type = args.get("type")
-    raw_response = client.check_dns(host, dns_type)
+    dns_type = args.get("type", "A")  # Required parameter with default
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    request_data = {"host": host, "dns_types": dns_type}
 
-    records = raw_response.get("data", {}).get("records", None)
-    entries = []
+    try:
+        response = client.api_request(ENDPOINTS["dns_lookup"], request_data)
+    except Exception as e:
+        raise DemistoException(f"Failed to get DNS records: {str(e)}")
+
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error looking up DNS for {host}: {response.get("error")}')
+
+    response = map_fields(response)
+
+    records = response.get("records", {})
+
     if records:
-        md_data = copy.deepcopy(records)
-        md_data["Host"] = host
-        md_data["Type"] = dns_type
-
-        records["host"] = host
-        records["type"] = dns_type
-
-        ec = {
-            "APIVoid.DNS(val.host && val.type && val.host == obj.host && val.type == obj.type)": records,
+        # Build outputs with host and type
+        outputs = {
+            "host": host,
+            "type": dns_type,
         }
-        md = tableToMarkdown(f"APIVoid DNS-{dns_type} information for {host}:", md_data)
-        entries.append(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": ec,
-                "HumanReadable": md,
-                "ReadableContentsFormat": formats["markdown"],
-                "EntryContext": ec,
-            }
+
+        # Build readable output - check for the requested type in lowercase
+        dns_type_lower = dns_type.lower()
+
+        # Check if the requested type exists in records
+        if dns_type_lower in records and records[dns_type_lower]:
+            type_records = records[dns_type_lower]
+            outputs["items"] = type_records
+            md = tableToMarkdown(f"APIVoid DNS {dns_type.upper()} records for {host}:", type_records)
+        else:
+            md = f"## No {dns_type.upper()} records found for {host}"
+
+        return CommandResults(
+            outputs_prefix="APIVoid.DNS", outputs_key_field="host", outputs=outputs, readable_output=md, raw_response=response
         )
-
-        for item in records.get("items", []):
-            item_type = item.get("type", dns_type)
-            md = tableToMarkdown(f"Information of {item_type} record from {host}:", item)
-            entries.append(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "Contents": item,
-                    "HumanReadable": md,
-                    "ReadableContentsFormat": formats["markdown"],
-                }
-            )
-
-        demisto.results(entries)
     else:
-        demisto.results(f"## No information for {host}")
+        return CommandResults(readable_output=f"## No DNS records found for {host}", raw_response=response)
 
 
-def ssl_lookup_command(client, args):
+def ssl_info_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get SSL certificate information for a host
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+
+    Returns:
+        CommandResults object
+    """
     host = args.get("host")
-    raw_response = client.check_ssl(host)
 
-    if "error" in raw_response:
-        raise Exception(f"Command Failed: {raw_response['error']}")
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["ssl_info"], {"host": host})
+    except Exception as e:
+        raise DemistoException(f"Failed to get SSL info: {str(e)}")
 
-    certificate = raw_response.get("data", {}).get("certificate", None)
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error getting SSL info for {host}: {response.get("error")}')
+
+    response = map_fields(response, exclude_mappings=["name"])
+
+    certificate = response.get("certificate", {})
     if certificate:
-        md_data = copy.deepcopy(certificate)
+        md_data = dict(certificate)
         if "details" in md_data:
             del md_data["details"]
 
         certificate["host"] = host
-        ec = {
-            "APIVoid.SSL(val.host && val.host == obj.host)": certificate,
-        }
         md = tableToMarkdown(f"APIVoid SSL Information for {host}:", md_data)
-
     else:
-        ec = {}
-        md = f"## No information for {host}"
+        md = f"## No SSL information for {host}"
+    outputs = certificate if certificate else None
 
-    return_outputs(md, ec, raw_response)
+    return CommandResults(
+        outputs_prefix="APIVoid.SSL", outputs_key_field="host", outputs=outputs, readable_output=md, raw_response=response
+    )
 
 
-def email_address_command(client, args):
+def email_verify_command(client: Client, args: dict) -> CommandResults:
+    """
+    Verify an email address
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+
+    Returns:
+        CommandResults object
+    """
     email = args.get("email")
-    raw_response = client.check_email_address(email)
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["email_verify"], {"email": email})
+    except Exception as e:
+        raise DemistoException(f"Failed to verify email: {str(e)}")
 
-    data = raw_response.get("data", {})
-    if data:
-        ec = {"APIVoid.Email(val.email && val.email == obj.email)": data}
-        md = tableToMarkdown(f"APIVoid Email Information for {email}:", data)
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error verifying email {email}: {response.get("error")}')
 
+    if response:
+        # Create simple table
+        md = tableToMarkdown(f"APIVoid Email Information for {email}:", response)
     else:
-        ec = {}
         md = f"## No information for {email}"
 
-    return_outputs(md, ec, raw_response)
+    return CommandResults(
+        outputs_prefix="APIVoid.Email", outputs_key_field="email", outputs=response, readable_output=md, raw_response=response
+    )
 
 
-def threatlog_command(client, args):
-    host = args.get("host")
-    raw_response = client.check_threatlog(host)
+def parked_domain_command(client: Client, args: dict) -> CommandResults:
+    """
+    Check if a domain is parked
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
 
-    data = raw_response.get("data", {}).get("threatlog", None)
-    if data:
-        ec = {
-            "APIVoid.ThreatLog(val.host && val.host == obj.host)": data,
-            "Domain": {
-                "Name": host,
-            },
-        }
-        md = tableToMarkdown(f"APIVoid ThreatLog Information for {host}:", data)
-
-    else:
-        ec = {}
-        md = f"## No information for {host}"
-
-    return_outputs(md, ec, raw_response)
-
-
-def check_parked_domain_command(client, args):
+    Returns:
+        CommandResults object
+    """
     domain = args.get("domain")
-    raw_response = client.check_parked_domain(domain)
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["parked_domain"], {"host": domain})
+    except Exception as e:
+        raise DemistoException(f"Failed to check parked domain: {str(e)}")
 
-    data = raw_response.get("data", {})
-    if data:
-        ec = {"APIVoid.ParkedDomain(val.host && val.host == obj.host)": data, "Domain": {"Name": domain}}
-        md = tableToMarkdown(f"APIVoid Parked Domain Information for {domain}:", data)
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error checking parked domain {domain}: {response.get("error")}')
 
+    if response:
+        ec = {"APIVoid.ParkedDomain(val.host && val.host == obj.host)": response, "Domain": {"Name": domain}}
+        md = tableToMarkdown(f"APIVoid Parked Domain Information for {domain}:", response)
     else:
         ec = {}
         md = f"## No information for {domain}"
 
-    return_outputs(md, ec, raw_response)
+    return CommandResults(outputs=ec, readable_output=md, raw_response=response)
 
 
-def domain_age_command(client, args):
+def domain_age_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get domain age information
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+
+    Returns:
+        CommandResults object
+    """
     domain = args.get("domain")
-    raw_response = client.check_domain_age(domain)
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["domain_age"], {"host": domain})
+    except Exception as e:
+        raise DemistoException(f"Failed to get domain age: {str(e)}")
 
-    data = raw_response.get("data", {})
-    if data:
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error getting domain age for {domain}: {response.get("error")}')
+
+    if response:
         ec = {
-            "APIVoid.DomainAge(val.host && val.host == obj.host)": data,
-            "Domain": {
-                "Name": domain,
-                "CreationDate": data.get("domain_creation_date", None),
-            },
+            "APIVoid.DomainAge(val.host && val.host == obj.host)": response,
+            "Domain": {"Name": domain, "CreationDate": response.get("domain_creation_date")},
         }
-        md = tableToMarkdown(f"APIVoid Domain Age Information for {domain}:", data)
-
+        md = tableToMarkdown(f"APIVoid Domain Age Information for {domain}:", response)
     else:
         ec = {}
         md = f"## No information for {domain}"
 
-    return_outputs(md, ec, raw_response)
+    return CommandResults(outputs=ec, readable_output=md, raw_response=response)
 
 
-def screenshot_command(client, args):
-    url = args.get("url")
-    raw_response = client.screenshot(url)
+def screenshot_command(client: Client, args: dict) -> dict:
+    """
+    Capture a screenshot of a URL
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
 
-    data = raw_response.get("data", {})
+    Returns:
+        File result dict
+    """
+    url = args.get("url", "")
+
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["screenshot"], {"url": url})
+    except Exception as e:
+        raise DemistoException(f"Failed to capture screenshot: {str(e)}")
+
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error capturing screenshot for {url}: {response.get("error")}')
+
+    data = demisto.get(response, "rendered_file.base64_file")
     if data:
-        # Create new file here
+        # Create file name
         file_name = url.replace("https", "").replace("http", "").replace("://", "").replace(".", "_")
         file_name += "_capture.png"
-        demisto.results(fileResult(file_name, b64decode(data.get("base64_file", None))))
+        return fileResult(file_name, b64decode(data))
+    else:
+        raise DemistoException(f"No screenshot data returned for {url}")
 
 
-def url_to_pdf_command(client, args):
-    url = args.get("url")
-    raw_response = client.url_to_pdf(url)
+def url_to_pdf_command(client: Client, args: dict) -> dict:
+    """
+    Convert a URL to PDF
 
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
 
-    data = raw_response.get("data", {})
+    Returns:
+        File result dict
+    """
+    url = args.get("url", "")
+    demisto.debug(f"APIVoid: url_to_pdf_command called with url={url}")
+
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["url_to_pdf"], {"url": url})
+    except Exception as e:
+        raise DemistoException(f"Failed to convert URL to PDF: {str(e)}")
+
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error converting URL to PDF for {url}: {response.get("error")}')
+
+    data = demisto.get(response, "rendered_file.base64_file")
     if data:
-        # Create new file here
+        # Create file name
         file_name = url.replace("https", "").replace("http", "").replace("://", "").replace(".", "_")
         file_name += "_capture.pdf"
-        demisto.results(fileResult(file_name, b64decode(data.get("base64_file", None))))
-
-
-def url_to_html_command(client, args):
-    url = args.get("url")
-    raw_response = client.url_to_html(url)
-
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
-
-    data = raw_response.get("data", {})
-    if data:
-        # Create new file here
-        file_name = url.replace("https", "").replace("http", "").replace("://", "").replace(".", "_")
-        file_name += "_capture.html"
-        demisto.results(fileResult(file_name, b64decode(data.get("base64_file", None))))
-
-
-def site_trust_command(client, args):
-    host = args.get("host")
-    raw_response = client.site_trust(host)
-
-    if "error" in raw_response:
-        return_error("Command Failed: " + str(raw_response["error"]))
-
-    data = raw_response.get("data", {}).get("report", None)
-    if data:
-        data["host"] = host
-        ec = {
-            "APIVoid.SiteTrust(val.host && val.host == obj.host)": data,
-        }
-        md = tableToMarkdown(f"APIVoid Site Trustworthiness for {host}:", data)
-
-        # Populate Domain information if available
-        if data.get("domain_age", {}).get("found", False):
-            ec["Domain"] = {
-                "Name": host,
-                "CreationDate": data.get("domain_age", {}).get("domain_creation_date", None),
-            }
-        if "ns" in data.get("dns_records", {}):
-            name_servers = ",".join([x.get("target", None) for x in data.get("dns_records", {}).get("ns", {}).get("records", [])])
-            ec["Domain"]["NameServers"] = name_servers
-
+        return fileResult(file_name, b64decode(data))
     else:
-        ec = {}
+        raise DemistoException(f"No PDF data returned for {url}")
+
+
+def site_trustworthiness_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get site trustworthiness information
+
+    Args:
+        client: APIVoid client instance
+        args: Command arguments
+
+    Returns:
+        CommandResults object
+    """
+    host = args.get("host")
+    demisto.debug(f"APIVoid: site_trustworthiness_command called with host={host}")
+
+    # Make API request
+    try:
+        response = client.api_request(ENDPOINTS["site_trustworthiness"], {"host": host})
+    except Exception as e:
+        raise DemistoException(f"Failed to get site trustworthiness: {str(e)}")
+
+    # Handle API errors
+    if "error" in response:
+        raise DemistoException(f'Error getting site trustworthiness for {host}: {response.get("error")}')
+
+    response = map_fields(response, exclude_mappings=["name"])
+
+    # Build outputs - following YML structure
+    outputs = {}
+    if response:
+        response["host"] = host
+
+        # Map security_checks domain age fields to domain_age structure for YML compatibility
+        # The YML expects APIVoid.SiteTrust.domain_age.* fields
+        security_checks = response.get("security_checks", {})
+        if security_checks:
+            # Create domain_age object from security_checks fields
+            domain_age = {}
+            if "domain_creation_date" in security_checks:
+                domain_age["domain_creation_date"] = security_checks.get("domain_creation_date")
+                domain_age["found"] = True
+            if "domain_age_in_days" in security_checks:
+                domain_age["domain_age_in_days"] = security_checks.get("domain_age_in_days")
+            if "domain_age_in_months" in security_checks:
+                domain_age["domain_age_in_months"] = security_checks.get("domain_age_in_months")
+            if "domain_age_in_years" in security_checks:
+                domain_age["domain_age_in_years"] = security_checks.get("domain_age_in_years")
+
+            if domain_age:
+                response["domain_age"] = domain_age
+
+        outputs = response
+
+        # Create simple table
+        md = tableToMarkdown(f"APIVoid Site Trustworthiness for {host}:", response)
+    else:
         md = f"## No information for {host}"
 
-    return_outputs(md, ec, raw_response)
+    return CommandResults(
+        outputs_prefix="APIVoid.SiteTrust", outputs_key_field="host", outputs=outputs, readable_output=md, raw_response=response
+    )
+
+
+def test_module(client: Client) -> str:
+    """
+    Test the integration by making a simple API call
+
+    Args:
+        client: APIVoid client instance
+
+    Returns:
+        'ok' if successful, error message otherwise
+    """
+    try:
+        # Use IP reputation endpoint with a known IP for testing
+        response = client.api_request(ENDPOINTS["ip_reputation"], {"ip": "8.8.8.8"})
+        if "error" in response:
+            return f'Test Failed: {response.get("error")}'
+        return "ok"
+    except Exception as e:
+        return f"Test Failed: {str(e)}"
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    global GOOD, SUSPICIOUS, BAD, MALICIOUS
+    """Main execution function"""
+
+    # Get parameters once
     params = demisto.params()
-    # get the service API url (This is static for this service)
-    base_url = API_ENDPOINT
-
-    apikey = params.get("credentials", {}).get("password") or params.get("apikey", None)
-
-    verify_certificate = not params.get("insecure", False)
+    base_url = params.get("url", "https://api.apivoid.com")
+    apikey = params.get("credentials", {}).get("password") or params.get("apikey", "")
+    verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    reliability = params.get("integrationReliability", "C - Fairly reliable")
 
-    GOOD = int(params.get("good", 10))
-    SUSPICIOUS = int(params.get("suspicious", 30))
-    BAD = int(params.get("bad", 60))
-    MALICIOUS = params.get("malicious", "suspicious")
+    # Threshold configuration
+    thresholds = {
+        "suspicious": arg_to_number(params.get("suspicious", 30)),
+        "bad": arg_to_number(params.get("bad", 60)),
+    }
+
+    demisto.debug(f"APIVoid: Initialized with base_url={base_url}, verify={verify}, proxy={proxy}, reliability={reliability}")
+    demisto.debug(f'APIVoid: Thresholds configured - ' f'suspicious={thresholds["suspicious"]}%, bad={thresholds["bad"]}%')
+
+    # Create client
+    client = Client(base_url, apikey, verify, proxy)
+
+    # Get command and args
     command = demisto.command()
+    args = demisto.args()
 
-    LOG(f"Command being called is {demisto.command()}")
+    demisto.debug(f"APIVoid: Command being called is {command}")
+
     try:
-        client = Client(
-            base_url,
-            apikey,
-            verify_certificate,
-            proxy,
-        )
-
-        args = demisto.args()
-
-        commands = {
-            "apivoid-dns-lookup": dns_lookup_command,
-            "apivoid-ssl-info": ssl_lookup_command,
-            "apivoid-email-verify": email_address_command,
-            "apivoid-threatlog": threatlog_command,
-            "apivoid-parked-domain": check_parked_domain_command,
-            "apivoid-domain-age": domain_age_command,
-            "apivoid-url-to-image": screenshot_command,
-            "apivoid-url-to-pdf": url_to_pdf_command,
-            "apivoid-url-to-html": url_to_html_command,
-            "apivoid-site-trustworthiness": site_trust_command,
-        }
-
+        result: None | str | CommandResults | dict[str, Any] = None
+        # Command routing
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
-        elif command == "ip":
-            ip_command(client, args, True)
+        elif command in ["ip", "apivoid-ip"]:
+            reputation_only = command == "ip"
+            result = ip_reputation_command(client, args, reputation_only, thresholds, reliability)
+            return_results(result)
 
-        elif command == "apivoid-ip":
-            ip_command(client, args, False)
+        elif command in ["domain", "apivoid-domain"]:
+            reputation_only = command == "domain"
+            result = domain_reputation_command(client, args, reputation_only, thresholds, reliability)
+            return_results(result)
 
-        elif command == "domain":
-            domain_command(client, args, True)
+        elif command in ["url", "apivoid-url"]:
+            reputation_only = command == "url"
+            result = url_reputation_command(client, args, reputation_only, thresholds, reliability)
+            return_results(result)
 
-        elif command == "apivoid-domain":
-            domain_command(client, args, False)
+        elif command == "apivoid-dns-lookup":
+            result = dns_lookup_command(client, args)
+            return_results(result)
 
-        elif command == "url":
-            url_command(client, args, True)
+        elif command == "apivoid-ssl-info":
+            result = ssl_info_command(client, args)
+            return_results(result)
 
-        elif command == "apivoid-url":
-            url_command(client, args, False)
+        elif command == "apivoid-email-verify":
+            result = email_verify_command(client, args)
+            return_results(result)
 
+        elif command == "apivoid-parked-domain":
+            result = parked_domain_command(client, args)
+            return_results(result)
+
+        elif command == "apivoid-domain-age":
+            result = domain_age_command(client, args)
+            return_results(result)
+
+        elif command == "apivoid-url-to-image":
+            result = screenshot_command(client, args)
+            return_results(result)
+
+        elif command == "apivoid-url-to-pdf":
+            result = url_to_pdf_command(client, args)
+            return_results(result)
+
+        elif command == "apivoid-site-trustworthiness":
+            result = site_trustworthiness_command(client, args)
+            return_results(result)
+
+        elif command in ["apivoid-threatlog", "apivoid-url-to-html"]:
+            raise DemistoException(f"Command {command} is not supported in API V2")
         else:
-            commands[command](client, args)
+            raise NotImplementedError(f"Command {command} is not implemented")
 
-    # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
