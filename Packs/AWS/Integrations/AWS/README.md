@@ -3331,3 +3331,394 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 #### Context Output
 
 There is no context output for this command.
+### aws-lambda-function-get
+
+***
+Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+
+#### Base Command
+
+`aws-lambda-function-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function, version, or alias. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.Configuration.FunctionName | string | The name of the function. | 
+| AWS.Lambda.Functions.Configuration.FunctionArn | string | The function's Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.Configuration.Runtime | string | The identifier of the function's runtime. | 
+| AWS.Lambda.Functions.Configuration.Role | string | The function's execution role. | 
+| AWS.Lambda.Functions.Configuration.Handler | string | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Functions.Configuration.CodeSize | number | The size of the function's deployment package, in bytes. | 
+| AWS.Lambda.Functions.Configuration.Description | string | The function's description. | 
+| AWS.Lambda.Functions.Configuration.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Functions.Configuration.MemorySize | number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Functions.Configuration.LastModified | string | The date and time that the function was last updated, in ISO-8601 format. | 
+| AWS.Lambda.Functions.Configuration.CodeSha256 | string | The SHA256 hash of the function's deployment package. | 
+| AWS.Lambda.Functions.Configuration.Version | string | The version of the Lambda function. | 
+| AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds | array | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds | array | A list of VPC security group IDs. | 
+| AWS.Lambda.Functions.Configuration.VpcConfig.VpcId | string | The ID of the VPC. | 
+| AWS.Lambda.Functions.Code.RepositoryType | string | The repository from which you can download the function. | 
+| AWS.Lambda.Functions.Code.Location | string | The presigned URL you can use to download the function's .zip file. | 
+| AWS.Lambda.Functions.Tags | object | The function's tags. | 
+| AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions | number | The number of concurrent executions that are reserved for this function. | 
+| AWS.Lambda.Functions.Region | string | The AWS Region. | 
+### aws-lambda-functions-list
+
+***
+Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+
+#### Base Command
+
+`aws-lambda-functions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| limit | Maximum number of functions to return in a single request. Valid range is 1-50. Default: 50. Default is 50. | Optional | 
+| next_token | Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. | 
+| AWS.Lambda.Functions.FunctionArn | string | The function's Amazon Resource Name. | 
+| AWS.Lambda.Functions.Runtime | string | The runtime environment for the Lambda function. | 
+| AWS.Lambda.Functions.Role | string | The function's execution role. | 
+| AWS.Lambda.Functions.Handler | string | The function Lambda calls to begin executing your function. | 
+| AWS.Lambda.Functions.CodeSize | number | The size of the function's deployment package in bytes. | 
+| AWS.Lambda.Functions.Description | string | The function's description. | 
+| AWS.Lambda.Functions.Timeout | number | The amount of time that Lambda allows a function to run before terminating it. | 
+| AWS.Lambda.Functions.MemorySize | number | The memory allocated to the function. | 
+| AWS.Lambda.Functions.LastModified | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Functions.CodeSha256 | string | The SHA256 hash of the function's deployment package. | 
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. | 
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | string | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | string | A list of VPC security groups IDs. | 
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. | 
+| AWS.Lambda.Functions.DeadLetterConfig.TargetArn | string | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
+| AWS.Lambda.Functions.Environment.Variables | string | Environment variable key-value pairs. | 
+| AWS.Lambda.Functions.Environment.Error.ErrorCode | string | The error code for environment variables that could not be applied. | 
+| AWS.Lambda.Functions.Environment.Error.Message | string | The error message for environment variables that could not be applied. | 
+| AWS.Lambda.Functions.KMSKeyArn | string | The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK. | 
+| AWS.Lambda.Functions.TracingConfig.Mode | string | The function's AWS X-Ray tracing configuration mode. | 
+| AWS.Lambda.Functions.MasterArn | string | The ARN of the master function. | 
+| AWS.Lambda.Functions.RevisionId | string | Represents the latest updated revision of the function or alias. | 
+| AWS.Lambda.Functions.Layers.Arn | string | The Amazon Resource Name \(ARN\) of the function layer. | 
+| AWS.Lambda.Functions.Layers.CodeSize | string | The size of the layer archive in bytes. | 
+| AWS.Lambda.Functions.Region | string | The AWS Region. | 
+| AWS.Lambda.FunctionsNextToken | string | Token to use for pagination in subsequent requests. | 
+### aws-lambda-aliases-list
+
+***
+Returns a list of aliases created for a Lambda function.
+
+#### Base Command
+
+`aws-lambda-aliases-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function. | Required | 
+| function_version | Specify a function version to only list aliases that invoke that version. | Optional | 
+| limit | The maximum number of aliases to return (default is 50, maximum is 10000). Default is 50. | Optional | 
+| next_token | Specify the pagination token that was returned by a previous request to retrieve the next page of results. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Aliases.AliasArn | string | Lambda function ARN that is qualified using the alias name as the suffix. | 
+| AWS.Lambda.Aliases.Name | string | Alias name. | 
+| AWS.Lambda.Aliases.FunctionVersion | string | Function version to which the alias points. | 
+| AWS.Lambda.Aliases.Description | string | Alias description. | 
+| AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights | string | The name of the second alias, and the percentage of traffic that is routed to it. | 
+| AWS.Lambda.Aliases.RevisionId | string | Represents the latest updated revision of the function or alias. | 
+| AWS.Lambda.AliasesNextToken | unknown | The pagination token for the next set of aliases. | 
+### aws-lambda-account-settings-get
+
+***
+Retrieves details about the account's limits and usage in an AWS Region.
+
+#### Base Command
+
+`aws-lambda-account-settings-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize | number | The amount of storage space that you can use for all deployment packages and layer archives. | 
+| AWS.Lambda.AccountSettings.AccountLimit.CodeSizeUnzipped | number | The maximum size of your function's code and layers when they're extracted. | 
+| AWS.Lambda.AccountSettings.AccountLimit.CodeSizeZipped | number | The maximum size of a deployment package when it's uploaded directly to AWS Lambda. Use Amazon S3 for larger files. | 
+| AWS.Lambda.AccountSettings.AccountLimit.ConcurrentExecutions | number | The maximum number of simultaneous function executions. | 
+| AWS.Lambda.AccountSettings.AccountLimit.UnreservedConcurrentExecutions | number | The maximum number of simultaneous function executions, minus the capacity that's reserved for individual functions with PutFunctionConcurrency. | 
+| AWS.Lambda.AccountSettings.AccountUsage.TotalCodeSize | number | The amount of storage space, in bytes, that's being used by deployment packages and layer archives. | 
+| AWS.Lambda.AccountSettings.AccountUsage.FunctionCount | number | The number of Lambda functions. | 
+| AWS.Lambda.AccountSettings.Region | string | The AWS Region. | 
+| AWS.Lambda.AccountSettings.AccountId | string | The AWS account ID. | 
+### aws-lambda-function-versions-list
+
+***
+Returns a list of versions, with the version-specific configuration of each.
+
+#### Base Command
+
+`aws-lambda-function-versions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function. | Required | 
+| next_token | Specify the pagination token that's returned by a previous request to retrieve the next page of results. | Optional | 
+| limit | The maximum number of versions to return. Note that the maximum limit is 50 items in each response. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionVersionsNextToken | String | The pagination token that's included if more results are available. | 
+| AWS.Lambda.Functions.FunctionArn | String | The function's Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.FunctionVersions.FunctionArn | String | The function's Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.FunctionVersions.Runtime | String | The identifier of the function's runtime. Runtime is required if the deployment package is a .zip file archive. | 
+| AWS.Lambda.Functions.FunctionVersions.Role | String | The function's execution role. | 
+| AWS.Lambda.Functions.FunctionVersions.Handler | String | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Functions.FunctionVersions.CodeSize | Number | The size of the function's deployment package, in bytes. | 
+| AWS.Lambda.Functions.FunctionVersions.Description | String | The function's description. | 
+| AWS.Lambda.Functions.FunctionVersions.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Functions.FunctionVersions.MemorySize | Number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Functions.FunctionVersions.LastModified | String | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Functions.FunctionVersions.CodeSha256 | String | The SHA256 hash of the function's deployment package. | 
+| AWS.Lambda.Functions.FunctionVersions.Version | String | The version of the Lambda function. | 
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.SubnetIds | String | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.SecurityGroupIds | String | A list of VPC security group IDs. | 
+| AWS.Lambda.Functions.FunctionVersions.VpcConfig.VpcId | String | The ID of the VPC. | 
+| AWS.Lambda.Functions.FunctionVersions.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
+| AWS.Lambda.Functions.FunctionVersions.Environment.Variables | String | Environment variable key-value pairs. Omitted from CloudTrail logs. | 
+| AWS.Lambda.Functions.FunctionVersions.Environment.Error.ErrorCode | String | The error code for environment variables that couldn't be applied. | 
+| AWS.Lambda.Functions.FunctionVersions.Environment.Error.Message | String | The error message for environment variables that couldn't be applied. | 
+| AWS.Lambda.Functions.FunctionVersions.KMSKeyArn | String | The ARN of the KMS key used to encrypt the function's environment variables. | 
+| AWS.Lambda.Functions.FunctionVersions.TracingConfig.Mode | String | The tracing mode for the Lambda function. | 
+| AWS.Lambda.Functions.FunctionVersions.MasterArn | String | The ARN of the main function for Lambda@Edge functions. | 
+| AWS.Lambda.Functions.FunctionVersions.State | String | The current state of the function. When the state is Inactive, you can reactivate the function by invoking it. | 
+| AWS.Lambda.Functions.FunctionVersions.StateReason | String | The reason for the function's current state. | 
+| AWS.Lambda.Functions.FunctionVersions.StateReasonCode | String | The reason code for the current state of the function. | 
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatus | String | The status of the last update that was performed on the function. This is first set to Successful after function creation completes. | 
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. | 
+| AWS.Lambda.Functions.FunctionVersions.LastUpdateStatusReasonCode | String | The reason code for the last update operation status. | 
+| AWS.Lambda.Functions.FunctionVersions.PackageType | String | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+### aws-lambda-function-url-config-delete
+
+***
+Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+
+#### Base Command
+
+`aws-lambda-function-url-config-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function. | Required | 
+| qualifier | The alias name or version number. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-function-create
+
+***
+Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+
+#### Base Command
+
+`aws-lambda-function-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function. | Required | 
+| runtime | The runtime environment for the function. | Required | 
+| handler | The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler. | Required | 
+| role | The Amazon Resource Name (ARN) of the function's execution role. | Required | 
+| code | Entry ID of the uploaded base64-encoded contents of the deployment package. | Optional | 
+| s3_bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account. | Optional | 
+| description | A description of the function. | Optional | 
+| function_timeout | The amount of time (in seconds) that Lambda allows a function to run before stopping it. Default is 3. | Optional | 
+| memory_size | The amount of memory (in MB) available to the function at runtime. Default is 128. | Optional | 
+| publish | Set to true to publish the first version of the function during creation. Possible values are: true, false. | Optional | 
+| subnet_ids | A comma-separated list of VPC subnet IDs. | Optional | 
+| security_group_ids | A comma-separated list of VPC security group IDs. | Optional | 
+| ipv6_allowed_for_dual_stack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional | 
+| package_type | The type of deployment package. Possible values are: Image, Zip. | Optional | 
+| environment | The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional | 
+| tracing_config | The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: Active, PassThrough. Default is Active. | Optional | 
+| tags | The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Optional | 
+| layers | A list of function layers to add to the function's execution environment. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. | 
+| AWS.Lambda.Functions.FunctionArn | string | The function's Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.Runtime | string | The identifier of the function's runtime. | 
+| AWS.Lambda.Functions.Role | string | The function's execution role. | 
+| AWS.Lambda.Functions.Handler | string | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Functions.CodeSize | number | The size of the function's deployment package, in bytes. | 
+| AWS.Lambda.Functions.Description | string | The function's description. | 
+| AWS.Lambda.Functions.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Functions.MemorySize | number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. | 
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | array | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | array | A list of VPC security group IDs. | 
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. | 
+| AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack | boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. | 
+| AWS.Lambda.Functions.PackageType | string | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+| AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format. | 
+| AWS.Lambda.Functions.Region | string | The AWS Region. | 
+### aws-lambda-layer-version-list
+
+***
+Lists the versions of an Lambda layer.
+
+#### Base Command
+
+`aws-lambda-layer-version-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required | 
+| compatible_runtime | A runtime identifier. For example, java21. | Optional | 
+| next_token | A pagination token returned by a previous call. | Optional | 
+| limit | The maximum number of versions to return. | Optional | 
+| compatible_architecture | The compatible instruction set architecture. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.LayerVersionsNextToken | string | A pagination token returned when the response doesn't contain all versions. | 
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.LayerVersions.Version | number | The version number. | 
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. | 
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. | 
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. | 
+| AWS.Lambda.LayerVersions.LicenseInfo | string | The layer's open-source license. | 
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. | 
+### aws-lambda-function-delete
+
+***
+Deletes a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function or version. | Required | 
+| qualifier | Specify a version to delete. You can't delete a version that an alias references. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-layer-version-delete
+
+***
+Deletes a version of a Lambda layer.
+
+#### Base Command
+
+`aws-lambda-layer-version-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| layer_name | The name or Amazon Resource Name (ARN) of the layer. | Required | 
+| version_number | The version number to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-layer-version-publish
+
+***
+Creates a Lambda layer from a ZIP archive.
+
+#### Base Command
+
+`aws-lambda-layer-version-publish`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| layer_name | The name of the layer. | Required | 
+| description | The description of the version. | Optional | 
+| zip_file | The entry ID of the uploaded ZIP file containing the layer code. | Optional | 
+| s3_bucket | The Amazon S3 bucket of the layer archive. | Optional | 
+| s3_key | The Amazon S3 key of the layer archive. | Optional | 
+| s3_object_version | For versioned objects, the version of the layer archive object to use. | Optional | 
+| compatible_runtimes | A list of compatible function runtimes. | Optional | 
+| compatible_architectures | A list of compatible instruction set architectures. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.LayerVersions.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.LayerVersions.LayerArn | string | The ARN of the layer. | 
+| AWS.Lambda.LayerVersions.Description | string | The description of the version. | 
+| AWS.Lambda.LayerVersions.CreatedDate | string | The date that the layer version was created, in ISO 8601 format. | 
+| AWS.Lambda.LayerVersions.Version | number | The version number. | 
+| AWS.Lambda.LayerVersions.CompatibleRuntimes | array | The layer's compatible runtimes. | 
+| AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. | 
+| AWS.Lambda.LayerVersions.Region | string | The AWS Region. | 
