@@ -18,6 +18,7 @@ from NodeZero import (
     _test_module,
     fetch_incidents,
     fetch_all_weaknesses_pages,
+    get_weaknesses_command,
     authenticate,
     dedup_by_ids,
     UnauthenticatedError,
@@ -623,3 +624,81 @@ class TestAuthenticateHelper:
         authenticate(client)
 
         assert client._jwt == "existing-token"
+
+
+class TestGetWeaknessesCommand:
+    """Tests for the nodezero-get-weaknesses command."""
+
+    def test_get_weaknesses_returns_results(self, requests_mock):
+        """Test that the command returns weaknesses as CommandResults."""
+        client = create_test_client()
+        client._jwt = "valid-token"
+        client._expiry = 9999999999
+
+        requests_mock.post(
+            "https://test.horizon3ai.com/v1/graphql",
+            json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
+        )
+
+        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00", "limit": "10"})
+
+        assert result.outputs_prefix == "NodeZero.Weakness"
+        assert result.outputs_key_field == "uuid"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "test-uuid-123"
+        assert "NodeZero Weaknesses" in result.readable_output
+
+    def test_get_weaknesses_default_args(self, requests_mock):
+        """Test that the command works with default arguments."""
+        client = create_test_client()
+        client._jwt = "valid-token"
+        client._expiry = 9999999999
+
+        requests_mock.post(
+            "https://test.horizon3ai.com/v1/graphql",
+            json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
+        )
+
+        result = get_weaknesses_command(client, {})
+
+        assert result.outputs_prefix == "NodeZero.Weakness"
+        assert len(result.outputs) == 1
+
+    def test_get_weaknesses_empty_results(self, requests_mock):
+        """Test that the command handles empty results."""
+        client = create_test_client()
+        client._jwt = "valid-token"
+        client._expiry = 9999999999
+
+        empty_response = {
+            "data": {
+                "weaknesses_page": {
+                    "weaknesses": [],
+                    "page_info": {"page_num": 1, "page_size": 50},
+                }
+            }
+        }
+        requests_mock.post(
+            "https://test.horizon3ai.com/v1/graphql",
+            json=empty_response,
+        )
+
+        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00"})
+
+        assert result.outputs == []
+
+    def test_get_weaknesses_limit_capped(self, requests_mock):
+        """Test that limit is capped at 1000."""
+        client = create_test_client()
+        client._jwt = "valid-token"
+        client._expiry = 9999999999
+
+        requests_mock.post(
+            "https://test.horizon3ai.com/v1/graphql",
+            json=SAMPLE_WEAKNESSES_PAGE_RESPONSE,
+        )
+
+        # Even with limit > 1000, should not error
+        result = get_weaknesses_command(client, {"since_date": "2024-01-01T00:00:00", "limit": "5000"})
+
+        assert result.outputs_prefix == "NodeZero.Weakness"

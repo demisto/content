@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 import time
 from typing import Any, Literal, TypeAlias, TypedDict
 
@@ -9,7 +9,7 @@ import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_core import ValidationError
 
 urllib3.disable_warnings()
@@ -129,6 +129,17 @@ class WeaknessesPage(BaseModel):
             weaknesses=[Weakness.model_validate(w) for w in data.get("weaknesses", [])],
             page_info=PageInfo.model_validate(data.get("page_info", {})),
         )
+
+
+def _default_since_date() -> str:
+    return (datetime.now(UTC) - timedelta(days=7)).strftime(NZ_DATE_FORMAT)
+
+
+class GetWeaknessesArgs(BaseModel):
+    """Parsed arguments for the nodezero-get-weaknesses command."""
+
+    since_date: str = Field(default_factory=_default_since_date)
+    limit: int = Field(default=50, le=1000)
 
 
 class LastRun(BaseModel):
@@ -297,6 +308,52 @@ def fetch_all_weaknesses_pages(
 """ COMMAND FUNCTIONS """
 
 
+def get_weaknesses_command(
+    client: Client,
+    args: GetWeaknessesArgs,
+) -> CommandResults:
+    """Return a table of HIGH/CRITICAL weaknesses from NodeZero.
+
+    Args:
+        client: NodeZero API client.
+        args: Parsed command arguments.
+
+    Returns:
+        CommandResults with human-readable table and context data.
+    """
+    authenticate(client)
+
+    weaknesses = fetch_all_weaknesses_pages(
+        client=client,
+        since_date=args.since_date,
+        max_fetch=args.limit,
+    )
+
+    outputs = [w.model_dump() for w in weaknesses]
+    headers = [
+        "uuid",
+        "severity",
+        "vuln_id",
+        "vuln_short_name",
+        "ip",
+        "affected_asset_display_name",
+        "score",
+        "created_at",
+    ]
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "NodeZero Weaknesses",
+            outputs,
+            headers=headers,
+            removeNull=True,
+        ),
+        outputs_prefix="NodeZero.Weakness",
+        outputs_key_field="uuid",
+        outputs=outputs,
+    )
+
+
 def _test_module(client: Client) -> Literal["ok"]:
     """Tests API connectivity and authentication.
 
@@ -358,7 +415,7 @@ def fetch_incidents(
     elif first_fetch_time:
         since_date = first_fetch_time.strftime(NZ_DATE_FORMAT)
     else:
-        since_date = (datetime.now(timezone.utc) - timedelta(days=7)).strftime(NZ_DATE_FORMAT)
+        since_date = (datetime.now(UTC) - timedelta(days=7)).strftime(NZ_DATE_FORMAT)
 
     demisto.debug(f"Fetching weaknesses since {since_date}")
 
@@ -416,6 +473,10 @@ def main():
 
         if command == "test-module":
             return_results(_test_module(client))
+
+        elif command == "nodezero-get-weaknesses":
+            weakness_args = GetWeaknessesArgs.model_validate(_args)
+            return_results(get_weaknesses_command(client, weakness_args))
 
         elif command == "fetch-incidents":
             first_fetch_time = arg_to_datetime(
