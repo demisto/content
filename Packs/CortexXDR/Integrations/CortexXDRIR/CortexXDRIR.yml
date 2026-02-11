@@ -4139,7 +4139,7 @@ script:
     description: Creates or updates an automation script.
     name: xdr-automation-script-create
   - arguments:
-    - description: The field to search by (id or name).
+    - description: The field to search by.
       name: field
       required: true
       auto: PREDEFINED
@@ -4152,7 +4152,7 @@ script:
     description: Gets an automation script.
     name: xdr-automation-script-get
   - arguments:
-    - description: The field to search by (id or name).
+    - description: The field to search by.
       name: field
       required: true
       auto: PREDEFINED
@@ -4171,7 +4171,7 @@ script:
     description: Creates or updates an automation playbook.
     name: xdr-automation-playbook-create
   - arguments:
-    - description: The field to search by (id or name).
+    - description: The field to search by.
       name: field
       required: true
       auto: PREDEFINED
@@ -4184,7 +4184,7 @@ script:
     description: Gets an automation playbook.
     name: xdr-automation-playbook-get
   - arguments:
-    - description: The field to search by (id or name).
+    - description: The field to search by.
       name: field
       required: true
       auto: PREDEFINED
