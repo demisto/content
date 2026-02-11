@@ -1,5 +1,4 @@
 category: Network Security
-provider: Akamai Technologies
 commonfields:
   id: Akamai WAF
   version: -1
@@ -2079,7 +2078,7 @@ script:
       name: with_metrics
     description: Akamai Generic API Call.
     name: akamai-generic-api-call-command
-  dockerimage: demisto/auth-utils:1.0.0.5476008
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   script: ''
   subtype: python3
   type: python
