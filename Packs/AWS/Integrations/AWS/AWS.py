@@ -300,16 +300,14 @@ def prepare_create_function_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         "TracingConfig": {"Mode": args.get("tracing_config") or "Active"},
         "MemorySize": arg_to_number(args.get("memory_size")) or 128,
         "Timeout": arg_to_number(args.get("function_timeout")) or 3,
-        "Publish": argToBoolean(args.get("publish")) if args.get("publish") else None,
+        "Publish": arg_to_bool_or_none(args.get("publish")),
         "Environment": {"Variables": env_vars} if env_vars else None,
         "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
-        "Layers": argToList(args.get("layers")) if args.get("layers") else None,
+        "Layers": argToList(args.get("layers")),
         "VpcConfig": {
-            "SubnetIds": argToList(args.get("subnet_ids")) if args.get("subnet_ids") else None,
-            "SecurityGroupIds": argToList(args.get("security_group_ids")) if args.get("security_group_ids") else None,
-            "Ipv6AllowedForDualStack": argToBoolean(args.get("ipv6_allowed_for_dual_stack"))
-            if args.get("ipv6_allowed_for_dual_stack")
-            else None,
+            "SubnetIds": argToList(args.get("subnet_ids")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dual_stack")),
         },
     }
 
@@ -5474,23 +5472,19 @@ class Lambda:
 
         # Extract configuration for readable output
         func_config = response.get("Configuration", {})
-
+        func_config["Location"] = response.get("Code").get("Location")  # type: ignore
+        func_config["Region"] = args.get("region")
         response["FunctionArn"] = func_config["FunctionArn"]
         outputs = copy.deepcopy(response)
         outputs.pop("ResponseMetadata", None)
-        readable_data = {
-            "FunctionName": func_config.get("FunctionName"),
-            "FunctionArn": func_config.get("FunctionArn"),
-            "Runtime": func_config.get("Runtime"),
-            "Region": args.get("region"),
-        }
+
         human_readable = tableToMarkdown(
             "AWS Lambda Function",
-            readable_data,
+            func_config,
             headerTransform=pascalToSpace,
             removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Runtime", "Region", "Location"],
         )
-
         return CommandResults(
             outputs_prefix="AWS.Lambda.Functions",
             outputs_key_field="FunctionArn",
@@ -5540,24 +5534,12 @@ class Lambda:
         for func in functions_list:
             func["Region"] = args.get("region")
 
-        # Prepare readable output
-        readable_data = []
-        for func in functions_list:
-            readable_data.append(
-                {
-                    "FunctionName": func.get("FunctionName"),
-                    "FunctionArn": func.get("FunctionArn"),
-                    "Runtime": func.get("Runtime"),
-                    "LastModified": func.get("LastModified"),
-                    "Region": args.get("region"),
-                }
-            )
-
         human_readable = tableToMarkdown(
             "AWS Lambda Functions",
-            readable_data,
+            functions_list,
             headerTransform=pascalToSpace,
             removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Runtime", "LastModified", "Region"],
         )
 
         # Prepare outputs with pagination support
@@ -5626,10 +5608,8 @@ class Lambda:
 
         # Prepare outputs with pagination support
         outputs = {
-            "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)": {
-                "Aliases": aliases_list,
-                "AliasesNextToken": next_marker,
-            }
+            "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)": aliases_list,
+            "AWS.Lambda(true)": {"AliasesNextToken": next_marker},
         }
 
         return CommandResults(
@@ -5744,24 +5724,10 @@ class Lambda:
         if not versions:
             return CommandResults(readable_output=f"No versions found for function {args.get('function_name')}.")
 
-        # Prepare readable output
-        readable_data = []
-        for version in versions:
-            readable_data.append(
-                {
-                    "FunctionName": version.get("FunctionName"),
-                    "Runtime": version.get("Runtime"),
-                    "Role": version.get("Role"),
-                    "Description": version.get("Description"),
-                    "LastModified": version.get("LastModified"),
-                    "State": version.get("State"),
-                }
-            )
-
         headers = ["FunctionName", "Role", "Runtime", "LastModified", "State", "Description"]
         human_readable = tableToMarkdown(
             "AWS Lambda Function Versions",
-            readable_data,
+            versions,
             headers=headers,
             headerTransform=pascalToSpace,
             removeNull=True,
@@ -5770,7 +5736,7 @@ class Lambda:
         # Prepare output with region context
         output = {
             "FunctionVersions": versions,
-            "FunctionArn": versions[0].get("FunctionArn") if versions else None,
+            "FunctionArn": versions[0].get("FunctionArn"),
         }
 
         outputs = {
@@ -5812,9 +5778,7 @@ class Lambda:
             return CommandResults(
                 readable_output=f"Successfully deleted function URL configuration for {args.get('function_name')}"
             )
-        else:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return None
+        return None
 
     @staticmethod
     def create_function_command(client: BotoClient, args: Dict[str, Any]):
@@ -5854,7 +5818,6 @@ class Lambda:
         ]
 
         kwargs = prepare_create_function_kwargs(args)
-        kwargs["FunctionName"] = args.get("function_name")
 
         print_debug_logs(client, f"Creating Lambda function: {args.get('function_name')} using {kwargs=}")
 
@@ -5910,7 +5873,7 @@ class Lambda:
 
         # Build pagination parameters using build_pagination_kwargs
         pagination_kwargs = build_pagination_kwargs(
-            args, minimum_limit=1, max_limit=10000, next_token_name="Marker", limit_name="MaxItems"
+            args, minimum_limit=1, max_limit=50, next_token_name="Marker", limit_name="MaxItems"
         )
         kwargs.update(pagination_kwargs)
 
@@ -5977,8 +5940,7 @@ class Lambda:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             return CommandResults(readable_output=f"Successfully deleted Lambda function: {args.get('function_name')}")
         else:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return None
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))  # noqa: RET503
 
     @staticmethod
     def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
@@ -6006,8 +5968,7 @@ class Lambda:
             msg = f"Successfully deleted version {kwargs.get('VersionNumber')} of layer {kwargs.get('LayerName')}"
             return CommandResults(readable_output=msg)
         else:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return None
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))  # noqa: RET503
 
     @staticmethod
     def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
@@ -6091,7 +6052,7 @@ class Lambda:
 
         return CommandResults(
             outputs=remove_empty_elements(outputs),
-            raw_response=response,
+            raw_response=serialize_response_with_datetime_encoding(response),
             outputs_prefix="AWS.Lambda.LayerVersions",
             outputs_key_field="LayerVersionArn",
             readable_output=readable_output,

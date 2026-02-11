@@ -7260,9 +7260,9 @@ def test_lambda_list_aliases_command_success(mocker):
     # Verify CommandResults structure
     assert "AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)" in result.outputs
     function_data = result.outputs["AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)"]
-    assert len(function_data["Aliases"]) == 2
-    assert function_data["Aliases"][0]["Name"] == "prod"
-    assert function_data["Aliases"][1]["Name"] == "dev"
+    assert len(function_data) == 2
+    assert function_data[0]["Name"] == "prod"
+    assert function_data[1]["Name"] == "dev"
     assert "prod" in result.readable_output
     assert "dev" in result.readable_output
 
@@ -7299,7 +7299,7 @@ def test_lambda_list_aliases_command_with_function_version(mocker):
     # Verify FunctionVersion was passed to API
     mock_client.list_aliases.assert_called_once_with(FunctionName="test-func", FunctionVersion="5", MaxItems=50)
     function_data = result.outputs["AWS.Lambda.Aliases(val.AliasArn && val.AliasArn == obj.AliasArn)"]
-    assert function_data["Aliases"][0]["FunctionVersion"] == "5"
+    assert function_data[0]["FunctionVersion"] == "5"
 
 
 def test_lambda_list_aliases_command_no_aliases(mocker):
